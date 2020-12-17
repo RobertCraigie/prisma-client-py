@@ -7,3 +7,10 @@ __copyright__ = 'Copyright 2020 RobertCraigie'
 __version__ = '0.0.1'
 
 from . import cli
+
+
+try:
+    from .client import *
+except ImportError:
+    # code has not been generated yet
+    pass
