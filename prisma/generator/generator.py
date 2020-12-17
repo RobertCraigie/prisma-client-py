@@ -1,4 +1,5 @@
 import logging
+import argparse
 from pathlib import Path
 from jinja2 import Environment, PackageLoader, select_autoescape
 
@@ -11,7 +12,13 @@ __all__ = (
 )
 
 
-def run():
+def run(args):
+    parser = argparse.ArgumentParser(description='Generate the prisma client code.')
+    parser.add_argument('-o', '--output', type=str, help='directory to write the generated code to')
+
+    parsed = parser.parse_args(args)
+    rootdir = Path(parsed.output) if parsed.output else BASE_PACKAGE_DIR
+
     env = Environment(
         loader=PackageLoader('prisma.generator', 'templates'),
     )
@@ -23,6 +30,6 @@ def run():
         template = env.get_template(name)
         output = template.render()
 
-        file = BASE_PACKAGE_DIR.joinpath(name.rstrip('.jinja'))
+        file = rootdir.joinpath(name.rstrip('.jinja'))
         file.write_text(output)
         log.debug('Wrote generated code to %s', file.absolute())

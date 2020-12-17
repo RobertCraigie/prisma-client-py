@@ -17,7 +17,7 @@ def main():
 
     args = sys.argv
     if len(args) > 1 and args[1] == 'generate':
-        generator.run()
+        generator.run(args[2:])
     else:
         print('Prisma CLI has not been implemented yet.')
 
