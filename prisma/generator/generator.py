@@ -22,13 +22,14 @@ def run(args):
     env = Environment(
         loader=PackageLoader('prisma.generator', 'templates'),
     )
+    header = env.get_template('_header.py.jinja').render()
 
     for name in env.list_templates():
-        if not name.endswith('.py.jinja'):
+        if not name.endswith('.py.jinja') or name.startswith('_'):
             continue
 
         template = env.get_template(name)
-        output = template.render()
+        output = header + template.render()
 
         file = rootdir.joinpath(name.rstrip('.jinja'))
         file.write_text(output)
