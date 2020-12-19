@@ -30,16 +30,14 @@ setup(
     maintainer='Robert Craigie',
     license='APACHE',
     url='https://github.com/RobertCraigie/prisma-client-py',
-    description='Prisma Client Py is an unofficial implementation of Prisma Client JS',
+    description='Prisma Client Py is an unofficial implementation of the Prisma Client',
     install_requires=requirements,
     long_description=readme,
     long_description_content_type='text/markdown',
     packages=find_packages(include=['prisma', 'prisma.*']),
     project_urls={},
     python_requires='>=3',
-    package_data={
-        '': ['generator/templates/*.py.jinja']
-    },
+    package_data={'': ['generator/templates/*.py.jinja']},
     include_package_data=True,
     entry_points={
         'console_scripts': [
