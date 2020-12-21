@@ -1,6 +1,7 @@
 [MESSAGES CONTROL]
 disable =
-  missing-docstring
+  missing-docstring,
+  too-few-public-methods
 
 
 [REPORTS]
