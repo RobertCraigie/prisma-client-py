@@ -16,12 +16,15 @@ __all__ = (
     'ENGINES',
     'PRISMA_CLI_NAME',
     'GLOBAL_TEMP_DIR',
+    'GLOBAL_UNPACK_DIR',
 )
 
 
 # hardcode CLI version and engine version
 PRISMA_VERSION = '2.12.0'
-ENGINE_VERSION = 'cf0680a1bfe8d5e743dc659cc7f08009f9587d58'
+
+# versions can be found under https://github.com/prisma/prisma-engine/commits/master
+ENGINE_VERSION = '58369335532e47bdcec77a2f1e7c1fb83a463918'
 
 # CLI binaries are stored here
 PRISMA_URL = os.environ.get(
@@ -46,3 +49,5 @@ PRISMA_CLI_NAME = f'prisma-cl-{platform.system().lower()}'
 GLOBAL_TEMP_DIR = (
     Path(tempfile.gettempdir()) / 'prisma' / 'binaries' / 'engines' / ENGINE_VERSION
 )
+
+GLOBAL_UNPACK_DIR = GLOBAL_TEMP_DIR.joinpath('unpacked')
