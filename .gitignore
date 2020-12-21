@@ -113,3 +113,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# local testing files
+tmp/
