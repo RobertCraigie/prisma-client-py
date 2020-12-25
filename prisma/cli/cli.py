@@ -85,7 +85,8 @@ def invoke_prisma():
                 ),
             )
         elif request.method == 'generate':
-            raise NotImplementedError('Client generation has not been implemented yet')
+            generator.run(request.params)
+            response = jsonrpc.Response(id=request.id, result=None)
         else:
             raise RuntimeError(f'JSON RPC received unexpected method: {request.method}')
 

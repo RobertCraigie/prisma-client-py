@@ -1,7 +1,37 @@
+# -- client.py.jinja --
+from pydantic import BaseModel, validate_arguments
+
 
 __all__ = (
     'Client',
 )
 
+
 class Client:
-    pass
+    {% for model in dmmf.datamodel.models %}
+    {{ model.name.lower() }}: '{{ model.name }}Actions'
+    {% endfor %}
+
+    def __init__(self):
+        {% for model in dmmf.datamodel.models %}
+        self.{{ model.name.lower() }} = {{ model.name }}Actions(self)
+        {% endfor %}
+
+
+{% for model in dmmf.datamodel.models %}
+class {{ model.name }}Type(BaseModel):
+    {% for field in model.fields %}
+    {{ field.python_case }}:
+            {%- if field.isRequired -%}
+                {{ ' ' }}{{ field.python_type }}
+            {% else -%}
+                {{ ' ' }}Optional[{{ field.python_type }}]
+            {% endif %}
+    {% endfor %}
+
+
+class {{ model.name }}Actions:
+    def __init__(self, client: Client):
+        self.client = client
+
+{% endfor %}
