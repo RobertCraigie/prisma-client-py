@@ -26,8 +26,8 @@ def download(url: str, to: str) -> None:
                 shutil.copyfileobj(f_in, f_out)
 
         # chmod +x
-        st = os.stat(tmp)
-        os.chmod(tmp, st.st_mode | 0o111)
+        status = os.stat(tmp)
+        os.chmod(tmp, status.st_mode | 0o111)
 
         # override the original
         shutil.copy(tmp, to)

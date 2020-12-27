@@ -17,15 +17,26 @@ def check_for_extension(file):
 
 
 def linux_distro():
-    distro = _platform.linux_distribution()[0].lower()
-    if distro in ['centos', 'fedora', 'rhel']:
-        return 'rhel'
-
-    if distro == 'alpine':
+    # NOTE: this has only been tested on ubuntu
+    distro_id, distro_id_like = _get_linux_distro_details()
+    if distro_id == 'alpine':
         return 'alpine'
+
+    if any(distro in distro_id_like for distro in ['centos', 'fedora', 'rhel']):
+        return 'rhel'
 
     # default to debian
     return 'debian'
+
+
+def _get_linux_distro_details():
+    process = subprocess.run(
+        ['cat', '/etc/os-release'], stdout=subprocess.PIPE, check=True
+    )
+    output = str(process.stdout, 'utf-8')
+    distro_id = re.match(r'(?m)^ID="?([^"\n]*)"?', output)
+    distro_id_like = re.match(r'(?m)^ID_LIKE="?([^"\n]*)"?', output)
+    return distro_id, distro_id_like
 
 
 @lru_cache(maxsize=None)

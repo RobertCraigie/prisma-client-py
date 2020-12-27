@@ -2,12 +2,11 @@
 
 import os
 import logging
-import tempfile
 from pathlib import Path
 
 from . import platform
 from .utils import download
-from .engine import Engine, ENGINE_VERSION
+from .engine import Engine, GLOBAL_TEMP_DIR
 
 
 __all__ = (
@@ -39,11 +38,6 @@ ENGINES = [
 
 # local file path for the prisma CL
 PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}'
-
-# where the engines live
-GLOBAL_TEMP_DIR = (
-    Path(tempfile.gettempdir()) / 'prisma' / 'binaries' / 'engines' / ENGINE_VERSION
-)
 
 
 def ensure_cached() -> Path:

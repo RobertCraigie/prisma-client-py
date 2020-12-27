@@ -1,5 +1,7 @@
 import os
 import logging
+import tempfile
+from pathlib import Path
 from pydantic import BaseModel
 
 from . import platform
@@ -17,6 +19,11 @@ ENGINE_URL = os.environ.get(
 
 # versions can be found under https://github.com/prisma/prisma-engine/commits/master
 ENGINE_VERSION = '58369335532e47bdcec77a2f1e7c1fb83a463918'
+
+# where the engines live
+GLOBAL_TEMP_DIR = (
+    Path(tempfile.gettempdir()) / 'prisma' / 'binaries' / 'engines' / ENGINE_VERSION
+)
 
 
 class Engine(BaseModel):
@@ -43,9 +50,6 @@ class Engine(BaseModel):
 
     @property
     def location(self) -> str:
-        # TODO: fix circular reference
-        from .binaries import GLOBAL_TEMP_DIR
-
         env = os.environ.get(self.env)
         if env is not None:
             log.debug('Using environment variable location: %s for %s', env, self.name)

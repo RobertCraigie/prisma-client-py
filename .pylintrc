@@ -1,7 +1,21 @@
 [MESSAGES CONTROL]
 disable =
+  fixme,
+  try-except-raise,
   missing-docstring,
   too-few-public-methods
+
+
+[MASTER]
+extension-pkg-whitelist =
+  pydantic
+
+
+[BASIC]
+good-names =
+  db,
+  fd,
+  to,
 
 
 [REPORTS]
