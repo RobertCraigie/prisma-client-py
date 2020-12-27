@@ -34,8 +34,12 @@ def _get_linux_distro_details():
         ['cat', '/etc/os-release'], stdout=subprocess.PIPE, check=True
     )
     output = str(process.stdout, 'utf-8')
-    distro_id = re.match(r'(?m)^ID="?([^"\n]*)"?', output)
-    distro_id_like = re.match(r'(?m)^ID_LIKE="?([^"\n]*)"?', output)
+
+    match = re.search(r'ID="?([^"\n]*)"?', output)
+    distro_id = match.group(1) if match else ''
+
+    match = re.search(r'ID_LIKE="?([^"\n]*)"?', output)
+    distro_id_like = match.group(1) if match else ''
     return distro_id, distro_id_like
 
 
