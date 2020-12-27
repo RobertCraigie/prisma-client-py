@@ -23,7 +23,7 @@ type_mapping = {
 
 
 def run(params):
-    rootdir = Path(params['generator']['output']) or BASE_PACKAGE_DIR
+    rootdir = Path(params['generator']['output'])
     params = update_params(params)
 
     env = Environment(
