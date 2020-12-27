@@ -1,0 +1,23 @@
+datasource db {
+    provider = "sqlite"
+    url      = "file:dev.db"
+}
+
+generator db {
+    provider = "python3 -m prisma"
+    output   = env("PRISMA_PY_OUTPUT_LOCATION")
+}
+
+model Post {
+    id        String   @default(cuid()) @id
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    title     String
+    published Boolean
+    desc      String?
+}
+
+model User {
+    id        String   @default(cuid()) @id
+    name String
+}

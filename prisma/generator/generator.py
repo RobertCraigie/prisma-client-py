@@ -18,7 +18,7 @@ type_mapping = {
     'Boolean': 'bool',
     'Int': 'int',
     'Float': 'float',
-    'Json': 'dict'
+    'Json': 'dict',
 }
 
 
@@ -55,7 +55,8 @@ def update_params(params):
             except KeyError:
                 # TODO: handle this better
                 raise RuntimeError(
-                    f'Could not parse {field["name"]} in the {model["name"]} model due to unknown type: {field["type"]}',
+                    f'Could not parse {field["name"]} in the {model["name"]} model '
+                    f'due to unknown type: {field["type"]}',
                     file=sys.stderr,
                 ) from None
 

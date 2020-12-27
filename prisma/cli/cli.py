@@ -3,9 +3,10 @@
 import os
 import sys
 import logging
+import subprocess
 import contextlib
 
-from .. import generator, jsonrpc
+from .. import generator, jsonrpc, binaries
 
 
 __all__ = ('main',)
@@ -17,19 +18,45 @@ def main():
     with setup_logging():
         args = sys.argv
         if len(args) > 1:
-            print('Prisma CLI has not been implemented yet.', file=sys.stderr)
-            sys.exit(1)
+            run_prisma_command(args[1:])
+        else:
+            if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
+                log.warning(
+                    'This command is only meant to be invoked internally. '
+                    'Please run the following instead:'
+                )
+                log.warning('`python3 -m prisma <command>`')
+                log.warning('e.g.')
+                log.warning('python3 -m prisma generate')
+                sys.exit(1)
 
-        if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
-            log.warning(
-                'This command is only meant to be invoked internally. Please run the following instead:'
-            )
-            log.warning('`python3 -m prisma <command>`')
-            log.warning('e.g.')
-            log.warning('python3 -m prisma generate')
-            sys.exit(1)
+            invoke_prisma()
 
-        invoke_prisma()
+
+def run_prisma_command(args):
+    directory = binaries.ensure_cached()
+    path = directory.joinpath(binaries.PRISMA_CLI_NAME)
+    if not path.exists():
+        raise RuntimeError(
+            f'The Prisma CLI is not downloaded, expected {path} to exist.'
+        )
+
+    log.debug('Using Prisma CLI at %s', path)
+    log.debug('Running command with args: %s', args)
+
+    env = {'PRISMA_HIDE_UPDATE_MESSAGE': 'true', **os.environ}
+
+    # ensure the client uses our engine binaries
+    for engine in binaries.ENGINES:
+        env[engine.env] = engine.location
+
+    subprocess.run(
+        [str(path.absolute()), *args],
+        env=env,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
+        check=True,
+    )
 
 
 @contextlib.contextmanager
@@ -50,7 +77,6 @@ def setup_logging():
         handler = logging.StreamHandler()
         handler.setFormatter(fmt)
         logger.addHandler(handler)
-        logger.addHandler(logging.StreamHandler())
 
         yield
     finally:
