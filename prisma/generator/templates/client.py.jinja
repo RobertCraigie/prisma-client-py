@@ -1,10 +1,15 @@
 # -- client.py.jinja --
 from pydantic import BaseModel, validate_arguments
+from prisma.engine import QueryEngine
 
 
 __all__ = (
     'Client',
 )
+
+SCHEMA = '''
+{{ datamodel }}
+'''
 
 
 class Client:
@@ -16,6 +21,29 @@ class Client:
         {% for model in dmmf.datamodel.models %}
         self.{{ model.name.lower() }} = {{ model.name }}Actions(self)
         {% endfor %}
+        self._engine = None
+
+    def __del__(self):
+        if self._engine is not None:
+            self._engine.stop()
+            self._engine = None
+
+    async def connect(self):
+        """Connect to the Prisma query engine.
+
+        It is required to call this before accessing data.
+        """
+        if self._engine is None:
+            self._engine = QueryEngine(dml=SCHEMA)
+
+        await self._engine.connect()
+
+    async def disconnect(self):
+        """Disconnect the Prisma query engine."""
+        if self._engine is not None:
+            self._engine.disconnect()
+            await self._engine.close_session()
+            self._engine = None
 
 
 {% for model in dmmf.datamodel.models %}

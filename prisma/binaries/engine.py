@@ -8,7 +8,12 @@ from . import platform
 from .utils import download
 
 
-__all__ = ('Engine',)
+__all__ = (
+    'Engine',
+    'ENGINE_VERSION',
+    'ENGINE_URL',
+    'GLOBAL_TEMP_DIR',
+)
 
 log = logging.getLogger(__name__)
 

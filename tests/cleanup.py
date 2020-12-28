@@ -11,5 +11,6 @@ def main():
         if path.exists():
             path.unlink()
 
+
 if __name__ == '__main__':
     main()
