@@ -17,18 +17,18 @@ class Client:
     {{ model.name.lower() }}: '{{ model.name }}Actions'
     {% endfor %}
 
-    def __init__(self):
+    def __init__(self) -> None:
         {% for model in dmmf.datamodel.models %}
         self.{{ model.name.lower() }} = {{ model.name }}Actions(self)
         {% endfor %}
-        self._engine = None
+        self._engine: Optional[QueryEngine] = None
 
-    def __del__(self):
+    def __del__(self) -> None:
         if self._engine is not None:
             self._engine.stop()
             self._engine = None
 
-    async def connect(self):
+    async def connect(self) -> None:
         """Connect to the Prisma query engine.
 
         It is required to call this before accessing data.
@@ -38,7 +38,7 @@ class Client:
 
         await self._engine.connect()
 
-    async def disconnect(self):
+    async def disconnect(self) -> None:
         """Disconnect the Prisma query engine."""
         if self._engine is not None:
             self._engine.disconnect()

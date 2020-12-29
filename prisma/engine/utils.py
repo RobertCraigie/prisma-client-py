@@ -74,4 +74,4 @@ def get_open_port() -> int:
     sock.bind(('', 0))
     port = sock.getsockname()[1]
     sock.close()
-    return port
+    return int(port)

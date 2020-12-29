@@ -1,3 +1,4 @@
+import aiohttp
 from ..errors import PrismaError
 
 
@@ -8,6 +9,7 @@ __all__ = (
     'EngineConnectionError',
     'EngineRequestError',
     'AlreadyConnectedError',
+    'NotConnectedError',
 )
 
 
@@ -23,11 +25,13 @@ class AlreadyConnectedError(EngineError):
     pass
 
 
+class NotConnectedError(EngineError):
+    pass
+
+
 class MismatchedVersionsError(EngineError):
-    def __init__(self, message=None, *, expected=None, got=None):
-        super().__init__(
-            message or f'Expected query engine version `{expected}` but got `{got}`'
-        )
+    def __init__(self, *, expected: str, got: str):
+        super().__init__(f'Expected query engine version `{expected}` but got `{got}`')
         self.expected = expected
         self.got = got
 
@@ -37,7 +41,7 @@ class EngineConnectionError(EngineError):
 
 
 class EngineRequestError(EngineError):
-    def __init__(self, response, body):
+    def __init__(self, response: aiohttp.ClientResponse, body: str):
         self.response = response
 
         # TODO: better error message

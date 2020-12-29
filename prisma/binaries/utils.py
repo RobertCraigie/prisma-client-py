@@ -13,7 +13,7 @@ def download(url: str, to: str) -> None:
     tmp = to + '.tmp'
     tar = to + '.gz.tmp'
 
-    async def do_download():
+    async def do_download() -> None:
         async with aiohttp.ClientSession(raise_for_status=True) as session:
             async with session.get(url, timeout=None) as resp:
                 with open(tar, 'wb') as fd:

@@ -35,11 +35,11 @@ class Engine(BaseModel):
     name: str
     env: str
 
-    def download(self):
+    def download(self) -> None:
         binary_name = platform.binary_platform()
         log.debug('Checking engine %s', self.name)
 
-        to = self.location
+        to = Path(self.location)
         url = platform.check_for_extension(
             ENGINE_URL.format(ENGINE_VERSION, binary_name, self.name)
         )
@@ -62,5 +62,5 @@ class Engine(BaseModel):
 
         binary_name = platform.binary_platform()
         return platform.check_for_extension(
-            GLOBAL_TEMP_DIR.joinpath(f'prisma-{self.name}-{binary_name}')
+            str(GLOBAL_TEMP_DIR.joinpath(f'prisma-{self.name}-{binary_name}'))
         )

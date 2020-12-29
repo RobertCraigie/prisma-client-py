@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-def main():
+def main() -> None:
     """Remove auto-generated python files"""
     directory = Path.cwd().joinpath('prisma')
     templates = Path.cwd().joinpath('prisma/generator/templates')

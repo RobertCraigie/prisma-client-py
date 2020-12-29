@@ -6,10 +6,9 @@ import asyncio
 import logging
 import subprocess
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Any
 
 import aiohttp
-from pydantic import BaseModel
 
 from . import utils, errors
 from ..utils import time_since
@@ -21,24 +20,22 @@ __all__ = ('QueryEngine',)
 log = logging.getLogger(__name__)
 
 
-class QueryEngine(BaseModel):
-    url: Optional[str]
-    session: Optional[aiohttp.ClientSession]
-    process: Optional[subprocess.Popen]
-    file: Optional[Path]
-    dml: str
+class QueryEngine:
+    def __init__(self, *, dml: str):
+        self.dml = dml
+        self.url = None  # type: Optional[str]
+        self.process = None  # type: Optional[subprocess.Popen[bytes]]
+        self.session = None  # type: Optional[aiohttp.ClientSession]
+        self.file = None  # type: Optional[Path]
 
-    class Config:
-        arbitrary_types_allowed = True
-
-    def __del__(self):
+    def __del__(self) -> None:
         self.stop()
 
-    def stop(self):
+    def stop(self) -> None:
         self.disconnect()
         asyncio.get_event_loop().create_task(self.close_session())
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         log.debug('Disconnecting query engine...')
 
         if self.process is not None:
@@ -52,11 +49,11 @@ class QueryEngine(BaseModel):
 
         log.debug('Disconnected query engine')
 
-    async def close_session(self):
+    async def close_session(self) -> None:
         if self.session and not self.session.closed:
             await self.session.close()
 
-    async def connect(self):
+    async def connect(self) -> None:
         log.debug('Connecting to query engine')
         if self.process is not None:
             raise errors.AlreadyConnectedError('Already connected to the query engine')
@@ -72,7 +69,7 @@ class QueryEngine(BaseModel):
 
         log.debug('Connecting to query engine took %s', time_since(start))
 
-    async def spawn(self, file):
+    async def spawn(self, file: Path) -> None:
         port = utils.get_open_port()
         log.debug('Running query engine on port %i', port)
 
@@ -120,7 +117,10 @@ class QueryEngine(BaseModel):
                 'Could not connect to the query engine'
             ) from last_exc
 
-    async def request(self, method, path):
+    async def request(self, method: str, path: str) -> Any:
+        if self.url is None:
+            raise errors.NotConnectedError('Not connected to the query engine')
+
         if self.session is None:
             self.session = aiohttp.ClientSession()
 
@@ -132,4 +132,4 @@ class QueryEngine(BaseModel):
                 return await resp.json()
 
             # TODO: handle errors better
-            raise errors.EngineRequestError(resp, await resp.body())
+            raise errors.EngineRequestError(resp, await resp.text())

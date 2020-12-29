@@ -2,13 +2,14 @@ import re
 import subprocess
 import platform as _platform
 from functools import lru_cache
+from typing import Tuple
 
 
-def name():
+def name() -> str:
     return _platform.system().lower()
 
 
-def check_for_extension(file):
+def check_for_extension(file: str) -> str:
     if name() == 'windows':
         if '.gz' in file:
             return file.replace('.gz', '.exe.gz')
@@ -16,7 +17,7 @@ def check_for_extension(file):
     return file
 
 
-def linux_distro():
+def linux_distro() -> str:
     # NOTE: this has only been tested on ubuntu
     distro_id, distro_id_like = _get_linux_distro_details()
     if distro_id == 'alpine':
@@ -29,22 +30,22 @@ def linux_distro():
     return 'debian'
 
 
-def _get_linux_distro_details():
+def _get_linux_distro_details() -> Tuple[str, str]:
     process = subprocess.run(
         ['cat', '/etc/os-release'], stdout=subprocess.PIPE, check=True
     )
     output = str(process.stdout, 'utf-8')
 
     match = re.search(r'ID="?([^"\n]*)"?', output)
-    distro_id = match.group(1) if match else ''
+    distro_id = match.group(1) if match else ''  # type: str
 
     match = re.search(r'ID_LIKE="?([^"\n]*)"?', output)
-    distro_id_like = match.group(1) if match else ''
+    distro_id_like = match.group(1) if match else ''  # type: str
     return distro_id, distro_id_like
 
 
 @lru_cache(maxsize=None)
-def binary_platform():
+def binary_platform() -> str:
     platform = name()
     if platform != 'linux':
         return platform
@@ -57,7 +58,7 @@ def binary_platform():
     return f'{distro}-openssl-{ssl}'
 
 
-def get_openssl():
+def get_openssl() -> str:
     process = subprocess.run(
         ['openssl', 'version', '-v'], stdout=subprocess.PIPE, check=True
     )

@@ -49,7 +49,7 @@ def ensure_cached() -> Path:
     return GLOBAL_TEMP_DIR
 
 
-def download_cli():
+def download_cli() -> None:
     url = PRISMA_URL.format(version=PRISMA_VERSION, platform=platform.name())
     dest = GLOBAL_TEMP_DIR.joinpath(platform.check_for_extension(PRISMA_CLI_NAME))
 

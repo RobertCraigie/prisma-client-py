@@ -2,7 +2,8 @@ import sys
 import json
 import signal
 import logging
-from typing import Dict, List, Optional
+from types import FrameType
+from typing import Dict, List, Optional, Any, NoReturn
 from pydantic import BaseModel
 
 
@@ -20,13 +21,13 @@ class Request(BaseModel):
     method: str
 
     # request payload
-    params: Optional[Dict]
+    params: Optional[Dict[str, Any]]
 
 
 class Response(BaseModel):
     id: int
     jsonrpc: str = '2.0'
-    result: Optional[Dict]
+    result: Optional[Dict[str, Any]]
 
 
 class Manifest(BaseModel):
@@ -45,7 +46,7 @@ method_mapping = {
 
 
 def readline() -> str:
-    def handler(signum, frame):
+    def handler(signum: int, frame: Optional[FrameType]) -> NoReturn:
         raise TimeoutError("Timed out waiting for stdin")
 
     # TODO: windows compatibility
@@ -57,7 +58,7 @@ def readline() -> str:
     return line
 
 
-def parse(line) -> Request:
+def parse(line: str) -> Request:
     data = json.loads(line)
     try:
         method = data['method']

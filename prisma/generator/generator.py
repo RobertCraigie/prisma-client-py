@@ -1,4 +1,3 @@
-import sys
 import logging
 from pathlib import Path
 from jinja2 import Environment, PackageLoader
@@ -56,8 +55,7 @@ def update_params(params):
                 # TODO: handle this better
                 raise RuntimeError(
                     f'Could not parse {field["name"]} in the {model["name"]} model '
-                    f'due to unknown type: {field["type"]}',
-                    file=sys.stderr,
+                    f'due to unknown type: {field["type"]}'
                 ) from None
 
             field['python_case'] = camelcase_to_snakecase(field['name'])

@@ -5,6 +5,7 @@ import sys
 import logging
 import subprocess
 import contextlib
+from typing import List, Iterator
 
 from .. import generator, jsonrpc, binaries
 
@@ -14,7 +15,7 @@ __all__ = ('main',)
 log = logging.getLogger(__name__)
 
 
-def main():
+def main() -> None:
     with setup_logging():
         args = sys.argv
         if len(args) > 1:
@@ -33,7 +34,7 @@ def main():
             invoke_prisma()
 
 
-def run_prisma_command(args):
+def run_prisma_command(args: List[str]) -> None:
     directory = binaries.ensure_cached()
     path = directory.joinpath(binaries.PRISMA_CLI_NAME)
     if not path.exists():
@@ -60,7 +61,7 @@ def run_prisma_command(args):
 
 
 @contextlib.contextmanager
-def setup_logging():
+def setup_logging() -> Iterator[None]:
     try:
         logger = logging.getLogger()
 
@@ -84,13 +85,13 @@ def setup_logging():
         logger.removeHandler(handler)
 
 
-def invoke_prisma():
+def invoke_prisma() -> None:
     while True:
         try:
             line = jsonrpc.readline()
         except TimeoutError:
             log.debug('Timed out waiting for stdin input')
-            return
+            break
 
         request = jsonrpc.parse(line)
         log.debug(
