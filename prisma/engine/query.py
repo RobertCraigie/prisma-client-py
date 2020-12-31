@@ -81,7 +81,7 @@ class QueryEngine:
             RUST_LOG='error',
             RUST_LOG_FORMAT='json',
         )
-        if log.isEnabledFor(logging.DEBUG):
+        if os.environ.get('PRISMA_PY_DEBUG'):
             env.update(PRISMA_LOG_QUERIES='y', RUST_LOG='info')
 
         log.debug('Starting query engine...')
@@ -92,7 +92,6 @@ class QueryEngine:
             stderr=sys.stderr,
         )
 
-        # send a health check and retry if not successful
         last_exc = None
         for _ in range(100):
             try:
@@ -117,14 +116,22 @@ class QueryEngine:
                 'Could not connect to the query engine'
             ) from last_exc
 
-    async def request(self, method: str, path: str) -> Any:
+    async def request(self, method: str, path: str, *, data: Any = None) -> Any:
         if self.url is None:
             raise errors.NotConnectedError('Not connected to the query engine')
 
         if self.session is None:
             self.session = aiohttp.ClientSession()
 
-        kwargs = {'headers': {'Content-Type': 'application/json'}}
+        kwargs = {
+            'headers': {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            }
+        }
+
+        if data is not None:
+            kwargs['data'] = data
 
         url = self.url + path
         async with self.session.request(method, url, **kwargs) as resp:

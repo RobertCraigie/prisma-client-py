@@ -14,8 +14,16 @@ extension-pkg-whitelist =
 [BASIC]
 good-names =
   db,
+  dt,
   fd,
   to,
+
+
+[VARIABLES]
+callbacks =
+  cb_,
+  _cb,
+  pytest_
 
 
 [REPORTS]

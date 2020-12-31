@@ -2,6 +2,7 @@
 from enum import Enum
 from pydantic import BaseModel, Field, validate_arguments
 from prisma.engine import QueryEngine
+from prisma.builder import QueryBuilder
 
 
 __all__ = (
@@ -69,8 +70,40 @@ class {{ model.name }}(BaseModel):
     class Config:
         use_enum_values = True
 
+
+class {{ model.name }}CreateInput(BaseModel):
+    {% for field in model.all_fields %}
+        {%- if field.required_on_create and not field.is_read_only -%}
+            {{'    '}}{{ field.python_case }}: {{ field.python_type }}
+        {% else -%}
+            {{'    '}}{{ field.python_case }}: Optional[{{ field.python_type }}]
+        {% endif %}
+    {% endfor %}
+
+
+
 class {{ model.name }}Actions:
     def __init__(self, client: Client):
         self.client = client
 
+    # TODO: add support for select and include
+    @validate_arguments
+    async def create(self, data: {{ model.name }}CreateInput) -> {{ model.name }}:
+        builder = QueryBuilder(
+            engine=self.client._engine,
+            operation='mutation',
+            method='createOne',
+            model='{{ model.name }}',
+            fields=list({{ model.name }}.schema()['properties'].keys()),
+            data=data
+        )
+        resp = await builder.execute()
+        return {{ model.name }}.parse_obj(resp['data']['result'])
+
+
+{% endfor %}
+
+# required to support relationships between models
+{% for model in dmmf.datamodel.models %}
+{{ model.name }}.update_forward_refs()
 {% endfor %}

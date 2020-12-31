@@ -10,7 +10,7 @@ from typing import List, Iterator
 from .. import generator, jsonrpc, binaries
 
 
-__all__ = ('main',)
+__all__ = ('main', 'setup_logging')
 
 log = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ def run_prisma_command(args: List[str]) -> None:
 
 
 @contextlib.contextmanager
-def setup_logging() -> Iterator[None]:
+def setup_logging(use_handler: bool = True) -> Iterator[None]:
     try:
         logger = logging.getLogger()
 
@@ -71,18 +71,20 @@ def setup_logging() -> Iterator[None]:
         else:
             logger.setLevel(logging.INFO)
 
-        fmt = logging.Formatter(
-            '[{levelname:<7}] {name}: {message}',
-            style='{',
-        )
-        handler = logging.StreamHandler()
-        handler.setFormatter(fmt)
-        logger.addHandler(handler)
+        if use_handler:
+            fmt = logging.Formatter(
+                '[{levelname:<7}] {name}: {message}',
+                style='{',
+            )
+            handler = logging.StreamHandler()
+            handler.setFormatter(fmt)
+            logger.addHandler(handler)
 
         yield
     finally:
-        handler.close()
-        logger.removeHandler(handler)
+        if use_handler:
+            handler.close()
+            logger.removeHandler(handler)
 
 
 def invoke_prisma() -> None:

@@ -1,4 +1,3 @@
-import prisma
 from prisma import Client
 
 
@@ -10,6 +9,3 @@ def test_generation():
     assert db is not None
     assert db.user is not None
     assert db.post is not None
-
-    assert prisma.client.PostType is not None
-    assert prisma.client.UserType is not None
