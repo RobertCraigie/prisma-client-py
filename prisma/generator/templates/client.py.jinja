@@ -47,10 +47,10 @@ class Client:
 
 
 {% for model in dmmf.datamodel.models %}
-class {{ model.name }}Type(BaseModel):
-    {% for field in model.fields %}
+class {{ model.name }}(BaseModel):
+    {% for field in model.all_fields %}
     {{ field.python_case }}:
-            {%- if field.isRequired -%}
+            {%- if field.is_required -%}
                 {{ ' ' }}{{ field.python_type }}
             {% else -%}
                 {{ ' ' }}Optional[{{ field.python_type }}]
