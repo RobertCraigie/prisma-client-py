@@ -134,9 +134,18 @@ class QueryEngine:
             kwargs['data'] = data
 
         url = self.url + path
+        log.debug('Sending %s request to %s with data: %s', method, url, data)
+
         async with self.session.request(method, url, **kwargs) as resp:
             if 300 > resp.status >= 200:
-                return await resp.json()
+                response = await resp.json()
+                log.debug('%s %s returned %s', method, url, response)
+
+                errors_data = response.get('errors')
+                if errors_data:
+                    return utils.handle_response_errors(resp, errors_data)
+
+                return response
 
             # TODO: handle errors better
             raise errors.EngineRequestError(resp, await resp.text())

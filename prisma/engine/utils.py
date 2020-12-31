@@ -4,8 +4,13 @@ import socket
 import logging
 import subprocess
 from pathlib import Path
+from typing import NoReturn, Any
+
+import aiohttp
 
 from . import errors
+from .. import errors as prisma_errors
+
 from ..utils import time_since
 from ..binaries import GLOBAL_TEMP_DIR, ENGINE_VERSION, platform
 
@@ -75,3 +80,25 @@ def get_open_port() -> int:
     port = sock.getsockname()[1]
     sock.close()
     return int(port)
+
+
+def handle_response_errors(resp: aiohttp.ClientResponse, data: Any) -> NoReturn:
+    for error in data:
+        try:
+            code = error.get('user_facing_error', {}).get('error_code')
+            if code is None:
+                continue
+
+            if code == 'P2002':
+                raise prisma_errors.UniqueViolationError(error)
+        except (KeyError, TypeError):
+            continue
+
+    try:
+        raise prisma_errors.DataError(data[0])
+    except (IndexError, TypeError):
+        pass
+
+    raise errors.EngineRequestError(
+        resp, f'Could not process erroneous response: {data}'
+    )
