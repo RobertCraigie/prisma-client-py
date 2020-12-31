@@ -1,5 +1,6 @@
 # -- client.py.jinja --
-from pydantic import BaseModel, validate_arguments
+from enum import Enum
+from pydantic import BaseModel, Field, validate_arguments
 from prisma.engine import QueryEngine
 
 
@@ -46,17 +47,27 @@ class Client:
             self._engine = None
 
 
+{% for enum in dmmf.datamodel.enums %}
+class {{ enum.name }}Enum(str, Enum):
+    {% for value in enum.values %}
+    {{ value.name }} = '{{ value.name }}'
+    {% endfor %}
+{% endfor %}
+
+
 {% for model in dmmf.datamodel.models %}
 class {{ model.name }}(BaseModel):
     {% for field in model.all_fields %}
     {{ field.python_case }}:
             {%- if field.is_required -%}
-                {{ ' ' }}{{ field.python_type }}
+                {{ ' ' }}{{ field.python_type }} = Field(alias='{{ field.name }}')
             {% else -%}
-                {{ ' ' }}Optional[{{ field.python_type }}]
+                {{ ' ' }}Optional[{{ field.python_type }}] = Field(alias='{{ field.name }}')
             {% endif %}
     {% endfor %}
 
+    class Config:
+        use_enum_values = True
 
 class {{ model.name }}Actions:
     def __init__(self, client: Client):
