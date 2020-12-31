@@ -2,7 +2,7 @@
 
 <div align="center">
     <h1>Prisma Client Python</h1>
-    <p><h3 align="center">Typesafe database access for Python</h3></p>
+    <p><h3 align="center">Type-safe database access for Python</h3></p>
 </div>
 
 <hr>
