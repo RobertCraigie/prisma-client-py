@@ -7,7 +7,7 @@ import subprocess
 import contextlib
 from typing import List, Iterator
 
-from .. import generator, jsonrpc, binaries
+from . import generator, jsonrpc, binaries
 
 
 __all__ = ('main', 'setup_logging')
