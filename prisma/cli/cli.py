@@ -51,13 +51,13 @@ def run_prisma_command(args: List[str]) -> None:
     for engine in binaries.ENGINES:
         env[engine.env] = engine.location
 
-    subprocess.run(
+    process = subprocess.run(  # pylint: disable=subprocess-run-check
         [str(path.absolute()), *args],
         env=env,
         stdout=sys.stdout,
         stderr=sys.stderr,
-        check=True,
     )
+    sys.exit(process.returncode)
 
 
 @contextlib.contextmanager
