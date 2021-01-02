@@ -21,14 +21,13 @@ def run(params: Dict[str, Any]) -> None:
         trim_blocks=True,
         lstrip_blocks=True,
     )
-    header = env.get_template('_header.py.jinja').render(**params)
 
     for name in env.list_templates():
         if not name.endswith('.py.jinja') or name.startswith('_'):
             continue
 
         template = env.get_template(name)
-        output = header + template.render(**params)
+        output = template.render(**params)
 
         file = rootdir.joinpath(name.rstrip('.jinja'))
         file.write_text(output)
