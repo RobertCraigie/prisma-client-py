@@ -1,6 +1,8 @@
 # -- client.py.jinja --
 from enum import Enum
 from pydantic import BaseModel, Field, validate_arguments
+
+from prisma import types
 from prisma.engine import QueryEngine
 from prisma.builder import QueryBuilder
 
@@ -71,29 +73,13 @@ class {{ model.name }}(BaseModel):
         use_enum_values = True
 
 
-class {{ model.name }}OptionalCreateInput(TypedDict, total=False):
-    {% for field in model.all_fields %}
-        {%- if not field.required_on_create and not field.is_read_only -%}
-            {{'    '}}{{ field.python_case }}: Optional[{{ field.python_type }}]
-        {% endif %}
-    {% endfor %}
-
-
-class {{ model.name }}CreateInput({{ model.name }}OptionalCreateInput):
-    {% for field in model.all_fields %}
-        {%- if field.required_on_create and not field.is_read_only -%}
-            {{'    '}}{{ field.python_case }}: {{ field.python_type }}
-        {% endif %}
-    {% endfor %}
-
-
 class {{ model.name }}Actions:
     def __init__(self, client: Client):
         self.client = client
 
     # TODO: add support for select and include
     @validate_arguments
-    async def create(self, data: {{ model.name }}CreateInput) -> {{ model.name }}:
+    async def create(self, data: types.{{ model.name }}CreateInput) -> {{ model.name }}:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='mutation',
