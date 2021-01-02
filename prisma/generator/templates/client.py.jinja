@@ -71,15 +71,20 @@ class {{ model.name }}(BaseModel):
         use_enum_values = True
 
 
-class {{ model.name }}CreateInput(BaseModel):
+class {{ model.name }}OptionalCreateInput(TypedDict, total=False):
     {% for field in model.all_fields %}
-        {%- if field.required_on_create and not field.is_read_only -%}
-            {{'    '}}{{ field.python_case }}: {{ field.python_type }}
-        {% else -%}
+        {%- if not field.required_on_create and not field.is_read_only -%}
             {{'    '}}{{ field.python_case }}: Optional[{{ field.python_type }}]
         {% endif %}
     {% endfor %}
 
+
+class {{ model.name }}CreateInput({{ model.name }}OptionalCreateInput):
+    {% for field in model.all_fields %}
+        {%- if field.required_on_create and not field.is_read_only -%}
+            {{'    '}}{{ field.python_case }}: {{ field.python_type }}
+        {% endif %}
+    {% endfor %}
 
 
 class {{ model.name }}Actions:
