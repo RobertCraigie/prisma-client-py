@@ -1,9 +1,7 @@
 import sys
 import json
-import signal
 import logging
-from types import FrameType
-from typing import Dict, List, Optional, Any, NoReturn
+from typing import Dict, List, Optional, Any
 from pydantic import BaseModel
 
 
@@ -45,15 +43,13 @@ method_mapping = {
 }
 
 
-def readline() -> str:
-    def handler(signum: int, frame: Optional[FrameType]) -> NoReturn:
-        raise TimeoutError("Timed out waiting for stdin")
+def readline() -> Optional[str]:
+    try:
+        line = input()
+    except EOFError:
+        log.debug('Ignoring EOFError')
+        return None
 
-    # TODO: windows compatibility
-    signal.signal(signal.SIGALRM, handler)
-    signal.alarm(3)
-
-    line = input()
     log.debug('Received %s', line)
     return line
 

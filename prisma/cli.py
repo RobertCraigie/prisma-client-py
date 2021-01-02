@@ -89,10 +89,9 @@ def setup_logging(use_handler: bool = True) -> Iterator[None]:
 
 def invoke_prisma() -> None:
     while True:
-        try:
-            line = jsonrpc.readline()
-        except TimeoutError:
-            log.debug('Timed out waiting for stdin input')
+        line = jsonrpc.readline()
+        if line is None:
+            log.debug('Prisma invokation ending')
             break
 
         request = jsonrpc.parse(line)
