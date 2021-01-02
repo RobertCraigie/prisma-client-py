@@ -15,6 +15,14 @@ class {{ model.name }}CreateInput({{ model.name }}OptionalCreateInput):
         {% endif %}
     {% endfor %}
 
+
+class {{ model.name }}WhereUniqueInput(TypedDict, total=False):
+    {% for field in model.all_fields %}
+        {%- if field.is_unique or field.is_id -%}
+            {{'    '}}{{ field.python_case }}: {{ field.python_type }}
+        {% endif %}
+    {% endfor %}
+
 {% endfor %}
 
 # fmt: on

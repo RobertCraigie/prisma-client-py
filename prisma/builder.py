@@ -14,7 +14,7 @@ class QueryBuilder(BaseModel):
 
     model: str
     engine: QueryEngine
-    data: Dict[str, Any]
+    arguments: Dict[str, Any]
     fields_: List[str] = Field(alias='fields')
 
     class Config:
@@ -23,7 +23,7 @@ class QueryBuilder(BaseModel):
     def build(self) -> str:
         data = {
             'variables': {},
-            'operation_name': 'mutation',
+            'operation_name': self.operation,
             'query': self.build_query(),
         }
         return json.dumps(data)
@@ -47,13 +47,28 @@ class QueryBuilder(BaseModel):
         return (
             f'{self.operation} {{'
               f'result: {self.method}{self.model}('
-                f'data: {self.build_data()}'
+                f'{self.build_args()}'
               f'){{ {" ".join(self.fields_)} }}'
             '}'
         )
         # fmt: on
 
-    def build_data(self) -> str:
+    def build_args(self) -> str:
+        """Returns a string representing the arguments to the the GraphQL query.
+
+        e.g. 'where: { id: "hsdajkd2" } take: 1'
+        """
+        strings = []
+        for arg, value in self.arguments.items():
+            if isinstance(value, dict):
+                parsed = self.build_data(value)
+            else:
+                parsed = json.dumps(value)
+
+            strings.append(f'{arg}: {parsed}')
+        return ' '.join(strings)
+
+    def build_data(self, data: Dict[str, Any]) -> str:
         """Returns a custom json dumped string of a dictionary.
 
         differences:
@@ -64,7 +79,7 @@ class QueryBuilder(BaseModel):
         """
         strings = []
         dumps = json.dumps
-        for key, value in self.data.items():
+        for key, value in data.items():
             if value is not None:
                 strings.append(f'{key}: {dumps(value)}')
         return f'{{ {", ".join(strings)} }}'

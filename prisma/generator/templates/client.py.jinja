@@ -86,7 +86,20 @@ class {{ model.name }}Actions:
             method='createOne',
             model='{{ model.name }}',
             fields=list({{ model.name }}.schema()['properties'].keys()),
-            data=data
+            arguments={'data': data}
+        )
+        resp = await builder.execute()
+        return {{ model.name }}.parse_obj(resp['data']['result'])
+
+    @validate_arguments
+    async def find_unique(self, where: types.{{ model.name }}WhereUniqueInput) -> {{ model.name }}:
+        builder = QueryBuilder(
+            engine=self.client._engine,
+            operation='query',
+            method='findOne',
+            model='{{ model.name }}',
+            fields=list({{ model.name }}.schema()['properties'].keys()),
+            arguments={'where': where},
         )
         resp = await builder.execute()
         return {{ model.name }}.parse_obj(resp['data']['result'])

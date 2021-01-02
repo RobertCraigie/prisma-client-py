@@ -26,5 +26,9 @@ callbacks =
   pytest_
 
 
+[SIMILARITIES]
+ignore-imports = yes
+
+
 [REPORTS]
 output-format = colorized
