@@ -120,9 +120,6 @@ class QueryEngine:
         if self.url is None:
             raise errors.NotConnectedError('Not connected to the query engine')
 
-        if self.session is None:
-            self.session = aiohttp.ClientSession()
-
         kwargs = {
             'headers': {
                 'Content-Type': 'application/json',
@@ -136,16 +133,18 @@ class QueryEngine:
         url = self.url + path
         log.debug('Sending %s request to %s with data: %s', method, url, data)
 
-        async with self.session.request(method, url, **kwargs) as resp:
-            if 300 > resp.status >= 200:
-                response = await resp.json()
-                log.debug('%s %s returned %s', method, url, response)
+        # TODO: re-use the same session
+        async with aiohttp.ClientSession() as session:
+            async with session.request(method, url, **kwargs) as resp:
+                if 300 > resp.status >= 200:
+                    response = await resp.json()
+                    log.debug('%s %s returned %s', method, url, response)
 
-                errors_data = response.get('errors')
-                if errors_data:
-                    return utils.handle_response_errors(resp, errors_data)
+                    errors_data = response.get('errors')
+                    if errors_data:
+                        return utils.handle_response_errors(resp, errors_data)
 
-                return response
+                    return response
 
-            # TODO: handle errors better
-            raise errors.EngineRequestError(resp, await resp.text())
+                # TODO: handle errors better
+                raise errors.EngineRequestError(resp, await resp.text())

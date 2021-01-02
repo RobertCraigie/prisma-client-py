@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 import prisma
 from prisma.cli import setup_logging
@@ -19,6 +21,11 @@ def client():
 
     # TODO: this should reset the database state before every test
     return CLIENT
+
+
+@pytest.fixture
+def event_loop():
+    return asyncio.get_event_loop()
 
 
 # TODO: don't emulate the with statement

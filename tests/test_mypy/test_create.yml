@@ -14,7 +14,6 @@
 - case: create_optional_data
   main: |
     from prisma import Client
-    from prisma.client import PostCreateInput
 
     async def main() -> None:
       client = Client()
@@ -34,7 +33,7 @@
 - case: create_dynamic_data
   main: |
     from prisma import Client
-    from prisma.client import PostCreateInput
+    from prisma.types import PostCreateInput
 
     async def main() -> None:
       client = Client()
