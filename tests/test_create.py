@@ -33,6 +33,9 @@ async def test_create(client):
 @pytest.mark.asyncio
 async def test_create_missing_required_args(client):
     with pytest.raises(ValidationError):
+        await client.post.create()
+
+    with pytest.raises(errors.MissingRequiredValueError):
         await client.post.create(
             {
                 'title': 'Hi from Prisma!',

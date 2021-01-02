@@ -91,6 +91,9 @@ def handle_response_errors(resp: aiohttp.ClientResponse, data: Any) -> NoReturn:
 
             if code == 'P2002':
                 raise prisma_errors.UniqueViolationError(error)
+
+            if code == 'P2012':
+                raise prisma_errors.MissingRequiredValueError(error)
         except (KeyError, TypeError):
             continue
 

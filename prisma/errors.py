@@ -26,3 +26,7 @@ class DataError(PrismaError):
 
 class UniqueViolationError(DataError):
     pass
+
+
+class MissingRequiredValueError(DataError):
+    pass
