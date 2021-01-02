@@ -114,6 +114,9 @@ def invoke_prisma() -> None:
                 ),
             )
         elif request.method == 'generate':
+            if request.params is None:
+                raise RuntimeError('Prisma JSONRPC did not send data to generate.')
+
             generator.run(request.params)
             response = jsonrpc.Response(id=request.id, result=None)
         else:

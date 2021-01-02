@@ -1,7 +1,8 @@
 import logging
 from pathlib import Path
-from jinja2 import Environment, PackageLoader
+from typing import Dict, Any
 
+from jinja2 import Environment, PackageLoader
 from .models import Data
 
 
@@ -11,7 +12,7 @@ log = logging.getLogger(__name__)
 BASE_PACKAGE_DIR = Path(__file__).parent.parent
 
 
-def run(params):
+def run(params: Dict[str, Any]) -> None:
     params = vars(Data.parse_obj(params))
     rootdir = Path(params['generator'].output)
 

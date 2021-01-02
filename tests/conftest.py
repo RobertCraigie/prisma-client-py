@@ -1,3 +1,4 @@
+# pylint: disable=global-statement
 import asyncio
 
 import pytest
@@ -32,9 +33,9 @@ def event_loop():
 def pytest_sessionstart(session):
     global LOGGING_CONTEXT_MANAGER
     LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
-    LOGGING_CONTEXT_MANAGER.__enter__()
+    LOGGING_CONTEXT_MANAGER.__enter__()  # pylint: disable=no-member
 
 
 def pytest_sessionfinish(session):
     if LOGGING_CONTEXT_MANAGER is not None:
-        LOGGING_CONTEXT_MANAGER.__exit__(None, None, None)
+        LOGGING_CONTEXT_MANAGER.__exit__(None, None, None)  # pylint: disable=no-member

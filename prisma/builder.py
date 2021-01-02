@@ -43,6 +43,7 @@ class QueryBuilder(BaseModel):
           ) { id published createdAt updatedAt title desc }
         }
         """
+        # fmt: off
         return (
             f'{self.operation} {{'
               f'result: {self.method}{self.model}('
@@ -50,6 +51,7 @@ class QueryBuilder(BaseModel):
               f'){{ {" ".join(self.fields_)} }}'
             '}'
         )
+        # fmt: on
 
     def build_data(self) -> str:
         """Returns a custom json dumped string of a dictionary.
