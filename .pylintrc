@@ -23,7 +23,9 @@ good-names =
 callbacks =
   cb_,
   _cb,
-  pytest_
+  pytest_,
+  plugin,
+  _hook
 
 
 [SIMILARITIES]
