@@ -50,6 +50,36 @@ class Client:
             await self._engine.close_session()
             self._engine = None
 
+    async def execute_raw(self, query: str, *args: Any) -> int:
+        builder = QueryBuilder(
+            engine=self._engine,
+            operation='mutation',
+            method='executeRaw',
+            arguments={'query': query, 'parameters': args}
+        )
+        resp = await builder.execute()
+        return int(resp['data']['result'])
+
+    @overload
+    async def query_raw(self, query: str, *args: Any, model: None) -> Any:
+        ...
+
+    @overload
+    async def query_raw(self, query: str, *args: Any, model: Type[BaseModel]) -> List[BaseModel]:
+        ...
+
+    async def query_raw(self, query: str, *args: Any, model: Optional[Type[BaseModel]] = None) -> Union[List[BaseModel], Any]:
+        builder = QueryBuilder(
+            engine=self._engine,
+            operation='mutation',
+            method='queryRaw',
+            arguments={'query': query, 'parameters': args}
+        )
+        result = (await builder.execute())['data']['result']
+        if model is not None:
+            return list(map(lambda r: model.parse_obj(r), result))
+        return result
+
 
 {% for enum in dmmf.datamodel.enums %}
 class {{ enum.name }}Enum(str, Enum):

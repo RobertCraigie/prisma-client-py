@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 
 from .engine import QueryEngine
@@ -12,10 +12,10 @@ class QueryBuilder(BaseModel):
     # GraphQL operation
     operation: str
 
-    model: str
+    model: Optional[str]
     engine: QueryEngine
     arguments: Dict[str, Any]
-    fields_: List[str] = Field(alias='fields')
+    fields_: Optional[List[str]] = Field(alias='fields')
 
     class Config:
         arbitrary_types_allowed = True
@@ -46,9 +46,9 @@ class QueryBuilder(BaseModel):
         # fmt: off
         return (
             f'{self.operation} {{'
-              f'result: {self.method}{self.model}('
+              f'result: {self.method}{self.model if self.model else ""}('
                 f'{self.build_args()}'
-              f'){{ {" ".join(self.fields_)} }}'
+              f'){self.build_fields()}'
             '}'
         )
         # fmt: on
@@ -62,11 +62,24 @@ class QueryBuilder(BaseModel):
         for arg, value in self.arguments.items():
             if isinstance(value, dict):
                 parsed = self.build_data(value)
+            elif isinstance(value, (list, tuple)):
+                # prisma expects a json string value like "[\"John\",\"123\"]"
+                # we encode twice to ensure that only the inner quotes are escaped
+                # yes this is a terrible solution
+                # TODO: better solution
+                parsed = json.dumps(json.dumps(value))
             else:
                 parsed = json.dumps(value)
 
             strings.append(f'{arg}: {parsed}')
+
         return ' '.join(strings)
+
+    def build_fields(self) -> str:
+        if self.fields_ is None:
+            return ''
+
+        return f'{{ {" ".join(self.fields_)} }}'
 
     def build_data(self, data: Dict[str, Any]) -> str:
         """Returns a custom json dumped string of a dictionary.
@@ -82,6 +95,7 @@ class QueryBuilder(BaseModel):
         for key, value in data.items():
             if value is not None:
                 strings.append(f'{key}: {dumps(value)}')
+
         return f'{{ {", ".join(strings)} }}'
 
     async def execute(self) -> Any:
