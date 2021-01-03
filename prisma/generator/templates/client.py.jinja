@@ -64,9 +64,12 @@ class Client:
     async def query_raw(self, query: str, *args: Any, model: None) -> Any:
         ...
 
+    {% for model in dmmf.datamodel.models %}
     @overload
-    async def query_raw(self, query: str, *args: Any, model: Type[BaseModel]) -> List[BaseModel]:
+    async def query_raw(self, query: str, *args: Any, model: Type['{{ model.name }}']) -> List['{{ model.name }}']:
         ...
+
+    {% endfor %}
 
     async def query_raw(self, query: str, *args: Any, model: Optional[Type[BaseModel]] = None) -> Union[List[BaseModel], Any]:
         builder = QueryBuilder(
