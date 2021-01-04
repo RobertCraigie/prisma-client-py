@@ -31,3 +31,9 @@ async def test_find_unique_missing_required_args(client):
                 'title': 'Hi from Prisma!',
             }
         )
+
+
+@pytest.mark.asyncio
+async def test_find_unique_no_match(client):
+    found = await client.post.find_unique(where={'id': 'sjbsjahs'})
+    assert found is None

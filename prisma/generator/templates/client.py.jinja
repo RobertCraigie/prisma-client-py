@@ -126,7 +126,7 @@ class {{ model.name }}Actions:
         return {{ model.name }}.parse_obj(resp['data']['result'])
 
     @validate_arguments
-    async def find_unique(self, where: types.{{ model.name }}WhereUniqueInput) -> {{ model.name }}:
+    async def find_unique(self, where: types.{{ model.name }}WhereUniqueInput) -> Optional[{{ model.name }}]:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
@@ -136,7 +136,10 @@ class {{ model.name }}Actions:
             arguments={'where': where},
         )
         resp = await builder.execute()
-        return {{ model.name }}.parse_obj(resp['data']['result'])
+        result = resp['data']['result']
+        if result is None:
+            return None
+        return {{ model.name }}.parse_obj(result)
 
 
 {% endfor %}
