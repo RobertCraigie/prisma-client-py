@@ -1,0 +1,26 @@
+{% include '_header.py.jinja' %}
+# -- template models.py.jinja --
+from pydantic import BaseModel, Field
+
+{% for model in dmmf.datamodel.models %}
+class {{ model.name }}(BaseModel):
+    {% for field in model.all_fields %}
+    {{ field.python_case }}:
+            {%- if field.is_required -%}
+                {{ ' ' }}{{ field.python_type }} = Field(alias='{{ field.name }}')
+            {% else -%}
+                {{ ' ' }}Optional[{{ field.python_type }}] = Field(alias='{{ field.name }}')
+            {% endif %}
+    {% endfor %}
+
+    class Config:
+        use_enum_values = True
+
+
+{% endfor %}
+
+
+# required to support relationships between models
+{% for model in dmmf.datamodel.models %}
+{{ model.name }}.update_forward_refs()
+{% endfor %}

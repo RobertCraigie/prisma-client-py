@@ -1,9 +1,9 @@
 {% include '_header.py.jinja' %}
 # -- template client.py.jinja --
 from enum import Enum
-from pydantic import BaseModel, Field, validate_arguments
+from pydantic import BaseModel, validate_arguments
 
-from prisma import types
+from prisma import types, models
 from prisma.engine import QueryEngine
 from prisma.builder import QueryBuilder
 
@@ -66,7 +66,7 @@ class Client:
 
     {% for model in dmmf.datamodel.models %}
     @overload
-    async def query_raw(self, query: str, *args: Any, model: Type['{{ model.name }}']) -> List['{{ model.name }}']:
+    async def query_raw(self, query: str, *args: Any, model: Type['models.{{ model.name }}']) -> List['models.{{ model.name }}']:
         ...
 
     {% endfor %}
@@ -93,19 +93,6 @@ class {{ enum.name }}Enum(str, Enum):
 
 
 {% for model in dmmf.datamodel.models %}
-class {{ model.name }}(BaseModel):
-    {% for field in model.all_fields %}
-    {{ field.python_case }}:
-            {%- if field.is_required -%}
-                {{ ' ' }}{{ field.python_type }} = Field(alias='{{ field.name }}')
-            {% else -%}
-                {{ ' ' }}Optional[{{ field.python_type }}] = Field(alias='{{ field.name }}')
-            {% endif %}
-    {% endfor %}
-
-    class Config:
-        use_enum_values = True
-
 
 class {{ model.name }}Actions:
     def __init__(self, client: Client):
@@ -113,38 +100,33 @@ class {{ model.name }}Actions:
 
     # TODO: add support for select and include
     @validate_arguments
-    async def create(self, data: types.{{ model.name }}CreateInput) -> {{ model.name }}:
+    async def create(self, data: types.{{ model.name }}CreateInput) -> models.{{ model.name }}:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='mutation',
             method='createOne',
             model='{{ model.name }}',
-            fields=list({{ model.name }}.schema()['properties'].keys()),
+            fields=list(models.{{ model.name }}.schema()['properties'].keys()),
             arguments={'data': data}
         )
         resp = await builder.execute()
-        return {{ model.name }}.parse_obj(resp['data']['result'])
+        return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
     @validate_arguments
-    async def find_unique(self, where: types.{{ model.name }}WhereUniqueInput) -> Optional[{{ model.name }}]:
+    async def find_unique(self, where: types.{{ model.name }}WhereUniqueInput) -> Optional[models.{{ model.name }}]:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
             method='findOne',
             model='{{ model.name }}',
-            fields=list({{ model.name }}.schema()['properties'].keys()),
+            fields=list(models.{{ model.name }}.schema()['properties'].keys()),
             arguments={'where': where},
         )
         resp = await builder.execute()
         result = resp['data']['result']
         if result is None:
             return None
-        return {{ model.name }}.parse_obj(result)
+        return models.{{ model.name }}.parse_obj(result)
 
 
-{% endfor %}
-
-# required to support relationships between models
-{% for model in dmmf.datamodel.models %}
-{{ model.name }}.update_forward_refs()
 {% endfor %}

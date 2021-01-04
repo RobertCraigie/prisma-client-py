@@ -1,7 +1,7 @@
 - case: correct_return_model_type
   main: |
     from prisma import Client
-    from prisma.client import Post, User
+    from prisma.models import Post, User
 
     async def main() -> None:
       client = Client()
@@ -12,14 +12,14 @@
         WHERE title = "hi"
       '''
       posts = await client.query_raw(query, model=Post)
-      reveal_type(posts)  # N: Revealed type is 'builtins.list*[prisma.client.Post]'
+      reveal_type(posts)  # N: Revealed type is 'builtins.list*[prisma.models.Post]'
       post = posts[0]
       id = post.id
       oops = post.oops  # E: "Post" has no attribute "oops"
       oops = posts[0].oops  # E: "Post" has no attribute "oops"
 
       users = await client.query_raw(query, model=User)
-      reveal_type(users)  # N: Revealed type is 'builtins.list*[prisma.client.User]'
+      reveal_type(users)  # N: Revealed type is 'builtins.list*[prisma.models.User]'
       user = users[0]
       id = user.id
       name = user.name

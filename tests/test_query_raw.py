@@ -1,7 +1,7 @@
 import pytest
 
 from prisma import errors
-from prisma.client import Post
+from prisma.models import Post
 
 
 @pytest.mark.asyncio

@@ -18,12 +18,14 @@
     async def main() -> None:
       client = Client()
       post = await client.post.find_unique({'id': 'dbkh232'})
-      reveal_type(post)  # N: Revealed type is 'prisma.client.Post*'
-      reveal_type(post.id)  # N: Revealed type is 'builtins.str'
-      reveal_type(post.title)  # N: Revealed type is 'builtins.str'
-      reveal_type(post.published)  # N: Revealed type is 'builtins.bool'
-      reveal_type(post.title.lower())  # N: Revealed type is 'builtins.str'
-      oops = post.oops  # E: "Post" has no attribute "oops"
+      reveal_type(post)  # N: Revealed type is 'Union[prisma.models.Post, None]'
+
+      if post is not None:
+        reveal_type(post.id)  # N: Revealed type is 'builtins.str'
+        reveal_type(post.title)  # N: Revealed type is 'builtins.str'
+        reveal_type(post.published)  # N: Revealed type is 'builtins.bool'
+        reveal_type(post.title.lower())  # N: Revealed type is 'builtins.str'
+        oops = post.oops  # E: "Post" has no attribute "oops"
 
 - case: find_unique_dynamic_where
   main: |
@@ -40,4 +42,4 @@
         data['invalid'] = True  # E: TypedDict "PostWhereUniqueInput" has no key 'invalid'
 
       post = await client.post.find_unique(data)
-      reveal_type(post)  # N: Revealed type is 'prisma.client.Post*'
+      reveal_type(post)  # N: Revealed type is 'Union[prisma.models.Post, None]'

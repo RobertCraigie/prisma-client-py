@@ -18,7 +18,7 @@
     async def main() -> None:
       client = Client()
       post = await client.post.create({'title': 'Hello', 'published': True})
-      reveal_type(post)  # N: Revealed type is 'prisma.client.Post*'
+      reveal_type(post)  # N: Revealed type is 'prisma.models.Post*'
       reveal_type(post.id)  # N: Revealed type is 'builtins.str'
       reveal_type(post.title)  # N: Revealed type is 'builtins.str'
       reveal_type(post.published)  # N: Revealed type is 'builtins.bool'
