@@ -1,7 +1,7 @@
 import enum
 from contextvars import ContextVar
 from typing import Any, Optional, List, Union
-from pydantic import BaseModel, Extra, Field as BaseField
+from pydantic import BaseModel, Extra, Field as FieldInfo
 
 from .utils import pascalize, camelize, decamelize
 
@@ -24,12 +24,12 @@ class Data(BaseModel):
     datamodel: str
     version: str
     generator: 'Generator'
-    dmmf: 'DMMF' = BaseField(alias='dmmf')
-    schema_path: str = BaseField(alias='schemaPath')
+    dmmf: 'DMMF' = FieldInfo(alias='dmmf')
+    schema_path: str = FieldInfo(alias='schemaPath')
 
     # TODO
-    data_sources: Any = BaseField(alias='dataSources')
-    other_generators: List[Any] = BaseField(alias='otherGenerators')
+    data_sources: Any = FieldInfo(alias='dataSources')
+    other_generators: List[Any] = FieldInfo(alias='otherGenerators')
 
     @classmethod
     def parse_obj(cls, obj: Any) -> 'Data':
@@ -43,14 +43,14 @@ class Generator(BaseModel):
     output: str
     provider: str
     config: 'Config'
-    binary_targets: List[str] = BaseField(alias='binaryTargets')
-    preview_features: List[str] = BaseField(alias='previewFeatures')
+    binary_targets: List[str] = FieldInfo(alias='binaryTargets')
+    preview_features: List[str] = FieldInfo(alias='previewFeatures')
 
 
 class Config(BaseModel):
     """Custom generator config options."""
 
-    transform_fields: Optional[TransformChoices] = BaseField(alias='transformFields')
+    transform_fields: Optional[TransformChoices] = FieldInfo(alias='transformFields')
 
     class Config:
         extra = Extra.forbid
@@ -62,7 +62,7 @@ class DMMF(BaseModel):
     datamodel: 'Datamodel'
 
     # TODO
-    prisma_schema: Any = BaseField(alias='schema')
+    prisma_schema: Any = FieldInfo(alias='schema')
 
 
 class Datamodel(BaseModel):
@@ -72,21 +72,21 @@ class Datamodel(BaseModel):
 
 class Enum(BaseModel):
     name: str
-    db_name: Optional[str] = BaseField(alias='dbName')
+    db_name: Optional[str] = FieldInfo(alias='dbName')
     values: List['EnumValue']
 
 
 class EnumValue(BaseModel):
     name: str
-    db_name: Optional[str] = BaseField(alias='dbName')
+    db_name: Optional[str] = FieldInfo(alias='dbName')
 
 
 class Model(BaseModel):
     name: str
-    is_embedded: bool = BaseField(alias='isEmbedded')
-    db_name: Optional[str] = BaseField(alias='dbName')
-    is_generated: bool = BaseField(alias='isGenerated')
-    all_fields: List['Field'] = BaseField(alias='fields')
+    is_embedded: bool = FieldInfo(alias='isEmbedded')
+    db_name: Optional[str] = FieldInfo(alias='dbName')
+    is_generated: bool = FieldInfo(alias='isGenerated')
+    all_fields: List['Field'] = FieldInfo(alias='fields')
 
 
 # TODO: Json probably isn't right
@@ -107,21 +107,21 @@ class Field(BaseModel):
     kind: str
     type: str
 
-    is_id: bool = BaseField(alias='isId')
-    is_list: bool = BaseField(alias='isList')
-    is_unique: bool = BaseField(alias='isUnique')
-    is_required: bool = BaseField(alias='isRequired')
-    is_read_only: bool = BaseField(alias='isReadOnly')
-    is_generated: bool = BaseField(alias='isGenerated')
-    is_updated_at: bool = BaseField(alias='isUpdatedAt')
+    is_id: bool = FieldInfo(alias='isId')
+    is_list: bool = FieldInfo(alias='isList')
+    is_unique: bool = FieldInfo(alias='isUnique')
+    is_required: bool = FieldInfo(alias='isRequired')
+    is_read_only: bool = FieldInfo(alias='isReadOnly')
+    is_generated: bool = FieldInfo(alias='isGenerated')
+    is_updated_at: bool = FieldInfo(alias='isUpdatedAt')
 
     default: Optional[Union['DefaultValue', str]]
-    has_default_value: bool = BaseField(alias='hasDefaultValue')
+    has_default_value: bool = FieldInfo(alias='hasDefaultValue')
 
-    relation_name: Optional[str] = BaseField(alias='relationName')
-    relation_on_delete: Optional[str] = BaseField(alias='relationOnDelete')
-    relation_to_fields: Optional[List[str]] = BaseField(alias='relationToFields')
-    relation_from_fields: Optional[List[str]] = BaseField(alias='relationFromFields')
+    relation_name: Optional[str] = FieldInfo(alias='relationName')
+    relation_on_delete: Optional[str] = FieldInfo(alias='relationOnDelete')
+    relation_to_fields: Optional[List[str]] = FieldInfo(alias='relationToFields')
+    relation_from_fields: Optional[List[str]] = FieldInfo(alias='relationFromFields')
 
     # TODO: cache the properties
     @property
