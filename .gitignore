@@ -116,3 +116,9 @@ venv.bak/
 
 # local testing files
 tmp/
+
+# generated code
+prisma/types.py
+prisma/client.py
+prisma/models.py
+
