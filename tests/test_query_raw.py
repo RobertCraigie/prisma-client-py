@@ -9,7 +9,7 @@ async def test_query_raw(client):
     with pytest.raises(errors.RawQueryError):
         query = '''
             SELECT *
-            FROM posts;
+            FROM bad_table;
         '''
         await client.query_raw(query)
 
@@ -21,16 +21,17 @@ async def test_query_raw(client):
     )
 
     query = '''
-        SELECT COUNT(*)
-        FROM public."Post"
+        SELECT COUNT(*) as count
+        FROM Post
     '''
     results = await client.query_raw(query)
     assert len(results) == 1
+    print(results[0])
     assert isinstance(results[0]['count'], int)
 
     query = '''
         SELECT *
-        FROM public."Post"
+        FROM Post
         WHERE id = $1
     '''
     results = await client.query_raw(query, post.id)
@@ -50,7 +51,7 @@ async def test_query_raw_model(client):
 
     query = '''
         SELECT *
-        FROM public."Post"
+        FROM Post
         WHERE id = $1
     '''
     posts = await client.query_raw(query, post.id, model=Post)
@@ -66,7 +67,7 @@ async def test_query_raw_model(client):
 async def test_query_raw_no_result(client):
     query = '''
         SELECT *
-        FROM public."Post"
+        FROM Post
         WHERE id = 'sdldsd'
     '''
     results = await client.query_raw(query)
@@ -81,6 +82,6 @@ async def test_query_raw_no_result(client):
 async def test_query_raw_incorrect_params(client):
     query = '''
         SELECT COUNT(*)
-        FROM public."Post"
+        FROM Post
     '''
     await client.query_raw(query, 1)

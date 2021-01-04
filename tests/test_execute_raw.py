@@ -12,7 +12,7 @@ async def test_execute_raw(client):
     assert isinstance(post.id, str)
 
     query = '''
-        UPDATE public."Post"
+        UPDATE Post
         SET title = 'My edited title'
         WHERE id = $1
     '''
@@ -28,7 +28,7 @@ async def test_execute_raw(client):
 @pytest.mark.asyncio
 async def test_execute_raw_no_result(client):
     query = '''
-        UPDATE public."Post"
+        UPDATE Post
         SET title = 'updated title'
         WHERE id = 'sdldsd'
     '''
