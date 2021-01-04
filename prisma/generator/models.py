@@ -1,10 +1,21 @@
+import enum
+from contextvars import ContextVar
 from typing import Any, Optional, List, Union
-from pydantic import BaseModel, Field as BaseField
+from pydantic import BaseModel, Extra, Field as BaseField
 
-from .utils import camelcase_to_snakecase
+from .utils import pascalize, camelize, decamelize
 
 
 # NOTE: this does not represent all the data that is passed by prisma
+
+config_ctx: ContextVar['Config'] = ContextVar('config_ctx')
+
+
+class TransformChoices(str, enum.Enum):
+    none = 'none'
+    snake_case = 'snake_case'
+    camel_case = 'camelCase'
+    pascal_case = 'PascalCase'
 
 
 class Data(BaseModel):
@@ -20,6 +31,12 @@ class Data(BaseModel):
     data_sources: Any = BaseField(alias='dataSources')
     other_generators: List[Any] = BaseField(alias='otherGenerators')
 
+    @classmethod
+    def parse_obj(cls, obj: Any) -> 'Data':
+        data = super().parse_obj(obj)
+        config_ctx.set(data.generator.config)
+        return data
+
 
 class Generator(BaseModel):
     name: str
@@ -32,6 +49,13 @@ class Generator(BaseModel):
 
 class Config(BaseModel):
     """Custom generator config options."""
+
+    transform_fields: Optional[TransformChoices] = BaseField(alias='transformFields')
+
+    class Config:
+        extra = Extra.forbid
+        use_enum_values = True
+        allow_population_by_field_name = True
 
 
 class DMMF(BaseModel):
@@ -118,11 +142,20 @@ class Field(BaseModel):
 
     @property
     def python_case(self) -> str:
-        return camelcase_to_snakecase(self.name)
+        transform = config_ctx.get().transform_fields
+        if transform == TransformChoices.camel_case:
+            return camelize(self.name)
+
+        if transform == TransformChoices.pascal_case:
+            return pascalize(self.name)
+
+        if transform == TransformChoices.none:
+            return self.name
+
+        return decamelize(self.name)
 
     @property
     def required_on_create(self) -> bool:
-        """f.IsRequired && !f.IsUpdatedAt && !f.HasDefaultValue"""
         return (
             self.is_required and not self.is_updated_at and not self.has_default_value
         )
