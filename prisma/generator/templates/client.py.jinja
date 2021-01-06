@@ -61,7 +61,7 @@ class Client:
         return int(resp['data']['result'])
 
     @overload
-    async def query_raw(self, query: str, *args: Any, model: None) -> Any:
+    async def query_raw(self, query: str, *args: Any) -> Any:
         ...
 
     {% for model in dmmf.datamodel.models %}
