@@ -80,7 +80,7 @@ class Client:
         )
         result = (await builder.execute())['data']['result']
         if model is not None:
-            return list(map(lambda r: model.parse_obj(r), result))
+            return [model.parse_obj(r) for r in result]
         return result
 
 
