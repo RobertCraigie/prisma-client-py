@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import atexit
 import signal
 import asyncio
 import logging
@@ -27,6 +28,9 @@ class QueryEngine:
         self.process = None  # type: Optional[subprocess.Popen[bytes]]
         self.session = None  # type: Optional[aiohttp.ClientSession]
         self.file = None  # type: Optional[Path]
+
+        # ensure the query engine process is terminated when we are
+        atexit.register(self.stop)
 
     def __del__(self) -> None:
         self.stop()
