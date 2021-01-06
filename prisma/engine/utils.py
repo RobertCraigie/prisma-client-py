@@ -16,6 +16,12 @@ from ..binaries import GLOBAL_TEMP_DIR, ENGINE_VERSION, platform
 
 
 log = logging.getLogger(__name__)
+ERROR_MAPPING = {
+    'P2002': prisma_errors.UniqueViolationError,
+    'P2010': prisma_errors.RawQueryError,
+    'P2012': prisma_errors.MissingRequiredValueError,
+    'P2021': prisma_errors.TableNotFoundError
+}
 
 
 def ensure() -> Path:
@@ -89,17 +95,10 @@ def handle_response_errors(resp: aiohttp.ClientResponse, data: Any) -> NoReturn:
             if code is None:
                 continue
 
-            if code == 'P2002':
-                raise prisma_errors.UniqueViolationError(error)
+            exc = ERROR_MAPPING.get(code)
+            if exc is not None:
+                raise exc(error)
 
-            if code == 'P2010':
-                raise prisma_errors.RawQueryError(error)
-
-            if code == 'P2012':
-                raise prisma_errors.MissingRequiredValueError(error)
-
-            if code == 'P2021':
-                raise prisma_errors.TableNotFoundError(error)
         except (KeyError, TypeError):
             continue
 
