@@ -10,6 +10,7 @@ __all__ = (
     'EngineRequestError',
     'AlreadyConnectedError',
     'NotConnectedError',
+    'UnprocessableEntityError',
 )
 
 
@@ -46,3 +47,15 @@ class EngineRequestError(EngineError):
 
         # TODO: better error message
         super().__init__(f'{response.status}: {body}')
+
+
+class UnprocessableEntityError(EngineRequestError):
+    def __init__(self, response: aiohttp.ClientResponse):
+        super().__init__(
+            response,
+            (
+                'Error occurred, '
+                'it is likely that the internal GraphQL query builder generated a malformed request.\n'
+                'Please create an issue at https://github.com/RobertCraigie/prisma-client-py/issues'
+            ),
+        )

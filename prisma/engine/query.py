@@ -150,5 +150,8 @@ class QueryEngine:
 
                     return response
 
+                if resp.status == 422:
+                    raise errors.UnprocessableEntityError(resp)
+
                 # TODO: handle errors better
                 raise errors.EngineRequestError(resp, await resp.text())
