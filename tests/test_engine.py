@@ -4,7 +4,7 @@ from prisma.engine import errors
 
 
 @pytest.mark.asyncio
-async def test_engine_connects():
+async def test_engine_connects() -> None:
     db = Client()
     await db.connect()
 

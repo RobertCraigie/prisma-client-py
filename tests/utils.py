@@ -1,8 +1,9 @@
 import asyncio
 from datetime import datetime
+from typing import Coroutine, Any
 
 
-def async_run(coro):
+def async_run(coro: Coroutine[Any, Any, Any]) -> Any:
     return asyncio.get_event_loop().run_until_complete(coro)
 
 

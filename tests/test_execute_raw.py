@@ -1,8 +1,9 @@
 import pytest
+from prisma import Client
 
 
 @pytest.mark.asyncio
-async def test_execute_raw(client):
+async def test_execute_raw(client: Client) -> None:
     post = await client.post.create(
         {
             'title': 'My post title!',
@@ -26,7 +27,7 @@ async def test_execute_raw(client):
 
 
 @pytest.mark.asyncio
-async def test_execute_raw_no_result(client):
+async def test_execute_raw_no_result(client: Client) -> None:
     query = '''
         UPDATE Post
         SET title = 'updated title'
