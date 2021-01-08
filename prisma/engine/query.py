@@ -79,12 +79,13 @@ class QueryEngine:
 
         self.url = f'http://localhost:{port}'
 
-        env = dict(
-            **os.environ,
+        env = os.environ.copy()
+        env.update(
             PRISMA_DML=self.dml,
             RUST_LOG='error',
             RUST_LOG_FORMAT='json',
         )
+
         if os.environ.get('PRISMA_PY_DEBUG'):
             env.update(PRISMA_LOG_QUERIES='y', RUST_LOG='info')
 
