@@ -8,23 +8,17 @@ from prisma.cli import setup_logging
 from .utils import async_run
 
 
-CLIENT = None
 LOGGING_CONTEXT_MANAGER = None
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def client() -> prisma.Client:
-    global CLIENT
-
-    if CLIENT is None:
-        CLIENT = prisma.Client()
-        async_run(CLIENT.connect())
-
-    # TODO: this should reset the database state before every test
-    return CLIENT
+    client_ = prisma.Client()
+    async_run(client_.connect())
+    return client_
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def event_loop() -> asyncio.AbstractEventLoop:
     return asyncio.get_event_loop()
 
