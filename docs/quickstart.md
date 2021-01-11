@@ -148,6 +148,7 @@ post description is "Prisma is a database toolkit and makes databases easy.""
     ```
     [mypy]
     strict = True
+    plugins = prisma.mypy
     ```
 
 ## Usage
