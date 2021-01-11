@@ -4,12 +4,12 @@
 
     async def main() -> None:
       client = Client()
-      await client.post.create()  # E: Too few arguments for "create" of "PostActions"
+      await client.post.create()  # E: Too few arguments for "create" of "PostActions"  [call-arg]
 
-      await client.post.create({'published': False})  # E: Key 'title' missing for TypedDict "PostCreateInput"
-      await client.post.create({'title': 'Hello, world'})  # E: Key 'published' missing for TypedDict "PostCreateInput"
+      await client.post.create({'published': False})  # E: Key 'title' missing for TypedDict "PostCreateInput"  [typeddict-item]
+      await client.post.create({'title': 'Hello, world'})  # E: Key 'published' missing for TypedDict "PostCreateInput"  [typeddict-item]
 
-      await client.post.create({'title': 'a', 'published': 'false'})  # E: Incompatible types (expression has type "str", TypedDict item "published" has type "bool")
+      await client.post.create({'title': 'a', 'published': 'false'})  # E: Incompatible types (expression has type "str", TypedDict item "published" has type "bool")  [typeddict-item]
 
 - case: create_optional_data
   main: |
@@ -23,7 +23,7 @@
       reveal_type(post.title)  # N: Revealed type is 'builtins.str'
       reveal_type(post.published)  # N: Revealed type is 'builtins.bool'
       reveal_type(post.title.lower())  # N: Revealed type is 'builtins.str'
-      oops = post.oops  # E: "Post" has no attribute "oops"
+      oops = post.oops  # E: "Post" has no attribute "oops"  [attr-defined]
 
       post = await client.post.create({'title': 'Hello', 'published': True, 'desc': 'description'})
       reveal_type(post.id)  # N: Revealed type is 'builtins.str'
@@ -45,7 +45,7 @@
 
       if True:
         data['id'] = '983293asdsad'
-        data['invalid'] = True  # E: TypedDict "PostCreateInput" has no key 'invalid'
+        data['invalid'] = True  # E: TypedDict "PostCreateInput" has no key 'invalid'  [misc]
 
       await client.post.create(data)
 
