@@ -6,7 +6,7 @@ from prisma import Client
 async def test_execute_raw(client: Client) -> None:
     post = await client.post.create(
         {
-            'title': 'My post title!',
+            'title': 'My post title.',
             'published': False,
         }
     )

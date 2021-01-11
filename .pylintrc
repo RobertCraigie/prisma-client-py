@@ -37,6 +37,7 @@ callbacks =
 
 [SIMILARITIES]
 ignore-imports = yes
+min-similarity-lines = 6
 
 
 [REPORTS]

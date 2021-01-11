@@ -55,7 +55,8 @@ class UnprocessableEntityError(EngineRequestError):
             response,
             (
                 'Error occurred, '
-                'it is likely that the internal GraphQL query builder generated a malformed request.\n'
+                'it is likely that the internal GraphQL query '
+                'builder generated a malformed request.\n'
                 'Please create an issue at https://github.com/RobertCraigie/prisma-client-py/issues'
             ),
         )

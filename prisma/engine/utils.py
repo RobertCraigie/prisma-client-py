@@ -20,7 +20,7 @@ ERROR_MAPPING = {
     'P2002': prisma_errors.UniqueViolationError,
     'P2010': prisma_errors.RawQueryError,
     'P2012': prisma_errors.MissingRequiredValueError,
-    'P2021': prisma_errors.TableNotFoundError
+    'P2021': prisma_errors.TableNotFoundError,
 }
 
 

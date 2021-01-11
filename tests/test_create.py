@@ -30,6 +30,24 @@ async def test_create(client: Client) -> None:
 
 
 @pytest.mark.asyncio
+async def test_create_with_relationship(client: Client) -> None:
+    post = await client.post.create(
+        {
+            'title': 'Post 1',
+            'published': False,
+            'author': {'create': {'name': 'Bob'}},
+        },
+        include={'author': True},
+    )
+    assert post.author is not None
+    assert post.author.name == 'Bob'
+
+    found = await client.user.find_unique(where={'id': post.author.id})
+    assert found is not None
+    assert found.name == 'Bob'
+
+
+@pytest.mark.asyncio
 async def test_create_missing_required_args(client: Client) -> None:
     with pytest.raises(TypeError):
         await client.post.create()  # type: ignore[call-arg]
