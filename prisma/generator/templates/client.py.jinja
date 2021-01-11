@@ -1,6 +1,5 @@
 {% include '_header.py.jinja' %}
 # -- template client.py.jinja --
-from enum import Enum
 from collections import defaultdict
 from pydantic import BaseModel, validate_arguments
 
@@ -83,14 +82,6 @@ class Client:
         if model is not None:
             return [model.parse_obj(r) for r in result]
         return result
-
-
-{% for enum in dmmf.datamodel.enums %}
-class {{ enum.name }}Enum(str, Enum):
-    {% for value in enum.values %}
-    {{ value.name }} = '{{ value.name }}'
-    {% endfor %}
-{% endfor %}
 
 
 {% for model in dmmf.datamodel.models %}

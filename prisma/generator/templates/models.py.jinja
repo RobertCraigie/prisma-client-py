@@ -1,6 +1,7 @@
 {% include '_header.py.jinja' %}
 # -- template models.py.jinja --
 from pydantic import BaseModel, Field
+from prisma import types
 
 {% for model in dmmf.datamodel.models %}
 class {{ model.name }}(BaseModel):
