@@ -4,7 +4,7 @@ from enum import Enum
 from collections import defaultdict
 from pydantic import BaseModel, validate_arguments
 
-from prisma import types, models
+from prisma import types, models, errors
 from prisma.engine import QueryEngine
 from prisma.builder import QueryBuilder
 
@@ -121,6 +121,24 @@ class {{ model.name }}Actions:
             aliases=self._field_aliases,
         )
         resp = await builder.execute()
+        return models.{{ model.name }}.parse_obj(resp['data']['result'])
+
+    async def delete(self, where: types.{{ model.name }}WhereUniqueInput, include: Optional[types.{{ model.name}}Include]=None) -> Optional[models.{{ model.name }}]:
+        builder = QueryBuilder(
+            engine=self.client._engine,
+            operation='mutation',
+            method='deleteOne',
+            model='{{ model.name }}',
+            include=include,
+            arguments={'where': where},
+            aliases=self._field_aliases,
+        )
+
+        try:
+            resp = await builder.execute()
+        except errors.RecordNotFoundError:
+            return None
+
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
     async def find_unique(self, where: types.{{ model.name }}WhereUniqueInput, include: Optional[types.{{ model.name}}Include]=None) -> Optional[models.{{ model.name }}]:
