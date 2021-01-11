@@ -58,15 +58,6 @@ class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=Fal
     connect: Optional[Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]]
 
 
-class {{ model.name }}WhereInput(TypedDict, total=False):
-    """{{ model.name }} arguments for searching"""
-    {% for field in model.all_fields %}
-        {%- if not field.relation_name -%}
-            {{'    '}}{{ field.python_case }}: {{ field.python_type }}
-        {% endif %}
-    {% endfor %}
-
-
 class {{ model.name }}WhereUniqueInput(TypedDict, total=False):
     """Unique {{ model.name }} arguments for searching"""
     {% for field in model.all_fields %}
@@ -101,7 +92,29 @@ class FindMany{{ model.name }}Args(TypedDict, total=False):
     cursor: '{{ model.name }}WhereUniqueInput'
 
 
+# recursive {{ model.name }} types
+
+# TODO: generator option to generate more types
+# TODO: relational types
+{% for i in range(5) %}
+class {{ model.name }}WhereInput{{ 'Recursive%s' % i if i != 0 else '' }}(TypedDict, total=False):
+    """{{ model.name }} arguments for searching"""
+    {% for field in model.all_fields %}
+        {%- if not field.relation_name -%}
+            {{'    '}}{{ field.python_case }}: {{ field.python_type }}
+        {% endif %}
+    {% endfor %}
+    {% if i != 4 %}
+    AND: '{{ model.name }}WhereInputRecursive{{ i + 1 }}'
+    OR: '{{ model.name }}WhereInputRecursive{{ i + 1 }}'
+    NOT: '{{ model.name }}WhereInputRecursive{{ i + 1 }}'
+    {% endif %}
+
+
 {% endfor %}
+
+{% endfor %}
+
 
 # we have to import ourselves as enum types are namespaced to types
 # e.g. types.RoleEnum
