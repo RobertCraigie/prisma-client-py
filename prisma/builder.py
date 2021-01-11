@@ -1,4 +1,5 @@
 import json
+import datetime
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 
@@ -26,7 +27,7 @@ class QueryBuilder(BaseModel):
             'operation_name': self.operation,
             'query': self.build_query(),
         }
-        return json.dumps(data)
+        return dumps(data)
 
     def build_query(self) -> str:
         """Build the GraphQL query string for this operation.
@@ -67,9 +68,9 @@ class QueryBuilder(BaseModel):
                 # we encode twice to ensure that only the inner quotes are escaped
                 # yes this is a terrible solution
                 # TODO: better solution
-                parsed = json.dumps(json.dumps(value))
+                parsed = dumps(dumps(value))
             else:
-                parsed = json.dumps(value)
+                parsed = dumps(value)
 
             strings.append(f'{arg}: {parsed}')
 
@@ -91,7 +92,6 @@ class QueryBuilder(BaseModel):
         e.g. {'title': 'hi', 'published': False, 'desc': None} -> {title: "hi", published: false}
         """
         strings = []
-        dumps = json.dumps
         for key, value in data.items():
             if value is not None:
                 strings.append(f'{key}: {dumps(value)}')
@@ -101,3 +101,16 @@ class QueryBuilder(BaseModel):
     async def execute(self) -> Any:
         payload = self.build()
         return await self.engine.request('POST', '/', data=payload)
+
+
+def serialize_json(obj: Any) -> str:
+    """JSON serializer for objects not serializable by the default JSON encoder"""
+    if isinstance(obj, (datetime.datetime, datetime.date)):
+        return obj.isoformat()
+
+    raise TypeError(f'Type {type(obj)} not serializable')
+
+
+def dumps(obj: Any, **kwargs: Any) -> str:
+    kwargs.setdefault('default', serialize_json)
+    return json.dumps(obj, **kwargs)
