@@ -1,3 +1,8 @@
+[DESIGN]
+max-locals = 20
+max-branches = 20
+
+
 [MESSAGES CONTROL]
 disable =
   fixme,
@@ -8,11 +13,13 @@ disable =
 
 [MASTER]
 extension-pkg-whitelist =
-  pydantic
+  pydantic,
 
 
 [BASIC]
 good-names =
+  i,
+  j,
   db,
   dt,
   fd,
