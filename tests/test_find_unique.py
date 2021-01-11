@@ -21,7 +21,7 @@ async def test_find_unique(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_find_unique_missing_required_args(client: Client) -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(TypeError):
         await client.post.find_unique()  # type: ignore[call-arg]
 
     # TODO: more constrained error type

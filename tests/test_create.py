@@ -32,7 +32,7 @@ async def test_create(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_create_missing_required_args(client: Client) -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(TypeError):
         await client.post.create()  # type: ignore[call-arg]
 
     with pytest.raises(errors.MissingRequiredValueError):
