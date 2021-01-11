@@ -1,29 +1,99 @@
 {% include '_header.py.jinja' %}
 # -- template types.py.jinja --
+
+from prisma import models
+
+
 {% for model in dmmf.datamodel.models %}
 
 class {{ model.name }}OptionalCreateInput(TypedDict, total=False):
+    """{{ model.name }} optional arguments to the create method"""
     {% for field in model.all_fields %}
         {%- if not field.required_on_create and not field.is_read_only -%}
-            {{'    '}}{{ field.python_case }}: Optional[{{ field.python_type }}]
+            {{'    '}}{{ field.python_case }}: Optional[{{ field.create_input_type }}]
         {% endif %}
     {% endfor %}
 
 
 class {{ model.name }}CreateInput({{ model.name }}OptionalCreateInput):
+    """{{ model.name }} required arguments to the create method"""
     {% for field in model.all_fields %}
         {%- if field.required_on_create and not field.is_read_only -%}
+            {{'    '}}{{ field.python_case }}: {{ field.create_input_type }}
+        {% endif %}
+    {% endfor %}
+
+
+class {{ model.name }}OptionalCreateWithoutRelationsInput(TypedDict, total=False):
+    """{{ model.name }} optional arguments to the create method"""
+    {% for field in model.all_fields %}
+        {%- if not field.required_on_create and not field.is_read_only and not field.relation_name -%}
+            {{'    '}}{{ field.python_case }}: Optional[{{ field.python_type }}]
+        {% endif %}
+    {% endfor %}
+
+
+class {{ model.name }}CreateWithoutRelationsInput({{ model.name }}OptionalCreateWithoutRelationsInput):
+    """{{ model.name }} required arguments to the create method"""
+    {% for field in model.all_fields %}
+        {%- if field.required_on_create and not field.is_read_only and not field.relation_name -%}
+            {{'    '}}{{ field.python_case }}: {{ field.python_type }}
+        {% endif %}
+    {% endfor %}
+
+
+class {{ model.name }}CreateNestedWithoutRelationsInput(TypedDict, total=False):
+    create: Optional['{{ model.name }}CreateWithoutRelationsInput']
+    connect: Optional['{{ model.name }}WhereUniqueInput']
+
+
+class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=False):
+    create: Optional[Union['{{ model.name }}CreateWithoutRelationsInput', List['{{ model.name }}CreateWithoutRelationsInput']]]
+    connect: Optional[Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]]
+
+
+class {{ model.name }}WhereInput(TypedDict, total=False):
+    """{{ model.name }} arguments for searching"""
+    {% for field in model.all_fields %}
+        {%- if not field.relation_name -%}
             {{'    '}}{{ field.python_case }}: {{ field.python_type }}
         {% endif %}
     {% endfor %}
 
 
 class {{ model.name }}WhereUniqueInput(TypedDict, total=False):
+    """Unique {{ model.name }} arguments for searching"""
     {% for field in model.all_fields %}
         {%- if field.is_unique or field.is_id -%}
             {{'    '}}{{ field.python_case }}: {{ field.python_type }}
         {% endif %}
     {% endfor %}
+
+
+class {{ model.name }}Include(TypedDict, total=False):
+    """{{ model.name }} relational arguments"""
+    {% for field in model.all_fields %}
+        {%- if field.relation_name -%}
+            {{'    '}}{{ field.python_case }}: Union[bool, '{{ field.relational_args_type }}']
+        {% endif %}
+    {% endfor %}
+
+
+class {{ model.name }}Args(TypedDict, total=False):
+    """Arguments for {{ model.name }}"""
+    # TODO: mypy does not support recursive types
+    # include: '{{ model.name }}Include'
+
+
+class FindMany{{ model.name }}Args(TypedDict, total=False):
+    take: int
+    skip: int
+
+    # TODO: mypy does not support recursive types
+    # include: '{{ model.name }}Include'
+    where: '{{ model.name }}WhereInput'
+    cursor: '{{ model.name }}WhereUniqueInput'
+
 
 {% endfor %}
 

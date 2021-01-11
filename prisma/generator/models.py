@@ -126,11 +126,18 @@ class Field(BaseModel):
     # TODO: cache the properties
     @property
     def python_type(self) -> str:
+        type_ = self._actual_python_type
+        if self.is_list:
+            return f'List[{type_}]'
+        return type_
+
+    @property
+    def _actual_python_type(self) -> str:
         if self.kind == 'enum':
             return f'{self.type}Enum'
 
         if self.kind == 'object':
-            return f'\'{self.type}\''
+            return f'\'models.{self.type}\''
 
         try:
             return TYPE_MAPPING[self.type]
@@ -139,6 +146,22 @@ class Field(BaseModel):
             raise RuntimeError(
                 f'Could not parse {self.name} due to unknown type: {self.type}',
             ) from exc
+
+    @property
+    def create_input_type(self) -> str:
+        if self.kind != 'object':
+            return self.python_type
+
+        if self.is_list:
+            return f'\'{self.type}CreateManyNestedWithoutRelationsInput\''
+
+        return f'\'{self.type}CreateNestedWithoutRelationsInput\''
+
+    @property
+    def relational_args_type(self) -> str:
+        if self.is_list:
+            return f'FindMany{self.type}Args'
+        return f'{self.type}Args'
 
     @property
     def python_case(self) -> str:

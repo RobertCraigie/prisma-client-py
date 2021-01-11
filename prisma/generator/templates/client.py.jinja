@@ -1,6 +1,7 @@
 {% include '_header.py.jinja' %}
 # -- template client.py.jinja --
 from enum import Enum
+from collections import defaultdict
 from pydantic import BaseModel, validate_arguments
 
 from prisma import types, models
@@ -97,28 +98,40 @@ class {{ enum.name }}Enum(str, Enum):
 class {{ model.name }}Actions:
     def __init__(self, client: Client):
         self.client = client
+        self._field_aliases = aliases = defaultdict(dict)  # type: Dict[str, Dict[str, str]]
 
-    # TODO: add support for select and include
-    async def create(self, data: types.{{ model.name }}CreateInput) -> models.{{ model.name }}:
+        for field, info in models.{{ model.name }}.__fields__.items():
+            if info.type_.__module__ == 'prisma.models':
+                for f, info in info.type_.__fields__.items():
+                    if info.type_.__module__ == 'prisma.models':
+                        continue
+
+                    aliases[field][f] = info.alias
+            else:
+                aliases[''][field] = info.alias
+
+    async def create(self, data: types.{{ model.name }}CreateInput, include: Optional[types.{{ model.name}}Include]=None) -> models.{{ model.name }}:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='mutation',
             method='createOne',
             model='{{ model.name }}',
-            fields=list(models.{{ model.name }}.schema()['properties'].keys()),
-            arguments={'data': data}
+            include=include,
+            arguments={'data': data},
+            aliases=self._field_aliases,
         )
         resp = await builder.execute()
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
-    async def find_unique(self, where: types.{{ model.name }}WhereUniqueInput) -> Optional[models.{{ model.name }}]:
+    async def find_unique(self, where: types.{{ model.name }}WhereUniqueInput, include: Optional[types.{{ model.name}}Include]=None) -> Optional[models.{{ model.name }}]:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
             method='findOne',
             model='{{ model.name }}',
-            fields=list(models.{{ model.name }}.schema()['properties'].keys()),
+            include=include,
             arguments={'where': where},
+            aliases=self._field_aliases,
         )
         resp = await builder.execute()
         result = resp['data']['result']

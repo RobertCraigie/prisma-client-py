@@ -1,5 +1,4 @@
 import pytest
-from pydantic import ValidationError
 
 from prisma import errors, Client
 from .utils import assert_time_like_now

@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 class {{ model.name }}(BaseModel):
     {% for field in model.all_fields %}
     {{ field.python_case }}:
-            {%- if field.is_required -%}
+            {%- if field.is_required and not field.relation_name -%}
                 {{ ' ' }}{{ field.python_type }} = Field(alias='{{ field.name }}')
             {% else -%}
                 {{ ' ' }}Optional[{{ field.python_type }}] = Field(alias='{{ field.name }}')
@@ -20,6 +20,10 @@ class {{ model.name }}(BaseModel):
 
 {% endfor %}
 
+
+# we have to import ourselves as relation types are namespaced to models
+# e.g. models.Post
+from prisma import models
 
 # required to support relationships between models
 {% for model in dmmf.datamodel.models %}
