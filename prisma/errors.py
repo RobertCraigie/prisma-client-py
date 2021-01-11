@@ -5,6 +5,10 @@ __all__ = (
     'PrismaError',
     'DataError',
     'UniqueViolationError',
+    'MissingRequiredValueError',
+    'RawQueryError',
+    'TableNotFoundError',
+    'RecordNotFoundError',
 )
 
 
@@ -44,3 +48,7 @@ class TableNotFoundError(DataError):
     def __init__(self, data: Any):
         super().__init__(data)
         self.table = self.meta.get('table')  # type: Optional[str]
+
+
+class RecordNotFoundError(DataError):
+    pass
