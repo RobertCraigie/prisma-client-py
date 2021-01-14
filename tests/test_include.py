@@ -124,6 +124,46 @@ async def test_find_unique_include_pagination(
 
 
 @pytest.mark.asyncio
+async def test_find_unique_include_nested_where_or(
+    client: Client, user_id: str, posts: List[Post]
+) -> None:
+    user = await client.user.find_unique(
+        where={'id': user_id},
+        include={
+            'posts': {'where': {'OR': [{'published': True}, {'id': posts[0].id}]}}
+        },
+    )
+    assert user is not None
+
+    assert posts[0].published is False
+    assert len(user.posts) == 3
+
+    assert user.posts[0].id == posts[0].id
+    assert user.posts[1].id == posts[1].id
+    assert user.posts[2].id == posts[2].id
+
+    assert user.posts[0].published is False
+    assert user.posts[1].published is True
+    assert user.posts[2].published is True
+
+
+@pytest.mark.asyncio
+async def test_find_unique_include_nested_include(client: Client, user_id: str) -> None:
+    user = await client.user.find_unique(
+        where={'id': user_id},
+        include={
+            'profile': True,
+            'posts': {'include': {'categories': {'include': {'posts': True}}}},
+        },
+    )
+    assert user is not None
+    assert user.profile is None
+    for post in user.posts:
+        for category in post.categories:
+            assert category.posts is not None
+
+
+@pytest.mark.asyncio
 async def test_create_include(client: Client) -> None:
     post = await client.post.create(
         {

@@ -89,17 +89,17 @@ class Client:
 class {{ model.name }}Actions:
     def __init__(self, client: Client):
         self.client = client
-        self._field_aliases = aliases = defaultdict(dict)  # type: Dict[str, Dict[str, str]]
+        self._field_aliases = self._gen_field_aliases(models.{{ model.name }}, defaultdict(dict), key='')
 
-        for field, info in models.{{ model.name }}.__fields__.items():
+    def _gen_field_aliases(self, model: Type[BaseModel], aliases: Dict[str, Dict[str, str]], *, key: str) -> Dict[str, Dict[str, str]]:
+        # TODO: these field aliases could clash, see GitHub #3
+        for field, info in model.__fields__.items():
             if info.type_.__module__ == 'prisma.models':
-                for f, info in info.type_.__fields__.items():
-                    if info.type_.__module__ == 'prisma.models':
-                        continue
-
-                    aliases[field][f] = info.alias
+                if field not in aliases:
+                    self._gen_field_aliases(info.type_, aliases, key=field)
             else:
-                aliases[''][field] = info.alias
+                aliases[key][field] = info.alias
+        return aliases
 
     async def create(self, data: types.{{ model.name }}CreateInput, include: Optional[types.{{ model.name}}Include]=None) -> models.{{ model.name }}:
         builder = QueryBuilder(

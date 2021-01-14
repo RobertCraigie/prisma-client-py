@@ -31,27 +31,9 @@ model Post {{
 
 @pytest.fixture
 def tmpdir(tmpdir):
-    def generate(options):
-        schema_path = tmpdir.join('prisma.schema')
-        schema_path.write(SCHEMA.format(output=tmpdir, options=options))
-        subprocess.run(
-            ['python', '-m', 'prisma', 'generate', f'--schema={schema_path}'],
-            check=True,
-            env=os.environ,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-        )
-
-    tmpdir.generate = generate
-
-    cwd = os.getcwd()
-    os.chdir(tmpdir)
-    sys.modules.pop('models', None)
-
-    yield tmpdir
-
-    sys.modules.pop('models', None)
-    os.chdir(cwd)
+    generate = tmpdir.generate
+    tmpdir.generate = lambda *a: generate(SCHEMA, *a)
+    return tmpdir
 
 
 def test_transform_fields_none(tmpdir):

@@ -86,29 +86,39 @@ class QueryBuilder(BaseModel):
 
         return ' '.join(strings)
 
-    def build_fields(self) -> str:
+    def build_fields(
+        self, include: Optional[Dict[str, Any]] = None, context: Optional[str] = None
+    ) -> str:
         aliases = self.aliases
         if aliases is None:
             return ''
 
-        if self.include is None:
-            return f'{{ {" ".join(aliases[""].values())} }}'
+        if context is None:
+            context = ''
 
-        fields = list(aliases[''].values())
-        for key, value in self.include.items():
+        if include is None:
+            include = self.include
+
+        if include is None:
+            return f'{{ {" ".join(aliases[context].values())} }}'
+
+        fields = list(aliases[context].values())
+        for key, value in include.items():
             if value is True:
                 fields.append(f'{key} {{ {" ".join(aliases[key].values())} }}')
             elif value is False:
                 continue
             elif isinstance(value, dict):
-                # fmt: off
+                args = value.copy()
+                nested_include = args.pop('include', {})
+                args_string = self.build_args(args, context=key)
+                if args_string:
+                    args_string = f'({args_string})'
+
                 fields.append(
-                    f'{key}({self.build_args(value, context=key)}) '
-                    '{ '
-                        f'{" ".join(aliases[key].values())} '
-                    '}'
+                    f'{key}{args_string} '
+                    f'{self.build_fields(include=nested_include, context=key)}'
                 )
-                # fmt: on
             else:
                 raise TypeError(
                     f'Expected `bool` or `dict` include value but got {type(value)} instead'
