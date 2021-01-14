@@ -2,6 +2,7 @@
 # -- template types.py.jinja --
 from enum import Enum
 
+{% set depth = generator.config.recursive_type_depth %}
 
 {% for enum in dmmf.datamodel.enums %}
 class {{ enum.name }}Enum(str, Enum):
@@ -11,9 +12,10 @@ class {{ enum.name }}Enum(str, Enum):
 {% endfor %}
 
 {% for model in dmmf.datamodel.models %}
+# {{ model.name }} types
 
 class {{ model.name }}OptionalCreateInput(TypedDict, total=False):
-    """{{ model.name }} optional arguments to the create method"""
+    """Optional arguments to the {{ model.name }} create method"""
     {% for field in model.all_fields %}
         {%- if not field.required_on_create and not field.is_read_only -%}
             {{'    '}}{{ field.python_case }}: Optional[{{ field.create_input_type }}]
@@ -22,7 +24,7 @@ class {{ model.name }}OptionalCreateInput(TypedDict, total=False):
 
 
 class {{ model.name }}CreateInput({{ model.name }}OptionalCreateInput):
-    """{{ model.name }} required arguments to the create method"""
+    """Required arguments to the {{ model.name }} create method"""
     {% for field in model.all_fields %}
         {%- if field.required_on_create and not field.is_read_only -%}
             {{'    '}}{{ field.python_case }}: {{ field.create_input_type }}
@@ -31,7 +33,7 @@ class {{ model.name }}CreateInput({{ model.name }}OptionalCreateInput):
 
 
 class {{ model.name }}OptionalCreateWithoutRelationsInput(TypedDict, total=False):
-    """{{ model.name }} optional arguments to the create method"""
+    """Optional arguments to the {{ model.name }} create method, without relations"""
     {% for field in model.all_fields %}
         {%- if not field.required_on_create and not field.is_read_only and not field.relation_name -%}
             {{'    '}}{{ field.python_case }}: Optional[{{ field.python_type }}]
@@ -40,7 +42,7 @@ class {{ model.name }}OptionalCreateWithoutRelationsInput(TypedDict, total=False
 
 
 class {{ model.name }}CreateWithoutRelationsInput({{ model.name }}OptionalCreateWithoutRelationsInput):
-    """{{ model.name }} required arguments to the create method"""
+    """Required arguments to the {{ model.name }} create method, without relations"""
     {% for field in model.all_fields %}
         {%- if field.required_on_create and not field.is_read_only and not field.relation_name -%}
             {{'    '}}{{ field.python_case }}: {{ field.python_type }}
@@ -58,6 +60,7 @@ class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=Fal
     connect: Optional[Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]]
 
 
+# TODO: what if a relational field is unique?
 class {{ model.name }}WhereUniqueInput(TypedDict, total=False):
     """Unique {{ model.name }} arguments for searching"""
     {% for field in model.all_fields %}
@@ -67,36 +70,54 @@ class {{ model.name }}WhereUniqueInput(TypedDict, total=False):
     {% endfor %}
 
 
+# recursive {{ model.name }} types
+
+
 class {{ model.name }}Include(TypedDict, total=False):
     """{{ model.name }} relational arguments"""
-    {% for field in model.all_fields %}
-        {%- if field.relation_name -%}
-            {{'    '}}{{ field.python_case }}: Union[bool, '{{ field.relational_args_type }}']
-        {% endif %}
+    {% for field in model.relational_fields -%}
+        {{'    '}}{{ field.python_case }}: Union[bool, '{{ field.relational_args_type }}From{{ model.name }}']
     {% endfor %}
 
 
-class {{ model.name }}Args(TypedDict, total=False):
+{% for related in dmmf.datamodel.models %}
+{% for i in range(depth) %}
+class {{ related.name }}IncludeFrom{{ model.name }}{{ 'Recursive%s' % i if i != 0 else '' }}(TypedDict, total=False):
+    """{{ model.name }} relational arguments"""
+    {% if i != depth - 1 %}
+    {% for field in related.relational_fields -%}
+        {{'    '}}{{ field.python_case }}: Union[bool, '{{ field.relational_args_type }}From{{ model.name }}Recursive{{ i + 1 }}']
+    {% endfor %}
+    {% endif %}
+
+{% endfor %}
+{% endfor %}
+
+
+{% for related in dmmf.datamodel.models %}
+{% for i in range(depth) %}
+class {{ related.name }}ArgsFrom{{ model.name }}{{ 'Recursive%s' % i if i != 0 else '' }}(TypedDict, total=False):
     """Arguments for {{ model.name }}"""
-    # TODO: mypy does not support recursive types
-    # include: '{{ model.name }}Include'
+    {% if i != depth - 1 %}
+    include: '{{ related.name }}IncludeFrom{{ related.name }}Recursive{{ i + 1 }}'
+    {% endif %}
 
 
-class FindMany{{ model.name }}Args(TypedDict, total=False):
+class FindMany{{ related.name }}ArgsFrom{{ model.name }}{{ 'Recursive%s' % i if i != 0 else '' }}(TypedDict, total=False):
     take: int
     skip: int
+    where: '{{ related.name }}WhereInput'
+    cursor: '{{ related.name }}WhereUniqueInput'
+    {% if i != depth - 1 %}
+    include: '{{ related.name }}IncludeFrom{{ related.name }}Recursive{{ i + 1 }}'
+    {% endif %}
 
-    # TODO: mypy does not support recursive types
-    # include: '{{ model.name }}Include'
-    where: '{{ model.name }}WhereInput'
-    cursor: '{{ model.name }}WhereUniqueInput'
+{% endfor %}
+{% endfor %}
 
 
-# recursive {{ model.name }} types
-
-# TODO: generator option to generate more types
-# TODO: relational types
-{% for i in range(5) %}
+# TODO: support relationships here
+{% for i in range(depth) %}
 class {{ model.name }}WhereInput{{ 'Recursive%s' % i if i != 0 else '' }}(TypedDict, total=False):
     """{{ model.name }} arguments for searching"""
     {% for field in model.all_fields %}
@@ -104,10 +125,10 @@ class {{ model.name }}WhereInput{{ 'Recursive%s' % i if i != 0 else '' }}(TypedD
             {{'    '}}{{ field.python_case }}: {{ field.python_type }}
         {% endif %}
     {% endfor %}
-    {% if i != 4 %}
-    AND: '{{ model.name }}WhereInputRecursive{{ i + 1 }}'
-    OR: '{{ model.name }}WhereInputRecursive{{ i + 1 }}'
-    NOT: '{{ model.name }}WhereInputRecursive{{ i + 1 }}'
+    {% if i != depth - 1 %}
+    AND: List['{{ model.name }}WhereInputRecursive{{ i + 1 }}']
+    OR: List['{{ model.name }}WhereInputRecursive{{ i + 1 }}']
+    NOT: List['{{ model.name }}WhereInputRecursive{{ i + 1 }}']
     {% endif %}
 
 

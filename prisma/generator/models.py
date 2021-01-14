@@ -1,14 +1,18 @@
 import enum
 from contextvars import ContextVar
-from typing import Any, Optional, List, Union
-from pydantic import BaseModel, Extra, Field as FieldInfo
+from typing import Any, Optional, List, Union, Iterator
+from pydantic import BaseModel, Extra, Field as FieldInfo, conint
 
 from .utils import pascalize, camelize, decamelize
 
 
 # NOTE: this does not represent all the data that is passed by prisma
 
-config_ctx: ContextVar['Config'] = ContextVar('config_ctx')
+data_ctx: ContextVar['Data'] = ContextVar('data_ctx')
+
+
+def get_config() -> 'Config':
+    return data_ctx.get().generator.config
 
 
 class TransformChoices(str, enum.Enum):
@@ -34,7 +38,7 @@ class Data(BaseModel):
     @classmethod
     def parse_obj(cls, obj: Any) -> 'Data':
         data = super().parse_obj(obj)
-        config_ctx.set(data.generator.config)
+        data_ctx.set(data)
         return data
 
 
@@ -50,6 +54,9 @@ class Generator(BaseModel):
 class Config(BaseModel):
     """Custom generator config options."""
 
+    recursive_type_depth: conint(ge=2) = FieldInfo(
+        alias='recursiveTypeDepth', default=5
+    )
     transform_fields: Optional[TransformChoices] = FieldInfo(alias='transformFields')
 
     class Config:
@@ -87,6 +94,20 @@ class Model(BaseModel):
     db_name: Optional[str] = FieldInfo(alias='dbName')
     is_generated: bool = FieldInfo(alias='isGenerated')
     all_fields: List['Field'] = FieldInfo(alias='fields')
+
+    @property
+    def related_models(self) -> Iterator['Model']:
+        models = data_ctx.get().dmmf.datamodel.models
+        for field in self.relational_fields:
+            for model in models:
+                if field.type == model.name:
+                    yield model
+
+    @property
+    def relational_fields(self) -> Iterator['Field']:
+        for field in self.all_fields:
+            if field.relation_name:
+                yield field
 
 
 # TODO: Json probably isn't right
@@ -165,7 +186,7 @@ class Field(BaseModel):
 
     @property
     def python_case(self) -> str:
-        transform = config_ctx.get().transform_fields
+        transform = get_config().transform_fields
         if transform == TransformChoices.camel_case:
             return camelize(self.name)
 
