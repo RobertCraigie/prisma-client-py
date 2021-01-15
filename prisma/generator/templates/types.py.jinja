@@ -32,6 +32,9 @@ class {{ model.name }}CreateInput({{ model.name }}OptionalCreateInput):
     {% endfor %}
 
 
+# TODO: remove this in favour of without explicit relations
+# e.g. PostCreateWithoutAuthorInput
+
 class {{ model.name }}OptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the {{ model.name }} create method, without relations"""
     {% for field in model.all_fields %}
@@ -68,6 +71,54 @@ class {{ model.name }}WhereUniqueInput(TypedDict, total=False):
             {{'    '}}{{ field.python_case }}: {{ field.python_type }}
         {% endif %}
     {% endfor %}
+
+
+class {{ model.name }}UpdateInput(TypedDict, total=False):
+    """Optional arguments for updating a record"""
+    {% for field in model.all_fields %}
+        {%- if not field.is_unique and not field.is_id and not field.is_read_only -%}
+            {{'    '}}{{ field.python_case }}: Optional[{{ field.get_update_input_type(model.name) }}]
+        {% endif %}
+    {% endfor %}
+
+
+{% for field in model.atomic_fields %}
+class {{ model.name }}Update{{ field.name }}Input(TypedDict, total=False):
+    set: {{ field.atomic_type }}
+    {% if field.type != 'Boolean' %}
+    increment: {{ field.atomic_type }}
+    decrement: {{ field.atomic_type }}
+    multiply: {{ field.atomic_type }}
+    divide: {{ field.atomic_type }}
+    {% endif %}
+{% endfor %}
+
+
+class {{ model.name }}UpdateManyWithoutRelationsInput(TypedDict, total=False):
+    create: List['{{ model.name }}CreateWithoutRelationsInput']
+    connect: List['{{ model.name }}WhereUniqueInput']
+    set: List['{{ model.name }}WhereUniqueInput']
+    disconnect: List['{{ model.name }}WhereUniqueInput']
+    delete: List['{{ model.name }}WhereUniqueInput']
+
+    # TODO
+    # update: List['{{ model.name }}UpdateWithWhereUniqueWithoutRelationsInput']
+    # updateMany: List['{{ model.name }}UpdateManyWithWhereUniqueWithoutRelationsInput']
+    # deleteMany: List['{{ model.name }}ScalarWhereInput']
+    # upsert: List['{{ model.name }}UpserteWithWhereUniqueWithoutRelationsInput']
+    # connectOrCreate: List['{{ model.name }}CreateOrConnectWithoutRelationsInput']
+
+
+class {{ model.name }}UpdateOneWithoutRelationsInput(TypedDict, total=False):
+    create: '{{ model.name }}CreateWithoutRelationsInput'
+    connect: '{{ model.name }}WhereUniqueInput'
+    disconnect: bool
+    delete: bool
+
+    # TODO
+    # update: '{{ model.name }}UpdateInput'
+    # upsert: '{{ model.name }}UpsertWithoutRelationsInput'
+    # connectOrCreate: '{{ model.name }}CreateOrConnectWithoutRelationsInput'
 
 
 # recursive {{ model.name }} types

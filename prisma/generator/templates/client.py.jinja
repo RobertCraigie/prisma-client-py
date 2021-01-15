@@ -148,5 +148,22 @@ class {{ model.name }}Actions:
             return None
         return models.{{ model.name }}.parse_obj(result)
 
+    async def update(self, data: types.{{ model.name }}UpdateInput, where: types.{{ model.name }}WhereUniqueInput, include: Optional[types.{{ model.name}}Include]=None) -> Optional[models.{{ model.name }}]:
+        builder = QueryBuilder(
+            engine=self.client._engine,
+            operation='mutation',
+            method='updateOne',
+            model='{{ model.name }}',
+            include=include,
+            arguments={'data': data, 'where': where},
+            aliases=self._field_aliases,
+        )
+
+        try:
+            resp = await builder.execute()
+        except errors.RecordNotFoundError:
+            return None
+
+        return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
 {% endfor %}

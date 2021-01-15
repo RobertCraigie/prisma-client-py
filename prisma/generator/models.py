@@ -8,6 +8,8 @@ from .utils import pascalize, camelize, decamelize
 
 # NOTE: this does not represent all the data that is passed by prisma
 
+ATOMIC_FIELD_TYPES = ['Int', 'Float', 'Boolean']
+
 data_ctx: ContextVar['Data'] = ContextVar('data_ctx')
 
 
@@ -54,7 +56,10 @@ class Generator(BaseModel):
 class Config(BaseModel):
     """Custom generator config options."""
 
-    recursive_type_depth: conint(ge=2) = FieldInfo(
+    # have to ignore the type as mypy does not like the type
+    # annotation, ignoring has no negative side effects as
+    # this field is not accessed in any python code
+    recursive_type_depth: conint(ge=2) = FieldInfo(  # type: ignore
         alias='recursiveTypeDepth', default=5
     )
     transform_fields: Optional[TransformChoices] = FieldInfo(alias='transformFields')
@@ -107,6 +112,12 @@ class Model(BaseModel):
     def relational_fields(self) -> Iterator['Field']:
         for field in self.all_fields:
             if field.relation_name:
+                yield field
+
+    @property
+    def atomic_fields(self) -> Iterator['Field']:
+        for field in self.all_fields:
+            if field.type in ATOMIC_FIELD_TYPES:
                 yield field
 
 
@@ -203,6 +214,31 @@ class Field(BaseModel):
         return (
             self.is_required and not self.is_updated_at and not self.has_default_value
         )
+
+    @property
+    def is_atomic(self) -> bool:
+        return self.type in ATOMIC_FIELD_TYPES
+
+    @property
+    def atomic_type(self) -> str:
+        if self.type not in ATOMIC_FIELD_TYPES:
+            raise TypeError('Field is not atomic')
+
+        if self.is_list:
+            return f'List[{self.python_type}]'
+
+        return self.python_type
+
+    def get_update_input_type(self, model: str) -> str:
+        if self.type in ATOMIC_FIELD_TYPES:
+            return f'\'{model}Update{self.name}Input\''
+
+        if self.kind == 'object':
+            if self.is_list:
+                return f'\'{self.type}UpdateManyWithoutRelationsInput\''
+            return f'\'{self.type}UpdateOneWithoutRelationsInput\''
+
+        return self.python_type
 
 
 class DefaultValue(BaseModel):
