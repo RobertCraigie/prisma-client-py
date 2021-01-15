@@ -7,7 +7,7 @@
 
 <hr>
 
-Prisma Client Python is an unofficial implementation of [Prisma Client JS](https://github.com/prisma/prisma-client-js) which is an **auto-generated query builder** that enables **type-safe** database access and **reduces boilerplate**. You can use it as an alternative to traditional ORMs such as gorm, xorm, sqlboiler and most database-specific tools.
+Prisma Client Python is an unofficial implementation of [Prisma Client JS](https://github.com/prisma/prisma-client-js) which is an **auto-generated query builder** that enables **type-safe** database access and **reduces boilerplate**. You can use it as an alternative to traditional ORMs such as SQLAlchemy, Django ORM, peewee and most database-specific tools.
 
 ## Contributing
 

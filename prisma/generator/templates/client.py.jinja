@@ -1,9 +1,9 @@
 {% include '_header.py.jinja' %}
 # -- template client.py.jinja --
-from enum import Enum
-from pydantic import BaseModel, Field, validate_arguments
+from collections import defaultdict
+from pydantic import BaseModel, validate_arguments
 
-from prisma import types
+from prisma import types, models, errors
 from prisma.engine import QueryEngine
 from prisma.builder import QueryBuilder
 
@@ -61,12 +61,12 @@ class Client:
         return int(resp['data']['result'])
 
     @overload
-    async def query_raw(self, query: str, *args: Any, model: None) -> Any:
+    async def query_raw(self, query: str, *args: Any) -> Any:
         ...
 
     {% for model in dmmf.datamodel.models %}
     @overload
-    async def query_raw(self, query: str, *args: Any, model: Type['{{ model.name }}']) -> List['{{ model.name }}']:
+    async def query_raw(self, query: str, *args: Any, model: Type['models.{{ model.name }}']) -> List['models.{{ model.name }}']:
         ...
 
     {% endfor %}
@@ -80,68 +80,90 @@ class Client:
         )
         result = (await builder.execute())['data']['result']
         if model is not None:
-            return list(map(lambda r: model.parse_obj(r), result))
+            return [model.parse_obj(r) for r in result]
         return result
 
 
-{% for enum in dmmf.datamodel.enums %}
-class {{ enum.name }}Enum(str, Enum):
-    {% for value in enum.values %}
-    {{ value.name }} = '{{ value.name }}'
-    {% endfor %}
-{% endfor %}
-
-
 {% for model in dmmf.datamodel.models %}
-class {{ model.name }}(BaseModel):
-    {% for field in model.all_fields %}
-    {{ field.python_case }}:
-            {%- if field.is_required -%}
-                {{ ' ' }}{{ field.python_type }} = Field(alias='{{ field.name }}')
-            {% else -%}
-                {{ ' ' }}Optional[{{ field.python_type }}] = Field(alias='{{ field.name }}')
-            {% endif %}
-    {% endfor %}
-
-    class Config:
-        use_enum_values = True
-
 
 class {{ model.name }}Actions:
     def __init__(self, client: Client):
         self.client = client
+        self._field_aliases = self._gen_field_aliases(models.{{ model.name }}, defaultdict(dict), key='')
 
-    # TODO: add support for select and include
-    @validate_arguments
-    async def create(self, data: types.{{ model.name }}CreateInput) -> {{ model.name }}:
+    def _gen_field_aliases(self, model: Type[BaseModel], aliases: Dict[str, Dict[str, str]], *, key: str) -> Dict[str, Dict[str, str]]:
+        # TODO: these field aliases could clash, see GitHub #3
+        for field, info in model.__fields__.items():
+            if info.type_.__module__ == 'prisma.models':
+                if field not in aliases:
+                    self._gen_field_aliases(info.type_, aliases, key=field)
+            else:
+                aliases[key][field] = info.alias
+        return aliases
+
+    async def create(self, data: types.{{ model.name }}CreateInput, include: Optional[types.{{ model.name}}Include]=None) -> models.{{ model.name }}:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='mutation',
             method='createOne',
             model='{{ model.name }}',
-            fields=list({{ model.name }}.schema()['properties'].keys()),
-            arguments={'data': data}
+            include=include,
+            arguments={'data': data},
+            aliases=self._field_aliases,
         )
         resp = await builder.execute()
-        return {{ model.name }}.parse_obj(resp['data']['result'])
+        return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
-    @validate_arguments
-    async def find_unique(self, where: types.{{ model.name }}WhereUniqueInput) -> {{ model.name }}:
+    async def delete(self, where: types.{{ model.name }}WhereUniqueInput, include: Optional[types.{{ model.name}}Include]=None) -> Optional[models.{{ model.name }}]:
+        builder = QueryBuilder(
+            engine=self.client._engine,
+            operation='mutation',
+            method='deleteOne',
+            model='{{ model.name }}',
+            include=include,
+            arguments={'where': where},
+            aliases=self._field_aliases,
+        )
+
+        try:
+            resp = await builder.execute()
+        except errors.RecordNotFoundError:
+            return None
+
+        return models.{{ model.name }}.parse_obj(resp['data']['result'])
+
+    async def find_unique(self, where: types.{{ model.name }}WhereUniqueInput, include: Optional[types.{{ model.name}}Include]=None) -> Optional[models.{{ model.name }}]:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
             method='findOne',
             model='{{ model.name }}',
-            fields=list({{ model.name }}.schema()['properties'].keys()),
+            include=include,
             arguments={'where': where},
+            aliases=self._field_aliases,
         )
         resp = await builder.execute()
-        return {{ model.name }}.parse_obj(resp['data']['result'])
+        result = resp['data']['result']
+        if result is None:
+            return None
+        return models.{{ model.name }}.parse_obj(result)
 
+    async def update(self, data: types.{{ model.name }}UpdateInput, where: types.{{ model.name }}WhereUniqueInput, include: Optional[types.{{ model.name}}Include]=None) -> Optional[models.{{ model.name }}]:
+        builder = QueryBuilder(
+            engine=self.client._engine,
+            operation='mutation',
+            method='updateOne',
+            model='{{ model.name }}',
+            include=include,
+            arguments={'data': data, 'where': where},
+            aliases=self._field_aliases,
+        )
 
-{% endfor %}
+        try:
+            resp = await builder.execute()
+        except errors.RecordNotFoundError:
+            return None
 
-# required to support relationships between models
-{% for model in dmmf.datamodel.models %}
-{{ model.name }}.update_forward_refs()
+        return models.{{ model.name }}.parse_obj(resp['data']['result'])
+
 {% endfor %}

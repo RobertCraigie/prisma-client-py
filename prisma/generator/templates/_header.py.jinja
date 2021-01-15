@@ -5,22 +5,7 @@
 
 # global imports for type checking
 import datetime
+from typing_extensions import TypedDict
 from typing import TYPE_CHECKING, Optional, Any, Dict, overload, Union, List, Type
-
-if TYPE_CHECKING:
-    from mypy_extensions import TypedDict
-else:
-    # as we aren't type checking we can just use a dummy object
-    class _TypedDictMeta(type):
-        def __init__(self, *args, **kwargs):
-            super().__init__(None)
-
-        def __new__(cls, name, bases, ns, total=True):
-            return super().__new__(cls, name, bases, ns)
-
-    class TypedDict(dict, metaclass=_TypedDictMeta):
-        def __init__(self, name, definition, total=True):
-            pass
-
 
 

@@ -1,31 +1,194 @@
 {% include '_header.py.jinja' %}
 # -- template types.py.jinja --
+from enum import Enum
+
+{% set depth = generator.config.recursive_type_depth %}
+
+{% for enum in dmmf.datamodel.enums %}
+class {{ enum.name }}Enum(str, Enum):
+    {% for value in enum.values %}
+    {{ value.name }} = '{{ value.name }}'
+    {% endfor %}
+{% endfor %}
+
 {% for model in dmmf.datamodel.models %}
+# {{ model.name }} types
 
 class {{ model.name }}OptionalCreateInput(TypedDict, total=False):
+    """Optional arguments to the {{ model.name }} create method"""
     {% for field in model.all_fields %}
         {%- if not field.required_on_create and not field.is_read_only -%}
-            {{'    '}}{{ field.python_case }}: Optional[{{ field.python_type }}]
+            {{'    '}}{{ field.python_case }}: Optional[{{ field.create_input_type }}]
         {% endif %}
     {% endfor %}
 
 
 class {{ model.name }}CreateInput({{ model.name }}OptionalCreateInput):
+    """Required arguments to the {{ model.name }} create method"""
     {% for field in model.all_fields %}
         {%- if field.required_on_create and not field.is_read_only -%}
+            {{'    '}}{{ field.python_case }}: {{ field.create_input_type }}
+        {% endif %}
+    {% endfor %}
+
+
+# TODO: remove this in favour of without explicit relations
+# e.g. PostCreateWithoutAuthorInput
+
+class {{ model.name }}OptionalCreateWithoutRelationsInput(TypedDict, total=False):
+    """Optional arguments to the {{ model.name }} create method, without relations"""
+    {% for field in model.all_fields %}
+        {%- if not field.required_on_create and not field.is_read_only and not field.relation_name -%}
+            {{'    '}}{{ field.python_case }}: Optional[{{ field.python_type }}]
+        {% endif %}
+    {% endfor %}
+
+
+class {{ model.name }}CreateWithoutRelationsInput({{ model.name }}OptionalCreateWithoutRelationsInput):
+    """Required arguments to the {{ model.name }} create method, without relations"""
+    {% for field in model.all_fields %}
+        {%- if field.required_on_create and not field.is_read_only and not field.relation_name -%}
             {{'    '}}{{ field.python_case }}: {{ field.python_type }}
         {% endif %}
     {% endfor %}
 
 
+class {{ model.name }}CreateNestedWithoutRelationsInput(TypedDict, total=False):
+    create: Optional['{{ model.name }}CreateWithoutRelationsInput']
+    connect: Optional['{{ model.name }}WhereUniqueInput']
+
+
+class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=False):
+    create: Optional[Union['{{ model.name }}CreateWithoutRelationsInput', List['{{ model.name }}CreateWithoutRelationsInput']]]
+    connect: Optional[Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]]
+
+
+# TODO: what if a relational field is unique?
 class {{ model.name }}WhereUniqueInput(TypedDict, total=False):
+    """Unique {{ model.name }} arguments for searching"""
     {% for field in model.all_fields %}
         {%- if field.is_unique or field.is_id -%}
             {{'    '}}{{ field.python_case }}: {{ field.python_type }}
         {% endif %}
     {% endfor %}
 
+
+class {{ model.name }}UpdateInput(TypedDict, total=False):
+    """Optional arguments for updating a record"""
+    {% for field in model.all_fields %}
+        {%- if not field.is_unique and not field.is_id and not field.is_read_only -%}
+            {{'    '}}{{ field.python_case }}: Optional[{{ field.get_update_input_type(model.name) }}]
+        {% endif %}
+    {% endfor %}
+
+
+{% for field in model.atomic_fields %}
+class {{ model.name }}Update{{ field.name }}Input(TypedDict, total=False):
+    set: {{ field.atomic_type }}
+    {% if field.type != 'Boolean' %}
+    increment: {{ field.atomic_type }}
+    decrement: {{ field.atomic_type }}
+    multiply: {{ field.atomic_type }}
+    divide: {{ field.atomic_type }}
+    {% endif %}
 {% endfor %}
 
-# fmt: on
+
+class {{ model.name }}UpdateManyWithoutRelationsInput(TypedDict, total=False):
+    create: List['{{ model.name }}CreateWithoutRelationsInput']
+    connect: List['{{ model.name }}WhereUniqueInput']
+    set: List['{{ model.name }}WhereUniqueInput']
+    disconnect: List['{{ model.name }}WhereUniqueInput']
+    delete: List['{{ model.name }}WhereUniqueInput']
+
+    # TODO
+    # update: List['{{ model.name }}UpdateWithWhereUniqueWithoutRelationsInput']
+    # updateMany: List['{{ model.name }}UpdateManyWithWhereUniqueWithoutRelationsInput']
+    # deleteMany: List['{{ model.name }}ScalarWhereInput']
+    # upsert: List['{{ model.name }}UpserteWithWhereUniqueWithoutRelationsInput']
+    # connectOrCreate: List['{{ model.name }}CreateOrConnectWithoutRelationsInput']
+
+
+class {{ model.name }}UpdateOneWithoutRelationsInput(TypedDict, total=False):
+    create: '{{ model.name }}CreateWithoutRelationsInput'
+    connect: '{{ model.name }}WhereUniqueInput'
+    disconnect: bool
+    delete: bool
+
+    # TODO
+    # update: '{{ model.name }}UpdateInput'
+    # upsert: '{{ model.name }}UpsertWithoutRelationsInput'
+    # connectOrCreate: '{{ model.name }}CreateOrConnectWithoutRelationsInput'
+
+
+# recursive {{ model.name }} types
+
+
+class {{ model.name }}Include(TypedDict, total=False):
+    """{{ model.name }} relational arguments"""
+    {% for field in model.relational_fields -%}
+        {{'    '}}{{ field.python_case }}: Union[bool, '{{ field.relational_args_type }}From{{ model.name }}']
+    {% endfor %}
+
+
+{% for related in dmmf.datamodel.models %}
+{% for i in range(depth) %}
+class {{ related.name }}IncludeFrom{{ model.name }}{{ 'Recursive%s' % i if i != 0 else '' }}(TypedDict, total=False):
+    """{{ model.name }} relational arguments"""
+    {% if i != depth - 1 %}
+    {% for field in related.relational_fields -%}
+        {{'    '}}{{ field.python_case }}: Union[bool, '{{ field.relational_args_type }}From{{ model.name }}Recursive{{ i + 1 }}']
+    {% endfor %}
+    {% endif %}
+
+{% endfor %}
+{% endfor %}
+
+
+{% for related in dmmf.datamodel.models %}
+{% for i in range(depth) %}
+class {{ related.name }}ArgsFrom{{ model.name }}{{ 'Recursive%s' % i if i != 0 else '' }}(TypedDict, total=False):
+    """Arguments for {{ model.name }}"""
+    {% if i != depth - 1 %}
+    include: '{{ related.name }}IncludeFrom{{ related.name }}Recursive{{ i + 1 }}'
+    {% endif %}
+
+
+class FindMany{{ related.name }}ArgsFrom{{ model.name }}{{ 'Recursive%s' % i if i != 0 else '' }}(TypedDict, total=False):
+    take: int
+    skip: int
+    where: '{{ related.name }}WhereInput'
+    cursor: '{{ related.name }}WhereUniqueInput'
+    {% if i != depth - 1 %}
+    include: '{{ related.name }}IncludeFrom{{ related.name }}Recursive{{ i + 1 }}'
+    {% endif %}
+
+{% endfor %}
+{% endfor %}
+
+
+# TODO: support relationships here
+{% for i in range(depth) %}
+class {{ model.name }}WhereInput{{ 'Recursive%s' % i if i != 0 else '' }}(TypedDict, total=False):
+    """{{ model.name }} arguments for searching"""
+    {% for field in model.all_fields %}
+        {%- if not field.relation_name -%}
+            {{'    '}}{{ field.python_case }}: {{ field.python_type }}
+        {% endif %}
+    {% endfor %}
+    {% if i != depth - 1 %}
+    AND: List['{{ model.name }}WhereInputRecursive{{ i + 1 }}']
+    OR: List['{{ model.name }}WhereInputRecursive{{ i + 1 }}']
+    NOT: List['{{ model.name }}WhereInputRecursive{{ i + 1 }}']
+    {% endif %}
+
+
+{% endfor %}
+
+{% endfor %}
+
+
+# we have to import ourselves as enum types are namespaced to types
+# e.g. types.RoleEnum
+from prisma import types, models
 

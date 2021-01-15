@@ -1,18 +1,19 @@
 import pytest
+from prisma import Client
 
 
 @pytest.mark.asyncio
-async def test_execute_raw(client):
+async def test_execute_raw(client: Client) -> None:
     post = await client.post.create(
         {
-            'title': 'My post title!',
+            'title': 'My post title.',
             'published': False,
         }
     )
     assert isinstance(post.id, str)
 
     query = '''
-        UPDATE public."Post"
+        UPDATE Post
         SET title = 'My edited title'
         WHERE id = $1
     '''
@@ -26,9 +27,9 @@ async def test_execute_raw(client):
 
 
 @pytest.mark.asyncio
-async def test_execute_raw_no_result(client):
+async def test_execute_raw_no_result(client: Client) -> None:
     query = '''
-        UPDATE public."Post"
+        UPDATE Post
         SET title = 'updated title'
         WHERE id = 'sdldsd'
     '''

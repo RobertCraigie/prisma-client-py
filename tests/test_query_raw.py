@@ -1,15 +1,15 @@
 import pytest
 
-from prisma import errors
-from prisma.client import Post
+from prisma import errors, Client
+from prisma.models import Post
 
 
 @pytest.mark.asyncio
-async def test_query_raw(client):
+async def test_query_raw(client: Client) -> None:
     with pytest.raises(errors.RawQueryError):
         query = '''
             SELECT *
-            FROM posts;
+            FROM bad_table;
         '''
         await client.query_raw(query)
 
@@ -21,8 +21,8 @@ async def test_query_raw(client):
     )
 
     query = '''
-        SELECT COUNT(*)
-        FROM public."Post"
+        SELECT COUNT(*) as count
+        FROM Post
     '''
     results = await client.query_raw(query)
     assert len(results) == 1
@@ -30,7 +30,7 @@ async def test_query_raw(client):
 
     query = '''
         SELECT *
-        FROM public."Post"
+        FROM Post
         WHERE id = $1
     '''
     results = await client.query_raw(query, post.id)
@@ -40,7 +40,7 @@ async def test_query_raw(client):
 
 
 @pytest.mark.asyncio
-async def test_query_raw_model(client):
+async def test_query_raw_model(client: Client) -> None:
     post = await client.post.create(
         {
             'title': 'My post title!',
@@ -50,7 +50,7 @@ async def test_query_raw_model(client):
 
     query = '''
         SELECT *
-        FROM public."Post"
+        FROM Post
         WHERE id = $1
     '''
     posts = await client.query_raw(query, post.id, model=Post)
@@ -63,10 +63,10 @@ async def test_query_raw_model(client):
 
 
 @pytest.mark.asyncio
-async def test_query_raw_no_result(client):
+async def test_query_raw_no_result(client: Client) -> None:
     query = '''
         SELECT *
-        FROM public."Post"
+        FROM Post
         WHERE id = 'sdldsd'
     '''
     results = await client.query_raw(query)
@@ -78,9 +78,9 @@ async def test_query_raw_no_result(client):
 
 @pytest.mark.asyncio
 @pytest.mark.skip(reason='This is an internal prisma query engine bug')
-async def test_query_raw_incorrect_params(client):
+async def test_query_raw_incorrect_params(client: Client) -> None:
     query = '''
         SELECT COUNT(*)
-        FROM public."Post"
+        FROM Post
     '''
     await client.query_raw(query, 1)

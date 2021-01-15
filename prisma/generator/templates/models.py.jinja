@@ -1,0 +1,32 @@
+{% include '_header.py.jinja' %}
+# -- template models.py.jinja --
+from pydantic import BaseModel, Field
+from prisma import types
+
+{% for model in dmmf.datamodel.models %}
+class {{ model.name }}(BaseModel):
+    {% for field in model.all_fields %}
+    {{ field.python_case }}:
+            {%- if field.is_required and not field.relation_name -%}
+                {{ ' ' }}{{ field.python_type }} = Field(alias='{{ field.name }}')
+            {% else -%}
+                {{ ' ' }}Optional[{{ field.python_type }}] = Field(alias='{{ field.name }}')
+            {% endif %}
+    {% endfor %}
+
+    class Config:
+        use_enum_values = True
+        allow_population_by_field_name = True
+
+
+{% endfor %}
+
+
+# we have to import ourselves as relation types are namespaced to models
+# e.g. models.Post
+from prisma import models
+
+# required to support relationships between models
+{% for model in dmmf.datamodel.models %}
+{{ model.name }}.update_forward_refs()
+{% endfor %}

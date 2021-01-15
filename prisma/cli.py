@@ -108,7 +108,7 @@ def invoke_prisma() -> None:
                 result=dict(
                     manifest=jsonrpc.Manifest(
                         defaultOutput=str(generator.BASE_PACKAGE_DIR.absolute()),
-                        prettyName='Prisma Client Py',
+                        prettyName='Prisma Client Python',
                     )
                 ),
             )

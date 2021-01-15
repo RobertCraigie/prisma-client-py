@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import atexit
 import signal
 import asyncio
 import logging
@@ -27,6 +28,9 @@ class QueryEngine:
         self.process = None  # type: Optional[subprocess.Popen[bytes]]
         self.session = None  # type: Optional[aiohttp.ClientSession]
         self.file = None  # type: Optional[Path]
+
+        # ensure the query engine process is terminated when we are
+        atexit.register(self.stop)
 
     def __del__(self) -> None:
         self.stop()
@@ -75,12 +79,13 @@ class QueryEngine:
 
         self.url = f'http://localhost:{port}'
 
-        env = dict(
-            **os.environ,
+        env = os.environ.copy()
+        env.update(
             PRISMA_DML=self.dml,
             RUST_LOG='error',
             RUST_LOG_FORMAT='json',
         )
+
         if os.environ.get('PRISMA_PY_DEBUG'):
             env.update(PRISMA_LOG_QUERIES='y', RUST_LOG='info')
 
@@ -145,6 +150,9 @@ class QueryEngine:
                         return utils.handle_response_errors(resp, errors_data)
 
                     return response
+
+                if resp.status == 422:
+                    raise errors.UnprocessableEntityError(resp)
 
                 # TODO: handle errors better
                 raise errors.EngineRequestError(resp, await resp.text())

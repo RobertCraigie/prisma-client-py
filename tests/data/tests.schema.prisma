@@ -5,6 +5,7 @@ datasource db {
 
 generator db {
     provider = "python3 -m prisma"
+    recursive_type_depth = 5
     output = env("PRISMA_PY_OUTPUT")
 }
 
@@ -15,9 +16,27 @@ model Post {
     title     String
     published Boolean
     desc      String?
+    author    User?       @relation(fields:  [authorId], references: [id])
+    authorId  String?
+    categories Category[] @relation(references: [id])
 }
 
 model User {
     id        String   @default(cuid()) @id
     name String
+    posts     Post[]
+    profile   Profile?
+}
+
+model Category {
+    id    Int    @id @default(autoincrement())
+    posts Post[] @relation(references: [id])
+    name String
+}
+
+model Profile {
+  id      Int    @id @default(autoincrement())
+  user    User   @relation(fields:  [userId], references: [id])
+  userId  String
+  bio String
 }

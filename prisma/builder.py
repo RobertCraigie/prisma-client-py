@@ -1,6 +1,7 @@
 import json
-from typing import List, Dict, Any, Optional
-from pydantic import BaseModel, Field
+import datetime
+from typing import Dict, Any, Optional
+from pydantic import BaseModel
 
 from .engine import QueryEngine
 
@@ -15,7 +16,11 @@ class QueryBuilder(BaseModel):
     model: Optional[str]
     engine: QueryEngine
     arguments: Dict[str, Any]
-    fields_: Optional[List[str]] = Field(alias='fields')
+    include: Optional[Dict[str, Any]]
+
+    # mappings of model user facing fields to their corresponding query engine fields
+    # an empty key represents the fields for the current model
+    aliases: Optional[Dict[str, Dict[str, str]]]
 
     class Config:
         arbitrary_types_allowed = True
@@ -26,7 +31,7 @@ class QueryBuilder(BaseModel):
             'operation_name': self.operation,
             'query': self.build_query(),
         }
-        return json.dumps(data)
+        return dumps(data)
 
     def build_query(self) -> str:
         """Build the GraphQL query string for this operation.
@@ -53,13 +58,19 @@ class QueryBuilder(BaseModel):
         )
         # fmt: on
 
-    def build_args(self) -> str:
+    def build_args(
+        self, arguments: Optional[Dict[str, Any]] = None, context: Optional[str] = None
+    ) -> str:
         """Returns a string representing the arguments to the the GraphQL query.
 
         e.g. 'where: { id: "hsdajkd2" } take: 1'
         """
+        if arguments is None:
+            arguments = self.arguments
+
         strings = []
-        for arg, value in self.arguments.items():
+        args = self._transform_aliases(arguments, context)
+        for arg, value in args.items():
             if isinstance(value, dict):
                 parsed = self.build_data(value)
             elif isinstance(value, (list, tuple)):
@@ -67,21 +78,55 @@ class QueryBuilder(BaseModel):
                 # we encode twice to ensure that only the inner quotes are escaped
                 # yes this is a terrible solution
                 # TODO: better solution
-                parsed = json.dumps(json.dumps(value))
+                parsed = dumps(dumps(value))
             else:
-                parsed = json.dumps(value)
+                parsed = dumps(value)
 
             strings.append(f'{arg}: {parsed}')
 
         return ' '.join(strings)
 
-    def build_fields(self) -> str:
-        if self.fields_ is None:
+    def build_fields(
+        self, include: Optional[Dict[str, Any]] = None, context: Optional[str] = None
+    ) -> str:
+        aliases = self.aliases
+        if aliases is None:
             return ''
 
-        return f'{{ {" ".join(self.fields_)} }}'
+        if context is None:
+            context = ''
 
-    def build_data(self, data: Dict[str, Any]) -> str:
+        if include is None:
+            include = self.include
+
+        if include is None:
+            return f'{{ {" ".join(aliases[context].values())} }}'
+
+        fields = list(aliases[context].values())
+        for key, value in include.items():
+            if value is True:
+                fields.append(f'{key} {{ {" ".join(aliases[key].values())} }}')
+            elif value is False:
+                continue
+            elif isinstance(value, dict):
+                args = value.copy()
+                nested_include = args.pop('include', {})
+                args_string = self.build_args(args, context=key)
+                if args_string:
+                    args_string = f'({args_string})'
+
+                fields.append(
+                    f'{key}{args_string} '
+                    f'{self.build_fields(include=nested_include, context=key)}'
+                )
+            else:
+                raise TypeError(
+                    f'Expected `bool` or `dict` include value but got {type(value)} instead'
+                )
+
+        return f'{{ {" ".join(fields)} }}'
+
+    def build_data(self, data: Dict[str, Any], transform: Optional[bool] = True) -> str:
         """Returns a custom json dumped string of a dictionary.
 
         differences:
@@ -91,13 +136,67 @@ class QueryBuilder(BaseModel):
         e.g. {'title': 'hi', 'published': False, 'desc': None} -> {title: "hi", published: false}
         """
         strings = []
-        dumps = json.dumps
-        for key, value in data.items():
-            if value is not None:
+
+        if transform:
+            transformed = self._transform_aliases(data)
+        else:
+            # aliases have already been transformed
+            transformed = data
+
+        for key, value in transformed.items():
+            if value is None:
+                continue
+
+            if isinstance(value, dict):
+                strings.append(f'{key}: {self.build_data(value, transform=False)}')
+            elif isinstance(value, (list, tuple)):
+                inner = []
+                for item in value:
+                    if isinstance(item, dict):
+                        inner.append(self.build_data(item, transform=False))
+                    else:
+                        inner.append(dumps(item))
+                strings.append(f'{key}: [{", ".join(inner)}]')
+            else:
                 strings.append(f'{key}: {dumps(value)}')
 
         return f'{{ {", ".join(strings)} }}'
 
+    def _transform_aliases(
+        self, data: Dict[str, Any], context: Optional[str] = None
+    ) -> Dict[str, Any]:
+        if self.aliases is None:
+            return data
+
+        mappings = self.aliases.get(context if context is not None else '')
+        if mappings is None:
+            return data
+
+        transformed = {}  # type: Dict[str, Any]
+        for inner_key, value in data.items():
+            alias = mappings.get(inner_key, inner_key)
+            if isinstance(value, dict):
+                transformed[alias] = self._transform_aliases(
+                    value,
+                    context=inner_key if inner_key in self.aliases.keys() else context,
+                )
+            else:
+                transformed[alias] = value
+        return transformed
+
     async def execute(self) -> Any:
         payload = self.build()
         return await self.engine.request('POST', '/', data=payload)
+
+
+def serialize_json(obj: Any) -> str:
+    """JSON serializer for objects not serializable by the default JSON encoder"""
+    if isinstance(obj, (datetime.datetime, datetime.date)):
+        return obj.isoformat()
+
+    raise TypeError(f'Type {type(obj)} not serializable')
+
+
+def dumps(obj: Any, **kwargs: Any) -> str:
+    kwargs.setdefault('default', serialize_json)
+    return json.dumps(obj, **kwargs)
