@@ -1,5 +1,7 @@
 # Quickstart
 
+In this page, you will learn how to send queries to an SQLite database using Prisma Client Python.
+
 ## Setup
 
 1) Setup a Python project with a [virtual environment](https://docs.python.org/3/library/venv.html)
