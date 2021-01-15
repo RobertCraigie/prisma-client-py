@@ -44,12 +44,12 @@ ACTIONS = [
     # implemented
     'create',
     'find_unique',
+    'delete',
+    'update',
     # not implemented
     'find_first',
     'find_many',
-    'update',
     'upsert',
-    'delete',
     'update_many',
     'delete_many',
     'count',
@@ -263,6 +263,17 @@ class PrismaPlugin(Plugin):
     def is_list_type(self, typ: Type) -> bool:
         return isinstance(typ, Instance) and typ.type.fullname == 'builtins.list'
 
+    def is_dict_call_type(self, expr: NameExpr) -> bool:
+        # statically wise, TypedDicts do not inherit from dict
+        # so we cannot check that, just checking if the expression
+        # inherits from a class that ends with dict is good enough
+        # for our use case
+        return bool(expr.fullname == 'builtins.dict') or bool(
+            isinstance(expr.node, TypeInfo)
+            and expr.node.bases
+            and expr.node.bases[0].type.fullname.lower().endswith('dict')
+        )
+
     def copy_modified_instance(
         self, instance: Instance, names: SymbolTable
     ) -> Instance:
@@ -309,7 +320,7 @@ class PrismaPlugin(Plugin):
                 f'Expected CallExpr.callee to be a NameExpr but got {type(expr.callee)} instead.'
             )
 
-        if strict and expr.callee.fullname != 'builtins.dict':
+        if strict and not self.is_dict_call_type(expr.callee):
             raise TypeError(
                 f'Expected builtins.dict to be called but got {expr.callee.fullname} instead'
             )

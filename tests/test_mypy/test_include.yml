@@ -69,3 +69,18 @@
       reveal_type(user.posts)  # N: Revealed type is 'builtins.list[prisma.models.Post, prisma.models.Post]'
       reveal_type(user.posts[0].categories)  # N: Revealed type is 'builtins.list[prisma.models.Category]'
 
+- case: explicit_include_type
+  main: |
+    from prisma import Client
+    from prisma.types import UserInclude
+
+    async def main() -> None:
+      client = Client()
+
+      user = await client.user.find_unique(
+        where={'id': '1'},
+        include=UserInclude(posts=True)
+      )
+
+      assert user is not None
+      reveal_type(user.posts)  # N: Revealed type is 'builtins.list[prisma.models.Post]'
