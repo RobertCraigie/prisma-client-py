@@ -15,6 +15,8 @@ BASE_PACKAGE_DIR = Path(__file__).parent.parent
 def run(params: Dict[str, Any]) -> None:
     params = vars(Data.parse_obj(params))
     rootdir = Path(params['generator'].output)
+    if not rootdir.exists():
+        rootdir.mkdir(parents=True, exist_ok=True)
 
     env = Environment(
         loader=PackageLoader('prisma.generator', 'templates'),
