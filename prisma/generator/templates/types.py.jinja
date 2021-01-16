@@ -4,6 +4,28 @@ from enum import Enum
 
 {% set depth = generator.config.recursive_type_depth %}
 
+# TODO: cleanup whitespace control
+# TODO: add an argument to signify that the last iteration should be skipped
+{% macro recursive() %}
+    {%+ for i in range(depth) -%}
+        {% if i == 0 %}
+            {% set name = '' %}
+        {% else %}
+            {% set name = 'Recursive%s' % i %}
+        {% endif %}
+
+        {% if i == depth - 1 %}
+            {% set next = '' %}
+        {% else %}
+            {% set next = 'Recursive%s' % (i + 1) %}
+
+        {% endif %}
+
+{{ caller(name, next) }}
+    {%- endfor %}
+{% endmacro %}
+
+
 {% for enum in dmmf.datamodel.enums %}
 class {{ enum.name }}Enum(str, Enum):
     {% for value in enum.values %}
@@ -132,58 +154,55 @@ class {{ model.name }}Include(TypedDict, total=False):
 
 
 {% for related in dmmf.datamodel.models %}
-{% for i in range(depth) %}
-class {{ related.name }}IncludeFrom{{ model.name }}{{ 'Recursive%s' % i if i != 0 else '' }}(TypedDict, total=False):
-    """{{ model.name }} relational arguments"""
-    {% if i != depth - 1 %}
-    {% for field in related.relational_fields -%}
-        {{'    '}}{{ field.python_case }}: Union[bool, '{{ field.relational_args_type }}From{{ model.name }}Recursive{{ i + 1 }}']
-    {% endfor %}
+{% call(current, next) recursive() %}
+class {{ related.name }}IncludeFrom{{ model.name }}{{ current }}(TypedDict, total=False):
+    """Relational arguments for {{model.name }}"""
+    {% if next != '' -%}
+        {% for field in related.relational_fields -%}
+            {{'    '}}{{ field.python_case }}: Union[bool, '{{ field.relational_args_type }}From{{ model.name + next }}']
+        {% endfor %}
     {% endif %}
+{% endcall %}
 
-{% endfor %}
-{% endfor %}
-
-
-{% for related in dmmf.datamodel.models %}
-{% for i in range(depth) %}
-class {{ related.name }}ArgsFrom{{ model.name }}{{ 'Recursive%s' % i if i != 0 else '' }}(TypedDict, total=False):
-    """Arguments for {{ model.name }}"""
-    {% if i != depth - 1 %}
-    include: '{{ related.name }}IncludeFrom{{ related.name }}Recursive{{ i + 1 }}'
+{% call(current, next) recursive() %}
+class {{ related.name }}ArgsFrom{{ model.name }}{{ current }}(TypedDict, total=False):
+    """Arguments for {{model.name }}"""
+    {%+ if next != '' -%}
+        include: '{{ related.name }}IncludeFrom{{ related.name + next}}'
     {% endif %}
+{% endcall %}
 
-
-class FindMany{{ related.name }}ArgsFrom{{ model.name }}{{ 'Recursive%s' % i if i != 0 else '' }}(TypedDict, total=False):
+{% call(current, next) recursive() %}
+class FindMany{{ related.name }}ArgsFrom{{ model.name}}{{ current }}(TypedDict, total=False):
+    """Arguments for {{model.name }}"""
     take: int
     skip: int
     where: '{{ related.name }}WhereInput'
     cursor: '{{ related.name }}WhereUniqueInput'
-    {% if i != depth - 1 %}
-    include: '{{ related.name }}IncludeFrom{{ related.name }}Recursive{{ i + 1 }}'
+    {%+ if next != '' -%}
+        include: '{{ related.name }}IncludeFrom{{ related.name + next}}'
     {% endif %}
+{% endcall %}
 
-{% endfor %}
 {% endfor %}
 
 
 # TODO: support relationships here
-{% for i in range(depth) %}
-class {{ model.name }}WhereInput{{ 'Recursive%s' % i if i != 0 else '' }}(TypedDict, total=False):
+{% call(current, next) recursive() %}
+class {{ model.name }}WhereInput{{ current }}(TypedDict, total=False):
     """{{ model.name }} arguments for searching"""
     {% for field in model.all_fields %}
         {%- if not field.relation_name -%}
-            {{'    '}}{{ field.python_case }}: {{ field.python_type }}
+            {{'    '}}{{ field.python_case }}: {{ field.where_input_type }}
         {% endif %}
     {% endfor %}
-    {% if i != depth - 1 %}
-    AND: List['{{ model.name }}WhereInputRecursive{{ i + 1 }}']
-    OR: List['{{ model.name }}WhereInputRecursive{{ i + 1 }}']
-    NOT: List['{{ model.name }}WhereInputRecursive{{ i + 1 }}']
+
+    {% if next != '' %}
+    AND: List['{{ model.name }}WhereInput{{ next }}']
+    OR: List['{{ model.name }}WhereInput{{ next }}']
+    NOT: List['{{ model.name }}WhereInput{{ next }}']
     {% endif %}
-
-
-{% endfor %}
+{% endcall %}
 
 {% endfor %}
 
