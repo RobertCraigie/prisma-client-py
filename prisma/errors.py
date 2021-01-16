@@ -16,6 +16,14 @@ class PrismaError(Exception):
     pass
 
 
+class ClientNotConnectedError(PrismaError):
+    def __init__(self) -> None:
+        super().__init__(
+            'Client is not connected to the query engine, '
+            'you must `await client.connect()` before attempting to query data.'
+        )
+
+
 class DataError(PrismaError):
     def __init__(self, data: Any, *, message: Optional[str] = None):
         self.data = data

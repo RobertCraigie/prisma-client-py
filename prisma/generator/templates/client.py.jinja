@@ -26,29 +26,29 @@ class Client:
         {% for model in dmmf.datamodel.models %}
         self.{{ model.name.lower() }} = {{ model.name }}Actions(self)
         {% endfor %}
-        self._engine: Optional[QueryEngine] = None
+        self.__engine: Optional[QueryEngine] = None
 
     def __del__(self) -> None:
-        if self._engine is not None:
-            self._engine.stop()
-            self._engine = None
+        if self.__engine is not None:
+            self.__engine.stop()
+            self.__engine = None
 
     async def connect(self) -> None:
         """Connect to the Prisma query engine.
 
         It is required to call this before accessing data.
         """
-        if self._engine is None:
-            self._engine = QueryEngine(dml=SCHEMA)
+        if self.__engine is None:
+            self.__engine = QueryEngine(dml=SCHEMA)
 
-        await self._engine.connect()
+        await self.__engine.connect()
 
     async def disconnect(self) -> None:
         """Disconnect the Prisma query engine."""
-        if self._engine is not None:
-            self._engine.disconnect()
-            await self._engine.close_session()
-            self._engine = None
+        if self.__engine is not None:
+            self.__engine.disconnect()
+            await self.__engine.close_session()
+            self.__engine = None
 
     async def execute_raw(self, query: str, *args: Any) -> int:
         builder = QueryBuilder(
@@ -82,6 +82,13 @@ class Client:
         if model is not None:
             return [model.parse_obj(r) for r in result]
         return result
+
+    @property
+    def _engine(self) -> QueryEngine:
+        engine = self.__engine
+        if engine is None:
+            raise errors.ClientNotConnectedError()
+        return engine
 
 
 {% for model in dmmf.datamodel.models %}
