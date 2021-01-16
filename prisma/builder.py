@@ -1,6 +1,6 @@
 import json
 import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from pydantic import BaseModel
 
 from .engine import QueryEngine
@@ -17,6 +17,7 @@ class QueryBuilder(BaseModel):
     engine: QueryEngine
     arguments: Dict[str, Any]
     include: Optional[Dict[str, Any]]
+    root_selection: Optional[List[str]]
 
     # mappings of model user facing fields to their corresponding query engine fields
     # an empty key represents the fields for the current model
@@ -99,10 +100,14 @@ class QueryBuilder(BaseModel):
         if include is None:
             include = self.include
 
+        fields = (
+            self.root_selection
+            and self.root_selection.copy()
+            or aliases[context].values()
+        )
         if include is None:
-            return f'{{ {" ".join(aliases[context].values())} }}'
+            return f'{{ {" ".join(fields)} }}'
 
-        fields = list(aliases[context].values())
         for key, value in include.items():
             if value is True:
                 fields.append(f'{key} {{ {" ".join(aliases[key].values())} }}')

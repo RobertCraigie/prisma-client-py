@@ -166,4 +166,17 @@ class {{ model.name }}Actions:
 
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
+    async def count(self, args: types.FindMany{{ model.name }}ArgsFrom{{ model.name }}) -> int:
+        builder = QueryBuilder(
+            engine=self.client._engine,
+            operation='query',
+            method='aggregate',
+            model='{{ model.name }}',
+            arguments=args,
+            aliases=self._field_aliases,
+            root_selection=['count'],
+        )
+        resp = await builder.execute()
+        return int(resp['data']['result']['count'])
+
 {% endfor %}
