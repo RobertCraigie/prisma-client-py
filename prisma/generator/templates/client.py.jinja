@@ -179,4 +179,17 @@ class {{ model.name }}Actions:
         resp = await builder.execute()
         return int(resp['data']['result']['count'])
 
+    async def delete_many(self, where: Optional[types.{{ model.name }}WhereInput] = None) -> int:
+        builder = QueryBuilder(
+            engine=self.client._engine,
+            operation='mutation',
+            method='deleteMany',
+            model='{{ model.name }}',
+            arguments={'where': where or {}},
+            aliases=self._field_aliases,
+            root_selection=['count'],
+        )
+        resp = await builder.execute()
+        return int(resp['data']['result']['count'])
+
 {% endfor %}
