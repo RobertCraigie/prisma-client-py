@@ -6,7 +6,7 @@ __license__ = 'APACHE'
 __copyright__ = 'Copyright 2020 RobertCraigie'
 __version__ = '0.0.1'
 
-from . import binaries, jsonrpc, engine
+from . import binaries, jsonrpc, engine, utils
 
 
 try:
@@ -14,3 +14,6 @@ try:
 except ImportError:
     # code has not been generated yet
     pass
+
+
+utils.setup_logging()
