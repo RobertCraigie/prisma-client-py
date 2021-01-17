@@ -1,21 +1,26 @@
 # pylint: disable=global-statement
 import asyncio
+import inspect
+from contextvars import ContextVar
 
 import pytest
 import prisma
+from prisma import Client
 from prisma.cli import setup_logging
 
 from .utils import async_run
 
 
+client_ctx: ContextVar['Client'] = ContextVar('client_ctx', default=Client())
 LOGGING_CONTEXT_MANAGER = None
 
 
-@pytest.fixture(scope='session')
-def client() -> prisma.Client:
-    client_ = prisma.Client()
-    async_run(client_.connect())
-    return client_
+@pytest.fixture(name='client', scope='session')
+def client_fixture() -> prisma.Client:
+    client = client_ctx.get()
+    async_run(client.connect())
+    async_run(cleanup_client(client))
+    return client
 
 
 @pytest.fixture(scope='session')
@@ -33,3 +38,30 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 def pytest_sessionfinish(session: pytest.Session) -> None:
     if LOGGING_CONTEXT_MANAGER is not None:
         LOGGING_CONTEXT_MANAGER.__exit__(None, None, None)  # pylint: disable=no-member
+
+
+def pytest_runtest_setup(item: pytest.Item) -> None:
+    if not has_client_fixture(item) or marked_persist_data(item):
+        return
+
+    client = client_ctx.get()
+    if client.is_connected():
+        async_run(cleanup_client(client))
+
+
+def has_client_fixture(item: pytest.Item) -> bool:
+    # TODO: more strict check
+    return 'client' in item.fixturenames
+
+
+def marked_persist_data(item: pytest.Item) -> bool:
+    for marker in item.iter_markers():
+        if marker.name == 'persist_data':
+            return True
+    return False
+
+
+async def cleanup_client(client: Client) -> None:
+    for name, item in inspect.getmembers(client):
+        if item.__class__.__name__.endswith('Actions'):
+            await item.delete_many()

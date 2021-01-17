@@ -33,6 +33,10 @@ class Client:
             self.__engine.stop()
             self.__engine = None
 
+    def is_connected(self) -> bool:
+        """Returns True if the client is connected to the query engine, False otherwise."""
+        return self.__engine is not None
+
     async def connect(self) -> None:
         """Connect to the Prisma query engine.
 
