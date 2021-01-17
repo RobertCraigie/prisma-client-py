@@ -1,6 +1,7 @@
 # pylint: disable=global-statement
 import asyncio
 import inspect
+from typing import Any
 from contextvars import ContextVar
 
 import pytest
@@ -49,9 +50,9 @@ def pytest_runtest_setup(item: pytest.Function) -> None:
         async_run(cleanup_client(client))
 
 
-def has_client_fixture(item: pytest.Function) -> bool:
+def has_client_fixture(item: Any) -> bool:
     # TODO: more strict check
-    return 'client' in item.fixturenames
+    return hasattr(item, 'fixturenames') and 'client' in item.fixturenames
 
 
 def marked_persist_data(item: pytest.Function) -> bool:
