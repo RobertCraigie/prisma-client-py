@@ -159,6 +159,19 @@ class {{ model.name }}Actions:
             return None
         return models.{{ model.name }}.parse_obj(result)
 
+    async def find_many(self, args: types.FindMany{{ model.name }}ArgsFrom{{ model.name }}) -> List[models.{{ model.name }}]:
+        builder = QueryBuilder(
+            engine=self.client._engine,
+            operation='query',
+            method='findMany',
+            model='{{ model.name }}',
+            include=args.get('include'),
+            arguments=args,
+            aliases=self._field_aliases,
+        )
+        resp = await builder.execute()
+        return [models.{{ model.name }}.parse_obj(r) for r in resp['data']['result']]
+
     async def update(self, data: types.{{ model.name }}UpdateInput, where: types.{{ model.name }}WhereUniqueInput, include: Optional[types.{{ model.name}}Include]=None) -> Optional[models.{{ model.name }}]:
         builder = QueryBuilder(
             engine=self.client._engine,

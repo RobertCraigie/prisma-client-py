@@ -6,6 +6,15 @@ from pydantic import BaseModel
 from .engine import QueryEngine
 
 
+GLOBAL_ALIASES = {
+    'startswith': 'startsWith',
+    'endswith': 'endsWith',
+    'not_in': 'notIn',
+    'NOT': 'not',
+    'IN': 'in',
+}
+
+
 class QueryBuilder(BaseModel):
     # prisma method
     method: str
@@ -179,7 +188,7 @@ class QueryBuilder(BaseModel):
 
         transformed = {}  # type: Dict[str, Any]
         for inner_key, value in data.items():
-            alias = mappings.get(inner_key, inner_key)
+            alias = mappings.get(inner_key, GLOBAL_ALIASES.get(inner_key, inner_key))
             if isinstance(value, dict):
                 transformed[alias] = self._transform_aliases(
                     value,

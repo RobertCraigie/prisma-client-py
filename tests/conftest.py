@@ -40,7 +40,7 @@ def pytest_sessionfinish(session: pytest.Session) -> None:
         LOGGING_CONTEXT_MANAGER.__exit__(None, None, None)  # pylint: disable=no-member
 
 
-def pytest_runtest_setup(item: pytest.Item) -> None:
+def pytest_runtest_setup(item: pytest.Function) -> None:
     if not has_client_fixture(item) or marked_persist_data(item):
         return
 
@@ -49,12 +49,12 @@ def pytest_runtest_setup(item: pytest.Item) -> None:
         async_run(cleanup_client(client))
 
 
-def has_client_fixture(item: pytest.Item) -> bool:
+def has_client_fixture(item: pytest.Function) -> bool:
     # TODO: more strict check
     return 'client' in item.fixturenames
 
 
-def marked_persist_data(item: pytest.Item) -> bool:
+def marked_persist_data(item: pytest.Function) -> bool:
     for marker in item.iter_markers():
         if marker.name == 'persist_data':
             return True
@@ -62,6 +62,6 @@ def marked_persist_data(item: pytest.Item) -> bool:
 
 
 async def cleanup_client(client: Client) -> None:
-    for name, item in inspect.getmembers(client):
+    for _, item in inspect.getmembers(client):
         if item.__class__.__name__.endswith('Actions'):
             await item.delete_many()

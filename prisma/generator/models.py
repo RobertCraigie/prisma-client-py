@@ -10,6 +10,17 @@ from .utils import pascalize, camelize, decamelize
 
 ATOMIC_FIELD_TYPES = ['Int', 'Float', 'Boolean']
 
+# TODO: Json probably isn't right
+TYPE_MAPPING = {
+    'String': 'str',
+    'DateTime': 'datetime.datetime',
+    'Boolean': 'bool',
+    'Int': 'int',
+    'Float': 'float',
+    'Json': 'dict',
+}
+FILTER_TYPES = ['String', 'Datetime', 'Boolean', 'Int', 'Float']
+
 data_ctx: ContextVar['Data'] = ContextVar('data_ctx')
 
 
@@ -121,17 +132,6 @@ class Model(BaseModel):
                 yield field
 
 
-# TODO: Json probably isn't right
-TYPE_MAPPING = {
-    'String': 'str',
-    'DateTime': 'datetime.datetime',
-    'Boolean': 'bool',
-    'Int': 'int',
-    'Float': 'float',
-    'Json': 'dict',
-}
-
-
 class Field(BaseModel):
     name: str
 
@@ -188,6 +188,13 @@ class Field(BaseModel):
             return f'\'{self.type}CreateManyNestedWithoutRelationsInput\''
 
         return f'\'{self.type}CreateNestedWithoutRelationsInput\''
+
+    @property
+    def where_input_type(self) -> str:
+        typ = self.type
+        if typ in FILTER_TYPES:
+            return f'Union[{self._actual_python_type}, \'types.{typ}Filter\']'
+        return self.python_type
 
     @property
     def relational_args_type(self) -> str:
