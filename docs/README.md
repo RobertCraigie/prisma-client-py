@@ -3,6 +3,7 @@
 Contents
 
 - [Quickstart](quickstart.md)
+- [Configuration](config.md)
 
 ---
 
