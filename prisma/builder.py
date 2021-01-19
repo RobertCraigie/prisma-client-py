@@ -61,9 +61,8 @@ class QueryBuilder(BaseModel):
         # fmt: off
         return (
             f'{self.operation} {{'
-              f'result: {self.method}{self.model if self.model else ""}('
-                f'{self.build_args()}'
-              f'){self.build_fields()}'
+              f'result: {self.method}{self.model if self.model else ""}{self.build_args()}'
+                f'{self.build_fields()}'
             '}'
         )
         # fmt: on
@@ -94,7 +93,7 @@ class QueryBuilder(BaseModel):
 
             strings.append(f'{arg}: {parsed}')
 
-        return ' '.join(strings)
+        return f'({" ".join(strings)})' if strings else ''
 
     def build_fields(
         self, include: Optional[Dict[str, Any]] = None, context: Optional[str] = None
@@ -125,12 +124,8 @@ class QueryBuilder(BaseModel):
             elif isinstance(value, dict):
                 args = value.copy()
                 nested_include = args.pop('include', {})
-                args_string = self.build_args(args, context=key)
-                if args_string:
-                    args_string = f'({args_string})'
-
                 fields.append(
-                    f'{key}{args_string} '
+                    f'{key}{self.build_args(args, context=key)} '
                     f'{self.build_fields(include=nested_include, context=key)}'
                 )
             else:
