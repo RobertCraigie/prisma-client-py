@@ -109,9 +109,9 @@ class QueryBuilder(BaseModel):
             include = self.include
 
         fields = (
-            self.root_selection
-            and self.root_selection.copy()
-            or list(aliases[context].values())
+            self.root_selection.copy()
+            if self.root_selection
+            else list(aliases[context].values())
         )
         if include is None:
             return f'{{ {" ".join(fields)} }}'
