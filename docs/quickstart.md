@@ -1,5 +1,7 @@
 # Quickstart
 
+> NOTE: Adapted from the Prisma Client Go [documentation](https://github.com/prisma/prisma-client-go/blob/master/docs/quickstart.md)
+
 In this page, you will learn how to send queries to an SQLite database using Prisma Client Python.
 
 ## Setup
@@ -86,10 +88,10 @@ from prisma.client import Client
 
 
 async def main() -> None:
-    db = Client()
-    await db.connect()
+    client = Client()
+    await client.connect()
 
-    post = await db.post.create(
+    post = await client.post.create(
         {
             'title': 'Hello from prisma!',
             'desc': 'Prisma is a database toolkit and makes databases easy.',
@@ -98,11 +100,11 @@ async def main() -> None:
     )
     print(f'created post: {post.json(indent=2, sort_keys=True)}')
 
-    found = await db.post.find_unique(where={'id': post.id})
+    found = await client.post.find_unique(where={'id': post.id})
     print(f'found post: {found.json(indent=2, sort_keys=True)}')
     print(f'post description is "{found.desc}"')
 
-    await db.disconnect()
+    await client.disconnect()
 
 
 if __name__ == '__main__':
@@ -165,7 +167,7 @@ Success: no issues found in 1 source file
 ```
 
 All prisma client methods are fully statically typed, this means that mypy will output an error
-if you try to access an unknown field <TODO etc>
+if you try to access an unknown field or any other invalid operation.
 
 For example, add the following line to the end of the main() function
 
@@ -184,4 +186,5 @@ Found 1 error in 1 file (checked 1 source file)
 
 ### Next steps
 
-<TODO: advanced tutorial>
+We just scratched the surface of what you can do. Read our [advanced tutorial](advanced.md) to learn about more
+complex queries and how you can query for relations.
