@@ -52,6 +52,9 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# cache
+.mypy_cache
+
 # Translations
 *.mo
 *.pot
@@ -121,4 +124,3 @@ tmp/
 prisma/types.py
 prisma/client.py
 prisma/models.py
-
