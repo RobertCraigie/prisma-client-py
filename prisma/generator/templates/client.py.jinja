@@ -177,15 +177,26 @@ class {{ model.name }}Actions:
 
     async def find_many(
         self,
-        args: types.FindMany{{ model.name }}Args
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.{{ model.name }}WhereInput] = None,
+        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
+        include: Optional[types.{{ model.name }}Include] = None,
+        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> List[models.{{ model.name }}]:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
             method='findMany',
             model='{{ model.name }}',
-            include=args.get('include'),
-            arguments=args,
+            include=include,
+            arguments={
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+            },
             aliases=self._field_aliases,
         )
         resp = await builder.execute()
@@ -193,15 +204,24 @@ class {{ model.name }}Actions:
 
     async def find_first(
         self,
-        args: types.FindFirst{{ model.name }}Args
+        skip: Optional[int] = None,
+        where: Optional[types.{{ model.name }}WhereInput] = None,
+        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
+        include: Optional[types.{{ model.name }}Include] = None,
+        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> Optional[models.{{ model.name }}]:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
             method='findFirst',
             model='{{ model.name }}',
-            include=args.get('include'),
-            arguments=args,
+            include=include,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+            },
             aliases=self._field_aliases,
         )
         resp = await builder.execute()
@@ -253,14 +273,25 @@ class {{ model.name }}Actions:
 
     async def count(
         self,
-        args: Optional[types.FindMany{{ model.name }}ArgsFrom{{ model.name }}] = None
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.{{ model.name }}WhereInput] = None,
+        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
+        include: Optional[types.{{ model.name }}Include] = None,
+        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> int:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
             method='aggregate',
             model='{{ model.name }}',
-            arguments=args or {},
+            arguments={
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+            },
             aliases=self._field_aliases,
             root_selection=['count'],
         )

@@ -81,6 +81,9 @@ class QueryBuilder(BaseModel):
         strings = []
         args = self._transform_aliases(arguments, context)
         for arg, value in args.items():
+            if value is None:
+                continue
+
             if isinstance(value, dict):
                 parsed = self.build_data(value)
             elif isinstance(value, (list, tuple)):
