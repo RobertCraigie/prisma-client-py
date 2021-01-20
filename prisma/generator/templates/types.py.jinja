@@ -213,6 +213,11 @@ class {{ model.name }}UpdateOneWithoutRelationsInput(TypedDict, total=False):
     # connectOrCreate: '{{ model.name }}CreateOrConnectWithoutRelationsInput'
 
 
+class {{ model.name }}UpsertInput(TypedDict, total=False):
+    create: '{{ model.name }}CreateInput'
+    update: '{{ model.name }}UpdateInput'
+
+
 # recursive {{ model.name }} types
 
 
@@ -280,4 +285,3 @@ class {{ model.name }}WhereInput{{ current }}(TypedDict, total=False):
 # we have to import ourselves as enum types are namespaced to types
 # e.g. types.RoleEnum
 from prisma import types, models
-

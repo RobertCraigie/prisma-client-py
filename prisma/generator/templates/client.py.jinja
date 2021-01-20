@@ -190,6 +190,24 @@ class {{ model.name }}Actions:
 
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
+    async def upsert(
+        self,
+        where: types.{{ model.name }}WhereUniqueInput,
+        data: types.{{ model.name }}UpsertInput,
+        include: Optional[types.{{ model.name}}Include] = None,
+    ) -> models.{{ model.name}}:
+        builder = QueryBuilder(
+            engine=self.client._engine,
+            operation='mutation',
+            method='upsertOne',
+            model='{{ model.name }}',
+            include=include,
+            arguments={'where': where, **data},
+            aliases=self._field_aliases,
+        )
+        resp = await builder.execute()
+        return models.{{ model.name }}.parse_obj(resp['data']['result'])
+
     async def count(self, args: Optional[types.FindMany{{ model.name }}ArgsFrom{{ model.name }}] = None) -> int:
         builder = QueryBuilder(
             engine=self.client._engine,
