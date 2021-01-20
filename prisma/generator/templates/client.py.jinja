@@ -159,7 +159,7 @@ class {{ model.name }}Actions:
             return None
         return models.{{ model.name }}.parse_obj(result)
 
-    async def find_many(self, args: types.FindMany{{ model.name }}ArgsFrom{{ model.name }}) -> List[models.{{ model.name }}]:
+    async def find_many(self, args: types.FindMany{{ model.name }}Args) -> List[models.{{ model.name }}]:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
@@ -171,6 +171,22 @@ class {{ model.name }}Actions:
         )
         resp = await builder.execute()
         return [models.{{ model.name }}.parse_obj(r) for r in resp['data']['result']]
+
+    async def find_first(self, args: types.FindFirst{{ model.name }}Args) -> Optional[models.{{ model.name }}]:
+        builder = QueryBuilder(
+            engine=self.client._engine,
+            operation='query',
+            method='findFirst',
+            model='{{ model.name }}',
+            include=args.get('include'),
+            arguments=args,
+            aliases=self._field_aliases,
+        )
+        resp = await builder.execute()
+        result = resp['data']['result']
+        if result is None:
+            return None
+        return models.{{ model.name }}.parse_obj(result)
 
     async def update(self, data: types.{{ model.name }}UpdateInput, where: types.{{ model.name }}WhereUniqueInput, include: Optional[types.{{ model.name}}Include]=None) -> Optional[models.{{ model.name }}]:
         builder = QueryBuilder(

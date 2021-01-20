@@ -273,6 +273,10 @@ class FindMany{{ related.name }}ArgsFrom{{ model.name}}{{ current }}(TypedDict, 
 {% endfor %}
 
 
+FindMany{{ model.name }}Args = FindMany{{ model.name }}ArgsFrom{{ model.name }}
+FindFirst{{ model.name }}Args = FindMany{{ model.name }}ArgsFrom{{ model.name}}
+
+
 # TODO: support relationships here
 {% call(current, next) recursive() %}
 class {{ model.name }}WhereInput{{ current }}(TypedDict, total=False):
