@@ -75,7 +75,9 @@ class Client:
 
     {% endfor %}
 
-    async def query_raw(self, query: str, *args: Any, model: Optional[Type[BaseModel]] = None) -> Union[List[BaseModel], Any]:
+    async def query_raw(
+        self, query: str, *args: Any, model: Optional[Type[BaseModel]] = None
+    ) -> Union[List[BaseModel], Any]:
         builder = QueryBuilder(
             engine=self._engine,
             operation='mutation',
@@ -102,7 +104,9 @@ class {{ model.name }}Actions:
         self.client = client
         self._field_aliases = self._gen_field_aliases(models.{{ model.name }}, defaultdict(dict), key='')
 
-    def _gen_field_aliases(self, model: Type[BaseModel], aliases: Dict[str, Dict[str, str]], *, key: str) -> Dict[str, Dict[str, str]]:
+    def _gen_field_aliases(
+        self, model: Type[BaseModel], aliases: Dict[str, Dict[str, str]], *, key: str
+    ) -> Dict[str, Dict[str, str]]:
         # TODO: these field aliases could clash, see GitHub #3
         for field, info in model.__fields__.items():
             if info.type_.__module__ == 'prisma.models':
@@ -112,7 +116,11 @@ class {{ model.name }}Actions:
                 aliases[key][field] = info.alias
         return aliases
 
-    async def create(self, data: types.{{ model.name }}CreateInput, include: Optional[types.{{ model.name}}Include]=None) -> models.{{ model.name }}:
+    async def create(
+        self,
+        data: types.{{ model.name }}CreateInput,
+        include: Optional[types.{{ model.name}}Include] = None
+    ) -> models.{{ model.name }}:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='mutation',
@@ -125,7 +133,11 @@ class {{ model.name }}Actions:
         resp = await builder.execute()
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
-    async def delete(self, where: types.{{ model.name }}WhereUniqueInput, include: Optional[types.{{ model.name}}Include]=None) -> Optional[models.{{ model.name }}]:
+    async def delete(
+        self,
+        where: types.{{ model.name }}WhereUniqueInput,
+        include: Optional[types.{{ model.name}}Include] = None
+    ) -> Optional[models.{{ model.name }}]:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='mutation',
@@ -143,7 +155,11 @@ class {{ model.name }}Actions:
 
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
-    async def find_unique(self, where: types.{{ model.name }}WhereUniqueInput, include: Optional[types.{{ model.name}}Include]=None) -> Optional[models.{{ model.name }}]:
+    async def find_unique(
+        self,
+        where: types.{{ model.name }}WhereUniqueInput,
+        include: Optional[types.{{ model.name}}Include] = None
+    ) -> Optional[models.{{ model.name }}]:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
@@ -159,7 +175,10 @@ class {{ model.name }}Actions:
             return None
         return models.{{ model.name }}.parse_obj(result)
 
-    async def find_many(self, args: types.FindMany{{ model.name }}Args) -> List[models.{{ model.name }}]:
+    async def find_many(
+        self,
+        args: types.FindMany{{ model.name }}Args
+    ) -> List[models.{{ model.name }}]:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
@@ -172,7 +191,10 @@ class {{ model.name }}Actions:
         resp = await builder.execute()
         return [models.{{ model.name }}.parse_obj(r) for r in resp['data']['result']]
 
-    async def find_first(self, args: types.FindFirst{{ model.name }}Args) -> Optional[models.{{ model.name }}]:
+    async def find_first(
+        self,
+        args: types.FindFirst{{ model.name }}Args
+    ) -> Optional[models.{{ model.name }}]:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
@@ -188,7 +210,12 @@ class {{ model.name }}Actions:
             return None
         return models.{{ model.name }}.parse_obj(result)
 
-    async def update(self, data: types.{{ model.name }}UpdateInput, where: types.{{ model.name }}WhereUniqueInput, include: Optional[types.{{ model.name}}Include]=None) -> Optional[models.{{ model.name }}]:
+    async def update(
+        self,
+        data: types.{{ model.name }}UpdateInput,
+        where: types.{{ model.name }}WhereUniqueInput,
+        include: Optional[types.{{ model.name}}Include] = None
+    ) -> Optional[models.{{ model.name }}]:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='mutation',
@@ -224,7 +251,10 @@ class {{ model.name }}Actions:
         resp = await builder.execute()
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
-    async def count(self, args: Optional[types.FindMany{{ model.name }}ArgsFrom{{ model.name }}] = None) -> int:
+    async def count(
+        self,
+        args: Optional[types.FindMany{{ model.name }}ArgsFrom{{ model.name }}] = None
+    ) -> int:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
@@ -237,7 +267,10 @@ class {{ model.name }}Actions:
         resp = await builder.execute()
         return int(resp['data']['result']['count'])
 
-    async def delete_many(self, where: Optional[types.{{ model.name }}WhereInput] = None) -> int:
+    async def delete_many(
+        self,
+        where: Optional[types.{{ model.name }}WhereInput] = None
+    ) -> int:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='mutation',
