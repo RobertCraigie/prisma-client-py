@@ -4,6 +4,8 @@ Contents
 
 - [Quickstart](quickstart.md)
 - [Configuration](config.md)
+- [Logging](logging.md)
+- [Mypy Plugin](mypy.md)
 
 ---
 
