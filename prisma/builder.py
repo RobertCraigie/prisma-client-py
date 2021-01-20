@@ -9,6 +9,7 @@ from .engine import QueryEngine
 GLOBAL_ALIASES = {
     'startswith': 'startsWith',
     'endswith': 'endsWith',
+    'order_by': 'orderBy',
     'not_in': 'notIn',
     'NOT': 'not',
     'IN': 'in',

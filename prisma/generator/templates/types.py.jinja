@@ -25,6 +25,10 @@ from enum import Enum
     {%- endfor %}
 {% endmacro %}
 
+
+SortOrder = Literal['asc', 'desc']
+
+
 {% call(current, next) recursive() %}
 class StringFilter{{ current }}(TypedDict, total=False):
     equals: str
@@ -218,6 +222,12 @@ class {{ model.name }}UpsertInput(TypedDict, total=False):
     update: '{{ model.name }}UpdateInput'
 
 
+class {{ model.name }}OrderByInput(TypedDict, total=False):
+    {% for field in model.scalar_fields %}
+    {{ field.name }}: Optional['SortOrder']
+    {% endfor %}
+
+
 # recursive {{ model.name }} types
 
 
@@ -252,6 +262,7 @@ class FindMany{{ related.name }}ArgsFrom{{ model.name}}{{ current }}(TypedDict, 
     """Arguments for {{model.name }}"""
     take: int
     skip: int
+    order_by: Union['{{ model.name }}OrderByInput', List['{{ model.name }}OrderByInput']]
     where: '{{ related.name }}WhereInput'
     cursor: '{{ related.name }}WhereUniqueInput'
     {%+ if next != '' -%}

@@ -38,3 +38,13 @@ async def test_find_many(client: Client) -> None:
     posts = await client.post.find_many({'where': {'title': 'Test post 2'}})
     assert len(posts) == 1
     assert posts[0].title == 'Test post 2'
+
+    posts = await client.post.find_many({'order_by': {'title': 'desc'}})
+    assert len(posts) == 2
+    assert posts[0].title == 'Test post 2'
+    assert posts[1].title == 'Test post 1'
+
+    posts = await client.post.find_many({'order_by': {'title': 'asc'}})
+    assert len(posts) == 2
+    assert posts[0].title == 'Test post 1'
+    assert posts[1].title == 'Test post 2'

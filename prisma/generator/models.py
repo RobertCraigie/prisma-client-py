@@ -126,6 +126,12 @@ class Model(BaseModel):
                 yield field
 
     @property
+    def scalar_fields(self) -> Iterator['Field']:
+        for field in self.all_fields:
+            if not field.relation_name:
+                yield field
+
+    @property
     def atomic_fields(self) -> Iterator['Field']:
         for field in self.all_fields:
             if field.type in ATOMIC_FIELD_TYPES:
