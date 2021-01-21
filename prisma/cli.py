@@ -19,7 +19,10 @@ def main() -> None:
     with setup_logging():
         args = sys.argv
         if len(args) > 1:
-            run_prisma_command(args[1:])
+            if args[1] == 'fetch':
+                run_fetch_command()
+            else:
+                run_prisma_command(args[1:])
         else:
             if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
                 log.warning(
@@ -32,6 +35,11 @@ def main() -> None:
                 sys.exit(1)
 
             invoke_prisma()
+
+
+def run_fetch_command() -> None:
+    directory = binaries.ensure_cached()
+    print(f'Downloaded engines to {directory}')
 
 
 def run_prisma_command(args: List[str]) -> None:
