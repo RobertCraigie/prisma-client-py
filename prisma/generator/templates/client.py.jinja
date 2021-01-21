@@ -271,6 +271,23 @@ class {{ model.name }}Actions:
         resp = await builder.execute()
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
+    async def update_many(
+        self,
+        data: types.{{ model.name }}UpdateManyMutationInput,
+        where: types.{{ model.name }}WhereInput,
+    ) -> int:
+        builder = QueryBuilder(
+            engine=self.client._engine,
+            operation='mutation',
+            method='updateMany',
+            model='{{ model.name }}',
+            arguments={'data': data, 'where': where,},
+            aliases=self._field_aliases,
+            root_selection=['count'],
+        )
+        resp = await builder.execute()
+        return int(resp['data']['result']['count'])
+
     async def count(
         self,
         take: Optional[int] = None,

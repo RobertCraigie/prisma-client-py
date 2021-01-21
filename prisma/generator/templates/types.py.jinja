@@ -178,6 +178,15 @@ class {{ model.name }}UpdateInput(TypedDict, total=False):
     {% endfor %}
 
 
+class {{ model.name }}UpdateManyMutationInput(TypedDict, total=False):
+    """Arguments for updating many records"""
+    {% for field in model.all_fields %}
+        {%- if not field.is_read_only -%}
+            {{'    '}}{{ field.python_case }}: Optional[{{ field.get_update_input_type(model.name) }}]
+        {% endif %}
+    {% endfor %}
+
+
 {% for field in model.atomic_fields %}
 class {{ model.name }}Update{{ field.name }}Input(TypedDict, total=False):
     set: {{ field.atomic_type }}

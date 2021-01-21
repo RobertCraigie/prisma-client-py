@@ -234,7 +234,7 @@ class Field(BaseModel):
 
     @property
     def atomic_type(self) -> str:
-        if self.type not in ATOMIC_FIELD_TYPES:
+        if not self.is_atomic:
             raise TypeError('Field is not atomic')
 
         if self.is_list:
@@ -243,8 +243,8 @@ class Field(BaseModel):
         return self.python_type
 
     def get_update_input_type(self, model: str) -> str:
-        if self.type in ATOMIC_FIELD_TYPES:
-            return f'\'{model}Update{self.name}Input\''
+        if self.is_atomic:
+            return f'Union[\'{model}Update{self.name}Input\', {self.atomic_type}]'
 
         if self.kind == 'object':
             if self.is_list:
