@@ -37,7 +37,9 @@ class QueryEngine:
 
     def stop(self) -> None:
         self.disconnect()
-        asyncio.get_event_loop().create_task(self.close_session())
+        loop = asyncio.get_event_loop()
+        if not loop.is_closed():
+            loop.create_task(self.close_session())
 
     def disconnect(self) -> None:
         log.debug('Disconnecting query engine...')
