@@ -61,7 +61,10 @@ def ensure() -> Path:
         log.debug('Query engine found in the global path')
 
     if not file:
-        raise errors.BinaryNotFoundError()
+        raise errors.BinaryNotFoundError(
+            f'Expected {local_path} or {global_path} but neither were found.\n'
+            'Try running python -m prisma fetch'
+        )
 
     start_version = time.monotonic()
     process = subprocess.run(

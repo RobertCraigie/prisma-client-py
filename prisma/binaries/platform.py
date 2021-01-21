@@ -10,7 +10,7 @@ def name() -> str:
 
 
 def check_for_extension(file: str) -> str:
-    if name() == 'windows':
+    if name() == 'windows' and '.exe' not in file:
         if '.gz' in file:
             return file.replace('.gz', '.exe.gz')
         return file + '.exe'

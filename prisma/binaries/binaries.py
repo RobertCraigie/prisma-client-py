@@ -36,8 +36,11 @@ ENGINES = [
     Engine(name='prisma-fmt', env='PRISMA_FMT_BINARY'),
 ]
 
-# local file path for the prisma CL
-PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}'
+# local file path for the prisma CLI
+if platform.name() == 'windows':
+    PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}.exe'
+else:
+    PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}'
 
 
 def ensure_cached() -> Path:
@@ -50,7 +53,9 @@ def ensure_cached() -> Path:
 
 
 def download_cli() -> None:
-    url = PRISMA_URL.format(version=PRISMA_VERSION, platform=platform.name())
+    url = platform.check_for_extension(PRISMA_URL).format(
+        version=PRISMA_VERSION, platform=platform.name()
+    )
     dest = GLOBAL_TEMP_DIR.joinpath(platform.check_for_extension(PRISMA_CLI_NAME))
 
     if dest.exists():
