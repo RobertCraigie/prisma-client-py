@@ -32,6 +32,9 @@ def run(params: Dict[str, Any]) -> None:
         output = template.render(**params)
 
         file = rootdir.joinpath(name.rstrip('.jinja'))
+        if not file.exists():
+            file.parent.mkdir(parents=True, exist_ok=True)
+
         file.write_text(output)
         log.debug('Wrote generated code to %s', file.absolute())
 

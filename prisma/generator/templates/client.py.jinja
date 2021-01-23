@@ -1,4 +1,5 @@
 {% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import maybe_async_def, maybe_await with context %}
 # -- template client.py.jinja --
 from collections import defaultdict
 from pydantic import BaseModel, validate_arguments
@@ -37,7 +38,7 @@ class Client:
         """Returns True if the client is connected to the query engine, False otherwise."""
         return self.__engine is not None
 
-    async def connect(self) -> None:
+    {{ maybe_async_def }}connect(self) -> None:
         """Connect to the Prisma query engine.
 
         It is required to call this before accessing data.
@@ -45,37 +46,37 @@ class Client:
         if self.__engine is None:
             self.__engine = QueryEngine(dml=SCHEMA)
 
-        await self.__engine.connect()
+        {{ maybe_await }}self.__engine.connect()
 
-    async def disconnect(self) -> None:
+    {{ maybe_async_def }}disconnect(self) -> None:
         """Disconnect the Prisma query engine."""
         if self.__engine is not None:
             self.__engine.disconnect()
-            await self.__engine.close_session()
+            {{ maybe_await }}self.__engine.close_session()
             self.__engine = None
 
-    async def execute_raw(self, query: str, *args: Any) -> int:
+    {{ maybe_async_def }}execute_raw(self, query: str, *args: Any) -> int:
         builder = QueryBuilder(
             engine=self._engine,
             operation='mutation',
             method='executeRaw',
             arguments={'query': query, 'parameters': args}
         )
-        resp = await builder.execute()
+        resp = {{ maybe_await }}builder.execute()
         return int(resp['data']['result'])
 
     @overload
-    async def query_raw(self, query: str, *args: Any) -> Any:
+    {{ maybe_async_def }}query_raw(self, query: str, *args: Any) -> Any:
         ...
 
     {% for model in dmmf.datamodel.models %}
     @overload
-    async def query_raw(self, query: str, *args: Any, model: Type['models.{{ model.name }}']) -> List['models.{{ model.name }}']:
+    {{ maybe_async_def }}query_raw(self, query: str, *args: Any, model: Type['models.{{ model.name }}']) -> List['models.{{ model.name }}']:
         ...
 
     {% endfor %}
 
-    async def query_raw(
+    {{ maybe_async_def }}query_raw(
         self, query: str, *args: Any, model: Optional[Type[BaseModel]] = None
     ) -> Union[List[BaseModel], Any]:
         builder = QueryBuilder(
@@ -84,7 +85,7 @@ class Client:
             method='queryRaw',
             arguments={'query': query, 'parameters': args}
         )
-        result = (await builder.execute())['data']['result']
+        result = ({{ maybe_await }}builder.execute())['data']['result']
         if model is not None:
             return [model.parse_obj(r) for r in result]
         return result
@@ -116,7 +117,7 @@ class {{ model.name }}Actions:
                 aliases[key][field] = info.alias
         return aliases
 
-    async def create(
+    {{ maybe_async_def }}create(
         self,
         data: types.{{ model.name }}CreateInput,
         include: Optional[types.{{ model.name}}Include] = None
@@ -130,10 +131,10 @@ class {{ model.name }}Actions:
             arguments={'data': data},
             aliases=self._field_aliases,
         )
-        resp = await builder.execute()
+        resp = {{ maybe_await }}builder.execute()
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
-    async def delete(
+    {{ maybe_async_def }}delete(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
         include: Optional[types.{{ model.name}}Include] = None
@@ -149,13 +150,13 @@ class {{ model.name }}Actions:
         )
 
         try:
-            resp = await builder.execute()
+            resp = {{ maybe_await }}builder.execute()
         except errors.RecordNotFoundError:
             return None
 
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
-    async def find_unique(
+    {{ maybe_async_def }}find_unique(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
         include: Optional[types.{{ model.name}}Include] = None
@@ -169,13 +170,13 @@ class {{ model.name }}Actions:
             arguments={'where': where},
             aliases=self._field_aliases,
         )
-        resp = await builder.execute()
+        resp = {{ maybe_await }}builder.execute()
         result = resp['data']['result']
         if result is None:
             return None
         return models.{{ model.name }}.parse_obj(result)
 
-    async def find_many(
+    {{ maybe_async_def }}find_many(
         self,
         take: Optional[int] = None,
         skip: Optional[int] = None,
@@ -199,10 +200,10 @@ class {{ model.name }}Actions:
             },
             aliases=self._field_aliases,
         )
-        resp = await builder.execute()
+        resp = {{ maybe_await }}builder.execute()
         return [models.{{ model.name }}.parse_obj(r) for r in resp['data']['result']]
 
-    async def find_first(
+    {{ maybe_async_def }}find_first(
         self,
         skip: Optional[int] = None,
         where: Optional[types.{{ model.name }}WhereInput] = None,
@@ -224,13 +225,13 @@ class {{ model.name }}Actions:
             },
             aliases=self._field_aliases,
         )
-        resp = await builder.execute()
+        resp = {{ maybe_await }}builder.execute()
         result = resp['data']['result']
         if result is None:
             return None
         return models.{{ model.name }}.parse_obj(result)
 
-    async def update(
+    {{ maybe_async_def }}update(
         self,
         data: types.{{ model.name }}UpdateInput,
         where: types.{{ model.name }}WhereUniqueInput,
@@ -247,13 +248,13 @@ class {{ model.name }}Actions:
         )
 
         try:
-            resp = await builder.execute()
+            resp = {{ maybe_await }}builder.execute()
         except errors.RecordNotFoundError:
             return None
 
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
-    async def upsert(
+    {{ maybe_async_def }}upsert(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
         data: types.{{ model.name }}UpsertInput,
@@ -268,10 +269,10 @@ class {{ model.name }}Actions:
             arguments={'where': where, **data},
             aliases=self._field_aliases,
         )
-        resp = await builder.execute()
+        resp = {{ maybe_await }}builder.execute()
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
-    async def update_many(
+    {{ maybe_async_def }}update_many(
         self,
         data: types.{{ model.name }}UpdateManyMutationInput,
         where: types.{{ model.name }}WhereInput,
@@ -285,10 +286,10 @@ class {{ model.name }}Actions:
             aliases=self._field_aliases,
             root_selection=['count'],
         )
-        resp = await builder.execute()
+        resp = {{ maybe_await }}builder.execute()
         return int(resp['data']['result']['count'])
 
-    async def count(
+    {{ maybe_async_def }}count(
         self,
         take: Optional[int] = None,
         skip: Optional[int] = None,
@@ -312,10 +313,10 @@ class {{ model.name }}Actions:
             aliases=self._field_aliases,
             root_selection=['count'],
         )
-        resp = await builder.execute()
+        resp = {{ maybe_await }}builder.execute()
         return int(resp['data']['result']['count'])
 
-    async def delete_many(
+    {{ maybe_async_def }}delete_many(
         self,
         where: Optional[types.{{ model.name }}WhereInput] = None
     ) -> int:
@@ -328,7 +329,7 @@ class {{ model.name }}Actions:
             aliases=self._field_aliases,
             root_selection=['count'],
         )
-        resp = await builder.execute()
+        resp = {{ maybe_await }}builder.execute()
         return int(resp['data']['result']['count'])
 
 {% endfor %}

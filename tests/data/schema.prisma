@@ -6,6 +6,7 @@ datasource db {
 generator db {
     provider = "python3 -m prisma"
     recursive_type_depth = 5
+    http = "aiohttp"
 }
 
 model Post {

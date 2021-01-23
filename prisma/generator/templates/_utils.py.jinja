@@ -1,0 +1,20 @@
+{% set is_async = generator.config.http == 'aiohttp' %}
+
+{% if is_async %}
+    {% set maybe_await = 'await ' %}
+    {% set maybe_async_def = 'async def ' %}
+{% else %}
+    {% set maybe_await = '' %}
+    {% set maybe_async_def = 'def ' %}
+{% endif %}
+
+
+{% macro sleep(duration) -%}
+{% if is_async %}
+await asyncio.sleep({{ duration }})
+{% else %}
+time.sleep({{ duration }})
+{% endif %}
+{%- endmacro %}
+
+{% debug %}

@@ -6,11 +6,10 @@ import subprocess
 from pathlib import Path
 from typing import NoReturn, Any
 
-import aiohttp
-
 from . import errors
 from .. import errors as prisma_errors
 
+from ..http import Response
 from ..utils import time_since
 from ..binaries import GLOBAL_TEMP_DIR, ENGINE_VERSION, platform
 
@@ -92,7 +91,7 @@ def get_open_port() -> int:
     return int(port)
 
 
-def handle_response_errors(resp: aiohttp.ClientResponse, data: Any) -> NoReturn:
+def handle_response_errors(resp: Response, data: Any) -> NoReturn:
     for error in data:
         try:
             code = error.get('user_facing_error', {}).get('error_code')

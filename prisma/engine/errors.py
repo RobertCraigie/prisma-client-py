@@ -1,4 +1,4 @@
-import aiohttp
+from ..http import Response
 from ..errors import PrismaError
 
 
@@ -42,7 +42,7 @@ class EngineConnectionError(EngineError):
 
 
 class EngineRequestError(EngineError):
-    def __init__(self, response: aiohttp.ClientResponse, body: str):
+    def __init__(self, response: Response, body: str):
         self.response = response
 
         # TODO: better error message
@@ -50,7 +50,7 @@ class EngineRequestError(EngineError):
 
 
 class UnprocessableEntityError(EngineRequestError):
-    def __init__(self, response: aiohttp.ClientResponse):
+    def __init__(self, response: Response):
         super().__init__(
             response,
             (

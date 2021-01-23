@@ -31,7 +31,7 @@ In this page, you will learn how to send queries to an SQLite database using Pri
 3) Install Prisma Client Python
 
     ```shell script
-    pip install git+https://github.com/RobertCraigie/prisma-client-py
+    pip install git+https://github.com/RobertCraigie/prisma-client-py#egg=prisma[aiohttp]
     ```
 
 4) Prepare your database schema in a `schema.prisma` file.

@@ -40,6 +40,10 @@ setup(
     package_data={'': ['generator/templates/*.py.jinja', 'py.typed']},
     include_package_data=True,
     zip_safe=False,
+    extras_require={
+        'aiohttp': ['aiohttp>=3.6.0,<=3.7.3'],
+        'requests': ['requests==2.25.1'],
+    },
     entry_points={
         'console_scripts': [
             'prisma=prisma.cli:main',

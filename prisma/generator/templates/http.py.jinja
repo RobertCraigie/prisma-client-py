@@ -1,0 +1,8 @@
+{% include '_header.py.jinja' %}
+# -- template http.py.jinja --
+{% if generator.config.http == 'aiohttp' %}
+from ._aiohttp_http import *
+{% else %}
+from ._requests_http import *
+{% endif %}
+

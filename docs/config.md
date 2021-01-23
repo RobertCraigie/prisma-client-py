@@ -13,6 +13,27 @@ generator db {
 ```
 See the [official docs](https://www.prisma.io/docs/concepts/components/prisma-schema/generators) for options that are not specific to Prisma Client Python.
 
+## HTTP Libraries
+
+See [install](install.md) for more information.
+
+The HTTP library that will be used by Prisma Client Python can be configured using the `http` option.
+
+Valid values are:
+
+* aiohttp
+* requests
+
+If aiohttp is used then the generated client will be asynchronous, e.g.
+```py
+user = await client.user.find_unique(where={'id': 'user_id'})
+```
+
+And if requests is used then the generated client will be synchronous, e.g.
+```py
+user = client.user.find_unique(where={'id': 'user_id'})
+```
+
 ## Model Field Transformation
 
 > [@map](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#map) should be used to transform individual field names

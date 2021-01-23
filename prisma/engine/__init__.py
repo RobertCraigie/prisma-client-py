@@ -1,2 +1,7 @@
 from .errors import *
-from .query import *
+
+try:
+    from .query import *
+except ImportError:
+    # code has not been generated yet
+    pass

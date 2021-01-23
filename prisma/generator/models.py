@@ -1,7 +1,7 @@
 import enum
 from contextvars import ContextVar
 from typing import Any, Optional, List, Union, Iterator
-from pydantic import BaseModel, Extra, Field as FieldInfo, conint
+from pydantic import BaseModel, Extra, Field as FieldInfo, conint, validator
 
 from .utils import pascalize, camelize, decamelize
 
@@ -33,6 +33,11 @@ class TransformChoices(str, enum.Enum):
     snake_case = 'snake_case'
     camel_case = 'camelCase'
     pascal_case = 'PascalCase'
+
+
+class HttpChoices(str, enum.Enum):
+    aiohttp = 'aiohttp'
+    requests = 'requests'
 
 
 class Data(BaseModel):
@@ -74,11 +79,34 @@ class Config(BaseModel):
         alias='recursiveTypeDepth', default=5
     )
     transform_fields: Optional[TransformChoices] = FieldInfo(alias='transformFields')
+    http: HttpChoices = HttpChoices.aiohttp
 
     class Config:
         extra = Extra.forbid
         use_enum_values = True
         allow_population_by_field_name = True
+
+    @validator('http', always=True)
+    def http_matches_installed_library(  # pylint: disable=no-self-argument, no-self-use
+        cls, value: HttpChoices
+    ) -> str:
+        # pylint: disable=unused-import, import-outside-toplevel
+        try:
+            if value == 'aiohttp':
+                import aiohttp
+            elif value == 'requests':
+                import requests
+            else:  # pragma: no cover
+                raise RuntimeError(f'Unhandled validator check for {value}')
+        except ModuleNotFoundError as exc:
+            # pylint: disable=line-too-long
+            raise ValueError(
+                f'Missing library for "{value}"\n  '
+                'Did you specify the correct target library in your `schema.prisma` file?\n  '
+                'See https://github.com/RobertCraigie/prisma-client-py/blob/master/docs/config.md#http-libraries'
+            ) from exc
+
+        return value
 
 
 class DMMF(BaseModel):
