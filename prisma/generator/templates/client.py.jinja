@@ -4,9 +4,9 @@
 from collections import defaultdict
 from pydantic import BaseModel, validate_arguments
 
-from prisma import types, models, errors
-from prisma.engine import QueryEngine
-from prisma.builder import QueryBuilder
+from . import types, models, errors
+from .engine import QueryEngine
+from .builder import QueryBuilder
 
 
 __all__ = (
@@ -110,7 +110,7 @@ class {{ model.name }}Actions:
     ) -> Dict[str, Dict[str, str]]:
         # TODO: these field aliases could clash, see GitHub #3
         for field, info in model.__fields__.items():
-            if info.type_.__module__ == 'prisma.models':
+            if info.type_.__module__ == f'{__package__}.models':
                 if field not in aliases:
                     self._gen_field_aliases(info.type_, aliases, key=field)
             else:
