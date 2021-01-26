@@ -3,6 +3,7 @@ from typing import Any, Optional
 import aiohttp
 
 from ._types import Method
+from .errors import HTTPClientClosedError
 from .http_abstract import AbstractResponse, AbstractHTTP
 
 
@@ -27,9 +28,10 @@ class HTTP(AbstractHTTP):
                     fd.write(await resp.read())
 
     async def request(self, method: Method, url: str, **kwargs: Any) -> 'Response':
-        if self.session is None:
-            self.session = aiohttp.ClientSession()
+        if self.closed:
+            raise HTTPClientClosedError()
 
+        assert self.session is not None
         return Response(await self.session.request(method, url, **kwargs))
 
     def open(self) -> None:

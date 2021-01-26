@@ -9,6 +9,8 @@ __all__ = (
     'RawQueryError',
     'TableNotFoundError',
     'RecordNotFoundError',
+    'HTTPClientClosedError',
+    'ClientNotConnectedError',
 )
 
 
@@ -22,6 +24,11 @@ class ClientNotConnectedError(PrismaError):
             'Client is not connected to the query engine, '
             'you must `await client.connect()` before attempting to query data.'
         )
+
+
+class HTTPClientClosedError(PrismaError):
+    def __init__(self) -> None:
+        super().__init__('Cannot make a request from a closed client.')
 
 
 class DataError(PrismaError):
