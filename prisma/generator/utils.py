@@ -1,5 +1,6 @@
 # All string functions are heavily inspired by https://github.com/nficano/humps
 import re
+from pathlib import Path
 
 
 ACRONYM_RE = re.compile(r"([A-Z]+)(?=[A-Z][a-z])")
@@ -43,3 +44,7 @@ def decamelize(string: str) -> str:
 def _fix_abbrevations(string: str) -> str:
     """Ensure "APIReponse" returns "api_reponse"."""
     return ACRONYM_RE.sub(lambda m: m.group(0).title(), string)
+
+
+def is_same_path(path: Path, other: Path) -> bool:
+    return str(path.resolve()).strip() == str(other.resolve()).strip()

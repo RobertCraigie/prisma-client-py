@@ -1,9 +1,12 @@
 import logging
 from pathlib import Path
 from typing import Dict, Any
+from distutils.dir_util import copy_tree
 
 from jinja2 import Environment, PackageLoader
+
 from .models import Data
+from .utils import is_same_path
 
 
 __all__ = ('run', 'BASE_PACKAGE_DIR')
@@ -17,6 +20,9 @@ def run(params: Dict[str, Any]) -> None:
     rootdir = Path(params['generator'].output)
     if not rootdir.exists():
         rootdir.mkdir(parents=True, exist_ok=True)
+
+    if not is_same_path(BASE_PACKAGE_DIR, rootdir):
+        copy_tree(str(BASE_PACKAGE_DIR), str(rootdir))
 
     env = Environment(
         loader=PackageLoader('prisma.generator', 'templates'),
