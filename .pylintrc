@@ -16,6 +16,11 @@ extension-pkg-whitelist =
   pydantic,
 
 
+[TYPECHECK]
+generated-members =
+  py.path
+
+
 [BASIC]
 good-names =
   i,

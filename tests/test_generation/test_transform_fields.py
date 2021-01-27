@@ -1,9 +1,8 @@
-import os
-import sys
 import datetime
-import subprocess
 
 import pytest
+
+from .utils import Tmpdir
 
 
 SCHEMA = '''
@@ -29,17 +28,11 @@ model Post {{
 '''
 
 
-@pytest.fixture
-def tmpdir(tmpdir):
-    generate = tmpdir.generate
-    tmpdir.generate = lambda *a: generate(SCHEMA, *a)
-    return tmpdir
+def test_transform_fields_none(tmpdir: Tmpdir) -> None:
+    # pylint: disable=import-outside-toplevel, no-member
+    tmpdir.generate(SCHEMA, 'transform_fields = "none"')
 
-
-def test_transform_fields_none(tmpdir):
-    tmpdir.generate('transform_fields = "none"')
-
-    from models import Post
+    from models import Post  # type: ignore[import]
 
     post = Post(
         id='1',
@@ -55,15 +48,16 @@ def test_transform_fields_none(tmpdir):
     assert post.Published is False
 
     with pytest.raises(AttributeError):
-        post.title
+        assert post.title
 
 
 @pytest.mark.parametrize('explicit', [True, False])
-def test_transform_fields_snake_case(tmpdir, explicit):
+def test_transform_fields_snake_case(tmpdir: Tmpdir, explicit: bool) -> None:
+    # pylint: disable=import-outside-toplevel
     if explicit:
-        tmpdir.generate('transform_fields = "snake_case"')
+        tmpdir.generate(SCHEMA, 'transform_fields = "snake_case"')
     else:
-        tmpdir.generate('')
+        tmpdir.generate(SCHEMA, '')
 
     from models import Post
 
@@ -81,11 +75,12 @@ def test_transform_fields_snake_case(tmpdir, explicit):
     assert post.published is False
 
     with pytest.raises(AttributeError):
-        post.Title
+        assert post.Title  # pylint: disable=no-member
 
 
-def test_transform_fields_camel_case(tmpdir):
-    tmpdir.generate('transform_fields = "camelCase"')
+def test_transform_fields_camel_case(tmpdir: Tmpdir) -> None:
+    # pylint: disable=import-outside-toplevel, no-member
+    tmpdir.generate(SCHEMA, 'transform_fields = "camelCase"')
 
     from models import Post
 
@@ -103,11 +98,12 @@ def test_transform_fields_camel_case(tmpdir):
     assert post.published is False
 
     with pytest.raises(AttributeError):
-        post.Published
+        assert post.Published
 
 
-def test_transform_fields_pascal_case(tmpdir):
-    tmpdir.generate('transform_fields = "PascalCase"')
+def test_transform_fields_pascal_case(tmpdir: Tmpdir) -> None:
+    # pylint: disable=import-outside-toplevel, no-member
+    tmpdir.generate(SCHEMA, 'transform_fields = "PascalCase"')
 
     from models import Post
 
@@ -125,4 +121,4 @@ def test_transform_fields_pascal_case(tmpdir):
     assert post.Published is False
 
     with pytest.raises(AttributeError):
-        post.created_at
+        assert post.created_at
