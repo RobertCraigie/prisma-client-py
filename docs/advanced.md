@@ -70,7 +70,7 @@ python -m prisma migrate up --experimental
 python -m prisma generate
 ```
 
-In order to create comments, we first need to create a post, and then connect that post when creating a comment.
+In order to create comments, we can either create a post, and then connect that post when creating a comment or create a post while creating the comment.
 
 ```py
 post = await client.post.create({'title': 'My new post', 'published': True})
@@ -82,6 +82,24 @@ print(f'first comment: {first.json(indent=2)}\n')
 second = await client.comment.create({'content': 'Second comment', 'post': {'connect': {'id': post.id}}})
 print(f'second comment: {second.json(indent=2)}\n')
 ```
+
+<details>
+    <summary>Expand to show alternative method</summary>
+
+   ```py
+   first = await client.comment.create(
+        {
+            'content': 'First comment',
+            'post': {'create': {'title': 'My new post', 'published': True}},
+        },
+        include={'post': True}
+   )
+   second = await client.comment.create(
+        {'content': 'Second comment', 'post': {'connect': {'id': first.post.id}}}
+   )
+   ```
+
+</details>
 
 Now that a post and comments have been created, you can query for them as follows:
 
@@ -100,10 +118,9 @@ few of their comments in just a few lines and with full type-safety:
 
 ```py
 # fetch a post and 3 of it's comments
-post = await client.post.find_unique(where={'post_id': post.id}, include={'comments': {'take': 3}})
+post = await client.post.find_unique(where={'id': post.id}, include={'comments': {'take': 3}})
 ```
 
 ## API reference
 
 To explore all query capabilities, check out the [API reference](reference).
-
