@@ -66,7 +66,7 @@ class QueryEngine:
         if self.session and not self.session.closed:
             {{ maybe_await }}self.session.close()
 
-    {{ maybe_async_def }}connect(self) -> None:
+    {{ maybe_async_def }}connect(self, timeout: int = 10) -> None:
         log.debug('Connecting to query engine')
         if self.process is not None:
             raise errors.AlreadyConnectedError('Already connected to the query engine')
@@ -75,14 +75,14 @@ class QueryEngine:
         self.file = file = utils.ensure()
 
         try:
-            {{ maybe_await }}self.spawn(file)
+            {{ maybe_await }}self.spawn(file, timeout=timeout)
         except Exception:
             self.disconnect()
             raise
 
         log.debug('Connecting to query engine took %s', time_since(start))
 
-    {{ maybe_async_def }}spawn(self, file: Path) -> None:
+    {{ maybe_async_def }}spawn(self, file: Path, timeout: int = 10) -> None:
         port = utils.get_open_port()
         log.debug('Running query engine on port %i', port)
 
@@ -107,7 +107,7 @@ class QueryEngine:
         )
 
         last_exc = None
-        for _ in range(100):
+        for _ in range(int(timeout / 0.1)):
             try:
                 data = {{ maybe_await }}self.request('GET', '/status')
             except Exception as exc:  # pylint: disable=broad-except

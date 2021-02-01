@@ -38,7 +38,7 @@ class Client:
         """Returns True if the client is connected to the query engine, False otherwise."""
         return self.__engine is not None
 
-    {{ maybe_async_def }}connect(self) -> None:
+    {{ maybe_async_def }}connect(self, timeout: int = 10) -> None:
         """Connect to the Prisma query engine.
 
         It is required to call this before accessing data.
@@ -46,7 +46,7 @@ class Client:
         if self.__engine is None:
             self.__engine = QueryEngine(dml=SCHEMA)
 
-        {{ maybe_await }}self.__engine.connect()
+        {{ maybe_await }}self.__engine.connect(timeout=timeout)
 
     {{ maybe_async_def }}disconnect(self) -> None:
         """Disconnect the Prisma query engine."""
