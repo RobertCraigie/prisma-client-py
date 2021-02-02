@@ -1,6 +1,6 @@
 import enum
 from contextvars import ContextVar
-from typing import Any, Optional, List, Union, Iterator
+from typing import Any, Optional, List, Union, Iterator, TYPE_CHECKING
 from pydantic import BaseModel, Extra, Field as FieldInfo, conint, validator
 
 from .utils import pascalize, camelize, decamelize
@@ -72,12 +72,13 @@ class Generator(BaseModel):
 class Config(BaseModel):
     """Custom generator config options."""
 
-    # have to ignore the type as mypy does not like the type
-    # annotation, ignoring has no negative side effects as
-    # this field is not accessed in any python code
-    recursive_type_depth: conint(ge=2) = FieldInfo(  # type: ignore
-        alias='recursiveTypeDepth', default=5
-    )
+    if TYPE_CHECKING:
+        recursive_type_depth: int
+    else:
+        recursive_type_depth: conint(ge=2) = FieldInfo(
+            alias='recursiveTypeDepth', default=5
+        )
+
     transform_fields: Optional[TransformChoices] = FieldInfo(alias='transformFields')
     http: HttpChoices = HttpChoices.aiohttp
 
