@@ -37,7 +37,7 @@ setup(
     packages=find_packages(include=['prisma', 'prisma.*']),
     project_urls={},
     python_requires='>=3',
-    package_data={'': ['generator/templates/*.py.jinja', 'py.typed']},
+    package_data={'': ['generator/templates/**/*.py.jinja', 'py.typed']},
     include_package_data=True,
     zip_safe=False,
     extras_require={
