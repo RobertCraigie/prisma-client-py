@@ -4,8 +4,14 @@
 # fmt: off
 
 # global imports for type checking
+import sys
 import datetime
-from typing_extensions import TypedDict, Literal
 from typing import TYPE_CHECKING, Optional, Any, Dict, overload, Union, List, Type
+
+
+if sys.version_info >= (3, 8):
+    from typing import TypedDict, Literal
+else:
+    from typing_extensions import TypedDict, Literal
 
 

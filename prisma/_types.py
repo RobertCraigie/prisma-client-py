@@ -1,5 +1,14 @@
+import sys
 from typing import Callable, Coroutine, Any
-from typing_extensions import Literal
+
+
+if sys.version_info >= (3, 8):
+    from typing import (  # pylint: disable=no-name-in-module, unused-import
+        TypedDict,
+        Literal,
+    )
+else:
+    from typing_extensions import TypedDict, Literal
 
 
 Method = Literal['GET', 'POST']
