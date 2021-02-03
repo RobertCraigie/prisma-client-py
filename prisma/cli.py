@@ -99,7 +99,7 @@ def invoke_prisma() -> None:
     while True:
         line = jsonrpc.readline()
         if line is None:
-            log.debug('Prisma invokation ending')
+            log.debug('Prisma invocation ending')
             break
 
         request = jsonrpc.parse(line)
