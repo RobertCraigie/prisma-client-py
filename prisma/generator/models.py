@@ -1,4 +1,7 @@
 import enum
+import importlib
+from pathlib import Path
+from importlib import machinery
 from contextvars import ContextVar
 from typing import Any, Optional, List, Union, Iterator, TYPE_CHECKING
 from pydantic import BaseModel, Extra, Field as FieldInfo, conint, validator
@@ -38,6 +41,54 @@ class TransformChoices(str, enum.Enum):
 class HttpChoices(str, enum.Enum):
     aiohttp = 'aiohttp'
     requests = 'requests'
+
+
+class Module(BaseModel):
+    spec: machinery.ModuleSpec
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    @validator('spec', pre=True, allow_reuse=True)
+    @classmethod
+    def spec_validator(cls, value: Optional[str]) -> machinery.ModuleSpec:
+        spec: Optional[machinery.ModuleSpec] = None
+
+        if value is None:
+            value = '.prisma/partials.py'
+
+        path = Path.cwd().joinpath(value)
+        if path.exists():
+            spec = importlib.util.spec_from_file_location(
+                'prisma.partial_type_generator', value
+            )
+        elif value.startswith('.'):
+            raise ValueError(
+                f'No file found at {value} and relative imports are not allowed.'
+            )
+        else:
+            try:
+                spec = importlib.util.find_spec(value)
+            except ModuleNotFoundError:
+                spec = None
+
+        if spec is None:
+            raise ValueError(f'Could not find a python file or module at {value}')
+
+        return spec
+
+    def run(self) -> None:
+        importlib.invalidate_caches()
+        mod = importlib.util.module_from_spec(self.spec)
+        assert self.spec.loader is not None, 'Expected an import loader to exist.'
+
+        # TODO: why does mypy think loader has no exec_module attribute?
+        # it was added in python3.4
+        try:
+            self.spec.loader.exec_module(mod)  # type: ignore[attr-defined]
+        except:
+            print('An exception ocurred while running the partial type generator')
+            raise
 
 
 class Data(BaseModel):
@@ -81,16 +132,16 @@ class Config(BaseModel):
 
     transform_fields: Optional[TransformChoices] = FieldInfo(alias='transformFields')
     http: HttpChoices = HttpChoices.aiohttp
+    partial_type_generator: Optional[Module] = FieldInfo(alias='partialTypeGenerator')
 
     class Config:
         extra = Extra.forbid
         use_enum_values = True
         allow_population_by_field_name = True
 
-    @validator('http', always=True)
-    def http_matches_installed_library(  # pylint: disable=no-self-argument, no-self-use
-        cls, value: HttpChoices
-    ) -> str:
+    @validator('http', always=True, allow_reuse=True)
+    @classmethod
+    def http_matches_installed_library(cls, value: HttpChoices) -> str:
         # pylint: disable=unused-import, import-outside-toplevel
         try:
             if value == 'aiohttp':
@@ -108,6 +159,17 @@ class Config(BaseModel):
             ) from exc
 
         return value
+
+    @validator('partial_type_generator', pre=True, always=True, allow_reuse=True)
+    @classmethod
+    def partial_type_generator_converter(cls, value: Optional[str]) -> Optional[Module]:
+        try:
+            return Module(spec=value)
+        except ValueError:
+            if value is None:
+                # no config value passed and the default location was not found
+                return None
+            raise
 
 
 class DMMF(BaseModel):
@@ -199,6 +261,18 @@ class Field(BaseModel):
         return type_
 
     @property
+    def python_type_as_string(self) -> str:
+        type_ = self._actual_python_type
+        if self.is_list:
+            type_ = type_.replace('\'', '\\\'')
+            return f'\'List[{type_}]\''
+
+        if not type_.startswith('\''):
+            type_ = f'\'{type_}\''
+
+        return type_
+
+    @property
     def _actual_python_type(self) -> str:
         if self.kind == 'enum':
             return f'\'types.{self.type}Enum\''
@@ -256,6 +330,10 @@ class Field(BaseModel):
         return (
             self.is_required and not self.is_updated_at and not self.has_default_value
         )
+
+    @property
+    def is_optional(self) -> bool:
+        return not (self.is_required and not self.relation_name)
 
     @property
     def is_atomic(self) -> bool:

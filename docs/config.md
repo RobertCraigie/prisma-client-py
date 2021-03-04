@@ -13,6 +13,13 @@ generator db {
 ```
 See the [official docs](https://www.prisma.io/docs/concepts/components/prisma-schema/generators) for options that are not specific to Prisma Client Python.
 
+# Contents
+
+* [HTTP Libraries](#http-libraries)
+* [Partial Type Generator](#partial-type-generator)
+* [Model Field Transformation](#model-field-transformation)
+* [Recursive Type Depth](#recursive-type-depth)
+
 ## HTTP Libraries
 
 See [install](install.md) for more information.
@@ -32,6 +39,36 @@ user = await client.user.find_unique(where={'id': 'user_id'})
 And if requests is used then the generated client will be synchronous, e.g.
 ```py
 user = client.user.find_unique(where={'id': 'user_id'})
+```
+
+## Partial Type Generator
+
+Custom partial models can be generated along with the prisma client, see [partial types](partial-types.md) for more information.
+
+The script that generates the partial types can be configured using the `partial_type_generator` option (also aliased to `partialTypeGenerator`).
+Defaults to `.prisma/partials.py`
+
+You can pass either an absolute module import or a path.
+> ⚠️ Passing a module will also import any parent packages, e.g. given `foo.bar.partials`, `foo` and `bar` will also be imported
+
+### Examples
+
+```
+...
+generator db {
+    provider = "python -m prisma"
+    partial_type_generator = "scripts/partial_types.py"
+}
+...
+```
+
+```
+...
+generator db {
+    provider = "python -m prisma"
+    partial_type_generator = "scripts.partial_types"
+}
+...
 ```
 
 ## Model Field Transformation

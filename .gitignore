@@ -125,4 +125,5 @@ prisma/types.py
 prisma/client.py
 prisma/models.py
 prisma/builder.py
+prisma/partials.py
 prisma/engine/query.py

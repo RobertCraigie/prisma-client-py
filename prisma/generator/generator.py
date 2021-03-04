@@ -1,18 +1,24 @@
 import logging
 from pathlib import Path
 from typing import Dict, Any
+from contextvars import ContextVar
 from distutils.dir_util import copy_tree
 
 from jinja2 import Environment, PackageLoader
 
 from .models import Data
 from .utils import is_same_path
+from .types import PartialModelFields
 
 
-__all__ = ('run', 'BASE_PACKAGE_DIR')
+__all__ = ('run', 'BASE_PACKAGE_DIR', 'partial_models_ctx')
 
 log = logging.getLogger(__name__)
 BASE_PACKAGE_DIR = Path(__file__).parent.parent
+DEFERRED_TEMPLATES = {'partials.py.jinja'}
+partial_models_ctx: ContextVar[Dict[str, PartialModelFields]] = ContextVar(
+    'partial_models_ctx', default={}
+)
 
 
 def run(params: Dict[str, Any]) -> None:
@@ -31,17 +37,36 @@ def run(params: Dict[str, Any]) -> None:
     )
 
     for name in env.list_templates():
-        if not name.endswith('.py.jinja') or name.startswith('_'):
+        if (
+            not name.endswith('.py.jinja')
+            or name.startswith('_')
+            or name in DEFERRED_TEMPLATES
+        ):
             continue
 
-        template = env.get_template(name)
-        output = template.render(**params)
+        render_template(env, rootdir, name, params)
 
-        file = rootdir.joinpath(name.rstrip('.jinja'))
-        if not file.exists():
-            file.parent.mkdir(parents=True, exist_ok=True)
+    config = params['generator'].config
+    if config.partial_type_generator:
+        log.debug('Generating partial types')
+        config.partial_type_generator.run()
 
-        file.write_text(output)
-        log.debug('Wrote generated code to %s', file.absolute())
+    params['partial_models'] = partial_models_ctx.get()
+    for name in DEFERRED_TEMPLATES:
+        render_template(env, rootdir, name, params)
 
     log.debug('Finished generating the prisma python client')
+
+
+def render_template(
+    env: Environment, rootdir: Path, name: str, params: Dict[str, Any]
+) -> None:
+    template = env.get_template(name)
+    output = template.render(**params)
+
+    file = rootdir.joinpath(name.rstrip('.jinja'))
+    if not file.parent.exists():
+        file.parent.mkdir(parents=True, exist_ok=True)
+
+    file.write_text(output)
+    log.debug('Wrote generated code to %s', file.absolute())

@@ -1,7 +1,19 @@
 {% include '_header.py.jinja' %}
 # -- template models.py.jinja --
-from pydantic import BaseModel, Field
+import os
+from pydantic import BaseConfig, BaseModel, Field
+
 from . import types
+from .generator import partial_models_ctx, PartialModelField
+
+
+class Config(BaseConfig):
+    use_enum_values = True
+    allow_population_by_field_name = True
+
+
+_created_partial_types = set()
+
 
 {% for model in dmmf.datamodel.models %}
 class {{ model.name }}(BaseModel):
@@ -14,10 +26,87 @@ class {{ model.name }}(BaseModel):
             {% endif %}
     {% endfor %}
 
-    class Config:
-        use_enum_values = True
-        allow_population_by_field_name = True
+    Config = Config
 
+    @staticmethod
+    def create_partial(
+        name: str,
+        include: Optional[Iterable['types.{{ model.name }}Keys']] = None,
+        exclude: Optional[Iterable['types.{{ model.name }}Keys']] = None,
+        required: Optional[Iterable['types.{{ model.name }}Keys']] = None,
+        optional: Optional[Iterable['types.{{ model.name }}Keys']] = None,
+    ) -> None:
+        if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
+            raise RuntimeError(
+                'Attempted to create a partial type outside of client generation.'
+            )
+
+        if name in _created_partial_types:
+            raise TypeError(f'Partial type "{name}" has already been created.')
+
+        if include is not None and exclude is not None:
+            raise TypeError(f'Exclude and include are mutually exclusive.')
+
+        if required and optional:
+            shared = set(required) & set(optional)
+            if shared:
+                raise TypeError(f'Cannot make the same field(s) required and optional {shared}')
+
+        fields: Dict['types.{{ model.name }}Keys', PartialModelField] = {}
+
+        try:
+            if include:
+                for field in include:
+                    fields[field] = _{{ model.name }}_fields[field]
+            elif exclude:
+                for field in exclude:
+                    if field not in _{{ model.name }}_fields:
+                        raise KeyError(field)
+
+                fields = {
+                    key: data
+                    for key, data in _{{ model.name }}_fields.items()
+                    if key not in exclude
+                }
+            else:
+                fields = _{{ model.name }}_fields.copy()
+
+            if required:
+                for field in required:
+                    fields[field] = fields[field].copy()
+                    fields[field]['optional'] = False
+
+            if optional:
+                for field in optional:
+                    fields[field] = fields[field].copy()
+                    fields[field]['optional'] = True
+        except KeyError as exc:
+            raise TypeError(
+                f'{exc.args[0]} is not a valid {{ model.name }} field.'
+            ) from None
+
+        models = partial_models_ctx.get()
+
+        # mypy does not like this as we are assigning a
+        # Dict[Literal] to a Dict[str] but this is fine
+        models[name] = fields  # type: ignore[assignment]
+        partial_models_ctx.set(models)
+        _created_partial_types.add(name)
+
+
+{% endfor %}
+
+{% for model in dmmf.datamodel.models %}
+_{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] = {
+    {% for field in model.all_fields %}
+    '{{ field.python_case }}': {
+        'name': '{{ field.python_case }}',
+        'alias': '{{ field.name }}',
+        'optional': {{ field.is_optional }},
+        'type': {{ field.python_type_as_string }},
+    },
+    {% endfor %}
+}
 
 {% endfor %}
 

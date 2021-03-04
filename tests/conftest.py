@@ -12,6 +12,7 @@ from prisma.cli import setup_logging
 from .utils import async_run
 
 
+pytest_plugins = ['pytester']
 client_ctx: ContextVar['Client'] = ContextVar('client_ctx', default=Client())
 LOGGING_CONTEXT_MANAGER = None
 

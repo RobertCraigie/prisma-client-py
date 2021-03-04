@@ -1,0 +1,23 @@
+{% include '_header.py.jinja' %}
+# -- template partials.py.jinja --
+from pydantic import BaseModel, Field
+from . import types, models
+
+
+{% for name, fields in partial_models.items() %}
+class {{ name }}(BaseModel):
+    {% for field in fields.values() %}
+    {{ field.name }}:
+            {%- if field.optional -%}
+                {{ ' ' }}Optional[{{ field.type }}] = Field(alias='{{ field.alias }}')
+            {% else -%}
+                {{ ' ' }}{{ field.type }} = Field(alias='{{ field.alias }}')
+            {% endif %}
+    {% endfor %}
+
+    Config = models.Config
+
+
+{% endfor %}
+# fmt: on
+

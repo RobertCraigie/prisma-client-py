@@ -303,6 +303,12 @@ class {{ model.name }}WhereInput{{ current }}(TypedDict, total=False):
     {% endif %}
 {% endcall %}
 
+{{ model.name }}Keys = Literal[
+    {% for field in model.all_fields %}
+    '{{ field.python_case }}',
+    {% endfor %}
+]
+
 {% endfor %}
 
 

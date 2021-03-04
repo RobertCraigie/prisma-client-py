@@ -1,20 +1,17 @@
 import os
-import sys
 from typing import Iterator
 
-import py
 import pytest
+from _pytest.pytester import Testdir as PytestTestdir
 
-from .utils import Tmpdir
+from .utils import Testdir
 
 
-@pytest.fixture(name='tmpdir')
-def tmpdir_fixture(tmpdir: py.path.local) -> Iterator[Tmpdir]:
+@pytest.fixture(name='testdir')
+def testdir_fixture(testdir: PytestTestdir) -> Iterator[Testdir]:
     cwd = os.getcwd()
-    os.chdir(tmpdir)
-    sys.modules.pop('models', None)
+    os.chdir(testdir.tmpdir)
 
-    yield Tmpdir(tmpdir)
+    yield Testdir(testdir)
 
-    sys.modules.pop('models', None)
     os.chdir(cwd)
