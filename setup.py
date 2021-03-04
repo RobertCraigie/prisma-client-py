@@ -52,6 +52,8 @@ setup(
     classifiers=[
         'Development Status :: 1 - Planning',
         'Intended Audience :: Developers',
+        'Typing :: Typed',
+        'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Database :: Database Engines/Servers',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3.6',
