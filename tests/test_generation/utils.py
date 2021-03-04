@@ -71,10 +71,10 @@ class Testdir:
     def tmpdir(self) -> py.path.local:
         return self.testdir.tmpdir
 
-    def __repr__(self) -> str:
+    def __repr__(self) -> str:  # pragma: no cover
         return str(self)
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # pragma: no cover
         return f'<Testdir {self.tmpdir} >'
 
 

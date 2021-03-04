@@ -58,7 +58,7 @@ model User {{
     ],
 )
 def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
-    def tests() -> None:  # pylint: disable=all
+    def tests() -> None:  # pylint: disable=all  mark: filedef
         from typing import Type, Dict, Iterator, Any, Tuple, Set, Optional
         from pydantic import BaseModel
         from prisma.partials import (  # type: ignore[attr-defined]
@@ -152,7 +152,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
                 },
             )
 
-    def generator() -> None:
+    def generator() -> None:  # mark: filedef
         from prisma.models import Post
 
         Post.create_partial('PostWithoutDesc', exclude=['desc'])
@@ -174,7 +174,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
 def test_partial_types_incorrect_key(
     testdir: Testdir, argument: Literal['exclude', 'include', 'required', 'optional']
 ) -> None:
-    def generator() -> None:
+    def generator() -> None:  # mark: filedef
         from prisma.models import Post
 
         Post.create_partial('PostWithoutFoo', **{argument: ['foo']})  # type: ignore
@@ -188,7 +188,7 @@ def test_partial_types_incorrect_key(
 
 
 def test_partial_types_same_required_and_optional(testdir: Testdir) -> None:
-    def generator() -> None:
+    def generator() -> None:  # mark: filedef
         from prisma.models import Post
 
         Post.create_partial(
@@ -211,7 +211,7 @@ def test_partial_types_same_required_and_optional(testdir: Testdir) -> None:
 
 
 def test_partial_types_excluded_required(testdir: Testdir) -> None:
-    def generator() -> None:
+    def generator() -> None:  # mark: filedef
         from prisma.models import Post
 
         Post.create_partial(
@@ -241,7 +241,7 @@ def test_partial_type_generator_not_found(testdir: Testdir) -> None:
 
 
 def test_partial_type_generator_error_while_running(testdir: Testdir) -> None:
-    def generator() -> None:
+    def generator() -> None:  # mark: filedef
         import foo  # type: ignore[import]
 
     testdir.make_from_function(generator, name='.prisma/partials.py')

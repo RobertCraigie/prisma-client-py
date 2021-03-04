@@ -27,7 +27,7 @@ model Entry {{
 
 
 def test_transform_fields_none(testdir: Testdir) -> None:
-    def tests() -> None:  # pylint: disable=all
+    def tests() -> None:  # pylint: disable=all mark: filedef
         import datetime
         import pytest
         from prisma.models import Entry  # type: ignore[attr-defined]
@@ -56,7 +56,7 @@ def test_transform_fields_none(testdir: Testdir) -> None:
 
 @pytest.mark.parametrize('explicit', [True, False])
 def test_transform_fields_snake_case(testdir: Testdir, explicit: bool) -> None:
-    def tests() -> None:  # pylint: disable=all
+    def tests() -> None:  # pylint: disable=all mark: filedef
         import datetime
         import pytest
         from prisma.models import Entry  # type: ignore[attr-defined]
@@ -88,7 +88,7 @@ def test_transform_fields_snake_case(testdir: Testdir, explicit: bool) -> None:
 
 
 def test_transform_fields_camel_case(testdir: Testdir) -> None:
-    def tests() -> None:  # pylint: disable=all
+    def tests() -> None:  # pylint: disable=all mark: filedef
         import datetime
         import pytest
         from prisma.models import Entry  # type: ignore[attr-defined]
@@ -116,7 +116,7 @@ def test_transform_fields_camel_case(testdir: Testdir) -> None:
 
 
 def test_transform_fields_pascal_case(testdir: Testdir) -> None:
-    def tests() -> None:  # pylint: disable=all
+    def tests() -> None:  # pylint: disable=all mark: filedef
         import datetime
         import pytest
         from prisma.models import Entry  # type: ignore[attr-defined]
