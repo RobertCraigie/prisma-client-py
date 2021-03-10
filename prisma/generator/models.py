@@ -328,7 +328,10 @@ class Field(BaseModel):
     @property
     def required_on_create(self) -> bool:
         return (
-            self.is_required and not self.is_updated_at and not self.has_default_value
+            self.is_required
+            and not self.is_updated_at
+            and not self.has_default_value
+            and not self.relation_name
         )
 
     @property

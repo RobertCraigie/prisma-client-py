@@ -66,13 +66,13 @@ All examples use the following models
 model User {
   id      String   @default(cuid()) @id
   name    String
-  profile Profile
+  profile Profile?
   email   String?
 }
 
 model Profile {
   id       Int    @id @default(autoincrement())
-  user     User   @relation(fields:  [userId], references: [id])
+  user     User   @relation(fields: [user_id], references: [id])
   user_id  String
   bio      String
 }
@@ -83,7 +83,6 @@ class User:
   id: str
   name: str
   profile: Optional['Profile']
-  profile_id: int
   email: Optional[str]
 
 class Profile:
@@ -116,7 +115,7 @@ class UserOnlyNameAndEmail:
 
 ```py
 from prisma.models import User
-User.create_partial('UserWithoutProfile', exclude=['profile', 'profile_id'])
+User.create_partial('UserWithoutProfile', exclude=['profile'])
 ```
 
 ```py
@@ -138,7 +137,6 @@ class UserOptionalName:
   id: str
   name: Optional[str]
   profile: Optional['Profile']
-  profile_id: int
   email: Optional[str]
 ```
 
@@ -154,7 +152,6 @@ class UserRequiredEmail:
   id: str
   name: str
   profile: Optional['Profile']
-  profile_id: int
   email: str
 ```
 

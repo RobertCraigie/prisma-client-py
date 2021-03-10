@@ -8,40 +8,43 @@ from .utils import Testdir
 
 SCHEMA = '''
 datasource db {{
-    provider = "sqlite"
-    url      = "file:dev.db"
+  provider = "sqlite"
+  url      = "file:dev.db"
 }}
 
 generator db {{
-    provider = "coverage run -m prisma"
-    output = "{output}"
-    {options}
+  provider = "coverage run -m prisma"
+  output = "{output}"
+  {options}
 }}
 
 model Post {{
-    id          String     @default(cuid()) @id
-    createdAt   DateTime   @default(now())
-    updated_at  DateTime   @updatedAt
-    Title       String
-    Published   Boolean
-    desc        String?
-    comments    Comment[]
-    author      User       @relation(fields:  [author_id], references: [id])
-    author_id   String
+  id          String     @id @default(cuid())
+  createdAt   DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  Title       String
+  Published   Boolean
+  desc        String?
+  comments    Comment[]
+  author_id   String
+  author      User      @relation(fields: [author_id], references: [id])
 }}
 
 model Comment {{
-    id           String   @default(cuid()) @id
-    created_at   DateTime @default(now())
-    updated_at   DateTime @updatedAt
-    content      String
+  id           String   @id @default(cuid())
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  content      String
+  Post         Post?    @relation(fields: [post_id], references: [id])
+  post_id      String?
 }}
 
 model User {{
-    id           String   @default(cuid()) @id
-    created_at   DateTime @default(now())
-    updated_at   DateTime @updatedAt
-    name         String
+  id           String   @id @default(cuid())
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  name         String
+  posts        Post[]
 }}
 '''
 

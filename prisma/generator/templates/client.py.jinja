@@ -164,7 +164,7 @@ class {{ model.name }}Actions:
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
-            method='findOne',
+            method='findUnique',
             model='{{ model.name }}',
             include=include,
             arguments={'where': where},
@@ -298,6 +298,7 @@ class {{ model.name }}Actions:
         include: Optional[types.{{ model.name }}Include] = None,
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> int:
+        # TODO: support select
         builder = QueryBuilder(
             engine=self.client._engine,
             operation='query',
@@ -311,10 +312,10 @@ class {{ model.name }}Actions:
                 'cursor': cursor,
             },
             aliases=self._field_aliases,
-            root_selection=['count'],
+            root_selection=['count { _all }'],
         )
         resp = {{ maybe_await }}builder.execute()
-        return int(resp['data']['result']['count'])
+        return cast(int, resp['data']['result']['count']['_all'])
 
     {{ maybe_async_def }}delete_many(
         self,

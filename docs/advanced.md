@@ -20,8 +20,8 @@ model Comment {
     id        String   @default(cuid()) @id
     createdAt DateTime @default(now())
     content   String
-    post   Post @relation(fields: [post_id], references: [id])
-    post_id String
+    post      Post @relation(fields: [post_id], references: [id])
+    post_id   String
 }
 ```
 
@@ -53,8 +53,8 @@ model Comment {
         id        String   @default(cuid()) @id
         createdAt DateTime @default(now())
         content   String
-        post   Post @relation(fields: [post_id], references: [id])
-        post_id String
+        post      Post @relation(fields: [post_id], references: [id])
+        post_id   String
     }
    ```
 

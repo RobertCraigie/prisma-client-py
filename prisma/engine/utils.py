@@ -19,8 +19,8 @@ ERROR_MAPPING = {
     'P2002': prisma_errors.UniqueViolationError,
     'P2010': prisma_errors.RawQueryError,
     'P2012': prisma_errors.MissingRequiredValueError,
-    'P2016': prisma_errors.RecordNotFoundError,
     'P2021': prisma_errors.TableNotFoundError,
+    'P2025': prisma_errors.RecordNotFoundError,
 }
 
 
@@ -94,7 +94,8 @@ def get_open_port() -> int:
 def handle_response_errors(resp: Response, data: Any) -> NoReturn:
     for error in data:
         try:
-            code = error.get('user_facing_error', {}).get('error_code')
+            user_facing = error.get('user_facing_error', {})
+            code = user_facing.get('error_code')
             if code is None:
                 continue
 
@@ -102,6 +103,8 @@ def handle_response_errors(resp: Response, data: Any) -> NoReturn:
             if exc is not None:
                 raise exc(error)
 
+            if 'A value is required but not set' in user_facing.get('message', ''):
+                raise prisma_errors.MissingRequiredValueError(error)
         except (KeyError, TypeError):
             continue
 
