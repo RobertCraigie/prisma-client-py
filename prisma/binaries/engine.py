@@ -23,7 +23,9 @@ ENGINE_URL = os.environ.get(
 )
 
 # versions can be found under https://github.com/prisma/prisma-engine/commits/master
-ENGINE_VERSION = 'da6fafb57b24e0b61ca20960c64e2d41f9e8cff1'
+ENGINE_VERSION = os.environ.get(
+    'PRISMA_ENGINE_VERSION', 'da6fafb57b24e0b61ca20960c64e2d41f9e8cff1'
+)
 
 # where the engines live
 GLOBAL_TEMP_DIR = (
