@@ -1,3 +1,4 @@
+import asyncio
 from typing import Any, Optional
 
 import aiohttp
@@ -7,7 +8,7 @@ from .errors import HTTPClientClosedError
 from .http_abstract import AbstractResponse, AbstractHTTP
 
 
-__all__ = ('HTTP', 'Response')
+__all__ = ('HTTP', 'Response', 'client')
 
 
 class HTTP(AbstractHTTP):
@@ -19,13 +20,23 @@ class HTTP(AbstractHTTP):
         self.session = None  # type: Optional[aiohttp.ClientSession]
         self.open()
 
-    @staticmethod
-    async def download(url: str, dest: str) -> None:
-        async with aiohttp.ClientSession(raise_for_status=True) as session:
-            async with session.get(url, timeout=None) as resp:
-                with open(dest, 'wb') as fd:
-                    # TODO: read and write in chunks
-                    fd.write(await resp.read())
+    def __del__(self) -> None:
+        try:
+            asyncio.get_event_loop().create_task(self.close())
+        except Exception:  # pylint: disable=broad-except
+            # weird errors can happen, like the asyncio module not
+            # being populated, can safely ignore as we're just
+            # cleaning up anyway
+            pass
+
+    async def download(self, url: str, dest: str) -> None:
+        if self.session is None:
+            raise HTTPClientClosedError()
+
+        async with self.session.get(url, raise_for_status=True, timeout=None) as resp:
+            with open(dest, 'wb') as fd:
+                # TODO: read and write in chunks
+                fd.write(await resp.read())
 
     async def request(self, method: Method, url: str, **kwargs: Any) -> 'Response':
         if self.closed:
@@ -47,6 +58,9 @@ class HTTP(AbstractHTTP):
         return self.session is None
 
 
+client = HTTP()
+
+
 class Response(AbstractResponse):
     # pylint: disable=invalid-overridden-method
 
@@ -62,6 +76,9 @@ class Response(AbstractResponse):
 
     async def text(self, **kwargs: Any) -> Any:
         return await self._original.text(**kwargs)
+
+    def __repr__(self) -> str:
+        return str(self)
 
     def __str__(self) -> str:
         return f'<Response wrapped={self._original} >'

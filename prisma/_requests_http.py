@@ -8,7 +8,7 @@ from .errors import HTTPClientClosedError
 from .http_abstract import AbstractResponse, AbstractHTTP
 
 
-__all__ = ('HTTP', 'Response')
+__all__ = ('HTTP', 'Response', 'client')
 
 
 class HTTP(AbstractHTTP):
@@ -19,9 +19,14 @@ class HTTP(AbstractHTTP):
         self.session = None  # type: Optional[requests.Session]
         self.open()
 
-    @staticmethod
-    def download(url: str, dest: str) -> None:
-        with requests.get(url, stream=True) as resp:
+    def __del__(self) -> None:
+        self.close()
+
+    def download(self, url: str, dest: str) -> None:
+        if self.session is None:
+            raise HTTPClientClosedError()
+
+        with self.session.request('GET', url, stream=True) as resp:
             with open(dest, 'wb') as fd:
                 shutil.copyfileobj(resp.raw, fd)
 
@@ -45,6 +50,9 @@ class HTTP(AbstractHTTP):
         return self.session is None
 
 
+client = HTTP()
+
+
 class Response(AbstractResponse):
     def __init__(self, original: requests.Response) -> None:
         self._original = original
@@ -58,6 +66,9 @@ class Response(AbstractResponse):
 
     def text(self) -> Any:
         return self._original.text
+
+    def __repr__(self) -> str:
+        return str(self)
 
     def __str__(self) -> str:
         return f'<Response wrapped={self._original} >'

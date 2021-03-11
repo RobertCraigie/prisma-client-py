@@ -9,9 +9,12 @@ MaybeCoroutine = Union[Coroutine[Any, Any, ReturnType], ReturnType]
 
 
 class AbstractHTTP(ABC):
-    @staticmethod
     @abstractmethod
-    def download(url: str, dest: str) -> MaybeCoroutine[None]:
+    def __del__(self) -> None:
+        ...
+
+    @abstractmethod
+    def download(self, url: str, dest: str) -> MaybeCoroutine[None]:
         ...
 
     @abstractmethod
@@ -51,4 +54,8 @@ class AbstractResponse(ABC):
 
     @abstractmethod
     def text(self) -> MaybeCoroutine[Any]:
+        ...
+
+    @abstractmethod
+    def __repr__(self) -> str:
         ...
