@@ -8,6 +8,11 @@ from typing import Any, Union, Coroutine
 from ._types import FuncType, CoroType
 
 
+class _NoneType:
+    def __bool__(self) -> bool:
+        return False
+
+
 def time_since(start: float, precision: int = 4) -> str:
     # TODO: prettier output
     delta = round(time.monotonic() - start, precision)

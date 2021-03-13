@@ -7,7 +7,8 @@ import subprocess
 import contextlib
 from typing import List, Iterator
 
-from . import generator, jsonrpc, binaries
+from . import generator, jsonrpc, binaries, http
+from .utils import maybe_async_run
 
 
 __all__ = ('main', 'setup_logging')
@@ -15,8 +16,8 @@ __all__ = ('main', 'setup_logging')
 log = logging.getLogger(__name__)
 
 
-def main() -> None:
-    with setup_logging():
+def main(do_cleanup: bool = True) -> None:
+    with setup_logging(), cleanup(do_cleanup):
         args = sys.argv
         if len(args) > 1:
             if args[1] == 'fetch':
@@ -93,6 +94,15 @@ def setup_logging(use_handler: bool = True) -> Iterator[None]:
         if use_handler:
             handler.close()
             logger.removeHandler(handler)
+
+
+@contextlib.contextmanager
+def cleanup(do_cleanup: bool = True) -> Iterator[None]:
+    try:
+        yield
+    finally:
+        if do_cleanup:
+            maybe_async_run(http.client.close)
 
 
 def invoke_prisma() -> None:

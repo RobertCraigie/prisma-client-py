@@ -4,7 +4,6 @@ from typing import Optional, Any
 import requests
 
 from ._types import Method
-from .errors import HTTPClientClosedError
 from .http_abstract import AbstractResponse, AbstractHTTP
 
 
@@ -17,28 +16,20 @@ class HTTP(AbstractHTTP[requests.Session, requests.Response]):
     library = 'requests'
 
     def download(self, url: str, dest: str) -> None:
-        if self.session is None:
-            raise HTTPClientClosedError()
-
         with self.session.request('GET', url, stream=True) as resp:
             with open(dest, 'wb') as fd:
                 shutil.copyfileobj(resp.raw, fd)
 
     def request(self, method: Method, url: str, **kwargs: Any) -> 'Response':
-        if self.closed:
-            raise HTTPClientClosedError()
-
-        assert self.session is not None
         return Response(self.session.request(method, url, **kwargs))
 
     def open(self) -> None:
         self.session = requests.Session()
 
-    def close(self, session: Optional[requests.Session] = None) -> None:
-        session = session or self.session
-        if session is not None:
-            session.close()
-            self.session = None
+    def close(self) -> None:
+        if not self.closed:
+            self.session.close()
+            self.session = None  # type: ignore[assignment]
 
     def __del__(self) -> None:
         self.close()

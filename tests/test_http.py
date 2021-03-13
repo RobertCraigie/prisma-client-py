@@ -1,11 +1,31 @@
 from typing import cast
 
 import pytest
+import aiohttp
 from prisma.http import HTTP
+from prisma._types import Literal
+from prisma.utils import _NoneType
 from prisma.errors import HTTPClientClosedError
 
 
 # TODO: test every HTTP library
+
+State = Literal['initial', 'open', 'closed']
+
+
+def assert_session_state(http: HTTP, state: State) -> None:
+    # pylint: disable=protected-access
+    if state == 'initial':
+        assert http._session is _NoneType
+    elif state == 'open':
+        assert isinstance(http._session, aiohttp.ClientSession)
+    elif state == 'closed':
+        with pytest.raises(HTTPClientClosedError):
+            assert http.session
+    else:  # pragma: no cover
+        raise ValueError(
+            f'Unknown value {state} for state, must be one of initial, open or closed'
+        )
 
 
 @pytest.mark.asyncio
@@ -21,3 +41,17 @@ async def test_request_on_closed_sessions() -> None:
 
     with pytest.raises(HTTPClientClosedError):
         await http.request('GET', '/')
+
+
+@pytest.mark.asyncio
+async def test_lazy_session_open() -> None:
+    http = HTTP()
+    assert_session_state(http, 'initial')
+
+    # access the session property, opening the session
+    # TODO: test using an actual request
+    assert http.session
+
+    assert_session_state(http, 'open')
+    await http.close()
+    assert_session_state(http, 'closed')

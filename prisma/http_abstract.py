@@ -1,7 +1,9 @@
 from abc import abstractmethod, ABC
-from typing import Any, Union, Coroutine, TypeVar, Generic, Optional
+from typing import Any, Union, Coroutine, Type, TypeVar, Generic, Optional, cast
 
 from ._types import Method
+from .utils import _NoneType
+from .errors import HTTPClientClosedError
 
 
 Session = TypeVar('Session')
@@ -12,8 +14,10 @@ MaybeCoroutine = Union[Coroutine[Any, Any, ReturnType], ReturnType]
 
 class AbstractHTTP(ABC, Generic[Session, Response]):
     def __init__(self) -> None:
-        self.session = None  # type: Optional[Session]
-        self.open()
+        # NoneType = not used yet
+        # None = closed
+        # Session = open
+        self._session = _NoneType  # type: Optional[Union[Session, Type[_NoneType]]]
 
     @abstractmethod
     def __del__(self) -> None:
@@ -34,17 +38,33 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         ...
 
     @abstractmethod
-    def close(self, session: Optional[Session] = None) -> MaybeCoroutine[None]:
+    def close(self) -> MaybeCoroutine[None]:
         ...
 
     @property
     def closed(self) -> bool:
-        return self.session is None
+        return self._session is None
 
     @property
     @abstractmethod
     def library(self) -> str:
         ...
+
+    @property
+    def session(self) -> Session:
+        session = self._session
+        if session is _NoneType:
+            self.open()
+            return cast(Session, self._session)
+
+        if session is None:
+            raise HTTPClientClosedError()
+
+        return cast(Session, session)
+
+    @session.setter
+    def session(self, value: Optional[Session]) -> None:
+        self._session = value
 
     def __repr__(self) -> str:
         return str(self)
