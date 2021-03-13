@@ -11,16 +11,10 @@ from .http_abstract import AbstractResponse, AbstractHTTP
 __all__ = ('HTTP', 'Response', 'client')
 
 
-class HTTP(AbstractHTTP):
+class HTTP(AbstractHTTP[requests.Session, requests.Response]):
+    # pylint: disable=attribute-defined-outside-init
 
     library = 'requests'
-
-    def __init__(self) -> None:
-        self.session = None  # type: Optional[requests.Session]
-        self.open()
-
-    def __del__(self) -> None:
-        self.close()
 
     def download(self, url: str, dest: str) -> None:
         if self.session is None:
@@ -40,35 +34,26 @@ class HTTP(AbstractHTTP):
     def open(self) -> None:
         self.session = requests.Session()
 
-    def close(self) -> None:
-        if self.session is not None:
-            self.session.close()
+    def close(self, session: Optional[requests.Session] = None) -> None:
+        session = session or self.session
+        if session is not None:
+            session.close()
             self.session = None
 
-    @property
-    def closed(self) -> bool:
-        return self.session is None
+    def __del__(self) -> None:
+        self.close()
 
 
 client = HTTP()
 
 
-class Response(AbstractResponse):
-    def __init__(self, original: requests.Response) -> None:
-        self._original = original
-
+class Response(AbstractResponse[requests.Response]):
     @property
     def status(self) -> int:
-        return self._original.status_code
+        return self.original.status_code
 
     def json(self) -> Any:
-        return self._original.json()
+        return self.original.json()
 
     def text(self) -> Any:
-        return self._original.text
-
-    def __repr__(self) -> str:
-        return str(self)
-
-    def __str__(self) -> str:
-        return f'<Response wrapped={self._original} >'
+        return self.original.text

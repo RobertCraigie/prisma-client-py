@@ -1,14 +1,20 @@
 from abc import abstractmethod, ABC
-from typing import Any, Union, Coroutine, TypeVar
+from typing import Any, Union, Coroutine, TypeVar, Generic, Optional
 
 from ._types import Method
 
 
+Session = TypeVar('Session')
+Response = TypeVar('Response')
 ReturnType = TypeVar('ReturnType')
 MaybeCoroutine = Union[Coroutine[Any, Any, ReturnType], ReturnType]
 
 
-class AbstractHTTP(ABC):
+class AbstractHTTP(ABC, Generic[Session, Response]):
+    def __init__(self) -> None:
+        self.session = None  # type: Optional[Session]
+        self.open()
+
     @abstractmethod
     def __del__(self) -> None:
         ...
@@ -20,7 +26,7 @@ class AbstractHTTP(ABC):
     @abstractmethod
     def request(
         self, method: Method, url: str, **kwargs: Any
-    ) -> MaybeCoroutine['AbstractResponse']:
+    ) -> MaybeCoroutine['AbstractResponse[Response]']:
         ...
 
     @abstractmethod
@@ -28,21 +34,29 @@ class AbstractHTTP(ABC):
         ...
 
     @abstractmethod
-    def close(self) -> MaybeCoroutine[None]:
+    def close(self, session: Optional[Session] = None) -> MaybeCoroutine[None]:
         ...
 
     @property
-    @abstractmethod
     def closed(self) -> bool:
-        ...
+        return self.session is None
 
     @property
     @abstractmethod
     def library(self) -> str:
         ...
 
+    def __repr__(self) -> str:
+        return str(self)
 
-class AbstractResponse(ABC):
+    def __str__(self) -> str:
+        return f'<HTTP library={self.library} closed={self.closed}>'
+
+
+class AbstractResponse(ABC, Generic[Response]):
+    def __init__(self, original: Response) -> None:
+        self.original = original
+
     @property
     @abstractmethod
     def status(self) -> int:
@@ -56,6 +70,8 @@ class AbstractResponse(ABC):
     def text(self) -> MaybeCoroutine[Any]:
         ...
 
-    @abstractmethod
     def __repr__(self) -> str:
-        ...
+        return str(self)
+
+    def __str__(self) -> str:
+        return f'<Response wrapped={self.original} >'

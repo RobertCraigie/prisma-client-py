@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, Optional
+from typing import Any, Optional, Dict
 
 import aiohttp
 
@@ -11,23 +11,10 @@ from .http_abstract import AbstractResponse, AbstractHTTP
 __all__ = ('HTTP', 'Response', 'client')
 
 
-class HTTP(AbstractHTTP):
-    # pylint: disable=invalid-overridden-method
+class HTTP(AbstractHTTP[aiohttp.ClientSession, aiohttp.ClientResponse]):
+    # pylint: disable=invalid-overridden-method,attribute-defined-outside-init
 
     library = 'aiohttp'
-
-    def __init__(self) -> None:
-        self.session = None  # type: Optional[aiohttp.ClientSession]
-        self.open()
-
-    def __del__(self) -> None:
-        try:
-            asyncio.get_event_loop().create_task(self.close())
-        except Exception:  # pylint: disable=broad-except
-            # weird errors can happen, like the asyncio module not
-            # being populated, can safely ignore as we're just
-            # cleaning up anyway
-            pass
 
     async def download(self, url: str, dest: str) -> None:
         if self.session is None:
@@ -48,37 +35,46 @@ class HTTP(AbstractHTTP):
     def open(self) -> None:
         self.session = aiohttp.ClientSession()
 
-    async def close(self) -> None:
-        if self.session is not None:
-            await self.session.close()
-            self.session = None
+    async def close(self, session: Optional[aiohttp.ClientSession] = None) -> None:
+        session = session or self.session
+        self.session = None
+        if session is not None:
+            await session.close()
 
-    @property
-    def closed(self) -> bool:
-        return self.session is None
+    def __del__(self) -> None:
+        # NOTE: this should be removed in the next commit
+        # where I introduce lazy session loading
+        # note to self, also remove the pylintrc change
+        def handler(self: asyncio.AbstractEventLoop, context: Dict[str, Any]) -> None:
+            # if aiohttp calls the exception handler, ignore it as it is just warning
+            # that the client session is not closed
+            if context and 'client_session' not in context:
+                if old_handler:
+                    old_handler(self, context)
+                else:
+                    loop.default_exception_handler(context)
+
+        session = self.session
+        self.session = None
+        loop = asyncio.get_event_loop()
+        loop.create_task(self.close(session))
+
+        old_handler = loop.get_exception_handler()
+        loop.set_exception_handler(handler)
 
 
 client = HTTP()
 
 
-class Response(AbstractResponse):
+class Response(AbstractResponse[aiohttp.ClientResponse]):
     # pylint: disable=invalid-overridden-method
-
-    def __init__(self, original: aiohttp.ClientResponse) -> None:
-        self._original = original
 
     @property
     def status(self) -> int:
-        return self._original.status
+        return self.original.status
 
     async def json(self, **kwargs: Any) -> Any:
-        return await self._original.json(**kwargs)
+        return await self.original.json(**kwargs)
 
     async def text(self, **kwargs: Any) -> Any:
-        return await self._original.text(**kwargs)
-
-    def __repr__(self) -> str:
-        return str(self)
-
-    def __str__(self) -> str:
-        return f'<Response wrapped={self._original} >'
+        return await self.original.text(**kwargs)

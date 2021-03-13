@@ -37,7 +37,8 @@ callbacks =
   _cb,
   pytest_,
   plugin,
-  _hook
+  _hook,
+  handler
 
 
 [SIMILARITIES]
