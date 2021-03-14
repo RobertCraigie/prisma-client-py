@@ -33,8 +33,8 @@ async def test_create(client: Client) -> None:
 async def test_create_with_relationship(client: Client) -> None:
     post = await client.post.create(
         {
-            'title': 'Post 1',
             'published': False,
+            'title': 'Post 1',
             'author': {'create': {'name': 'Bob'}},
         },
         include={'author': True},

@@ -1,5 +1,5 @@
 import shutil
-from typing import Optional, Any
+from typing import Any
 
 import requests
 
