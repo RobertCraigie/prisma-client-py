@@ -72,11 +72,17 @@ def run_prisma_command(args: List[str]) -> None:
 @contextlib.contextmanager
 def setup_logging(use_handler: bool = True) -> Iterator[None]:
     try:
+        handler = None
         logger = logging.getLogger()
 
-        # TODO: this does not log anything when running from the prisma cli
         if os.environ.get('PRISMA_PY_DEBUG'):
             logger.setLevel(logging.DEBUG)
+
+            # the prisma CLI binary uses the DEBUG environment variable
+            if os.environ.get('DEBUG') is None:
+                os.environ['DEBUG'] = 'GeneratorProcess'
+            else:
+                log.debug('NOTE: Not overriding the DEBUG environment variable.')
         else:
             logger.setLevel(logging.INFO)
 
@@ -91,7 +97,7 @@ def setup_logging(use_handler: bool = True) -> Iterator[None]:
 
         yield
     finally:
-        if use_handler:
+        if use_handler and handler is not None:
             handler.close()
             logger.removeHandler(handler)
 
@@ -114,9 +120,8 @@ def invoke_prisma() -> None:
 
         request = jsonrpc.parse(line)
         log.debug(
-            'Received request method: %s with params: %s',
+            'Received request method: %s',
             request.method,
-            request.params,
         )
 
         response = None

@@ -50,7 +50,6 @@ def readline() -> Optional[str]:
         log.debug('Ignoring EOFError')
         return None
 
-    log.debug('Received %s', line)
     return line
 
 
