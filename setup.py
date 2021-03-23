@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import re
-
+from typing import List
+from pathlib import Path
 from setuptools import setup, find_packages
 
 
-with open('requirements.txt') as f:
-    requirements = f.read().splitlines()
+def requirements(name: str) -> List[str]:
+    root = Path(__file__).parent / 'requirements'
+    return root.joinpath(name).read_text().splitlines()
+
 
 with open('README.md', 'r') as f:
     readme = f.read()
@@ -31,7 +34,7 @@ setup(
     license='APACHE',
     url='https://github.com/RobertCraigie/prisma-client-py',
     description='Prisma Client Python is an auto-generated and fully type-safe database client',
-    install_requires=requirements,
+    install_requires=requirements('base.txt'),
     long_description=readme,
     long_description_content_type='text/markdown',
     packages=find_packages(include=['prisma', 'prisma.*']),
@@ -41,8 +44,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     extras_require={
-        'aiohttp': ['aiohttp>=3.6.0,<=3.7.3'],
-        'requests': ['requests==2.25.1'],
+        'aiohttp': requirements('aiohttp.txt'),
+        'requests': requirements('requests.txt'),
     },
     entry_points={
         'console_scripts': [
