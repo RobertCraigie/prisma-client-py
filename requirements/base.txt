@@ -1,4 +1,4 @@
-jinja2==2.11.2
+jinja2==2.11.3
 pydantic>1.5.0,<=1.7.3
 contextvars; python_version < '3.7'
 typing-extensions==3.7.4.1; python_version < '3.8'
