@@ -11,8 +11,9 @@ from . import binaries, jsonrpc, engine, utils
 
 try:
     from .client import *
-except ImportError:
+except ModuleNotFoundError:
     # code has not been generated yet
+    # TODO: this could swallow unexpected errors
     pass
 
 
