@@ -8,6 +8,9 @@ from typing import Any, Union, Coroutine
 from ._types import FuncType, CoroType
 
 
+DEBUG = os.environ.get('PRISMA_PY_DEBUG', '').lower() in {'1', 't', 'true'}
+
+
 class _NoneType:
     def __bool__(self) -> bool:
         return False
@@ -20,7 +23,7 @@ def time_since(start: float, precision: int = 4) -> str:
 
 
 def setup_logging() -> None:
-    if os.environ.get('PRISMA_PY_DEBUG'):
+    if DEBUG:
         logging.getLogger('prisma').setLevel(logging.DEBUG)
 
 

@@ -14,6 +14,7 @@ from pathlib import Path
 
 from . import utils, errors
 from ..http import HTTP
+from ..utils import DEBUG
 from .._types import Method
 from ..binaries import platform
 from ..utils import time_since
@@ -95,7 +96,7 @@ class QueryEngine:
             RUST_LOG_FORMAT='json',
         )
 
-        if os.environ.get('PRISMA_PY_DEBUG'):
+        if DEBUG:
             env.update(PRISMA_LOG_QUERIES='y', RUST_LOG='info')
 
         log.debug('Starting query engine...')

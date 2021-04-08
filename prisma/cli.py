@@ -8,7 +8,7 @@ import contextlib
 from typing import List, Iterator
 
 from . import generator, jsonrpc, binaries, http
-from .utils import maybe_async_run
+from .utils import maybe_async_run, DEBUG
 
 
 __all__ = ('main', 'setup_logging')
@@ -75,7 +75,7 @@ def setup_logging(use_handler: bool = True) -> Iterator[None]:
         handler = None
         logger = logging.getLogger()
 
-        if os.environ.get('PRISMA_PY_DEBUG'):
+        if DEBUG:
             logger.setLevel(logging.DEBUG)
 
             # the prisma CLI binary uses the DEBUG environment variable
