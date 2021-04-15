@@ -7,11 +7,11 @@ from distutils.dir_util import copy_tree
 from jinja2 import Environment, PackageLoader
 
 from .models import Data
-from .utils import is_same_path
 from .types import PartialModelFields
+from .utils import is_same_path, remove_suffix
 
 
-__all__ = ('run', 'BASE_PACKAGE_DIR', 'partial_models_ctx')
+__all__ = ('run', 'BASE_PACKAGE_DIR', 'partial_models_ctx', 'render_template')
 
 log = logging.getLogger(__name__)
 BASE_PACKAGE_DIR = Path(__file__).parent.parent
@@ -64,9 +64,9 @@ def render_template(
     template = env.get_template(name)
     output = template.render(**params)
 
-    file = rootdir.joinpath(name.rstrip('.jinja'))
+    file = rootdir.joinpath(remove_suffix(name, '.jinja'))
     if not file.parent.exists():
         file.parent.mkdir(parents=True, exist_ok=True)
 
     file.write_text(output)
-    log.debug('Wrote generated code to %s', file.absolute())
+    log.debug('Rendered template to %s', file.absolute())

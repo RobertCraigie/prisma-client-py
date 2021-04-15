@@ -48,3 +48,11 @@ def _fix_abbrevations(string: str) -> str:
 
 def is_same_path(path: Path, other: Path) -> bool:
     return str(path.resolve()).strip() == str(other.resolve()).strip()
+
+
+def remove_suffix(string: str, suf: str) -> str:
+    """Remove a suffix from a string, if it exists."""
+    # taken from https://stackoverflow.com/a/18723694
+    if suf and string.endswith(suf):
+        return string[: -len(suf)]
+    return string
