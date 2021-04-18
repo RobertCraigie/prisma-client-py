@@ -26,6 +26,12 @@ if not version:
     raise RuntimeError('version is not set')
 
 
+extras = {
+    'aiohttp': requirements('aiohttp.txt'),
+    'requests': requirements('requests.txt'),
+}
+
+
 setup(
     name='prisma',
     version=version,
@@ -44,8 +50,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     extras_require={
-        'aiohttp': requirements('aiohttp.txt'),
-        'requests': requirements('requests.txt'),
+        **extras,
+        'all': [req for requirements in extras.values() for req in requirements],
     },
     entry_points={
         'console_scripts': [
