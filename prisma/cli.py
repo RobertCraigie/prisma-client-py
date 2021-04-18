@@ -58,7 +58,7 @@ def run_prisma_command(args: List[str]) -> None:
 
     # ensure the client uses our engine binaries
     for engine in binaries.ENGINES:
-        env[engine.env] = engine.location
+        env[engine.env] = str(engine.path.absolute())
 
     process = subprocess.run(  # pylint: disable=subprocess-run-check
         [str(path.absolute()), *args],
