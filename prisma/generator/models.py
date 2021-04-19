@@ -3,7 +3,8 @@ import importlib
 from pathlib import Path
 from importlib import machinery
 from contextvars import ContextVar
-from typing import Any, Optional, List, Union, Iterator, TYPE_CHECKING
+from collections import defaultdict
+from typing import Any, Optional, List, Union, Iterator, Dict, TYPE_CHECKING
 from pydantic import BaseModel, Extra, Field as FieldInfo, conint, validator
 
 from .utils import pascalize, camelize, decamelize
@@ -29,6 +30,10 @@ data_ctx: ContextVar['Data'] = ContextVar('data_ctx')
 
 def get_config() -> 'Config':
     return data_ctx.get().generator.config
+
+
+def get_datamodel() -> 'Datamodel':
+    return data_ctx.get().dmmf.datamodel
 
 
 class TransformChoices(str, enum.Enum):
@@ -200,11 +205,16 @@ class Model(BaseModel):
     is_embedded: bool = FieldInfo(alias='isEmbedded')
     db_name: Optional[str] = FieldInfo(alias='dbName')
     is_generated: bool = FieldInfo(alias='isGenerated')
-    all_fields: List['Field'] = FieldInfo(alias='fields')
+
+    if TYPE_CHECKING:
+        # pylint thinks all_fields is not an iterable
+        all_fields: List['Field']
+    else:
+        all_fields: List['Field'] = FieldInfo(alias='fields')
 
     @property
     def related_models(self) -> Iterator['Model']:
-        models = data_ctx.get().dmmf.datamodel.models
+        models = get_datamodel().models
         for field in self.relational_fields:
             for model in models:
                 if field.type == model.name:
@@ -213,13 +223,13 @@ class Model(BaseModel):
     @property
     def relational_fields(self) -> Iterator['Field']:
         for field in self.all_fields:
-            if field.relation_name:
+            if field.is_relational:
                 yield field
 
     @property
     def scalar_fields(self) -> Iterator['Field']:
         for field in self.all_fields:
-            if not field.relation_name:
+            if not field.is_relational:
                 yield field
 
     @property
@@ -227,6 +237,30 @@ class Model(BaseModel):
         for field in self.all_fields:
             if field.type in ATOMIC_FIELD_TYPES:
                 yield field
+
+    def get_field_aliases(self) -> Dict[str, Dict[str, str]]:
+        aliases = self._gen_field_aliases(self, defaultdict(dict), key='')
+
+        # convert to a normal dictionary, otherwise jinja repr's
+        # the defaultdict leading to invalid codegen
+        return dict(aliases)
+
+    def _gen_field_aliases(
+        self, model: Optional['Model'], aliases: Dict[str, Dict[str, str]], *, key: str
+    ) -> Dict[str, Dict[str, str]]:
+        # TODO: these field aliases could clash, see GitHub #3
+        if model is None:
+            return aliases
+
+        for field in model.all_fields:
+            if not field.is_relational:
+                aliases[key][field.python_case] = field.name
+            elif field.name not in aliases:
+                self._gen_field_aliases(
+                    field.get_relational_model(), aliases, key=field.name
+                )
+
+        return aliases
 
 
 class Field(BaseModel):
@@ -339,6 +373,10 @@ class Field(BaseModel):
         return not (self.is_required and not self.relation_name)
 
     @property
+    def is_relational(self) -> bool:
+        return self.relation_name is not None
+
+    @property
     def is_atomic(self) -> bool:
         return self.type in ATOMIC_FIELD_TYPES
 
@@ -362,6 +400,16 @@ class Field(BaseModel):
             return f'\'{self.type}UpdateOneWithoutRelationsInput\''
 
         return self.python_type
+
+    def get_relational_model(self) -> Optional['Model']:
+        if not self.is_relational:
+            return None
+
+        name = self.type
+        for model in get_datamodel().models:
+            if model.name == name:
+                return model
+        return None
 
 
 class DefaultValue(BaseModel):

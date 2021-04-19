@@ -103,19 +103,7 @@ class Client:
 class {{ model.name }}Actions:
     def __init__(self, client: Client):
         self.client = client
-        self._field_aliases = self._gen_field_aliases(models.{{ model.name }}, defaultdict(dict), key='')
-
-    def _gen_field_aliases(
-        self, model: Type[BaseModel], aliases: Dict[str, Dict[str, str]], *, key: str
-    ) -> Dict[str, Dict[str, str]]:
-        # TODO: these field aliases could clash, see GitHub #3
-        for field, info in model.__fields__.items():
-            if info.type_.__module__ == f'{__package__}.models':
-                if field not in aliases:
-                    self._gen_field_aliases(info.type_, aliases, key=field)
-            else:
-                aliases[key][field] = info.alias
-        return aliases
+        self._field_aliases = {{ model.get_field_aliases() }}
 
     {{ maybe_async_def }}create(
         self,
