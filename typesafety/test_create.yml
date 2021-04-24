@@ -4,10 +4,10 @@
 
     async def main() -> None:
       client = Client()
-      await client.post.create()  # E: Too few arguments for "create" of "PostActions"  [call-arg]
+      await client.post.create()  # E: Missing positional argument "data" in call to "create" of "PostActions"  [call-arg]
 
-      await client.post.create({'published': False})  # E: Key 'title' missing for TypedDict "PostCreateInput"  [typeddict-item]
-      await client.post.create({'title': 'Hello, world'})  # E: Key 'published' missing for TypedDict "PostCreateInput"  [typeddict-item]
+      await client.post.create({'published': False})  # E: Missing key 'title' for TypedDict "PostCreateInput"  [typeddict-item]
+      await client.post.create({'title': 'Hello, world'})  # E: Missing key 'published' for TypedDict "PostCreateInput"  [typeddict-item]
 
       await client.post.create({'title': 'a', 'published': 'false'})  # E: Incompatible types (expression has type "str", TypedDict item "published" has type "bool")  [typeddict-item]
 
