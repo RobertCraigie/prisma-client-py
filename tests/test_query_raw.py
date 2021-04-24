@@ -2,6 +2,7 @@ import pytest
 
 from prisma import errors, Client
 from prisma.models import Post
+from prisma.partials import PostOnlyPublished
 
 
 @pytest.mark.asyncio
@@ -60,6 +61,29 @@ async def test_query_raw_model(client: Client) -> None:
     assert isinstance(found, Post)
     assert found == post
     assert found.id == post.id
+
+
+@pytest.mark.asyncio
+async def test_query_raw_partial_model(client: Client) -> None:
+    posts = [
+        await client.post.create({'title': 'foo', 'published': False}),
+        await client.post.create({'title': 'foo', 'published': True}),
+        await client.post.create({'title': 'foo', 'published': True}),
+        await client.post.create({'title': 'foo', 'published': False}),
+    ]
+    query = '''
+        SELECT id, published
+        FROM Post
+        WHERE published = 0
+    '''
+    results = await client.query_raw(query, model=PostOnlyPublished)
+    assert len(results) == 2
+    assert set(p.id for p in results) == set(
+        p.id for p in posts if p.published is False
+    )
+    assert not hasattr(results[0], 'title')
+    assert results[0].published is False
+    assert results[1].published is False
 
 
 @pytest.mark.asyncio

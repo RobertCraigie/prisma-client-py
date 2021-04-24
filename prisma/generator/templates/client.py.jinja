@@ -5,6 +5,7 @@ from collections import defaultdict
 from pydantic import BaseModel, validate_arguments
 
 from . import types, models, errors
+from ._types import BaseModelT
 from .engine import QueryEngine
 from .builder import QueryBuilder
 
@@ -69,16 +70,13 @@ class Client:
     {{ maybe_async_def }}query_raw(self, query: str, *args: Any) -> Any:
         ...
 
-    {% for model in dmmf.datamodel.models %}
     @overload
-    {{ maybe_async_def }}query_raw(self, query: str, *args: Any, model: Type['models.{{ model.name }}']) -> List['models.{{ model.name }}']:
+    {{ maybe_async_def }}query_raw(self, query: str, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
         ...
 
-    {% endfor %}
-
     {{ maybe_async_def }}query_raw(
-        self, query: str, *args: Any, model: Optional[Type[BaseModel]] = None
-    ) -> Union[List[BaseModel], Any]:
+        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+    ) -> Union[List[BaseModelT], Any]:
         builder = QueryBuilder(
             engine=self._engine,
             operation='mutation',

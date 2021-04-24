@@ -4,7 +4,7 @@
 
     async def main() -> None:
       client = Client()
-      await client.post.find_unique()  # E: Missing positional argument "where" in call to "find_unique" of "PostActions" [call-arg]
+      await client.post.find_unique()  # E: Missing positional argument "where" in call to "find_unique" of "PostActions"  [call-arg]
 
       await client.post.find_unique({'published': False})  # E: Extra key 'published' for TypedDict "PostWhereUniqueInput"  [typeddict-item]
       await client.post.find_unique({'title': 'Hello, world'})  # E: Extra key 'title' for TypedDict "PostWhereUniqueInput"  [typeddict-item]
