@@ -9,7 +9,7 @@ import prisma
 from prisma import Client
 from prisma.cli import setup_logging
 
-from .utils import async_run
+from .utils import async_run, Runner
 
 
 pytest_plugins = ['pytester']
@@ -28,6 +28,12 @@ def client_fixture() -> prisma.Client:
 @pytest.fixture(scope='session')
 def event_loop() -> asyncio.AbstractEventLoop:
     return asyncio.get_event_loop()
+
+
+@pytest.fixture()
+def runner() -> Runner:
+    """Fixture for running cli tests"""
+    return Runner()
 
 
 # TODO: don't emulate the with statement

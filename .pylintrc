@@ -8,7 +8,11 @@ disable =
   fixme,
   try-except-raise,
   missing-docstring,
-  too-few-public-methods
+  too-few-public-methods,
+
+  # we need to import outside the toplevel due to code generation
+  # and for performance reasons
+  import-outside-toplevel,
 
 
 [MASTER]

@@ -4,6 +4,8 @@ import logging
 from pathlib import Path
 from typing import Optional
 
+import click
+
 from .binary import Binary
 from .engine import Engine
 from .constants import GLOBAL_TEMP_DIR, PRISMA_CLI_NAME
@@ -13,6 +15,7 @@ __all__ = (
     'ENGINES',
     'BINARIES',
     'ensure_cached',
+    'remove_all',
 )
 
 log = logging.getLogger(__name__)
@@ -44,7 +47,25 @@ def ensure_cached() -> Path:
         log.debug('All binaries are cached')
         return GLOBAL_TEMP_DIR
 
-    for binary in binaries:
-        binary.download()
+    def show_item(item: Optional[Binary]) -> str:
+        if item is not None:
+            return binary.name
+        return ''
+
+    with click.progressbar(
+        binaries,
+        label='Downloading binaries',
+        fill_char=click.style('#', fg='yellow'),
+        item_show_func=show_item,
+    ) as iterator:
+        for binary in iterator:
+            binary.download()
 
     return GLOBAL_TEMP_DIR
+
+
+def remove_all() -> None:
+    """Remove all downloaded binaries"""
+    for binary in BINARIES:
+        if binary.path.exists():
+            binary.path.unlink()

@@ -3,6 +3,7 @@ import time
 import asyncio
 import inspect
 import logging
+import importlib
 from typing import Any, Union, Coroutine
 
 from ._types import FuncType, CoroType
@@ -39,3 +40,7 @@ def async_run(coro: Coroutine[Any, Any, Any]) -> Any:
 
 def is_coroutine(obj: Any) -> bool:
     return asyncio.iscoroutinefunction(obj) or inspect.isgeneratorfunction(obj)
+
+
+def module_exists(name: str) -> bool:
+    return importlib.util.find_spec(name) is not None

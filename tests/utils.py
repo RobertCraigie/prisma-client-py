@@ -1,6 +1,48 @@
 import asyncio
 from datetime import datetime
-from typing import Coroutine, Any
+from typing import Coroutine, Any, Optional, List, cast
+
+import click
+from click.testing import CliRunner, Result
+
+from prisma.cli import main
+
+
+class Runner:
+    def __init__(self) -> None:
+        self._runner = CliRunner()
+        self.default_cli = None  # type: Optional[click.Command]
+
+    def invoke(
+        self,
+        args: Optional[List[str]] = None,
+        cli: Optional[click.Command] = None,
+        **kwargs: Any
+    ) -> Result:
+        default_args: Optional[List[str]] = None
+
+        if cli is not None:
+            default_args = args
+        elif self.default_cli is not None:
+            cli = self.default_cli
+            default_args = args
+        else:
+
+            @click.command()
+            def cli() -> None:
+                if args is not None:
+                    # fake invocation context
+                    args.insert(0, 'prisma')
+
+                main(args, use_handler=False, do_cleanup=False, pipe=True)
+
+            # mypy doesn't pick up the def properly
+            cli = cast(click.Command, cli)
+
+            # we don't pass any args to click as we need to parse them ourselves
+            default_args = []
+
+        return self._runner.invoke(cli, default_args, **kwargs)
 
 
 def async_run(coro: Coroutine[Any, Any, Any]) -> Any:
