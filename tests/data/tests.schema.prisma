@@ -4,10 +4,11 @@ datasource db {
 }
 
 generator db {
-  provider             = "coverage run -m prisma"
-  recursive_type_depth = 5
-  output               = env("PRISMA_PY_OUTPUT")
-  http                 = "aiohttp"
+  provider               = "coverage run -m prisma"
+  recursive_type_depth   = 5
+  http                   = "aiohttp"
+  output                 = env("PRISMA_PY_OUTPUT")
+  partial_type_generator = "tests/scripts/partial_type_generator.py"
 }
 
 model Post {

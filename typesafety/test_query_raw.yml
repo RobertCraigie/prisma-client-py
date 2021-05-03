@@ -1,0 +1,79 @@
+- case: correct_return_model_type
+  main: |
+    from prisma import Client
+    from prisma.models import Post, User
+
+    async def main() -> None:
+      client = Client()
+
+      query = '''
+        SELECT *
+        FROM public."Post"
+        WHERE title = "hi"
+      '''
+      posts = await client.query_raw(query, model=Post)
+      reveal_type(posts)  # N: Revealed type is 'builtins.list*[prisma.models.Post*]'
+      post = posts[0]
+      id = post.id
+      oops = post.oops  # E: "Post" has no attribute "oops"  [attr-defined]
+      oops = posts[0].oops  # E: "Post" has no attribute "oops"  [attr-defined]
+
+      users = await client.query_raw(query, model=User)
+      reveal_type(users)  # N: Revealed type is 'builtins.list*[prisma.models.User*]'
+      user = users[0]
+      id = user.id
+      name = user.name
+      oops = user.oops  # E: "User" has no attribute "oops"  [attr-defined]
+
+- case: no_model
+  main: |
+    from prisma import Client
+    from prisma.models import Post, User
+
+    async def main() -> None:
+      client = Client()
+
+      query = '''
+        SELECT *
+        FROM public."Post"
+        WHERE title = "hi"
+      '''
+      posts = await client.query_raw(query)
+      reveal_type(posts)  # N: Revealed type is 'Any'
+
+- case: bad_model_argument
+  main: |
+    from prisma import Client
+
+    async def main() -> None:
+      client = Client()
+
+      query = '''
+        SELECT *
+        FROM public."Post"
+        WHERE title = "hi"
+      '''
+      posts = await client.query_raw(query, model=int)  # E: Value of type variable "BaseModelT" of "query_raw" of "Client" cannot be "int"  [type-var]
+
+- case: non_prisma_model_basemodel
+  main: |
+    from prisma import Client
+    from pydantic import BaseModel
+
+    class MyModel(BaseModel):
+      id: int
+      title: str
+
+    async def main() -> None:
+      client = Client()
+
+      query = '''
+        SELECT *
+        FROM public."Post"
+        WHERE title = "hi"
+      '''
+      models = await client.query_raw(query, model=MyModel)
+      reveal_type(models)  # N: Revealed type is 'builtins.list*[main.MyModel*]'
+      id = models[0].id
+      title = models[0].title
+      oops = models[0].oops  # E: "MyModel" has no attribute "oops"  [attr-defined]

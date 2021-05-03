@@ -13,12 +13,13 @@ else:
     from ._aiohttp_http import HTTP, Response, client
 
 
-try:
-    import requests
-except ImportError:
-    pass
-else:
-    from ._requests_http import HTTP, Response, client
+if HTTP is None:
+    try:
+        import requests
+    except ImportError:
+        pass
+    else:
+        from ._requests_http import HTTP, Response, client
 
 
 if HTTP is None:
