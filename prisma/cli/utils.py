@@ -2,8 +2,7 @@ import sys
 import logging
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import Any  # pylint: disable=unused-import
-from typing import Optional, List, Union, NoReturn, overload
+from typing import Optional, List, Union, NoReturn, Mapping, Any, overload
 
 import click
 
@@ -79,3 +78,15 @@ def error(message: str, exit_: bool = True) -> Union[None, NoReturn]:
         sys.exit(1)
     else:
         return None
+
+
+def pretty_info(mapping: Mapping[str, Any]) -> str:
+    """Pretty print a mapping
+
+    e.g {'foo': 'bar', 'hello': 1}
+
+    foo   : bar
+    hello : 1
+    """
+    pad = max(len(k) for k in mapping.keys())
+    return '\n'.join(f'{k.ljust(pad)} : {v}' for k, v in mapping.items())
