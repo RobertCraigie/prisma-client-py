@@ -1,7 +1,6 @@
 import sys
 import logging
 from pathlib import Path
-from subprocess import CompletedProcess
 from typing import Optional, List, Union, NoReturn, Mapping, Any, overload
 
 import click

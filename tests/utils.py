@@ -29,7 +29,7 @@ class Runner:
         else:
 
             @click.command()
-            def cli() -> None:
+            def cli() -> None:  # pylint: disable=function-redefined
                 if args is not None:
                     # fake invocation context
                     args.insert(0, 'prisma')

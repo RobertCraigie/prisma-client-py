@@ -14,6 +14,10 @@ disable =
   # and for performance reasons
   import-outside-toplevel,
 
+  # there are false positives for this error, mypy will catch the
+  # actual errors, so we can safely disable this error code in pylint
+  unsubscriptable-object,
+
 
 [MASTER]
 extension-pkg-whitelist =
