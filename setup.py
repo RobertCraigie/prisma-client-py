@@ -57,6 +57,7 @@ setup(
         'console_scripts': [
             'prisma=prisma.cli:main',
         ],
+        'prisma': [],
     },
     classifiers=[
         'Development Status :: 1 - Planning',

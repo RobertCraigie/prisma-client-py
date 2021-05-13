@@ -3,7 +3,7 @@ from typing import Optional
 
 import pytest
 from prisma._types import Literal
-from .utils import Testdir
+from ..utils import Testdir
 
 
 SCHEMA = '''

@@ -1,6 +1,6 @@
 import datetime
 import pytest
-from .utils import Testdir
+from ..utils import Testdir
 
 
 SCHEMA = '''

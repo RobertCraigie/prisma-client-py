@@ -1,11 +1,39 @@
+import os
+import sys
+import inspect
 import asyncio
+import textwrap
+import subprocess
+import contextlib
+from pathlib import Path
 from datetime import datetime
-from typing import Coroutine, Any, Optional, List, cast
+from typing import Coroutine, Any, Optional, List, Union, Iterator, cast, TYPE_CHECKING
 
+import py
 import click
+import pkg_resources
 from click.testing import CliRunner, Result
+from pkg_resources import EntryPoint, Distribution
 
 from prisma.cli import main
+from prisma._types import FuncType
+
+
+if TYPE_CHECKING:
+    from _pytest.pytester import RunResult, Testdir as PytestTestdir
+
+
+# as we are generating new modules we need to clear them from
+# the module cache so that python actually picks them up
+# when we import them again, however we also have to ignore
+# any prisma.generator modules as we rely on the import caching
+# mechanism for loading partial model types
+IMPORT_RELOADER = '''
+import sys
+for name in sys.modules.copy():
+    if 'prisma' in name and 'generator' not in name:
+        sys.modules.pop(name, None)
+'''
 
 
 class Runner:
@@ -17,7 +45,7 @@ class Runner:
         self,
         args: Optional[List[str]] = None,
         cli: Optional[click.Command] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Result:
         default_args: Optional[List[str]] = None
 
@@ -43,6 +71,164 @@ class Runner:
             default_args = []
 
         return self._runner.invoke(cli, default_args, **kwargs)
+
+
+class Testdir:
+    __test__ = False
+
+    def __init__(self, testdir: 'PytestTestdir') -> None:
+        self.testdir = testdir
+
+    def _make_relative(self, path: Union[str, Path]) -> str:
+        if not isinstance(path, Path):
+            path = Path(path)
+
+        if not path.is_absolute():
+            return str(path)
+
+        return str(path.relative_to(self.path))
+
+    def _resolve_name(self, func: FuncType, name: Optional[str] = None) -> str:
+        if name is None:
+            return func.__name__
+
+        return name
+
+    def make_from_function(
+        self,
+        function: FuncType,
+        ext: str = '.py',
+        name: Optional[Union[str, Path]] = None,
+        **env: Any,
+    ) -> None:
+        source = get_source_from_function(function, **env)
+
+        if name:
+            self.makefile(ext, **{self._make_relative(name): source})
+        else:
+            self.makefile(ext, source)
+
+    def generate(self, schema: str, options: str = '', **extra: Any) -> None:
+        path = self.tmpdir.join('schema.prisma')
+        path.write(
+            schema.format(output=self.tmpdir.join('prisma'), options=options, **extra)
+        )
+        args = [sys.executable, '-m', 'prisma', 'generate', f'--schema={path}']
+        proc = subprocess.run(  # pylint: disable=subprocess-run-check
+            args,
+            env=os.environ,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        print(str(proc.stdout, 'utf-8'), file=sys.stdout)
+        if proc.returncode != 0:
+            raise subprocess.CalledProcessError(
+                proc.returncode, args, proc.stdout, proc.stderr
+            )
+
+    def makefile(self, ext: str, *args: str, **kwargs: str) -> None:
+        self.testdir.makefile(ext, *args, **kwargs)
+
+    def runpytest(
+        self, *args: Union[str, 'os.PathLike[str]'], **kwargs: Any
+    ) -> 'RunResult':
+        return self.testdir.runpytest(*args, **kwargs)
+
+    def create_module(
+        self, func: FuncType, name: Optional[str] = None, mod: str = 'mod'
+    ) -> None:
+        mod_path = self.path / mod
+        mod_path.mkdir(exist_ok=True)
+        mod_path.joinpath('__init__.py').touch()
+        name = self._resolve_name(func, name)
+        self.make_from_function(func, name=mod_path / name)
+
+    @contextlib.contextmanager
+    def install_module(
+        self,
+        pkg: Optional[str] = None,
+        install_flags: Optional[List[str]] = None,
+        uninstall_flags: Optional[List[str]] = None,
+    ) -> Iterator[None]:
+        if install_flags is None:
+            install_flags = ['-e', '.']
+
+        if uninstall_flags is None:
+            if pkg is None:  # pragma: no cover
+                raise TypeError('Missing required argument: pkg')
+
+            uninstall_flags = ['-y', pkg]
+
+        try:
+            subprocess.run(['pip', 'install', *install_flags], check=True)
+            yield
+        finally:
+            subprocess.run(['pip', 'uninstall', *uninstall_flags], check=True)
+
+    @contextlib.contextmanager
+    def create_entry_point(
+        self,
+        func: FuncType,
+        name: Optional[str] = None,
+        mod: str = 'mod',
+        clear: bool = True,
+    ) -> Iterator[None]:
+        name = self._resolve_name(func, name)
+        self.create_module(func, name=name, mod=mod)
+
+        entries = None
+
+        try:
+            entries = pkg_resources.get_distribution('prisma').get_entry_map()['prisma']
+
+            if clear:
+                # TODO: clear all entries, this curently only clears
+                # entry points defined in the prisma package, other
+                # packages prisma entry points are not cleared
+                entries.clear()
+
+            entries[name] = EntryPoint.parse(
+                f'{name} = {mod}.{name}', dist=Distribution(mod)
+            )
+            yield
+        finally:
+            if entries is not None:
+                entries.pop(name, None)
+
+    @property
+    def tmpdir(self) -> py.path.local:
+        return self.testdir.tmpdir
+
+    @property
+    def path(self) -> Path:
+        return Path(self.tmpdir)
+
+    def __repr__(self) -> str:  # pragma: no cover
+        return str(self)
+
+    def __str__(self) -> str:  # pragma: no cover
+        return f'<Testdir {self.tmpdir} >'
+
+
+def get_source_from_function(function: FuncType, **env: Any) -> str:
+    lines = inspect.getsource(function).splitlines()[1:]
+
+    # setup env after imports
+    for index, line in enumerate(lines):
+        if not line.lstrip(' ').startswith(('import', 'from')):
+            start = index
+            break
+    else:
+        start = 0
+
+    lines = textwrap.dedent('\n'.join(lines)).splitlines()
+    for name, value in env.items():
+        if isinstance(value, str):
+            value = f'\'{value}\''
+
+        lines.insert(start, f'{name} = {value}')
+
+    return IMPORT_RELOADER + '\n'.join(lines)
 
 
 def async_run(coro: Coroutine[Any, Any, Any]) -> Any:
