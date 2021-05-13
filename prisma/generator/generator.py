@@ -9,7 +9,7 @@ from jinja2 import Environment, PackageLoader
 from .models import Data
 from .types import PartialModelFields
 from .utils import is_same_path, remove_suffix
-
+from ..plugins import PluginContext
 
 __all__ = ('run', 'BASE_PACKAGE_DIR', 'partial_models_ctx', 'render_template')
 
@@ -22,8 +22,14 @@ partial_models_ctx: ContextVar[Dict[str, PartialModelFields]] = ContextVar(
 
 
 def run(params: Dict[str, Any]) -> None:
-    params = vars(Data.parse_obj(params))
-    rootdir = Path(params['generator'].output)
+    data = Data.parse_obj(params)
+    config = data.generator.config
+
+    if not config.skip_plugins:
+        ctx = PluginContext(method='generate', data=data)
+        ctx.run()
+
+    rootdir = Path(data.generator.output)
     if not rootdir.exists():
         rootdir.mkdir(parents=True, exist_ok=True)
 
@@ -36,6 +42,7 @@ def run(params: Dict[str, Any]) -> None:
         lstrip_blocks=True,
     )
 
+    params = vars(data)
     for name in env.list_templates():
         if (
             not name.endswith('.py.jinja')
@@ -46,7 +53,6 @@ def run(params: Dict[str, Any]) -> None:
 
         render_template(env, rootdir, name, params)
 
-    config = params['generator'].config
     if config.partial_type_generator:
         log.debug('Generating partial types')
         config.partial_type_generator.run()

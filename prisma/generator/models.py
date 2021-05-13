@@ -135,6 +135,8 @@ class Config(BaseModel):
             alias='recursiveTypeDepth', default=5
         )
 
+    # TODO: add support for skipping individual plugins
+    skip_plugins: bool = FieldInfo(alias='skipPlugins', default=False)
     transform_fields: Optional[TransformChoices] = FieldInfo(alias='transformFields')
     http: HttpChoices = HttpChoices.aiohttp
     partial_type_generator: Optional[Module] = FieldInfo(alias='partialTypeGenerator')

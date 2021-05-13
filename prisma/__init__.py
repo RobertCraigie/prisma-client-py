@@ -6,6 +6,7 @@ __license__ = 'APACHE'
 __copyright__ = 'Copyright 2020 RobertCraigie'
 __version__ = '0.0.1'
 
+from .plugins import *
 from . import binaries, jsonrpc, engine, utils
 
 

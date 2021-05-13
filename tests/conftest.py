@@ -1,15 +1,22 @@
 # pylint: disable=global-statement
+import os
 import asyncio
 import inspect
-from typing import Any
+from typing import Any, Iterator, TYPE_CHECKING
 from contextvars import ContextVar
 
 import pytest
+
 import prisma
 from prisma import Client
 from prisma.cli import setup_logging
 
-from .utils import async_run, Runner
+from . import contexts
+from .utils import async_run, Runner, Testdir
+
+
+if TYPE_CHECKING:
+    from _pytest.pytester import Testdir as PytestTestdir
 
 
 pytest_plugins = ['pytester']
@@ -36,6 +43,16 @@ def runner() -> Runner:
     return Runner()
 
 
+@pytest.fixture(name='testdir')
+def testdir_fixture(testdir: 'PytestTestdir') -> Iterator[Testdir]:
+    cwd = os.getcwd()
+    os.chdir(testdir.tmpdir)
+
+    yield Testdir(testdir)
+
+    os.chdir(cwd)
+
+
 # TODO: don't emulate the with statement
 def pytest_sessionstart(session: pytest.Session) -> None:
     global LOGGING_CONTEXT_MANAGER
@@ -49,6 +66,8 @@ def pytest_sessionfinish(session: pytest.Session) -> None:
 
 
 def pytest_runtest_setup(item: pytest.Function) -> None:
+    contexts.clear()
+
     if not has_client_fixture(item) or marked_persist_data(item):
         return
 

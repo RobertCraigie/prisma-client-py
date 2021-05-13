@@ -11,6 +11,8 @@ __all__ = (
     'RecordNotFoundError',
     'HTTPClientClosedError',
     'ClientNotConnectedError',
+    'PluginError',
+    'PluginMissingRequiredHookError',
 )
 
 
@@ -66,4 +68,12 @@ class TableNotFoundError(DataError):
 
 
 class RecordNotFoundError(DataError):
+    pass
+
+
+class PluginError(PrismaError):
+    pass
+
+
+class PluginMissingRequiredHookError(PluginError):
     pass
