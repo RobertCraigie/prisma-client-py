@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 import subprocess
-from typing import List, Union, Optional, IO
+from typing import List, Union, Optional, IO, Dict, Any
 
 from .. import generator, jsonrpc, binaries
 
@@ -14,6 +14,7 @@ def run(
     args: List[str],
     check: bool = False,
     pipe: bool = False,
+    env: Optional[Dict[str, Any]] = None,
 ) -> int:
     directory = binaries.ensure_cached()
     path = directory.joinpath(binaries.PRISMA_CLI_NAME)
@@ -25,7 +26,11 @@ def run(
     log.debug('Using Prisma CLI at %s', path)
     log.debug('Running prisma command with args: %s', args)
 
-    env = {'PRISMA_HIDE_UPDATE_MESSAGE': 'true', **os.environ}
+    default_env = {'PRISMA_HIDE_UPDATE_MESSAGE': 'true', **os.environ}
+    if env is not None:
+        env = {**default_env, **env}
+    else:
+        env = default_env
 
     # ensure the client uses our engine binaries
     for engine in binaries.ENGINES:

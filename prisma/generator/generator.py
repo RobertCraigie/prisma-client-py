@@ -9,6 +9,8 @@ from jinja2 import Environment, PackageLoader
 from .models import Data
 from .types import PartialModelFields
 from .utils import is_same_path, remove_suffix
+
+from ..utils import DEBUG_GENERATOR
 from ..plugins import PluginContext
 
 __all__ = ('run', 'BASE_PACKAGE_DIR', 'partial_models_ctx', 'render_template')
@@ -24,6 +26,14 @@ partial_models_ctx: ContextVar[Dict[str, PartialModelFields]] = ContextVar(
 def run(params: Dict[str, Any]) -> None:
     data = Data.parse_obj(params)
     config = data.generator.config
+
+    if DEBUG_GENERATOR:
+        path = Path(__file__).parent.joinpath('debug.json')
+
+        with path.open('w') as file:
+            file.write(data.json(indent=2))
+
+        log.debug('Wrote generator data to %s', path)
 
     if not config.skip_plugins:
         ctx = PluginContext(method='generate', data=data)

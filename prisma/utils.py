@@ -9,7 +9,12 @@ from typing import Any, Union, Coroutine
 from ._types import FuncType, CoroType
 
 
-DEBUG = os.environ.get('PRISMA_PY_DEBUG', '').lower() in {'1', 't', 'true'}
+def _env_bool(key: str) -> bool:
+    return os.environ.get(key, '').lower() in {'1', 't', 'true'}
+
+
+DEBUG = _env_bool('PRISMA_PY_DEBUG')
+DEBUG_GENERATOR = _env_bool('PRISMA_PY_DEBUG_GENERATOR')
 
 
 class _NoneType:

@@ -7,7 +7,17 @@ import subprocess
 import contextlib
 from pathlib import Path
 from datetime import datetime
-from typing import Coroutine, Any, Optional, List, Union, Iterator, cast, TYPE_CHECKING
+from typing import (
+    Coroutine,
+    Any,
+    Optional,
+    List,
+    Dict,
+    Union,
+    Iterator,
+    cast,
+    TYPE_CHECKING,
+)
 
 import py
 import click
@@ -33,6 +43,26 @@ import sys
 for name in sys.modules.copy():
     if 'prisma' in name and 'generator' not in name:
         sys.modules.pop(name, None)
+'''
+
+DEFAULT_SCHEMA = '''
+datasource db {{
+  provider = "sqlite"
+  url      = "file:dev.db"
+}}
+
+generator db {{
+  provider = "coverage run -m prisma"
+  output = "{output}"
+  {options}
+}}
+
+model User {{
+  id           String   @id @default(cuid())
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  name         String
+}}
 '''
 
 
@@ -70,11 +100,13 @@ class Runner:
             # we don't pass any args to click as we need to parse them ourselves
             default_args = []
 
-        return self._runner.invoke(cli, default_args, **kwargs)
+        with temp_env_update({'_PRISMA_PY_SHOULD_PIPE': '1'}):
+            return self._runner.invoke(cli, default_args, **kwargs)
 
 
 class Testdir:
     __test__ = False
+    default_schema = DEFAULT_SCHEMA
 
     def __init__(self, testdir: 'PytestTestdir') -> None:
         self.testdir = testdir
@@ -108,11 +140,10 @@ class Testdir:
         else:
             self.makefile(ext, source)
 
-    def generate(self, schema: str, options: str = '', **extra: Any) -> None:
-        path = self.tmpdir.join('schema.prisma')
-        path.write(
-            schema.format(output=self.tmpdir.join('prisma'), options=options, **extra)
-        )
+    def generate(
+        self, schema: Optional[str] = None, options: str = '', **extra: Any
+    ) -> None:
+        path = self.make_schema(schema, options, **extra)
         args = [sys.executable, '-m', 'prisma', 'generate', f'--schema={path}']
         proc = subprocess.run(  # pylint: disable=subprocess-run-check
             args,
@@ -126,6 +157,25 @@ class Testdir:
                 proc.returncode, args, proc.stdout, proc.stderr
             )
 
+    def make_schema(
+        self,
+        schema: Optional[str] = None,
+        options: str = '',
+        output: Optional[str] = None,
+        **extra: Any,
+    ) -> Path:
+        if schema is None:
+            schema = self.default_schema
+
+        if output is None:
+            output = 'prisma'
+
+        path = self.path.joinpath('schema.prisma')
+        path.write_text(
+            schema.format(output=self.path.joinpath(output), options=options, **extra)
+        )
+        return path
+
     def makefile(self, ext: str, *args: str, **kwargs: str) -> None:
         self.testdir.makefile(ext, *args, **kwargs)
 
@@ -135,13 +185,13 @@ class Testdir:
         return self.testdir.runpytest(*args, **kwargs)
 
     def create_module(
-        self, func: FuncType, name: Optional[str] = None, mod: str = 'mod'
+        self, func: FuncType, name: Optional[str] = None, mod: str = 'mod', **env: Any
     ) -> None:
         mod_path = self.path / mod
         mod_path.mkdir(exist_ok=True)
         mod_path.joinpath('__init__.py').touch()
         name = self._resolve_name(func, name)
-        self.make_from_function(func, name=mod_path / name)
+        self.make_from_function(func, name=mod_path / name, **env)
 
     @contextlib.contextmanager
     def install_module(
@@ -229,6 +279,19 @@ def get_source_from_function(function: FuncType, **env: Any) -> str:
         lines.insert(start, f'{name} = {value}')
 
     return IMPORT_RELOADER + '\n'.join(lines)
+
+
+@contextlib.contextmanager
+def temp_env_update(env: Dict[str, str]) -> Iterator[None]:
+    try:
+        old = os.environ.copy()
+        os.environ.update(env)
+        yield
+    finally:
+        for key in env.keys():
+            os.environ.pop(key, None)
+
+        os.environ.update(old)
 
 
 def async_run(coro: Coroutine[Any, Any, Any]) -> Any:

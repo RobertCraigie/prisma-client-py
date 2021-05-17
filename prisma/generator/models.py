@@ -4,8 +4,16 @@ from pathlib import Path
 from importlib import machinery
 from contextvars import ContextVar
 from collections import defaultdict
-from typing import Any, Optional, List, Union, Iterator, Dict, TYPE_CHECKING
-from pydantic import BaseModel, Extra, Field as FieldInfo, conint, validator
+from typing import Any, Optional, List, Tuple, Union, Iterator, Dict, TYPE_CHECKING
+from pydantic import (
+    BaseModel as PydanticBaseModel,
+    BaseSettings,
+    Extra,
+    Field as FieldInfo,
+    conint,
+    validator,
+)
+from pydantic.env_settings import SettingsSourceCallable
 
 from .utils import pascalize, camelize, decamelize
 
@@ -34,6 +42,13 @@ def get_config() -> 'Config':
 
 def get_datamodel() -> 'Datamodel':
     return data_ctx.get().dmmf.datamodel
+
+
+class BaseModel(PydanticBaseModel):
+    class Config:
+        json_encoders = {
+            machinery.ModuleSpec: lambda s: s.origin,
+        }
 
 
 class TransformChoices(str, enum.Enum):
@@ -125,26 +140,35 @@ class Generator(BaseModel):
     preview_features: List[str] = FieldInfo(alias='previewFeatures')
 
 
-class Config(BaseModel):
+class Config(BaseSettings):
     """Custom generator config options."""
 
     if TYPE_CHECKING:
         recursive_type_depth: int
     else:
-        recursive_type_depth: conint(ge=2) = FieldInfo(
-            alias='recursiveTypeDepth', default=5
-        )
+        recursive_type_depth: conint(ge=2) = FieldInfo(default=5)
 
     # TODO: add support for skipping individual plugins
-    skip_plugins: bool = FieldInfo(alias='skipPlugins', default=False)
-    transform_fields: Optional[TransformChoices] = FieldInfo(alias='transformFields')
+    skip_plugins: bool = FieldInfo(default=False)
+    transform_fields: Optional[TransformChoices]
     http: HttpChoices = HttpChoices.aiohttp
-    partial_type_generator: Optional[Module] = FieldInfo(alias='partialTypeGenerator')
+    partial_type_generator: Optional[Module]
 
     class Config:
         extra = Extra.forbid
         use_enum_values = True
+        env_prefix = 'prisma_py_config_'
         allow_population_by_field_name = True
+
+        @classmethod
+        def customise_sources(
+            cls,
+            init_settings: SettingsSourceCallable,
+            env_settings: SettingsSourceCallable,
+            file_secret_settings: SettingsSourceCallable,
+        ) -> Tuple[SettingsSourceCallable, ...]:
+            # prioritise env settings over init settings
+            return env_settings, init_settings, file_secret_settings
 
     @validator('http', always=True, allow_reuse=True)
     @classmethod

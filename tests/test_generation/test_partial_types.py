@@ -239,7 +239,7 @@ def test_partial_type_generator_not_found(testdir: Testdir) -> None:
 
     output = str(exc.value.output)
     assert 'ValidationError' in output
-    assert 'generator -> config -> partialTypeGenerator' in output
+    assert 'generator -> config -> partial_type_generator' in output
     assert 'Could not find a python file or module at foo.bar.baz' in output
 
 
