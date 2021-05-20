@@ -1,6 +1,5 @@
 import random
 import shutil
-from pathlib import Path
 
 from click.testing import Result
 

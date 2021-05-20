@@ -12,7 +12,8 @@ def test_no_args_outside_generation_warning(runner: Runner) -> None:
     result = runner.invoke([])
     assert result.exit_code == 1
     assert result.output == (
-        'This command is only intended to be invoked internally. Please run the following instead:\n'
+        'This command is only intended to be invoked internally. '
+        'Please run the following instead:\n'
         'prisma <command>\n'
         'e.g.\n'
         'prisma generate\n'

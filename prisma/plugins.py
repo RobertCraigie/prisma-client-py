@@ -139,6 +139,8 @@ def load_plugins(ctx: PluginContext) -> Iterator[Plugin]:
 
 
 # circular import
-from .generator.models import Data
+from .generator.models import (  # pylint: disable=unused-import, wrong-import-position
+    Data,
+)
 
 PluginContext.update_forward_refs()

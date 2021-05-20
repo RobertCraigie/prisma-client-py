@@ -5,25 +5,6 @@ import pytest
 from ..utils import Testdir
 
 
-SCHEMA = '''
-datasource db {{
-  provider = "sqlite"
-  url      = "file:dev.db"
-}}
-
-generator db {{
-  provider = "coverage run -m prisma"
-  output = "{output}"
-  {options}
-}}
-
-model User {{
-  id           String   @id @default(cuid())
-  name         String
-}}
-'''
-
-
 def test_skip_plugins(testdir: Testdir) -> None:
     def plugin() -> None:  # mark: filedef
         raise RuntimeError('Plugin ran')
@@ -47,10 +28,10 @@ def test_skip_plugins(testdir: Testdir) -> None:
     testdir.make_from_function(setup, name='setup.py')
 
     with testdir.install_module('prisma-plugin'):
-        testdir.generate(SCHEMA, 'skip_plugins = True')
+        testdir.generate(options='skip_plugins = True')
 
         for options in ['', 'skip_plugins = False']:
             with pytest.raises(subprocess.CalledProcessError) as exc:
-                testdir.generate(SCHEMA, options)
+                testdir.generate(options=options)
 
             assert 'RuntimeError: Plugin ran' in str(exc.value.output)

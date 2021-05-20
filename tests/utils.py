@@ -120,7 +120,8 @@ class Testdir:
 
         return str(path.relative_to(self.path))
 
-    def _resolve_name(self, func: FuncType, name: Optional[str] = None) -> str:
+    @staticmethod
+    def _resolve_name(func: FuncType, name: Optional[str] = None) -> str:
         if name is None:
             return func.__name__
 
@@ -193,9 +194,9 @@ class Testdir:
         name = self._resolve_name(func, name)
         self.make_from_function(func, name=mod_path / name, **env)
 
+    @staticmethod
     @contextlib.contextmanager
     def install_module(
-        self,
         pkg: Optional[str] = None,
         install_flags: Optional[List[str]] = None,
         uninstall_flags: Optional[List[str]] = None,

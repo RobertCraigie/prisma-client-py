@@ -1,13 +1,14 @@
 [DESIGN]
 max-locals = 20
 max-branches = 20
+max-line-length = 105
 
 
 [MESSAGES CONTROL]
 disable =
   fixme,
   try-except-raise,
-  missing-docstring,
+  redefined-outer-name,
   too-few-public-methods,
 
   # we need to import outside the toplevel due to code generation
@@ -17,6 +18,9 @@ disable =
   # there are false positives for this error, mypy will catch the
   # actual errors, so we can safely disable this error code in pylint
   unsubscriptable-object,
+
+  # TODO: re-enable this at some point
+  missing-docstring,
 
 
 [MASTER]
@@ -31,6 +35,7 @@ generated-members =
 
 [BASIC]
 good-names =
+  T,
   i,
   j,
   db,

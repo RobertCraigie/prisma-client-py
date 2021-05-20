@@ -1,7 +1,5 @@
 import re
 import json
-from pathlib import Path
-from prisma import binaries
 from tests.utils import Runner
 
 

@@ -1,7 +1,6 @@
 import pytest
 
 from prisma import PluginContext, plugins
-from prisma._types import FuncType
 from prisma.errors import PluginMissingRequiredHookError
 from prisma.generator.models import Data
 
@@ -28,7 +27,7 @@ def test_no_hooks_defined(testdir: Testdir, ctx: PluginContext) -> None:
 
 def test_wrong_hook_type(testdir: Testdir, ctx: PluginContext) -> None:
     def plugin() -> None:  # mark: filedef
-        prisma_generate = 1
+        prisma_generate = 1  # pylint: disable=unused-variable
 
     with testdir.create_entry_point(plugin):
         with pytest.raises(TypeError) as exc:
