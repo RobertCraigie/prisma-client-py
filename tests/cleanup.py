@@ -1,28 +1,19 @@
-import subprocess
+import os
+import sys
 from pathlib import Path
+
+sys.path.insert(0, '.')
+
+from prisma.generator.generator import (  # pylint: disable=wrong-import-position
+    BASE_PACKAGE_DIR,
+    cleanup_templates,
+)
 
 
 def main() -> None:
     """Remove auto-generated python files"""
-    directory = Path.cwd().joinpath('prisma')
-    templates = Path.cwd().joinpath('prisma/generator/templates')
-    for template in templates.glob('**/[!_]*.py.jinja'):
-        path = directory.joinpath(
-            *template.parts[template.parts.index('templates') + 1 : -1],
-            template.name.rstrip('.jinja')
-        )
-
-        if path.exists():
-            path.unlink()
-
-        # TODO: output error if unexpected error occurs
-        # if the template replaces an existing file then we need to
-        # revert to the original file
-        subprocess.run(  # pylint: disable=subprocess-run-check
-            ['git', 'checkout', path],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.STDOUT,
-        )
+    cleanup_templates(rootdir=BASE_PACKAGE_DIR)
+    cleanup_templates(rootdir=Path(os.environ.get('PRISMA_PY_OUTPUT')))
 
 
 if __name__ == '__main__':

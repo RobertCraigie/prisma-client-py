@@ -127,3 +127,4 @@ prisma/models.py
 prisma/builder.py
 prisma/partials.py
 prisma/engine/query.py
+prisma/http.py.original

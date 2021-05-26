@@ -1,5 +1,3 @@
-# WARNING: if you are editing this file you must stage it before running tests
-#
 # NOTE: we don't care which http method we use here as this file is replaced
 # with the method that the user specifies
 
