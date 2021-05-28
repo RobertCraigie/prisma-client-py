@@ -13,7 +13,8 @@ __all__ = ('HTTP', 'Response', 'client')
 class HTTP(AbstractHTTP[aiohttp.ClientSession, aiohttp.ClientResponse]):
     # pylint: disable=invalid-overridden-method,attribute-defined-outside-init
 
-    library = 'aiohttp'
+    session: aiohttp.ClientSession
+    library: str = 'aiohttp'
 
     async def download(self, url: str, dest: str) -> None:
         async with self.session.get(url, raise_for_status=True, timeout=None) as resp:
@@ -46,7 +47,7 @@ class HTTP(AbstractHTTP[aiohttp.ClientSession, aiohttp.ClientResponse]):
             pass
 
 
-client = HTTP()
+client: HTTP = HTTP()
 
 
 class Response(AbstractResponse[aiohttp.ClientResponse]):

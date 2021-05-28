@@ -11,13 +11,13 @@ from ..utils import module_exists
 from .._types import Literal
 
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 
 class PrismaCLI(click.MultiCommand):
 
-    base_package = 'prisma.cli.commands'
-    folder = Path(__file__).parent / 'commands'
+    base_package: str = 'prisma.cli.commands'
+    folder: Path = Path(__file__).parent / 'commands'
 
     def list_commands(self, ctx: click.Context) -> List[str]:
         commands = []

@@ -22,10 +22,13 @@ from ..utils import time_since
 
 __all__ = ('QueryEngine',)
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 
 class QueryEngine:
+    dml: str
+    session: HTTP
+
     def __init__(self, *, dml: str):
         self.dml = dml
         self.session = HTTP()

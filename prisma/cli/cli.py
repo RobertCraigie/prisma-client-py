@@ -16,7 +16,7 @@ from ..utils import maybe_async_run, DEBUG
 
 __all__ = ('main', 'setup_logging')
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 
 # TODO: switch base cli to click as well to support autocomplete
@@ -56,10 +56,10 @@ def main(
 
 @contextlib.contextmanager
 def setup_logging(use_handler: bool = True) -> Iterator[None]:
-    try:
-        handler = None
-        logger = logging.getLogger()
+    handler = None
+    logger = logging.getLogger()
 
+    try:
         if DEBUG:
             logger.setLevel(logging.DEBUG)
 

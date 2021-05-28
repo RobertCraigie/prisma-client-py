@@ -2,7 +2,7 @@
 
 import logging
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 
 import click
 
@@ -18,7 +18,7 @@ __all__ = (
     'remove_all',
 )
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 ENGINES = [
     Engine(name='query-engine', env='PRISMA_QUERY_ENGINE_BINARY'),
@@ -27,7 +27,7 @@ ENGINES = [
     Engine(name='prisma-fmt', env='PRISMA_FMT_BINARY'),
 ]
 
-BINARIES = [
+BINARIES: List[Binary] = [
     *ENGINES,
     Binary(name=PRISMA_CLI_NAME),
 ]

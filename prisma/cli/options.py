@@ -1,16 +1,17 @@
 import click
 
 from .utils import PathlibPath
+from .._types import FuncType
 
 
-schema = click.option(
+schema: FuncType = click.option(
     '--schema',
     type=PathlibPath(exists=True, dir_okay=False, resolve_path=True),
     help='The location of the Prisma schema file.',
     required=False,
 )
 
-watch = click.option(
+watch: FuncType = click.option(
     '--watch',
     is_flag=True,
     default=False,

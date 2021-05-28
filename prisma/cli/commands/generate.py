@@ -15,7 +15,7 @@ ARG_TO_CONFIG_KEY = {
     'partials': 'partial_type_generator',
 }
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 
 @click.command('generate')

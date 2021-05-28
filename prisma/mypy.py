@@ -41,12 +41,10 @@ CLIENT_ACTION_CHILD = re.compile(
     r'prisma\.client\.(.*)Actions\.(?P<name>(((?!\.).)*$))'
 )
 ACTIONS = [
-    # implemented
     'create',
     'find_unique',
     'delete',
     'update',
-    # not implemented
     'find_first',
     'find_many',
     'upsert',
@@ -58,7 +56,7 @@ ACTIONS = [
 PRISMA_TYPE = re.compile(r'prisma\.types\.(?P<name>(((?!\.).)*$))')
 CONFIGFILE_KEY = 'prisma-mypy'
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 
 def plugin(version: str) -> TypingType[Plugin]:
@@ -84,6 +82,8 @@ class PrismaPluginConfig:
 
 
 class PrismaPlugin(Plugin):
+    config: PrismaPluginConfig
+
     def __init__(self, options: Options) -> None:
         self.config = PrismaPluginConfig(options)
         super().__init__(options)
@@ -370,6 +370,8 @@ class PrismaPlugin(Plugin):
 
 
 class UnparsedExpression(Exception):
+    context: Union[Expression, Node]
+
     def __init__(self, context: Union[Expression, Node]) -> None:
         self.context = context
         super().__init__(

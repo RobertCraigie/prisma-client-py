@@ -40,7 +40,7 @@ class QueryBuilder(BaseModel):
     {% raw %}
 
     class Config:
-        arbitrary_types_allowed = True
+        arbitrary_types_allowed: bool = True
 
     def build(self) -> str:
         data = {

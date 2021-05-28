@@ -22,7 +22,7 @@ __all__ = (
     'partial_models_ctx',
 )
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 BASE_PACKAGE_DIR = Path(__file__).parent.parent
 
 # set of templates that should be rendered after every other template

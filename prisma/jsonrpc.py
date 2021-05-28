@@ -1,11 +1,11 @@
 import sys
 import json
 import logging
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Type, Any
 from pydantic import BaseModel
 
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 
 class Request(BaseModel):
@@ -37,7 +37,7 @@ class Manifest(BaseModel):
 
 
 # TODO: proper types
-method_mapping = {
+method_mapping: Dict[str, Type[Request]] = {
     'getManifest': Request,
     'generate': Request,
 }

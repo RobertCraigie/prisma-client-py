@@ -74,6 +74,8 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
 
 
 class AbstractResponse(ABC, Generic[Response]):
+    original: Response
+
     def __init__(self, original: Response) -> None:
         self.original = original
 

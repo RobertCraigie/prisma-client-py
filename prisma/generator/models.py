@@ -4,7 +4,17 @@ from pathlib import Path
 from importlib import machinery
 from contextvars import ContextVar
 from collections import defaultdict
-from typing import Any, Optional, List, Tuple, Union, Iterator, Dict, TYPE_CHECKING
+from typing import (
+    Any,
+    Optional,
+    List,
+    Tuple,
+    Union,
+    Iterator,
+    Dict,
+    Type,
+    TYPE_CHECKING,
+)
 from pydantic import (
     BaseModel as PydanticBaseModel,
     BaseSettings,
@@ -46,7 +56,7 @@ def get_datamodel() -> 'Datamodel':
 
 class BaseModel(PydanticBaseModel):
     class Config:
-        json_encoders = {
+        json_encoders: Dict[Type[Any], Any] = {
             machinery.ModuleSpec: lambda s: s.origin,
         }
 
@@ -67,7 +77,7 @@ class Module(BaseModel):
     spec: machinery.ModuleSpec
 
     class Config:
-        arbitrary_types_allowed = True
+        arbitrary_types_allowed: bool = True
 
     @validator('spec', pre=True, allow_reuse=True)
     @classmethod
@@ -155,10 +165,10 @@ class Config(BaseSettings):
     partial_type_generator: Optional[Module]
 
     class Config:
-        extra = Extra.forbid
-        use_enum_values = True
-        env_prefix = 'prisma_py_config_'
-        allow_population_by_field_name = True
+        extra: Extra = Extra.forbid
+        use_enum_values: bool = True
+        env_prefix: str = 'prisma_py_config_'
+        allow_population_by_field_name: bool = True
 
         @classmethod
         def customise_sources(

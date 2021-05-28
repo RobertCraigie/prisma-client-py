@@ -7,7 +7,7 @@ from typing import List, Union, Optional, IO, Dict, Any
 from .. import generator, jsonrpc, binaries
 
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 
 def run(

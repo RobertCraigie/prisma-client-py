@@ -1,4 +1,5 @@
 import json
+from typing import List
 from pathlib import Path
 from importlib import import_module
 
@@ -25,7 +26,7 @@ def cli(output_json: bool) -> None:
         'aiohttp': 'aiohttp',
         'requests': 'requests',
     }
-    installed = []
+    installed: List[str] = []
     for extra, module in extras.items():
         try:
             import_module(module)

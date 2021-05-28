@@ -4,7 +4,7 @@ import socket
 import logging
 import subprocess
 from pathlib import Path
-from typing import NoReturn, Any
+from typing import NoReturn, Dict, Type, Any
 
 from . import errors
 from .. import errors as prisma_errors
@@ -14,8 +14,8 @@ from ..utils import time_since
 from ..binaries import GLOBAL_TEMP_DIR, ENGINE_VERSION, platform
 
 
-log = logging.getLogger(__name__)
-ERROR_MAPPING = {
+log: logging.Logger = logging.getLogger(__name__)
+ERROR_MAPPING: Dict[str, Type[Exception]] = {
     'P2002': prisma_errors.UniqueViolationError,
     'P2010': prisma_errors.RawQueryError,
     'P2012': prisma_errors.MissingRequiredValueError,

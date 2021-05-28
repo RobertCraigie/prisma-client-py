@@ -9,7 +9,7 @@ from .constants import ENGINE_URL, ENGINE_VERSION, GLOBAL_TEMP_DIR
 
 __all__ = ('Engine',)
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 
 class Engine(Binary):

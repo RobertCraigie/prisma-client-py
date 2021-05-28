@@ -31,6 +31,9 @@ class NotConnectedError(EngineError):
 
 
 class MismatchedVersionsError(EngineError):
+    got: str
+    expected: str
+
     def __init__(self, *, expected: str, got: str):
         super().__init__(f'Expected query engine version `{expected}` but got `{got}`')
         self.expected = expected
@@ -42,6 +45,8 @@ class EngineConnectionError(EngineError):
 
 
 class EngineRequestError(EngineError):
+    response: Response
+
     def __init__(self, response: Response, body: str):
         self.response = response
 

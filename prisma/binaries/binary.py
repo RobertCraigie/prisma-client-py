@@ -9,7 +9,7 @@ from .constants import GLOBAL_TEMP_DIR, PRISMA_URL, PRISMA_VERSION
 
 __all__ = ('Binary',)
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 
 class Binary(BaseModel):

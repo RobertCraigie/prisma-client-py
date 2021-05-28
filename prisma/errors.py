@@ -34,6 +34,10 @@ class HTTPClientClosedError(PrismaError):
 
 
 class DataError(PrismaError):
+    data: Any
+    code: Any
+    meta: Any
+
     def __init__(self, data: Any, *, message: Optional[str] = None):
         self.data = data
 

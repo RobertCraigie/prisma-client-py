@@ -99,6 +99,8 @@ class Client:
 {% for model in dmmf.datamodel.models %}
 
 class {{ model.name }}Actions:
+    client: Client
+
     def __init__(self, client: Client):
         self.client = client
         self._field_aliases = {{ model.get_field_aliases() }}

@@ -19,7 +19,7 @@ from .utils import _NoneType
 from .errors import PluginMissingRequiredHookError
 
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 __all__ = ('PluginContext', 'load_plugins')
 
@@ -43,6 +43,10 @@ class PluginContext(BaseModel):
 
 
 class Plugin:
+    obj: Any
+    ctx: PluginContext
+    entry: pkg_resources.EntryPoint
+
     def __init__(
         self, *, entry: pkg_resources.EntryPoint, obj: Any, ctx: PluginContext
     ) -> None:
