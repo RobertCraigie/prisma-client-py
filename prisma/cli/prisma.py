@@ -4,6 +4,8 @@ import logging
 import subprocess
 from typing import List, Union, Optional, IO, Dict, Any
 
+import click
+
 from .. import generator, jsonrpc, binaries
 
 
@@ -57,6 +59,15 @@ def run(
     if pipe:
         print(process.stdout)
         print(process.stderr, file=sys.stderr)
+
+    if args and args[0] in {'--help', '-h'}:
+        prefix = ' '
+        click.echo(click.style(prefix + 'Python Commands\n', bold=True))
+        click.echo(
+            prefix
+            + 'For Prisma Client Python commands see '
+            + click.style('prisma py --help', bold=True)
+        )
 
     return process.returncode
 

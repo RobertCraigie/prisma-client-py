@@ -33,3 +33,10 @@ def test_custom_help(runner: Runner, args: List[str]) -> None:
         'Custom command line arguments specifically for Prisma Client Python.'
         in result.output
     )
+
+
+@pytest.mark.parametrize('args', [['-h'], ['--help']])
+def test_outputs_custom_commands_info(runner: Runner, args: List[str]) -> None:
+    result = runner.invoke(args)
+    assert 'Python Commands' in result.output
+    assert 'For Prisma Client Python commands see prisma py --help' in result.output
