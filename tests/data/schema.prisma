@@ -4,7 +4,7 @@ datasource db {
 }
 
 generator db {
-  provider               = "coverage run -m prisma"
+  provider               = "python3 -m prisma"
   recursive_type_depth   = 5
   http                   = "aiohttp"
   partial_type_generator = "tests/scripts/partial_type_generator.py"

@@ -2,6 +2,6 @@ include README.md
 include requirements/*.txt
 
 include prisma/py.typed
-include prisma/generator/templates/**/*.py.jinja
+recursive-include prisma/generator/templates/ *.py.jinja
 
 global-exclude *.pyc

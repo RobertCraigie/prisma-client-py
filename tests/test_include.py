@@ -1,5 +1,4 @@
-from typing import Optional, List
-from contextvars import ContextVar
+from typing import List
 
 import pytest
 
@@ -7,13 +6,10 @@ from prisma import Client
 from prisma.models import Post
 
 
-posts_ctx: ContextVar[Optional[List[Post]]] = ContextVar('posts_ctx', default=None)
-
-
 @pytest.fixture(scope='module', name='user_id')
 async def user_id_fixture(client: Client) -> str:
     user = await client.user.create({'name': 'Robert'})
-    posts = await create_posts(client, user.id)
+    posts = await create_or_get_posts(client, user.id)
     await client.category.create(
         {
             'name': 'My Category',
@@ -25,15 +21,17 @@ async def user_id_fixture(client: Client) -> str:
 
 @pytest.fixture(scope='module', name='posts')
 async def posts_fixture(client: Client, user_id: str) -> List[Post]:
-    return await create_posts(client, user_id)
+    return await create_or_get_posts(client, user_id)
 
 
-async def create_posts(client: Client, user_id: str) -> List[Post]:
-    posts = posts_ctx.get()
-    if posts is not None:
-        return posts
+async def create_or_get_posts(client: Client, user_id: str) -> List[Post]:
+    user = await client.user.find_unique(where={'id': user_id}, include={'posts': True})
+    assert user is not None
 
-    posts = [
+    if user.posts:
+        return user.posts
+
+    return [
         await client.post.create(
             {
                 'title': 'Post 1',
@@ -63,8 +61,6 @@ async def create_posts(client: Client, user_id: str) -> List[Post]:
             }
         ),
     ]
-    posts_ctx.set(posts)
-    return posts
 
 
 @pytest.mark.asyncio

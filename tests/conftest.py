@@ -1,5 +1,6 @@
 # pylint: disable=global-statement
 import os
+import sys
 import asyncio
 import inspect
 from typing import Any, Iterator, TYPE_CHECKING
@@ -47,10 +48,12 @@ def runner() -> Runner:
 def testdir_fixture(testdir: 'PytestTestdir') -> Iterator[Testdir]:
     cwd = os.getcwd()
     os.chdir(testdir.tmpdir)
+    sys.path.insert(0, str(testdir.tmpdir))
 
     yield Testdir(testdir)
 
     os.chdir(cwd)
+    sys.path.remove(str(testdir.tmpdir))
 
 
 # TODO: don't emulate the with statement
