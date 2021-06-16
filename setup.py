@@ -56,6 +56,7 @@ setup(
     entry_points={
         'console_scripts': [
             'prisma=prisma.cli:main',
+            'prisma-client-py=prisma.cli:main',
         ],
         'prisma': [],
     },
