@@ -81,3 +81,19 @@ class PluginError(PrismaError):
 
 class PluginMissingRequiredHookError(PluginError):
     pass
+
+
+class BuilderError(PrismaError):
+    pass
+
+
+class UnknownModelError(BuilderError):
+    def __init__(self, model: str) -> None:
+        super().__init__(f'Model: "{model}" does not exist.')
+
+
+class UnknownRelationalFieldError(BuilderError):
+    def __init__(self, model: str, field: str) -> None:
+        super().__init__(
+            f'Field: "{field}" either does not exist or is not a relational field on the {model} model'
+        )

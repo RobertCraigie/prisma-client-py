@@ -6,6 +6,7 @@ import textwrap
 import subprocess
 import contextlib
 from pathlib import Path
+from textwrap import dedent
 from datetime import datetime
 from typing import (
     Coroutine,
@@ -27,6 +28,7 @@ from pkg_resources import EntryPoint, Distribution
 
 from prisma.cli import main
 from prisma._types import FuncType
+from prisma.builder import QueryBuilder
 
 
 if TYPE_CHECKING:
@@ -308,3 +310,16 @@ def assert_time_like_now(dt: datetime, threshold: int = 10) -> None:
     delta = datetime.utcnow() - dt
     assert delta.days == 0
     assert delta.total_seconds() < threshold
+
+
+def assert_query_equals(query: Union[str, QueryBuilder], expected: str) -> None:
+    if not isinstance(query, str):
+        query = query.build_query()
+
+    # we have to dedent and remove leading and ending newlines
+    # to support in-place query definitions
+    expected = dedent(expected).lstrip('\n')
+    if expected.endswith('\n'):
+        expected = expected[:-1]
+
+    assert query == expected

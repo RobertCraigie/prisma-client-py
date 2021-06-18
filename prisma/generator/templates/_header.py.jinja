@@ -6,8 +6,22 @@
 # global imports for type checking
 import sys
 import datetime
-from typing import TYPE_CHECKING, Optional, Any, Dict, overload, Union, List, Set, Type, Iterable, cast
-
+from typing import (
+    TYPE_CHECKING,
+    Optional,
+    Iterable,
+    Iterator,
+    Mapping,
+    Tuple,
+    Union,
+    List,
+    Dict,
+    Type,
+    Any,
+    Set,
+    overload,
+    cast,
+)
 
 if sys.version_info >= (3, 8):
     from typing import TypedDict, Literal

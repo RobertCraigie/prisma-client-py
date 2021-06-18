@@ -57,13 +57,14 @@ class Client:
             self.__engine = None
 
     {{ maybe_async_def }}execute_raw(self, query: str, *args: Any) -> int:
-        builder = QueryBuilder(
-            engine=self._engine,
+        resp = {{ maybe_await }}self._execute(
             operation='mutation',
             method='executeRaw',
-            arguments={'query': query, 'parameters': args}
+            arguments={
+                'query': query,
+                'parameters': args,
+            }
         )
-        resp = {{ maybe_await }}builder.execute()
         return int(resp['data']['result'])
 
     @overload
@@ -77,16 +78,36 @@ class Client:
     {{ maybe_async_def }}query_raw(
         self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[List[BaseModelT], Any]:
-        builder = QueryBuilder(
-            engine=self._engine,
+        resp = {{ maybe_await }}self._execute(
             operation='mutation',
             method='queryRaw',
-            arguments={'query': query, 'parameters': args}
+            arguments={
+                'query': query,
+                'parameters': args,
+            }
         )
-        result = ({{ maybe_await }}builder.execute())['data']['result']
+        result = resp['data']['result']
         if model is not None:
             return [model.parse_obj(r) for r in result]
         return result
+
+    # TODO: don't return Any
+    {{ maybe_async_def }}_execute(
+        self,
+        method: str,
+        operation: str,
+        arguments: Dict[str, Any],
+        model: Optional[str] = None,
+        root_selection: Optional[List[str]] = None
+    ) -> Any:
+        builder = QueryBuilder(
+            operation=operation,
+            method=method,
+            model=model,
+            arguments=arguments,
+            root_selection=root_selection,
+        )
+        return {{ maybe_await }}self._engine.request('POST', '/', data=builder.build())
 
     @property
     def _engine(self) -> QueryEngine:
@@ -103,23 +124,21 @@ class {{ model.name }}Actions:
 
     def __init__(self, client: Client):
         self.client = client
-        self._field_aliases = {{ model.get_field_aliases() }}
 
     {{ maybe_async_def }}create(
         self,
         data: types.{{ model.name }}CreateInput,
         include: Optional[types.{{ model.name}}Include] = None
     ) -> models.{{ model.name }}:
-        builder = QueryBuilder(
-            engine=self.client._engine,
+        resp = {{ maybe_await }}self.client._execute(
             operation='mutation',
             method='createOne',
             model='{{ model.name }}',
-            include=include,
-            arguments={'data': data},
-            aliases=self._field_aliases,
+            arguments={
+                'data': data,
+                'include': include,
+            },
         )
-        resp = {{ maybe_await }}builder.execute()
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
     {{ maybe_async_def }}delete(
@@ -127,18 +146,16 @@ class {{ model.name }}Actions:
         where: types.{{ model.name }}WhereUniqueInput,
         include: Optional[types.{{ model.name}}Include] = None
     ) -> Optional[models.{{ model.name }}]:
-        builder = QueryBuilder(
-            engine=self.client._engine,
-            operation='mutation',
-            method='deleteOne',
-            model='{{ model.name }}',
-            include=include,
-            arguments={'where': where},
-            aliases=self._field_aliases,
-        )
-
         try:
-            resp = {{ maybe_await }}builder.execute()
+            resp = {{ maybe_await }}self.client._execute(
+                operation='mutation',
+                method='deleteOne',
+                model='{{ model.name }}',
+                arguments={
+                    'where': where,
+                    'include': include,
+                },
+            )
         except errors.RecordNotFoundError:
             return None
 
@@ -149,16 +166,15 @@ class {{ model.name }}Actions:
         where: types.{{ model.name }}WhereUniqueInput,
         include: Optional[types.{{ model.name}}Include] = None
     ) -> Optional[models.{{ model.name }}]:
-        builder = QueryBuilder(
-            engine=self.client._engine,
+        resp = {{ maybe_await }}self.client._execute(
             operation='query',
             method='findUnique',
             model='{{ model.name }}',
-            include=include,
-            arguments={'where': where},
-            aliases=self._field_aliases,
+            arguments={
+                'where': where,
+                'include': include,
+            },
         )
-        resp = {{ maybe_await }}builder.execute()
         result = resp['data']['result']
         if result is None:
             return None
@@ -173,22 +189,19 @@ class {{ model.name }}Actions:
         include: Optional[types.{{ model.name }}Include] = None,
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> List[models.{{ model.name }}]:
-        builder = QueryBuilder(
-            engine=self.client._engine,
+        resp = {{ maybe_await }}self.client._execute(
             operation='query',
             method='findMany',
             model='{{ model.name }}',
-            include=include,
             arguments={
                 'take': take,
                 'skip': skip,
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
+                'include': include,
             },
-            aliases=self._field_aliases,
         )
-        resp = {{ maybe_await }}builder.execute()
         return [models.{{ model.name }}.parse_obj(r) for r in resp['data']['result']]
 
     {{ maybe_async_def }}find_first(
@@ -199,21 +212,18 @@ class {{ model.name }}Actions:
         include: Optional[types.{{ model.name }}Include] = None,
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> Optional[models.{{ model.name }}]:
-        builder = QueryBuilder(
-            engine=self.client._engine,
+        resp = {{ maybe_await }}self.client._execute(
             operation='query',
             method='findFirst',
             model='{{ model.name }}',
-            include=include,
             arguments={
                 'skip': skip,
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
+                'include': include
             },
-            aliases=self._field_aliases,
         )
-        resp = {{ maybe_await }}builder.execute()
         result = resp['data']['result']
         if result is None:
             return None
@@ -225,18 +235,17 @@ class {{ model.name }}Actions:
         where: types.{{ model.name }}WhereUniqueInput,
         include: Optional[types.{{ model.name}}Include] = None
     ) -> Optional[models.{{ model.name }}]:
-        builder = QueryBuilder(
-            engine=self.client._engine,
-            operation='mutation',
-            method='updateOne',
-            model='{{ model.name }}',
-            include=include,
-            arguments={'data': data, 'where': where},
-            aliases=self._field_aliases,
-        )
-
         try:
-            resp = {{ maybe_await }}builder.execute()
+            resp = {{ maybe_await }}self.client._execute(
+                operation='mutation',
+                method='updateOne',
+                model='{{ model.name }}',
+                arguments={
+                    'data': data,
+                    'where': where,
+                    'include': include,
+                },
+            )
         except errors.RecordNotFoundError:
             return None
 
@@ -248,16 +257,17 @@ class {{ model.name }}Actions:
         data: types.{{ model.name }}UpsertInput,
         include: Optional[types.{{ model.name}}Include] = None,
     ) -> models.{{ model.name}}:
-        builder = QueryBuilder(
-            engine=self.client._engine,
+        resp = {{ maybe_await }}self.client._execute(
             operation='mutation',
             method='upsertOne',
             model='{{ model.name }}',
-            include=include,
-            arguments={'where': where, **data},
-            aliases=self._field_aliases,
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
         )
-        resp = {{ maybe_await }}builder.execute()
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
     {{ maybe_async_def }}update_many(
@@ -265,16 +275,13 @@ class {{ model.name }}Actions:
         data: types.{{ model.name }}UpdateManyMutationInput,
         where: types.{{ model.name }}WhereInput,
     ) -> int:
-        builder = QueryBuilder(
-            engine=self.client._engine,
+        resp = {{ maybe_await }}self.client._execute(
             operation='mutation',
             method='updateMany',
             model='{{ model.name }}',
             arguments={'data': data, 'where': where,},
-            aliases=self._field_aliases,
             root_selection=['count'],
         )
-        resp = {{ maybe_await }}builder.execute()
         return int(resp['data']['result']['count'])
 
     {{ maybe_async_def }}count(
@@ -287,8 +294,7 @@ class {{ model.name }}Actions:
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> int:
         # TODO: support select
-        builder = QueryBuilder(
-            engine=self.client._engine,
+        resp = {{ maybe_await }}self.client._execute(
             operation='query',
             method='aggregate',
             model='{{ model.name }}',
@@ -299,26 +305,21 @@ class {{ model.name }}Actions:
                 'order_by': order,
                 'cursor': cursor,
             },
-            aliases=self._field_aliases,
             root_selection=['count { _all }'],
         )
-        resp = {{ maybe_await }}builder.execute()
         return cast(int, resp['data']['result']['count']['_all'])
 
     {{ maybe_async_def }}delete_many(
         self,
         where: Optional[types.{{ model.name }}WhereInput] = None
     ) -> int:
-        builder = QueryBuilder(
-            engine=self.client._engine,
+        resp = {{ maybe_await }}self.client._execute(
             operation='mutation',
             method='deleteMany',
             model='{{ model.name }}',
             arguments={'where': where or {}},
-            aliases=self._field_aliases,
             root_selection=['count'],
         )
-        resp = {{ maybe_await }}builder.execute()
         return int(resp['data']['result']['count'])
 
 {% endfor %}

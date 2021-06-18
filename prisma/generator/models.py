@@ -3,7 +3,6 @@ import importlib
 from pathlib import Path
 from importlib import machinery
 from contextvars import ContextVar
-from collections import defaultdict
 from typing import (
     Any,
     Optional,
@@ -273,30 +272,6 @@ class Model(BaseModel):
         for field in self.all_fields:
             if field.type in ATOMIC_FIELD_TYPES:
                 yield field
-
-    def get_field_aliases(self) -> Dict[str, Dict[str, str]]:
-        aliases = self._gen_field_aliases(self, defaultdict(dict), key='')
-
-        # convert to a normal dictionary, otherwise jinja repr's
-        # the defaultdict leading to invalid codegen
-        return dict(aliases)
-
-    def _gen_field_aliases(
-        self, model: Optional['Model'], aliases: Dict[str, Dict[str, str]], *, key: str
-    ) -> Dict[str, Dict[str, str]]:
-        # TODO: these field aliases could clash, see GitHub #3
-        if model is None:
-            return aliases
-
-        for field in model.all_fields:
-            if not field.is_relational:
-                aliases[key][field.python_case] = field.name
-            elif field.name not in aliases:
-                self._gen_field_aliases(
-                    field.get_relational_model(), aliases, key=field.name
-                )
-
-        return aliases
 
 
 class Field(BaseModel):
