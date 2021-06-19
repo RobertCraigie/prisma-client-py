@@ -256,3 +256,24 @@ def test_partial_type_generator_error_while_running(testdir: Testdir) -> None:
     assert '.prisma/partials.py' in output
     assert 'No module named \\\'foo\\\'' in output
     assert 'An exception ocurred while running the partial type generator' in output
+
+
+def test_partial_type_already_created(testdir: Testdir) -> None:
+    def generator() -> None:  # mark: filedef
+        from prisma.models import Post
+
+        for _ in range(2):
+            Post.create_partial(
+                'PostPartial',
+                exclude={'desc'},
+            )
+
+    testdir.make_from_function(generator, name='.prisma/partials.py')
+
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(SCHEMA)
+
+    output = str(exc.value.output)
+    assert '.prisma/partials.py' in output
+    assert 'Partial type "PostPartial" has already been created.' in output
+    assert 'An exception ocurred while running the partial type generator' in output

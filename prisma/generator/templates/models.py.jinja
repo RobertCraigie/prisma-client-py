@@ -42,7 +42,7 @@ class {{ model.name }}(BaseModel):
             )
 
         if name in _created_partial_types:
-            raise TypeError(f'Partial type "{name}" has already been created.')
+            raise ValueError(f'Partial type "{name}" has already been created.')
 
         if include is not None and exclude is not None:
             raise TypeError(f'Exclude and include are mutually exclusive.')
@@ -50,7 +50,7 @@ class {{ model.name }}(BaseModel):
         if required and optional:
             shared = set(required) & set(optional)
             if shared:
-                raise TypeError(f'Cannot make the same field(s) required and optional {shared}')
+                raise ValueError(f'Cannot make the same field(s) required and optional {shared}')
 
         fields: Dict['types.{{ model.name }}Keys', PartialModelField] = {}
 
