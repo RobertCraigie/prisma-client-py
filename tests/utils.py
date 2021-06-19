@@ -154,7 +154,7 @@ class Testdir:
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
-        print(str(proc.stdout, 'utf-8'), file=sys.stdout)
+        print(str(proc.stdout, sys.getdefaultencoding()), file=sys.stdout)
         if proc.returncode != 0:
             raise subprocess.CalledProcessError(
                 proc.returncode, args, proc.stdout, proc.stderr

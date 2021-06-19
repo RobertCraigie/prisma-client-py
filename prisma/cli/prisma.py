@@ -45,7 +45,7 @@ def run(
     if pipe:
         stdout = subprocess.PIPE
         stderr = subprocess.PIPE
-        encoding = 'utf-8'
+        encoding = sys.getdefaultencoding()
 
     process = subprocess.run(
         [str(path.absolute()), *args],

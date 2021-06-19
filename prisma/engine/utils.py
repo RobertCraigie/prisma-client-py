@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import socket
 import logging
@@ -71,7 +72,11 @@ def ensure() -> Path:
     )
     log.debug('Version check took %s', time_since(start_version))
 
-    version = str(process.stdout, 'utf-8').replace("query-engine", "").strip()
+    version = (
+        str(process.stdout, sys.getdefaultencoding())
+        .replace('query-engine', '')
+        .strip()
+    )
     log.debug('Using query enginve version %s', version)
 
     if force_version and version != ENGINE_VERSION:

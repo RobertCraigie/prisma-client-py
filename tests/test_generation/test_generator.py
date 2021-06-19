@@ -1,3 +1,4 @@
+import sys
 import subprocess
 from pathlib import Path
 from typing import Iterator
@@ -114,7 +115,7 @@ def test_erroneous_template_cleanup(testdir: Testdir) -> None:
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate()
 
-    output = str(exc.value.output, 'utf-8')
+    output = str(exc.value.output, sys.getdefaultencoding())
     assert template in output
 
     assert_module_is_clean(path)

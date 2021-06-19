@@ -1,4 +1,5 @@
 import re
+import sys
 import subprocess
 import platform as _platform
 from functools import lru_cache
@@ -34,7 +35,7 @@ def _get_linux_distro_details() -> Tuple[str, str]:
     process = subprocess.run(
         ['cat', '/etc/os-release'], stdout=subprocess.PIPE, check=True
     )
-    output = str(process.stdout, 'utf-8')
+    output = str(process.stdout, sys.getdefaultencoding())
 
     match = re.search(r'ID="?([^"\n]*)"?', output)
     distro_id = match.group(1) if match else ''  # type: str
@@ -62,7 +63,7 @@ def get_openssl() -> str:
     process = subprocess.run(
         ['openssl', 'version', '-v'], stdout=subprocess.PIPE, check=True
     )
-    return parse_openssl_version(str(process.stdout, 'utf-8'))
+    return parse_openssl_version(str(process.stdout, sys.getdefaultencoding()))
 
 
 def parse_openssl_version(string: str) -> str:
