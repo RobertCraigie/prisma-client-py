@@ -12,6 +12,7 @@ from .builder import QueryBuilder
 
 __all__ = (
     'Client',
+    'load_env',
 )
 
 SCHEMA = '''
@@ -19,16 +20,34 @@ SCHEMA = '''
 '''
 
 
+def load_env(*, override: bool = True, **kwargs: Any) -> None:
+    """Load environemntal variables from dotenv files
+
+    Loads from the following files relative to the current
+    working directory:
+
+    - .env
+    - prisma/.env
+    """
+    from dotenv import load_dotenv
+
+    load_dotenv('.env', override=override, **kwargs)
+    load_dotenv('prisma/.env', override=override, **kwargs)
+
+
 class Client:
     {% for model in dmmf.datamodel.models %}
     {{ model.name.lower() }}: '{{ model.name }}Actions'
     {% endfor %}
 
-    def __init__(self) -> None:
+    def __init__(self, *, use_dotenv: bool = True) -> None:
         {% for model in dmmf.datamodel.models %}
         self.{{ model.name.lower() }} = {{ model.name }}Actions(self)
         {% endfor %}
         self.__engine: Optional[QueryEngine] = None
+
+        if use_dotenv:
+            load_env()
 
     def __del__(self) -> None:
         if self.__engine is not None:
