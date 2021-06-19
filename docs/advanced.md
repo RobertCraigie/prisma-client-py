@@ -17,11 +17,11 @@ model Post {
 }
 
 model Comment {
-    id        String   @default(cuid()) @id
-    createdAt DateTime @default(now())
-    content   String
-    post      Post @relation(fields: [post_id], references: [id])
-    post_id   String
+    id         String   @default(cuid()) @id
+    created_at DateTime @default(now())
+    content    String
+    post       Post @relation(fields: [post_id], references: [id])
+    post_id    String
 }
 ```
 
@@ -40,21 +40,21 @@ model Comment {
     }
 
     model Post {
-        id        String   @default(cuid()) @id
-        createdAt DateTime @default(now())
-        updatedAt DateTime @updatedAt
-        title     String
-        published Boolean
-        desc      String?
-        comments Comment[]
+        id         String   @default(cuid()) @id
+        created_at DateTime @default(now())
+        updated_at DateTime @updatedAt
+        title      String
+        published  Boolean
+        desc       String?
+        comments  Comment[]
     }
 
     model Comment {
-        id        String   @default(cuid()) @id
-        createdAt DateTime @default(now())
-        content   String
-        post      Post @relation(fields: [post_id], references: [id])
-        post_id   String
+        id         String   @default(cuid()) @id
+        created_at DateTime @default(now())
+        content    String
+        post       Post @relation(fields: [post_id], references: [id])
+        post_id    String
     }
    ```
 

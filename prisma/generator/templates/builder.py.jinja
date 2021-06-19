@@ -44,16 +44,6 @@ DEFAULT_FIELDS_MAPPING = {
     {% endfor %}
 }
 
-FIELDS_ALIAS_MAPPINGS = {
-    {% for model in dmmf.datamodel.models %}
-    '{{ model.name }}': {
-        {% for field in model.all_fields %}
-        '{{ field.python_case }}': '{{ field.name }}',
-        {% endfor %}
-    },
-    {% endfor %}
-}
-
 RELATIONAL_FIELD_MAPPINGS = {
     {% for model in dmmf.datamodel.models %}
     '{{ model.name }}': {
@@ -99,7 +89,7 @@ class QueryBuilder:
         self.method = method
         self.operation = operation
         self.root_selection = root_selection
-        self.arguments = args = self._transform_aliases(arguments, model=model)
+        self.arguments = args = self._transform_aliases(arguments)
         self.include = args.pop('include', None)
 
     def build(self) -> str:
@@ -177,44 +167,18 @@ class QueryBuilder:
         except KeyError as exc:
             raise UnknownRelationalFieldError(model=current_model, field=field) from exc
 
-    def _transform_aliases(
-        self, arguments: Dict[str, Any], model: Optional[str] = None
-    ) -> Dict[str, Any]:
-        """Transform dict keys to match field and global aliases
+    def _transform_aliases(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
+        """Transform dict keys to match global aliases
 
         e.g. order_by -> orderBy
         """
-        if model is None:
-            # as there is no model we cannot resolve any aliases
-            # and we don't need to worry about global aliases as
-            # the only time we won't have access to a model is
-            # for query_raw and execute_raw which don't make
-            # use of any global aliases.
-            # however we should return a new dict to keep this
-            # behaviour in keeping with standard behaviour
-            # for mutability's sake.
-            return arguments.copy()
-
         transformed = dict()
-        mappings = FIELDS_ALIAS_MAPPINGS[model]
-
         for key, value in arguments.items():
-            alias = mappings.get(key, GLOBAL_ALIASES.get(key, key))
+            alias = GLOBAL_ALIASES.get(key, key)
             if isinstance(value, dict):
-                # NOTE: this is a naive check and susceptible to edge cases
-                # see tests/test_builder.py::test_aliases_edge_case for an example
-                try:
-                    new_model = self.get_relational_model(model, key)
-                except (UnknownModelError, UnknownRelationalFieldError):
-                    # naive fallback
-                    new_model = model
-
-                transformed[alias] = self._transform_aliases(
-                    arguments=value, model=new_model
-                )
+                transformed[alias] = self._transform_aliases(arguments=value)
             else:
                 transformed[alias] = value
-
         return transformed
 
 

@@ -18,7 +18,7 @@ _created_partial_types: Set[str] = set()
 {% for model in dmmf.datamodel.models %}
 class {{ model.name }}(BaseModel):
     {% for field in model.all_fields %}
-    {{ field.python_case }}:
+    {{ field.name }}:
             {%- if field.is_required and not field.relation_name -%}
                 {{ ' ' }}{{ field.python_type }} = Field(alias='{{ field.name }}')
             {% else -%}
@@ -99,8 +99,8 @@ class {{ model.name }}(BaseModel):
 {% for model in dmmf.datamodel.models %}
 _{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] = {
     {% for field in model.all_fields %}
-    '{{ field.python_case }}': {
-        'name': '{{ field.python_case }}',
+    '{{ field.name }}': {
+        'name': '{{ field.name }}',
         'alias': '{{ field.name }}',
         'optional': {{ field.is_optional }},
         'type': {{ field.python_type_as_string }},

@@ -71,120 +71,6 @@ generator db {
 ...
 ```
 
-## Model Field Transformation
-
-> [@map](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#map) should be used to transform individual field names
-
-As per python convention Prisma Client Python transforms model fields to `snake_case`.
-This behaviour can be controlled with the `transform_fields` option (also aliased to `transformFields`).
-
-Valid values are:
-
-* none
-* snake_case
-* camelCase
-* PascalCase
-
-A `ValidationError` will be raised during client generation if an invalid value is passed.
-
-### Examples
-
-These examples use the following `schema.prisma` model
-```
-model Post {
-    id          String   @default(cuid()) @id
-    createdAt   DateTime @default(now())
-    updated_at  DateTime @updatedAt
-    Title       String
-    PublishedAt Boolean
-    desc        String?
-}
-```
-
-#### Snake Case
-
-```
-...
-generator db {
-    provider = "python -m prisma"
-    transform_fields = "snake_case"
-}
-...
-```
-
-```py
-class Post:
-    id: str
-    title: str
-    published_at
-    desc: Optional[str]
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
-```
-
-#### None
-
-```
-...
-generator db {
-    provider = "python -m prisma"
-    transform_fields = "none"
-}
-...
-```
-
-```py
-class Post:
-    id: str
-    Title: str
-    PublishedAt: bool
-    desc: Optional[str]
-    createdAt: datetime.datetime
-    updated_at: datetime.datetime
-```
-
-#### Camel Case
-
-```
-...
-generator db {
-    provider = "python -m prisma"
-    transform_fields = "camelCase"
-}
-...
-```
-
-```py
-class Post:
-    id: str
-    title: str
-    publishedAt: bool
-    desc: Optional[str]
-    createdAt: datetime.datetime
-    updatedAt: datetime.datetime
-```
-
-#### Pascal Case
-
-```
-...
-generator db {
-    provider = "python -m prisma"
-    transform_fields = "PascalCase"
-}
-...
-```
-
-```py
-class Post:
-    Id: str
-    Title: str
-    PublishedAt: bool
-    Desc: Optional[str]
-    CreatedAt: datetime.datetime
-    UpdatedAt: datetime.datetime
-```
-
 ## Recursive Type Depth
 
 > ⚠️ Increasing the number of types generated will exponentially increase the time taken and resources used by static type checkers.
@@ -201,8 +87,8 @@ These examples use the following `schema.prisma` models
 model Post {
     id         String      @default(cuid()) @id
     title      String
-    author     User?       @relation(fields:  [authorId], references: [id])
-    authorId   String?
+    author     User?       @relation(fields:  [author_id], references: [id])
+    author_id  String?
     categories Category[]  @relation(references: [id])
 }
 
@@ -221,8 +107,8 @@ model Category {
 
 model Profile {
   id      Int    @id @default(autoincrement())
-  user    User   @relation(fields:  [userId], references: [id])
-  userId  String
+  user    User   @relation(fields:  [user_id], references: [id])
+  user_id String
   bio     String
 }
 ```

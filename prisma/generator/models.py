@@ -24,8 +24,6 @@ from pydantic import (
 )
 from pydantic.env_settings import SettingsSourceCallable
 
-from .utils import pascalize, camelize, decamelize
-
 
 # NOTE: this does not represent all the data that is passed by prisma
 
@@ -58,13 +56,6 @@ class BaseModel(PydanticBaseModel):
         json_encoders: Dict[Type[Any], Any] = {
             machinery.ModuleSpec: lambda s: s.origin,
         }
-
-
-class TransformChoices(str, enum.Enum):
-    none = 'none'
-    snake_case = 'snake_case'
-    camel_case = 'camelCase'
-    pascal_case = 'PascalCase'
 
 
 class HttpChoices(str, enum.Enum):
@@ -159,7 +150,6 @@ class Config(BaseSettings):
 
     # TODO: add support for skipping individual plugins
     skip_plugins: bool = FieldInfo(default=False)
-    transform_fields: Optional[TransformChoices]
     http: HttpChoices = HttpChoices.aiohttp
     partial_type_generator: Optional[Module]
 
@@ -355,20 +345,6 @@ class Field(BaseModel):
         if self.is_list:
             return f'FindMany{self.type}Args'
         return f'{self.type}Args'
-
-    @property
-    def python_case(self) -> str:
-        transform = get_config().transform_fields
-        if transform == TransformChoices.camel_case:
-            return camelize(self.name)
-
-        if transform == TransformChoices.pascal_case:
-            return pascalize(self.name)
-
-        if transform == TransformChoices.none:
-            return self.name
-
-        return decamelize(self.name)
 
     @property
     def required_on_create(self) -> bool:

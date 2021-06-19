@@ -7,11 +7,10 @@ import click
 
 from .. import prisma, options
 from ..utils import EnumChoice, PathlibPath, should_pipe
-from ...generator.models import HttpChoices, TransformChoices
+from ...generator.models import HttpChoices
 
 
 ARG_TO_CONFIG_KEY = {
-    'transform': 'transform_fields',
     'partials': 'partial_type_generator',
 }
 
@@ -31,11 +30,6 @@ log: logging.Logger = logging.getLogger(__name__)
     '--http',
     type=EnumChoice(HttpChoices),
     help='HTTP client library the generated client will use',
-)
-@click.option(
-    '--transform',
-    type=EnumChoice(TransformChoices),
-    help='How to transform model fields to python case',
 )
 @click.option(
     '--partials',

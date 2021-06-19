@@ -20,10 +20,10 @@ generator db {{
 
 model Post {{
   id          String     @id @default(cuid())
-  createdAt   DateTime   @default(now())
+  created_at  DateTime   @default(now())
   updated_at  DateTime   @updatedAt
-  Title       String
-  Published   Boolean
+  title       String
+  published   Boolean
   desc        String?
   comments    Comment[]
   author_id   String
@@ -35,7 +35,7 @@ model Comment {{
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
   content      String
-  Post         Post?    @relation(fields: [post_id], references: [id])
+  post         Post?    @relation(fields: [post_id], references: [id])
   post_id      String?
 }}
 

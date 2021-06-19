@@ -4,7 +4,7 @@ from itertools import chain
 from typing import Optional, Iterator, Dict, Any, Callable, Generator, Tuple, Type
 
 import pytest
-from prisma.generator.models import HttpChoices, TransformChoices
+from prisma.generator.models import HttpChoices
 
 from ..utils import Testdir, Runner, temp_env_update
 
@@ -119,30 +119,6 @@ def test_http_option(
 ) -> None:
     def do_assert(data: Dict[str, Any]) -> None:
         assert data['generator']['config']['http'] == target
-
-    run_test(runner, testdir, argument, options, do_assert)
-
-
-@pytest.mark.parametrize(
-    'target,argument,options',
-    chain(
-        from_enum(TransformChoices, '--transform='),
-        (
-            (None, None, None),  # default
-            ('PascalCase', None, 'transform_fields = PascalCase'),
-            ('camelCase', '--transform=camelCase', 'transform_fields = PascalCase'),
-        ),
-    ),
-)
-def test_transform_option(
-    testdir: Testdir,
-    runner: Runner,
-    target: Optional[str],
-    argument: Optional[str],
-    options: Optional[str],
-) -> None:
-    def do_assert(data: Dict[str, Any]) -> None:
-        assert data['generator']['config']['transform_fields'] == target
 
     run_test(runner, testdir, argument, options, do_assert)
 

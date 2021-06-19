@@ -13,13 +13,14 @@ generator db {
 
 model Post {
   id         String     @id @default(cuid())
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
   title      String
   published  Boolean
+  views      Int        @default(0)
   desc       String?
-  author     User?      @relation(fields: [authorId], references: [id])
-  authorId   String?
+  author     User?      @relation(fields: [author_id], references: [id])
+  author_id  String?
   categories Category[] @relation(references: [id])
 }
 
@@ -37,8 +38,8 @@ model Category {
 }
 
 model Profile {
-  id     Int    @id @default(autoincrement())
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-  bio    String
+  id      Int    @id @default(autoincrement())
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String
+  bio     String
 }

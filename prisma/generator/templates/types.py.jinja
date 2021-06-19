@@ -114,7 +114,7 @@ class {{ model.name }}OptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the {{ model.name }} create method"""
     {% for field in model.all_fields %}
         {%- if not field.required_on_create and not field.is_read_only -%}
-            {{'    '}}{{ field.python_case }}: Optional[{{ field.create_input_type }}]
+            {{'    '}}{{ field.name }}: Optional[{{ field.create_input_type }}]
         {% endif %}
     {% endfor %}
 
@@ -123,7 +123,7 @@ class {{ model.name }}CreateInput({{ model.name }}OptionalCreateInput):
     """Required arguments to the {{ model.name }} create method"""
     {% for field in model.all_fields %}
         {%- if field.required_on_create and not field.is_read_only -%}
-            {{'    '}}{{ field.python_case }}: {{ field.create_input_type }}
+            {{'    '}}{{ field.name }}: {{ field.create_input_type }}
         {% endif %}
     {% endfor %}
 
@@ -135,7 +135,7 @@ class {{ model.name }}OptionalCreateWithoutRelationsInput(TypedDict, total=False
     """Optional arguments to the {{ model.name }} create method, without relations"""
     {% for field in model.all_fields %}
         {%- if not field.required_on_create and not field.is_read_only and not field.relation_name -%}
-            {{'    '}}{{ field.python_case }}: Optional[{{ field.python_type }}]
+            {{'    '}}{{ field.name }}: Optional[{{ field.python_type }}]
         {% endif %}
     {% endfor %}
 
@@ -144,7 +144,7 @@ class {{ model.name }}CreateWithoutRelationsInput({{ model.name }}OptionalCreate
     """Required arguments to the {{ model.name }} create method, without relations"""
     {% for field in model.all_fields %}
         {%- if field.required_on_create and not field.is_read_only and not field.relation_name -%}
-            {{'    '}}{{ field.python_case }}: {{ field.python_type }}
+            {{'    '}}{{ field.name }}: {{ field.python_type }}
         {% endif %}
     {% endfor %}
 
@@ -164,7 +164,7 @@ class {{ model.name }}WhereUniqueInput(TypedDict, total=False):
     """Unique {{ model.name }} arguments for searching"""
     {% for field in model.all_fields %}
         {%- if field.is_unique or field.is_id -%}
-            {{'    '}}{{ field.python_case }}: {{ field.python_type }}
+            {{'    '}}{{ field.name }}: {{ field.python_type }}
         {% endif %}
     {% endfor %}
 
@@ -173,7 +173,7 @@ class {{ model.name }}UpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
     {% for field in model.all_fields %}
         {%- if not field.is_unique and not field.is_id and not field.is_read_only -%}
-            {{'    '}}{{ field.python_case }}: Optional[{{ field.get_update_input_type(model.name) }}]
+            {{'    '}}{{ field.name }}: Optional[{{ field.get_update_input_type(model.name) }}]
         {% endif %}
     {% endfor %}
 
@@ -182,7 +182,7 @@ class {{ model.name }}UpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
     {% for field in model.all_fields %}
         {%- if not field.is_read_only -%}
-            {{'    '}}{{ field.python_case }}: Optional[{{ field.get_update_input_type(model.name) }}]
+            {{'    '}}{{ field.name }}: Optional[{{ field.get_update_input_type(model.name) }}]
         {% endif %}
     {% endfor %}
 
@@ -243,7 +243,7 @@ class {{ model.name }}OrderByInput(TypedDict, total=False):
 class {{ model.name }}Include(TypedDict, total=False):
     """{{ model.name }} relational arguments"""
     {% for field in model.relational_fields -%}
-        {{'    '}}{{ field.python_case }}: Union[bool, '{{ field.relational_args_type }}From{{ model.name }}']
+        {{'    '}}{{ field.name }}: Union[bool, '{{ field.relational_args_type }}From{{ model.name }}']
     {% endfor %}
 
 
@@ -253,7 +253,7 @@ class {{ related.name }}IncludeFrom{{ model.name }}{{ current }}(TypedDict, tota
     """Relational arguments for {{model.name }}"""
     {% if next != '' -%}
         {% for field in related.relational_fields -%}
-            {{'    '}}{{ field.python_case }}: Union[bool, '{{ field.relational_args_type }}From{{ model.name + next }}']
+            {{'    '}}{{ field.name }}: Union[bool, '{{ field.relational_args_type }}From{{ model.name + next }}']
         {% endfor %}
     {% endif %}
 {% endcall %}
@@ -292,7 +292,7 @@ class {{ model.name }}WhereInput{{ current }}(TypedDict, total=False):
     """{{ model.name }} arguments for searching"""
     {% for field in model.all_fields %}
         {%- if not field.relation_name -%}
-            {{'    '}}{{ field.python_case }}: {{ field.where_input_type }}
+            {{'    '}}{{ field.name }}: {{ field.where_input_type }}
         {% endif %}
     {% endfor %}
 
@@ -305,7 +305,7 @@ class {{ model.name }}WhereInput{{ current }}(TypedDict, total=False):
 
 {{ model.name }}Keys = Literal[
     {% for field in model.all_fields %}
-    '{{ field.python_case }}',
+    '{{ field.name }}',
     {% endfor %}
 ]
 

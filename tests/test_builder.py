@@ -1,14 +1,13 @@
 # fmt: off
 # I prefer this way of formatting
 import functools
-from typing import Any
+from typing import Dict, Any
 
 import pytest
 from prisma.builder import QueryBuilder
-from prisma.utils import _env_bool
 from prisma.errors import UnknownRelationalFieldError
 
-from .utils import Testdir, assert_query_equals
+from .utils import assert_query_equals
 
 
 # TODO: more tests
@@ -19,8 +18,18 @@ from .utils import Testdir, assert_query_equals
 #       will break these tests
 
 
-def build_query(**kwargs: Any) -> str:
-    return QueryBuilder(**kwargs).build_query()
+def build_query(
+    method: str,
+    operation: str,
+    arguments: Dict[str, Any],
+    **kwargs: Any,
+) -> str:
+    return QueryBuilder(
+        method=method,
+        operation=operation,
+        arguments=arguments,
+        **kwargs,
+    ).build_query()
 
 
 def test_basic_building() -> None:
@@ -112,13 +121,13 @@ def test_include_with_arguments() -> None:
         )
         {
           id
-          createdAt
-          updatedAt
+          created_at
+          updated_at
           title
           published
           views
           desc
-          authorId
+          author_id
         }
       }
     }
@@ -142,87 +151,3 @@ def test_raw_queries() -> None:
       )
     }
     ''')
-
-
-@pytest.mark.skipif(
-    not _env_bool('PRISMA_PY_TEST_BUGS'),
-    reason='This is a known bug'
-)
-def test_aliases_edge_case(testdir: Testdir) -> None:
-    def tests() -> None:  # pylint: disable=all
-        from prisma.builder import QueryBuilder
-        from tests.utils import assert_query_equals
-
-        def test_aliases_edge_case() -> None:
-            builder = QueryBuilder(
-                method='upsertOne',
-                operation='mutation',
-                model='User',
-                arguments={
-                    'where': {
-                        'id': 1
-                    },
-                    'create': {
-                        'my_field': 'Robert',
-                        'my_create_field': 'foo',
-                    },
-                    'update': {
-                        'my_field': 'Robert',
-                        'my_create_field': 'foo',
-                    },
-                }
-            )
-            assert_query_equals((
-                builder
-            ), '''
-            mutation {
-              result: upsertOneUser
-              (
-                where: {
-                  id: 1
-                }
-                create: {
-                  myField: "Robert"
-                  my_create_field: "foo"
-                }
-                update: {
-                  myField: "Robert"
-                  my_create_field: "foo"
-                }
-              )
-              {
-                id
-                myField
-                create_model_id
-              }
-            }
-            ''')
-
-    schema = '''
-        datasource db {{
-          provider = "sqlite"
-          url      = "file:dev.db"
-        }}
-
-        generator db {{
-          provider = "coverage run -m prisma"
-          output = "{output}"
-          {options}
-        }}
-
-        model User {{
-            id              Int         @id
-            myField         String
-            create          CreateModel @relation(fields: [create_model_id], references: [id])
-            create_model_id Int
-        }}
-
-        model CreateModel {{
-            id            Int    @id
-            myCreateField String
-            user          User?
-        }}
-    '''
-    testdir.generate(schema=schema)
-    testdir.make_from_function(tests)
-    testdir.runpytest().assert_outcomes(passed=1)
