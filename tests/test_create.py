@@ -60,10 +60,10 @@ async def test_create_missing_required_args(client: Client) -> None:
         )
 
 
-@pytest.mark.skip(reason='Data is not cleared between test runs yet')
 @pytest.mark.asyncio
 async def test_create_unique_violation(client: Client) -> None:
     user = await client.user.create({'name': 'Robert', 'id': 'user-1'})
+    assert user.id == 'user-1'
     assert user.name == 'Robert'
 
     with pytest.raises(errors.UniqueViolationError):

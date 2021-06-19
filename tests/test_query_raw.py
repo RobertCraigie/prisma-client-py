@@ -101,10 +101,14 @@ async def test_query_raw_no_result(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason='This is an internal prisma query engine bug')
 async def test_query_raw_incorrect_params(client: Client) -> None:
     query = '''
-        SELECT COUNT(*)
+        SELECT COUNT(*) as total
         FROM Post
     '''
-    await client.query_raw(query, 1)
+    results = await client.query_raw(query)
+    assert len(results) == 1
+    assert results[0]['total'] == 0
+
+    with pytest.raises(errors.RawQueryError):
+        await client.query_raw(query, 1)
