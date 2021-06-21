@@ -18,7 +18,7 @@ __all__ = (
 # TODO: if this version changes but the engine version
 #       doesn't change then the CLI is incorrectly cached
 # hardcoded CLI version version
-PRISMA_VERSION = '2.20.1'
+PRISMA_VERSION = '2.23.0'
 
 # CLI binaries are stored here
 PRISMA_URL = os.environ.get(
@@ -33,7 +33,7 @@ ENGINE_URL = os.environ.get(
 
 # versions can be found under https://github.com/prisma/prisma-engine/commits/master
 ENGINE_VERSION = os.environ.get(
-    'PRISMA_ENGINE_VERSION', '60ba6551f29b17d7d6ce479e5733c70d9c00860e'
+    'PRISMA_ENGINE_VERSION', 'adf5e8cba3daf12d456d911d72b6e9418681b28b'
 )
 
 # where the binaries live
