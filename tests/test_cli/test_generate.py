@@ -44,7 +44,7 @@ def run_test(
     print(result.output)
     assert result.exit_code == 0
 
-    path = testdir.path / 'prisma' / 'generator' / 'debug.json'
+    path = testdir.path / 'prisma' / 'generator' / 'debug-data.json'
     data = json.loads(path.read_text())
     do_assert(data)
 

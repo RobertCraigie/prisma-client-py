@@ -1,3 +1,4 @@
+import json
 import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
@@ -42,22 +43,20 @@ partial_models_ctx: ContextVar[Dict[str, PartialModelFields]] = ContextVar(
 
 
 def run(params: Dict[str, Any]) -> None:
+    if DEBUG_GENERATOR:
+        _write_debug_data('params', json.dumps(params, indent=2))
+
     data = Data.parse_obj(params)
     config = data.generator.config
 
     if DEBUG_GENERATOR:
-        path = Path(__file__).parent.joinpath('debug.json')
-
-        with path.open('w') as file:
-            file.write(data.json(indent=2))
-
-        log.debug('Wrote generator data to %s', path)
+        _write_debug_data('data', data.json(indent=2))
 
     if not config.skip_plugins:
         ctx = PluginContext(method='generate', data=data)
         ctx.run()
 
-    rootdir = Path(data.generator.output)
+    rootdir = Path(data.generator.output.value)
     if not rootdir.exists():
         rootdir.mkdir(parents=True, exist_ok=True)
 
@@ -112,7 +111,7 @@ def render_template(
     name: str,
     params: Dict[str, Any],
     *,
-    env: Optional[Environment] = None
+    env: Optional[Environment] = None,
 ) -> None:
     if env is None:
         env = DEFAULT_ENV
@@ -132,3 +131,12 @@ def render_template(
 
     file.write_text(output)
     log.debug('Rendered template to %s', file.absolute())
+
+
+def _write_debug_data(name: str, output: str) -> None:
+    path = Path(__file__).parent.joinpath(f'debug-{name}.json')
+
+    with path.open('w') as file:
+        file.write(output)
+
+    log.debug('Wrote generator %s to %s', name, path.absolute())

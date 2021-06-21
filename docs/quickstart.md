@@ -60,14 +60,14 @@ In this page, you will learn how to send queries to an SQLite database using Pri
     ```
 
     To get this up and running in your database, we use the Prisma migration
-    tool [`migrate`](https://github.com/prisma/migrate) (Note: this tool is experimental) to create and migrate our
+    tool [`migrate`](https://github.com/prisma/migrate) to create and migrate our
     database:
 
      ```shell script
     # initialize the first migration
-    python -m prisma migrate save --experimental --create-db --name "init"
+    python -m prisma migrate save --create-db --name "init"
     # apply the migration
-    python -m prisma migrate up --experimental
+    python -m prisma migrate up
     ```
 
 5) Generate the Prisma Client Python client in your project

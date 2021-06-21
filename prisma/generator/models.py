@@ -133,11 +133,16 @@ class Data(BaseModel):
 
 class Generator(BaseModel):
     name: str
-    output: str
-    provider: str
+    output: 'ValueFromEnvVar'
+    provider: 'ValueFromEnvVar'
     config: 'Config'
     binary_targets: List[str] = FieldInfo(alias='binaryTargets')
     preview_features: List[str] = FieldInfo(alias='previewFeatures')
+
+
+class ValueFromEnvVar(BaseModel):
+    value: str
+    from_env_var: Optional[str] = FieldInfo(alias='fromEnvVar')
 
 
 class Config(BaseSettings):

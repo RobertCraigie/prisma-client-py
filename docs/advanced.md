@@ -64,8 +64,8 @@ Whenever you make changes to your model, migrate your database and re-generate y
 
 ```shell script
 # apply migrations
-python -m prisma migrate save --experimental --name "add comment model"
-python -m prisma migrate up --experimental
+python -m prisma migrate save --name "add comment model"
+python -m prisma migrate up
 # generate
 python -m prisma generate
 ```
