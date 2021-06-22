@@ -65,7 +65,7 @@ def setup_logging(use_handler: bool = True) -> Iterator[None]:
 
             # the prisma CLI binary uses the DEBUG environment variable
             if os.environ.get('DEBUG') is None:
-                os.environ['DEBUG'] = 'GeneratorProcess'
+                os.environ['DEBUG'] = 'prisma:GeneratorProcess'
             else:
                 log.debug('Not overriding the DEBUG environment variable.')
         else:
