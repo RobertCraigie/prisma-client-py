@@ -1,5 +1,6 @@
 import os
 import sys
+import uuid
 import inspect
 import asyncio
 import textwrap
@@ -247,6 +248,16 @@ class Testdir:
         finally:
             if entries is not None:
                 entries.pop(name, None)
+
+    @contextlib.contextmanager
+    def redirect_stdout_to_file(
+        self,
+    ) -> Iterator[Path]:
+        path = self.path.joinpath(f'stdout-{uuid.uuid4()}.txt')
+
+        with path.open('w') as file:
+            with contextlib.redirect_stdout(file):
+                yield path
 
     @property
     def tmpdir(self) -> py.path.local:

@@ -100,7 +100,7 @@ class QueryEngine:
         )
 
         if DEBUG:
-            env.update(PRISMA_LOG_QUERIES='y', RUST_LOG='info')
+            env.update(LOG_QUERIES='y', RUST_LOG='info')
 
         log.debug('Starting query engine...')
         self.process = subprocess.Popen(
