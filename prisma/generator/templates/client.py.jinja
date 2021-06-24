@@ -139,17 +139,15 @@ class Client:
 {% for model in dmmf.datamodel.models %}
 
 class {{ model.name }}Actions:
-    client: Client
-
     def __init__(self, client: Client):
-        self.client = client
+        self._client = client
 
     {{ maybe_async_def }}create(
         self,
         data: types.{{ model.name }}CreateInput,
         include: Optional[types.{{ model.name}}Include] = None
     ) -> models.{{ model.name }}:
-        resp = {{ maybe_await }}self.client._execute(
+        resp = {{ maybe_await }}self._client._execute(
             operation='mutation',
             method='createOne',
             model='{{ model.name }}',
@@ -166,7 +164,7 @@ class {{ model.name }}Actions:
         include: Optional[types.{{ model.name}}Include] = None
     ) -> Optional[models.{{ model.name }}]:
         try:
-            resp = {{ maybe_await }}self.client._execute(
+            resp = {{ maybe_await }}self._client._execute(
                 operation='mutation',
                 method='deleteOne',
                 model='{{ model.name }}',
@@ -185,7 +183,7 @@ class {{ model.name }}Actions:
         where: types.{{ model.name }}WhereUniqueInput,
         include: Optional[types.{{ model.name}}Include] = None
     ) -> Optional[models.{{ model.name }}]:
-        resp = {{ maybe_await }}self.client._execute(
+        resp = {{ maybe_await }}self._client._execute(
             operation='query',
             method='findUnique',
             model='{{ model.name }}',
@@ -208,7 +206,7 @@ class {{ model.name }}Actions:
         include: Optional[types.{{ model.name }}Include] = None,
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> List[models.{{ model.name }}]:
-        resp = {{ maybe_await }}self.client._execute(
+        resp = {{ maybe_await }}self._client._execute(
             operation='query',
             method='findMany',
             model='{{ model.name }}',
@@ -231,7 +229,7 @@ class {{ model.name }}Actions:
         include: Optional[types.{{ model.name }}Include] = None,
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> Optional[models.{{ model.name }}]:
-        resp = {{ maybe_await }}self.client._execute(
+        resp = {{ maybe_await }}self._client._execute(
             operation='query',
             method='findFirst',
             model='{{ model.name }}',
@@ -255,7 +253,7 @@ class {{ model.name }}Actions:
         include: Optional[types.{{ model.name}}Include] = None
     ) -> Optional[models.{{ model.name }}]:
         try:
-            resp = {{ maybe_await }}self.client._execute(
+            resp = {{ maybe_await }}self._client._execute(
                 operation='mutation',
                 method='updateOne',
                 model='{{ model.name }}',
@@ -276,7 +274,7 @@ class {{ model.name }}Actions:
         data: types.{{ model.name }}UpsertInput,
         include: Optional[types.{{ model.name}}Include] = None,
     ) -> models.{{ model.name}}:
-        resp = {{ maybe_await }}self.client._execute(
+        resp = {{ maybe_await }}self._client._execute(
             operation='mutation',
             method='upsertOne',
             model='{{ model.name }}',
@@ -294,7 +292,7 @@ class {{ model.name }}Actions:
         data: types.{{ model.name }}UpdateManyMutationInput,
         where: types.{{ model.name }}WhereInput,
     ) -> int:
-        resp = {{ maybe_await }}self.client._execute(
+        resp = {{ maybe_await }}self._client._execute(
             operation='mutation',
             method='updateMany',
             model='{{ model.name }}',
@@ -313,7 +311,7 @@ class {{ model.name }}Actions:
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> int:
         # TODO: support select
-        resp = {{ maybe_await }}self.client._execute(
+        resp = {{ maybe_await }}self._client._execute(
             operation='query',
             method='aggregate',
             model='{{ model.name }}',
@@ -332,7 +330,7 @@ class {{ model.name }}Actions:
         self,
         where: Optional[types.{{ model.name }}WhereInput] = None
     ) -> int:
-        resp = {{ maybe_await }}self.client._execute(
+        resp = {{ maybe_await }}self._client._execute(
             operation='mutation',
             method='deleteMany',
             model='{{ model.name }}',
