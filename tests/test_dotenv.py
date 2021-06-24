@@ -7,22 +7,15 @@ from .utils import Testdir
 
 
 SCHEMA = '''
-datasource db {{
-  provider = "sqlite"
-  url      = env("_PRISMA_PY_TESTING_DOTENV_DATABSE_URL")
-}}
-
 generator db {{
   provider = "coverage run -m prisma"
   output = "{output}"
   {options}
 }}
 
-model User {{
-  id           String   @id @default(cuid())
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-  name         String
+datasource db {{
+  provider = "sqlite"
+  url      = env("_PRISMA_PY_TESTING_DOTENV_DATABSE_URL")
 }}
 '''
 ENV_KEY = '_PRISMA_PY_TESTING_DOTENV_DATABSE_URL'
@@ -33,8 +26,8 @@ def make_env_file(testdir: Testdir, name) -> None:
     if not path.parent.exists():
         path.parent.mkdir(parents=True)
 
-    with path.open('w') as f:
-        f.write(f'export {ENV_KEY}="file:dev.db"')
+    with path.open('w') as file:
+        file.write(f'export {ENV_KEY}="file:dev.db"')
 
 
 @pytest.fixture(autouse=True)
@@ -42,9 +35,7 @@ def clear_env() -> None:
     os.environ.pop(ENV_KEY, None)
 
 
-@pytest.mark.parametrize(
-    'name', ['.env', 'prisma/.env']
-)
+@pytest.mark.parametrize('name', ['.env', 'prisma/.env'])
 def test_client_loads_dotenv(testdir: Testdir, name: str) -> None:
     make_env_file(testdir, name=name)
 
