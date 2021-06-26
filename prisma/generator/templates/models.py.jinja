@@ -88,7 +88,7 @@ class {{ model.name }}(BaseModel):
         models = partial_models_ctx.get()
 
         # mypy does not like this as we are assigning a
-        # Dict[Literal] to a Dict[str] but this is fine
+        # Dict[Literal[str]] to a Dict[str] but this is fine
         models[name] = fields  # type: ignore[assignment]
         partial_models_ctx.set(models)
         _created_partial_types.add(name)

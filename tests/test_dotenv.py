@@ -21,7 +21,7 @@ datasource db {{
 ENV_KEY = '_PRISMA_PY_TESTING_DOTENV_DATABSE_URL'
 
 
-def make_env_file(testdir: Testdir, name) -> None:
+def make_env_file(testdir: Testdir, name: str) -> None:
     path = testdir.path.joinpath(name)
     if not path.parent.exists():
         path.parent.mkdir(parents=True)
