@@ -18,3 +18,10 @@ watch: FuncType = click.option(
     required=False,
     help='Watch the Prisma schema and rerun after a change',
 )
+
+skip_generate: FuncType = click.option(
+    '--skip-generate',
+    is_flag=True,
+    default=False,
+    help='Skip triggering generators (e.g. Prisma Client Python)',
+)

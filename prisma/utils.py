@@ -4,7 +4,8 @@ import asyncio
 import inspect
 import logging
 import importlib
-from typing import Any, Union, Coroutine
+import contextlib
+from typing import Any, Union, Dict, Iterator, Coroutine
 
 from ._types import FuncType, CoroType
 
@@ -49,3 +50,16 @@ def is_coroutine(obj: Any) -> bool:
 
 def module_exists(name: str) -> bool:
     return importlib.util.find_spec(name) is not None
+
+
+@contextlib.contextmanager
+def temp_env_update(env: Dict[str, str]) -> Iterator[None]:
+    try:
+        old = os.environ.copy()
+        os.environ.update(env)
+        yield
+    finally:
+        for key in env.keys():
+            os.environ.pop(key, None)
+
+        os.environ.update(old)

@@ -7,6 +7,7 @@ from typing import Optional, List, Union, NoReturn, Mapping, Any, Type, overload
 
 import click
 
+from . import prisma
 from ..utils import module_exists
 from .._types import Literal
 
@@ -94,6 +95,26 @@ def should_pipe() -> bool:
     This should only return True while testing internally
     """
     return os.environ.get('_PRISMA_PY_SHOULD_PIPE') == '1'
+
+
+def maybe_exit(retcode: int) -> None:
+    """Exit if given a non-zero exit code"""
+    if retcode != 0:
+        sys.exit(retcode)
+
+
+def generate_client(schema: Optional[str] = None, *, reload: bool = False) -> None:
+    """Run `prisma generate` and update sys.modules"""
+    args = ['generate']
+    if schema is not None:
+        args.append(f'--schema={schema}')
+
+    maybe_exit(prisma.run(args))
+
+    if reload:
+        for name in sys.modules.copy():
+            if 'prisma' in name and 'generator' not in name:
+                sys.modules.pop(name, None)
 
 
 @overload

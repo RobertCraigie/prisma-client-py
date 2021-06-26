@@ -17,7 +17,7 @@ from ..http import HTTP
 from ..utils import DEBUG
 from .._types import Method
 from ..binaries import platform
-from ..utils import time_since
+from ..utils import time_since, _env_bool
 
 
 __all__ = ('QueryEngine',)
@@ -102,9 +102,14 @@ class QueryEngine:
         if DEBUG:
             env.update(LOG_QUERIES='y', RUST_LOG='info')
 
+        args: List[str] = [str(file.absolute()), '-p', str(port), '--enable-raw-queries']
+        if _env_bool('__PRISMA_PY_PLAYGROUND'):
+            env.update(RUST_LOG='info')
+            args.append('--enable-playground')
+
         log.debug('Starting query engine...')
         self.process = subprocess.Popen(
-            [file.absolute(), '-p', str(port), '--enable-raw-queries'],
+            args,
             env=env,
             stdout=sys.stdout,
             stderr=sys.stderr,

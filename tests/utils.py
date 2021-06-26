@@ -14,7 +14,6 @@ from typing import (
     Any,
     Optional,
     List,
-    Dict,
     Union,
     Iterator,
     cast,
@@ -29,6 +28,7 @@ from pkg_resources import EntryPoint, Distribution
 
 from prisma.cli import main
 from prisma._types import FuncType
+from prisma.utils import temp_env_update
 from prisma.builder import QueryBuilder
 
 
@@ -293,19 +293,6 @@ def get_source_from_function(function: FuncType, **env: Any) -> str:
         lines.insert(start, f'{name} = {value}')
 
     return IMPORT_RELOADER + '\n'.join(lines)
-
-
-@contextlib.contextmanager
-def temp_env_update(env: Dict[str, str]) -> Iterator[None]:
-    try:
-        old = os.environ.copy()
-        os.environ.update(env)
-        yield
-    finally:
-        for key in env.keys():
-            os.environ.pop(key, None)
-
-        os.environ.update(old)
 
 
 def async_run(coro: Coroutine[Any, Any, Any]) -> Any:

@@ -4,9 +4,10 @@ from itertools import chain
 from typing import Optional, Iterator, Dict, Any, Callable, Generator, Tuple, Type
 
 import pytest
+from prisma.utils import temp_env_update
 from prisma.generator.models import HttpChoices
 
-from ..utils import Testdir, Runner, temp_env_update
+from ..utils import Testdir, Runner
 
 
 # all these tests simply ensure the correct config is being parsed by generator.run,
