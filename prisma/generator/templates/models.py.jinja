@@ -3,7 +3,7 @@
 import os
 from pydantic import BaseConfig, BaseModel, Field
 
-from . import types
+from . import types, errors
 from .generator import partial_models_ctx, PartialModelField
 
 
@@ -20,9 +20,9 @@ class {{ model.name }}(BaseModel):
     {% for field in model.all_fields %}
     {{ field.name }}:
             {%- if field.is_required and not field.relation_name -%}
-                {{ ' ' }}{{ field.python_type }} = Field(alias='{{ field.name }}')
+                {{ ' ' }}{{ field.python_type }}
             {% else -%}
-                {{ ' ' }}Optional[{{ field.python_type }}] = Field(alias='{{ field.name }}')
+                {{ ' ' }}Optional[{{ field.python_type }}]
             {% endif %}
     {% endfor %}
 
@@ -35,6 +35,7 @@ class {{ model.name }}(BaseModel):
         exclude: Optional[Iterable['types.{{ model.name }}Keys']] = None,
         required: Optional[Iterable['types.{{ model.name }}Keys']] = None,
         optional: Optional[Iterable['types.{{ model.name }}Keys']] = None,
+        types: Optional[Mapping['types.{{ model.name }}RelationalFieldKeys', str]] = None,
     ) -> None:
         if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
             raise RuntimeError(
@@ -80,9 +81,30 @@ class {{ model.name }}(BaseModel):
                 for field in optional:
                     fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
+
+            if types:
+                for field, type_ in types.items():
+                    if field not in _{{ model.name }}_relational_fields:
+                        raise errors.UnknownRelationalFieldError('{{ model.name }}', field)
+
+                    # TODO: this method of validating types is not ideal
+                    # as it means we cannot two create partial types that
+                    # reference each other
+                    if type_ not in _created_partial_types:
+                        raise ValueError(
+                            f'Unknown partial type: "{type_}". '
+                            f'Did you remember to generate the {type_} type before this one?'
+                        )
+
+                    # TODO: support non prisma.partials models
+                    info = fields[field]
+                    if info['is_list']:
+                        info['type'] = f'List[\'partials.{type_}\']'
+                    else:
+                        info['type'] = f'\'partials.{type_}\''
         except KeyError as exc:
-            raise TypeError(
-                f'{exc.args[0]} is not a valid {{ model.name }} field.'
+            raise ValueError(
+                f'{exc.args[0]} is not a valid {{ model.name }} / {name} field.'
             ) from None
 
         models = partial_models_ctx.get()
@@ -97,11 +119,16 @@ class {{ model.name }}(BaseModel):
 {% endfor %}
 
 {% for model in dmmf.datamodel.models %}
+_{{ model.name }}_relational_fields: Set[str] = {
+    {% for field in model.relational_fields %}
+    '{{ field.name }}',
+    {% endfor %}
+}
 _{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] = {
     {% for field in model.all_fields %}
     '{{ field.name }}': {
         'name': '{{ field.name }}',
-        'alias': '{{ field.name }}',
+        'is_list': {{ field.is_list }},
         'optional': {{ field.is_optional }},
         'type': {{ field.python_type_as_string }},
     },

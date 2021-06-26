@@ -62,6 +62,7 @@ model User {{
 )
 def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
     def tests() -> None:  # pylint: disable=all  mark: filedef
+        import datetime
         from typing import Type, Dict, Iterator, Any, Tuple, Set, Optional
         from pydantic import BaseModel
         from prisma.partials import (  # type: ignore[attr-defined]
@@ -71,6 +72,8 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             PostOnlyId,
             PostOptionalInclude,
             PostRequiredAuthor,
+            PostModifiedAuthor,
+            UserModifiedPosts,
         )
 
         base_fields = {
@@ -155,8 +158,31 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
                 },
             )
 
+        def test_modified_relational_type() -> None:
+            assert_expected(PostModifiedAuthor, base_fields, None)
+
+            field = PostModifiedAuthor.__fields__['author']
+            assert field.type_.__name__ == 'UserOnlyName'
+            assert field.type_.__module__ == 'prisma.partials'
+
+        def test_modified_relational_list_type() -> None:
+            UserModifiedPosts(
+                id='1',
+                name='Robert',
+                created_at=datetime.datetime.utcnow(),
+                updated_at=datetime.datetime.utcnow(),
+                posts=[PostOnlyId(id='2')],
+            )
+            field = UserModifiedPosts.__fields__['posts']
+            assert field.type_.__name__ == 'PostOnlyId'
+            assert field.type_.__module__ == 'prisma.partials'
+            assert field.outer_type_.__name__ == 'List'
+            assert field.outer_type_.__module__ == 'typing'
+
     def generator() -> None:  # mark: filedef
-        from prisma.models import Post
+        from prisma.models import Post, User
+
+        User.create_partial('UserOnlyName', include={'name'})
 
         Post.create_partial('PostWithoutDesc', exclude=['desc'])
         Post.create_partial('PostOptionalPublished', optional=['published'])
@@ -166,11 +192,14 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             'PostOptionalInclude', include={'title'}, optional={'title'}
         )
         Post.create_partial('PostRequiredAuthor', required=['author'])
+        Post.create_partial('PostModifiedAuthor', types={'author': 'UserOnlyName'})
+
+        User.create_partial('UserModifiedPosts', types={'posts': 'PostOnlyId'})
 
     testdir.make_from_function(generator, name=location)
     testdir.generate(SCHEMA, options)
     testdir.make_from_function(tests)
-    testdir.runpytest().assert_outcomes(passed=6)
+    testdir.runpytest().assert_outcomes(passed=8)
 
 
 @pytest.mark.parametrize('argument', ['exclude', 'include', 'required', 'optional'])
@@ -187,7 +216,7 @@ def test_partial_types_incorrect_key(
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
 
-    assert 'foo is not a valid Post field' in str(exc.value.output)
+    assert 'foo is not a valid Post / PostWithoutFoo field' in str(exc.value.output)
 
 
 def test_partial_types_same_required_and_optional(testdir: Testdir) -> None:
@@ -230,7 +259,7 @@ def test_partial_types_excluded_required(testdir: Testdir) -> None:
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
 
-    assert 'desc is not a valid Post field' in str(exc.value.output)
+    assert 'desc is not a valid Post / PostPartial field' in str(exc.value.output)
 
 
 def test_partial_type_generator_not_found(testdir: Testdir) -> None:
@@ -277,3 +306,72 @@ def test_partial_type_already_created(testdir: Testdir) -> None:
     assert '.prisma/partials.py' in output
     assert 'Partial type "PostPartial" has already been created.' in output
     assert 'An exception ocurred while running the partial type generator' in output
+
+
+def test_unknown_partial_type(testdir: Testdir) -> None:
+    def generator() -> None:  # mark: filedef
+        from prisma.models import Post
+
+        Post.create_partial('PostPartial', types={'author': 'UnknownUser'})
+
+    testdir.make_from_function(generator, name='.prisma/partials.py')
+
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(SCHEMA)
+
+    output = str(exc.value.output)
+    assert 'ValueError' in output
+    assert '.prisma/partials.py' in output
+    assert 'Unknown partial type: "UnknownUser"' in output
+    assert 'An exception ocurred while running the partial type generator' in output
+    assert (
+        'Did you remember to generate the UnknownUser type before this one?' in output
+    )
+
+
+def test_passing_type_for_excluded_field(testdir: Testdir) -> None:
+    def generator() -> None:  # mark: filedef
+        from prisma.models import Post, User
+
+        User.create_partial('CustomUser')
+        Post.create_partial(
+            'PostPartial',
+            exclude={'author'},
+            types={'author': 'CustomUser'},
+        )
+
+    testdir.make_from_function(generator, name='.prisma/partials.py')
+
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(SCHEMA)
+
+    output = str(exc.value.output)
+    assert 'ValueError' in output
+    assert '.prisma/partials.py' in output
+    assert 'author is not a valid Post / PostPartial field' in output
+    assert 'An exception ocurred while running the partial type generator' in output
+
+
+def test_partial_type_types_non_relational(testdir: Testdir) -> None:
+    def generator() -> None:  # mark: filedef
+        from prisma.models import Post
+
+        Post.create_partial('Placeholder')
+        Post.create_partial(
+            'PostPartial',
+            types={'published': 'Placeholder'},
+        )
+
+    testdir.make_from_function(generator, name='.prisma/partials.py')
+
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(SCHEMA)
+
+    output = str(exc.value.output)
+    assert '.prisma/partials.py' in output
+    assert 'prisma.errors.UnknownRelationalFieldError' in output
+    assert 'An exception ocurred while running the partial type generator' in output
+    assert (
+        'Field: "published" either does not exist or is not a relational field on the Post model'
+        in output
+    )

@@ -268,6 +268,15 @@ class Model(BaseModel):
             if field.type in ATOMIC_FIELD_TYPES:
                 yield field
 
+    @property
+    def has_relational_fields(self) -> bool:
+        try:
+            next(self.relational_fields)
+        except StopIteration:
+            return False
+        else:
+            return True
+
 
 class Field(BaseModel):
     name: str

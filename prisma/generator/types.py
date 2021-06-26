@@ -10,7 +10,7 @@ __all__ = (
 
 class PartialModelField(TypedDict):
     name: str
-    alias: str
+    is_list: bool
     optional: bool
     type: str
 

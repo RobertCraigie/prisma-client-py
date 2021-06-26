@@ -309,6 +309,16 @@ class {{ model.name }}WhereInput{{ current }}(TypedDict, total=False):
     {% endfor %}
 ]
 
+{% if model.has_relational_fields %}
+{{ model.name }}RelationalFieldKeys = Literal[
+    {% for field in model.relational_fields %}
+    '{{ field.name }}',
+    {% endfor %}
+]
+{% else %}
+{{ model.name }}RelationalFieldKeys = None
+{% endif %}
+
 {% endfor %}
 
 
