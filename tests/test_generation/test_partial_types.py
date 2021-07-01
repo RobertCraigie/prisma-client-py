@@ -192,9 +192,9 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             'PostOptionalInclude', include={'title'}, optional={'title'}
         )
         Post.create_partial('PostRequiredAuthor', required=['author'])
-        Post.create_partial('PostModifiedAuthor', types={'author': 'UserOnlyName'})
+        Post.create_partial('PostModifiedAuthor', relations={'author': 'UserOnlyName'})
 
-        User.create_partial('UserModifiedPosts', types={'posts': 'PostOnlyId'})
+        User.create_partial('UserModifiedPosts', relations={'posts': 'PostOnlyId'})
 
     testdir.make_from_function(generator, name=location)
     testdir.generate(SCHEMA, options)
@@ -312,7 +312,7 @@ def test_unknown_partial_type(testdir: Testdir) -> None:
     def generator() -> None:  # mark: filedef
         from prisma.models import Post
 
-        Post.create_partial('PostPartial', types={'author': 'UnknownUser'})
+        Post.create_partial('PostPartial', relations={'author': 'UnknownUser'})
 
     testdir.make_from_function(generator, name='.prisma/partials.py')
 
@@ -337,7 +337,7 @@ def test_passing_type_for_excluded_field(testdir: Testdir) -> None:
         Post.create_partial(
             'PostPartial',
             exclude={'author'},
-            types={'author': 'CustomUser'},
+            relations={'author': 'CustomUser'},
         )
 
     testdir.make_from_function(generator, name='.prisma/partials.py')
@@ -359,7 +359,7 @@ def test_partial_type_types_non_relational(testdir: Testdir) -> None:
         Post.create_partial('Placeholder')
         Post.create_partial(
             'PostPartial',
-            types={'published': 'Placeholder'},
+            relations={'published': 'Placeholder'},
         )
 
     testdir.make_from_function(generator, name='.prisma/partials.py')

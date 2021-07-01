@@ -35,7 +35,7 @@ class {{ model.name }}(BaseModel):
         exclude: Optional[Iterable['types.{{ model.name }}Keys']] = None,
         required: Optional[Iterable['types.{{ model.name }}Keys']] = None,
         optional: Optional[Iterable['types.{{ model.name }}Keys']] = None,
-        types: Optional[Mapping['types.{{ model.name }}RelationalFieldKeys', str]] = None,
+        relations: Optional[Mapping['types.{{ model.name }}RelationalFieldKeys', str]] = None,
     ) -> None:
         if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
             raise RuntimeError(
@@ -82,8 +82,8 @@ class {{ model.name }}(BaseModel):
                     fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
-            if types:
-                for field, type_ in types.items():
+            if relations:
+                for field, type_ in relations.items():
                     if field not in _{{ model.name }}_relational_fields:
                         raise errors.UnknownRelationalFieldError('{{ model.name }}', field)
 
