@@ -34,7 +34,7 @@ BINARIES: List[Binary] = [
 
 
 def ensure_cached() -> Path:
-    binaries = []
+    binaries: List[Binary] = []
     for binary in BINARIES:
         path = binary.path
         if path.exists():

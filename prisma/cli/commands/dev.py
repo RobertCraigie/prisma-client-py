@@ -29,4 +29,7 @@ def playground(schema: Optional[str], skip_generate: bool) -> None:
     with temp_env_update({'__PRISMA_PY_PLAYGROUND': '1'}):
         maybe_async_run(client.connect)
 
-    client._engine.process.wait()  # pylint: disable=protected-access
+    # TODO: this is the result of a badly designed class
+    engine = client._engine  # pylint: disable=protected-access
+    assert engine.process is not None, 'Engine process unavailable for some reason'
+    engine.process.wait()

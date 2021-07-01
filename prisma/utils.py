@@ -3,8 +3,8 @@ import time
 import asyncio
 import inspect
 import logging
-import importlib
 import contextlib
+from importlib.util import find_spec
 from typing import Any, Union, Dict, Iterator, Coroutine
 
 from ._types import FuncType, CoroType
@@ -18,7 +18,7 @@ DEBUG = _env_bool('PRISMA_PY_DEBUG')
 DEBUG_GENERATOR = _env_bool('PRISMA_PY_DEBUG_GENERATOR')
 
 
-class _NoneType:
+class _NoneType:  # pyright: reportUnusedClass=false
     def __bool__(self) -> bool:
         return False
 
@@ -49,13 +49,14 @@ def is_coroutine(obj: Any) -> bool:
 
 
 def module_exists(name: str) -> bool:
-    return importlib.util.find_spec(name) is not None
+    return find_spec(name) is not None
 
 
 @contextlib.contextmanager
 def temp_env_update(env: Dict[str, str]) -> Iterator[None]:
+    old = os.environ.copy()
+
     try:
-        old = os.environ.copy()
         os.environ.update(env)
         yield
     finally:

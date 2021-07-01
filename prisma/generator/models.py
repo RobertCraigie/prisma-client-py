@@ -1,7 +1,8 @@
 import enum
 import importlib
 from pathlib import Path
-from importlib import machinery
+from importlib import machinery, util as importlib_util
+from importlib.abc import InspectLoader
 from contextvars import ContextVar
 from typing import (
     Any,
@@ -12,6 +13,7 @@ from typing import (
     Iterator,
     Dict,
     Type,
+    cast,
     TYPE_CHECKING,
 )
 from pydantic import (
@@ -51,10 +53,15 @@ def get_datamodel() -> 'Datamodel':
     return data_ctx.get().dmmf.datamodel
 
 
+def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
+    assert spec.origin is not None, 'Cannot serialize module with no origin'
+    return spec.origin
+
+
 class BaseModel(PydanticBaseModel):
     class Config:
         json_encoders: Dict[Type[Any], Any] = {
-            machinery.ModuleSpec: lambda s: s.origin,
+            machinery.ModuleSpec: _module_spec_serializer,
         }
 
 
@@ -66,7 +73,7 @@ class HttpChoices(str, enum.Enum):
 class Module(BaseModel):
     spec: machinery.ModuleSpec
 
-    class Config:
+    class Config(BaseModel.Config):
         arbitrary_types_allowed: bool = True
 
     @validator('spec', pre=True, allow_reuse=True)
@@ -79,7 +86,7 @@ class Module(BaseModel):
 
         path = Path.cwd().joinpath(value)
         if path.exists():
-            spec = importlib.util.spec_from_file_location(
+            spec = importlib_util.spec_from_file_location(
                 'prisma.partial_type_generator', value
             )
         elif value.startswith('.'):
@@ -88,7 +95,7 @@ class Module(BaseModel):
             )
         else:
             try:
-                spec = importlib.util.find_spec(value)
+                spec = importlib_util.find_spec(value)
             except ModuleNotFoundError:
                 spec = None
 
@@ -99,13 +106,15 @@ class Module(BaseModel):
 
     def run(self) -> None:
         importlib.invalidate_caches()
-        mod = importlib.util.module_from_spec(self.spec)
-        assert self.spec.loader is not None, 'Expected an import loader to exist.'
+        mod = importlib_util.module_from_spec(self.spec)
+        loader = self.spec.loader
+        assert loader is not None, 'Expected an import loader to exist.'
+        assert isinstance(
+            loader, InspectLoader
+        ), f'Cannot execute module from loader type: {type(loader)}'
 
-        # TODO: why does mypy think loader has no exec_module attribute?
-        # it was added in python3.4
         try:
-            self.spec.loader.exec_module(mod)  # type: ignore[attr-defined]
+            loader.exec_module(mod)
         except:
             print('An exception ocurred while running the partial type generator')
             raise
@@ -126,7 +135,7 @@ class Data(BaseModel):
 
     @classmethod
     def parse_obj(cls, obj: Any) -> 'Data':
-        data = super().parse_obj(obj)
+        data = cast(Data, super().parse_obj(obj))
         data_ctx.set(data)
         return data
 
@@ -158,7 +167,7 @@ class Config(BaseSettings):
     http: HttpChoices = HttpChoices.aiohttp
     partial_type_generator: Optional[Module]
 
-    class Config:
+    class Config(BaseSettings.Config):
         extra: Extra = Extra.forbid
         use_enum_values: bool = True
         env_prefix: str = 'prisma_py_config_'
@@ -177,7 +186,7 @@ class Config(BaseSettings):
     @validator('http', always=True, allow_reuse=True)
     @classmethod
     def http_matches_installed_library(cls, value: HttpChoices) -> str:
-        # pylint: disable=unused-import, import-outside-toplevel
+        # pyright: reportUnusedImport=false
         try:
             if value == 'aiohttp':
                 import aiohttp

@@ -383,7 +383,7 @@ ERROR_PARSING = ErrorCode('prisma-parsing', 'Unable to parse', 'Prisma')
 
 
 def error_unable_to_parse(
-    api: CheckerPluginInterface, context: Context, detail: str
+    api: CheckerPluginInterface, context: Optional[Context], detail: str
 ) -> None:
     link = 'https://github.com/RobertCraigie/prisma-client-py/issues/new/choose'
     full_message = f'The prisma mypy plugin was unable to parse: {detail}\n'

@@ -7,7 +7,7 @@ __copyright__ = 'Copyright 2020-2021 RobertCraigie'
 __version__ = '0.0.1'
 
 from .plugins import *
-from . import binaries, jsonrpc, engine, utils
+from .utils import setup_logging
 
 
 try:
@@ -18,4 +18,4 @@ except ModuleNotFoundError:
     pass
 
 
-utils.setup_logging()
+setup_logging()

@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 import subprocess
-from typing import List, Union, Optional, IO, Dict, Any
+from typing import List, Union, Optional, IO, Dict
 
 import click
 
@@ -16,7 +16,7 @@ def run(
     args: List[str],
     check: bool = False,
     pipe: bool = False,
-    env: Optional[Dict[str, Any]] = None,
+    env: Optional[Dict[str, str]] = None,
 ) -> int:
     directory = binaries.ensure_cached()
     path = directory.joinpath(binaries.PRISMA_CLI_NAME)

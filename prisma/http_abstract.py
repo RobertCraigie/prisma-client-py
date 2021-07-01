@@ -63,7 +63,9 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         return cast(Session, session)
 
     @session.setter
-    def session(self, value: Optional[Session]) -> None:
+    def session(
+        self, value: Optional[Session]
+    ) -> None:  # pyright: reportPropertyTypeMismatch=false
         self._session = value
 
     def __repr__(self) -> str:

@@ -464,6 +464,8 @@ class Data(Node):
 
 
 class ListNode(Node):
+    data: Iterable[Any]
+
     def __init__(self, data: Iterable[Any], joiner: str = ',\n', **kwargs: Any) -> None:
         super().__init__(joiner=joiner, **kwargs)
         self.data = data
@@ -568,11 +570,6 @@ class Selection(Node):
         if include is not None:
             if model is None:
                 raise ValueError('Cannot include fields when model is None.')
-
-            if not isinstance(include, dict):
-                raise TypeError(
-                    f'Expected `dict` include value but got type={type(include)} instead.'
-                )
 
             for key, value in include.items():
                 if value is True:

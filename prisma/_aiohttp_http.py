@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, Optional
+from typing import Any
 
 import aiohttp
 
@@ -14,7 +14,6 @@ class HTTP(AbstractHTTP[aiohttp.ClientSession, aiohttp.ClientResponse]):
     # pylint: disable=invalid-overridden-method,attribute-defined-outside-init
 
     session: aiohttp.ClientSession
-    library: str = 'aiohttp'
 
     async def download(self, url: str, dest: str) -> None:
         async with self.session.get(url, raise_for_status=True, timeout=None) as resp:
@@ -49,6 +48,10 @@ class HTTP(AbstractHTTP[aiohttp.ClientSession, aiohttp.ClientResponse]):
             # being populated, can safely ignore as we're just
             # cleaning up anyway
             pass
+
+    @property
+    def library(self) -> str:
+        return 'aiohttp'
 
 
 client: HTTP = HTTP()

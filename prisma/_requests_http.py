@@ -12,8 +12,7 @@ __all__ = ('HTTP', 'Response', 'client')
 
 class HTTP(AbstractHTTP[requests.Session, requests.Response]):
     # pylint: disable=attribute-defined-outside-init
-
-    library = 'requests'
+    session: requests.Session
 
     def download(self, url: str, dest: str) -> None:
         with self.session.request('GET', url, stream=True) as resp:
@@ -33,6 +32,10 @@ class HTTP(AbstractHTTP[requests.Session, requests.Response]):
 
     def __del__(self) -> None:
         self.close()
+
+    @property
+    def library(self) -> str:
+        return 'requests'
 
 
 client = HTTP()

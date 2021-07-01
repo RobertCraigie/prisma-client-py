@@ -1,7 +1,7 @@
 import sys
 import logging
 from pathlib import Path
-from typing import Optional, Any
+from typing import Optional, Dict, Any
 
 import click
 
@@ -45,7 +45,7 @@ def cli(schema: Optional[Path], watch: bool, **kwargs: Any) -> None:
     if watch:
         args.append('--watch')
 
-    env = {}
+    env: Dict[str, str] = {}
     prefix = 'PRISMA_PY_CONFIG_'
     for key, value in kwargs.items():
         if value is None:

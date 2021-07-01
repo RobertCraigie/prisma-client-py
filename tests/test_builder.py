@@ -69,14 +69,17 @@ def test_basic_building() -> None:
 
 
 def test_invalid_include() -> None:
-    builder = functools.partial(QueryBuilder, operation='query', method='findUnique', model='User')
-    with pytest.raises(TypeError) as exc:
-        builder(arguments={'include': 1}).build_query()
-
-    assert exc.match('Expected `dict` include value but got type=<class \'int\'> instead')
-
     with pytest.raises(UnknownRelationalFieldError) as exception:
-        builder(arguments={'include': {'hello': True}}).build_query()
+        QueryBuilder(
+            operation='query',
+            method='findUnique',
+            model='User',
+            arguments={
+                'include': {
+                    'hello': True,
+                }
+            }
+        ).build_query()
 
     assert exception.match(
         'Field: "hello" either does not exist or is not a relational field on the User model'

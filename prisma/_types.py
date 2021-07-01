@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 
 if sys.version_info >= (3, 8):
+    # pyright: reportUnusedImport=false
     from typing import (  # pylint: disable=no-name-in-module, unused-import
         TypedDict,
         Literal,

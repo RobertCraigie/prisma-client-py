@@ -19,6 +19,9 @@ disable =
   # actual errors, so we can safely disable this error code in pylint
   unsubscriptable-object,
 
+  # using pyright for this now
+  unused-import,
+
   # TODO: re-enable this at some point
   missing-docstring,
 

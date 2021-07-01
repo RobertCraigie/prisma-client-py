@@ -3,7 +3,7 @@ import sys
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Optional, List, Union, NoReturn, Mapping, Any, Type, overload
+from typing import Optional, List, Union, NoReturn, Mapping, Any, Type, overload, cast
 
 import click
 
@@ -21,7 +21,7 @@ class PrismaCLI(click.MultiCommand):
     folder: Path = Path(__file__).parent / 'commands'
 
     def list_commands(self, ctx: click.Context) -> List[str]:
-        commands = []
+        commands: List[str] = []
 
         for path in self.folder.iterdir():
             name = path.name
@@ -61,7 +61,7 @@ class PathlibPath(click.Path):
     def convert(  # type: ignore[override]
         self, value: str, param: Optional[click.Parameter], ctx: Optional[click.Context]
     ) -> Path:
-        return Path(super().convert(value, param, ctx))
+        return Path(str(super().convert(value, param, ctx)))
 
 
 class EnumChoice(click.Choice):
@@ -76,13 +76,16 @@ class EnumChoice(click.Choice):
     """
 
     def __init__(self, enum: Type[Enum]) -> None:
+        if str not in enum.__mro__:
+            raise TypeError('Enum does not subclass `str`')
+
         self.__enum = enum
         super().__init__([item.value for item in enum.__members__.values()])
 
     def convert(
         self, value: str, param: Optional[click.Parameter], ctx: Optional[click.Context]
     ) -> str:
-        return str(self.__enum(super().convert(value, param, ctx)).value)
+        return str(cast(Any, self.__enum(super().convert(value, param, ctx)).value))
 
 
 def is_module(path: Path) -> bool:
