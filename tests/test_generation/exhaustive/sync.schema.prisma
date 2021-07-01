@@ -1,0 +1,169 @@
+// NOTE: modified from https://github.com/prisma/prisma/blob/master/src/packages/client/src/__tests__/integration/happy/exhaustive-schema/schema.prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator db {
+  provider             = "python3 -m prisma"
+  recursive_type_depth = 3
+  http                 = "requests"
+  output               = "../../../.tests_cache/generation/exhaustive/__prisma_sync_output__"
+}
+
+model Post {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  title      String
+  content    String?
+  published  Boolean  @default(false)
+  author     User     @relation(fields: [author_id], references: [id])
+  author_id  Int
+}
+
+model User {
+  id               Int             @id @default(autoincrement())
+  email            String          @unique
+  int              Int
+  optional_int     Int?
+  float            Float
+  optional_float   Float?
+  string           String
+  optional_string  String?
+  json             Json
+  optional_json    Json?
+  enum             ABeautifulEnum
+  optional_enum    ABeautifulEnum?
+  boolean          Boolean
+  optional_boolean Boolean?
+  posts            Post[]
+}
+
+model M {
+  id               Int             @id @default(autoincrement())
+  n                N[]
+  int              Int
+  optional_int     Int?
+  float            Float
+  optional_float   Float?
+  string           String
+  optional_string  String?
+  json             Json
+  optional_json    Json?
+  enum             ABeautifulEnum
+  optional_enum    ABeautifulEnum?
+  boolean          Boolean
+  optional_boolean Boolean?
+}
+
+model N {
+  id               Int             @id @default(autoincrement())
+  m                M[]
+  int              Int
+  optional_int     Int?
+  float            Float
+  optional_float   Float?
+  string           String
+  optional_string  String?
+  json             Json
+  optional_json    Json?
+  enum             ABeautifulEnum
+  optional_enum    ABeautifulEnum?
+  boolean          Boolean
+  optional_boolean Boolean?
+}
+
+model OneOptional {
+  id               Int             @id @default(autoincrement())
+  many             ManyRequired[]
+  int              Int
+  optional_int     Int?
+  float            Float
+  optional_float   Float?
+  string           String
+  optional_string  String?
+  json             Json
+  optional_json    Json?
+  enum             ABeautifulEnum
+  optional_enum    ABeautifulEnum?
+  boolean          Boolean
+  optional_boolean Boolean?
+}
+
+model ManyRequired {
+  id  Int          @id @default(autoincrement())
+  one OneOptional? @relation(fields: [one_optional_id], references: [id])
+
+  one_optional_id  Int?
+  int              Int
+  optional_int     Int?
+  float            Float
+  optional_float   Float?
+  string           String
+  optional_string  String?
+  json             Json
+  optional_json    Json?
+  enum             ABeautifulEnum
+  optional_enum    ABeautifulEnum?
+  boolean          Boolean
+  optional_boolean Boolean?
+}
+
+enum ABeautifulEnum {
+  A
+  B
+  C
+}
+
+model A {
+  id       String  @id @default(uuid())
+  email    String  @unique
+  name     String?
+  int      Int     @db.Integer
+  sInt     Int     @db.SmallInt
+  inc_int  Int     @default(autoincrement()) @db.Integer
+  inc_sInt Int     @default(autoincrement()) @db.SmallInt
+
+  // TODO
+  // bInt     BigInt @db.BigInt
+  // inc_bInt BigInt @default(autoincrement()) @db.BigInt
+}
+
+model B {
+  id      String @id @default(cuid())
+  float   Float  @db.Real
+  d_float Float  @db.DoublePrecision
+
+  // TODO
+  // decFloat Decimal @db.Decimal(2, 1)
+  // numFloat Decimal @db.Decimal(10, 6)
+}
+
+model C {
+  id     String @id @default(cuid())
+  char   String @db.Char(10)
+  v_char String @db.VarChar(11)
+  text   String @db.Text
+  bit    String @db.Bit(4)
+  v_bit  String @db.VarBit(5)
+  uuid   String @db.Uuid
+}
+
+model D {
+  id    String  @id @default(cuid())
+  bool  Boolean @db.Boolean
+  xml   String  @db.Xml
+  json  Json    @db.Json
+  jsonb Json    @db.JsonB
+
+  // TODO
+  // byteA Bytes   @db.ByteA
+}
+
+model E {
+  id   String   @id @default(cuid())
+  date DateTime @db.Date
+  time DateTime @db.Time(3)
+  ts   DateTime @db.Timestamp(3)
+}

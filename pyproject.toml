@@ -8,6 +8,7 @@ exclude = '''
   | \.mypy_cache
   | \.tox
   | \.venv
+  | \.tests_cache
   | _build
   | buck-out
   | build

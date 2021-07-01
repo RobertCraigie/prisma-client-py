@@ -132,3 +132,6 @@ prisma/http.py.original
 # debug files
 prisma/generator/debug-data.json
 prisma/generator/debug-params.json
+
+# test cache files
+.tests_cache/
