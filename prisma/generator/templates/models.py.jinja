@@ -83,6 +83,7 @@ class {{ model.name }}(BaseModel):
                     fields[field]['optional'] = True
 
             if relations:
+                {% if model.has_relational_fields %}
                 for field, type_ in relations.items():
                     if field not in _{{ model.name }}_relational_fields:
                         raise errors.UnknownRelationalFieldError('{{ model.name }}', field)
@@ -102,6 +103,9 @@ class {{ model.name }}(BaseModel):
                         info['type'] = f'List[\'partials.{type_}\']'
                     else:
                         info['type'] = f'\'partials.{type_}\''
+                {% else %}
+                raise ValueError('Model: "{{ model.name }}" has no relational fields.')
+                {% endif %}
         except KeyError as exc:
             raise ValueError(
                 f'{exc.args[0]} is not a valid {{ model.name }} / {name} field.'
@@ -119,11 +123,15 @@ class {{ model.name }}(BaseModel):
 {% endfor %}
 
 {% for model in dmmf.datamodel.models %}
-_{{ model.name }}_relational_fields: Set[str] = {
-    {% for field in model.relational_fields %}
-    '{{ field.name }}',
-    {% endfor %}
-}
+{% if model.has_relational_fields -%}
+    _{{ model.name }}_relational_fields: Set[str] = {
+        {% for field in model.relational_fields %}
+        '{{ field.name }}',
+        {% endfor %}
+    }
+{% else -%}
+    _{{ model.name }}_relational_fields: Set[str] = set()
+{% endif %}
 _{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] = {
     {% for field in model.all_fields %}
     '{{ field.name }}': {

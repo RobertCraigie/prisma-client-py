@@ -742,25 +742,7 @@ class A(BaseModel):
                     fields[field]['optional'] = True
 
             if relations:
-                for field, type_ in relations.items():
-                    if field not in _A_relational_fields:
-                        raise errors.UnknownRelationalFieldError('A', field)
-
-                    # TODO: this method of validating types is not ideal
-                    # as it means we cannot two create partial types that
-                    # reference each other
-                    if type_ not in _created_partial_types:
-                        raise ValueError(
-                            f'Unknown partial type: "{type_}". '
-                            f'Did you remember to generate the {type_} type before this one?'
-                        )
-
-                    # TODO: support non prisma.partials models
-                    info = fields[field]
-                    if info['is_list']:
-                        info['type'] = f'List[\'partials.{type_}\']'
-                    else:
-                        info['type'] = f'\'partials.{type_}\''
+                raise ValueError('Model: "A" has no relational fields.')
         except KeyError as exc:
             raise ValueError(
                 f'{exc.args[0]} is not a valid A / {name} field.'
@@ -837,25 +819,7 @@ class B(BaseModel):
                     fields[field]['optional'] = True
 
             if relations:
-                for field, type_ in relations.items():
-                    if field not in _B_relational_fields:
-                        raise errors.UnknownRelationalFieldError('B', field)
-
-                    # TODO: this method of validating types is not ideal
-                    # as it means we cannot two create partial types that
-                    # reference each other
-                    if type_ not in _created_partial_types:
-                        raise ValueError(
-                            f'Unknown partial type: "{type_}". '
-                            f'Did you remember to generate the {type_} type before this one?'
-                        )
-
-                    # TODO: support non prisma.partials models
-                    info = fields[field]
-                    if info['is_list']:
-                        info['type'] = f'List[\'partials.{type_}\']'
-                    else:
-                        info['type'] = f'\'partials.{type_}\''
+                raise ValueError('Model: "B" has no relational fields.')
         except KeyError as exc:
             raise ValueError(
                 f'{exc.args[0]} is not a valid B / {name} field.'
@@ -936,25 +900,7 @@ class C(BaseModel):
                     fields[field]['optional'] = True
 
             if relations:
-                for field, type_ in relations.items():
-                    if field not in _C_relational_fields:
-                        raise errors.UnknownRelationalFieldError('C', field)
-
-                    # TODO: this method of validating types is not ideal
-                    # as it means we cannot two create partial types that
-                    # reference each other
-                    if type_ not in _created_partial_types:
-                        raise ValueError(
-                            f'Unknown partial type: "{type_}". '
-                            f'Did you remember to generate the {type_} type before this one?'
-                        )
-
-                    # TODO: support non prisma.partials models
-                    info = fields[field]
-                    if info['is_list']:
-                        info['type'] = f'List[\'partials.{type_}\']'
-                    else:
-                        info['type'] = f'\'partials.{type_}\''
+                raise ValueError('Model: "C" has no relational fields.')
         except KeyError as exc:
             raise ValueError(
                 f'{exc.args[0]} is not a valid C / {name} field.'
@@ -1033,25 +979,7 @@ class D(BaseModel):
                     fields[field]['optional'] = True
 
             if relations:
-                for field, type_ in relations.items():
-                    if field not in _D_relational_fields:
-                        raise errors.UnknownRelationalFieldError('D', field)
-
-                    # TODO: this method of validating types is not ideal
-                    # as it means we cannot two create partial types that
-                    # reference each other
-                    if type_ not in _created_partial_types:
-                        raise ValueError(
-                            f'Unknown partial type: "{type_}". '
-                            f'Did you remember to generate the {type_} type before this one?'
-                        )
-
-                    # TODO: support non prisma.partials models
-                    info = fields[field]
-                    if info['is_list']:
-                        info['type'] = f'List[\'partials.{type_}\']'
-                    else:
-                        info['type'] = f'\'partials.{type_}\''
+                raise ValueError('Model: "D" has no relational fields.')
         except KeyError as exc:
             raise ValueError(
                 f'{exc.args[0]} is not a valid D / {name} field.'
@@ -1129,25 +1057,7 @@ class E(BaseModel):
                     fields[field]['optional'] = True
 
             if relations:
-                for field, type_ in relations.items():
-                    if field not in _E_relational_fields:
-                        raise errors.UnknownRelationalFieldError('E', field)
-
-                    # TODO: this method of validating types is not ideal
-                    # as it means we cannot two create partial types that
-                    # reference each other
-                    if type_ not in _created_partial_types:
-                        raise ValueError(
-                            f'Unknown partial type: "{type_}". '
-                            f'Did you remember to generate the {type_} type before this one?'
-                        )
-
-                    # TODO: support non prisma.partials models
-                    info = fields[field]
-                    if info['is_list']:
-                        info['type'] = f'List[\'partials.{type_}\']'
-                    else:
-                        info['type'] = f'\'partials.{type_}\''
+                raise ValueError('Model: "E" has no relational fields.')
         except KeyError as exc:
             raise ValueError(
                 f'{exc.args[0]} is not a valid E / {name} field.'
@@ -1164,8 +1074,8 @@ class E(BaseModel):
 
 
 _Post_relational_fields: Set[str] = {
-    'author',
-}
+        'author',
+    }
 _Post_fields: Dict['types.PostKeys', PartialModelField] = {
     'id': {
         'name': 'id',
@@ -1212,8 +1122,8 @@ _Post_fields: Dict['types.PostKeys', PartialModelField] = {
 }
 
 _User_relational_fields: Set[str] = {
-    'posts',
-}
+        'posts',
+    }
 _User_fields: Dict['types.UserKeys', PartialModelField] = {
     'id': {
         'name': 'id',
@@ -1308,8 +1218,8 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = {
 }
 
 _M_relational_fields: Set[str] = {
-    'n',
-}
+        'n',
+    }
 _M_fields: Dict['types.MKeys', PartialModelField] = {
     'id': {
         'name': 'id',
@@ -1398,8 +1308,8 @@ _M_fields: Dict['types.MKeys', PartialModelField] = {
 }
 
 _N_relational_fields: Set[str] = {
-    'm',
-}
+        'm',
+    }
 _N_fields: Dict['types.NKeys', PartialModelField] = {
     'id': {
         'name': 'id',
@@ -1488,8 +1398,8 @@ _N_fields: Dict['types.NKeys', PartialModelField] = {
 }
 
 _OneOptional_relational_fields: Set[str] = {
-    'many',
-}
+        'many',
+    }
 _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = {
     'id': {
         'name': 'id',
@@ -1578,8 +1488,8 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = {
 }
 
 _ManyRequired_relational_fields: Set[str] = {
-    'one',
-}
+        'one',
+    }
 _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = {
     'id': {
         'name': 'id',
@@ -1673,8 +1583,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = {
     },
 }
 
-_A_relational_fields: Set[str] = {
-}
+_A_relational_fields: Set[str] = set()
 _A_fields: Dict['types.AKeys', PartialModelField] = {
     'id': {
         'name': 'id',
@@ -1720,8 +1629,7 @@ _A_fields: Dict['types.AKeys', PartialModelField] = {
     },
 }
 
-_B_relational_fields: Set[str] = {
-}
+_B_relational_fields: Set[str] = set()
 _B_fields: Dict['types.BKeys', PartialModelField] = {
     'id': {
         'name': 'id',
@@ -1743,8 +1651,7 @@ _B_fields: Dict['types.BKeys', PartialModelField] = {
     },
 }
 
-_C_relational_fields: Set[str] = {
-}
+_C_relational_fields: Set[str] = set()
 _C_fields: Dict['types.CKeys', PartialModelField] = {
     'id': {
         'name': 'id',
@@ -1790,8 +1697,7 @@ _C_fields: Dict['types.CKeys', PartialModelField] = {
     },
 }
 
-_D_relational_fields: Set[str] = {
-}
+_D_relational_fields: Set[str] = set()
 _D_fields: Dict['types.DKeys', PartialModelField] = {
     'id': {
         'name': 'id',
@@ -1825,8 +1731,7 @@ _D_fields: Dict['types.DKeys', PartialModelField] = {
     },
 }
 
-_E_relational_fields: Set[str] = {
-}
+_E_relational_fields: Set[str] = set()
 _E_fields: Dict['types.EKeys', PartialModelField] = {
     'id': {
         'name': 'id',

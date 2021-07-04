@@ -31,6 +31,8 @@ else:
 
 # -- template types.py.jinja --
 from enum import Enum
+from .utils import _NoneType
+
 
 
 # TODO: cleanup whitespace control
@@ -1123,8 +1125,8 @@ PostKeys = Literal[
 ]
 
 PostRelationalFieldKeys = Literal[
-    'author',
-]
+        'author',
+    ]
 
 # User types
 
@@ -2130,8 +2132,8 @@ UserKeys = Literal[
 ]
 
 UserRelationalFieldKeys = Literal[
-    'posts',
-]
+        'posts',
+    ]
 
 # M types
 
@@ -3128,8 +3130,8 @@ MKeys = Literal[
 ]
 
 MRelationalFieldKeys = Literal[
-    'n',
-]
+        'n',
+    ]
 
 # N types
 
@@ -4126,8 +4128,8 @@ NKeys = Literal[
 ]
 
 NRelationalFieldKeys = Literal[
-    'm',
-]
+        'm',
+    ]
 
 # OneOptional types
 
@@ -5124,8 +5126,8 @@ OneOptionalKeys = Literal[
 ]
 
 OneOptionalRelationalFieldKeys = Literal[
-    'many',
-]
+        'many',
+    ]
 
 # ManyRequired types
 
@@ -6133,8 +6135,8 @@ ManyRequiredKeys = Literal[
 ]
 
 ManyRequiredRelationalFieldKeys = Literal[
-    'one',
-]
+        'one',
+    ]
 
 # A types
 
@@ -7061,7 +7063,7 @@ AKeys = Literal[
     'inc_sInt',
 ]
 
-ARelationalFieldKeys = None
+ARelationalFieldKeys = _NoneType
 
 # B types
 
@@ -7940,7 +7942,7 @@ BKeys = Literal[
     'd_float',
 ]
 
-BRelationalFieldKeys = None
+BRelationalFieldKeys = _NoneType
 
 # C types
 
@@ -8843,7 +8845,7 @@ CKeys = Literal[
     'uuid',
 ]
 
-CRelationalFieldKeys = None
+CRelationalFieldKeys = _NoneType
 
 # D types
 
@@ -9730,7 +9732,7 @@ DKeys = Literal[
     'jsonb',
 ]
 
-DRelationalFieldKeys = None
+DRelationalFieldKeys = _NoneType
 
 # E types
 
@@ -10606,7 +10608,7 @@ EKeys = Literal[
     'ts',
 ]
 
-ERelationalFieldKeys = None
+ERelationalFieldKeys = _NoneType
 
 
 

@@ -47,6 +47,11 @@ model User {{
   name         String
   posts        Post[]
 }}
+
+model Foo {{
+    id   String @id @default(cuid())
+    text String
+}}
 '''
 
 
@@ -377,3 +382,21 @@ def test_partial_type_types_non_relational(testdir: Testdir) -> None:
         'Field: "published" either does not exist or is not a relational field on the Post model'
         in output
     )
+
+
+def test_partial_type_relations_no_relational_fields(testdir: Testdir) -> None:
+    def generator() -> None:  # mark: filedef
+        from prisma.models import Foo
+
+        Foo.create_partial('Placeholder', relations={'wow': 'Placeholder'})
+
+    testdir.make_from_function(generator, name='.prisma/partials.py')
+
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(SCHEMA)
+
+    output = exc.value.output.decode('utf-8')
+    assert '.prisma/partials.py' in output
+    assert 'ValueError' in output
+    assert 'An exception ocurred while running the partial type generator' in output
+    assert 'Model: "Foo" has no relational fields.' in output
