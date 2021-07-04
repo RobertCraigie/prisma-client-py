@@ -153,7 +153,7 @@ class User(BaseModel):
     optional_float: Optional[float]
     string: str
     optional_string: Optional[str]
-    json: dict
+    json_: dict
     optional_json: Optional[dict]
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -260,7 +260,7 @@ class M(BaseModel):
     optional_float: Optional[float]
     string: str
     optional_string: Optional[str]
-    json: dict
+    json_: dict
     optional_json: Optional[dict]
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -366,7 +366,7 @@ class N(BaseModel):
     optional_float: Optional[float]
     string: str
     optional_string: Optional[str]
-    json: dict
+    json_: dict
     optional_json: Optional[dict]
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -472,7 +472,7 @@ class OneOptional(BaseModel):
     optional_float: Optional[float]
     string: str
     optional_string: Optional[str]
-    json: dict
+    json_: dict
     optional_json: Optional[dict]
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -579,7 +579,7 @@ class ManyRequired(BaseModel):
     optional_float: Optional[float]
     string: str
     optional_string: Optional[str]
-    json: dict
+    json_: dict
     optional_json: Optional[dict]
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -973,7 +973,7 @@ class D(BaseModel):
     id: str
     bool: bool
     xml: str
-    json: dict
+    json_: dict
     jsonb: dict
 
     Config = Config
@@ -1263,8 +1263,8 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = {
         'optional': True,
         'type': 'str',
     },
-    'json': {
-        'name': 'json',
+    'json_': {
+        'name': 'json_',
         'is_list': False,
         'optional': False,
         'type': 'dict',
@@ -1359,8 +1359,8 @@ _M_fields: Dict['types.MKeys', PartialModelField] = {
         'optional': True,
         'type': 'str',
     },
-    'json': {
-        'name': 'json',
+    'json_': {
+        'name': 'json_',
         'is_list': False,
         'optional': False,
         'type': 'dict',
@@ -1449,8 +1449,8 @@ _N_fields: Dict['types.NKeys', PartialModelField] = {
         'optional': True,
         'type': 'str',
     },
-    'json': {
-        'name': 'json',
+    'json_': {
+        'name': 'json_',
         'is_list': False,
         'optional': False,
         'type': 'dict',
@@ -1539,8 +1539,8 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = {
         'optional': True,
         'type': 'str',
     },
-    'json': {
-        'name': 'json',
+    'json_': {
+        'name': 'json_',
         'is_list': False,
         'optional': False,
         'type': 'dict',
@@ -1635,8 +1635,8 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = {
         'optional': True,
         'type': 'str',
     },
-    'json': {
-        'name': 'json',
+    'json_': {
+        'name': 'json_',
         'is_list': False,
         'optional': False,
         'type': 'dict',
@@ -1811,8 +1811,8 @@ _D_fields: Dict['types.DKeys', PartialModelField] = {
         'optional': False,
         'type': 'str',
     },
-    'json': {
-        'name': 'json',
+    'json_': {
+        'name': 'json_',
         'is_list': False,
         'optional': False,
         'type': 'dict',

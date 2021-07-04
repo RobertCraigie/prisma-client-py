@@ -56,7 +56,7 @@ generator db {
   provider             = "python3 -m prisma"
   recursive_type_depth = 3
   http                 = "requests"
-  output               = "../../../.tests_cache/generation/exhaustive/__prisma_sync_output__"
+  output               = "../../../.tests_cache/generation/exhaustive/__prisma_sync_output__/prisma"
 }
 
 model Post {
@@ -78,7 +78,7 @@ model User {
   optional_float   Float?
   string           String
   optional_string  String?
-  json             Json
+  json_            Json
   optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
@@ -96,7 +96,7 @@ model M {
   optional_float   Float?
   string           String
   optional_string  String?
-  json             Json
+  json_            Json
   optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
@@ -113,7 +113,7 @@ model N {
   optional_float   Float?
   string           String
   optional_string  String?
-  json             Json
+  json_            Json
   optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
@@ -130,7 +130,7 @@ model OneOptional {
   optional_float   Float?
   string           String
   optional_string  String?
-  json             Json
+  json_            Json
   optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
@@ -149,7 +149,7 @@ model ManyRequired {
   optional_float   Float?
   string           String
   optional_string  String?
-  json             Json
+  json_            Json
   optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
@@ -201,7 +201,7 @@ model D {
   id    String  @id @default(cuid())
   bool  Boolean @db.Boolean
   xml   String  @db.Xml
-  json  Json    @db.Json
+  json_ Json    @db.Json
   jsonb Json    @db.JsonB
 
   // TODO

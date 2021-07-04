@@ -1,6 +1,7 @@
 import enum
 import importlib
 from pathlib import Path
+from keyword import iskeyword
 from importlib import machinery, util as importlib_util
 from importlib.abc import InspectLoader
 from contextvars import ContextVar
@@ -309,6 +310,23 @@ class Field(BaseModel):
     relation_on_delete: Optional[str] = FieldInfo(alias='relationOnDelete')
     relation_to_fields: Optional[List[str]] = FieldInfo(alias='relationToFields')
     relation_from_fields: Optional[List[str]] = FieldInfo(alias='relationFromFields')
+
+    @validator('name')
+    @classmethod
+    def name_validator(cls, name: str) -> str:
+        if getattr(BaseModel, name, None):
+            raise ValueError(
+                f'Field name "{name}" shadows a BaseModel attribute; '
+                f'use a different field name with \'@map("{name}")\'.'
+            )
+
+        if iskeyword(name):
+            raise ValueError(
+                f'Field name "{name}" shadows a Python keyword; '
+                f'use a different field name with \'@map("{name}")\'.'
+            )
+
+        return name
 
     # TODO: cache the properties
     @property

@@ -1146,7 +1146,7 @@ class UserCreateInput(UserOptionalCreateInput):
     int: int
     float: float
     string: str
-    json: dict
+    json_: dict
     enum: 'types.ABeautifulEnumEnum'
     boolean: bool
 
@@ -1171,7 +1171,7 @@ class UserCreateWithoutRelationsInput(UserOptionalCreateWithoutRelationsInput):
     int: int
     float: float
     string: str
-    json: dict
+    json_: dict
     enum: 'types.ABeautifulEnumEnum'
     boolean: bool
 
@@ -1201,7 +1201,7 @@ class UserUpdateInput(TypedDict, total=False):
     optional_float: Optional[Union['UserUpdateoptional_floatInput', float]]
     string: Optional[str]
     optional_string: Optional[str]
-    json: Optional[dict]
+    json_: Optional[dict]
     optional_json: Optional[dict]
     enum: Optional['types.ABeautifulEnumEnum']
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -1220,7 +1220,7 @@ class UserUpdateManyMutationInput(TypedDict, total=False):
     optional_float: Optional[Union['UserUpdateoptional_floatInput', float]]
     string: Optional[str]
     optional_string: Optional[str]
-    json: Optional[dict]
+    json_: Optional[dict]
     optional_json: Optional[dict]
     enum: Optional['types.ABeautifulEnumEnum']
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -1306,7 +1306,7 @@ class UserOrderByInput(TypedDict, total=False):
     optional_float: Optional['SortOrder']
     string: Optional['SortOrder']
     optional_string: Optional['SortOrder']
-    json: Optional['SortOrder']
+    json_: Optional['SortOrder']
     optional_json: Optional['SortOrder']
     enum: Optional['SortOrder']
     optional_enum: Optional['SortOrder']
@@ -2058,7 +2058,7 @@ class UserWhereInput(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -2081,7 +2081,7 @@ class UserWhereInputRecursive1(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -2103,7 +2103,7 @@ class UserWhereInputRecursive2(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -2120,7 +2120,7 @@ UserKeys = Literal[
     'optional_float',
     'string',
     'optional_string',
-    'json',
+    'json_',
     'optional_json',
     'enum',
     'optional_enum',
@@ -2152,7 +2152,7 @@ class MCreateInput(MOptionalCreateInput):
     int: int
     float: float
     string: str
-    json: dict
+    json_: dict
     enum: 'types.ABeautifulEnumEnum'
     boolean: bool
 
@@ -2176,7 +2176,7 @@ class MCreateWithoutRelationsInput(MOptionalCreateWithoutRelationsInput):
     int: int
     float: float
     string: str
-    json: dict
+    json_: dict
     enum: 'types.ABeautifulEnumEnum'
     boolean: bool
 
@@ -2206,7 +2206,7 @@ class MUpdateInput(TypedDict, total=False):
     optional_float: Optional[Union['MUpdateoptional_floatInput', float]]
     string: Optional[str]
     optional_string: Optional[str]
-    json: Optional[dict]
+    json_: Optional[dict]
     optional_json: Optional[dict]
     enum: Optional['types.ABeautifulEnumEnum']
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -2224,7 +2224,7 @@ class MUpdateManyMutationInput(TypedDict, total=False):
     optional_float: Optional[Union['MUpdateoptional_floatInput', float]]
     string: Optional[str]
     optional_string: Optional[str]
-    json: Optional[dict]
+    json_: Optional[dict]
     optional_json: Optional[dict]
     enum: Optional['types.ABeautifulEnumEnum']
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -2308,7 +2308,7 @@ class MOrderByInput(TypedDict, total=False):
     optional_float: Optional['SortOrder']
     string: Optional['SortOrder']
     optional_string: Optional['SortOrder']
-    json: Optional['SortOrder']
+    json_: Optional['SortOrder']
     optional_json: Optional['SortOrder']
     enum: Optional['SortOrder']
     optional_enum: Optional['SortOrder']
@@ -3059,7 +3059,7 @@ class MWhereInput(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -3081,7 +3081,7 @@ class MWhereInputRecursive1(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -3102,7 +3102,7 @@ class MWhereInputRecursive2(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -3119,7 +3119,7 @@ MKeys = Literal[
     'optional_float',
     'string',
     'optional_string',
-    'json',
+    'json_',
     'optional_json',
     'enum',
     'optional_enum',
@@ -3150,7 +3150,7 @@ class NCreateInput(NOptionalCreateInput):
     int: int
     float: float
     string: str
-    json: dict
+    json_: dict
     enum: 'types.ABeautifulEnumEnum'
     boolean: bool
 
@@ -3174,7 +3174,7 @@ class NCreateWithoutRelationsInput(NOptionalCreateWithoutRelationsInput):
     int: int
     float: float
     string: str
-    json: dict
+    json_: dict
     enum: 'types.ABeautifulEnumEnum'
     boolean: bool
 
@@ -3204,7 +3204,7 @@ class NUpdateInput(TypedDict, total=False):
     optional_float: Optional[Union['NUpdateoptional_floatInput', float]]
     string: Optional[str]
     optional_string: Optional[str]
-    json: Optional[dict]
+    json_: Optional[dict]
     optional_json: Optional[dict]
     enum: Optional['types.ABeautifulEnumEnum']
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -3222,7 +3222,7 @@ class NUpdateManyMutationInput(TypedDict, total=False):
     optional_float: Optional[Union['NUpdateoptional_floatInput', float]]
     string: Optional[str]
     optional_string: Optional[str]
-    json: Optional[dict]
+    json_: Optional[dict]
     optional_json: Optional[dict]
     enum: Optional['types.ABeautifulEnumEnum']
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -3306,7 +3306,7 @@ class NOrderByInput(TypedDict, total=False):
     optional_float: Optional['SortOrder']
     string: Optional['SortOrder']
     optional_string: Optional['SortOrder']
-    json: Optional['SortOrder']
+    json_: Optional['SortOrder']
     optional_json: Optional['SortOrder']
     enum: Optional['SortOrder']
     optional_enum: Optional['SortOrder']
@@ -4057,7 +4057,7 @@ class NWhereInput(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -4079,7 +4079,7 @@ class NWhereInputRecursive1(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -4100,7 +4100,7 @@ class NWhereInputRecursive2(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -4117,7 +4117,7 @@ NKeys = Literal[
     'optional_float',
     'string',
     'optional_string',
-    'json',
+    'json_',
     'optional_json',
     'enum',
     'optional_enum',
@@ -4148,7 +4148,7 @@ class OneOptionalCreateInput(OneOptionalOptionalCreateInput):
     int: int
     float: float
     string: str
-    json: dict
+    json_: dict
     enum: 'types.ABeautifulEnumEnum'
     boolean: bool
 
@@ -4172,7 +4172,7 @@ class OneOptionalCreateWithoutRelationsInput(OneOptionalOptionalCreateWithoutRel
     int: int
     float: float
     string: str
-    json: dict
+    json_: dict
     enum: 'types.ABeautifulEnumEnum'
     boolean: bool
 
@@ -4202,7 +4202,7 @@ class OneOptionalUpdateInput(TypedDict, total=False):
     optional_float: Optional[Union['OneOptionalUpdateoptional_floatInput', float]]
     string: Optional[str]
     optional_string: Optional[str]
-    json: Optional[dict]
+    json_: Optional[dict]
     optional_json: Optional[dict]
     enum: Optional['types.ABeautifulEnumEnum']
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -4220,7 +4220,7 @@ class OneOptionalUpdateManyMutationInput(TypedDict, total=False):
     optional_float: Optional[Union['OneOptionalUpdateoptional_floatInput', float]]
     string: Optional[str]
     optional_string: Optional[str]
-    json: Optional[dict]
+    json_: Optional[dict]
     optional_json: Optional[dict]
     enum: Optional['types.ABeautifulEnumEnum']
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -4304,7 +4304,7 @@ class OneOptionalOrderByInput(TypedDict, total=False):
     optional_float: Optional['SortOrder']
     string: Optional['SortOrder']
     optional_string: Optional['SortOrder']
-    json: Optional['SortOrder']
+    json_: Optional['SortOrder']
     optional_json: Optional['SortOrder']
     enum: Optional['SortOrder']
     optional_enum: Optional['SortOrder']
@@ -5055,7 +5055,7 @@ class OneOptionalWhereInput(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -5077,7 +5077,7 @@ class OneOptionalWhereInputRecursive1(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -5098,7 +5098,7 @@ class OneOptionalWhereInputRecursive2(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -5115,7 +5115,7 @@ OneOptionalKeys = Literal[
     'optional_float',
     'string',
     'optional_string',
-    'json',
+    'json_',
     'optional_json',
     'enum',
     'optional_enum',
@@ -5146,7 +5146,7 @@ class ManyRequiredCreateInput(ManyRequiredOptionalCreateInput):
     int: int
     float: float
     string: str
-    json: dict
+    json_: dict
     enum: 'types.ABeautifulEnumEnum'
     boolean: bool
 
@@ -5170,7 +5170,7 @@ class ManyRequiredCreateWithoutRelationsInput(ManyRequiredOptionalCreateWithoutR
     int: int
     float: float
     string: str
-    json: dict
+    json_: dict
     enum: 'types.ABeautifulEnumEnum'
     boolean: bool
 
@@ -5200,7 +5200,7 @@ class ManyRequiredUpdateInput(TypedDict, total=False):
     optional_float: Optional[Union['ManyRequiredUpdateoptional_floatInput', float]]
     string: Optional[str]
     optional_string: Optional[str]
-    json: Optional[dict]
+    json_: Optional[dict]
     optional_json: Optional[dict]
     enum: Optional['types.ABeautifulEnumEnum']
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -5218,7 +5218,7 @@ class ManyRequiredUpdateManyMutationInput(TypedDict, total=False):
     optional_float: Optional[Union['ManyRequiredUpdateoptional_floatInput', float]]
     string: Optional[str]
     optional_string: Optional[str]
-    json: Optional[dict]
+    json_: Optional[dict]
     optional_json: Optional[dict]
     enum: Optional['types.ABeautifulEnumEnum']
     optional_enum: Optional['types.ABeautifulEnumEnum']
@@ -5309,7 +5309,7 @@ class ManyRequiredOrderByInput(TypedDict, total=False):
     optional_float: Optional['SortOrder']
     string: Optional['SortOrder']
     optional_string: Optional['SortOrder']
-    json: Optional['SortOrder']
+    json_: Optional['SortOrder']
     optional_json: Optional['SortOrder']
     enum: Optional['SortOrder']
     optional_enum: Optional['SortOrder']
@@ -6061,7 +6061,7 @@ class ManyRequiredWhereInput(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -6084,7 +6084,7 @@ class ManyRequiredWhereInputRecursive1(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -6106,7 +6106,7 @@ class ManyRequiredWhereInputRecursive2(TypedDict, total=False):
     optional_float: Union[float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
     optional_string: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     optional_json: dict
     enum: 'types.ABeautifulEnumEnum'
     optional_enum: 'types.ABeautifulEnumEnum'
@@ -6124,7 +6124,7 @@ ManyRequiredKeys = Literal[
     'optional_float',
     'string',
     'optional_string',
-    'json',
+    'json_',
     'optional_json',
     'enum',
     'optional_enum',
@@ -8856,7 +8856,7 @@ class DCreateInput(DOptionalCreateInput):
     """Required arguments to the D create method"""
     bool: bool
     xml: str
-    json: dict
+    json_: dict
     jsonb: dict
 
 
@@ -8872,7 +8872,7 @@ class DCreateWithoutRelationsInput(DOptionalCreateWithoutRelationsInput):
     """Required arguments to the D create method, without relations"""
     bool: bool
     xml: str
-    json: dict
+    json_: dict
     jsonb: dict
 
 
@@ -8896,7 +8896,7 @@ class DUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
     bool: Optional[Union['DUpdateboolInput', bool]]
     xml: Optional[str]
-    json: Optional[dict]
+    json_: Optional[dict]
     jsonb: Optional[dict]
 
 
@@ -8905,7 +8905,7 @@ class DUpdateManyMutationInput(TypedDict, total=False):
     id: Optional[str]
     bool: Optional[Union['DUpdateboolInput', bool]]
     xml: Optional[str]
-    json: Optional[dict]
+    json_: Optional[dict]
     jsonb: Optional[dict]
 
 
@@ -8949,7 +8949,7 @@ class DOrderByInput(TypedDict, total=False):
     id: Optional['SortOrder']
     bool: Optional['SortOrder']
     xml: Optional['SortOrder']
-    json: Optional['SortOrder']
+    json_: Optional['SortOrder']
     jsonb: Optional['SortOrder']
 
 
@@ -9691,7 +9691,7 @@ class DWhereInput(TypedDict, total=False):
     id: Union[str, 'types.StringFilter']
     bool: Union[bool, 'types.BooleanFilter']
     xml: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     jsonb: dict
 
     AND: List['DWhereInputRecursive1']
@@ -9705,7 +9705,7 @@ class DWhereInputRecursive1(TypedDict, total=False):
     id: Union[str, 'types.StringFilter']
     bool: Union[bool, 'types.BooleanFilter']
     xml: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     jsonb: dict
 
     AND: List['DWhereInputRecursive2']
@@ -9718,7 +9718,7 @@ class DWhereInputRecursive2(TypedDict, total=False):
     id: Union[str, 'types.StringFilter']
     bool: Union[bool, 'types.BooleanFilter']
     xml: Union[str, 'types.StringFilter']
-    json: dict
+    json_: dict
     jsonb: dict
 
 
@@ -9726,7 +9726,7 @@ DKeys = Literal[
     'id',
     'bool',
     'xml',
-    'json',
+    'json_',
     'jsonb',
 ]
 

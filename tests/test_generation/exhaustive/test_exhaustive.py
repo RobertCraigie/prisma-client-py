@@ -1,3 +1,5 @@
+import sys
+import subprocess
 from pathlib import Path
 from typing import List, Any
 
@@ -38,8 +40,8 @@ def get_files_from_templates(directory: Path) -> List[str]:
     return files
 
 
-SYNC_ROOTDIR = ROOTDIR / '__prisma_sync_output__'
-ASYNC_ROOTDIR = ROOTDIR / '__prisma_async_output__'
+SYNC_ROOTDIR = ROOTDIR / '__prisma_sync_output__' / 'prisma'
+ASYNC_ROOTDIR = ROOTDIR / '__prisma_async_output__' / 'prisma'
 FILES = get_files_from_templates(BASE_PACKAGE_DIR / 'generator' / 'templates')
 
 
@@ -51,3 +53,25 @@ def test_sync(snapshot: SnapshotAssertion, file: str) -> None:
 @pytest.mark.parametrize('file', FILES)
 def test_async(snapshot: SnapshotAssertion, file: str) -> None:
     assert ASYNC_ROOTDIR.joinpath(file).absolute().read_text() == snapshot
+
+
+def test_sync_client_can_be_imported() -> None:
+    proc = subprocess.run(
+        [sys.executable, '-c', 'import prisma; print(prisma.__file__)'],
+        cwd=str(SYNC_ROOTDIR.parent),
+        check=True,
+        stdout=subprocess.PIPE,
+    )
+    assert proc.stdout.decode('utf-8').rstrip('\n') == str(SYNC_ROOTDIR / '__init__.py')
+
+
+def test_async_client_can_be_imported() -> None:
+    proc = subprocess.run(
+        [sys.executable, '-c', 'import prisma; print(prisma.__file__)'],
+        cwd=str(ASYNC_ROOTDIR.parent),
+        check=True,
+        stdout=subprocess.PIPE,
+    )
+    assert proc.stdout.decode('utf-8').rstrip('\n') == str(
+        ASYNC_ROOTDIR / '__init__.py'
+    )
