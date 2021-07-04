@@ -7,6 +7,7 @@ import subprocess
 from typing import List
 
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 
 from prisma import utils
 from prisma.http import client
@@ -18,8 +19,13 @@ from ..utils import Testdir, Runner
 PRISMA_MODULE = [sys.executable, '-m', 'prisma']
 
 
-def test_playground_skip_generate_no_client(runner: Runner, monkeypatch) -> None:
-    monkeypatch.setattr(utils, 'module_exists', lambda m: False, raising=True)
+def test_playground_skip_generate_no_client(
+    runner: Runner, monkeypatch: MonkeyPatch
+) -> None:
+    def mock_return(mod: str) -> bool:
+        return False
+
+    monkeypatch.setattr(utils, 'module_exists', mock_return, raising=True)
     result = runner.invoke(['py', 'dev', 'playground', '--skip-generate'])
     assert result.exit_code == 1
     assert result.output == 'Prisma Client Python has not been generated yet.\n'
@@ -27,7 +33,8 @@ def test_playground_skip_generate_no_client(runner: Runner, monkeypatch) -> None
 
 @pytest.mark.asyncio
 async def test_playground(testdir: Testdir) -> None:
-    def output_reader(proc: subprocess.Popen, lines: List[str]) -> List[str]:
+    def output_reader(proc: 'subprocess.Popen[bytes]', lines: List[str]) -> List[str]:
+        assert proc.stdout is not None
         for line in iter(proc.stdout.readline, b''):
             lines.append(line.decode('utf-8'))
 

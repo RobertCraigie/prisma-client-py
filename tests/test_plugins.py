@@ -27,7 +27,7 @@ def test_no_hooks_defined(testdir: Testdir, ctx: PluginContext) -> None:
 
 def test_wrong_hook_type(testdir: Testdir, ctx: PluginContext) -> None:
     def plugin() -> None:  # mark: filedef
-        prisma_generate = 1  # pylint: disable=unused-variable
+        prisma_generate = 1  # pyright: reportUnusedVariable = false
 
     with testdir.create_entry_point(plugin):
         with pytest.raises(TypeError) as exc:

@@ -3,7 +3,6 @@ from typing import List, Any
 
 import pytest
 from syrupy import SnapshotAssertion
-from syrupy.types import SerializableData
 from syrupy.extensions.single_file import SingleFileSnapshotExtension
 
 from prisma.generator import BASE_PACKAGE_DIR
@@ -12,7 +11,7 @@ from .utils import ROOTDIR
 
 
 class SingleFileUTF8SnapshotExtension(SingleFileSnapshotExtension):
-    def serialize(self, data: SerializableData, **kwargs: Any) -> bytes:
+    def serialize(self, data: Any, **kwargs: Any) -> bytes:
         return bytes(data, 'utf8')
 
 

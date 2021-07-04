@@ -7,6 +7,7 @@ def test_field_map(testdir: Testdir) -> None:
     #       prisma handles mapping for us
     @typing.no_type_check
     def tests() -> None:  # mark: filedef
+        # pyright: reportUnusedFunction = false, reportGeneralTypeIssues = false
         # pylint: disable=all
         from prisma.models import User
 

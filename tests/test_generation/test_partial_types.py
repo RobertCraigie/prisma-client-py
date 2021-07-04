@@ -1,5 +1,6 @@
+# pyright: reportUnusedFunction=false
+
 import subprocess
-from typing import Optional
 
 import pytest
 from prisma._types import Literal
@@ -66,6 +67,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
         from typing import Type, Dict, Iterator, Any, Tuple, Set, Optional
         from pydantic import BaseModel
         from prisma.partials import (  # type: ignore[attr-defined]
+            # pyright: reportGeneralTypeIssues = false
             PostWithoutDesc,
             PostOptionalPublished,
             PostRequiredDesc,

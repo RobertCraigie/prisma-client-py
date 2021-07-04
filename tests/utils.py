@@ -16,7 +16,6 @@ from typing import (
     List,
     Union,
     Iterator,
-    cast,
     TYPE_CHECKING,
 )
 
@@ -89,16 +88,14 @@ class Runner:
             default_args = args
         else:
 
-            @click.command()
-            def cli() -> None:  # pylint: disable=function-redefined
+            def _cli() -> None:  # pylint: disable=function-redefined
                 if args is not None:
                     # fake invocation context
                     args.insert(0, 'prisma')
 
                 main(args, use_handler=False, do_cleanup=False, pipe=True)
 
-            # mypy doesn't pick up the def properly
-            cli = cast(click.Command, cli)
+            cli = click.command()(_cli)
 
             # we don't pass any args to click as we need to parse them ourselves
             default_args = []

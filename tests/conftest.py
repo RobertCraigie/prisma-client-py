@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 pytest_plugins = ['pytester']
 client_ctx: ContextVar['Client'] = ContextVar('client_ctx', default=Client())
-LOGGING_CONTEXT_MANAGER = None
+LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
 
 
 @pytest.fixture(name='client', scope='session')
@@ -58,8 +58,6 @@ def testdir_fixture(testdir: 'PytestTestdir') -> Iterator[Testdir]:
 
 # TODO: don't emulate the with statement
 def pytest_sessionstart(session: pytest.Session) -> None:
-    global LOGGING_CONTEXT_MANAGER
-    LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
     LOGGING_CONTEXT_MANAGER.__enter__()  # pylint: disable=no-member
 
 

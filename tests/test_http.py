@@ -36,7 +36,7 @@ async def test_request_on_closed_sessions() -> None:
 
     # mypy thinks that http.closed is Literal[False]
     # when it is in fact a bool
-    closed = cast(bool, http.closed)
+    closed = cast(bool, http.closed)  # pyright: reportUnnecessaryCast = false
     assert closed is True
 
     with pytest.raises(HTTPClientClosedError):

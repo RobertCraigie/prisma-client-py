@@ -1,6 +1,5 @@
 # fmt: off
 # I prefer this way of formatting
-import functools
 from typing import Dict, Any
 
 import pytest
