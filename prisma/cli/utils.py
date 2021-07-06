@@ -120,6 +120,12 @@ def generate_client(schema: Optional[str] = None, *, reload: bool = False) -> No
                 sys.modules.pop(name, None)
 
 
+def warning(message: str) -> None:
+    click.echo(
+        click.style('WARNING: ', fg='bright_yellow') + click.style(message, bold=True)
+    )
+
+
 @overload
 def error(message: str) -> NoReturn:
     ...

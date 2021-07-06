@@ -4,9 +4,10 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 
 import click
+import pydantic
 
 from .. import prisma, options
-from ..utils import EnumChoice, PathlibPath, should_pipe
+from ..utils import EnumChoice, PathlibPath, should_pipe, warning
 from ...generator.models import HttpChoices
 
 
@@ -38,6 +39,12 @@ log: logging.Logger = logging.getLogger(__name__)
 )
 def cli(schema: Optional[Path], watch: bool, **kwargs: Any) -> None:
     """Generate prisma artifacts with modified config options"""
+    if pydantic.VERSION.split('.') < ['1', '8']:
+        warning(
+            'Unsupported version of pydantic installed, this command may not work as intended\n'
+            'Please update pydantic to 1.8 or greater.\n'
+        )
+
     args = ['generate']
     if schema is not None:
         args.append(f'--schema={schema}')

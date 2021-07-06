@@ -3,7 +3,9 @@ from enum import Enum
 from itertools import chain
 from typing import Optional, Iterator, Dict, Any, Callable, Generator, Tuple, Type
 
+import pydantic
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 from prisma.utils import temp_env_update
 from prisma.generator.models import HttpChoices
 
@@ -54,6 +56,15 @@ def from_enum(
     enum: Type[Enum], arg: str
 ) -> Generator[Tuple[str, str, None], None, None]:
     return ((item.value, arg + item.value, None) for item in enum.__members__.values())
+
+
+def test_unsupported_pydantic_version(runner: Runner, monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setattr(pydantic, 'VERSION', '1.6.2', raising=True)
+    result = runner.invoke(['py', 'generate'])
+    assert result.output.startswith(
+        'WARNING: Unsupported version of pydantic installed, this command may not work as intended\n'
+        'Please update pydantic to 1.8 or greater'
+    )
 
 
 def test_bad_http_option(runner: Runner) -> None:

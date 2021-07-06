@@ -25,7 +25,11 @@ from pydantic import (
     conint,
     validator,
 )
-from pydantic.env_settings import SettingsSourceCallable
+
+try:
+    from pydantic.env_settings import SettingsSourceCallable
+except ImportError:
+    SettingsSourceCallable = Any
 
 
 # NOTE: this does not represent all the data that is passed by prisma
