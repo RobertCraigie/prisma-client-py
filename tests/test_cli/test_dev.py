@@ -9,10 +9,10 @@ from typing import List
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
-from prisma import utils
 from prisma.http import client
 from prisma.utils import temp_env_update
 from prisma.binaries import platform
+from prisma.cli.commands import dev
 from ..utils import Testdir, Runner
 
 
@@ -25,7 +25,7 @@ def test_playground_skip_generate_no_client(
     def mock_return(mod: str) -> bool:
         return False
 
-    monkeypatch.setattr(utils, 'module_exists', mock_return, raising=True)
+    monkeypatch.setattr(dev, 'module_exists', mock_return, raising=True)
     result = runner.invoke(['py', 'dev', 'playground', '--skip-generate'])
     assert result.exit_code == 1
     assert result.output == 'Prisma Client Python has not been generated yet.\n'
@@ -53,7 +53,10 @@ async def test_playground(testdir: Testdir) -> None:
 
     try:
         thread.start()
-        time.sleep(5)
+
+        # TODO: don't naively sleep, instead check the output every <x> time
+        #       until it is what we want or a timeout is reached
+        time.sleep(8)
 
         stdout = ''.join(lines)
         print(stdout)
