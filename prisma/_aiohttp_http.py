@@ -41,7 +41,11 @@ class HTTP(AbstractHTTP[aiohttp.ClientSession, aiohttp.ClientResponse]):
             # avoid creating the coroutine until we know we can
             # create a task to run it to avoid coroutine
             # not awaited errors
-            create_task = asyncio.get_event_loop().create_task
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                return
+
+            create_task = loop.create_task
             create_task(self.close())
         except Exception:  # pylint: disable=broad-except
             # weird errors can happen, like the asyncio module not
