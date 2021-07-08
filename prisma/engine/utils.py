@@ -63,7 +63,7 @@ def ensure() -> Path:
     if not file:
         raise errors.BinaryNotFoundError(
             f'Expected {local_path} or {global_path} but neither were found.\n'
-            'Try running python -m prisma fetch'
+            'Try running prisma py fetch'
         )
 
     start_version = time.monotonic()
