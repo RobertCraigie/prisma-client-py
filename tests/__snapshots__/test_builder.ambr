@@ -1,0 +1,44 @@
+# name: test_datetime_serialization_tz_aware
+  '
+  query {
+    result: findUniquePost
+    (
+      where: {
+        created_at: "1985-10-25T01:02:01+00:00"
+      }
+    )
+    {
+      id
+      created_at
+      updated_at
+      title
+      published
+      views
+      desc
+      author_id
+    }
+  }
+  '
+---
+# name: test_datetime_serialization_tz_unaware
+  '
+  query {
+    result: findUniquePost
+    (
+      where: {
+        created_at: "1985-10-26T00:01:01+00:00"
+      }
+    )
+    {
+      id
+      created_at
+      updated_at
+      title
+      published
+      views
+      desc
+      author_id
+    }
+  }
+  '
+---

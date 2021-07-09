@@ -640,8 +640,9 @@ class Key(AbstractNode):
 
 def serialize_json(obj: Any) -> str:
     """JSON serializer for objects not serializable by the default JSON encoder"""
-    if isinstance(obj, (datetime.datetime, datetime.date)):
-        return obj.isoformat()
+    if isinstance(obj, datetime.datetime):
+        # ensure we include the UTC offset
+        return obj.astimezone(datetime.timezone.utc).isoformat()
 
     raise TypeError(f'Type {type(obj)} not serializable')
 

@@ -1,8 +1,10 @@
 # fmt: off
 # I prefer this way of formatting
+import datetime
 from typing import Dict, Any
 
 import pytest
+from syrupy import SnapshotAssertion
 from prisma.builder import QueryBuilder
 from prisma.errors import UnknownRelationalFieldError
 
@@ -153,3 +155,31 @@ def test_raw_queries() -> None:
       )
     }
     ''')
+
+
+def test_datetime_serialization_tz_aware(snapshot: SnapshotAssertion) -> None:
+    query = QueryBuilder(
+        operation='query',
+        method='findUnique',
+        model='Post',
+        arguments={
+            'where': {
+                'created_at': datetime.datetime(1985, 10, 26, 1, 1, 1, tzinfo=datetime.timezone.max)
+            }
+        }
+    ).build_query()
+    assert query == snapshot
+
+
+def test_datetime_serialization_tz_unaware(snapshot: SnapshotAssertion) -> None:
+    query = QueryBuilder(
+        operation='query',
+        method='findUnique',
+        model='Post',
+        arguments={
+            'where': {
+                'created_at': datetime.datetime(1985, 10, 26, 1, 1, 1)
+            }
+        }
+    ).build_query()
+    assert query == snapshot
