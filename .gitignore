@@ -135,3 +135,4 @@ prisma/generator/debug-params.json
 
 # test cache files
 .tests_cache/
+tests/integrations/postgresql/prisma
