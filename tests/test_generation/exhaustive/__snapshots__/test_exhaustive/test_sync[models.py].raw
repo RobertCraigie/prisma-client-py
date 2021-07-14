@@ -33,7 +33,7 @@ else:
 import os
 from pydantic import BaseConfig, BaseModel, Field
 
-from . import types, errors
+from . import types, enums, errors
 from .generator import partial_models_ctx, PartialModelField
 
 
@@ -155,8 +155,8 @@ class User(BaseModel):
     optional_string: Optional[str]
     json_: dict
     optional_json: Optional[dict]
-    enum: 'types.ABeautifulEnumEnum'
-    optional_enum: Optional['types.ABeautifulEnumEnum']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: Optional['enums.ABeautifulEnum']
     boolean: bool
     optional_boolean: Optional[bool]
     posts: Optional[List['models.Post']]
@@ -262,8 +262,8 @@ class M(BaseModel):
     optional_string: Optional[str]
     json_: dict
     optional_json: Optional[dict]
-    enum: 'types.ABeautifulEnumEnum'
-    optional_enum: Optional['types.ABeautifulEnumEnum']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: Optional['enums.ABeautifulEnum']
     boolean: bool
     optional_boolean: Optional[bool]
 
@@ -368,8 +368,8 @@ class N(BaseModel):
     optional_string: Optional[str]
     json_: dict
     optional_json: Optional[dict]
-    enum: 'types.ABeautifulEnumEnum'
-    optional_enum: Optional['types.ABeautifulEnumEnum']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: Optional['enums.ABeautifulEnum']
     boolean: bool
     optional_boolean: Optional[bool]
 
@@ -474,8 +474,8 @@ class OneOptional(BaseModel):
     optional_string: Optional[str]
     json_: dict
     optional_json: Optional[dict]
-    enum: 'types.ABeautifulEnumEnum'
-    optional_enum: Optional['types.ABeautifulEnumEnum']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: Optional['enums.ABeautifulEnum']
     boolean: bool
     optional_boolean: Optional[bool]
 
@@ -581,8 +581,8 @@ class ManyRequired(BaseModel):
     optional_string: Optional[str]
     json_: dict
     optional_json: Optional[dict]
-    enum: 'types.ABeautifulEnumEnum'
-    optional_enum: Optional['types.ABeautifulEnumEnum']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: Optional['enums.ABeautifulEnum']
     boolean: bool
     optional_boolean: Optional[bool]
 
@@ -1189,13 +1189,13 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = {
         'name': 'enum',
         'is_list': False,
         'optional': False,
-        'type': 'types.ABeautifulEnumEnum',
+        'type': 'enums.ABeautifulEnum',
     },
     'optional_enum': {
         'name': 'optional_enum',
         'is_list': False,
         'optional': True,
-        'type': 'types.ABeautifulEnumEnum',
+        'type': 'enums.ABeautifulEnum',
     },
     'boolean': {
         'name': 'boolean',
@@ -1285,13 +1285,13 @@ _M_fields: Dict['types.MKeys', PartialModelField] = {
         'name': 'enum',
         'is_list': False,
         'optional': False,
-        'type': 'types.ABeautifulEnumEnum',
+        'type': 'enums.ABeautifulEnum',
     },
     'optional_enum': {
         'name': 'optional_enum',
         'is_list': False,
         'optional': True,
-        'type': 'types.ABeautifulEnumEnum',
+        'type': 'enums.ABeautifulEnum',
     },
     'boolean': {
         'name': 'boolean',
@@ -1375,13 +1375,13 @@ _N_fields: Dict['types.NKeys', PartialModelField] = {
         'name': 'enum',
         'is_list': False,
         'optional': False,
-        'type': 'types.ABeautifulEnumEnum',
+        'type': 'enums.ABeautifulEnum',
     },
     'optional_enum': {
         'name': 'optional_enum',
         'is_list': False,
         'optional': True,
-        'type': 'types.ABeautifulEnumEnum',
+        'type': 'enums.ABeautifulEnum',
     },
     'boolean': {
         'name': 'boolean',
@@ -1465,13 +1465,13 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = {
         'name': 'enum',
         'is_list': False,
         'optional': False,
-        'type': 'types.ABeautifulEnumEnum',
+        'type': 'enums.ABeautifulEnum',
     },
     'optional_enum': {
         'name': 'optional_enum',
         'is_list': False,
         'optional': True,
-        'type': 'types.ABeautifulEnumEnum',
+        'type': 'enums.ABeautifulEnum',
     },
     'boolean': {
         'name': 'boolean',
@@ -1561,13 +1561,13 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = {
         'name': 'enum',
         'is_list': False,
         'optional': False,
-        'type': 'types.ABeautifulEnumEnum',
+        'type': 'enums.ABeautifulEnum',
     },
     'optional_enum': {
         'name': 'optional_enum',
         'is_list': False,
         'optional': True,
-        'type': 'types.ABeautifulEnumEnum',
+        'type': 'enums.ABeautifulEnum',
     },
     'boolean': {
         'name': 'boolean',

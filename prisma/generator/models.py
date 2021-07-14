@@ -355,7 +355,7 @@ class Field(BaseModel):
     @property
     def _actual_python_type(self) -> str:
         if self.kind == 'enum':
-            return f'\'types.{self.type}Enum\''
+            return f'\'enums.{self.type}\''
 
         if self.kind == 'object':
             return f'\'models.{self.type}\''

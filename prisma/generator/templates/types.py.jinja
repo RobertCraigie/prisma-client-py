@@ -1,6 +1,5 @@
 {% include '_header.py.jinja' %}
 # -- template types.py.jinja --
-from enum import Enum
 from .utils import _NoneType
 
 
@@ -101,13 +100,6 @@ class FloatFilter{{ current }}(TypedDict, total=False):
     {% endif %}
 {% endcall %}
 
-
-{% for enum in dmmf.datamodel.enums %}
-class {{ enum.name }}Enum(str, Enum):
-    {% for value in enum.values %}
-    {{ value.name }} = '{{ value.name }}'
-    {% endfor %}
-{% endfor %}
 
 {% for model in dmmf.datamodel.models %}
 # {{ model.name }} types
@@ -324,6 +316,5 @@ class {{ model.name }}WhereInput{{ current }}(TypedDict, total=False):
 {% endfor %}
 
 
-# we have to import ourselves as enum types are namespaced to types
-# e.g. types.RoleEnum
-from . import types, models
+# we have to import ourselves as types can be namespaced to types
+from . import types, enums, models

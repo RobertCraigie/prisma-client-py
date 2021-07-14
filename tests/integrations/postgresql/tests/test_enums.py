@@ -1,15 +1,15 @@
 import pytest
 from prisma import Client
-from prisma.types import RoleEnum
+from prisma.enums import Role
 
 
 @pytest.mark.asyncio
 async def test_enum_create(client: Client) -> None:
     user = await client.user.create({'name': 'Robert'})
-    assert user.role == RoleEnum.USER
+    assert user.role == Role.USER
 
-    user = await client.user.create({'name': 'Tegan', 'role': RoleEnum.ADMIN})
-    assert user.role == RoleEnum.ADMIN
+    user = await client.user.create({'name': 'Tegan', 'role': Role.ADMIN})
+    assert user.role == Role.ADMIN
 
-    user = await client.user.create({'name': 'Bob', 'role': RoleEnum.ADMIN.value})
-    assert user.role == RoleEnum.ADMIN
+    user = await client.user.create({'name': 'Bob', 'role': Role.ADMIN.value})
+    assert user.role == Role.ADMIN
