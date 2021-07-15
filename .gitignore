@@ -122,6 +122,7 @@ tmp/
 
 # generated code
 prisma/types.py
+prisma/enums.py
 prisma/client.py
 prisma/models.py
 prisma/builder.py
