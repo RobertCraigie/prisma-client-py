@@ -7,7 +7,6 @@ generator db {
   provider             = "python3 -m prisma"
   recursive_type_depth = 5
   http                 = "aiohttp"
-  output               = "prisma"
 }
 
 model User {
