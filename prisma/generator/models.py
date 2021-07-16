@@ -24,6 +24,7 @@ from pydantic import (
     Field as FieldInfo,
     conint,
     validator,
+    root_validator,
 )
 
 try:
@@ -36,14 +37,12 @@ except ImportError:
 
 ATOMIC_FIELD_TYPES = ['Int', 'Float', 'Boolean']
 
-# TODO: Json probably isn't right
 TYPE_MAPPING = {
     'String': 'str',
     'DateTime': 'datetime.datetime',
     'Boolean': 'bool',
     'Int': 'int',
     'Float': 'float',
-    'Json': 'dict',
 }
 FILTER_TYPES = ['String', 'Datetime', 'Boolean', 'Int', 'Float']
 
@@ -314,6 +313,17 @@ class Field(BaseModel):
     relation_on_delete: Optional[str] = FieldInfo(alias='relationOnDelete')
     relation_to_fields: Optional[List[str]] = FieldInfo(alias='relationToFields')
     relation_from_fields: Optional[List[str]] = FieldInfo(alias='relationFromFields')
+
+    @root_validator
+    def scalar_type_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        kind = values.get('kind')
+        type_ = values.get('type')
+
+        if kind == 'scalar':
+            if type_ is not None and type_ not in TYPE_MAPPING:
+                raise ValueError(f'Unknown scalar type: {type_}')
+
+        return values
 
     @validator('name')
     @classmethod

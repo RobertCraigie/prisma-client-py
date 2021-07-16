@@ -79,8 +79,10 @@ model User {
   optional_float   Float?
   string           String
   optional_string  String?
-  json_            Json
-  optional_json    Json?
+
+  // TODO
+  // json_            Json
+  // optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
   boolean          Boolean
@@ -97,8 +99,10 @@ model M {
   optional_float   Float?
   string           String
   optional_string  String?
-  json_            Json
-  optional_json    Json?
+
+  // TODO
+  // json_            Json
+  // optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
   boolean          Boolean
@@ -114,8 +118,10 @@ model N {
   optional_float   Float?
   string           String
   optional_string  String?
-  json_            Json
-  optional_json    Json?
+
+  // TODO
+  // json_            Json
+  // optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
   boolean          Boolean
@@ -131,8 +137,10 @@ model OneOptional {
   optional_float   Float?
   string           String
   optional_string  String?
-  json_            Json
-  optional_json    Json?
+
+  // TODO
+  // json_            Json
+  // optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
   boolean          Boolean
@@ -150,8 +158,10 @@ model ManyRequired {
   optional_float   Float?
   string           String
   optional_string  String?
-  json_            Json
-  optional_json    Json?
+
+  // TODO
+  // json_            Json
+  // optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
   boolean          Boolean
@@ -202,10 +212,10 @@ model D {
   id    String  @id @default(cuid())
   bool  Boolean @db.Boolean
   xml   String  @db.Xml
-  json_ Json    @db.Json
-  jsonb Json    @db.JsonB
 
   // TODO
+  // json_ Json    @db.Json
+  // jsonb Json    @db.JsonB
   // byteA Bytes   @db.ByteA
 }
 
