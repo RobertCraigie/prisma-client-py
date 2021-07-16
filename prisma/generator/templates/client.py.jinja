@@ -1,6 +1,7 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import maybe_async_def, maybe_await with context %}
+{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations with context %}
 # -- template client.py.jinja --
+from types import TracebackType
 from collections import defaultdict
 from pydantic import BaseModel, validate_arguments
 
@@ -77,8 +78,8 @@ class Client:
 
     {{ maybe_async_def }}execute_raw(self, query: str, *args: Any) -> int:
         resp = {{ maybe_await }}self._execute(
-            operation='mutation',
-            method='executeRaw',
+            operation='{{ operations.execute_raw }}',
+            method='{{ methods.execute_raw }}',
             arguments={
                 'query': query,
                 'parameters': args,
@@ -98,8 +99,8 @@ class Client:
         self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[List[BaseModelT], Any]:
         resp = {{ maybe_await }}self._execute(
-            operation='mutation',
-            method='queryRaw',
+            operation='{{ operations.query_raw }}',
+            method='{{ methods.query_raw }}',
             arguments={
                 'query': query,
                 'parameters': args,
@@ -109,6 +110,10 @@ class Client:
         if model is not None:
             return [model.parse_obj(r) for r in result]
         return result
+
+    def batch_(self) -> 'Batch':
+        """Returns a context manager for grouping write queries into a single transaction."""
+        return Batch(client=self)
 
     # TODO: don't return Any
     {{ maybe_async_def }}_execute(
@@ -136,6 +141,70 @@ class Client:
         return engine
 
 
+# TODO: this should return the results as well
+# TODO: don't require copy-pasting arguments between actions and batch actions
+class Batch:
+    {% for model in dmmf.datamodel.models %}
+    {{ model.name.lower() }}: '{{ model.name }}BatchActions'
+    {% endfor %}
+
+    def __init__(self, client: Client) -> None:
+        self.__client = client
+        self.__queries: List[str] = []
+        {% for model in dmmf.datamodel.models %}
+        self.{{ model.name.lower() }} = {{ model.name }}BatchActions(self)
+        {% endfor %}
+
+    def _add(self, **kwargs: Any) -> None:
+        builder = QueryBuilder(**kwargs)
+        self.__queries.append(builder.build_query())
+
+    {{ maybe_async_def }}commit(self) -> None:
+        """Execute the queries"""
+        # TODO: normalise this, we should still call client._execute
+        from .builder import dumps
+
+        queries = self.__queries
+        self.__queries = []
+
+        payload = {
+            'batch': [
+                {
+                    'query': query,
+                    'variables': {},
+                }
+                for query in queries
+            ],
+            'transaction': True,
+        }
+        return {{ maybe_await }}self.__client._engine.request('POST', '/', data=dumps(payload))
+
+    {% if is_async %}
+    async def __aenter__(self) -> 'Batch':
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
+        if exc is None:
+            await self.commit()
+    {% else %}
+    def __enter__(self) -> 'Batch':
+        return self
+
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
+        if exc is None:
+            self.commit()
+    {% endif %}
+
 {% for model in dmmf.datamodel.models %}
 
 class {{ model.name }}Actions:
@@ -148,8 +217,8 @@ class {{ model.name }}Actions:
         include: Optional[types.{{ model.name}}Include] = None
     ) -> models.{{ model.name }}:
         resp = {{ maybe_await }}self._client._execute(
-            operation='mutation',
-            method='createOne',
+            operation='{{ operations.create }}',
+            method='{{ methods.create }}',
             model='{{ model.name }}',
             arguments={
                 'data': data,
@@ -165,8 +234,8 @@ class {{ model.name }}Actions:
     ) -> Optional[models.{{ model.name }}]:
         try:
             resp = {{ maybe_await }}self._client._execute(
-                operation='mutation',
-                method='deleteOne',
+                operation='{{ operations.delete }}',
+                method='{{ methods.delete }}',
                 model='{{ model.name }}',
                 arguments={
                     'where': where,
@@ -184,8 +253,8 @@ class {{ model.name }}Actions:
         include: Optional[types.{{ model.name}}Include] = None
     ) -> Optional[models.{{ model.name }}]:
         resp = {{ maybe_await }}self._client._execute(
-            operation='query',
-            method='findUnique',
+            operation='{{ operations.find_unique }}',
+            method='{{ methods.find_unique }}',
             model='{{ model.name }}',
             arguments={
                 'where': where,
@@ -207,8 +276,8 @@ class {{ model.name }}Actions:
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> List[models.{{ model.name }}]:
         resp = {{ maybe_await }}self._client._execute(
-            operation='query',
-            method='findMany',
+            operation='{{ operations.find_many }}',
+            method='{{ methods.find_many }}',
             model='{{ model.name }}',
             arguments={
                 'take': take,
@@ -230,8 +299,8 @@ class {{ model.name }}Actions:
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> Optional[models.{{ model.name }}]:
         resp = {{ maybe_await }}self._client._execute(
-            operation='query',
-            method='findFirst',
+            operation='{{ operations.find_first }}',
+            method='{{ methods.find_first }}',
             model='{{ model.name }}',
             arguments={
                 'skip': skip,
@@ -254,8 +323,8 @@ class {{ model.name }}Actions:
     ) -> Optional[models.{{ model.name }}]:
         try:
             resp = {{ maybe_await }}self._client._execute(
-                operation='mutation',
-                method='updateOne',
+                operation='{{ operations["update"] }}',
+                method='{{ methods["update"] }}',
                 model='{{ model.name }}',
                 arguments={
                     'data': data,
@@ -275,8 +344,8 @@ class {{ model.name }}Actions:
         include: Optional[types.{{ model.name}}Include] = None,
     ) -> models.{{ model.name}}:
         resp = {{ maybe_await }}self._client._execute(
-            operation='mutation',
-            method='upsertOne',
+            operation='{{ operations.upsert }}',
+            method='{{ methods.upsert }}',
             model='{{ model.name }}',
             arguments={
                 'where': where,
@@ -293,8 +362,8 @@ class {{ model.name }}Actions:
         where: types.{{ model.name }}WhereInput,
     ) -> int:
         resp = {{ maybe_await }}self._client._execute(
-            operation='mutation',
-            method='updateMany',
+            operation='{{ operations.update_many }}',
+            method='{{ methods.update_many }}',
             model='{{ model.name }}',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -312,8 +381,8 @@ class {{ model.name }}Actions:
     ) -> int:
         # TODO: support select
         resp = {{ maybe_await }}self._client._execute(
-            operation='query',
-            method='aggregate',
+            operation='{{ operations.count }}',
+            method='{{ methods.count }}',
             model='{{ model.name }}',
             arguments={
                 'take': take,
@@ -331,12 +400,110 @@ class {{ model.name }}Actions:
         where: Optional[types.{{ model.name }}WhereInput] = None
     ) -> int:
         resp = {{ maybe_await }}self._client._execute(
-            operation='mutation',
-            method='deleteMany',
+            operation='{{ operations.delete_many }}',
+            method='{{ methods.delete_many }}',
             model='{{ model.name }}',
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class {{ model.name }}BatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.{{ model.name }}CreateInput,
+        include: Optional[types.{{ model.name}}Include] = None
+    ) -> None:
+        self._batcher._add(
+            operation='{{ operations.create }}',
+            method='{{ methods.create }}',
+            model='{{ model.name }}',
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def delete(
+        self,
+        where: types.{{ model.name }}WhereUniqueInput,
+        include: Optional[types.{{ model.name}}Include] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='{{ operations.delete }}',
+            method='{{ methods.delete }}',
+            model='{{ model.name }}',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.{{ model.name }}UpdateInput,
+        where: types.{{ model.name }}WhereUniqueInput,
+        include: Optional[types.{{ model.name}}Include] = None
+    ) -> None:
+        self._batcher._add(
+            operation='{{ operations["update"] }}',
+            method='{{ methods["update"] }}',
+            model='{{ model.name }}',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.{{ model.name }}WhereUniqueInput,
+        data: types.{{ model.name }}UpsertInput,
+        include: Optional[types.{{ model.name}}Include] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='{{ operations.upsert }}',
+            method='{{ methods.upsert }}',
+            model='{{ model.name }}',
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.{{ model.name }}UpdateManyMutationInput,
+        where: types.{{ model.name }}WhereInput,
+    ) -> None:
+        self._batcher._add(
+            operation='{{ operations.update_many }}',
+            method='{{ methods.update_many }}',
+            model='{{ model.name }}',
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.{{ model.name }}WhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='{{ operations.delete_many }}',
+            method='{{ methods.delete_many }}',
+            model='{{ model.name }}',
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
 
 {% endfor %}

@@ -90,6 +90,7 @@ def marked_persist_data(item: pytest.Function) -> bool:
 
 
 async def cleanup_client(client: Client) -> None:
-    for _, item in inspect.getmembers(client):
-        if item.__class__.__name__.endswith('Actions'):
-            await item.delete_many()
+    async with client.batch_() as batcher:
+        for _, item in inspect.getmembers(batcher):
+            if item.__class__.__name__.endswith('Actions'):
+                item.delete_many()

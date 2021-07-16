@@ -30,6 +30,7 @@ else:
     from typing_extensions import TypedDict, Literal
 
 # -- template client.py.jinja --
+from types import TracebackType
 from collections import defaultdict
 from pydantic import BaseModel, validate_arguments
 
@@ -324,6 +325,10 @@ class Client:
             return [model.parse_obj(r) for r in result]
         return result
 
+    def batch_(self) -> 'Batch':
+        """Returns a context manager for grouping write queries into a single transaction."""
+        return Batch(client=self)
+
     # TODO: don't return Any
     async def _execute(
         self,
@@ -349,6 +354,72 @@ class Client:
             raise errors.ClientNotConnectedError()
         return engine
 
+
+# TODO: this should return the results as well
+# TODO: don't require copy-pasting arguments between actions and batch actions
+class Batch:
+    post: 'PostBatchActions'
+    user: 'UserBatchActions'
+    m: 'MBatchActions'
+    n: 'NBatchActions'
+    oneoptional: 'OneOptionalBatchActions'
+    manyrequired: 'ManyRequiredBatchActions'
+    a: 'ABatchActions'
+    b: 'BBatchActions'
+    c: 'CBatchActions'
+    d: 'DBatchActions'
+    e: 'EBatchActions'
+
+    def __init__(self, client: Client) -> None:
+        self.__client = client
+        self.__queries: List[str] = []
+        self.post = PostBatchActions(self)
+        self.user = UserBatchActions(self)
+        self.m = MBatchActions(self)
+        self.n = NBatchActions(self)
+        self.oneoptional = OneOptionalBatchActions(self)
+        self.manyrequired = ManyRequiredBatchActions(self)
+        self.a = ABatchActions(self)
+        self.b = BBatchActions(self)
+        self.c = CBatchActions(self)
+        self.d = DBatchActions(self)
+        self.e = EBatchActions(self)
+
+    def _add(self, **kwargs: Any) -> None:
+        builder = QueryBuilder(**kwargs)
+        self.__queries.append(builder.build_query())
+
+    async def commit(self) -> None:
+        """Execute the queries"""
+        # TODO: normalise this, we should still call client._execute
+        from .builder import dumps
+
+        queries = self.__queries
+        self.__queries = []
+
+        payload = {
+            'batch': [
+                {
+                    'query': query,
+                    'variables': {},
+                }
+                for query in queries
+            ],
+            'transaction': True,
+        }
+        return await self.__client._engine.request('POST', '/', data=dumps(payload))
+
+    async def __aenter__(self) -> 'Batch':
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
+        if exc is None:
+            await self.commit()
 
 
 class PostActions:
@@ -547,10 +618,108 @@ class PostActions:
             operation='mutation',
             method='deleteMany',
             model='Post',
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class PostBatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.PostCreateInput,
+        include: Optional[types.PostInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='createOne',
+            model='Post',
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def delete(
+        self,
+        where: types.PostWhereUniqueInput,
+        include: Optional[types.PostInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteOne',
+            model='Post',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.PostUpdateInput,
+        where: types.PostWhereUniqueInput,
+        include: Optional[types.PostInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateOne',
+            model='Post',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.PostWhereUniqueInput,
+        data: types.PostUpsertInput,
+        include: Optional[types.PostInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='upsertOne',
+            model='Post',
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.PostUpdateManyMutationInput,
+        where: types.PostWhereInput,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateMany',
+            model='Post',
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.PostWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteMany',
+            model='Post',
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
 
 
 class UserActions:
@@ -749,10 +918,108 @@ class UserActions:
             operation='mutation',
             method='deleteMany',
             model='User',
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class UserBatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.UserCreateInput,
+        include: Optional[types.UserInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='createOne',
+            model='User',
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def delete(
+        self,
+        where: types.UserWhereUniqueInput,
+        include: Optional[types.UserInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteOne',
+            model='User',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.UserUpdateInput,
+        where: types.UserWhereUniqueInput,
+        include: Optional[types.UserInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateOne',
+            model='User',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.UserWhereUniqueInput,
+        data: types.UserUpsertInput,
+        include: Optional[types.UserInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='upsertOne',
+            model='User',
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.UserUpdateManyMutationInput,
+        where: types.UserWhereInput,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateMany',
+            model='User',
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.UserWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteMany',
+            model='User',
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
 
 
 class MActions:
@@ -951,10 +1218,108 @@ class MActions:
             operation='mutation',
             method='deleteMany',
             model='M',
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class MBatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.MCreateInput,
+        include: Optional[types.MInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='createOne',
+            model='M',
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def delete(
+        self,
+        where: types.MWhereUniqueInput,
+        include: Optional[types.MInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteOne',
+            model='M',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.MUpdateInput,
+        where: types.MWhereUniqueInput,
+        include: Optional[types.MInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateOne',
+            model='M',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.MWhereUniqueInput,
+        data: types.MUpsertInput,
+        include: Optional[types.MInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='upsertOne',
+            model='M',
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.MUpdateManyMutationInput,
+        where: types.MWhereInput,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateMany',
+            model='M',
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.MWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteMany',
+            model='M',
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
 
 
 class NActions:
@@ -1153,10 +1518,108 @@ class NActions:
             operation='mutation',
             method='deleteMany',
             model='N',
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class NBatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.NCreateInput,
+        include: Optional[types.NInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='createOne',
+            model='N',
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def delete(
+        self,
+        where: types.NWhereUniqueInput,
+        include: Optional[types.NInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteOne',
+            model='N',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.NUpdateInput,
+        where: types.NWhereUniqueInput,
+        include: Optional[types.NInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateOne',
+            model='N',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.NWhereUniqueInput,
+        data: types.NUpsertInput,
+        include: Optional[types.NInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='upsertOne',
+            model='N',
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.NUpdateManyMutationInput,
+        where: types.NWhereInput,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateMany',
+            model='N',
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.NWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteMany',
+            model='N',
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
 
 
 class OneOptionalActions:
@@ -1355,10 +1818,108 @@ class OneOptionalActions:
             operation='mutation',
             method='deleteMany',
             model='OneOptional',
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class OneOptionalBatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.OneOptionalCreateInput,
+        include: Optional[types.OneOptionalInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='createOne',
+            model='OneOptional',
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def delete(
+        self,
+        where: types.OneOptionalWhereUniqueInput,
+        include: Optional[types.OneOptionalInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteOne',
+            model='OneOptional',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.OneOptionalUpdateInput,
+        where: types.OneOptionalWhereUniqueInput,
+        include: Optional[types.OneOptionalInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateOne',
+            model='OneOptional',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.OneOptionalWhereUniqueInput,
+        data: types.OneOptionalUpsertInput,
+        include: Optional[types.OneOptionalInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='upsertOne',
+            model='OneOptional',
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.OneOptionalUpdateManyMutationInput,
+        where: types.OneOptionalWhereInput,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateMany',
+            model='OneOptional',
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.OneOptionalWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteMany',
+            model='OneOptional',
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
 
 
 class ManyRequiredActions:
@@ -1557,10 +2118,108 @@ class ManyRequiredActions:
             operation='mutation',
             method='deleteMany',
             model='ManyRequired',
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class ManyRequiredBatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.ManyRequiredCreateInput,
+        include: Optional[types.ManyRequiredInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='createOne',
+            model='ManyRequired',
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def delete(
+        self,
+        where: types.ManyRequiredWhereUniqueInput,
+        include: Optional[types.ManyRequiredInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteOne',
+            model='ManyRequired',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.ManyRequiredUpdateInput,
+        where: types.ManyRequiredWhereUniqueInput,
+        include: Optional[types.ManyRequiredInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateOne',
+            model='ManyRequired',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.ManyRequiredWhereUniqueInput,
+        data: types.ManyRequiredUpsertInput,
+        include: Optional[types.ManyRequiredInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='upsertOne',
+            model='ManyRequired',
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.ManyRequiredUpdateManyMutationInput,
+        where: types.ManyRequiredWhereInput,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateMany',
+            model='ManyRequired',
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.ManyRequiredWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteMany',
+            model='ManyRequired',
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
 
 
 class AActions:
@@ -1759,10 +2418,108 @@ class AActions:
             operation='mutation',
             method='deleteMany',
             model='A',
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class ABatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.ACreateInput,
+        include: Optional[types.AInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='createOne',
+            model='A',
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def delete(
+        self,
+        where: types.AWhereUniqueInput,
+        include: Optional[types.AInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteOne',
+            model='A',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.AUpdateInput,
+        where: types.AWhereUniqueInput,
+        include: Optional[types.AInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateOne',
+            model='A',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.AWhereUniqueInput,
+        data: types.AUpsertInput,
+        include: Optional[types.AInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='upsertOne',
+            model='A',
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.AUpdateManyMutationInput,
+        where: types.AWhereInput,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateMany',
+            model='A',
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.AWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteMany',
+            model='A',
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
 
 
 class BActions:
@@ -1961,10 +2718,108 @@ class BActions:
             operation='mutation',
             method='deleteMany',
             model='B',
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class BBatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.BCreateInput,
+        include: Optional[types.BInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='createOne',
+            model='B',
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def delete(
+        self,
+        where: types.BWhereUniqueInput,
+        include: Optional[types.BInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteOne',
+            model='B',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.BUpdateInput,
+        where: types.BWhereUniqueInput,
+        include: Optional[types.BInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateOne',
+            model='B',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.BWhereUniqueInput,
+        data: types.BUpsertInput,
+        include: Optional[types.BInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='upsertOne',
+            model='B',
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.BUpdateManyMutationInput,
+        where: types.BWhereInput,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateMany',
+            model='B',
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.BWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteMany',
+            model='B',
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
 
 
 class CActions:
@@ -2163,10 +3018,108 @@ class CActions:
             operation='mutation',
             method='deleteMany',
             model='C',
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class CBatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.CCreateInput,
+        include: Optional[types.CInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='createOne',
+            model='C',
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def delete(
+        self,
+        where: types.CWhereUniqueInput,
+        include: Optional[types.CInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteOne',
+            model='C',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.CUpdateInput,
+        where: types.CWhereUniqueInput,
+        include: Optional[types.CInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateOne',
+            model='C',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.CWhereUniqueInput,
+        data: types.CUpsertInput,
+        include: Optional[types.CInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='upsertOne',
+            model='C',
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.CUpdateManyMutationInput,
+        where: types.CWhereInput,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateMany',
+            model='C',
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.CWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteMany',
+            model='C',
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
 
 
 class DActions:
@@ -2365,10 +3318,108 @@ class DActions:
             operation='mutation',
             method='deleteMany',
             model='D',
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class DBatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.DCreateInput,
+        include: Optional[types.DInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='createOne',
+            model='D',
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def delete(
+        self,
+        where: types.DWhereUniqueInput,
+        include: Optional[types.DInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteOne',
+            model='D',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.DUpdateInput,
+        where: types.DWhereUniqueInput,
+        include: Optional[types.DInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateOne',
+            model='D',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.DWhereUniqueInput,
+        data: types.DUpsertInput,
+        include: Optional[types.DInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='upsertOne',
+            model='D',
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.DUpdateManyMutationInput,
+        where: types.DWhereInput,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateMany',
+            model='D',
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.DWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteMany',
+            model='D',
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
 
 
 class EActions:
@@ -2567,8 +3618,106 @@ class EActions:
             operation='mutation',
             method='deleteMany',
             model='E',
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+
+# NOTE: some arguments are meaningless in this context but are included
+# for completeness sake
+class EBatchActions:
+    def __init__(self, batcher: Batch) -> None:
+        self._batcher = batcher
+
+    def create(
+        self,
+        data: types.ECreateInput,
+        include: Optional[types.EInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='createOne',
+            model='E',
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+
+    def delete(
+        self,
+        where: types.EWhereUniqueInput,
+        include: Optional[types.EInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteOne',
+            model='E',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def update(
+        self,
+        data: types.EUpdateInput,
+        where: types.EWhereUniqueInput,
+        include: Optional[types.EInclude] = None
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateOne',
+            model='E',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+        )
+
+    def upsert(
+        self,
+        where: types.EWhereUniqueInput,
+        data: types.EUpsertInput,
+        include: Optional[types.EInclude] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='upsertOne',
+            model='E',
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+
+    def update_many(
+        self,
+        data: types.EUpdateManyMutationInput,
+        where: types.EWhereInput,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='updateMany',
+            model='E',
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+
+    def delete_many(
+        self,
+        where: Optional[types.EWhereInput] = None,
+    ) -> None:
+        self._batcher._add(
+            operation='mutation',
+            method='deleteMany',
+            model='E',
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+
 

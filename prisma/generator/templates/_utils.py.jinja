@@ -17,3 +17,36 @@ time.sleep({{ duration }})
 {% endif %}
 {%- endmacro %}
 
+{% set operations = {
+    'create': 'mutation',
+    'delete': 'mutation',
+    'update': 'mutation',
+    'upsert': 'mutation',
+    'query_raw': 'mutation',
+    'execute_raw': 'mutation',
+    'delete_many': 'mutation',
+    'update_many': 'mutation',
+
+    'count': 'query',
+    'find_many': 'query',
+    'find_first': 'query',
+    'find_unique': 'query',
+}
+%}
+
+{% set methods = {
+    'create': 'createOne',
+    'delete': 'deleteOne',
+    'update': 'updateOne',
+    'upsert': 'upsertOne',
+    'query_raw': 'queryRaw',
+    'execute_raw': 'executeRaw',
+    'delete_many': 'deleteMany',
+    'update_many': 'updateMany',
+
+    'count': 'aggregate',
+    'find_many': 'findMany',
+    'find_first': 'findFirst',
+    'find_unique': 'findUnique',
+}
+%}
