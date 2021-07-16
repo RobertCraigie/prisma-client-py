@@ -13,11 +13,7 @@ async def post_fixture(client: Client) -> Post:
 @pytest.mark.asyncio
 async def test_finds_post(client: Client, post: Post) -> None:
     post = await client.post.find_first(
-        where={
-            'created_at': {
-                'lt': post.created_at + datetime.timedelta(seconds=1)
-            }
-        }
+        where={'created_at': {'lt': post.created_at + datetime.timedelta(seconds=1)}}
     )
     assert post is not None
     assert post.title == 'Foo'
@@ -29,9 +25,9 @@ async def test_tz_aware(client: Client, post: Post) -> None:
     post = await client.post.find_first(
         where={
             'created_at': {
-                'lt': (
-                    post.created_at + datetime.timedelta(hours=1)
-                ).astimezone(datetime.timezone.max)
+                'lt': (post.created_at + datetime.timedelta(hours=1)).astimezone(
+                    datetime.timezone.max
+                )
             }
         }
     )

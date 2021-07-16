@@ -77,7 +77,9 @@ async def test_mixing_models(client: Client) -> None:
         # for acheiving this is to use nested writes with user.create
         # client.user.create({'name': 'Robert', 'profile': {'create': {'bio': 'Robert\'s profile'}}})
         batcher.user.create({'id': 'abc', 'name': 'Robert'})
-        batcher.profile.create({'user': {'connect': {'id': 'abc'}}, 'bio': 'Robert\'s profile'})
+        batcher.profile.create(
+            {'user': {'connect': {'id': 'abc'}}, 'bio': 'Robert\'s profile'}
+        )
 
     user = await client.user.find_first(
         where={'name': 'Robert'}, include={'profile': True}
