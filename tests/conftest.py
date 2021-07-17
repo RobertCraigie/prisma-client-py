@@ -3,7 +3,7 @@ import os
 import sys
 import asyncio
 import inspect
-from typing import Any, Iterator, TYPE_CHECKING
+from typing import Any, List, Iterator, TYPE_CHECKING
 from contextvars import ContextVar
 
 import pytest
@@ -17,6 +17,7 @@ from .utils import async_run, Runner, Testdir
 
 
 if TYPE_CHECKING:
+    from _pytest.config import Config
     from _pytest.pytester import Testdir as PytestTestdir
 
 
@@ -64,6 +65,12 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 def pytest_sessionfinish(session: pytest.Session) -> None:
     if LOGGING_CONTEXT_MANAGER is not None:
         LOGGING_CONTEXT_MANAGER.__exit__(None, None, None)  # pylint: disable=no-member
+
+
+def pytest_collection_modifyitems(
+    session: pytest.Session, config: 'Config', items: List[pytest.Item]
+) -> None:
+    items.sort(key=lambda item: item.__class__.__name__ == 'IntegrationTestItem')
 
 
 def pytest_runtest_setup(item: pytest.Function) -> None:
