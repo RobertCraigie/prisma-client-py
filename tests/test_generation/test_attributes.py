@@ -1,21 +1,19 @@
-import typing
 from ..utils import Testdir
 
 
 def test_field_map(testdir: Testdir) -> None:
     # NOTE: this just tests that map can be used with Prisma Client Python
     #       prisma handles mapping for us
-    @typing.no_type_check
     def tests() -> None:  # mark: filedef
         # pyright: reportUnusedFunction = false, reportGeneralTypeIssues = false
         # pylint: disable=all
         from prisma.models import User
 
         def test_field_map() -> None:
-            user = User(id='1', my_field='bar', foo_field='baz')
+            user = User(id='1', my_field='bar', foo_field='baz')  # type: ignore[call-arg]
             assert user.id == '1'
-            assert user.my_field == 'bar'
-            assert user.foo_field == 'baz'
+            assert user.my_field == 'bar'  # type: ignore[attr-defined]
+            assert user.foo_field == 'baz'  # type: ignore[attr-defined]
 
     schema = '''
         datasource db {{

@@ -39,7 +39,7 @@ async def test_playground(testdir: Testdir) -> None:
 
         return lines
 
-    lines = []
+    lines: List[str] = []
     schema = testdir.make_schema()
     args = PRISMA_MODULE + ['py', 'dev', 'playground', f'--schema={schema}']
 
