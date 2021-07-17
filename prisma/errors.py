@@ -33,6 +33,16 @@ class HTTPClientClosedError(PrismaError):
         super().__init__('Cannot make a request from a closed client.')
 
 
+class UnsupportedDatabaseError(PrismaError):
+    context: str
+    database: str
+
+    def __init__(self, database: str, context: str) -> None:
+        super().__init__(f'{context} is not supported by {database}')
+        self.database = database
+        self.context = context
+
+
 class DataError(PrismaError):
     data: Any
     code: Any

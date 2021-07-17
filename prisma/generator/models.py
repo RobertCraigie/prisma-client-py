@@ -131,9 +131,9 @@ class Data(BaseModel):
     generator: 'Generator'
     dmmf: 'DMMF' = FieldInfo(alias='dmmf')
     schema_path: str = FieldInfo(alias='schemaPath')
+    datasources: List['Datasource'] = FieldInfo(alias='datasources')
 
     # TODO
-    data_sources: Any = FieldInfo(alias='dataSources')
     other_generators: List[Any] = FieldInfo(alias='otherGenerators')
 
     @classmethod
@@ -141,6 +141,14 @@ class Data(BaseModel):
         data = super().parse_obj(obj)
         data_ctx.set(data)
         return data
+
+
+class Datasource(BaseModel):
+    # TODO: provider enums
+    name: str
+    provider: List[str]
+    active_provider: str = FieldInfo(alias='activeProvider')
+    url: 'OptionalValueFromEnvVar'
 
 
 class Generator(BaseModel):
@@ -154,6 +162,11 @@ class Generator(BaseModel):
 
 class ValueFromEnvVar(BaseModel):
     value: str
+    from_env_var: Optional[str] = FieldInfo(alias='fromEnvVar')
+
+
+class OptionalValueFromEnvVar(BaseModel):
+    value: Optional[str]
     from_env_var: Optional[str] = FieldInfo(alias='fromEnvVar')
 
 
@@ -466,3 +479,4 @@ Field.update_forward_refs()
 Model.update_forward_refs()
 Datamodel.update_forward_refs()
 Generator.update_forward_refs()
+Datasource.update_forward_refs()

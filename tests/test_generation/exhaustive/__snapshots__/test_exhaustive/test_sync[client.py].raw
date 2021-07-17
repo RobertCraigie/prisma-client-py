@@ -270,6 +270,7 @@ class Client:
         self.d = DActions(self)
         self.e = EActions(self)
         self.__engine: Optional[QueryEngine] = None
+        self._active_provider = 'postgresql'
 
         if use_dotenv:
             load_env()
@@ -383,6 +384,7 @@ class Batch:
     def __init__(self, client: Client) -> None:
         self.__client = client
         self.__queries: List[str] = []
+        self._active_provider = client._active_provider
         self.post = PostBatchActions(self)
         self.user = UserBatchActions(self)
         self.m = MBatchActions(self)
@@ -451,6 +453,27 @@ class PostActions:
             },
         )
         return models.Post.parse_obj(resp['data']['result'])
+
+    def create_many(
+        self,
+        data: List[types.PostCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        if self._client._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        resp = self._client._execute(
+            operation='mutation',
+            method='createMany',
+            model='Post',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return resp['data']['result']['count']
 
     def delete(
         self,
@@ -655,6 +678,26 @@ class PostBatchActions:
             },
         )
 
+    def create_many(
+        self,
+        data: List[types.PostCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if self._batcher._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        self._batcher._add(
+            operation='mutation',
+            method='createMany',
+            model='Post',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+
     def delete(
         self,
         where: types.PostWhereUniqueInput,
@@ -751,6 +794,27 @@ class UserActions:
             },
         )
         return models.User.parse_obj(resp['data']['result'])
+
+    def create_many(
+        self,
+        data: List[types.UserCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        if self._client._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        resp = self._client._execute(
+            operation='mutation',
+            method='createMany',
+            model='User',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return resp['data']['result']['count']
 
     def delete(
         self,
@@ -955,6 +1019,26 @@ class UserBatchActions:
             },
         )
 
+    def create_many(
+        self,
+        data: List[types.UserCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if self._batcher._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        self._batcher._add(
+            operation='mutation',
+            method='createMany',
+            model='User',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+
     def delete(
         self,
         where: types.UserWhereUniqueInput,
@@ -1051,6 +1135,27 @@ class MActions:
             },
         )
         return models.M.parse_obj(resp['data']['result'])
+
+    def create_many(
+        self,
+        data: List[types.MCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        if self._client._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        resp = self._client._execute(
+            operation='mutation',
+            method='createMany',
+            model='M',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return resp['data']['result']['count']
 
     def delete(
         self,
@@ -1255,6 +1360,26 @@ class MBatchActions:
             },
         )
 
+    def create_many(
+        self,
+        data: List[types.MCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if self._batcher._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        self._batcher._add(
+            operation='mutation',
+            method='createMany',
+            model='M',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+
     def delete(
         self,
         where: types.MWhereUniqueInput,
@@ -1351,6 +1476,27 @@ class NActions:
             },
         )
         return models.N.parse_obj(resp['data']['result'])
+
+    def create_many(
+        self,
+        data: List[types.NCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        if self._client._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        resp = self._client._execute(
+            operation='mutation',
+            method='createMany',
+            model='N',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return resp['data']['result']['count']
 
     def delete(
         self,
@@ -1555,6 +1701,26 @@ class NBatchActions:
             },
         )
 
+    def create_many(
+        self,
+        data: List[types.NCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if self._batcher._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        self._batcher._add(
+            operation='mutation',
+            method='createMany',
+            model='N',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+
     def delete(
         self,
         where: types.NWhereUniqueInput,
@@ -1651,6 +1817,27 @@ class OneOptionalActions:
             },
         )
         return models.OneOptional.parse_obj(resp['data']['result'])
+
+    def create_many(
+        self,
+        data: List[types.OneOptionalCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        if self._client._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        resp = self._client._execute(
+            operation='mutation',
+            method='createMany',
+            model='OneOptional',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return resp['data']['result']['count']
 
     def delete(
         self,
@@ -1855,6 +2042,26 @@ class OneOptionalBatchActions:
             },
         )
 
+    def create_many(
+        self,
+        data: List[types.OneOptionalCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if self._batcher._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        self._batcher._add(
+            operation='mutation',
+            method='createMany',
+            model='OneOptional',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+
     def delete(
         self,
         where: types.OneOptionalWhereUniqueInput,
@@ -1951,6 +2158,27 @@ class ManyRequiredActions:
             },
         )
         return models.ManyRequired.parse_obj(resp['data']['result'])
+
+    def create_many(
+        self,
+        data: List[types.ManyRequiredCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        if self._client._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        resp = self._client._execute(
+            operation='mutation',
+            method='createMany',
+            model='ManyRequired',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return resp['data']['result']['count']
 
     def delete(
         self,
@@ -2155,6 +2383,26 @@ class ManyRequiredBatchActions:
             },
         )
 
+    def create_many(
+        self,
+        data: List[types.ManyRequiredCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if self._batcher._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        self._batcher._add(
+            operation='mutation',
+            method='createMany',
+            model='ManyRequired',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+
     def delete(
         self,
         where: types.ManyRequiredWhereUniqueInput,
@@ -2251,6 +2499,27 @@ class AActions:
             },
         )
         return models.A.parse_obj(resp['data']['result'])
+
+    def create_many(
+        self,
+        data: List[types.ACreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        if self._client._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        resp = self._client._execute(
+            operation='mutation',
+            method='createMany',
+            model='A',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return resp['data']['result']['count']
 
     def delete(
         self,
@@ -2455,6 +2724,26 @@ class ABatchActions:
             },
         )
 
+    def create_many(
+        self,
+        data: List[types.ACreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if self._batcher._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        self._batcher._add(
+            operation='mutation',
+            method='createMany',
+            model='A',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+
     def delete(
         self,
         where: types.AWhereUniqueInput,
@@ -2551,6 +2840,27 @@ class BActions:
             },
         )
         return models.B.parse_obj(resp['data']['result'])
+
+    def create_many(
+        self,
+        data: List[types.BCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        if self._client._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        resp = self._client._execute(
+            operation='mutation',
+            method='createMany',
+            model='B',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return resp['data']['result']['count']
 
     def delete(
         self,
@@ -2755,6 +3065,26 @@ class BBatchActions:
             },
         )
 
+    def create_many(
+        self,
+        data: List[types.BCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if self._batcher._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        self._batcher._add(
+            operation='mutation',
+            method='createMany',
+            model='B',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+
     def delete(
         self,
         where: types.BWhereUniqueInput,
@@ -2851,6 +3181,27 @@ class CActions:
             },
         )
         return models.C.parse_obj(resp['data']['result'])
+
+    def create_many(
+        self,
+        data: List[types.CCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        if self._client._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        resp = self._client._execute(
+            operation='mutation',
+            method='createMany',
+            model='C',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return resp['data']['result']['count']
 
     def delete(
         self,
@@ -3055,6 +3406,26 @@ class CBatchActions:
             },
         )
 
+    def create_many(
+        self,
+        data: List[types.CCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if self._batcher._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        self._batcher._add(
+            operation='mutation',
+            method='createMany',
+            model='C',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+
     def delete(
         self,
         where: types.CWhereUniqueInput,
@@ -3151,6 +3522,27 @@ class DActions:
             },
         )
         return models.D.parse_obj(resp['data']['result'])
+
+    def create_many(
+        self,
+        data: List[types.DCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        if self._client._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        resp = self._client._execute(
+            operation='mutation',
+            method='createMany',
+            model='D',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return resp['data']['result']['count']
 
     def delete(
         self,
@@ -3355,6 +3747,26 @@ class DBatchActions:
             },
         )
 
+    def create_many(
+        self,
+        data: List[types.DCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if self._batcher._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        self._batcher._add(
+            operation='mutation',
+            method='createMany',
+            model='D',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+
     def delete(
         self,
         where: types.DWhereUniqueInput,
@@ -3451,6 +3863,27 @@ class EActions:
             },
         )
         return models.E.parse_obj(resp['data']['result'])
+
+    def create_many(
+        self,
+        data: List[types.ECreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        if self._client._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        resp = self._client._execute(
+            operation='mutation',
+            method='createMany',
+            model='E',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return resp['data']['result']['count']
 
     def delete(
         self,
@@ -3653,6 +4086,26 @@ class EBatchActions:
                 'data': data,
                 'include': include,
             },
+        )
+
+    def create_many(
+        self,
+        data: List[types.ECreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if self._batcher._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        self._batcher._add(
+            operation='mutation',
+            method='createMany',
+            model='E',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
         )
 
     def delete(

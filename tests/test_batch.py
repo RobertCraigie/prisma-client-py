@@ -213,6 +213,15 @@ async def test_delete_many(client: Client) -> None:
     assert await client.user.count() == 0
 
 
+@pytest.mark.asyncio
+async def test_create_many_unsupported(client: Client) -> None:
+    with pytest.raises(prisma.errors.UnsupportedDatabaseError) as exc:
+        async with client.batch_() as batcher:
+            batcher.user.create_many([{'name': 'Robert'}])
+
+    assert exc.match(r'create_many\(\) is not supported by sqlite')
+
+
 def test_ensure_batch_and_action_signatures_are_equal(client: Client) -> None:
     # ensure tests will fail if an action method is updated without
     # updating the corresponding batch method

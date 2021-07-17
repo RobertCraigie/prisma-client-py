@@ -550,16 +550,14 @@ class Arguments(Node):
                     Key(arg, node=Data.create(self.builder, data=value))
                 )
             elif isinstance(value, (list, tuple, set)):
-                # NOTE: this is a special case for execute_raw and query_raw
-                # that expect parameters to be passed as a json string.
-                #
-                # this special case only works as there are no other root level arguments
-                # that take an Iterable, all other Iterable arguments are encapsulated within
-                # a Data node which handles Iterables differently, passing them to ListNode.
-                #
-                # prisma expects a json string value like "[\"John\",\"123\"]"
-                # we encode twice to ensure that only the inner quotes are escaped
-                children.append(f'{arg}: {dumps(dumps(value))}')
+                # NOTE: we have a special case for execute_raw and query_raw
+                # here as prisma expects parameters to be passed as a json string
+                # value like "[\"John\",\"123\"]", and we encode twice to ensure
+                # that only the inner quotes are escaped
+                if self.builder.method in {'queryRaw', 'executeRaw'}:
+                    children.append(f'{arg}: {dumps(dumps(value))}')
+                else:
+                    children.append(Key(arg, node=ListNode.create(self.builder, data=value)))
             else:
                 children.append(f'{arg}: {dumps(value)}')
 

@@ -46,6 +46,7 @@ class Client:
         self.{{ model.name.lower() }} = {{ model.name }}Actions(self)
         {% endfor %}
         self.__engine: Optional[QueryEngine] = None
+        self._active_provider = '{{ datasources[0].active_provider }}'
 
         if use_dotenv:
             load_env()
@@ -151,6 +152,7 @@ class Batch:
     def __init__(self, client: Client) -> None:
         self.__client = client
         self.__queries: List[str] = []
+        self._active_provider = client._active_provider
         {% for model in dmmf.datamodel.models %}
         self.{{ model.name.lower() }} = {{ model.name }}BatchActions(self)
         {% endfor %}
@@ -226,6 +228,27 @@ class {{ model.name }}Actions:
             },
         )
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
+
+    {{ maybe_async_def }}create_many(
+        self,
+        data: List[types.{{ model.name }}CreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        if self._client._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.create_many }}',
+            method='{{ methods.create_many }}',
+            model='{{ model.name }}',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return resp['data']['result']['count']
 
     {{ maybe_async_def }}delete(
         self,
@@ -428,6 +451,26 @@ class {{ model.name }}BatchActions:
                 'data': data,
                 'include': include,
             },
+        )
+
+    def create_many(
+        self,
+        data: List[types.{{ model.name }}CreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> None:
+        if self._batcher._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        self._batcher._add(
+            operation='{{ operations.create_many }}',
+            method='{{ methods.create_many }}',
+            model='{{ model.name }}',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
         )
 
     def delete(
