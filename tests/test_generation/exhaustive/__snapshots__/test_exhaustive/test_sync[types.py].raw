@@ -88,7 +88,7 @@ class StringFilterRecursive2(TypedDict, total=False):
     
 
 
-class DatetimeFilter(TypedDict, total=False):
+class DateTimeFilter(TypedDict, total=False):
     equals: datetime.datetime
     not_in: List[datetime.datetime]
     lt: datetime.datetime
@@ -96,11 +96,11 @@ class DatetimeFilter(TypedDict, total=False):
     gt: datetime.datetime
     gte: datetime.datetime
     IN: List[datetime.datetime]
-    NOT: 'DatetimeFilterRecursive1'
+    NOT: 'DateTimeFilterRecursive1'
 
 
 
-class DatetimeFilterRecursive1(TypedDict, total=False):
+class DateTimeFilterRecursive1(TypedDict, total=False):
     equals: datetime.datetime
     not_in: List[datetime.datetime]
     lt: datetime.datetime
@@ -108,10 +108,10 @@ class DatetimeFilterRecursive1(TypedDict, total=False):
     gt: datetime.datetime
     gte: datetime.datetime
     IN: List[datetime.datetime]
-    NOT: 'DatetimeFilterRecursive2'
+    NOT: 'DateTimeFilterRecursive2'
 
 
-class DatetimeFilterRecursive2(TypedDict, total=False):
+class DateTimeFilterRecursive2(TypedDict, total=False):
     equals: datetime.datetime
     not_in: List[datetime.datetime]
     lt: datetime.datetime
@@ -1072,7 +1072,7 @@ FindFirstPostArgs = FindManyPostArgsFromPost
 class PostWhereInput(TypedDict, total=False):
     """Post arguments for searching"""
     id: Union[int, 'types.IntFilter']
-    created_at: datetime.datetime
+    created_at: Union[datetime.datetime, 'types.DateTimeFilter']
     title: Union[str, 'types.StringFilter']
     content: Union[str, 'types.StringFilter']
     published: Union[bool, 'types.BooleanFilter']
@@ -1087,7 +1087,7 @@ class PostWhereInput(TypedDict, total=False):
 class PostWhereInputRecursive1(TypedDict, total=False):
     """Post arguments for searching"""
     id: Union[int, 'types.IntFilter']
-    created_at: datetime.datetime
+    created_at: Union[datetime.datetime, 'types.DateTimeFilter']
     title: Union[str, 'types.StringFilter']
     content: Union[str, 'types.StringFilter']
     published: Union[bool, 'types.BooleanFilter']
@@ -1101,7 +1101,7 @@ class PostWhereInputRecursive1(TypedDict, total=False):
 class PostWhereInputRecursive2(TypedDict, total=False):
     """Post arguments for searching"""
     id: Union[int, 'types.IntFilter']
-    created_at: datetime.datetime
+    created_at: Union[datetime.datetime, 'types.DateTimeFilter']
     title: Union[str, 'types.StringFilter']
     content: Union[str, 'types.StringFilter']
     published: Union[bool, 'types.BooleanFilter']
@@ -10457,9 +10457,9 @@ FindFirstEArgs = FindManyEArgsFromE
 class EWhereInput(TypedDict, total=False):
     """E arguments for searching"""
     id: Union[str, 'types.StringFilter']
-    date: datetime.datetime
-    time: datetime.datetime
-    ts: datetime.datetime
+    date: Union[datetime.datetime, 'types.DateTimeFilter']
+    time: Union[datetime.datetime, 'types.DateTimeFilter']
+    ts: Union[datetime.datetime, 'types.DateTimeFilter']
 
     AND: List['EWhereInputRecursive1']
     OR: List['EWhereInputRecursive1']
@@ -10470,9 +10470,9 @@ class EWhereInput(TypedDict, total=False):
 class EWhereInputRecursive1(TypedDict, total=False):
     """E arguments for searching"""
     id: Union[str, 'types.StringFilter']
-    date: datetime.datetime
-    time: datetime.datetime
-    ts: datetime.datetime
+    date: Union[datetime.datetime, 'types.DateTimeFilter']
+    time: Union[datetime.datetime, 'types.DateTimeFilter']
+    ts: Union[datetime.datetime, 'types.DateTimeFilter']
 
     AND: List['EWhereInputRecursive2']
     OR: List['EWhereInputRecursive2']
@@ -10482,9 +10482,9 @@ class EWhereInputRecursive1(TypedDict, total=False):
 class EWhereInputRecursive2(TypedDict, total=False):
     """E arguments for searching"""
     id: Union[str, 'types.StringFilter']
-    date: datetime.datetime
-    time: datetime.datetime
-    ts: datetime.datetime
+    date: Union[datetime.datetime, 'types.DateTimeFilter']
+    time: Union[datetime.datetime, 'types.DateTimeFilter']
+    ts: Union[datetime.datetime, 'types.DateTimeFilter']
 
 
 EKeys = Literal[

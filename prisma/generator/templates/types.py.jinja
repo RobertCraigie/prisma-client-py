@@ -48,7 +48,7 @@ class StringFilter{{ current }}(TypedDict, total=False):
 {% endcall %}
 
 {% call(current, next) recursive() %}
-class DatetimeFilter{{ current }}(TypedDict, total=False):
+class DateTimeFilter{{ current }}(TypedDict, total=False):
     equals: datetime.datetime
     not_in: List[datetime.datetime]
     lt: datetime.datetime
@@ -57,7 +57,7 @@ class DatetimeFilter{{ current }}(TypedDict, total=False):
     gte: datetime.datetime
     IN: List[datetime.datetime]
     {%+ if next != '' -%}
-        NOT: 'DatetimeFilter{{ next }}'
+        NOT: 'DateTimeFilter{{ next }}'
     {% endif %}
 {% endcall %}
 

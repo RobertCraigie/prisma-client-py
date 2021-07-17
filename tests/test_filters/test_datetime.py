@@ -12,17 +12,17 @@ async def post_fixture(client: Client) -> Post:
 
 @pytest.mark.asyncio
 async def test_finds_post(client: Client, post: Post) -> None:
-    post = await client.post.find_first(
+    found = await client.post.find_first(
         where={'created_at': {'lt': post.created_at + datetime.timedelta(seconds=1)}}
     )
-    assert post is not None
-    assert post.title == 'Foo'
+    assert found is not None
+    assert found.title == 'Foo'
 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
 async def test_tz_aware(client: Client, post: Post) -> None:
-    post = await client.post.find_first(
+    found = await client.post.find_first(
         where={
             'created_at': {
                 'lt': (post.created_at + datetime.timedelta(hours=1)).astimezone(
@@ -31,5 +31,5 @@ async def test_tz_aware(client: Client, post: Post) -> None:
             }
         }
     )
-    assert post is not None
-    assert post.title == 'Foo'
+    assert found is not None
+    assert found.title == 'Foo'

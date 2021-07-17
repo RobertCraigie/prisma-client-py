@@ -44,7 +44,7 @@ TYPE_MAPPING = {
     'Int': 'int',
     'Float': 'float',
 }
-FILTER_TYPES = ['String', 'Datetime', 'Boolean', 'Int', 'Float']
+FILTER_TYPES = ['String', 'DateTime', 'Boolean', 'Int', 'Float']
 
 data_ctx: ContextVar['Data'] = ContextVar('data_ctx')
 
