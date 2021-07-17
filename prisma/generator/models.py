@@ -85,7 +85,7 @@ class Module(BaseModel):
         spec: Optional[machinery.ModuleSpec] = None
 
         if value is None:
-            value = '.prisma/partials.py'
+            value = 'prisma/partial_types.py'
 
         path = Path.cwd().joinpath(value)
         if path.exists():

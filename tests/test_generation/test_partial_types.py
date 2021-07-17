@@ -58,8 +58,11 @@ model Foo {{
 @pytest.mark.parametrize(
     'location,options',
     [
-        ('.prisma/partials.py', ''),
-        ('.prisma/partials.py', 'partial_type_generator = ".prisma/partials.py"'),
+        ('prisma/partial_types.py', ''),
+        (
+            'prisma/partial_types.py',
+            'partial_type_generator = "prisma/partial_types.py"',
+        ),
         (
             'scripts/partials_generator.py',
             'partial_type_generator = "scripts.partials_generator"',
@@ -218,7 +221,9 @@ def test_partial_types_incorrect_key(
 
         Post.create_partial('PostWithoutFoo', **{argument: ['foo']})  # type: ignore
 
-    testdir.make_from_function(generator, name='.prisma/partials.py', argument=argument)
+    testdir.make_from_function(
+        generator, name='prisma/partial_types.py', argument=argument
+    )
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
@@ -239,7 +244,7 @@ def test_partial_types_same_required_and_optional(testdir: Testdir) -> None:
             },
         )
 
-    testdir.make_from_function(generator, name='.prisma/partials.py')
+    testdir.make_from_function(generator, name='prisma/partial_types.py')
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
@@ -261,7 +266,7 @@ def test_partial_types_excluded_required(testdir: Testdir) -> None:
             },
         )
 
-    testdir.make_from_function(generator, name='.prisma/partials.py')
+    testdir.make_from_function(generator, name='prisma/partial_types.py')
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
@@ -283,13 +288,13 @@ def test_partial_type_generator_error_while_running(testdir: Testdir) -> None:
     def generator() -> None:  # mark: filedef
         import foo  # type: ignore[import]
 
-    testdir.make_from_function(generator, name='.prisma/partials.py')
+    testdir.make_from_function(generator, name='prisma/partial_types.py')
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
 
     output = str(exc.value.output)
-    assert '.prisma/partials.py' in output
+    assert 'prisma/partial_types.py' in output
     assert 'No module named \\\'foo\\\'' in output
     assert 'An exception ocurred while running the partial type generator' in output
 
@@ -304,13 +309,13 @@ def test_partial_type_already_created(testdir: Testdir) -> None:
                 exclude={'desc'},
             )
 
-    testdir.make_from_function(generator, name='.prisma/partials.py')
+    testdir.make_from_function(generator, name='prisma/partial_types.py')
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
 
     output = str(exc.value.output)
-    assert '.prisma/partials.py' in output
+    assert 'prisma/partial_types.py' in output
     assert 'Partial type "PostPartial" has already been created.' in output
     assert 'An exception ocurred while running the partial type generator' in output
 
@@ -321,14 +326,14 @@ def test_unknown_partial_type(testdir: Testdir) -> None:
 
         Post.create_partial('PostPartial', relations={'author': 'UnknownUser'})
 
-    testdir.make_from_function(generator, name='.prisma/partials.py')
+    testdir.make_from_function(generator, name='prisma/partial_types.py')
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
 
     output = str(exc.value.output)
     assert 'ValueError' in output
-    assert '.prisma/partials.py' in output
+    assert 'prisma/partial_types.py' in output
     assert 'Unknown partial type: "UnknownUser"' in output
     assert 'An exception ocurred while running the partial type generator' in output
     assert (
@@ -347,14 +352,14 @@ def test_passing_type_for_excluded_field(testdir: Testdir) -> None:
             relations={'author': 'CustomUser'},
         )
 
-    testdir.make_from_function(generator, name='.prisma/partials.py')
+    testdir.make_from_function(generator, name='prisma/partial_types.py')
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
 
     output = str(exc.value.output)
     assert 'ValueError' in output
-    assert '.prisma/partials.py' in output
+    assert 'prisma/partial_types.py' in output
     assert 'author is not a valid Post / PostPartial field' in output
     assert 'An exception ocurred while running the partial type generator' in output
 
@@ -369,13 +374,13 @@ def test_partial_type_types_non_relational(testdir: Testdir) -> None:
             relations={'published': 'Placeholder'},  # type: ignore[dict-item]
         )
 
-    testdir.make_from_function(generator, name='.prisma/partials.py')
+    testdir.make_from_function(generator, name='prisma/partial_types.py')
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
 
     output = str(exc.value.output)
-    assert '.prisma/partials.py' in output
+    assert 'prisma/partial_types.py' in output
     assert 'prisma.errors.UnknownRelationalFieldError' in output
     assert 'An exception ocurred while running the partial type generator' in output
     assert (
@@ -390,13 +395,13 @@ def test_partial_type_relations_no_relational_fields(testdir: Testdir) -> None:
 
         Foo.create_partial('Placeholder', relations={'wow': 'Placeholder'})
 
-    testdir.make_from_function(generator, name='.prisma/partials.py')
+    testdir.make_from_function(generator, name='prisma/partial_types.py')
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
 
     output = exc.value.output.decode('utf-8')
-    assert '.prisma/partials.py' in output
+    assert 'prisma/partial_types.py' in output
     assert 'ValueError' in output
     assert 'An exception ocurred while running the partial type generator' in output
     assert 'Model: "Foo" has no relational fields.' in output
