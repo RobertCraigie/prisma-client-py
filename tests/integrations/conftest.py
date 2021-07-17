@@ -1,14 +1,15 @@
 import subprocess
 from pathlib import Path
-from typing import Optional, Union, Iterator, TYPE_CHECKING
+from typing import Optional, Union, Iterator, cast, Any, TYPE_CHECKING
 
 import pytest
+from py._path.local import LocalPath
+
 from _pytest.nodes import Node
 from _pytest.config import Config
 from _pytest._io import TerminalWriter
 from _pytest._code import ExceptionInfo
 from _pytest._code.code import TerminalRepr, ReprEntry, ReprFileLocation
-from py._path.local import LocalPath
 
 if TYPE_CHECKING:
     from _pytest._code.code import _TracebackStyle
@@ -31,6 +32,7 @@ class IntegrationError(AssertionError):
     def __init__(self, error_message: Optional[str] = None, lineno: int = 0) -> None:
         self.error_message = error_message or ''
         self.lineno = lineno
+        super().__init__()
 
     def __str__(self) -> str:
         return self.error_message
@@ -63,16 +65,16 @@ def pytest_ignore_collect(path: LocalPath, config: Config) -> Optional[bool]:
     tests/integrations/basic/conftest.py
     tests/integrations/basic/tests/test_foo.py
     """
-    path = resolve_path(path)
-    if path.parts[:2] != ('tests', 'integrations'):
+    pathlib_path = resolve_path(path)
+    if pathlib_path.parts[:2] != ('tests', 'integrations'):
         # not an integration test
         return None
 
-    if len(path.parts) <= 3:
+    if len(pathlib_path.parts) <= 3:
         # integration root dir, leave handling to pytest
         return None
 
-    return path.parts[-1] != 'test.sh'
+    return pathlib_path.parts[-1] != 'test.sh'
 
 
 def pytest_collect_file(
@@ -98,7 +100,9 @@ class IntegrationTestItem(pytest.Item):
         self.starting_lineno = 1
 
     def runtest(self) -> None:
-        result = subprocess.run([str(self.path)], cwd=str(self.path.parent))
+        result = subprocess.run(
+            [str(self.path)], cwd=str(self.path.parent), check=False
+        )
         if result.returncode != 0:
             raise IntegrationError(
                 f'Executing `{self.path}` returned non-zero exit code {result.returncode}'
@@ -119,12 +123,18 @@ class IntegrationTestItem(pytest.Item):
             # We assume that before doing exit() (which raises SystemExit) we've printed
             # enough context about what happened so that a stack trace is not useful.
             return excinfo.exconly(tryshort=True)
-        elif excinfo.errisinstance(IntegrationError):
+
+        if excinfo.errisinstance(IntegrationError):
             # with traceback removed
+            excinfo = cast(ExceptionInfo[IntegrationError], excinfo)
             exception_repr = excinfo.getrepr(style='short')
             exception_repr.reprcrash.message = ''  # type: ignore
-            repr_file_location = ReprFileLocation(
-                path=self.fspath, lineno=self.starting_lineno + excinfo.value.lineno, message=''  # type: ignore
+            repr_file_location = (
+                ReprFileLocation(  # pyright: reportGeneralTypeIssues=false
+                    path=self.fspath,
+                    lineno=self.starting_lineno + excinfo.value.lineno,
+                    message='',
+                )
             )
             repr_tb_entry = TraceLastReprEntry(
                 exception_repr.reprtraceback.reprentries[-1].lines[1:],
@@ -135,11 +145,20 @@ class IntegrationTestItem(pytest.Item):
             )
             exception_repr.reprtraceback.reprentries = [repr_tb_entry]
             return exception_repr
-        else:
-            return super().repr_failure(excinfo, style='native')
+
+        return super().repr_failure(excinfo, style='native')
 
 
 class IntegrationTestFile(pytest.File):
+    @classmethod
+    def from_parent(
+        cls, *args: Any, **kwargs: Any
+    ) -> 'IntegrationTestFile':  # pyright: reportIncompatibleMethodOverride=false
+        return cast(
+            IntegrationTestFile,
+            super().from_parent(*args, **kwargs),  # type: ignore[no-untyped-call]
+        )
+
     def collect(self) -> Iterator[IntegrationTestItem]:
         path = Path(self.fspath)
         yield IntegrationTestItem.from_parent(

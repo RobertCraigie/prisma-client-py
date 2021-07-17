@@ -23,6 +23,9 @@ disable =
   unused-import,
   unused-variable,
 
+  # useless
+  missing-kwoa,
+
   # TODO: re-enable this at some point
   missing-docstring,
 

@@ -47,7 +47,7 @@ for name in sys.modules.copy():
         sys.modules.pop(name, None)
 '''
 
-DEFAULT_SCHEMA = '''
+SCHEMA_HEADER = '''
 datasource db {{
   provider = "sqlite"
   url      = "file:dev.db"
@@ -59,6 +59,11 @@ generator db {{
   {options}
 }}
 
+'''
+
+DEFAULT_SCHEMA = (
+    SCHEMA_HEADER
+    + '''
 model User {{
   id           String   @id @default(cuid())
   created_at   DateTime @default(now())
@@ -66,6 +71,7 @@ model User {{
   name         String
 }}
 '''
+)
 
 
 class Runner:
@@ -106,6 +112,7 @@ class Runner:
 
 class Testdir:
     __test__ = False
+    SCHEMA_HEADER = SCHEMA_HEADER
     default_schema = DEFAULT_SCHEMA
 
     def __init__(self, testdir: 'PytestTestdir') -> None:

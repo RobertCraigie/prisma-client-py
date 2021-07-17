@@ -156,9 +156,14 @@ class PrismaPlugin(Plugin):
             if self.config.warn_parsing_errors:
                 # TODO: add more details
                 # e.g. "include" to "find_unique" of "UserActions"
+                if isinstance(exc, UnparsedExpression):
+                    err_ctx = exc.context  # pylint: disable=no-member
+                else:
+                    err_ctx = include_expr
+
                 error_unable_to_parse(
                     ctx.api,
-                    getattr(exc, 'context', include_expr),
+                    err_ctx,
                     'the "include" argument',
                 )
 
@@ -383,7 +388,7 @@ ERROR_PARSING = ErrorCode('prisma-parsing', 'Unable to parse', 'Prisma')
 
 
 def error_unable_to_parse(
-    api: CheckerPluginInterface, context: Optional[Context], detail: str
+    api: CheckerPluginInterface, context: Context, detail: str
 ) -> None:
     link = 'https://github.com/RobertCraigie/prisma-client-py/issues/new/choose'
     full_message = f'The prisma mypy plugin was unable to parse: {detail}\n'

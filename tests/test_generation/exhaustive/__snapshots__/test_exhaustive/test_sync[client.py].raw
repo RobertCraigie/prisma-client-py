@@ -417,7 +417,7 @@ class Batch:
             ],
             'transaction': True,
         }
-        return self.__client._engine.request('POST', '/', data=dumps(payload))
+        self.__client._engine.request('POST', '/', data=dumps(payload))
 
     def __enter__(self) -> 'Batch':
         return self

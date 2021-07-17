@@ -366,7 +366,7 @@ def test_partial_type_types_non_relational(testdir: Testdir) -> None:
         Post.create_partial('Placeholder')
         Post.create_partial(
             'PostPartial',
-            relations={'published': 'Placeholder'},
+            relations={'published': 'Placeholder'},  # type: ignore[dict-item]
         )
 
     testdir.make_from_function(generator, name='.prisma/partials.py')
@@ -386,7 +386,7 @@ def test_partial_type_types_non_relational(testdir: Testdir) -> None:
 
 def test_partial_type_relations_no_relational_fields(testdir: Testdir) -> None:
     def generator() -> None:  # mark: filedef
-        from prisma.models import Foo
+        from prisma.models import Foo  # type: ignore[attr-defined]
 
         Foo.create_partial('Placeholder', relations={'wow': 'Placeholder'})
 

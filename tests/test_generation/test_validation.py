@@ -6,50 +6,35 @@ from ..utils import Testdir
 
 
 def test_field_name_basemodel_attribute(testdir: Testdir) -> None:
-    schema = '''
-        datasource db {{
-          provider = "sqlite"
-          url      = "file:dev.db"
-        }}
-
-        generator db {{
-          provider = "coverage run -m prisma"
-          output = "{output}"
-          {options}
-        }}
-
+    schema = (
+        testdir.SCHEMA_HEADER
+        + '''
         model User {{
             id   String @id
             json String
         }}
     '''
+    )
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(schema=schema)
 
     assert (
-        'Field name "json" shadows a BaseModel attribute; use a different field name with \'@map("json")\''
+        'Field name "json" shadows a BaseModel attribute; '
+        'use a different field name with \'@map("json")\''
         in str(exc.value.output, 'utf-8')
     )
 
 
 def test_field_name_python_keyword(testdir: Testdir) -> None:
-    schema = '''
-        datasource db {{
-          provider = "sqlite"
-          url      = "file:dev.db"
-        }}
-
-        generator db {{
-          provider = "coverage run -m prisma"
-          output = "{output}"
-          {options}
-        }}
-
+    schema = (
+        testdir.SCHEMA_HEADER
+        + '''
         model User {{
             id   String @id
             from String
         }}
     '''
+    )
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(schema=schema)
 

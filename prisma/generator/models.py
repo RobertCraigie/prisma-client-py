@@ -14,7 +14,6 @@ from typing import (
     Iterator,
     Dict,
     Type,
-    cast,
     TYPE_CHECKING,
 )
 from pydantic import (
@@ -30,7 +29,7 @@ from pydantic import (
 try:
     from pydantic.env_settings import SettingsSourceCallable
 except ImportError:
-    SettingsSourceCallable = Any
+    SettingsSourceCallable = Any  # type: ignore
 
 
 # NOTE: this does not represent all the data that is passed by prisma
@@ -139,7 +138,7 @@ class Data(BaseModel):
 
     @classmethod
     def parse_obj(cls, obj: Any) -> 'Data':
-        data = cast(Data, super().parse_obj(obj))
+        data = super().parse_obj(obj)
         data_ctx.set(data)
         return data
 
@@ -315,6 +314,7 @@ class Field(BaseModel):
     relation_from_fields: Optional[List[str]] = FieldInfo(alias='relationFromFields')
 
     @root_validator
+    @classmethod
     def scalar_type_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         kind = values.get('kind')
         type_ = values.get('type')

@@ -177,7 +177,7 @@ class Batch:
             ],
             'transaction': True,
         }
-        return {{ maybe_await }}self.__client._engine.request('POST', '/', data=dumps(payload))
+        {{ maybe_await }}self.__client._engine.request('POST', '/', data=dumps(payload))
 
     {% if is_async %}
     async def __aenter__(self) -> 'Batch':

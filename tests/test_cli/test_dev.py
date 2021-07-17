@@ -11,7 +11,6 @@ from _pytest.monkeypatch import MonkeyPatch
 
 from prisma.http import client
 from prisma.utils import temp_env_update
-from prisma.binaries import platform
 from prisma.cli.commands import dev
 from ..utils import Testdir, Runner
 
@@ -73,8 +72,8 @@ async def test_playground(testdir: Testdir) -> None:
         assert resp.status == 200
         assert '<title>Rust Playground</title>' in await resp.text()
     finally:
-        if platform.name() == 'windows':
-            sig = signal.CTRL_C_EVENT
+        if sys.platform == 'win32':
+            sig = signal.CTRL_C_EVENT  # pylint: disable=no-member
         else:
             sig = signal.SIGINT
 

@@ -417,7 +417,7 @@ class Batch:
             ],
             'transaction': True,
         }
-        return await self.__client._engine.request('POST', '/', data=dumps(payload))
+        await self.__client._engine.request('POST', '/', data=dumps(payload))
 
     async def __aenter__(self) -> 'Batch':
         return self
