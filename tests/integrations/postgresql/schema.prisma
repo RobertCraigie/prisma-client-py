@@ -15,6 +15,18 @@ model User {
   updated_at DateTime @updatedAt
   name       String
   role       Role     @default(USER)
+  posts      Post[]
+}
+
+model Post {
+  id         String     @id @default(cuid())
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  title      String
+  published  Boolean    @default(false)
+  views      Int        @default(0)
+  author     User?      @relation(fields: [author_id], references: [id])
+  author_id  String?
 }
 
 enum Role {

@@ -49,5 +49,7 @@ def test_can_generate_from_env_var(testdir: Testdir) -> None:
     }}
     '''
 
-    with temp_env_update({'PRISMA_TEST_ASSUMPTIONS_OUTPUT': str(testdir.path / 'prisma')}):
+    with temp_env_update(
+        {'PRISMA_TEST_ASSUMPTIONS_OUTPUT': str(testdir.path / 'prisma')}
+    ):
         testdir.generate(schema=schema)

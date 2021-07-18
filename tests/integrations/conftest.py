@@ -101,8 +101,13 @@ class IntegrationTestItem(pytest.Item):
 
     def runtest(self) -> None:
         result = subprocess.run(
-            [str(self.path)], cwd=str(self.path.parent), check=False
+            [str(self.path)],
+            cwd=str(self.path.parent),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=False,
         )
+        print(result.stdout.decode('utf-8'))
         if result.returncode != 0:
             raise IntegrationError(
                 f'Executing `{self.path}` returned non-zero exit code {result.returncode}'
