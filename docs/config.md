@@ -75,7 +75,9 @@ generator db {
 
 > ⚠️ Increasing the number of types generated will exponentially increase the time taken and resources used by static type checkers.
 
-As many python static type checkers do not support recursive types Prisma Client Python duplicates would-be recursive types to an arbitrary depth. This depth can be controlled with the `recursive_type_depth` option (also aliased to `recursiveTypeDepth`).
+As some python static type checkers do not support recursive types, Prisma Client Python can generate recursive and psuedo-recursive types to an arbitrary depth.
+
+This depth can be controlled with the `recursive_type_depth` option, if `-1` is given then recursive types will be generated and if a value greater than or equal to  `2` is given then psuedo-recursive types will be generated to the given depth.
 
 A `ValidationError` will be raised during client generation if a non-integer value or a value less than 2 is passed.
 

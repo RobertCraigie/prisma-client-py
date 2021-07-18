@@ -173,15 +173,11 @@ class OptionalValueFromEnvVar(BaseModel):
 class Config(BaseSettings):
     """Custom generator config options."""
 
-    if TYPE_CHECKING:
-        recursive_type_depth: int
-    else:
-        recursive_type_depth: conint(ge=2) = FieldInfo(default=5)
-
     # TODO: add support for skipping individual plugins
     skip_plugins: bool = FieldInfo(default=False)
     http: HttpChoices = HttpChoices.aiohttp
     partial_type_generator: Optional[Module]
+    recursive_type_depth: int = FieldInfo(default=5)
 
     class Config(BaseSettings.Config):
         extra: Extra = Extra.forbid
@@ -230,6 +226,13 @@ class Config(BaseSettings):
                 # no config value passed and the default location was not found
                 return None
             raise
+
+    @validator('recursive_type_depth', always=True, allow_reuse=True)
+    @classmethod
+    def recursive_type_depth_validator(cls, value: int) -> int:
+        if value < -1 or value in {0, 1}:
+            raise ValueError('Value must equal -1 or be greater than 1.')
+        return value
 
 
 class DMMF(BaseModel):

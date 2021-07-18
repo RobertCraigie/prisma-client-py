@@ -43,7 +43,6 @@ SortOrder = Literal['asc', 'desc']
 
     
 
-
 class StringFilter(TypedDict, total=False):
     equals: str
     not_in: List[str]
@@ -56,7 +55,6 @@ class StringFilter(TypedDict, total=False):
     endswith: str
     IN: List[str]
     NOT: Union[str, 'StringFilterRecursive1']
-
 
 
 class StringFilterRecursive1(TypedDict, total=False):
@@ -87,7 +85,6 @@ class StringFilterRecursive2(TypedDict, total=False):
     
     
 
-
 class DateTimeFilter(TypedDict, total=False):
     equals: datetime.datetime
     not_in: List[datetime.datetime]
@@ -97,7 +94,6 @@ class DateTimeFilter(TypedDict, total=False):
     gte: datetime.datetime
     IN: List[datetime.datetime]
     NOT: 'DateTimeFilterRecursive1'
-
 
 
 class DateTimeFilterRecursive1(TypedDict, total=False):
@@ -123,11 +119,9 @@ class DateTimeFilterRecursive2(TypedDict, total=False):
 
     
 
-
 class BooleanFilter(TypedDict, total=False):
     equals: bool
     NOT: Union[bool, 'BooleanFilterRecursive1']
-
 
 
 class BooleanFilterRecursive1(TypedDict, total=False):
@@ -141,7 +135,6 @@ class BooleanFilterRecursive2(TypedDict, total=False):
 
     
 
-
 class IntFilter(TypedDict, total=False):
     equals: int
     IN: List[int]
@@ -151,7 +144,6 @@ class IntFilter(TypedDict, total=False):
     gt: int
     gte: int
     NOT: Union[int, 'IntFilterRecursive1']
-
 
 
 class IntFilterRecursive1(TypedDict, total=False):
@@ -177,7 +169,6 @@ class IntFilterRecursive2(TypedDict, total=False):
 
     
 
-
 class FloatFilter(TypedDict, total=False):
     equals: float
     IN: List[float]
@@ -187,7 +178,6 @@ class FloatFilter(TypedDict, total=False):
     gt: float
     gte: float
     NOT: Union[float, 'FloatFilterRecursive1']
-
 
 
 class FloatFilterRecursive1(TypedDict, total=False):
@@ -336,6 +326,7 @@ class PostOrderByInput(TypedDict, total=False):
 
 
 # recursive Post types
+# TODO: cleanup these types
 
 
 class PostInclude(TypedDict, total=False):
@@ -345,11 +336,9 @@ class PostInclude(TypedDict, total=False):
 
     
 
-
 class PostIncludeFromPost(TypedDict, total=False):
     """Relational arguments for Post"""
     author: Union[bool, 'UserArgsFromPostRecursive1']
-
 
 
 class PostIncludeFromPostRecursive1(TypedDict, total=False):
@@ -362,11 +351,9 @@ class PostIncludeFromPostRecursive2(TypedDict, total=False):
 
     
 
-
 class PostArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class PostArgsFromPostRecursive1(TypedDict, total=False):
@@ -379,7 +366,6 @@ class PostArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyPostArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     take: int
@@ -388,7 +374,6 @@ class FindManyPostArgsFromPost(TypedDict, total=False):
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class FindManyPostArgsFromPostRecursive1(TypedDict, total=False):
@@ -411,11 +396,9 @@ class FindManyPostArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class UserIncludeFromPost(TypedDict, total=False):
     """Relational arguments for Post"""
     posts: Union[bool, 'FindManyPostArgsFromPostRecursive1']
-
 
 
 class UserIncludeFromPostRecursive1(TypedDict, total=False):
@@ -428,11 +411,9 @@ class UserIncludeFromPostRecursive2(TypedDict, total=False):
 
     
 
-
 class UserArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class UserArgsFromPostRecursive1(TypedDict, total=False):
@@ -445,7 +426,6 @@ class UserArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyUserArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     take: int
@@ -454,7 +434,6 @@ class FindManyUserArgsFromPost(TypedDict, total=False):
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class FindManyUserArgsFromPostRecursive1(TypedDict, total=False):
@@ -477,11 +456,9 @@ class FindManyUserArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class MIncludeFromPost(TypedDict, total=False):
     """Relational arguments for Post"""
     n: Union[bool, 'FindManyNArgsFromPostRecursive1']
-
 
 
 class MIncludeFromPostRecursive1(TypedDict, total=False):
@@ -494,11 +471,9 @@ class MIncludeFromPostRecursive2(TypedDict, total=False):
 
     
 
-
 class MArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     include: 'MIncludeFromMRecursive1'
-
 
 
 class MArgsFromPostRecursive1(TypedDict, total=False):
@@ -511,7 +486,6 @@ class MArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyMArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     take: int
@@ -520,7 +494,6 @@ class FindManyMArgsFromPost(TypedDict, total=False):
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
     include: 'MIncludeFromMRecursive1'
-
 
 
 class FindManyMArgsFromPostRecursive1(TypedDict, total=False):
@@ -543,11 +516,9 @@ class FindManyMArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class NIncludeFromPost(TypedDict, total=False):
     """Relational arguments for Post"""
     m: Union[bool, 'FindManyMArgsFromPostRecursive1']
-
 
 
 class NIncludeFromPostRecursive1(TypedDict, total=False):
@@ -560,11 +531,9 @@ class NIncludeFromPostRecursive2(TypedDict, total=False):
 
     
 
-
 class NArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     include: 'NIncludeFromNRecursive1'
-
 
 
 class NArgsFromPostRecursive1(TypedDict, total=False):
@@ -577,7 +546,6 @@ class NArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyNArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     take: int
@@ -586,7 +554,6 @@ class FindManyNArgsFromPost(TypedDict, total=False):
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
     include: 'NIncludeFromNRecursive1'
-
 
 
 class FindManyNArgsFromPostRecursive1(TypedDict, total=False):
@@ -609,11 +576,9 @@ class FindManyNArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class OneOptionalIncludeFromPost(TypedDict, total=False):
     """Relational arguments for Post"""
     many: Union[bool, 'FindManyManyRequiredArgsFromPostRecursive1']
-
 
 
 class OneOptionalIncludeFromPostRecursive1(TypedDict, total=False):
@@ -626,11 +591,9 @@ class OneOptionalIncludeFromPostRecursive2(TypedDict, total=False):
 
     
 
-
 class OneOptionalArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class OneOptionalArgsFromPostRecursive1(TypedDict, total=False):
@@ -643,7 +606,6 @@ class OneOptionalArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyOneOptionalArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     take: int
@@ -652,7 +614,6 @@ class FindManyOneOptionalArgsFromPost(TypedDict, total=False):
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class FindManyOneOptionalArgsFromPostRecursive1(TypedDict, total=False):
@@ -675,11 +636,9 @@ class FindManyOneOptionalArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class ManyRequiredIncludeFromPost(TypedDict, total=False):
     """Relational arguments for Post"""
     one: Union[bool, 'OneOptionalArgsFromPostRecursive1']
-
 
 
 class ManyRequiredIncludeFromPostRecursive1(TypedDict, total=False):
@@ -692,11 +651,9 @@ class ManyRequiredIncludeFromPostRecursive2(TypedDict, total=False):
 
     
 
-
 class ManyRequiredArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class ManyRequiredArgsFromPostRecursive1(TypedDict, total=False):
@@ -709,7 +666,6 @@ class ManyRequiredArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyManyRequiredArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     take: int
@@ -718,7 +674,6 @@ class FindManyManyRequiredArgsFromPost(TypedDict, total=False):
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class FindManyManyRequiredArgsFromPostRecursive1(TypedDict, total=False):
@@ -741,10 +696,8 @@ class FindManyManyRequiredArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class AIncludeFromPost(TypedDict, total=False):
     """Relational arguments for Post"""
-
 
 
 class AIncludeFromPostRecursive1(TypedDict, total=False):
@@ -756,11 +709,9 @@ class AIncludeFromPostRecursive2(TypedDict, total=False):
 
     
 
-
 class AArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     include: 'AIncludeFromARecursive1'
-
 
 
 class AArgsFromPostRecursive1(TypedDict, total=False):
@@ -773,7 +724,6 @@ class AArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyAArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     take: int
@@ -782,7 +732,6 @@ class FindManyAArgsFromPost(TypedDict, total=False):
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
     include: 'AIncludeFromARecursive1'
-
 
 
 class FindManyAArgsFromPostRecursive1(TypedDict, total=False):
@@ -805,10 +754,8 @@ class FindManyAArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class BIncludeFromPost(TypedDict, total=False):
     """Relational arguments for Post"""
-
 
 
 class BIncludeFromPostRecursive1(TypedDict, total=False):
@@ -820,11 +767,9 @@ class BIncludeFromPostRecursive2(TypedDict, total=False):
 
     
 
-
 class BArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     include: 'BIncludeFromBRecursive1'
-
 
 
 class BArgsFromPostRecursive1(TypedDict, total=False):
@@ -837,7 +782,6 @@ class BArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyBArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     take: int
@@ -846,7 +790,6 @@ class FindManyBArgsFromPost(TypedDict, total=False):
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
     include: 'BIncludeFromBRecursive1'
-
 
 
 class FindManyBArgsFromPostRecursive1(TypedDict, total=False):
@@ -869,10 +812,8 @@ class FindManyBArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class CIncludeFromPost(TypedDict, total=False):
     """Relational arguments for Post"""
-
 
 
 class CIncludeFromPostRecursive1(TypedDict, total=False):
@@ -884,11 +825,9 @@ class CIncludeFromPostRecursive2(TypedDict, total=False):
 
     
 
-
 class CArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     include: 'CIncludeFromCRecursive1'
-
 
 
 class CArgsFromPostRecursive1(TypedDict, total=False):
@@ -901,7 +840,6 @@ class CArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyCArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     take: int
@@ -910,7 +848,6 @@ class FindManyCArgsFromPost(TypedDict, total=False):
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
     include: 'CIncludeFromCRecursive1'
-
 
 
 class FindManyCArgsFromPostRecursive1(TypedDict, total=False):
@@ -933,10 +870,8 @@ class FindManyCArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class DIncludeFromPost(TypedDict, total=False):
     """Relational arguments for Post"""
-
 
 
 class DIncludeFromPostRecursive1(TypedDict, total=False):
@@ -948,11 +883,9 @@ class DIncludeFromPostRecursive2(TypedDict, total=False):
 
     
 
-
 class DArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     include: 'DIncludeFromDRecursive1'
-
 
 
 class DArgsFromPostRecursive1(TypedDict, total=False):
@@ -965,7 +898,6 @@ class DArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyDArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     take: int
@@ -974,7 +906,6 @@ class FindManyDArgsFromPost(TypedDict, total=False):
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
     include: 'DIncludeFromDRecursive1'
-
 
 
 class FindManyDArgsFromPostRecursive1(TypedDict, total=False):
@@ -997,10 +928,8 @@ class FindManyDArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class EIncludeFromPost(TypedDict, total=False):
     """Relational arguments for Post"""
-
 
 
 class EIncludeFromPostRecursive1(TypedDict, total=False):
@@ -1012,11 +941,9 @@ class EIncludeFromPostRecursive2(TypedDict, total=False):
 
     
 
-
 class EArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     include: 'EIncludeFromERecursive1'
-
 
 
 class EArgsFromPostRecursive1(TypedDict, total=False):
@@ -1029,7 +956,6 @@ class EArgsFromPostRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyEArgsFromPost(TypedDict, total=False):
     """Arguments for Post"""
     take: int
@@ -1038,7 +964,6 @@ class FindManyEArgsFromPost(TypedDict, total=False):
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
     include: 'EIncludeFromERecursive1'
-
 
 
 class FindManyEArgsFromPostRecursive1(TypedDict, total=False):
@@ -1068,7 +993,6 @@ FindFirstPostArgs = FindManyPostArgsFromPost
 # TODO: support relationships here
     
 
-
 class PostWhereInput(TypedDict, total=False):
     """Post arguments for searching"""
     id: Union[int, 'types.IntFilter']
@@ -1081,7 +1005,6 @@ class PostWhereInput(TypedDict, total=False):
     AND: List['PostWhereInputRecursive1']
     OR: List['PostWhereInputRecursive1']
     NOT: List['PostWhereInputRecursive1']
-
 
 
 class PostWhereInputRecursive1(TypedDict, total=False):
@@ -1301,6 +1224,7 @@ class UserOrderByInput(TypedDict, total=False):
 
 
 # recursive User types
+# TODO: cleanup these types
 
 
 class UserInclude(TypedDict, total=False):
@@ -1310,11 +1234,9 @@ class UserInclude(TypedDict, total=False):
 
     
 
-
 class PostIncludeFromUser(TypedDict, total=False):
     """Relational arguments for User"""
     author: Union[bool, 'UserArgsFromUserRecursive1']
-
 
 
 class PostIncludeFromUserRecursive1(TypedDict, total=False):
@@ -1327,11 +1249,9 @@ class PostIncludeFromUserRecursive2(TypedDict, total=False):
 
     
 
-
 class PostArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class PostArgsFromUserRecursive1(TypedDict, total=False):
@@ -1344,7 +1264,6 @@ class PostArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyPostArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     take: int
@@ -1353,7 +1272,6 @@ class FindManyPostArgsFromUser(TypedDict, total=False):
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class FindManyPostArgsFromUserRecursive1(TypedDict, total=False):
@@ -1376,11 +1294,9 @@ class FindManyPostArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class UserIncludeFromUser(TypedDict, total=False):
     """Relational arguments for User"""
     posts: Union[bool, 'FindManyPostArgsFromUserRecursive1']
-
 
 
 class UserIncludeFromUserRecursive1(TypedDict, total=False):
@@ -1393,11 +1309,9 @@ class UserIncludeFromUserRecursive2(TypedDict, total=False):
 
     
 
-
 class UserArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class UserArgsFromUserRecursive1(TypedDict, total=False):
@@ -1410,7 +1324,6 @@ class UserArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyUserArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     take: int
@@ -1419,7 +1332,6 @@ class FindManyUserArgsFromUser(TypedDict, total=False):
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class FindManyUserArgsFromUserRecursive1(TypedDict, total=False):
@@ -1442,11 +1354,9 @@ class FindManyUserArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class MIncludeFromUser(TypedDict, total=False):
     """Relational arguments for User"""
     n: Union[bool, 'FindManyNArgsFromUserRecursive1']
-
 
 
 class MIncludeFromUserRecursive1(TypedDict, total=False):
@@ -1459,11 +1369,9 @@ class MIncludeFromUserRecursive2(TypedDict, total=False):
 
     
 
-
 class MArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     include: 'MIncludeFromMRecursive1'
-
 
 
 class MArgsFromUserRecursive1(TypedDict, total=False):
@@ -1476,7 +1384,6 @@ class MArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyMArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     take: int
@@ -1485,7 +1392,6 @@ class FindManyMArgsFromUser(TypedDict, total=False):
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
     include: 'MIncludeFromMRecursive1'
-
 
 
 class FindManyMArgsFromUserRecursive1(TypedDict, total=False):
@@ -1508,11 +1414,9 @@ class FindManyMArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class NIncludeFromUser(TypedDict, total=False):
     """Relational arguments for User"""
     m: Union[bool, 'FindManyMArgsFromUserRecursive1']
-
 
 
 class NIncludeFromUserRecursive1(TypedDict, total=False):
@@ -1525,11 +1429,9 @@ class NIncludeFromUserRecursive2(TypedDict, total=False):
 
     
 
-
 class NArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     include: 'NIncludeFromNRecursive1'
-
 
 
 class NArgsFromUserRecursive1(TypedDict, total=False):
@@ -1542,7 +1444,6 @@ class NArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyNArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     take: int
@@ -1551,7 +1452,6 @@ class FindManyNArgsFromUser(TypedDict, total=False):
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
     include: 'NIncludeFromNRecursive1'
-
 
 
 class FindManyNArgsFromUserRecursive1(TypedDict, total=False):
@@ -1574,11 +1474,9 @@ class FindManyNArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class OneOptionalIncludeFromUser(TypedDict, total=False):
     """Relational arguments for User"""
     many: Union[bool, 'FindManyManyRequiredArgsFromUserRecursive1']
-
 
 
 class OneOptionalIncludeFromUserRecursive1(TypedDict, total=False):
@@ -1591,11 +1489,9 @@ class OneOptionalIncludeFromUserRecursive2(TypedDict, total=False):
 
     
 
-
 class OneOptionalArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class OneOptionalArgsFromUserRecursive1(TypedDict, total=False):
@@ -1608,7 +1504,6 @@ class OneOptionalArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyOneOptionalArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     take: int
@@ -1617,7 +1512,6 @@ class FindManyOneOptionalArgsFromUser(TypedDict, total=False):
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class FindManyOneOptionalArgsFromUserRecursive1(TypedDict, total=False):
@@ -1640,11 +1534,9 @@ class FindManyOneOptionalArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class ManyRequiredIncludeFromUser(TypedDict, total=False):
     """Relational arguments for User"""
     one: Union[bool, 'OneOptionalArgsFromUserRecursive1']
-
 
 
 class ManyRequiredIncludeFromUserRecursive1(TypedDict, total=False):
@@ -1657,11 +1549,9 @@ class ManyRequiredIncludeFromUserRecursive2(TypedDict, total=False):
 
     
 
-
 class ManyRequiredArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class ManyRequiredArgsFromUserRecursive1(TypedDict, total=False):
@@ -1674,7 +1564,6 @@ class ManyRequiredArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyManyRequiredArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     take: int
@@ -1683,7 +1572,6 @@ class FindManyManyRequiredArgsFromUser(TypedDict, total=False):
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class FindManyManyRequiredArgsFromUserRecursive1(TypedDict, total=False):
@@ -1706,10 +1594,8 @@ class FindManyManyRequiredArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class AIncludeFromUser(TypedDict, total=False):
     """Relational arguments for User"""
-
 
 
 class AIncludeFromUserRecursive1(TypedDict, total=False):
@@ -1721,11 +1607,9 @@ class AIncludeFromUserRecursive2(TypedDict, total=False):
 
     
 
-
 class AArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     include: 'AIncludeFromARecursive1'
-
 
 
 class AArgsFromUserRecursive1(TypedDict, total=False):
@@ -1738,7 +1622,6 @@ class AArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyAArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     take: int
@@ -1747,7 +1630,6 @@ class FindManyAArgsFromUser(TypedDict, total=False):
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
     include: 'AIncludeFromARecursive1'
-
 
 
 class FindManyAArgsFromUserRecursive1(TypedDict, total=False):
@@ -1770,10 +1652,8 @@ class FindManyAArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class BIncludeFromUser(TypedDict, total=False):
     """Relational arguments for User"""
-
 
 
 class BIncludeFromUserRecursive1(TypedDict, total=False):
@@ -1785,11 +1665,9 @@ class BIncludeFromUserRecursive2(TypedDict, total=False):
 
     
 
-
 class BArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     include: 'BIncludeFromBRecursive1'
-
 
 
 class BArgsFromUserRecursive1(TypedDict, total=False):
@@ -1802,7 +1680,6 @@ class BArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyBArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     take: int
@@ -1811,7 +1688,6 @@ class FindManyBArgsFromUser(TypedDict, total=False):
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
     include: 'BIncludeFromBRecursive1'
-
 
 
 class FindManyBArgsFromUserRecursive1(TypedDict, total=False):
@@ -1834,10 +1710,8 @@ class FindManyBArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class CIncludeFromUser(TypedDict, total=False):
     """Relational arguments for User"""
-
 
 
 class CIncludeFromUserRecursive1(TypedDict, total=False):
@@ -1849,11 +1723,9 @@ class CIncludeFromUserRecursive2(TypedDict, total=False):
 
     
 
-
 class CArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     include: 'CIncludeFromCRecursive1'
-
 
 
 class CArgsFromUserRecursive1(TypedDict, total=False):
@@ -1866,7 +1738,6 @@ class CArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyCArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     take: int
@@ -1875,7 +1746,6 @@ class FindManyCArgsFromUser(TypedDict, total=False):
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
     include: 'CIncludeFromCRecursive1'
-
 
 
 class FindManyCArgsFromUserRecursive1(TypedDict, total=False):
@@ -1898,10 +1768,8 @@ class FindManyCArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class DIncludeFromUser(TypedDict, total=False):
     """Relational arguments for User"""
-
 
 
 class DIncludeFromUserRecursive1(TypedDict, total=False):
@@ -1913,11 +1781,9 @@ class DIncludeFromUserRecursive2(TypedDict, total=False):
 
     
 
-
 class DArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     include: 'DIncludeFromDRecursive1'
-
 
 
 class DArgsFromUserRecursive1(TypedDict, total=False):
@@ -1930,7 +1796,6 @@ class DArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyDArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     take: int
@@ -1939,7 +1804,6 @@ class FindManyDArgsFromUser(TypedDict, total=False):
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
     include: 'DIncludeFromDRecursive1'
-
 
 
 class FindManyDArgsFromUserRecursive1(TypedDict, total=False):
@@ -1962,10 +1826,8 @@ class FindManyDArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class EIncludeFromUser(TypedDict, total=False):
     """Relational arguments for User"""
-
 
 
 class EIncludeFromUserRecursive1(TypedDict, total=False):
@@ -1977,11 +1839,9 @@ class EIncludeFromUserRecursive2(TypedDict, total=False):
 
     
 
-
 class EArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     include: 'EIncludeFromERecursive1'
-
 
 
 class EArgsFromUserRecursive1(TypedDict, total=False):
@@ -1994,7 +1854,6 @@ class EArgsFromUserRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyEArgsFromUser(TypedDict, total=False):
     """Arguments for User"""
     take: int
@@ -2003,7 +1862,6 @@ class FindManyEArgsFromUser(TypedDict, total=False):
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
     include: 'EIncludeFromERecursive1'
-
 
 
 class FindManyEArgsFromUserRecursive1(TypedDict, total=False):
@@ -2033,7 +1891,6 @@ FindFirstUserArgs = FindManyUserArgsFromUser
 # TODO: support relationships here
     
 
-
 class UserWhereInput(TypedDict, total=False):
     """User arguments for searching"""
     id: Union[int, 'types.IntFilter']
@@ -2052,7 +1909,6 @@ class UserWhereInput(TypedDict, total=False):
     AND: List['UserWhereInputRecursive1']
     OR: List['UserWhereInputRecursive1']
     NOT: List['UserWhereInputRecursive1']
-
 
 
 class UserWhereInputRecursive1(TypedDict, total=False):
@@ -2285,6 +2141,7 @@ class MOrderByInput(TypedDict, total=False):
 
 
 # recursive M types
+# TODO: cleanup these types
 
 
 class MInclude(TypedDict, total=False):
@@ -2294,11 +2151,9 @@ class MInclude(TypedDict, total=False):
 
     
 
-
 class PostIncludeFromM(TypedDict, total=False):
     """Relational arguments for M"""
     author: Union[bool, 'UserArgsFromMRecursive1']
-
 
 
 class PostIncludeFromMRecursive1(TypedDict, total=False):
@@ -2311,11 +2166,9 @@ class PostIncludeFromMRecursive2(TypedDict, total=False):
 
     
 
-
 class PostArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class PostArgsFromMRecursive1(TypedDict, total=False):
@@ -2328,7 +2181,6 @@ class PostArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyPostArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     take: int
@@ -2337,7 +2189,6 @@ class FindManyPostArgsFromM(TypedDict, total=False):
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class FindManyPostArgsFromMRecursive1(TypedDict, total=False):
@@ -2360,11 +2211,9 @@ class FindManyPostArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class UserIncludeFromM(TypedDict, total=False):
     """Relational arguments for M"""
     posts: Union[bool, 'FindManyPostArgsFromMRecursive1']
-
 
 
 class UserIncludeFromMRecursive1(TypedDict, total=False):
@@ -2377,11 +2226,9 @@ class UserIncludeFromMRecursive2(TypedDict, total=False):
 
     
 
-
 class UserArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class UserArgsFromMRecursive1(TypedDict, total=False):
@@ -2394,7 +2241,6 @@ class UserArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyUserArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     take: int
@@ -2403,7 +2249,6 @@ class FindManyUserArgsFromM(TypedDict, total=False):
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class FindManyUserArgsFromMRecursive1(TypedDict, total=False):
@@ -2426,11 +2271,9 @@ class FindManyUserArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class MIncludeFromM(TypedDict, total=False):
     """Relational arguments for M"""
     n: Union[bool, 'FindManyNArgsFromMRecursive1']
-
 
 
 class MIncludeFromMRecursive1(TypedDict, total=False):
@@ -2443,11 +2286,9 @@ class MIncludeFromMRecursive2(TypedDict, total=False):
 
     
 
-
 class MArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     include: 'MIncludeFromMRecursive1'
-
 
 
 class MArgsFromMRecursive1(TypedDict, total=False):
@@ -2460,7 +2301,6 @@ class MArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyMArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     take: int
@@ -2469,7 +2309,6 @@ class FindManyMArgsFromM(TypedDict, total=False):
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
     include: 'MIncludeFromMRecursive1'
-
 
 
 class FindManyMArgsFromMRecursive1(TypedDict, total=False):
@@ -2492,11 +2331,9 @@ class FindManyMArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class NIncludeFromM(TypedDict, total=False):
     """Relational arguments for M"""
     m: Union[bool, 'FindManyMArgsFromMRecursive1']
-
 
 
 class NIncludeFromMRecursive1(TypedDict, total=False):
@@ -2509,11 +2346,9 @@ class NIncludeFromMRecursive2(TypedDict, total=False):
 
     
 
-
 class NArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     include: 'NIncludeFromNRecursive1'
-
 
 
 class NArgsFromMRecursive1(TypedDict, total=False):
@@ -2526,7 +2361,6 @@ class NArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyNArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     take: int
@@ -2535,7 +2369,6 @@ class FindManyNArgsFromM(TypedDict, total=False):
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
     include: 'NIncludeFromNRecursive1'
-
 
 
 class FindManyNArgsFromMRecursive1(TypedDict, total=False):
@@ -2558,11 +2391,9 @@ class FindManyNArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class OneOptionalIncludeFromM(TypedDict, total=False):
     """Relational arguments for M"""
     many: Union[bool, 'FindManyManyRequiredArgsFromMRecursive1']
-
 
 
 class OneOptionalIncludeFromMRecursive1(TypedDict, total=False):
@@ -2575,11 +2406,9 @@ class OneOptionalIncludeFromMRecursive2(TypedDict, total=False):
 
     
 
-
 class OneOptionalArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class OneOptionalArgsFromMRecursive1(TypedDict, total=False):
@@ -2592,7 +2421,6 @@ class OneOptionalArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyOneOptionalArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     take: int
@@ -2601,7 +2429,6 @@ class FindManyOneOptionalArgsFromM(TypedDict, total=False):
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class FindManyOneOptionalArgsFromMRecursive1(TypedDict, total=False):
@@ -2624,11 +2451,9 @@ class FindManyOneOptionalArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class ManyRequiredIncludeFromM(TypedDict, total=False):
     """Relational arguments for M"""
     one: Union[bool, 'OneOptionalArgsFromMRecursive1']
-
 
 
 class ManyRequiredIncludeFromMRecursive1(TypedDict, total=False):
@@ -2641,11 +2466,9 @@ class ManyRequiredIncludeFromMRecursive2(TypedDict, total=False):
 
     
 
-
 class ManyRequiredArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class ManyRequiredArgsFromMRecursive1(TypedDict, total=False):
@@ -2658,7 +2481,6 @@ class ManyRequiredArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyManyRequiredArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     take: int
@@ -2667,7 +2489,6 @@ class FindManyManyRequiredArgsFromM(TypedDict, total=False):
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class FindManyManyRequiredArgsFromMRecursive1(TypedDict, total=False):
@@ -2690,10 +2511,8 @@ class FindManyManyRequiredArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class AIncludeFromM(TypedDict, total=False):
     """Relational arguments for M"""
-
 
 
 class AIncludeFromMRecursive1(TypedDict, total=False):
@@ -2705,11 +2524,9 @@ class AIncludeFromMRecursive2(TypedDict, total=False):
 
     
 
-
 class AArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     include: 'AIncludeFromARecursive1'
-
 
 
 class AArgsFromMRecursive1(TypedDict, total=False):
@@ -2722,7 +2539,6 @@ class AArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyAArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     take: int
@@ -2731,7 +2547,6 @@ class FindManyAArgsFromM(TypedDict, total=False):
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
     include: 'AIncludeFromARecursive1'
-
 
 
 class FindManyAArgsFromMRecursive1(TypedDict, total=False):
@@ -2754,10 +2569,8 @@ class FindManyAArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class BIncludeFromM(TypedDict, total=False):
     """Relational arguments for M"""
-
 
 
 class BIncludeFromMRecursive1(TypedDict, total=False):
@@ -2769,11 +2582,9 @@ class BIncludeFromMRecursive2(TypedDict, total=False):
 
     
 
-
 class BArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     include: 'BIncludeFromBRecursive1'
-
 
 
 class BArgsFromMRecursive1(TypedDict, total=False):
@@ -2786,7 +2597,6 @@ class BArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyBArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     take: int
@@ -2795,7 +2605,6 @@ class FindManyBArgsFromM(TypedDict, total=False):
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
     include: 'BIncludeFromBRecursive1'
-
 
 
 class FindManyBArgsFromMRecursive1(TypedDict, total=False):
@@ -2818,10 +2627,8 @@ class FindManyBArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class CIncludeFromM(TypedDict, total=False):
     """Relational arguments for M"""
-
 
 
 class CIncludeFromMRecursive1(TypedDict, total=False):
@@ -2833,11 +2640,9 @@ class CIncludeFromMRecursive2(TypedDict, total=False):
 
     
 
-
 class CArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     include: 'CIncludeFromCRecursive1'
-
 
 
 class CArgsFromMRecursive1(TypedDict, total=False):
@@ -2850,7 +2655,6 @@ class CArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyCArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     take: int
@@ -2859,7 +2663,6 @@ class FindManyCArgsFromM(TypedDict, total=False):
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
     include: 'CIncludeFromCRecursive1'
-
 
 
 class FindManyCArgsFromMRecursive1(TypedDict, total=False):
@@ -2882,10 +2685,8 @@ class FindManyCArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class DIncludeFromM(TypedDict, total=False):
     """Relational arguments for M"""
-
 
 
 class DIncludeFromMRecursive1(TypedDict, total=False):
@@ -2897,11 +2698,9 @@ class DIncludeFromMRecursive2(TypedDict, total=False):
 
     
 
-
 class DArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     include: 'DIncludeFromDRecursive1'
-
 
 
 class DArgsFromMRecursive1(TypedDict, total=False):
@@ -2914,7 +2713,6 @@ class DArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyDArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     take: int
@@ -2923,7 +2721,6 @@ class FindManyDArgsFromM(TypedDict, total=False):
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
     include: 'DIncludeFromDRecursive1'
-
 
 
 class FindManyDArgsFromMRecursive1(TypedDict, total=False):
@@ -2946,10 +2743,8 @@ class FindManyDArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class EIncludeFromM(TypedDict, total=False):
     """Relational arguments for M"""
-
 
 
 class EIncludeFromMRecursive1(TypedDict, total=False):
@@ -2961,11 +2756,9 @@ class EIncludeFromMRecursive2(TypedDict, total=False):
 
     
 
-
 class EArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     include: 'EIncludeFromERecursive1'
-
 
 
 class EArgsFromMRecursive1(TypedDict, total=False):
@@ -2978,7 +2771,6 @@ class EArgsFromMRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyEArgsFromM(TypedDict, total=False):
     """Arguments for M"""
     take: int
@@ -2987,7 +2779,6 @@ class FindManyEArgsFromM(TypedDict, total=False):
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
     include: 'EIncludeFromERecursive1'
-
 
 
 class FindManyEArgsFromMRecursive1(TypedDict, total=False):
@@ -3017,7 +2808,6 @@ FindFirstMArgs = FindManyMArgsFromM
 # TODO: support relationships here
     
 
-
 class MWhereInput(TypedDict, total=False):
     """M arguments for searching"""
     id: Union[int, 'types.IntFilter']
@@ -3035,7 +2825,6 @@ class MWhereInput(TypedDict, total=False):
     AND: List['MWhereInputRecursive1']
     OR: List['MWhereInputRecursive1']
     NOT: List['MWhereInputRecursive1']
-
 
 
 class MWhereInputRecursive1(TypedDict, total=False):
@@ -3265,6 +3054,7 @@ class NOrderByInput(TypedDict, total=False):
 
 
 # recursive N types
+# TODO: cleanup these types
 
 
 class NInclude(TypedDict, total=False):
@@ -3274,11 +3064,9 @@ class NInclude(TypedDict, total=False):
 
     
 
-
 class PostIncludeFromN(TypedDict, total=False):
     """Relational arguments for N"""
     author: Union[bool, 'UserArgsFromNRecursive1']
-
 
 
 class PostIncludeFromNRecursive1(TypedDict, total=False):
@@ -3291,11 +3079,9 @@ class PostIncludeFromNRecursive2(TypedDict, total=False):
 
     
 
-
 class PostArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class PostArgsFromNRecursive1(TypedDict, total=False):
@@ -3308,7 +3094,6 @@ class PostArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyPostArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     take: int
@@ -3317,7 +3102,6 @@ class FindManyPostArgsFromN(TypedDict, total=False):
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class FindManyPostArgsFromNRecursive1(TypedDict, total=False):
@@ -3340,11 +3124,9 @@ class FindManyPostArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class UserIncludeFromN(TypedDict, total=False):
     """Relational arguments for N"""
     posts: Union[bool, 'FindManyPostArgsFromNRecursive1']
-
 
 
 class UserIncludeFromNRecursive1(TypedDict, total=False):
@@ -3357,11 +3139,9 @@ class UserIncludeFromNRecursive2(TypedDict, total=False):
 
     
 
-
 class UserArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class UserArgsFromNRecursive1(TypedDict, total=False):
@@ -3374,7 +3154,6 @@ class UserArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyUserArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     take: int
@@ -3383,7 +3162,6 @@ class FindManyUserArgsFromN(TypedDict, total=False):
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class FindManyUserArgsFromNRecursive1(TypedDict, total=False):
@@ -3406,11 +3184,9 @@ class FindManyUserArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class MIncludeFromN(TypedDict, total=False):
     """Relational arguments for N"""
     n: Union[bool, 'FindManyNArgsFromNRecursive1']
-
 
 
 class MIncludeFromNRecursive1(TypedDict, total=False):
@@ -3423,11 +3199,9 @@ class MIncludeFromNRecursive2(TypedDict, total=False):
 
     
 
-
 class MArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     include: 'MIncludeFromMRecursive1'
-
 
 
 class MArgsFromNRecursive1(TypedDict, total=False):
@@ -3440,7 +3214,6 @@ class MArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyMArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     take: int
@@ -3449,7 +3222,6 @@ class FindManyMArgsFromN(TypedDict, total=False):
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
     include: 'MIncludeFromMRecursive1'
-
 
 
 class FindManyMArgsFromNRecursive1(TypedDict, total=False):
@@ -3472,11 +3244,9 @@ class FindManyMArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class NIncludeFromN(TypedDict, total=False):
     """Relational arguments for N"""
     m: Union[bool, 'FindManyMArgsFromNRecursive1']
-
 
 
 class NIncludeFromNRecursive1(TypedDict, total=False):
@@ -3489,11 +3259,9 @@ class NIncludeFromNRecursive2(TypedDict, total=False):
 
     
 
-
 class NArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     include: 'NIncludeFromNRecursive1'
-
 
 
 class NArgsFromNRecursive1(TypedDict, total=False):
@@ -3506,7 +3274,6 @@ class NArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyNArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     take: int
@@ -3515,7 +3282,6 @@ class FindManyNArgsFromN(TypedDict, total=False):
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
     include: 'NIncludeFromNRecursive1'
-
 
 
 class FindManyNArgsFromNRecursive1(TypedDict, total=False):
@@ -3538,11 +3304,9 @@ class FindManyNArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class OneOptionalIncludeFromN(TypedDict, total=False):
     """Relational arguments for N"""
     many: Union[bool, 'FindManyManyRequiredArgsFromNRecursive1']
-
 
 
 class OneOptionalIncludeFromNRecursive1(TypedDict, total=False):
@@ -3555,11 +3319,9 @@ class OneOptionalIncludeFromNRecursive2(TypedDict, total=False):
 
     
 
-
 class OneOptionalArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class OneOptionalArgsFromNRecursive1(TypedDict, total=False):
@@ -3572,7 +3334,6 @@ class OneOptionalArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyOneOptionalArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     take: int
@@ -3581,7 +3342,6 @@ class FindManyOneOptionalArgsFromN(TypedDict, total=False):
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class FindManyOneOptionalArgsFromNRecursive1(TypedDict, total=False):
@@ -3604,11 +3364,9 @@ class FindManyOneOptionalArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class ManyRequiredIncludeFromN(TypedDict, total=False):
     """Relational arguments for N"""
     one: Union[bool, 'OneOptionalArgsFromNRecursive1']
-
 
 
 class ManyRequiredIncludeFromNRecursive1(TypedDict, total=False):
@@ -3621,11 +3379,9 @@ class ManyRequiredIncludeFromNRecursive2(TypedDict, total=False):
 
     
 
-
 class ManyRequiredArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class ManyRequiredArgsFromNRecursive1(TypedDict, total=False):
@@ -3638,7 +3394,6 @@ class ManyRequiredArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyManyRequiredArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     take: int
@@ -3647,7 +3402,6 @@ class FindManyManyRequiredArgsFromN(TypedDict, total=False):
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class FindManyManyRequiredArgsFromNRecursive1(TypedDict, total=False):
@@ -3670,10 +3424,8 @@ class FindManyManyRequiredArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class AIncludeFromN(TypedDict, total=False):
     """Relational arguments for N"""
-
 
 
 class AIncludeFromNRecursive1(TypedDict, total=False):
@@ -3685,11 +3437,9 @@ class AIncludeFromNRecursive2(TypedDict, total=False):
 
     
 
-
 class AArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     include: 'AIncludeFromARecursive1'
-
 
 
 class AArgsFromNRecursive1(TypedDict, total=False):
@@ -3702,7 +3452,6 @@ class AArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyAArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     take: int
@@ -3711,7 +3460,6 @@ class FindManyAArgsFromN(TypedDict, total=False):
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
     include: 'AIncludeFromARecursive1'
-
 
 
 class FindManyAArgsFromNRecursive1(TypedDict, total=False):
@@ -3734,10 +3482,8 @@ class FindManyAArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class BIncludeFromN(TypedDict, total=False):
     """Relational arguments for N"""
-
 
 
 class BIncludeFromNRecursive1(TypedDict, total=False):
@@ -3749,11 +3495,9 @@ class BIncludeFromNRecursive2(TypedDict, total=False):
 
     
 
-
 class BArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     include: 'BIncludeFromBRecursive1'
-
 
 
 class BArgsFromNRecursive1(TypedDict, total=False):
@@ -3766,7 +3510,6 @@ class BArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyBArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     take: int
@@ -3775,7 +3518,6 @@ class FindManyBArgsFromN(TypedDict, total=False):
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
     include: 'BIncludeFromBRecursive1'
-
 
 
 class FindManyBArgsFromNRecursive1(TypedDict, total=False):
@@ -3798,10 +3540,8 @@ class FindManyBArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class CIncludeFromN(TypedDict, total=False):
     """Relational arguments for N"""
-
 
 
 class CIncludeFromNRecursive1(TypedDict, total=False):
@@ -3813,11 +3553,9 @@ class CIncludeFromNRecursive2(TypedDict, total=False):
 
     
 
-
 class CArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     include: 'CIncludeFromCRecursive1'
-
 
 
 class CArgsFromNRecursive1(TypedDict, total=False):
@@ -3830,7 +3568,6 @@ class CArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyCArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     take: int
@@ -3839,7 +3576,6 @@ class FindManyCArgsFromN(TypedDict, total=False):
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
     include: 'CIncludeFromCRecursive1'
-
 
 
 class FindManyCArgsFromNRecursive1(TypedDict, total=False):
@@ -3862,10 +3598,8 @@ class FindManyCArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class DIncludeFromN(TypedDict, total=False):
     """Relational arguments for N"""
-
 
 
 class DIncludeFromNRecursive1(TypedDict, total=False):
@@ -3877,11 +3611,9 @@ class DIncludeFromNRecursive2(TypedDict, total=False):
 
     
 
-
 class DArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     include: 'DIncludeFromDRecursive1'
-
 
 
 class DArgsFromNRecursive1(TypedDict, total=False):
@@ -3894,7 +3626,6 @@ class DArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyDArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     take: int
@@ -3903,7 +3634,6 @@ class FindManyDArgsFromN(TypedDict, total=False):
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
     include: 'DIncludeFromDRecursive1'
-
 
 
 class FindManyDArgsFromNRecursive1(TypedDict, total=False):
@@ -3926,10 +3656,8 @@ class FindManyDArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class EIncludeFromN(TypedDict, total=False):
     """Relational arguments for N"""
-
 
 
 class EIncludeFromNRecursive1(TypedDict, total=False):
@@ -3941,11 +3669,9 @@ class EIncludeFromNRecursive2(TypedDict, total=False):
 
     
 
-
 class EArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     include: 'EIncludeFromERecursive1'
-
 
 
 class EArgsFromNRecursive1(TypedDict, total=False):
@@ -3958,7 +3684,6 @@ class EArgsFromNRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyEArgsFromN(TypedDict, total=False):
     """Arguments for N"""
     take: int
@@ -3967,7 +3692,6 @@ class FindManyEArgsFromN(TypedDict, total=False):
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
     include: 'EIncludeFromERecursive1'
-
 
 
 class FindManyEArgsFromNRecursive1(TypedDict, total=False):
@@ -3997,7 +3721,6 @@ FindFirstNArgs = FindManyNArgsFromN
 # TODO: support relationships here
     
 
-
 class NWhereInput(TypedDict, total=False):
     """N arguments for searching"""
     id: Union[int, 'types.IntFilter']
@@ -4015,7 +3738,6 @@ class NWhereInput(TypedDict, total=False):
     AND: List['NWhereInputRecursive1']
     OR: List['NWhereInputRecursive1']
     NOT: List['NWhereInputRecursive1']
-
 
 
 class NWhereInputRecursive1(TypedDict, total=False):
@@ -4245,6 +3967,7 @@ class OneOptionalOrderByInput(TypedDict, total=False):
 
 
 # recursive OneOptional types
+# TODO: cleanup these types
 
 
 class OneOptionalInclude(TypedDict, total=False):
@@ -4254,11 +3977,9 @@ class OneOptionalInclude(TypedDict, total=False):
 
     
 
-
 class PostIncludeFromOneOptional(TypedDict, total=False):
     """Relational arguments for OneOptional"""
     author: Union[bool, 'UserArgsFromOneOptionalRecursive1']
-
 
 
 class PostIncludeFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4271,11 +3992,9 @@ class PostIncludeFromOneOptionalRecursive2(TypedDict, total=False):
 
     
 
-
 class PostArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class PostArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4288,7 +4007,6 @@ class PostArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyPostArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     take: int
@@ -4297,7 +4015,6 @@ class FindManyPostArgsFromOneOptional(TypedDict, total=False):
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class FindManyPostArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4320,11 +4037,9 @@ class FindManyPostArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class UserIncludeFromOneOptional(TypedDict, total=False):
     """Relational arguments for OneOptional"""
     posts: Union[bool, 'FindManyPostArgsFromOneOptionalRecursive1']
-
 
 
 class UserIncludeFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4337,11 +4052,9 @@ class UserIncludeFromOneOptionalRecursive2(TypedDict, total=False):
 
     
 
-
 class UserArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class UserArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4354,7 +4067,6 @@ class UserArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyUserArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     take: int
@@ -4363,7 +4075,6 @@ class FindManyUserArgsFromOneOptional(TypedDict, total=False):
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class FindManyUserArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4386,11 +4097,9 @@ class FindManyUserArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class MIncludeFromOneOptional(TypedDict, total=False):
     """Relational arguments for OneOptional"""
     n: Union[bool, 'FindManyNArgsFromOneOptionalRecursive1']
-
 
 
 class MIncludeFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4403,11 +4112,9 @@ class MIncludeFromOneOptionalRecursive2(TypedDict, total=False):
 
     
 
-
 class MArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     include: 'MIncludeFromMRecursive1'
-
 
 
 class MArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4420,7 +4127,6 @@ class MArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyMArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     take: int
@@ -4429,7 +4135,6 @@ class FindManyMArgsFromOneOptional(TypedDict, total=False):
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
     include: 'MIncludeFromMRecursive1'
-
 
 
 class FindManyMArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4452,11 +4157,9 @@ class FindManyMArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class NIncludeFromOneOptional(TypedDict, total=False):
     """Relational arguments for OneOptional"""
     m: Union[bool, 'FindManyMArgsFromOneOptionalRecursive1']
-
 
 
 class NIncludeFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4469,11 +4172,9 @@ class NIncludeFromOneOptionalRecursive2(TypedDict, total=False):
 
     
 
-
 class NArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     include: 'NIncludeFromNRecursive1'
-
 
 
 class NArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4486,7 +4187,6 @@ class NArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyNArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     take: int
@@ -4495,7 +4195,6 @@ class FindManyNArgsFromOneOptional(TypedDict, total=False):
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
     include: 'NIncludeFromNRecursive1'
-
 
 
 class FindManyNArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4518,11 +4217,9 @@ class FindManyNArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class OneOptionalIncludeFromOneOptional(TypedDict, total=False):
     """Relational arguments for OneOptional"""
     many: Union[bool, 'FindManyManyRequiredArgsFromOneOptionalRecursive1']
-
 
 
 class OneOptionalIncludeFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4535,11 +4232,9 @@ class OneOptionalIncludeFromOneOptionalRecursive2(TypedDict, total=False):
 
     
 
-
 class OneOptionalArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class OneOptionalArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4552,7 +4247,6 @@ class OneOptionalArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyOneOptionalArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     take: int
@@ -4561,7 +4255,6 @@ class FindManyOneOptionalArgsFromOneOptional(TypedDict, total=False):
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class FindManyOneOptionalArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4584,11 +4277,9 @@ class FindManyOneOptionalArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class ManyRequiredIncludeFromOneOptional(TypedDict, total=False):
     """Relational arguments for OneOptional"""
     one: Union[bool, 'OneOptionalArgsFromOneOptionalRecursive1']
-
 
 
 class ManyRequiredIncludeFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4601,11 +4292,9 @@ class ManyRequiredIncludeFromOneOptionalRecursive2(TypedDict, total=False):
 
     
 
-
 class ManyRequiredArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class ManyRequiredArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4618,7 +4307,6 @@ class ManyRequiredArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyManyRequiredArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     take: int
@@ -4627,7 +4315,6 @@ class FindManyManyRequiredArgsFromOneOptional(TypedDict, total=False):
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class FindManyManyRequiredArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4650,10 +4337,8 @@ class FindManyManyRequiredArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class AIncludeFromOneOptional(TypedDict, total=False):
     """Relational arguments for OneOptional"""
-
 
 
 class AIncludeFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4665,11 +4350,9 @@ class AIncludeFromOneOptionalRecursive2(TypedDict, total=False):
 
     
 
-
 class AArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     include: 'AIncludeFromARecursive1'
-
 
 
 class AArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4682,7 +4365,6 @@ class AArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyAArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     take: int
@@ -4691,7 +4373,6 @@ class FindManyAArgsFromOneOptional(TypedDict, total=False):
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
     include: 'AIncludeFromARecursive1'
-
 
 
 class FindManyAArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4714,10 +4395,8 @@ class FindManyAArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class BIncludeFromOneOptional(TypedDict, total=False):
     """Relational arguments for OneOptional"""
-
 
 
 class BIncludeFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4729,11 +4408,9 @@ class BIncludeFromOneOptionalRecursive2(TypedDict, total=False):
 
     
 
-
 class BArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     include: 'BIncludeFromBRecursive1'
-
 
 
 class BArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4746,7 +4423,6 @@ class BArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyBArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     take: int
@@ -4755,7 +4431,6 @@ class FindManyBArgsFromOneOptional(TypedDict, total=False):
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
     include: 'BIncludeFromBRecursive1'
-
 
 
 class FindManyBArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4778,10 +4453,8 @@ class FindManyBArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class CIncludeFromOneOptional(TypedDict, total=False):
     """Relational arguments for OneOptional"""
-
 
 
 class CIncludeFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4793,11 +4466,9 @@ class CIncludeFromOneOptionalRecursive2(TypedDict, total=False):
 
     
 
-
 class CArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     include: 'CIncludeFromCRecursive1'
-
 
 
 class CArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4810,7 +4481,6 @@ class CArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyCArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     take: int
@@ -4819,7 +4489,6 @@ class FindManyCArgsFromOneOptional(TypedDict, total=False):
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
     include: 'CIncludeFromCRecursive1'
-
 
 
 class FindManyCArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4842,10 +4511,8 @@ class FindManyCArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class DIncludeFromOneOptional(TypedDict, total=False):
     """Relational arguments for OneOptional"""
-
 
 
 class DIncludeFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4857,11 +4524,9 @@ class DIncludeFromOneOptionalRecursive2(TypedDict, total=False):
 
     
 
-
 class DArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     include: 'DIncludeFromDRecursive1'
-
 
 
 class DArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4874,7 +4539,6 @@ class DArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyDArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     take: int
@@ -4883,7 +4547,6 @@ class FindManyDArgsFromOneOptional(TypedDict, total=False):
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
     include: 'DIncludeFromDRecursive1'
-
 
 
 class FindManyDArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4906,10 +4569,8 @@ class FindManyDArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class EIncludeFromOneOptional(TypedDict, total=False):
     """Relational arguments for OneOptional"""
-
 
 
 class EIncludeFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4921,11 +4582,9 @@ class EIncludeFromOneOptionalRecursive2(TypedDict, total=False):
 
     
 
-
 class EArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     include: 'EIncludeFromERecursive1'
-
 
 
 class EArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4938,7 +4597,6 @@ class EArgsFromOneOptionalRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyEArgsFromOneOptional(TypedDict, total=False):
     """Arguments for OneOptional"""
     take: int
@@ -4947,7 +4605,6 @@ class FindManyEArgsFromOneOptional(TypedDict, total=False):
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
     include: 'EIncludeFromERecursive1'
-
 
 
 class FindManyEArgsFromOneOptionalRecursive1(TypedDict, total=False):
@@ -4977,7 +4634,6 @@ FindFirstOneOptionalArgs = FindManyOneOptionalArgsFromOneOptional
 # TODO: support relationships here
     
 
-
 class OneOptionalWhereInput(TypedDict, total=False):
     """OneOptional arguments for searching"""
     id: Union[int, 'types.IntFilter']
@@ -4995,7 +4651,6 @@ class OneOptionalWhereInput(TypedDict, total=False):
     AND: List['OneOptionalWhereInputRecursive1']
     OR: List['OneOptionalWhereInputRecursive1']
     NOT: List['OneOptionalWhereInputRecursive1']
-
 
 
 class OneOptionalWhereInputRecursive1(TypedDict, total=False):
@@ -5232,6 +4887,7 @@ class ManyRequiredOrderByInput(TypedDict, total=False):
 
 
 # recursive ManyRequired types
+# TODO: cleanup these types
 
 
 class ManyRequiredInclude(TypedDict, total=False):
@@ -5241,11 +4897,9 @@ class ManyRequiredInclude(TypedDict, total=False):
 
     
 
-
 class PostIncludeFromManyRequired(TypedDict, total=False):
     """Relational arguments for ManyRequired"""
     author: Union[bool, 'UserArgsFromManyRequiredRecursive1']
-
 
 
 class PostIncludeFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5258,11 +4912,9 @@ class PostIncludeFromManyRequiredRecursive2(TypedDict, total=False):
 
     
 
-
 class PostArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class PostArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5275,7 +4927,6 @@ class PostArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyPostArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     take: int
@@ -5284,7 +4935,6 @@ class FindManyPostArgsFromManyRequired(TypedDict, total=False):
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class FindManyPostArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5307,11 +4957,9 @@ class FindManyPostArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class UserIncludeFromManyRequired(TypedDict, total=False):
     """Relational arguments for ManyRequired"""
     posts: Union[bool, 'FindManyPostArgsFromManyRequiredRecursive1']
-
 
 
 class UserIncludeFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5324,11 +4972,9 @@ class UserIncludeFromManyRequiredRecursive2(TypedDict, total=False):
 
     
 
-
 class UserArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class UserArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5341,7 +4987,6 @@ class UserArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyUserArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     take: int
@@ -5350,7 +4995,6 @@ class FindManyUserArgsFromManyRequired(TypedDict, total=False):
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class FindManyUserArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5373,11 +5017,9 @@ class FindManyUserArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class MIncludeFromManyRequired(TypedDict, total=False):
     """Relational arguments for ManyRequired"""
     n: Union[bool, 'FindManyNArgsFromManyRequiredRecursive1']
-
 
 
 class MIncludeFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5390,11 +5032,9 @@ class MIncludeFromManyRequiredRecursive2(TypedDict, total=False):
 
     
 
-
 class MArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     include: 'MIncludeFromMRecursive1'
-
 
 
 class MArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5407,7 +5047,6 @@ class MArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyMArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     take: int
@@ -5416,7 +5055,6 @@ class FindManyMArgsFromManyRequired(TypedDict, total=False):
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
     include: 'MIncludeFromMRecursive1'
-
 
 
 class FindManyMArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5439,11 +5077,9 @@ class FindManyMArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class NIncludeFromManyRequired(TypedDict, total=False):
     """Relational arguments for ManyRequired"""
     m: Union[bool, 'FindManyMArgsFromManyRequiredRecursive1']
-
 
 
 class NIncludeFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5456,11 +5092,9 @@ class NIncludeFromManyRequiredRecursive2(TypedDict, total=False):
 
     
 
-
 class NArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     include: 'NIncludeFromNRecursive1'
-
 
 
 class NArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5473,7 +5107,6 @@ class NArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyNArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     take: int
@@ -5482,7 +5115,6 @@ class FindManyNArgsFromManyRequired(TypedDict, total=False):
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
     include: 'NIncludeFromNRecursive1'
-
 
 
 class FindManyNArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5505,11 +5137,9 @@ class FindManyNArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class OneOptionalIncludeFromManyRequired(TypedDict, total=False):
     """Relational arguments for ManyRequired"""
     many: Union[bool, 'FindManyManyRequiredArgsFromManyRequiredRecursive1']
-
 
 
 class OneOptionalIncludeFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5522,11 +5152,9 @@ class OneOptionalIncludeFromManyRequiredRecursive2(TypedDict, total=False):
 
     
 
-
 class OneOptionalArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class OneOptionalArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5539,7 +5167,6 @@ class OneOptionalArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyOneOptionalArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     take: int
@@ -5548,7 +5175,6 @@ class FindManyOneOptionalArgsFromManyRequired(TypedDict, total=False):
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class FindManyOneOptionalArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5571,11 +5197,9 @@ class FindManyOneOptionalArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class ManyRequiredIncludeFromManyRequired(TypedDict, total=False):
     """Relational arguments for ManyRequired"""
     one: Union[bool, 'OneOptionalArgsFromManyRequiredRecursive1']
-
 
 
 class ManyRequiredIncludeFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5588,11 +5212,9 @@ class ManyRequiredIncludeFromManyRequiredRecursive2(TypedDict, total=False):
 
     
 
-
 class ManyRequiredArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class ManyRequiredArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5605,7 +5227,6 @@ class ManyRequiredArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyManyRequiredArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     take: int
@@ -5614,7 +5235,6 @@ class FindManyManyRequiredArgsFromManyRequired(TypedDict, total=False):
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class FindManyManyRequiredArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5637,10 +5257,8 @@ class FindManyManyRequiredArgsFromManyRequiredRecursive2(TypedDict, total=False)
     
     
 
-
 class AIncludeFromManyRequired(TypedDict, total=False):
     """Relational arguments for ManyRequired"""
-
 
 
 class AIncludeFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5652,11 +5270,9 @@ class AIncludeFromManyRequiredRecursive2(TypedDict, total=False):
 
     
 
-
 class AArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     include: 'AIncludeFromARecursive1'
-
 
 
 class AArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5669,7 +5285,6 @@ class AArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyAArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     take: int
@@ -5678,7 +5293,6 @@ class FindManyAArgsFromManyRequired(TypedDict, total=False):
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
     include: 'AIncludeFromARecursive1'
-
 
 
 class FindManyAArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5701,10 +5315,8 @@ class FindManyAArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class BIncludeFromManyRequired(TypedDict, total=False):
     """Relational arguments for ManyRequired"""
-
 
 
 class BIncludeFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5716,11 +5328,9 @@ class BIncludeFromManyRequiredRecursive2(TypedDict, total=False):
 
     
 
-
 class BArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     include: 'BIncludeFromBRecursive1'
-
 
 
 class BArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5733,7 +5343,6 @@ class BArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyBArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     take: int
@@ -5742,7 +5351,6 @@ class FindManyBArgsFromManyRequired(TypedDict, total=False):
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
     include: 'BIncludeFromBRecursive1'
-
 
 
 class FindManyBArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5765,10 +5373,8 @@ class FindManyBArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class CIncludeFromManyRequired(TypedDict, total=False):
     """Relational arguments for ManyRequired"""
-
 
 
 class CIncludeFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5780,11 +5386,9 @@ class CIncludeFromManyRequiredRecursive2(TypedDict, total=False):
 
     
 
-
 class CArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     include: 'CIncludeFromCRecursive1'
-
 
 
 class CArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5797,7 +5401,6 @@ class CArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyCArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     take: int
@@ -5806,7 +5409,6 @@ class FindManyCArgsFromManyRequired(TypedDict, total=False):
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
     include: 'CIncludeFromCRecursive1'
-
 
 
 class FindManyCArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5829,10 +5431,8 @@ class FindManyCArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class DIncludeFromManyRequired(TypedDict, total=False):
     """Relational arguments for ManyRequired"""
-
 
 
 class DIncludeFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5844,11 +5444,9 @@ class DIncludeFromManyRequiredRecursive2(TypedDict, total=False):
 
     
 
-
 class DArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     include: 'DIncludeFromDRecursive1'
-
 
 
 class DArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5861,7 +5459,6 @@ class DArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyDArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     take: int
@@ -5870,7 +5467,6 @@ class FindManyDArgsFromManyRequired(TypedDict, total=False):
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
     include: 'DIncludeFromDRecursive1'
-
 
 
 class FindManyDArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5893,10 +5489,8 @@ class FindManyDArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class EIncludeFromManyRequired(TypedDict, total=False):
     """Relational arguments for ManyRequired"""
-
 
 
 class EIncludeFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5908,11 +5502,9 @@ class EIncludeFromManyRequiredRecursive2(TypedDict, total=False):
 
     
 
-
 class EArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     include: 'EIncludeFromERecursive1'
-
 
 
 class EArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5925,7 +5517,6 @@ class EArgsFromManyRequiredRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyEArgsFromManyRequired(TypedDict, total=False):
     """Arguments for ManyRequired"""
     take: int
@@ -5934,7 +5525,6 @@ class FindManyEArgsFromManyRequired(TypedDict, total=False):
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
     include: 'EIncludeFromERecursive1'
-
 
 
 class FindManyEArgsFromManyRequiredRecursive1(TypedDict, total=False):
@@ -5964,7 +5554,6 @@ FindFirstManyRequiredArgs = FindManyManyRequiredArgsFromManyRequired
 # TODO: support relationships here
     
 
-
 class ManyRequiredWhereInput(TypedDict, total=False):
     """ManyRequired arguments for searching"""
     id: Union[int, 'types.IntFilter']
@@ -5983,7 +5572,6 @@ class ManyRequiredWhereInput(TypedDict, total=False):
     AND: List['ManyRequiredWhereInputRecursive1']
     OR: List['ManyRequiredWhereInputRecursive1']
     NOT: List['ManyRequiredWhereInputRecursive1']
-
 
 
 class ManyRequiredWhereInputRecursive1(TypedDict, total=False):
@@ -6183,6 +5771,7 @@ class AOrderByInput(TypedDict, total=False):
 
 
 # recursive A types
+# TODO: cleanup these types
 
 
 class AInclude(TypedDict, total=False):
@@ -6191,11 +5780,9 @@ class AInclude(TypedDict, total=False):
 
     
 
-
 class PostIncludeFromA(TypedDict, total=False):
     """Relational arguments for A"""
     author: Union[bool, 'UserArgsFromARecursive1']
-
 
 
 class PostIncludeFromARecursive1(TypedDict, total=False):
@@ -6208,11 +5795,9 @@ class PostIncludeFromARecursive2(TypedDict, total=False):
 
     
 
-
 class PostArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class PostArgsFromARecursive1(TypedDict, total=False):
@@ -6225,7 +5810,6 @@ class PostArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyPostArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     take: int
@@ -6234,7 +5818,6 @@ class FindManyPostArgsFromA(TypedDict, total=False):
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class FindManyPostArgsFromARecursive1(TypedDict, total=False):
@@ -6257,11 +5840,9 @@ class FindManyPostArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class UserIncludeFromA(TypedDict, total=False):
     """Relational arguments for A"""
     posts: Union[bool, 'FindManyPostArgsFromARecursive1']
-
 
 
 class UserIncludeFromARecursive1(TypedDict, total=False):
@@ -6274,11 +5855,9 @@ class UserIncludeFromARecursive2(TypedDict, total=False):
 
     
 
-
 class UserArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class UserArgsFromARecursive1(TypedDict, total=False):
@@ -6291,7 +5870,6 @@ class UserArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyUserArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     take: int
@@ -6300,7 +5878,6 @@ class FindManyUserArgsFromA(TypedDict, total=False):
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class FindManyUserArgsFromARecursive1(TypedDict, total=False):
@@ -6323,11 +5900,9 @@ class FindManyUserArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class MIncludeFromA(TypedDict, total=False):
     """Relational arguments for A"""
     n: Union[bool, 'FindManyNArgsFromARecursive1']
-
 
 
 class MIncludeFromARecursive1(TypedDict, total=False):
@@ -6340,11 +5915,9 @@ class MIncludeFromARecursive2(TypedDict, total=False):
 
     
 
-
 class MArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     include: 'MIncludeFromMRecursive1'
-
 
 
 class MArgsFromARecursive1(TypedDict, total=False):
@@ -6357,7 +5930,6 @@ class MArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyMArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     take: int
@@ -6366,7 +5938,6 @@ class FindManyMArgsFromA(TypedDict, total=False):
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
     include: 'MIncludeFromMRecursive1'
-
 
 
 class FindManyMArgsFromARecursive1(TypedDict, total=False):
@@ -6389,11 +5960,9 @@ class FindManyMArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class NIncludeFromA(TypedDict, total=False):
     """Relational arguments for A"""
     m: Union[bool, 'FindManyMArgsFromARecursive1']
-
 
 
 class NIncludeFromARecursive1(TypedDict, total=False):
@@ -6406,11 +5975,9 @@ class NIncludeFromARecursive2(TypedDict, total=False):
 
     
 
-
 class NArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     include: 'NIncludeFromNRecursive1'
-
 
 
 class NArgsFromARecursive1(TypedDict, total=False):
@@ -6423,7 +5990,6 @@ class NArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyNArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     take: int
@@ -6432,7 +5998,6 @@ class FindManyNArgsFromA(TypedDict, total=False):
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
     include: 'NIncludeFromNRecursive1'
-
 
 
 class FindManyNArgsFromARecursive1(TypedDict, total=False):
@@ -6455,11 +6020,9 @@ class FindManyNArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class OneOptionalIncludeFromA(TypedDict, total=False):
     """Relational arguments for A"""
     many: Union[bool, 'FindManyManyRequiredArgsFromARecursive1']
-
 
 
 class OneOptionalIncludeFromARecursive1(TypedDict, total=False):
@@ -6472,11 +6035,9 @@ class OneOptionalIncludeFromARecursive2(TypedDict, total=False):
 
     
 
-
 class OneOptionalArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class OneOptionalArgsFromARecursive1(TypedDict, total=False):
@@ -6489,7 +6050,6 @@ class OneOptionalArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyOneOptionalArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     take: int
@@ -6498,7 +6058,6 @@ class FindManyOneOptionalArgsFromA(TypedDict, total=False):
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class FindManyOneOptionalArgsFromARecursive1(TypedDict, total=False):
@@ -6521,11 +6080,9 @@ class FindManyOneOptionalArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class ManyRequiredIncludeFromA(TypedDict, total=False):
     """Relational arguments for A"""
     one: Union[bool, 'OneOptionalArgsFromARecursive1']
-
 
 
 class ManyRequiredIncludeFromARecursive1(TypedDict, total=False):
@@ -6538,11 +6095,9 @@ class ManyRequiredIncludeFromARecursive2(TypedDict, total=False):
 
     
 
-
 class ManyRequiredArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class ManyRequiredArgsFromARecursive1(TypedDict, total=False):
@@ -6555,7 +6110,6 @@ class ManyRequiredArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyManyRequiredArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     take: int
@@ -6564,7 +6118,6 @@ class FindManyManyRequiredArgsFromA(TypedDict, total=False):
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class FindManyManyRequiredArgsFromARecursive1(TypedDict, total=False):
@@ -6587,10 +6140,8 @@ class FindManyManyRequiredArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class AIncludeFromA(TypedDict, total=False):
     """Relational arguments for A"""
-
 
 
 class AIncludeFromARecursive1(TypedDict, total=False):
@@ -6602,11 +6153,9 @@ class AIncludeFromARecursive2(TypedDict, total=False):
 
     
 
-
 class AArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     include: 'AIncludeFromARecursive1'
-
 
 
 class AArgsFromARecursive1(TypedDict, total=False):
@@ -6619,7 +6168,6 @@ class AArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyAArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     take: int
@@ -6628,7 +6176,6 @@ class FindManyAArgsFromA(TypedDict, total=False):
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
     include: 'AIncludeFromARecursive1'
-
 
 
 class FindManyAArgsFromARecursive1(TypedDict, total=False):
@@ -6651,10 +6198,8 @@ class FindManyAArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class BIncludeFromA(TypedDict, total=False):
     """Relational arguments for A"""
-
 
 
 class BIncludeFromARecursive1(TypedDict, total=False):
@@ -6666,11 +6211,9 @@ class BIncludeFromARecursive2(TypedDict, total=False):
 
     
 
-
 class BArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     include: 'BIncludeFromBRecursive1'
-
 
 
 class BArgsFromARecursive1(TypedDict, total=False):
@@ -6683,7 +6226,6 @@ class BArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyBArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     take: int
@@ -6692,7 +6234,6 @@ class FindManyBArgsFromA(TypedDict, total=False):
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
     include: 'BIncludeFromBRecursive1'
-
 
 
 class FindManyBArgsFromARecursive1(TypedDict, total=False):
@@ -6715,10 +6256,8 @@ class FindManyBArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class CIncludeFromA(TypedDict, total=False):
     """Relational arguments for A"""
-
 
 
 class CIncludeFromARecursive1(TypedDict, total=False):
@@ -6730,11 +6269,9 @@ class CIncludeFromARecursive2(TypedDict, total=False):
 
     
 
-
 class CArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     include: 'CIncludeFromCRecursive1'
-
 
 
 class CArgsFromARecursive1(TypedDict, total=False):
@@ -6747,7 +6284,6 @@ class CArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyCArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     take: int
@@ -6756,7 +6292,6 @@ class FindManyCArgsFromA(TypedDict, total=False):
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
     include: 'CIncludeFromCRecursive1'
-
 
 
 class FindManyCArgsFromARecursive1(TypedDict, total=False):
@@ -6779,10 +6314,8 @@ class FindManyCArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class DIncludeFromA(TypedDict, total=False):
     """Relational arguments for A"""
-
 
 
 class DIncludeFromARecursive1(TypedDict, total=False):
@@ -6794,11 +6327,9 @@ class DIncludeFromARecursive2(TypedDict, total=False):
 
     
 
-
 class DArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     include: 'DIncludeFromDRecursive1'
-
 
 
 class DArgsFromARecursive1(TypedDict, total=False):
@@ -6811,7 +6342,6 @@ class DArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyDArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     take: int
@@ -6820,7 +6350,6 @@ class FindManyDArgsFromA(TypedDict, total=False):
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
     include: 'DIncludeFromDRecursive1'
-
 
 
 class FindManyDArgsFromARecursive1(TypedDict, total=False):
@@ -6843,10 +6372,8 @@ class FindManyDArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class EIncludeFromA(TypedDict, total=False):
     """Relational arguments for A"""
-
 
 
 class EIncludeFromARecursive1(TypedDict, total=False):
@@ -6858,11 +6385,9 @@ class EIncludeFromARecursive2(TypedDict, total=False):
 
     
 
-
 class EArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     include: 'EIncludeFromERecursive1'
-
 
 
 class EArgsFromARecursive1(TypedDict, total=False):
@@ -6875,7 +6400,6 @@ class EArgsFromARecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyEArgsFromA(TypedDict, total=False):
     """Arguments for A"""
     take: int
@@ -6884,7 +6408,6 @@ class FindManyEArgsFromA(TypedDict, total=False):
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
     include: 'EIncludeFromERecursive1'
-
 
 
 class FindManyEArgsFromARecursive1(TypedDict, total=False):
@@ -6914,7 +6437,6 @@ FindFirstAArgs = FindManyAArgsFromA
 # TODO: support relationships here
     
 
-
 class AWhereInput(TypedDict, total=False):
     """A arguments for searching"""
     id: Union[str, 'types.StringFilter']
@@ -6928,7 +6450,6 @@ class AWhereInput(TypedDict, total=False):
     AND: List['AWhereInputRecursive1']
     OR: List['AWhereInputRecursive1']
     NOT: List['AWhereInputRecursive1']
-
 
 
 class AWhereInputRecursive1(TypedDict, total=False):
@@ -7078,6 +6599,7 @@ class BOrderByInput(TypedDict, total=False):
 
 
 # recursive B types
+# TODO: cleanup these types
 
 
 class BInclude(TypedDict, total=False):
@@ -7086,11 +6608,9 @@ class BInclude(TypedDict, total=False):
 
     
 
-
 class PostIncludeFromB(TypedDict, total=False):
     """Relational arguments for B"""
     author: Union[bool, 'UserArgsFromBRecursive1']
-
 
 
 class PostIncludeFromBRecursive1(TypedDict, total=False):
@@ -7103,11 +6623,9 @@ class PostIncludeFromBRecursive2(TypedDict, total=False):
 
     
 
-
 class PostArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class PostArgsFromBRecursive1(TypedDict, total=False):
@@ -7120,7 +6638,6 @@ class PostArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyPostArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     take: int
@@ -7129,7 +6646,6 @@ class FindManyPostArgsFromB(TypedDict, total=False):
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class FindManyPostArgsFromBRecursive1(TypedDict, total=False):
@@ -7152,11 +6668,9 @@ class FindManyPostArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class UserIncludeFromB(TypedDict, total=False):
     """Relational arguments for B"""
     posts: Union[bool, 'FindManyPostArgsFromBRecursive1']
-
 
 
 class UserIncludeFromBRecursive1(TypedDict, total=False):
@@ -7169,11 +6683,9 @@ class UserIncludeFromBRecursive2(TypedDict, total=False):
 
     
 
-
 class UserArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class UserArgsFromBRecursive1(TypedDict, total=False):
@@ -7186,7 +6698,6 @@ class UserArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyUserArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     take: int
@@ -7195,7 +6706,6 @@ class FindManyUserArgsFromB(TypedDict, total=False):
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class FindManyUserArgsFromBRecursive1(TypedDict, total=False):
@@ -7218,11 +6728,9 @@ class FindManyUserArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class MIncludeFromB(TypedDict, total=False):
     """Relational arguments for B"""
     n: Union[bool, 'FindManyNArgsFromBRecursive1']
-
 
 
 class MIncludeFromBRecursive1(TypedDict, total=False):
@@ -7235,11 +6743,9 @@ class MIncludeFromBRecursive2(TypedDict, total=False):
 
     
 
-
 class MArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     include: 'MIncludeFromMRecursive1'
-
 
 
 class MArgsFromBRecursive1(TypedDict, total=False):
@@ -7252,7 +6758,6 @@ class MArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyMArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     take: int
@@ -7261,7 +6766,6 @@ class FindManyMArgsFromB(TypedDict, total=False):
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
     include: 'MIncludeFromMRecursive1'
-
 
 
 class FindManyMArgsFromBRecursive1(TypedDict, total=False):
@@ -7284,11 +6788,9 @@ class FindManyMArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class NIncludeFromB(TypedDict, total=False):
     """Relational arguments for B"""
     m: Union[bool, 'FindManyMArgsFromBRecursive1']
-
 
 
 class NIncludeFromBRecursive1(TypedDict, total=False):
@@ -7301,11 +6803,9 @@ class NIncludeFromBRecursive2(TypedDict, total=False):
 
     
 
-
 class NArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     include: 'NIncludeFromNRecursive1'
-
 
 
 class NArgsFromBRecursive1(TypedDict, total=False):
@@ -7318,7 +6818,6 @@ class NArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyNArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     take: int
@@ -7327,7 +6826,6 @@ class FindManyNArgsFromB(TypedDict, total=False):
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
     include: 'NIncludeFromNRecursive1'
-
 
 
 class FindManyNArgsFromBRecursive1(TypedDict, total=False):
@@ -7350,11 +6848,9 @@ class FindManyNArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class OneOptionalIncludeFromB(TypedDict, total=False):
     """Relational arguments for B"""
     many: Union[bool, 'FindManyManyRequiredArgsFromBRecursive1']
-
 
 
 class OneOptionalIncludeFromBRecursive1(TypedDict, total=False):
@@ -7367,11 +6863,9 @@ class OneOptionalIncludeFromBRecursive2(TypedDict, total=False):
 
     
 
-
 class OneOptionalArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class OneOptionalArgsFromBRecursive1(TypedDict, total=False):
@@ -7384,7 +6878,6 @@ class OneOptionalArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyOneOptionalArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     take: int
@@ -7393,7 +6886,6 @@ class FindManyOneOptionalArgsFromB(TypedDict, total=False):
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class FindManyOneOptionalArgsFromBRecursive1(TypedDict, total=False):
@@ -7416,11 +6908,9 @@ class FindManyOneOptionalArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class ManyRequiredIncludeFromB(TypedDict, total=False):
     """Relational arguments for B"""
     one: Union[bool, 'OneOptionalArgsFromBRecursive1']
-
 
 
 class ManyRequiredIncludeFromBRecursive1(TypedDict, total=False):
@@ -7433,11 +6923,9 @@ class ManyRequiredIncludeFromBRecursive2(TypedDict, total=False):
 
     
 
-
 class ManyRequiredArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class ManyRequiredArgsFromBRecursive1(TypedDict, total=False):
@@ -7450,7 +6938,6 @@ class ManyRequiredArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyManyRequiredArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     take: int
@@ -7459,7 +6946,6 @@ class FindManyManyRequiredArgsFromB(TypedDict, total=False):
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class FindManyManyRequiredArgsFromBRecursive1(TypedDict, total=False):
@@ -7482,10 +6968,8 @@ class FindManyManyRequiredArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class AIncludeFromB(TypedDict, total=False):
     """Relational arguments for B"""
-
 
 
 class AIncludeFromBRecursive1(TypedDict, total=False):
@@ -7497,11 +6981,9 @@ class AIncludeFromBRecursive2(TypedDict, total=False):
 
     
 
-
 class AArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     include: 'AIncludeFromARecursive1'
-
 
 
 class AArgsFromBRecursive1(TypedDict, total=False):
@@ -7514,7 +6996,6 @@ class AArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyAArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     take: int
@@ -7523,7 +7004,6 @@ class FindManyAArgsFromB(TypedDict, total=False):
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
     include: 'AIncludeFromARecursive1'
-
 
 
 class FindManyAArgsFromBRecursive1(TypedDict, total=False):
@@ -7546,10 +7026,8 @@ class FindManyAArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class BIncludeFromB(TypedDict, total=False):
     """Relational arguments for B"""
-
 
 
 class BIncludeFromBRecursive1(TypedDict, total=False):
@@ -7561,11 +7039,9 @@ class BIncludeFromBRecursive2(TypedDict, total=False):
 
     
 
-
 class BArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     include: 'BIncludeFromBRecursive1'
-
 
 
 class BArgsFromBRecursive1(TypedDict, total=False):
@@ -7578,7 +7054,6 @@ class BArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyBArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     take: int
@@ -7587,7 +7062,6 @@ class FindManyBArgsFromB(TypedDict, total=False):
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
     include: 'BIncludeFromBRecursive1'
-
 
 
 class FindManyBArgsFromBRecursive1(TypedDict, total=False):
@@ -7610,10 +7084,8 @@ class FindManyBArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class CIncludeFromB(TypedDict, total=False):
     """Relational arguments for B"""
-
 
 
 class CIncludeFromBRecursive1(TypedDict, total=False):
@@ -7625,11 +7097,9 @@ class CIncludeFromBRecursive2(TypedDict, total=False):
 
     
 
-
 class CArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     include: 'CIncludeFromCRecursive1'
-
 
 
 class CArgsFromBRecursive1(TypedDict, total=False):
@@ -7642,7 +7112,6 @@ class CArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyCArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     take: int
@@ -7651,7 +7120,6 @@ class FindManyCArgsFromB(TypedDict, total=False):
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
     include: 'CIncludeFromCRecursive1'
-
 
 
 class FindManyCArgsFromBRecursive1(TypedDict, total=False):
@@ -7674,10 +7142,8 @@ class FindManyCArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class DIncludeFromB(TypedDict, total=False):
     """Relational arguments for B"""
-
 
 
 class DIncludeFromBRecursive1(TypedDict, total=False):
@@ -7689,11 +7155,9 @@ class DIncludeFromBRecursive2(TypedDict, total=False):
 
     
 
-
 class DArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     include: 'DIncludeFromDRecursive1'
-
 
 
 class DArgsFromBRecursive1(TypedDict, total=False):
@@ -7706,7 +7170,6 @@ class DArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyDArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     take: int
@@ -7715,7 +7178,6 @@ class FindManyDArgsFromB(TypedDict, total=False):
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
     include: 'DIncludeFromDRecursive1'
-
 
 
 class FindManyDArgsFromBRecursive1(TypedDict, total=False):
@@ -7738,10 +7200,8 @@ class FindManyDArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class EIncludeFromB(TypedDict, total=False):
     """Relational arguments for B"""
-
 
 
 class EIncludeFromBRecursive1(TypedDict, total=False):
@@ -7753,11 +7213,9 @@ class EIncludeFromBRecursive2(TypedDict, total=False):
 
     
 
-
 class EArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     include: 'EIncludeFromERecursive1'
-
 
 
 class EArgsFromBRecursive1(TypedDict, total=False):
@@ -7770,7 +7228,6 @@ class EArgsFromBRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyEArgsFromB(TypedDict, total=False):
     """Arguments for B"""
     take: int
@@ -7779,7 +7236,6 @@ class FindManyEArgsFromB(TypedDict, total=False):
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
     include: 'EIncludeFromERecursive1'
-
 
 
 class FindManyEArgsFromBRecursive1(TypedDict, total=False):
@@ -7809,7 +7265,6 @@ FindFirstBArgs = FindManyBArgsFromB
 # TODO: support relationships here
     
 
-
 class BWhereInput(TypedDict, total=False):
     """B arguments for searching"""
     id: Union[str, 'types.StringFilter']
@@ -7819,7 +7274,6 @@ class BWhereInput(TypedDict, total=False):
     AND: List['BWhereInputRecursive1']
     OR: List['BWhereInputRecursive1']
     NOT: List['BWhereInputRecursive1']
-
 
 
 class BWhereInputRecursive1(TypedDict, total=False):
@@ -7965,6 +7419,7 @@ class COrderByInput(TypedDict, total=False):
 
 
 # recursive C types
+# TODO: cleanup these types
 
 
 class CInclude(TypedDict, total=False):
@@ -7973,11 +7428,9 @@ class CInclude(TypedDict, total=False):
 
     
 
-
 class PostIncludeFromC(TypedDict, total=False):
     """Relational arguments for C"""
     author: Union[bool, 'UserArgsFromCRecursive1']
-
 
 
 class PostIncludeFromCRecursive1(TypedDict, total=False):
@@ -7990,11 +7443,9 @@ class PostIncludeFromCRecursive2(TypedDict, total=False):
 
     
 
-
 class PostArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class PostArgsFromCRecursive1(TypedDict, total=False):
@@ -8007,7 +7458,6 @@ class PostArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyPostArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     take: int
@@ -8016,7 +7466,6 @@ class FindManyPostArgsFromC(TypedDict, total=False):
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class FindManyPostArgsFromCRecursive1(TypedDict, total=False):
@@ -8039,11 +7488,9 @@ class FindManyPostArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class UserIncludeFromC(TypedDict, total=False):
     """Relational arguments for C"""
     posts: Union[bool, 'FindManyPostArgsFromCRecursive1']
-
 
 
 class UserIncludeFromCRecursive1(TypedDict, total=False):
@@ -8056,11 +7503,9 @@ class UserIncludeFromCRecursive2(TypedDict, total=False):
 
     
 
-
 class UserArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class UserArgsFromCRecursive1(TypedDict, total=False):
@@ -8073,7 +7518,6 @@ class UserArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyUserArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     take: int
@@ -8082,7 +7526,6 @@ class FindManyUserArgsFromC(TypedDict, total=False):
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class FindManyUserArgsFromCRecursive1(TypedDict, total=False):
@@ -8105,11 +7548,9 @@ class FindManyUserArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class MIncludeFromC(TypedDict, total=False):
     """Relational arguments for C"""
     n: Union[bool, 'FindManyNArgsFromCRecursive1']
-
 
 
 class MIncludeFromCRecursive1(TypedDict, total=False):
@@ -8122,11 +7563,9 @@ class MIncludeFromCRecursive2(TypedDict, total=False):
 
     
 
-
 class MArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     include: 'MIncludeFromMRecursive1'
-
 
 
 class MArgsFromCRecursive1(TypedDict, total=False):
@@ -8139,7 +7578,6 @@ class MArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyMArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     take: int
@@ -8148,7 +7586,6 @@ class FindManyMArgsFromC(TypedDict, total=False):
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
     include: 'MIncludeFromMRecursive1'
-
 
 
 class FindManyMArgsFromCRecursive1(TypedDict, total=False):
@@ -8171,11 +7608,9 @@ class FindManyMArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class NIncludeFromC(TypedDict, total=False):
     """Relational arguments for C"""
     m: Union[bool, 'FindManyMArgsFromCRecursive1']
-
 
 
 class NIncludeFromCRecursive1(TypedDict, total=False):
@@ -8188,11 +7623,9 @@ class NIncludeFromCRecursive2(TypedDict, total=False):
 
     
 
-
 class NArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     include: 'NIncludeFromNRecursive1'
-
 
 
 class NArgsFromCRecursive1(TypedDict, total=False):
@@ -8205,7 +7638,6 @@ class NArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyNArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     take: int
@@ -8214,7 +7646,6 @@ class FindManyNArgsFromC(TypedDict, total=False):
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
     include: 'NIncludeFromNRecursive1'
-
 
 
 class FindManyNArgsFromCRecursive1(TypedDict, total=False):
@@ -8237,11 +7668,9 @@ class FindManyNArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class OneOptionalIncludeFromC(TypedDict, total=False):
     """Relational arguments for C"""
     many: Union[bool, 'FindManyManyRequiredArgsFromCRecursive1']
-
 
 
 class OneOptionalIncludeFromCRecursive1(TypedDict, total=False):
@@ -8254,11 +7683,9 @@ class OneOptionalIncludeFromCRecursive2(TypedDict, total=False):
 
     
 
-
 class OneOptionalArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class OneOptionalArgsFromCRecursive1(TypedDict, total=False):
@@ -8271,7 +7698,6 @@ class OneOptionalArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyOneOptionalArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     take: int
@@ -8280,7 +7706,6 @@ class FindManyOneOptionalArgsFromC(TypedDict, total=False):
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class FindManyOneOptionalArgsFromCRecursive1(TypedDict, total=False):
@@ -8303,11 +7728,9 @@ class FindManyOneOptionalArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class ManyRequiredIncludeFromC(TypedDict, total=False):
     """Relational arguments for C"""
     one: Union[bool, 'OneOptionalArgsFromCRecursive1']
-
 
 
 class ManyRequiredIncludeFromCRecursive1(TypedDict, total=False):
@@ -8320,11 +7743,9 @@ class ManyRequiredIncludeFromCRecursive2(TypedDict, total=False):
 
     
 
-
 class ManyRequiredArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class ManyRequiredArgsFromCRecursive1(TypedDict, total=False):
@@ -8337,7 +7758,6 @@ class ManyRequiredArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyManyRequiredArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     take: int
@@ -8346,7 +7766,6 @@ class FindManyManyRequiredArgsFromC(TypedDict, total=False):
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class FindManyManyRequiredArgsFromCRecursive1(TypedDict, total=False):
@@ -8369,10 +7788,8 @@ class FindManyManyRequiredArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class AIncludeFromC(TypedDict, total=False):
     """Relational arguments for C"""
-
 
 
 class AIncludeFromCRecursive1(TypedDict, total=False):
@@ -8384,11 +7801,9 @@ class AIncludeFromCRecursive2(TypedDict, total=False):
 
     
 
-
 class AArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     include: 'AIncludeFromARecursive1'
-
 
 
 class AArgsFromCRecursive1(TypedDict, total=False):
@@ -8401,7 +7816,6 @@ class AArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyAArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     take: int
@@ -8410,7 +7824,6 @@ class FindManyAArgsFromC(TypedDict, total=False):
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
     include: 'AIncludeFromARecursive1'
-
 
 
 class FindManyAArgsFromCRecursive1(TypedDict, total=False):
@@ -8433,10 +7846,8 @@ class FindManyAArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class BIncludeFromC(TypedDict, total=False):
     """Relational arguments for C"""
-
 
 
 class BIncludeFromCRecursive1(TypedDict, total=False):
@@ -8448,11 +7859,9 @@ class BIncludeFromCRecursive2(TypedDict, total=False):
 
     
 
-
 class BArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     include: 'BIncludeFromBRecursive1'
-
 
 
 class BArgsFromCRecursive1(TypedDict, total=False):
@@ -8465,7 +7874,6 @@ class BArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyBArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     take: int
@@ -8474,7 +7882,6 @@ class FindManyBArgsFromC(TypedDict, total=False):
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
     include: 'BIncludeFromBRecursive1'
-
 
 
 class FindManyBArgsFromCRecursive1(TypedDict, total=False):
@@ -8497,10 +7904,8 @@ class FindManyBArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class CIncludeFromC(TypedDict, total=False):
     """Relational arguments for C"""
-
 
 
 class CIncludeFromCRecursive1(TypedDict, total=False):
@@ -8512,11 +7917,9 @@ class CIncludeFromCRecursive2(TypedDict, total=False):
 
     
 
-
 class CArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     include: 'CIncludeFromCRecursive1'
-
 
 
 class CArgsFromCRecursive1(TypedDict, total=False):
@@ -8529,7 +7932,6 @@ class CArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyCArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     take: int
@@ -8538,7 +7940,6 @@ class FindManyCArgsFromC(TypedDict, total=False):
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
     include: 'CIncludeFromCRecursive1'
-
 
 
 class FindManyCArgsFromCRecursive1(TypedDict, total=False):
@@ -8561,10 +7962,8 @@ class FindManyCArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class DIncludeFromC(TypedDict, total=False):
     """Relational arguments for C"""
-
 
 
 class DIncludeFromCRecursive1(TypedDict, total=False):
@@ -8576,11 +7975,9 @@ class DIncludeFromCRecursive2(TypedDict, total=False):
 
     
 
-
 class DArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     include: 'DIncludeFromDRecursive1'
-
 
 
 class DArgsFromCRecursive1(TypedDict, total=False):
@@ -8593,7 +7990,6 @@ class DArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyDArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     take: int
@@ -8602,7 +7998,6 @@ class FindManyDArgsFromC(TypedDict, total=False):
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
     include: 'DIncludeFromDRecursive1'
-
 
 
 class FindManyDArgsFromCRecursive1(TypedDict, total=False):
@@ -8625,10 +8020,8 @@ class FindManyDArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class EIncludeFromC(TypedDict, total=False):
     """Relational arguments for C"""
-
 
 
 class EIncludeFromCRecursive1(TypedDict, total=False):
@@ -8640,11 +8033,9 @@ class EIncludeFromCRecursive2(TypedDict, total=False):
 
     
 
-
 class EArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     include: 'EIncludeFromERecursive1'
-
 
 
 class EArgsFromCRecursive1(TypedDict, total=False):
@@ -8657,7 +8048,6 @@ class EArgsFromCRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyEArgsFromC(TypedDict, total=False):
     """Arguments for C"""
     take: int
@@ -8666,7 +8056,6 @@ class FindManyEArgsFromC(TypedDict, total=False):
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
     include: 'EIncludeFromERecursive1'
-
 
 
 class FindManyEArgsFromCRecursive1(TypedDict, total=False):
@@ -8696,7 +8085,6 @@ FindFirstCArgs = FindManyCArgsFromC
 # TODO: support relationships here
     
 
-
 class CWhereInput(TypedDict, total=False):
     """C arguments for searching"""
     id: Union[str, 'types.StringFilter']
@@ -8710,7 +8098,6 @@ class CWhereInput(TypedDict, total=False):
     AND: List['CWhereInputRecursive1']
     OR: List['CWhereInputRecursive1']
     NOT: List['CWhereInputRecursive1']
-
 
 
 class CWhereInputRecursive1(TypedDict, total=False):
@@ -8850,6 +8237,7 @@ class DOrderByInput(TypedDict, total=False):
 
 
 # recursive D types
+# TODO: cleanup these types
 
 
 class DInclude(TypedDict, total=False):
@@ -8858,11 +8246,9 @@ class DInclude(TypedDict, total=False):
 
     
 
-
 class PostIncludeFromD(TypedDict, total=False):
     """Relational arguments for D"""
     author: Union[bool, 'UserArgsFromDRecursive1']
-
 
 
 class PostIncludeFromDRecursive1(TypedDict, total=False):
@@ -8875,11 +8261,9 @@ class PostIncludeFromDRecursive2(TypedDict, total=False):
 
     
 
-
 class PostArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class PostArgsFromDRecursive1(TypedDict, total=False):
@@ -8892,7 +8276,6 @@ class PostArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyPostArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     take: int
@@ -8901,7 +8284,6 @@ class FindManyPostArgsFromD(TypedDict, total=False):
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class FindManyPostArgsFromDRecursive1(TypedDict, total=False):
@@ -8924,11 +8306,9 @@ class FindManyPostArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class UserIncludeFromD(TypedDict, total=False):
     """Relational arguments for D"""
     posts: Union[bool, 'FindManyPostArgsFromDRecursive1']
-
 
 
 class UserIncludeFromDRecursive1(TypedDict, total=False):
@@ -8941,11 +8321,9 @@ class UserIncludeFromDRecursive2(TypedDict, total=False):
 
     
 
-
 class UserArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class UserArgsFromDRecursive1(TypedDict, total=False):
@@ -8958,7 +8336,6 @@ class UserArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyUserArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     take: int
@@ -8967,7 +8344,6 @@ class FindManyUserArgsFromD(TypedDict, total=False):
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class FindManyUserArgsFromDRecursive1(TypedDict, total=False):
@@ -8990,11 +8366,9 @@ class FindManyUserArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class MIncludeFromD(TypedDict, total=False):
     """Relational arguments for D"""
     n: Union[bool, 'FindManyNArgsFromDRecursive1']
-
 
 
 class MIncludeFromDRecursive1(TypedDict, total=False):
@@ -9007,11 +8381,9 @@ class MIncludeFromDRecursive2(TypedDict, total=False):
 
     
 
-
 class MArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     include: 'MIncludeFromMRecursive1'
-
 
 
 class MArgsFromDRecursive1(TypedDict, total=False):
@@ -9024,7 +8396,6 @@ class MArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyMArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     take: int
@@ -9033,7 +8404,6 @@ class FindManyMArgsFromD(TypedDict, total=False):
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
     include: 'MIncludeFromMRecursive1'
-
 
 
 class FindManyMArgsFromDRecursive1(TypedDict, total=False):
@@ -9056,11 +8426,9 @@ class FindManyMArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class NIncludeFromD(TypedDict, total=False):
     """Relational arguments for D"""
     m: Union[bool, 'FindManyMArgsFromDRecursive1']
-
 
 
 class NIncludeFromDRecursive1(TypedDict, total=False):
@@ -9073,11 +8441,9 @@ class NIncludeFromDRecursive2(TypedDict, total=False):
 
     
 
-
 class NArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     include: 'NIncludeFromNRecursive1'
-
 
 
 class NArgsFromDRecursive1(TypedDict, total=False):
@@ -9090,7 +8456,6 @@ class NArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyNArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     take: int
@@ -9099,7 +8464,6 @@ class FindManyNArgsFromD(TypedDict, total=False):
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
     include: 'NIncludeFromNRecursive1'
-
 
 
 class FindManyNArgsFromDRecursive1(TypedDict, total=False):
@@ -9122,11 +8486,9 @@ class FindManyNArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class OneOptionalIncludeFromD(TypedDict, total=False):
     """Relational arguments for D"""
     many: Union[bool, 'FindManyManyRequiredArgsFromDRecursive1']
-
 
 
 class OneOptionalIncludeFromDRecursive1(TypedDict, total=False):
@@ -9139,11 +8501,9 @@ class OneOptionalIncludeFromDRecursive2(TypedDict, total=False):
 
     
 
-
 class OneOptionalArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class OneOptionalArgsFromDRecursive1(TypedDict, total=False):
@@ -9156,7 +8516,6 @@ class OneOptionalArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyOneOptionalArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     take: int
@@ -9165,7 +8524,6 @@ class FindManyOneOptionalArgsFromD(TypedDict, total=False):
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class FindManyOneOptionalArgsFromDRecursive1(TypedDict, total=False):
@@ -9188,11 +8546,9 @@ class FindManyOneOptionalArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class ManyRequiredIncludeFromD(TypedDict, total=False):
     """Relational arguments for D"""
     one: Union[bool, 'OneOptionalArgsFromDRecursive1']
-
 
 
 class ManyRequiredIncludeFromDRecursive1(TypedDict, total=False):
@@ -9205,11 +8561,9 @@ class ManyRequiredIncludeFromDRecursive2(TypedDict, total=False):
 
     
 
-
 class ManyRequiredArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class ManyRequiredArgsFromDRecursive1(TypedDict, total=False):
@@ -9222,7 +8576,6 @@ class ManyRequiredArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyManyRequiredArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     take: int
@@ -9231,7 +8584,6 @@ class FindManyManyRequiredArgsFromD(TypedDict, total=False):
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class FindManyManyRequiredArgsFromDRecursive1(TypedDict, total=False):
@@ -9254,10 +8606,8 @@ class FindManyManyRequiredArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class AIncludeFromD(TypedDict, total=False):
     """Relational arguments for D"""
-
 
 
 class AIncludeFromDRecursive1(TypedDict, total=False):
@@ -9269,11 +8619,9 @@ class AIncludeFromDRecursive2(TypedDict, total=False):
 
     
 
-
 class AArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     include: 'AIncludeFromARecursive1'
-
 
 
 class AArgsFromDRecursive1(TypedDict, total=False):
@@ -9286,7 +8634,6 @@ class AArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyAArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     take: int
@@ -9295,7 +8642,6 @@ class FindManyAArgsFromD(TypedDict, total=False):
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
     include: 'AIncludeFromARecursive1'
-
 
 
 class FindManyAArgsFromDRecursive1(TypedDict, total=False):
@@ -9318,10 +8664,8 @@ class FindManyAArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class BIncludeFromD(TypedDict, total=False):
     """Relational arguments for D"""
-
 
 
 class BIncludeFromDRecursive1(TypedDict, total=False):
@@ -9333,11 +8677,9 @@ class BIncludeFromDRecursive2(TypedDict, total=False):
 
     
 
-
 class BArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     include: 'BIncludeFromBRecursive1'
-
 
 
 class BArgsFromDRecursive1(TypedDict, total=False):
@@ -9350,7 +8692,6 @@ class BArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyBArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     take: int
@@ -9359,7 +8700,6 @@ class FindManyBArgsFromD(TypedDict, total=False):
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
     include: 'BIncludeFromBRecursive1'
-
 
 
 class FindManyBArgsFromDRecursive1(TypedDict, total=False):
@@ -9382,10 +8722,8 @@ class FindManyBArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class CIncludeFromD(TypedDict, total=False):
     """Relational arguments for D"""
-
 
 
 class CIncludeFromDRecursive1(TypedDict, total=False):
@@ -9397,11 +8735,9 @@ class CIncludeFromDRecursive2(TypedDict, total=False):
 
     
 
-
 class CArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     include: 'CIncludeFromCRecursive1'
-
 
 
 class CArgsFromDRecursive1(TypedDict, total=False):
@@ -9414,7 +8750,6 @@ class CArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyCArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     take: int
@@ -9423,7 +8758,6 @@ class FindManyCArgsFromD(TypedDict, total=False):
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
     include: 'CIncludeFromCRecursive1'
-
 
 
 class FindManyCArgsFromDRecursive1(TypedDict, total=False):
@@ -9446,10 +8780,8 @@ class FindManyCArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class DIncludeFromD(TypedDict, total=False):
     """Relational arguments for D"""
-
 
 
 class DIncludeFromDRecursive1(TypedDict, total=False):
@@ -9461,11 +8793,9 @@ class DIncludeFromDRecursive2(TypedDict, total=False):
 
     
 
-
 class DArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     include: 'DIncludeFromDRecursive1'
-
 
 
 class DArgsFromDRecursive1(TypedDict, total=False):
@@ -9478,7 +8808,6 @@ class DArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyDArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     take: int
@@ -9487,7 +8816,6 @@ class FindManyDArgsFromD(TypedDict, total=False):
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
     include: 'DIncludeFromDRecursive1'
-
 
 
 class FindManyDArgsFromDRecursive1(TypedDict, total=False):
@@ -9510,10 +8838,8 @@ class FindManyDArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class EIncludeFromD(TypedDict, total=False):
     """Relational arguments for D"""
-
 
 
 class EIncludeFromDRecursive1(TypedDict, total=False):
@@ -9525,11 +8851,9 @@ class EIncludeFromDRecursive2(TypedDict, total=False):
 
     
 
-
 class EArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     include: 'EIncludeFromERecursive1'
-
 
 
 class EArgsFromDRecursive1(TypedDict, total=False):
@@ -9542,7 +8866,6 @@ class EArgsFromDRecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyEArgsFromD(TypedDict, total=False):
     """Arguments for D"""
     take: int
@@ -9551,7 +8874,6 @@ class FindManyEArgsFromD(TypedDict, total=False):
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
     include: 'EIncludeFromERecursive1'
-
 
 
 class FindManyEArgsFromDRecursive1(TypedDict, total=False):
@@ -9581,7 +8903,6 @@ FindFirstDArgs = FindManyDArgsFromD
 # TODO: support relationships here
     
 
-
 class DWhereInput(TypedDict, total=False):
     """D arguments for searching"""
     id: Union[str, 'types.StringFilter']
@@ -9591,7 +8912,6 @@ class DWhereInput(TypedDict, total=False):
     AND: List['DWhereInputRecursive1']
     OR: List['DWhereInputRecursive1']
     NOT: List['DWhereInputRecursive1']
-
 
 
 class DWhereInputRecursive1(TypedDict, total=False):
@@ -9722,6 +9042,7 @@ class EOrderByInput(TypedDict, total=False):
 
 
 # recursive E types
+# TODO: cleanup these types
 
 
 class EInclude(TypedDict, total=False):
@@ -9730,11 +9051,9 @@ class EInclude(TypedDict, total=False):
 
     
 
-
 class PostIncludeFromE(TypedDict, total=False):
     """Relational arguments for E"""
     author: Union[bool, 'UserArgsFromERecursive1']
-
 
 
 class PostIncludeFromERecursive1(TypedDict, total=False):
@@ -9747,11 +9066,9 @@ class PostIncludeFromERecursive2(TypedDict, total=False):
 
     
 
-
 class PostArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class PostArgsFromERecursive1(TypedDict, total=False):
@@ -9764,7 +9081,6 @@ class PostArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyPostArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     take: int
@@ -9773,7 +9089,6 @@ class FindManyPostArgsFromE(TypedDict, total=False):
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
     include: 'PostIncludeFromPostRecursive1'
-
 
 
 class FindManyPostArgsFromERecursive1(TypedDict, total=False):
@@ -9796,11 +9111,9 @@ class FindManyPostArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class UserIncludeFromE(TypedDict, total=False):
     """Relational arguments for E"""
     posts: Union[bool, 'FindManyPostArgsFromERecursive1']
-
 
 
 class UserIncludeFromERecursive1(TypedDict, total=False):
@@ -9813,11 +9126,9 @@ class UserIncludeFromERecursive2(TypedDict, total=False):
 
     
 
-
 class UserArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class UserArgsFromERecursive1(TypedDict, total=False):
@@ -9830,7 +9141,6 @@ class UserArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyUserArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     take: int
@@ -9839,7 +9149,6 @@ class FindManyUserArgsFromE(TypedDict, total=False):
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
     include: 'UserIncludeFromUserRecursive1'
-
 
 
 class FindManyUserArgsFromERecursive1(TypedDict, total=False):
@@ -9862,11 +9171,9 @@ class FindManyUserArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class MIncludeFromE(TypedDict, total=False):
     """Relational arguments for E"""
     n: Union[bool, 'FindManyNArgsFromERecursive1']
-
 
 
 class MIncludeFromERecursive1(TypedDict, total=False):
@@ -9879,11 +9186,9 @@ class MIncludeFromERecursive2(TypedDict, total=False):
 
     
 
-
 class MArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     include: 'MIncludeFromMRecursive1'
-
 
 
 class MArgsFromERecursive1(TypedDict, total=False):
@@ -9896,7 +9201,6 @@ class MArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyMArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     take: int
@@ -9905,7 +9209,6 @@ class FindManyMArgsFromE(TypedDict, total=False):
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
     include: 'MIncludeFromMRecursive1'
-
 
 
 class FindManyMArgsFromERecursive1(TypedDict, total=False):
@@ -9928,11 +9231,9 @@ class FindManyMArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class NIncludeFromE(TypedDict, total=False):
     """Relational arguments for E"""
     m: Union[bool, 'FindManyMArgsFromERecursive1']
-
 
 
 class NIncludeFromERecursive1(TypedDict, total=False):
@@ -9945,11 +9246,9 @@ class NIncludeFromERecursive2(TypedDict, total=False):
 
     
 
-
 class NArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     include: 'NIncludeFromNRecursive1'
-
 
 
 class NArgsFromERecursive1(TypedDict, total=False):
@@ -9962,7 +9261,6 @@ class NArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyNArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     take: int
@@ -9971,7 +9269,6 @@ class FindManyNArgsFromE(TypedDict, total=False):
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
     include: 'NIncludeFromNRecursive1'
-
 
 
 class FindManyNArgsFromERecursive1(TypedDict, total=False):
@@ -9994,11 +9291,9 @@ class FindManyNArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class OneOptionalIncludeFromE(TypedDict, total=False):
     """Relational arguments for E"""
     many: Union[bool, 'FindManyManyRequiredArgsFromERecursive1']
-
 
 
 class OneOptionalIncludeFromERecursive1(TypedDict, total=False):
@@ -10011,11 +9306,9 @@ class OneOptionalIncludeFromERecursive2(TypedDict, total=False):
 
     
 
-
 class OneOptionalArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class OneOptionalArgsFromERecursive1(TypedDict, total=False):
@@ -10028,7 +9321,6 @@ class OneOptionalArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyOneOptionalArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     take: int
@@ -10037,7 +9329,6 @@ class FindManyOneOptionalArgsFromE(TypedDict, total=False):
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
-
 
 
 class FindManyOneOptionalArgsFromERecursive1(TypedDict, total=False):
@@ -10060,11 +9351,9 @@ class FindManyOneOptionalArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class ManyRequiredIncludeFromE(TypedDict, total=False):
     """Relational arguments for E"""
     one: Union[bool, 'OneOptionalArgsFromERecursive1']
-
 
 
 class ManyRequiredIncludeFromERecursive1(TypedDict, total=False):
@@ -10077,11 +9366,9 @@ class ManyRequiredIncludeFromERecursive2(TypedDict, total=False):
 
     
 
-
 class ManyRequiredArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class ManyRequiredArgsFromERecursive1(TypedDict, total=False):
@@ -10094,7 +9381,6 @@ class ManyRequiredArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyManyRequiredArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     take: int
@@ -10103,7 +9389,6 @@ class FindManyManyRequiredArgsFromE(TypedDict, total=False):
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
-
 
 
 class FindManyManyRequiredArgsFromERecursive1(TypedDict, total=False):
@@ -10126,10 +9411,8 @@ class FindManyManyRequiredArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class AIncludeFromE(TypedDict, total=False):
     """Relational arguments for E"""
-
 
 
 class AIncludeFromERecursive1(TypedDict, total=False):
@@ -10141,11 +9424,9 @@ class AIncludeFromERecursive2(TypedDict, total=False):
 
     
 
-
 class AArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     include: 'AIncludeFromARecursive1'
-
 
 
 class AArgsFromERecursive1(TypedDict, total=False):
@@ -10158,7 +9439,6 @@ class AArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyAArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     take: int
@@ -10167,7 +9447,6 @@ class FindManyAArgsFromE(TypedDict, total=False):
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
     include: 'AIncludeFromARecursive1'
-
 
 
 class FindManyAArgsFromERecursive1(TypedDict, total=False):
@@ -10190,10 +9469,8 @@ class FindManyAArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class BIncludeFromE(TypedDict, total=False):
     """Relational arguments for E"""
-
 
 
 class BIncludeFromERecursive1(TypedDict, total=False):
@@ -10205,11 +9482,9 @@ class BIncludeFromERecursive2(TypedDict, total=False):
 
     
 
-
 class BArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     include: 'BIncludeFromBRecursive1'
-
 
 
 class BArgsFromERecursive1(TypedDict, total=False):
@@ -10222,7 +9497,6 @@ class BArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyBArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     take: int
@@ -10231,7 +9505,6 @@ class FindManyBArgsFromE(TypedDict, total=False):
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
     include: 'BIncludeFromBRecursive1'
-
 
 
 class FindManyBArgsFromERecursive1(TypedDict, total=False):
@@ -10254,10 +9527,8 @@ class FindManyBArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class CIncludeFromE(TypedDict, total=False):
     """Relational arguments for E"""
-
 
 
 class CIncludeFromERecursive1(TypedDict, total=False):
@@ -10269,11 +9540,9 @@ class CIncludeFromERecursive2(TypedDict, total=False):
 
     
 
-
 class CArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     include: 'CIncludeFromCRecursive1'
-
 
 
 class CArgsFromERecursive1(TypedDict, total=False):
@@ -10286,7 +9555,6 @@ class CArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyCArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     take: int
@@ -10295,7 +9563,6 @@ class FindManyCArgsFromE(TypedDict, total=False):
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
     include: 'CIncludeFromCRecursive1'
-
 
 
 class FindManyCArgsFromERecursive1(TypedDict, total=False):
@@ -10318,10 +9585,8 @@ class FindManyCArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class DIncludeFromE(TypedDict, total=False):
     """Relational arguments for E"""
-
 
 
 class DIncludeFromERecursive1(TypedDict, total=False):
@@ -10333,11 +9598,9 @@ class DIncludeFromERecursive2(TypedDict, total=False):
 
     
 
-
 class DArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     include: 'DIncludeFromDRecursive1'
-
 
 
 class DArgsFromERecursive1(TypedDict, total=False):
@@ -10350,7 +9613,6 @@ class DArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyDArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     take: int
@@ -10359,7 +9621,6 @@ class FindManyDArgsFromE(TypedDict, total=False):
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
     include: 'DIncludeFromDRecursive1'
-
 
 
 class FindManyDArgsFromERecursive1(TypedDict, total=False):
@@ -10382,10 +9643,8 @@ class FindManyDArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class EIncludeFromE(TypedDict, total=False):
     """Relational arguments for E"""
-
 
 
 class EIncludeFromERecursive1(TypedDict, total=False):
@@ -10397,11 +9656,9 @@ class EIncludeFromERecursive2(TypedDict, total=False):
 
     
 
-
 class EArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     include: 'EIncludeFromERecursive1'
-
 
 
 class EArgsFromERecursive1(TypedDict, total=False):
@@ -10414,7 +9671,6 @@ class EArgsFromERecursive2(TypedDict, total=False):
     
     
 
-
 class FindManyEArgsFromE(TypedDict, total=False):
     """Arguments for E"""
     take: int
@@ -10423,7 +9679,6 @@ class FindManyEArgsFromE(TypedDict, total=False):
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
     include: 'EIncludeFromERecursive1'
-
 
 
 class FindManyEArgsFromERecursive1(TypedDict, total=False):
@@ -10453,7 +9708,6 @@ FindFirstEArgs = FindManyEArgsFromE
 # TODO: support relationships here
     
 
-
 class EWhereInput(TypedDict, total=False):
     """E arguments for searching"""
     id: Union[str, 'types.StringFilter']
@@ -10464,7 +9718,6 @@ class EWhereInput(TypedDict, total=False):
     AND: List['EWhereInputRecursive1']
     OR: List['EWhereInputRecursive1']
     NOT: List['EWhereInputRecursive1']
-
 
 
 class EWhereInputRecursive1(TypedDict, total=False):

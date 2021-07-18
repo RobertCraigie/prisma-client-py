@@ -7,31 +7,39 @@ from .utils import _NoneType
 
 # TODO: cleanup whitespace control
 # TODO: add an argument to signify that the last iteration should be skipped
-{% macro recursive() %}
+{% macro recursive(base) %}
+    {% if depth == -1 %}
+{{ caller(base, base, '') }}
+    {% else %}
     {%+ for i in range(depth) -%}
         {% if i == 0 %}
-            {% set name = '' %}
+            {% set name = base %}
         {% else %}
-            {% set name = 'Recursive%s' % i %}
+            {% set name = base + 'Recursive%s' % i %}
         {% endif %}
 
         {% if i == depth - 1 %}
-            {% set next = '' %}
+            {% set iteration = '' %}
         {% else %}
-            {% set next = 'Recursive%s' % (i + 1) %}
-
+            {% set iteration = 'Recursive%s' % (i + 1) %}
         {% endif %}
 
-{{ caller(name, next) }}
+        {% if iteration %}
+            {% set next = base + iteration %}
+        {% else %}
+            {% set next = '' %}
+        {% endif %}
+{{ caller(name, next, iteration) }}
     {%- endfor %}
+    {% endif %}
 {% endmacro %}
 
 
 SortOrder = Literal['asc', 'desc']
 
 
-{% call(current, next) recursive() %}
-class StringFilter{{ current }}(TypedDict, total=False):
+{% call(name, next, iteration) recursive('StringFilter') %}
+class {{ name }}(TypedDict, total=False):
     equals: str
     not_in: List[str]
     lt: str
@@ -43,12 +51,12 @@ class StringFilter{{ current }}(TypedDict, total=False):
     endswith: str
     IN: List[str]
     {%+ if next != '' -%}
-        NOT: Union[str, 'StringFilter{{ next }}']
+        NOT: Union[str, '{{ next }}']
     {% endif %}
 {% endcall %}
 
-{% call(current, next) recursive() %}
-class DateTimeFilter{{ current }}(TypedDict, total=False):
+{% call(name, next, iteration) recursive('DateTimeFilter') %}
+class {{ name }}(TypedDict, total=False):
     equals: datetime.datetime
     not_in: List[datetime.datetime]
     lt: datetime.datetime
@@ -57,22 +65,22 @@ class DateTimeFilter{{ current }}(TypedDict, total=False):
     gte: datetime.datetime
     IN: List[datetime.datetime]
     {%+ if next != '' -%}
-        NOT: 'DateTimeFilter{{ next }}'
+        NOT: '{{ next }}'
     {% endif %}
 {% endcall %}
 
 
-{% call(current, next) recursive() %}
-class BooleanFilter{{ current }}(TypedDict, total=False):
+{% call(name, next, iteration) recursive('BooleanFilter') %}
+class {{ name }}(TypedDict, total=False):
     equals: bool
     {%+ if next != '' -%}
-        NOT: Union[bool, 'BooleanFilter{{ next }}']
+        NOT: Union[bool, '{{ next }}']
     {% endif %}
 {% endcall %}
 
 
-{% call(current, next) recursive() %}
-class IntFilter{{ current }}(TypedDict, total=False):
+{% call(name, next, iteration) recursive('IntFilter') %}
+class {{ name }}(TypedDict, total=False):
     equals: int
     IN: List[int]
     not_in: List[int]
@@ -81,13 +89,13 @@ class IntFilter{{ current }}(TypedDict, total=False):
     gt: int
     gte: int
     {%+ if next != '' -%}
-        NOT: Union[int, 'IntFilter{{ next }}']
+        NOT: Union[int, '{{ next }}']
     {% endif %}
 {% endcall %}
 
 
-{% call(current, next) recursive() %}
-class FloatFilter{{ current }}(TypedDict, total=False):
+{% call(name, next, iteration) recursive('FloatFilter') %}
+class {{ name }}(TypedDict, total=False):
     equals: float
     IN: List[float]
     not_in: List[float]
@@ -96,7 +104,7 @@ class FloatFilter{{ current }}(TypedDict, total=False):
     gt: float
     gte: float
     {%+ if next != '' -%}
-        NOT: Union[float, 'FloatFilter{{ next }}']
+        NOT: Union[float, '{{ next }}']
     {% endif %}
 {% endcall %}
 
@@ -232,6 +240,7 @@ class {{ model.name }}OrderByInput(TypedDict, total=False):
 
 
 # recursive {{ model.name }} types
+# TODO: cleanup these types
 
 
 class {{ model.name }}Include(TypedDict, total=False):
@@ -242,26 +251,26 @@ class {{ model.name }}Include(TypedDict, total=False):
 
 
 {% for related in dmmf.datamodel.models %}
-{% call(current, next) recursive() %}
-class {{ related.name }}IncludeFrom{{ model.name }}{{ current }}(TypedDict, total=False):
+{% call(name, next, iteration) recursive('%sIncludeFrom%s' % (related.name, model.name)) %}
+class {{ name }}(TypedDict, total=False):
     """Relational arguments for {{model.name }}"""
     {% if next != '' -%}
         {% for field in related.relational_fields -%}
-            {{'    '}}{{ field.name }}: Union[bool, '{{ field.relational_args_type }}From{{ model.name + next }}']
+            {{'    '}}{{ field.name }}: Union[bool, '{{ field.relational_args_type }}From{{ model.name + iteration }}']
         {% endfor %}
     {% endif %}
 {% endcall %}
 
-{% call(current, next) recursive() %}
-class {{ related.name }}ArgsFrom{{ model.name }}{{ current }}(TypedDict, total=False):
+{% call(name, next, iteration) recursive('%sArgsFrom%s' % (related.name, model.name)) %}
+class {{ name }}(TypedDict, total=False):
     """Arguments for {{model.name }}"""
     {%+ if next != '' -%}
-        include: '{{ related.name }}IncludeFrom{{ related.name + next}}'
+        include: '{{ related.name }}IncludeFrom{{ related.name + iteration}}'
     {% endif %}
 {% endcall %}
 
-{% call(current, next) recursive() %}
-class FindMany{{ related.name }}ArgsFrom{{ model.name}}{{ current }}(TypedDict, total=False):
+{% call(name, next, iteration) recursive('FindMany%sArgsFrom%s' % (related.name, model.name)) %}
+class {{ name }}(TypedDict, total=False):
     """Arguments for {{model.name }}"""
     take: int
     skip: int
@@ -269,7 +278,7 @@ class FindMany{{ related.name }}ArgsFrom{{ model.name}}{{ current }}(TypedDict, 
     where: '{{ related.name }}WhereInput'
     cursor: '{{ related.name }}WhereUniqueInput'
     {%+ if next != '' -%}
-        include: '{{ related.name }}IncludeFrom{{ related.name + next}}'
+        include: '{{ related.name }}IncludeFrom{{ related.name + iteration}}'
     {% endif %}
 {% endcall %}
 
@@ -281,8 +290,8 @@ FindFirst{{ model.name }}Args = FindMany{{ model.name }}ArgsFrom{{ model.name}}
 
 
 # TODO: support relationships here
-{% call(current, next) recursive() %}
-class {{ model.name }}WhereInput{{ current }}(TypedDict, total=False):
+{% call(current, next, iteration) recursive(model.name + 'WhereInput') %}
+class {{ current }}(TypedDict, total=False):
     """{{ model.name }} arguments for searching"""
     {% for field in model.all_fields %}
         {%- if not field.relation_name -%}
@@ -291,9 +300,9 @@ class {{ model.name }}WhereInput{{ current }}(TypedDict, total=False):
     {% endfor %}
 
     {% if next != '' %}
-    AND: List['{{ model.name }}WhereInput{{ next }}']
-    OR: List['{{ model.name }}WhereInput{{ next }}']
-    NOT: List['{{ model.name }}WhereInput{{ next }}']
+    AND: List['{{ next }}']
+    OR: List['{{ next }}']
+    NOT: List['{{ next }}']
     {% endif %}
 {% endcall %}
 
