@@ -53,7 +53,6 @@ ACTIONS = [
     'count',
 ]
 
-PRISMA_TYPE = re.compile(r'prisma\.types\.(?P<name>(((?!\.).)*$))')
 CONFIGFILE_KEY = 'prisma-mypy'
 
 log: logging.Logger = logging.getLogger(__name__)
