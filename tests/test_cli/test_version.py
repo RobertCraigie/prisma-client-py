@@ -31,6 +31,7 @@ def test_version_json(runner: Runner) -> None:
     assert SEMANTIC_VERSION.match(data['prisma-client-python'])
     assert PLACEHOLDER.match(data['platform'])
     assert HASH.match(data['engines'])
+    assert isinstance(data['installed-extras'], list)
 
 
 def test_same_output(runner: Runner) -> None:
@@ -47,4 +48,36 @@ def test_same_output(runner: Runner) -> None:
 
     # "-" is not a valid character in regex group names
     groups = {k.replace('_', '-'): v for k, v in match.groupdict().items()}
+    data['installed-extras'] = str(data['installed-extras'])
     assert groups == data
+
+
+def test_no_extras_installed(runner: Runner, monkeypatch) -> None:
+    from prisma.cli.commands import version
+
+    def patched_import_module(mod: str) -> None:
+        raise ImportError(mod)
+
+    monkeypatch.setattr(version, 'import_module', patched_import_module, raising=True)
+
+    result = runner.invoke(['py', 'version'])
+    assert result.exit_code == 0
+
+    match = PATTERN.match(result.output)
+    assert match is not None
+    assert match.group('installed_extras') == '[]'
+
+
+def test_no_extras_installed_json(runner: Runner, monkeypatch) -> None:
+    from prisma.cli.commands import version
+
+    def patched_import_module(mod: str) -> None:
+        raise ImportError(mod)
+
+    monkeypatch.setattr(version, 'import_module', patched_import_module, raising=True)
+
+    result = runner.invoke(['py', 'version', '--json'])
+    assert result.exit_code == 0
+
+    data = json.loads(result.output)
+    assert data['installed-extras'] == []

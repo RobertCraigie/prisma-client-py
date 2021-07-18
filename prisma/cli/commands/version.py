@@ -40,13 +40,13 @@ def cli(output_json: bool) -> None:
         'prisma client python': __version__,
         'platform': binary_platform(),
         'engines': ENGINE_VERSION,
-        'install path': Path(__file__).resolve().parent.parent.parent,
+        'install path': str(Path(__file__).resolve().parent.parent.parent),
         'installed extras': installed,
     }
 
     if output_json:
         click.echo(
-            json.dumps({k.replace(' ', '-'): str(v) for k, v in info.items()}, indent=2)
+            json.dumps({k.replace(' ', '-'): v for k, v in info.items()}, indent=2)
         )
     else:
         click.echo(pretty_info(info))

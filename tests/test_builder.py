@@ -6,7 +6,7 @@ from typing import Dict, Any
 import pytest
 from syrupy import SnapshotAssertion
 from prisma.builder import QueryBuilder
-from prisma.errors import UnknownRelationalFieldError
+from prisma.errors import UnknownRelationalFieldError, UnknownModelError
 
 from .utils import assert_query_equals
 
@@ -183,3 +183,15 @@ def test_datetime_serialization_tz_unaware(snapshot: SnapshotAssertion) -> None:
         }
     ).build_query()
     assert query == snapshot
+
+
+def test_unknown_model() -> None:
+    with pytest.raises(UnknownModelError) as exc:
+        QueryBuilder(
+            operation='query',
+            method='findUnique',
+            model='Foo',
+            arguments={},
+        ).build_query()
+
+    assert exc.match(r'Model: "Foo" does not exist\.')

@@ -71,7 +71,7 @@ def test_str_enum_choice(runner: Runner) -> None:
             click.echo('is bob')
         elif argument == MyEnum.alice:
             click.echo('is alice')
-        else:
+        else:  # pragma: no cover
             # this should never happen
             raise ValueError('Unknown enum value passed.')
 
