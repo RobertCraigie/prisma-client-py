@@ -248,7 +248,7 @@ class {{ model.name }}Actions:
             },
             root_selection=['count'],
         )
-        return resp['data']['result']['count']
+        return int(resp['data']['result']['count'])
 
     {{ maybe_async_def }}delete(
         self,

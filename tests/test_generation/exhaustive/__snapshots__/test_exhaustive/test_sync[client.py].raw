@@ -473,7 +473,7 @@ class PostActions:
             },
             root_selection=['count'],
         )
-        return resp['data']['result']['count']
+        return int(resp['data']['result']['count'])
 
     def delete(
         self,
@@ -814,7 +814,7 @@ class UserActions:
             },
             root_selection=['count'],
         )
-        return resp['data']['result']['count']
+        return int(resp['data']['result']['count'])
 
     def delete(
         self,
@@ -1155,7 +1155,7 @@ class MActions:
             },
             root_selection=['count'],
         )
-        return resp['data']['result']['count']
+        return int(resp['data']['result']['count'])
 
     def delete(
         self,
@@ -1496,7 +1496,7 @@ class NActions:
             },
             root_selection=['count'],
         )
-        return resp['data']['result']['count']
+        return int(resp['data']['result']['count'])
 
     def delete(
         self,
@@ -1837,7 +1837,7 @@ class OneOptionalActions:
             },
             root_selection=['count'],
         )
-        return resp['data']['result']['count']
+        return int(resp['data']['result']['count'])
 
     def delete(
         self,
@@ -2178,7 +2178,7 @@ class ManyRequiredActions:
             },
             root_selection=['count'],
         )
-        return resp['data']['result']['count']
+        return int(resp['data']['result']['count'])
 
     def delete(
         self,
@@ -2519,7 +2519,7 @@ class AActions:
             },
             root_selection=['count'],
         )
-        return resp['data']['result']['count']
+        return int(resp['data']['result']['count'])
 
     def delete(
         self,
@@ -2860,7 +2860,7 @@ class BActions:
             },
             root_selection=['count'],
         )
-        return resp['data']['result']['count']
+        return int(resp['data']['result']['count'])
 
     def delete(
         self,
@@ -3201,7 +3201,7 @@ class CActions:
             },
             root_selection=['count'],
         )
-        return resp['data']['result']['count']
+        return int(resp['data']['result']['count'])
 
     def delete(
         self,
@@ -3542,7 +3542,7 @@ class DActions:
             },
             root_selection=['count'],
         )
-        return resp['data']['result']['count']
+        return int(resp['data']['result']['count'])
 
     def delete(
         self,
@@ -3883,7 +3883,7 @@ class EActions:
             },
             root_selection=['count'],
         )
-        return resp['data']['result']['count']
+        return int(resp['data']['result']['count'])
 
     def delete(
         self,

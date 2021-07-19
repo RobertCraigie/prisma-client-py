@@ -1,5 +1,8 @@
 import re
 import json
+
+from _pytest.monkeypatch import MonkeyPatch
+
 from tests.utils import Runner
 
 
@@ -52,7 +55,7 @@ def test_same_output(runner: Runner) -> None:
     assert groups == data
 
 
-def test_no_extras_installed(runner: Runner, monkeypatch) -> None:
+def test_no_extras_installed(runner: Runner, monkeypatch: MonkeyPatch) -> None:
     from prisma.cli.commands import version
 
     def patched_import_module(mod: str) -> None:
@@ -68,7 +71,7 @@ def test_no_extras_installed(runner: Runner, monkeypatch) -> None:
     assert match.group('installed_extras') == '[]'
 
 
-def test_no_extras_installed_json(runner: Runner, monkeypatch) -> None:
+def test_no_extras_installed_json(runner: Runner, monkeypatch: MonkeyPatch) -> None:
     from prisma.cli.commands import version
 
     def patched_import_module(mod: str) -> None:

@@ -71,6 +71,7 @@ model Foo {{
 )
 def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
     def tests() -> None:  # pylint: disable=all  mark: filedef
+        import sys
         import datetime
         from typing import Type, Dict, Iterator, Any, Tuple, Set, Optional
         from pydantic import BaseModel
@@ -186,7 +187,12 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             field = UserModifiedPosts.__fields__['posts']
             assert field.type_.__name__ == 'PostOnlyId'
             assert field.type_.__module__ == 'prisma.partials'
-            assert field.outer_type_.__name__ == 'List'
+
+            if sys.version_info >= (3, 7):
+                assert field.outer_type_._name == 'List'
+            else:
+                assert field.outer_type_.__name__ == 'List'
+
             assert field.outer_type_.__module__ == 'typing'
 
     def generator() -> None:  # mark: filedef
