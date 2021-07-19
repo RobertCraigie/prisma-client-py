@@ -1,7 +1,7 @@
 import pytest
 
 from prisma import errors, Client
-from prisma.models import Post
+from prisma.models import Post, User
 from prisma.partials import PostOnlyPublished
 
 
@@ -112,3 +112,66 @@ async def test_query_raw_incorrect_params(client: Client) -> None:
 
     with pytest.raises(errors.RawQueryError):
         await client.query_raw(query, 1)
+
+
+@pytest.mark.asyncio
+async def test_execute_raw(client: Client) -> None:
+    post = await client.post.create(
+        {
+            'title': 'My post title.',
+            'published': False,
+        }
+    )
+    assert isinstance(post.id, str)
+
+    query = '''
+        UPDATE Post
+        SET title = 'My edited title'
+        WHERE id = $1
+    '''
+    count = await client.execute_raw(query, post.id)
+    assert count == 1
+
+    found = await client.post.find_unique(where={'id': post.id})
+    assert found is not None
+    assert found.id == post.id
+    assert found.title == 'My edited title'
+
+
+@pytest.mark.asyncio
+async def test_execute_raw_no_result(client: Client) -> None:
+    query = '''
+        UPDATE Post
+        SET title = 'updated title'
+        WHERE id = 'sdldsd'
+    '''
+    count = await client.execute_raw(query)
+    assert count == 0
+
+
+@pytest.mark.asyncio
+async def test_query_first(client: Client) -> None:
+    user = await client.user.create({'name': 'Robert'})
+
+    query = '''
+        SELECT *
+        FROM User
+        WHERE User.id = ?
+    '''
+    found = await client.query_first(query, user.id)
+    assert found == {'id': user.id, 'name': 'Robert'}
+
+
+@pytest.mark.asyncio
+async def test_query_first_model(client: Client) -> None:
+    user = await client.user.create({'name': 'Robert'})
+
+    query = '''
+        SELECT *
+        FROM User
+        WHERE User.id = ?
+    '''
+    found = await client.query_first(query, user.id, model=User)
+    assert found is not None
+    assert found.id == user.id
+    assert found.name == 'Robert'

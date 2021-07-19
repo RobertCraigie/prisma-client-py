@@ -89,6 +89,27 @@ class Client:
         return int(resp['data']['result'])
 
     @overload
+    {{ maybe_async_def }}query_first(self, query: str, *args: Any) -> Any:
+        ...
+
+    @overload
+    {{ maybe_async_def }}query_first(self, query: str, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
+        ...
+
+    {{ maybe_async_def }}query_first(
+        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+    ) -> Union[Optional[BaseModelT], Any]:
+        if model is not None:
+            results = {{ maybe_await }}self.query_raw(query, *args, model=model)
+        else:
+            results = {{ maybe_await }}self.query_raw(query, *args)
+
+        if not results:
+            return None
+
+        return results[0]
+
+    @overload
     {{ maybe_async_def }}query_raw(self, query: str, *args: Any) -> Any:
         ...
 

@@ -313,6 +313,27 @@ class Client:
         return int(resp['data']['result'])
 
     @overload
+    async def query_first(self, query: str, *args: Any) -> Any:
+        ...
+
+    @overload
+    async def query_first(self, query: str, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
+        ...
+
+    async def query_first(
+        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+    ) -> Union[Optional[BaseModelT], Any]:
+        if model is not None:
+            results = await self.query_raw(query, *args, model=model)
+        else:
+            results = await self.query_raw(query, *args)
+
+        if not results:
+            return None
+
+        return results[0]
+
+    @overload
     async def query_raw(self, query: str, *args: Any) -> Any:
         ...
 
