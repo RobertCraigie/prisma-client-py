@@ -1,3 +1,5 @@
+import sys
+import shutil
 import subprocess
 from pathlib import Path
 from typing import Optional, Union, Iterator, cast, Any, TYPE_CHECKING
@@ -13,6 +15,9 @@ from _pytest._code.code import TerminalRepr, ReprEntry, ReprFileLocation
 
 if TYPE_CHECKING:
     from _pytest._code.code import _TracebackStyle
+
+
+ROOTDIR = Path(__file__).parent.parent.parent
 
 
 class TraceLastReprEntry(ReprEntry):
@@ -84,6 +89,23 @@ def pytest_collect_file(
         return IntegrationTestFile.from_parent(parent, fspath=path)
 
     return None
+
+
+def pytest_sessionstart() -> None:
+    dist = ROOTDIR / '.tests_cache' / 'dist'
+    if dist.exists():
+        shutil.rmtree(str(dist))
+
+    result = subprocess.run(
+        [sys.executable, 'setup.py', 'bdist_wheel', '--dist-dir=.tests_cache/dist'],
+        check=False,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        cwd=str(ROOTDIR),
+    )
+    if result.returncode != 0:
+        print(result.stdout.decode('utf-8'))
+        raise RuntimeError('Could not build wheels, see output above.')
 
 
 class IntegrationTestItem(pytest.Item):
