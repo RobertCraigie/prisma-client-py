@@ -8,10 +8,12 @@ __version__ = '0.0.1'
 
 from .plugins import *
 from .utils import setup_logging
+from . import errors
 
 
 try:
     from .client import *
+    from . import models, partials, types
 except ModuleNotFoundError:
     # code has not been generated yet
     # TODO: this could swallow unexpected errors
