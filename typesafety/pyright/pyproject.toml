@@ -1,0 +1,9 @@
+[tool.pyright]
+pythonVersion = "3.9"
+
+typeCheckingMode = "strict"
+reportUnusedImport = true
+reportUnusedVariable = false
+reportUnknownMemberType = false
+reportCallInDefaultInitializer = true
+reportImplicitStringConcatenation = true
