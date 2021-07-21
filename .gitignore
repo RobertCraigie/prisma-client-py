@@ -136,3 +136,4 @@ prisma/generator/debug-params.json
 
 # test cache files
 .tests_cache/
+*.db
