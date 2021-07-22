@@ -26,7 +26,6 @@ def main(
     args: Optional[List[str]] = None,
     use_handler: bool = True,
     do_cleanup: bool = True,
-    pipe: bool = False,
 ) -> NoReturn:
     if args is None:
         args = sys.argv
@@ -36,7 +35,7 @@ def main(
             if args[1] == 'py':
                 cli.main(args[2:], prog_name='prisma py')
             else:
-                sys.exit(prisma.run(args[1:], pipe=pipe))
+                sys.exit(prisma.run(args[1:]))
         else:
             if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
                 error(

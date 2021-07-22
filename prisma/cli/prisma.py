@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 import subprocess
-from typing import List, Union, Optional, IO, Dict
+from typing import List, Optional, Dict
 
 import click
 
@@ -15,7 +15,6 @@ log: logging.Logger = logging.getLogger(__name__)
 def run(
     args: List[str],
     check: bool = False,
-    pipe: bool = False,
     env: Optional[Dict[str, str]] = None,
 ) -> int:
     directory = binaries.ensure_cached()
@@ -38,27 +37,13 @@ def run(
     for engine in binaries.ENGINES:
         env[engine.env] = str(engine.path.absolute())
 
-    encoding = None  # type: Optional[str]
-    stdout = sys.stdout  # type: Union[int, IO[str]]
-    stderr = sys.stderr  # type: Union[int, IO[str]]
-
-    if pipe:
-        stdout = subprocess.PIPE
-        stderr = subprocess.PIPE
-        encoding = sys.getdefaultencoding()
-
     process = subprocess.run(
         [str(path.absolute()), *args],
         env=env,
         check=check,
-        stdout=stdout,
-        stderr=stderr,
-        encoding=encoding,
+        stdout=sys.stdout,
+        stderr=sys.stderr,
     )
-
-    if pipe:
-        print(process.stdout)
-        print(process.stderr, file=sys.stderr)
 
     if args and args[0] in {'--help', '-h'}:
         prefix = ' '

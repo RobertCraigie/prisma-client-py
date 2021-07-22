@@ -7,7 +7,7 @@ import click
 import pydantic
 
 from .. import prisma, options
-from ..utils import EnumChoice, PathlibPath, should_pipe, warning
+from ..utils import EnumChoice, PathlibPath, warning
 from ...generator.models import HttpChoices
 
 
@@ -61,7 +61,7 @@ def cli(schema: Optional[Path], watch: bool, **kwargs: Any) -> None:
         env[prefix + ARG_TO_CONFIG_KEY.get(key, key).upper()] = serialize(key, value)
 
     log.debug('Running generate with env: %s', env)
-    sys.exit(prisma.run(args, env=env, pipe=should_pipe()))
+    sys.exit(prisma.run(args, env=env))
 
 
 def serialize(key: str, obj: Any) -> str:

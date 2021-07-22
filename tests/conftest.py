@@ -18,6 +18,7 @@ from .utils import async_run, Runner, Testdir
 
 if TYPE_CHECKING:
     from _pytest.config import Config
+    from _pytest.monkeypatch import MonkeyPatch
     from _pytest.pytester import Testdir as PytestTestdir
 
 
@@ -40,9 +41,9 @@ def event_loop() -> asyncio.AbstractEventLoop:
 
 
 @pytest.fixture()
-def runner() -> Runner:
+def runner(monkeypatch: 'MonkeyPatch') -> Runner:
     """Fixture for running cli tests"""
-    return Runner()
+    return Runner(patcher=monkeypatch)
 
 
 @pytest.fixture(name='testdir')

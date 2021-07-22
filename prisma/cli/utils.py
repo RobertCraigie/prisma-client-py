@@ -1,4 +1,3 @@
-import os
 import sys
 import logging
 from enum import Enum
@@ -90,14 +89,6 @@ class EnumChoice(click.Choice):
 
 def is_module(path: Path) -> bool:
     return path.is_dir() and path.joinpath('__init__.py').exists()
-
-
-def should_pipe() -> bool:
-    """Return whether or not prisma output should be piped or printed directly to stdout
-
-    This should only return True while testing internally
-    """
-    return os.environ.get('_PRISMA_PY_SHOULD_PIPE') == '1'
 
 
 def maybe_exit(retcode: int) -> None:

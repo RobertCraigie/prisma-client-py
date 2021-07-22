@@ -27,11 +27,11 @@ from pkg_resources import EntryPoint, Distribution
 
 from prisma.cli import main
 from prisma._types import FuncType
-from prisma.utils import temp_env_update
 from prisma.builder import QueryBuilder
 
 
 if TYPE_CHECKING:
+    from _pytest.monkeypatch import MonkeyPatch
     from _pytest.pytester import RunResult, Testdir as PytestTestdir
 
 
@@ -75,9 +75,11 @@ model User {{
 
 
 class Runner:
-    def __init__(self) -> None:
+    def __init__(self, patcher: 'MonkeyPatch') -> None:
         self._runner = CliRunner()
+        self._patcher = patcher
         self.default_cli = None  # type: Optional[click.Command]
+        self.patch_subprocess()
 
     def invoke(
         self,
@@ -99,15 +101,38 @@ class Runner:
                     # fake invocation context
                     args.insert(0, 'prisma')
 
-                main(args, use_handler=False, do_cleanup=False, pipe=True)
+                main(args, use_handler=False, do_cleanup=False)
 
             cli = click.command()(_cli)
 
             # we don't pass any args to click as we need to parse them ourselves
             default_args = []
 
-        with temp_env_update({'_PRISMA_PY_SHOULD_PIPE': '1'}):
-            return self._runner.invoke(cli, default_args, **kwargs)
+        return self._runner.invoke(cli, default_args, **kwargs)
+
+    def patch_subprocess(self) -> None:
+        """As we can't pass a fd from something like io.TextIO to a subprocess
+        we need to override the subprocess.run method to pipe the output and then
+        print the output ourselves so that it can be captured by anything higher in
+        call stack.
+        """
+
+        def _patched_subprocess_run(
+            *args: Any, **kwargs: Any
+        ) -> subprocess.CompletedProcess:
+            # pylint: disable=subprocess-run-check
+            kwargs['stdout'] = subprocess.PIPE
+            kwargs['stderr'] = subprocess.PIPE
+            kwargs['encoding'] = sys.getdefaultencoding()
+
+            process = old_subprocess_run(*args, **kwargs)
+
+            print(process.stdout)
+            print(process.stderr, file=sys.stderr)
+            return process
+
+        old_subprocess_run = subprocess.run
+        self._patcher.setattr(subprocess, 'run', _patched_subprocess_run, raising=True)
 
 
 class Testdir:
