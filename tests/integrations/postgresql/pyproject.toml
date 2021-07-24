@@ -1,0 +1,6 @@
+[tool.pyright]
+include = [
+    "tests",
+]
+pythonVersion = "3.9"
+typeCheckingMode = "strict"

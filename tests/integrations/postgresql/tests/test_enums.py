@@ -10,6 +10,3 @@ async def test_enum_create(client: Client) -> None:
 
     user = await client.user.create({'name': 'Tegan', 'role': Role.ADMIN})
     assert user.role == Role.ADMIN
-
-    user = await client.user.create({'name': 'Bob', 'role': Role.ADMIN.value})
-    assert user.role == Role.ADMIN

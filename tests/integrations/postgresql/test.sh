@@ -14,3 +14,5 @@ pip install -U --find-links=../../../.tests_cache/dist prisma[aiohttp]
 prisma db push --accept-data-loss --force-reset
 
 pytest --confcutdir=. tests
+
+pyright

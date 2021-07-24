@@ -5,7 +5,7 @@ datasource db {
 
 generator db {
   provider             = "python3 -m prisma"
-  recursive_type_depth = 5
+  recursive_type_depth = -1
   http                 = "aiohttp"
 }
 
