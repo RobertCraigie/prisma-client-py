@@ -2,18 +2,15 @@
 import os
 import sys
 import asyncio
-import inspect
-from typing import Any, List, Iterator, TYPE_CHECKING
-from contextvars import ContextVar
+from typing import List, Iterator, TYPE_CHECKING
 
 import pytest
 
-import prisma
 from prisma import Client
 from prisma.cli import setup_logging
 
 from . import contexts
-from .utils import async_run, Runner, Testdir
+from .utils import Runner, Testdir
 
 
 if TYPE_CHECKING:
@@ -23,16 +20,12 @@ if TYPE_CHECKING:
 
 
 pytest_plugins = ['pytester']
-client_ctx: ContextVar['Client'] = ContextVar('client_ctx', default=Client())
 LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
 
 
-@pytest.fixture(name='client', scope='session')
-def client_fixture() -> prisma.Client:
-    client = client_ctx.get()
-    async_run(client.connect())
-    async_run(cleanup_client(client))
-    return client
+@pytest.fixture(name='client')
+def client_fixture(prisma: Client) -> Client:
+    return prisma
 
 
 @pytest.fixture(scope='session')
@@ -76,29 +69,3 @@ def pytest_collection_modifyitems(
 
 def pytest_runtest_setup(item: pytest.Function) -> None:
     contexts.clear()
-
-    if not has_client_fixture(item) or marked_persist_data(item):
-        return
-
-    client = client_ctx.get()
-    if client.is_connected():
-        async_run(cleanup_client(client))
-
-
-def has_client_fixture(item: Any) -> bool:
-    # TODO: more strict check
-    return hasattr(item, 'fixturenames') and 'client' in item.fixturenames
-
-
-def marked_persist_data(item: pytest.Function) -> bool:
-    for marker in item.iter_markers():
-        if marker.name == 'persist_data':
-            return True
-    return False
-
-
-async def cleanup_client(client: Client) -> None:
-    async with client.batch_() as batcher:
-        for _, item in inspect.getmembers(batcher):
-            if item.__class__.__name__.endswith('Actions'):
-                item.delete_many()

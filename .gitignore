@@ -129,6 +129,7 @@ prisma/builder.py
 prisma/partials.py
 prisma/engine/query.py
 prisma/http.py.original
+prisma/ext/pytest/plugin.py
 
 # debug files
 prisma/generator/debug-data.json

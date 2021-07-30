@@ -59,6 +59,9 @@ setup(
             'prisma-client-py=prisma.cli:main',
         ],
         'prisma': [],
+        'pytest11': [
+            'prisma=prisma.ext.pytest',
+        ]
     },
     classifiers=[
         'Development Status :: 1 - Planning',

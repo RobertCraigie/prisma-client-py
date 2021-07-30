@@ -6,6 +6,11 @@ from prisma import Client
 from prisma.models import Post
 
 
+@pytest.fixture(name='client', scope='module')
+def client_fixture(prisma_session: Client) -> Client:
+    return prisma_session
+
+
 @pytest.fixture(scope='module', name='user_id')
 async def user_id_fixture(client: Client) -> str:
     user = await client.user.create({'name': 'Robert'})
@@ -64,7 +69,6 @@ async def create_or_get_posts(client: Client, user_id: str) -> List[Post]:
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
 async def test_find_unique_include(client: Client, user_id: str) -> None:
     user = await client.user.find_unique(where={'id': user_id}, include={'posts': True})
     assert user is not None
@@ -78,7 +82,6 @@ async def test_find_unique_include(client: Client, user_id: str) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
 async def test_find_unique_include_take(client: Client, user_id: str) -> None:
     user = await client.user.find_unique(
         where={'id': user_id}, include={'posts': {'take': 1}}
@@ -88,7 +91,6 @@ async def test_find_unique_include_take(client: Client, user_id: str) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
 async def test_find_unique_include_where(
     client: Client, user_id: str, posts: List[Post]
 ) -> None:
@@ -102,7 +104,6 @@ async def test_find_unique_include_where(
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
 async def test_find_unique_include_pagination(
     client: Client, user_id: str, posts: List[Post]
 ) -> None:
@@ -124,7 +125,6 @@ async def test_find_unique_include_pagination(
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
 async def test_find_unique_include_nested_where_or(
     client: Client, user_id: str, posts: List[Post]
 ) -> None:
@@ -149,7 +149,6 @@ async def test_find_unique_include_nested_where_or(
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
 async def test_find_unique_include_nested_include(client: Client, user_id: str) -> None:
     user = await client.user.find_unique(
         where={'id': user_id},
@@ -166,7 +165,6 @@ async def test_find_unique_include_nested_include(client: Client, user_id: str) 
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
 async def test_create_include(client: Client) -> None:
     post = await client.post.create(
         {

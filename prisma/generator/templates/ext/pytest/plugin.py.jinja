@@ -1,0 +1,60 @@
+{% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await with context %}
+# -- template plugin.py.jinja --
+import inspect
+from typing import Callable, Coroutine
+
+import pytest
+
+from ... import Client
+{% if is_async %}
+CleanupType = Callable[[Client], Coroutine[Any, Any, Any]]
+{% else %}
+CleanupType = Callable[[Client], Any]
+{% endif %}
+
+
+__all__ = (
+    'prisma',
+    'prisma_client',
+    'prisma_session',
+)
+
+@pytest.fixture(scope='session')
+def prisma_client() -> Client:
+    return Client()
+
+
+# TODO: fix scope mismatch errors, this probably doesn't even work as intended
+
+@pytest.fixture(scope='session')
+{{ maybe_async_def }}prisma_session(prisma_client: Client) -> Client:
+    if not prisma_client.is_connected():
+        {{ maybe_await }}prisma_client.connect()
+
+    {{maybe_await}}cleanup_client(prisma_client)
+    yield prisma_client
+    {{maybe_await}}cleanup_client(prisma_client)
+
+
+# TODO: should we use the event_loop fixture instead?
+
+@pytest.fixture(scope='function')
+{{ maybe_async_def }}prisma(prisma_client: Client) -> Client:
+    if not prisma_client.is_connected():
+        {{ maybe_await }}prisma_client.connect()
+
+    {{maybe_await}}cleanup_client(prisma_client)
+    yield prisma_client
+    {{maybe_await}}cleanup_client(prisma_client)
+
+
+{{ maybe_async_def }}cleanup_client(client: Client) -> None:
+    {% if is_async %}
+    async with client.batch_() as batcher:
+    {% else %}
+    with client.batch_() as batcher:
+    {% endif %}
+        for _, item in inspect.getmembers(batcher):
+            if item.__class__.__name__.endswith('Actions'):
+                item.delete_many()

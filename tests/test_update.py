@@ -2,6 +2,11 @@ import pytest
 from prisma import Client
 
 
+@pytest.fixture(name='client', scope='module')
+def client_fixture(prisma_session: Client) -> Client:
+    return prisma_session
+
+
 @pytest.fixture(scope='module', name='user_id')
 async def user_id_fixture(client: Client) -> str:
     user = await client.user.create({'name': 'Robert'})
@@ -9,7 +14,6 @@ async def user_id_fixture(client: Client) -> str:
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
 async def test_update(client: Client) -> None:
     post = await client.post.create(
         {
@@ -42,7 +46,6 @@ async def test_update(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
 @pytest.mark.parametrize('method', ['disconnect', 'delete'])
 async def test_update_with_create_disconnect(
     client: Client, user_id: str, method: str
@@ -77,7 +80,6 @@ async def test_update_with_create_disconnect(
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
 async def test_atomic_update(client: Client) -> None:
     post = await client.post.create({'title': 'My Post', 'published': False})
     assert post.title == 'My Post'
@@ -91,7 +93,6 @@ async def test_atomic_update(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
 async def test_update_record_not_found(client: Client) -> None:
     post = await client.post.update(
         where={'id': 'wow'}, data={'title': 'Hi from Update!'}
