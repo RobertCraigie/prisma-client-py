@@ -2,6 +2,7 @@ import subprocess
 
 import pytest
 
+from prisma.utils import temp_env_update
 from ..utils import Testdir
 
 
@@ -66,3 +67,28 @@ def test_unknown_type(testdir: Testdir) -> None:
         testdir.generate(schema=schema)
 
     assert 'Unknown scalar type: Json' in str(exc.value.output, 'utf-8')
+
+
+def test_native_binary_target_no_warning(testdir: Testdir) -> None:
+    with temp_env_update({'PRISMA_PY_DEBUG': '0'}):
+        result = testdir.generate(options='binaryTargets = ["native"]')
+
+    stdout = result.stdout.decode('utf-8')
+    assert 'Warning' not in stdout
+    assert 'binaryTargets option' not in stdout
+    assert 'prisma:GeneratorProcess' not in stdout
+
+
+def test_binary_targets_warning(testdir: Testdir) -> None:
+    with temp_env_update({'PRISMA_PY_DEBUG': '0'}):
+        result = testdir.generate(
+            options='binaryTargets = ["native", "rhel-openssl-1.1.x"]'
+        )
+
+    stdout = result.stdout.decode('utf-8')
+    assert 'prisma:GeneratorProcess' not in stdout
+    assert (
+        'Warning: The binaryTargets option '
+        'is not currently supported by Prisma Client Python'
+        in stdout
+    )

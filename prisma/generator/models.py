@@ -1,3 +1,4 @@
+import sys
 import enum
 import importlib
 from pathlib import Path
@@ -16,12 +17,13 @@ from typing import (
     Type,
     TYPE_CHECKING,
 )
+
+import click
 from pydantic import (
     BaseModel as PydanticBaseModel,
     BaseSettings,
     Extra,
     Field as FieldInfo,
-    conint,
     validator,
     root_validator,
 )
@@ -156,8 +158,24 @@ class Generator(BaseModel):
     output: 'ValueFromEnvVar'
     provider: 'ValueFromEnvVar'
     config: 'Config'
-    binary_targets: List[str] = FieldInfo(alias='binaryTargets')
+    binary_targets: List['ValueFromEnvVar'] = FieldInfo(alias='binaryTargets')
     preview_features: List[str] = FieldInfo(alias='previewFeatures')
+
+    @validator('binary_targets')
+    @classmethod
+    def warn_binary_targets(
+        cls, targets: List['ValueFromEnvVar']
+    ) -> List['ValueFromEnvVar']:
+        if targets and any(target.value != 'native' for target in targets):
+            click.echo(
+                click.style(
+                    'Warning: The binaryTargets option is not currently supported by Prisma Client Python',
+                    fg='yellow',
+                ),
+                file=sys.stdout,
+            )
+
+        return targets
 
 
 class ValueFromEnvVar(BaseModel):

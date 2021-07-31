@@ -175,7 +175,7 @@ class Testdir:
 
     def generate(
         self, schema: Optional[str] = None, options: str = '', **extra: Any
-    ) -> None:
+    ) -> 'subprocess.CompletedProcess[bytes':
         path = self.make_schema(schema, options, **extra)
         args = [sys.executable, '-m', 'prisma', 'generate', f'--schema={path}']
         proc = subprocess.run(  # pylint: disable=subprocess-run-check
@@ -189,6 +189,8 @@ class Testdir:
             raise subprocess.CalledProcessError(
                 proc.returncode, args, proc.stdout, proc.stderr
             )
+
+        return proc
 
     def make_schema(
         self,
