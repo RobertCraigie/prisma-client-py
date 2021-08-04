@@ -89,6 +89,5 @@ def test_binary_targets_warning(testdir: Testdir) -> None:
     assert 'prisma:GeneratorProcess' not in stdout
     assert (
         'Warning: The binaryTargets option '
-        'is not currently supported by Prisma Client Python'
-        in stdout
+        'is not currently supported by Prisma Client Python' in stdout
     )

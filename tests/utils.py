@@ -119,7 +119,7 @@ class Runner:
 
         def _patched_subprocess_run(
             *args: Any, **kwargs: Any
-        ) -> subprocess.CompletedProcess:
+        ) -> 'subprocess.CompletedProcess[bytes]':
             # pylint: disable=subprocess-run-check
             kwargs['stdout'] = subprocess.PIPE
             kwargs['stderr'] = subprocess.PIPE
@@ -175,7 +175,7 @@ class Testdir:
 
     def generate(
         self, schema: Optional[str] = None, options: str = '', **extra: Any
-    ) -> 'subprocess.CompletedProcess[bytes':
+    ) -> 'subprocess.CompletedProcess[bytes]':
         path = self.make_schema(schema, options, **extra)
         args = [sys.executable, '-m', 'prisma', 'generate', f'--schema={path}']
         proc = subprocess.run(  # pylint: disable=subprocess-run-check

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pyright: reportUnusedImport=false
 
 __title__ = 'prisma'
 __author__ = 'RobertCraigie'

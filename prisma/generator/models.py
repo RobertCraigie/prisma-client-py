@@ -169,7 +169,8 @@ class Generator(BaseModel):
         if targets and any(target.value != 'native' for target in targets):
             click.echo(
                 click.style(
-                    'Warning: The binaryTargets option is not currently supported by Prisma Client Python',
+                    'Warning: '
+                    'The binaryTargets option is not currently supported by Prisma Client Python',
                     fg='yellow',
                 ),
                 file=sys.stdout,
