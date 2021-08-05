@@ -2,6 +2,7 @@ import sys
 import shutil
 import subprocess
 from pathlib import Path
+from functools import lru_cache
 from typing import Optional, Union, Iterator, cast, Any, TYPE_CHECKING
 
 import pytest
@@ -91,7 +92,8 @@ def pytest_collect_file(
     return None
 
 
-def pytest_sessionstart() -> None:
+@lru_cache(maxsize=None)
+def create_wheels() -> None:
     dist = ROOTDIR / '.tests_cache' / 'dist'
     if dist.exists():
         shutil.rmtree(str(dist))
@@ -120,6 +122,9 @@ class IntegrationTestItem(pytest.Item):
         super().__init__(name, parent, config)
         self.path = path
         self.starting_lineno = 1
+
+    def setup(self) -> None:
+        create_wheels()
 
     def runtest(self) -> None:
         result = subprocess.run(
