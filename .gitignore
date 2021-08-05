@@ -121,18 +121,18 @@ venv.bak/
 tmp/
 
 # generated code
-prisma/types.py
-prisma/enums.py
-prisma/client.py
-prisma/models.py
-prisma/builder.py
-prisma/partials.py
-prisma/engine/query.py
-prisma/http.py.original
+src/prisma/types.py
+src/prisma/enums.py
+src/prisma/client.py
+src/prisma/models.py
+src/prisma/builder.py
+src/prisma/partials.py
+src/prisma/engine/query.py
+src/prisma/http.py.original
 
 # debug files
-prisma/generator/debug-data.json
-prisma/generator/debug-params.json
+src/prisma/generator/debug-data.json
+src/prisma/generator/debug-params.json
 
 # test cache files
 .tests_cache/

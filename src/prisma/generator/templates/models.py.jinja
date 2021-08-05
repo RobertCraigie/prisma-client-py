@@ -8,8 +8,8 @@ from .generator import partial_models_ctx, PartialModelField
 
 
 class Config(BaseConfig):
-    use_enum_values = True
-    allow_population_by_field_name = True
+    use_enum_values: bool = True
+    allow_population_by_field_name: bool = True
 
 
 _created_partial_types: Set[str] = set()

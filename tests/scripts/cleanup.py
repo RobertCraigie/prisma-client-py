@@ -1,5 +1,5 @@
-import os
 import sys
+import pkgutil
 from pathlib import Path
 
 
@@ -10,7 +10,7 @@ from pathlib import Path
 # prisma will raise an error when imported,
 # removing prisma/client.py fixes this as it is
 # the only default entrypoint to generated code
-file = Path(__file__).parent.parent / 'prisma/client.py'
+file = Path(pkgutil.get_loader('prisma').get_filename()).parent / 'client.py'
 if file.exists():
     file.unlink()
 
@@ -25,10 +25,6 @@ from prisma.generator.generator import (  # pylint: disable=wrong-import-positio
 def main() -> None:
     """Remove auto-generated python files"""
     cleanup_templates(rootdir=BASE_PACKAGE_DIR)
-
-    output = os.environ.get('PRISMA_PY_OUTPUT')
-    if output is not None:
-        cleanup_templates(rootdir=Path(output))
 
 
 if __name__ == '__main__':

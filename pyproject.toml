@@ -20,7 +20,7 @@ exclude = '''
 
 [tool.pyright]
 include = [
-    "prisma",
+    "src",
 ]
 ignore = [
     "tmp",

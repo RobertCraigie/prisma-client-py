@@ -10,11 +10,11 @@ Currently supported libraries are:
 ## Install Asynchronous Client
 
 ```shell script
-pip install git+https://github.com/RobertCraigie/prisma-client-py#egg=prisma[aiohttp]
+pip install git+https://github.com/RobertCraigie/prisma-client-py#egg=prisma.io[aiohttp]
 ```
 
 ## Install Synchronous Client
 
 ```shell script
-pip install git+https://github.com/RobertCraigie/prisma-client-py#egg=prisma[requests]
+pip install git+https://github.com/RobertCraigie/prisma-client-py#egg=prisma.io[requests]
 ```

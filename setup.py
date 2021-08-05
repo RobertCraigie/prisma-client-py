@@ -15,7 +15,7 @@ with open('README.md', 'r') as f:
     readme = f.read()
 
 version = ''
-with open('prisma/__init__.py') as f:
+with open('src/prisma/__init__.py') as f:
     match = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE)
     if not match:
         raise RuntimeError('version is not set')
@@ -27,13 +27,14 @@ if not version:
 
 
 extras = {
+    'dev': requirements('dev.txt'),
     'aiohttp': requirements('aiohttp.txt'),
     'requests': requirements('requests.txt'),
 }
 
 
 setup(
-    name='prisma',
+    name='prisma.io',
     version=version,
     author='Robert Craigie',
     maintainer='Robert Craigie',
@@ -43,7 +44,8 @@ setup(
     install_requires=requirements('base.txt'),
     long_description=readme,
     long_description_content_type='text/markdown',
-    packages=find_packages(include=['prisma', 'prisma.*']),
+    packages=find_packages(where='src', include=['prisma', 'prisma.*']),
+    package_dir={'': 'src'},
     project_urls={},
     python_requires='>=3',
     package_data={'': ['generator/templates/**/*.py.jinja', 'py.typed']},
