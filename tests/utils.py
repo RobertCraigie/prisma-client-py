@@ -264,7 +264,8 @@ class Testdir:
         entries = None
 
         try:
-            entries = pkg_resources.get_distribution('prisma').get_entry_map()['prisma']
+            dist = pkg_resources.get_distribution('prisma.io')
+            entries = dist.get_entry_map()['prisma']
 
             if clear:
                 # TODO: clear all entries, this curently only clears
