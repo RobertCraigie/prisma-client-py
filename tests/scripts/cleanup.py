@@ -9,8 +9,13 @@ from pathlib import Path
 # kind of error that wasn't automatically cleaned up,
 # prisma will raise an error when imported,
 # removing prisma/client.py fixes this as it is
-# the only default entrypoint to generated code
-file = Path(pkgutil.get_loader('prisma').get_filename()).parent / 'client.py'
+# the only default entrypoint to generated code.
+
+# mypy thinks get_filename() does not exist, this is not user
+# facing code so we don't have to worry about potential
+# version errors
+pkg = pkgutil.get_loader('prisma').get_filename()  # type: ignore[attr-defined]
+file = Path(pkg).parent / 'client.py'
 if file.exists():
     file.unlink()
 
