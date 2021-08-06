@@ -7,13 +7,15 @@ from prisma import binaries
 from tests.utils import Runner
 
 
-# NOTE: this could probably mess up other tests if one of these
+# TODO: this could probably mess up other tests if one of these
 # tests fails mid run, as the global binaries are deleted
 
 
 def assert_success(result: Result) -> None:
     assert result.exit_code == 0
-    assert result.output == f'Downloaded binaries to {binaries.GLOBAL_TEMP_DIR}\n'
+    assert result.output.endswith(
+        f'Downloaded binaries to {binaries.GLOBAL_TEMP_DIR}\n'
+    )
 
     for binary in binaries.BINARIES:
         assert binary.path.exists()

@@ -82,7 +82,7 @@ def test_str_enum_choice(runner: Runner) -> None:
     assert result.output == 'is alice\n'
 
     result = runner.invoke(['--argument=invalid'], cli=cli)
-    assert (
-        'Error: Invalid value for \'--argument\': invalid choice: invalid. (choose from bob, alice)'
-        in result.output
-    )
+    assert 'Error: Invalid value for \'--argument\':' in result.output
+    assert 'bob' in result.output
+    assert 'alice' in result.output
+    assert 'invalid' in result.output

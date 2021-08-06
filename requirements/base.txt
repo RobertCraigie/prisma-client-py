@@ -1,7 +1,6 @@
-# TODO: loosen version requirements
 jinja2>=2.11.2
 pydantic>=1.8.0
-click==7.1.2
+click>=7.1.2
 python-dotenv>=0.12.0
 contextvars; python_version < '3.7'
 typing-extensions>=3.7; python_version < '3.8'

@@ -70,7 +70,10 @@ def test_unsupported_pydantic_version(runner: Runner, monkeypatch: MonkeyPatch) 
 def test_bad_http_option(runner: Runner) -> None:
     result = runner.invoke(['py', 'generate', '--http=foo'])
     assert result.exit_code != 0
-    assert 'Error: Invalid value for \'--http\': invalid choice: foo' in result.output
+    assert 'Error: Invalid value for \'--http\'' in result.output
+    assert 'foo' in result.output
+    assert 'aiohttp' in result.output
+    assert 'requests' in result.output
 
 
 def test_prisma_error_non_zero_exit_code(testdir: Testdir, runner: Runner) -> None:
