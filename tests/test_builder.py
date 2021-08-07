@@ -5,13 +5,15 @@ from typing import Dict, Any
 
 import pytest
 from syrupy import SnapshotAssertion
-from prisma.builder import QueryBuilder
+from prisma.utils import _NoneType
+from prisma.builder import QueryBuilder, serializer
 from prisma.errors import UnknownRelationalFieldError, UnknownModelError
 
 from .utils import assert_query_equals
 
 
 # TODO: more tests
+# TODO: cleanup registered serializers
 # TODO: these tests should be schema agnostic
 #       one schema should be used for all these tests
 #       and only changed when needed for these tests
@@ -195,3 +197,51 @@ def test_unknown_model() -> None:
         ).build_query()
 
     assert exc.match(r'Model: "Foo" does not exist\.')
+
+
+def test_unserializable_type() -> None:
+    with pytest.raises(TypeError) as exc:
+        QueryBuilder(
+            operation='query',
+            method='findFirst',
+            arguments={
+                'where': QueryBuilder
+            }
+        ).build_query()
+
+    assert exc.match(r'Type <class \'prisma.builder.QueryBuilder\'> not serializable')
+
+
+def test_unserializable_instance() -> None:
+    with pytest.raises(TypeError) as exc:
+        QueryBuilder(
+            operation='query',
+            method='findFirst',
+            arguments={
+                'where': _NoneType()
+            }
+        ).build_query()
+
+    assert exc.match(r'Type <class \'prisma.utils._NoneType\'> not serializable')
+
+
+def test_custom_serialization(snapshot: SnapshotAssertion) -> None:
+    class Foo:
+        def __init__(self, arg: int) -> None:
+            self.arg = arg
+
+    @serializer.register(Foo)
+    def custom_serializer(inst: Foo) -> int:
+        return inst.arg
+
+    query = QueryBuilder(
+        operation='query',
+        method='findUnique',
+        model='Post',
+        arguments={
+            'where': {
+                'title': Foo(1),
+            }
+        }
+    ).build_query()
+    assert query == snapshot

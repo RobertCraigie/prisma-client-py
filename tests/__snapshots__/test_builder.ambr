@@ -1,3 +1,25 @@
+# name: test_custom_serialization
+  '
+  query {
+    result: findUniquePost
+    (
+      where: {
+        title: 1
+      }
+    )
+    {
+      id
+      created_at
+      updated_at
+      title
+      published
+      views
+      desc
+      author_id
+    }
+  }
+  '
+---
 # name: test_datetime_serialization_tz_aware
   '
   query {
@@ -26,7 +48,7 @@
     result: findUniquePost
     (
       where: {
-        created_at: "1985-10-26T00:01:01+00:00"
+        created_at: "1985-10-26T01:01:01+00:00"
       }
     )
     {

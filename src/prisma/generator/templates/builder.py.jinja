@@ -14,8 +14,11 @@
 
 import json
 import logging
+import inspect
 from textwrap import indent
+from datetime import timezone
 from abc import abstractmethod, ABC
+from functools import singledispatch
 
 from .errors import UnknownModelError, UnknownRelationalFieldError
 
@@ -636,17 +639,33 @@ class Key(AbstractNode):
         return f'{self.key}{self.sep}'
 
 
-def serialize_json(obj: Any) -> str:
-    """JSON serializer for objects not serializable by the default JSON encoder"""
-    if isinstance(obj, datetime.datetime):
-        # ensure we include the UTC offset
-        return obj.astimezone(datetime.timezone.utc).isoformat()
+@singledispatch
+def serializer(obj: Any) -> str:
+    """Single dispatch generic function for serializing objects to JSON"""
+    if inspect.isclass(obj):
+        typ = obj
+    else:
+        typ = type(obj)
 
-    raise TypeError(f'Type {type(obj)} not serializable')
+    raise TypeError(f'Type {typ} not serializable')
+
+
+@serializer.register(datetime.datetime)
+def serialize_datetime(dt: datetime.datetime) -> str:
+    """Format a datetime object to an ISO8601 string with a timezone.
+
+    This assumes naive datetime objects are in UTC.
+    """
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    elif dt.tzinfo != timezone.utc:
+        dt = dt.astimezone(timezone.utc)
+
+    return dt.isoformat()
 
 
 def dumps(obj: Any, **kwargs: Any) -> str:
-    kwargs.setdefault('default', serialize_json)
+    kwargs.setdefault('default', serializer)
     return json.dumps(obj, **kwargs)
 
 # black does not respect the fmt: off comment without this
