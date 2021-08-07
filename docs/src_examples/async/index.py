@@ -1,6 +1,7 @@
 import asyncio
 from prisma import Client
 
+
 async def main() -> None:
     db = Client()
     await db.connect()

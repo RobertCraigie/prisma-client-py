@@ -57,7 +57,7 @@ class PrismaCLI(click.MultiCommand):
 class PathlibPath(click.Path):
     """A Click path argument that returns a pathlib Path, not a string"""
 
-    def convert(  # type: ignore[override]
+    def convert(
         self, value: str, param: Optional[click.Parameter], ctx: Optional[click.Context]
     ) -> Path:
         return Path(str(super().convert(value, param, ctx)))

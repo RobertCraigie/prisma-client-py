@@ -1,5 +1,5 @@
 import sys
-from typing import Callable, Coroutine, TypeVar, Any
+from typing import Callable, Coroutine, TypeVar, Union, List, Dict, Any
 
 from pydantic import BaseModel
 
@@ -21,3 +21,6 @@ BaseModelT = TypeVar('BaseModelT', bound=BaseModel)
 # TODO: use a TypeVar
 FuncType = Callable[..., Any]
 CoroType = Callable[..., Coroutine[Any, Any, Any]]
+
+# NOTE: this should be a recursive type
+Serializable = Union[None, bool, float, int, str, List[Any], Dict[Any, Any]]

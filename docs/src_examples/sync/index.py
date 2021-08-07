@@ -1,5 +1,6 @@
 from prisma import Client
 
+
 def main() -> None:
     db = Client()
     db.connect()

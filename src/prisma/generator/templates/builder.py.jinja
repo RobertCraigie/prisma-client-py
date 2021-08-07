@@ -20,6 +20,7 @@ from datetime import timezone
 from abc import abstractmethod, ABC
 from functools import singledispatch
 
+from ._types import Serializable
 from .errors import UnknownModelError, UnknownRelationalFieldError
 
 
@@ -640,7 +641,7 @@ class Key(AbstractNode):
 
 
 @singledispatch
-def serializer(obj: Any) -> str:
+def serializer(obj: Any) -> Serializable:
     """Single dispatch generic function for serializing objects to JSON"""
     if inspect.isclass(obj):
         typ = obj
