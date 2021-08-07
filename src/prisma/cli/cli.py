@@ -21,13 +21,6 @@ log: logging.Logger = logging.getLogger(__name__)
 
 # TODO: switch base cli to click as well to support autocomplete
 
-try:
-    from rich.traceback import install
-
-    install(show_locals=True)
-except ImportError:
-    pass
-
 
 def main(
     args: Optional[List[str]] = None,

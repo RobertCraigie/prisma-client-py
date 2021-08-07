@@ -23,8 +23,6 @@ from ...binaries.platform import binary_platform
 def cli(output_json: bool) -> None:
     """Display Prisma Client Python version information."""
     extras = {
-        'dev': 'tox',
-        'pretty': 'rich',
         'aiohttp': 'aiohttp',
         'requests': 'requests',
     }
