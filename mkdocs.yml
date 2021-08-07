@@ -1,0 +1,56 @@
+strict: true
+site_url: https://example.com/
+site_dir: build/site
+site_name: Prisma Client Python
+site_description: An auto-generated and fully type-safe database client
+
+repo_name: RobertCraigie/prisma-client-py
+repo_url: https://github.com/RobertCraigie/prisma-client-py
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: red
+      accent: red
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: pink
+      accent: pink
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  logo: 'logo.svg'
+  favicon: 'favicon.png'
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+markdown_extensions:
+  - pymdownx.highlight:
+      use_pygments: false
+  - pymdownx.extra
+  - pymdownx.tabbed
+  - pymdownx.details
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+
+extra_javascript:
+  - https://unpkg.com/shiki@0.9.6
+  - scripts/highlight.js
+
+nav:
+  - Overview: index.md
+  - Quickstart: quickstart.md
+  - Advanced Usage: advanced.md
+  - Configuration: config.md
+  - Installation: install.md
+  - Logging: logging.md
+  - Partial Types: partial-types.md
+  - Type Checkers:
+    - Mypy: mypy.md
+  - API Reference:
+    - Partial Types: reference/partials.md

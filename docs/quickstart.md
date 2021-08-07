@@ -1,125 +1,91 @@
 # Quickstart
 
-> NOTE: Adapted from the Prisma Client Go [documentation](https://github.com/prisma/prisma-client-go/blob/master/docs/quickstart.md)
+!!! note
+    Adapted from the Prisma Client Go [documentation](https://github.com/prisma/prisma-client-go/blob/master/docs/quickstart.md)
 
-In this page, you will learn how to send queries to an SQLite database using Prisma Client Python.
+In this page, you will learn how to send queries to an SQLite database using Prisma Client Python and
+run static type checks.
 
 ## Setup
 
 1) Setup a Python project with a [virtual environment](https://docs.python.org/3/library/venv.html)
 
-    ```shell script
-    mkdir demo && cd demo
-    python3 -m venv .venv
-    ```
+```sh
+mkdir demo && cd demo
+python3 -m venv .venv
+```
 
 
 2) Activate the virtual environment
 
-    Note that you will have to run the activation command on every new shell instance.
+Note that you will have to run the activation command on every new shell instance.
 
-    | Platform | Shell           | Activation Command                      |
-    | -------- | --------------- | --------------------------------------- |
-    | POSIX    | bash/zsh        | `$ source .venv/bin/activate`           |
-    |          | fish            | `$ source .venv/bin/activate.fish`      |
-    |          | csh/tcsh        | `$ source .venv/bin/activate.csh`       |
-    |          | PowerShell Core | `$ .venv/bin/Activate.ps1`              |
-    | Windows  | cmd.exe         | `C:\> .venv\Scripts\activate.bat`       |
-    |          | PowerShell      | `PS C:\> .venv\Scripts\Activate.ps1`    |
+| Platform | Shell           | Activation Command                      |
+| -------- | --------------- | --------------------------------------- |
+| POSIX    | bash/zsh        | `$ source .venv/bin/activate`           |
+|          | fish            | `$ source .venv/bin/activate.fish`      |
+|          | csh/tcsh        | `$ source .venv/bin/activate.csh`       |
+|          | PowerShell Core | `$ .venv/bin/Activate.ps1`              |
+| Windows  | cmd.exe         | `C:\> .venv\Scripts\activate.bat`       |
+|          | PowerShell      | `PS C:\> .venv\Scripts\Activate.ps1`    |
 
 
 3) Install Prisma Client Python
 
-    ```shell script
-    pip install git+https://github.com/RobertCraigie/prisma-client-py#egg=prisma.io[aiohttp]
-    ```
+<!-- TODO: show how to setup a synchronous as well and explain the difference -->
+
+```sh
+pip install git+https://github.com/RobertCraigie/prisma-client-py#egg=prisma.io[aiohttp]
+```
 
 4) Prepare your database schema in a `schema.prisma` file.
 
-   For example, a simple schema with an sqlite database and one model would look like this:
+For example, a simple schema with an sqlite database and one model would look like this:
 
-    ```prisma
-    datasource db {
-        // could be postgresql or mysql
-        provider = "sqlite"
-        url      = "file:dev.db"
-    }
+```prisma
+--8<-- "docs/src_examples/async/index.schema.prisma"
+```
 
-    generator db {
-        provider = "python -m prisma"
-    }
 
-    model Post {
-        id        String   @default(cuid()) @id
-        createdAt DateTime @default(now())
-        updatedAt DateTime @updatedAt
-        title     String
-        published Boolean
-        desc      String?
-    }
+To get this up and running in your database, we use the Prisma migration
+tool [`db push`](https://www.prisma.io/docs/reference/api-reference/command-reference#db-push)
+to create and migrate our database:
+
+```sh
+prisma db push
+```
+
+If you make changes to your prisma schema, you need to run this command again.
+
+!!! note
+    The `db push` command also generates the client for you, if you want to generate the client without
+    modifying your database, use the following command
+
+    ```sh
+    prisma generate
     ```
 
-    To get this up and running in your database, we use the Prisma migration
-    tool [`migrate`](https://github.com/prisma/migrate) to create and migrate our
-    database:
-
-     ```shell script
-    # initialize the first migration
-    python -m prisma migrate save --create-db --name "init"
-    # apply the migration
-    python -m prisma migrate up
+!!! hint
+    you can add the `--watch` flag to re-generate the client whenever you modify the `schema.prisma` file
+    ```sh
+    prisma generate --watch
     ```
-
-5) Generate the Prisma Client Python client in your project
-
-     ```shell script
-    python -m prisma generate
-    ```
-
-    If you make changes to your prisma schema, you need to run this command again.
 
 ## Usage
 
 Create a file `main.py`:
 
 ```py
-import asyncio
-from prisma.client import Client
-
-
-async def main() -> None:
-    client = Client()
-    await client.connect()
-
-    post = await client.post.create(
-        {
-            'title': 'Hello from prisma!',
-            'desc': 'Prisma is a database toolkit and makes databases easy.',
-            'published': True,
-        }
-    )
-    print(f'created post: {post.json(indent=2, sort_keys=True)}')
-
-    found = await client.post.find_unique(where={'id': post.id})
-    print(f'found post: {found.json(indent=2, sort_keys=True)}')
-    print(f'post description is "{found.desc}"')
-
-    await client.disconnect()
-
-
-if __name__ == '__main__':
-    asyncio.get_event_loop().run_until_complete(main())
-
+--8<-- "docs/src_examples/async/index.py"
 ```
 
 and run it:
 
-```shell script
+```sh
 python main.py
 ```
 
 ```
-❯ python main.py
 created post: {
   "created_at": "2021-01-04T00:30:35.921000+00:00",
   "desc": "Prisma is a database toolkit and makes databases easy.",
@@ -139,35 +105,36 @@ found post: {
 post description is "Prisma is a database toolkit and makes databases easy.""
 ```
 
-## Setup Static Type Checking
+## Static type checking
+
+### Setup
 
 1) Install mypy
 
-    ```shell script
-    pip install mypy
-    ```
+```sh
+pip install mypy
+```
 
 2) Create a mypy config file `mypy.ini`
 
-    ```
-    [mypy]
-    strict = True
-    plugins = prisma.mypy
-    ```
-
-## Usage
-
-```shell script
-python -m mypy .
+```ini
+[mypy]
+strict = True
+plugins = prisma.mypy
 ```
 
+### Usage
+
+```sh
+mypy .
 ```
-❯ python -m mypy .
+
+```sh
+$ mypy .
 Success: no issues found in 1 source file
 ```
 
-All prisma client methods are fully statically typed, this means that mypy will output an error
-if you try to access an unknown field or any other invalid operation.
+### Error reporting
 
 For example, add the following line to the end of the main() function
 
@@ -177,14 +144,29 @@ async def main() -> None:
     print(f'Invalid field: {post.invalid_field}')
 ```
 
-```
-❯ python -m mypy .
+```sh
+$ mypy .
 main.py:24: error: "Post" has no attribute "invalid_field"
 Found 1 error in 1 file (checked 1 source file)
 ```
 
+Mypy will also error whenever you try to query by a non-existent field, for example
 
-### Next steps
+```py
+async def main() -> None:
+    ...
+    found = await client.post.find_unique(where={'unknown_field': post.id})
+    ...
+```
+
+```sh
+$ mypy .
+main.py:18: error: Extra key "unknown_field" for TypedDict "PostWhereUniqueInput"
+Found 1 error in 1 file (checked 1 source file)
+```
+
+
+## Next steps
 
 We just scratched the surface of what you can do. Read our [advanced tutorial](advanced.md) to learn about more
 complex queries and how you can query for relations.

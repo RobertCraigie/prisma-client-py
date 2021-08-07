@@ -2,11 +2,15 @@
 
 Prisma Client Python uses python's [logging library](https://docs.python.org/3/library/logging.html) for logging messages.
 
-## CLI Debug
+## Debugging the CLI
 
 Debugging the CLI is as simple as setting the `PRISMA_PY_DEBUG` environment variable to 1.
 
-## Client Debug
+```sh
+PRISMA_PY_DEBUG=1 prisma generate
+```
+
+## Debugging the Client
 
 In order to display any debug messages in your terminal, the logging library must first be configured.
 

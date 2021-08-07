@@ -26,6 +26,14 @@ pyright:
 typesafety:
 	tox -e typesafety $(ARGS)
 
+.PHONY: docs
+docs:
+	mkdocs build
+
+.PHONY: docs-serve
+docs-serve:
+	mkdocs serve
+
 .PHONY: clean
 clean:
 	python tests/scripts/cleanup.py

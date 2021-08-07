@@ -19,15 +19,13 @@ where `{{ model }}Keys` is [Literal](https://docs.python.org/3/library/typing.ht
 
 For example:
 
-```schema.prisma
-...
+```prisma
 model User {
   id      String   @default(cuid()) @id
   name    String
   posts   Post[]
   email   String?
 }
-...
 ```
 
 ```py
@@ -36,33 +34,29 @@ UserKeys = Literal['id', 'name', 'posts', 'email']
 
 ## Reference
 
-* `name`
 
-  The name given to the generated partial type, must be unique.
+`name`
+: The name given to the generated partial type, must be unique.
 
-* `include`
-
-  An iterable of field names that will be available in the generated model.
+`include`
+: An iterable of field names that will be available in the generated model.
   Cannot be used at the same time as `exclude`.
 
-* `exclude`
-
-  An iterable of field names that will *not* be available in the generated model.
+`exclude`
+: An iterable of field names that will *not* be available in the generated model.
   Cannot be used at the same time as `include`.
 
-* `required`
+`required`
+: An iterable of field names that will *not* be marked as optional in the generated model.
 
-  An iterable of field names that will *not* be marked as optional in the generated model.
-
-* `optional`
-
-  An iterable of field names that will be marked as optional in the generated model.
+`optional`
+: An iterable of field names that will be marked as optional in the generated model.
 
 ## Examples
 
 All examples use the following models
 
-```schema.prisma
+```prisma
 model User {
   id      String   @default(cuid()) @id
   name    String

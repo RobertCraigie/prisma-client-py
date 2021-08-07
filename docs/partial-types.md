@@ -11,7 +11,7 @@ See [config](config.md#partial-type-generator) for configuration details and the
 
 Given the following model and partial type generator
 
-```schema.prisma
+```prisma
 model User {
   id      String   @default(cuid()) @id
   name    String
@@ -21,7 +21,7 @@ model User {
 }
 ```
 
-`.prisma/partials.py`
+`prisma/partial_types.py`
 ```py
 from prisma.models import User
 
@@ -81,6 +81,7 @@ Just like normal prisma models, partial models can be used anywhere that accepts
 One situation where partial types are particularly useful is in FastAPI endpoints
 
 ```py
+from typing import Optional
 from prisma.client import Client
 from prisma.partials import UserWithoutRelations
 from fastapi import FastAPI, Depends
@@ -92,6 +93,22 @@ app = FastAPI()
     '/users/{user_id}',
     response_model=UserWithoutRelations,
 )
-async def get_user(user_id: str, db: Client = Depends(get_db)) -> User:
+async def get_user(user_id: str, db: Client = Depends(get_db)) -> Optional[User]:
     return await db.user.find_unique(where={'id': user_id})
+```
+
+or for making raw queries type safe
+
+```py
+from prisma.partials import UserInLogin
+
+user = await client.query_first(
+    'SELECT name, email FROM User WHERE id = ?',
+    'abc',
+    model=UserInLogin,
+)
+if user is None:
+    print('Did not find user')
+else:
+    print(f'Found user: name={user.name}, email={user.email}')
 ```
