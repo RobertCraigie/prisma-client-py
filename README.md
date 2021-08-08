@@ -125,4 +125,3 @@ model Post {
 ## Contributing
 
 We use [conventional commits](https://www.conventionalcommits.org) (also known as semantic commits) to ensure consistent and descriptive commit messages.
-

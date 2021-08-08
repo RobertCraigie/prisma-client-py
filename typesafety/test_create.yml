@@ -48,4 +48,3 @@
         data['invalid'] = True  # E: TypedDict "PostCreateInput" has no key 'invalid'  [misc]
 
       await client.post.create(data)
-

@@ -148,4 +148,3 @@ class UserRequiredEmail:
   profile: Optional['Profile']
   email: str
 ```
-

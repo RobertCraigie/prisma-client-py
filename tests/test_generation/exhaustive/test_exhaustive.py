@@ -1,25 +1,14 @@
 import sys
 import subprocess
 from pathlib import Path
-from typing import List, Any
+from typing import List
 
 import pytest
 from syrupy import SnapshotAssertion
-from syrupy.extensions.single_file import SingleFileSnapshotExtension
 
 from prisma.generator import BASE_PACKAGE_DIR
 from prisma.generator.utils import remove_suffix
 from .utils import ROOTDIR
-
-
-class SingleFileUTF8SnapshotExtension(SingleFileSnapshotExtension):
-    def serialize(self, data: Any, **kwargs: Any) -> bytes:
-        return bytes(data, 'utf8')
-
-
-@pytest.fixture
-def snapshot(snapshot: SnapshotAssertion) -> SnapshotAssertion:
-    return snapshot.use_extension(SingleFileUTF8SnapshotExtension)
 
 
 def get_files_from_templates(directory: Path) -> List[str]:

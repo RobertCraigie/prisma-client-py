@@ -6,10 +6,15 @@ repos:
     -   id: check-toml
     -   id: check-vcs-permalinks
     -   id: end-of-file-fixer
-        exclude: -*.py.jinja
+        exclude: |
+            (?x)^(
+                .*\.py\.jinja|
+                .*\.raw
+            )$
     -   id: trailing-whitespace
+        exclude: -*.ambr
     -   id: mixed-line-ending
-        args: [--fix=crlf]
+        args: [--fix=lf]
 -   repo: https://github.com/psf/black
     rev: 20.8b1
     hooks:
