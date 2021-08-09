@@ -41,12 +41,13 @@ class Client:
     {{ model.name.lower() }}: '{{ model.name }}Actions'
     {% endfor %}
 
-    def __init__(self, *, use_dotenv: bool = True) -> None:
+    def __init__(self, *, use_dotenv: bool = True, log_queries: bool = False) -> None:
         {% for model in dmmf.datamodel.models %}
         self.{{ model.name.lower() }} = {{ model.name }}Actions(self)
         {% endfor %}
         self.__engine: Optional[QueryEngine] = None
         self._active_provider = '{{ datasources[0].active_provider }}'
+        self._log_queries = log_queries
 
         if use_dotenv:
             load_env()
@@ -66,7 +67,7 @@ class Client:
         It is required to call this before accessing data.
         """
         if self.__engine is None:
-            self.__engine = QueryEngine(dml=SCHEMA)
+            self.__engine = QueryEngine(dml=SCHEMA, log_queries=self._log_queries)
 
         {{ maybe_await }}self.__engine.connect(timeout=timeout)
 

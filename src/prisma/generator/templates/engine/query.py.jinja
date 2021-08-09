@@ -28,9 +28,10 @@ class QueryEngine:
     dml: str
     session: HTTP
 
-    def __init__(self, *, dml: str):
+    def __init__(self, *, dml: str, log_queries: bool = False):
         self.dml = dml
         self.session = HTTP()
+        self._log_queries = log_queries
         self.url = None  # type: Optional[str]
         self.process = None  # type: Optional[subprocess.Popen[bytes]]
         self.file = None  # type: Optional[Path]
@@ -99,7 +100,11 @@ class QueryEngine:
         )
 
         if DEBUG:
-            env.update(LOG_QUERIES='y', RUST_LOG='info')
+            env.update(RUST_LOG='info')
+
+        # TODO: remove the noise from these query logs
+        if self._log_queries:
+            env.update(LOG_QUERIES='y')
 
         args: List[str] = [str(file.absolute()), '-p', str(port), '--enable-raw-queries']
         if _env_bool('__PRISMA_PY_PLAYGROUND'):

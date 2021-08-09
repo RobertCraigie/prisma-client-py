@@ -1,4 +1,5 @@
 import pytest
+from _pytest.capture import CaptureFixture
 
 import prisma
 from prisma import Client
@@ -14,8 +15,18 @@ def test_create_partial_raises_outside_generation() -> None:
 
 
 @pytest.mark.asyncio
+async def test_query_logging_disabled(
+    client: Client, capsys: CaptureFixture[str]
+) -> None:
+    await client.user.create({'name': 'Robert'})
+    captured = capsys.readouterr()
+    assert captured.out == ''
+    assert captured.err == ''
+
+
+@pytest.mark.asyncio
 async def test_logs_sql_queries(testdir: Testdir) -> None:
-    client = Client()
+    client = Client(log_queries=True)
 
     # we have to redirect stdout to a file to capture it as
     # we are passing stdout to a subprocess
@@ -28,5 +39,4 @@ async def test_logs_sql_queries(testdir: Testdir) -> None:
 
         await client.disconnect()
 
-    assert prisma.utils.DEBUG is True
     assert 'SELECT `main`.`User`.`id' in file.read_text()

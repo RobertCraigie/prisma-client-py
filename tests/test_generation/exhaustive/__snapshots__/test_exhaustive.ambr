@@ -1088,7 +1088,7 @@
       d: 'DActions'
       e: 'EActions'
   
-      def __init__(self, *, use_dotenv: bool = True) -> None:
+      def __init__(self, *, use_dotenv: bool = True, log_queries: bool = False) -> None:
           self.post = PostActions(self)
           self.user = UserActions(self)
           self.m = MActions(self)
@@ -1102,6 +1102,7 @@
           self.e = EActions(self)
           self.__engine: Optional[QueryEngine] = None
           self._active_provider = 'postgresql'
+          self._log_queries = log_queries
   
           if use_dotenv:
               load_env()
@@ -1121,7 +1122,7 @@
           It is required to call this before accessing data.
           """
           if self.__engine is None:
-              self.__engine = QueryEngine(dml=SCHEMA)
+              self.__engine = QueryEngine(dml=SCHEMA, log_queries=self._log_queries)
   
           await self.__engine.connect(timeout=timeout)
   
@@ -5100,9 +5101,10 @@
       dml: str
       session: HTTP
   
-      def __init__(self, *, dml: str):
+      def __init__(self, *, dml: str, log_queries: bool = False):
           self.dml = dml
           self.session = HTTP()
+          self._log_queries = log_queries
           self.url = None  # type: Optional[str]
           self.process = None  # type: Optional[subprocess.Popen[bytes]]
           self.file = None  # type: Optional[Path]
@@ -5167,7 +5169,11 @@
           )
   
           if DEBUG:
-              env.update(LOG_QUERIES='y', RUST_LOG='info')
+              env.update(RUST_LOG='info')
+  
+          # TODO: remove the noise from these query logs
+          if self._log_queries:
+              env.update(LOG_QUERIES='y')
   
           args: List[str] = [str(file.absolute()), '-p', str(port), '--enable-raw-queries']
           if _env_bool('__PRISMA_PY_PLAYGROUND'):
@@ -17929,7 +17935,7 @@
       d: 'DActions'
       e: 'EActions'
   
-      def __init__(self, *, use_dotenv: bool = True) -> None:
+      def __init__(self, *, use_dotenv: bool = True, log_queries: bool = False) -> None:
           self.post = PostActions(self)
           self.user = UserActions(self)
           self.m = MActions(self)
@@ -17943,6 +17949,7 @@
           self.e = EActions(self)
           self.__engine: Optional[QueryEngine] = None
           self._active_provider = 'postgresql'
+          self._log_queries = log_queries
   
           if use_dotenv:
               load_env()
@@ -17962,7 +17969,7 @@
           It is required to call this before accessing data.
           """
           if self.__engine is None:
-              self.__engine = QueryEngine(dml=SCHEMA)
+              self.__engine = QueryEngine(dml=SCHEMA, log_queries=self._log_queries)
   
           self.__engine.connect(timeout=timeout)
   
@@ -21941,9 +21948,10 @@
       dml: str
       session: HTTP
   
-      def __init__(self, *, dml: str):
+      def __init__(self, *, dml: str, log_queries: bool = False):
           self.dml = dml
           self.session = HTTP()
+          self._log_queries = log_queries
           self.url = None  # type: Optional[str]
           self.process = None  # type: Optional[subprocess.Popen[bytes]]
           self.file = None  # type: Optional[Path]
@@ -22006,7 +22014,11 @@
           )
   
           if DEBUG:
-              env.update(LOG_QUERIES='y', RUST_LOG='info')
+              env.update(RUST_LOG='info')
+  
+          # TODO: remove the noise from these query logs
+          if self._log_queries:
+              env.update(LOG_QUERIES='y')
   
           args: List[str] = [str(file.absolute()), '-p', str(port), '--enable-raw-queries']
           if _env_bool('__PRISMA_PY_PLAYGROUND'):
