@@ -8,7 +8,7 @@ set +x
 source .venv/bin/activate
 set -x
 
-pip install -U pytest pyright
+pip install -U pytest pyright coverage==5.3.1
 pip install -U --find-links=../../../.tests_cache/dist prisma.io[requests]
 
 # required due to https://github.com/RobertCraigie/prisma-client-py/issues/35
@@ -17,6 +17,6 @@ cp ../../../prisma/http.py.original $HTTP 2>/dev/null || :
 
 prisma db push --accept-data-loss --force-reset
 
-pytest --confcutdir=. -x tests
+coverage run -m pytest --confcutdir=. -x tests
 
 pyright tests

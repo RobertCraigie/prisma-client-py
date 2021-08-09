@@ -97,7 +97,7 @@ class Runner:
         else:
 
             def _cli() -> None:  # pylint: disable=function-redefined
-                if args is not None:
+                if args is not None:  # pragma: no branch
                     # fake invocation context
                     args.insert(0, 'prisma')
 
@@ -202,7 +202,7 @@ class Testdir:
         if schema is None:
             schema = self.default_schema
 
-        if output is None:
+        if output is None:  # pragma: no branch
             output = 'prisma'
 
         path = self.path.joinpath('schema.prisma')
@@ -235,7 +235,7 @@ class Testdir:
         install_flags: Optional[List[str]] = None,
         uninstall_flags: Optional[List[str]] = None,
     ) -> Iterator[None]:
-        if install_flags is None:
+        if install_flags is None:  # pragma: no branch
             install_flags = ['-e', '.']
 
         if uninstall_flags is None:
@@ -267,7 +267,7 @@ class Testdir:
             dist = pkg_resources.get_distribution('prisma.io')
             entries = dist.get_entry_map()['prisma']
 
-            if clear:
+            if clear:  # pragma: no branch
                 # TODO: clear all entries, this curently only clears
                 # entry points defined in the prisma package, other
                 # packages prisma entry points are not cleared
@@ -278,7 +278,7 @@ class Testdir:
             )
             yield
         finally:
-            if entries is not None:
+            if entries is not None:  # pragma: no branch
                 entries.pop(name, None)
 
     @contextlib.contextmanager
@@ -319,7 +319,7 @@ def get_source_from_function(function: FuncType, **env: Any) -> str:
 
     lines = textwrap.dedent('\n'.join(lines)).splitlines()
     for name, value in env.items():
-        if isinstance(value, str):
+        if isinstance(value, str):  # pragma: no branch
             value = f'\'{value}\''
 
         lines.insert(start, f'{name} = {value}')
@@ -343,13 +343,13 @@ def assert_time_like_now(dt: datetime, threshold: int = 10) -> None:
 
 
 def assert_query_equals(query: Union[str, QueryBuilder], expected: str) -> None:
-    if not isinstance(query, str):
+    if not isinstance(query, str):  # pragma: no branch
         query = query.build_query()
 
     # we have to dedent and remove leading and ending newlines
     # to support in-place query definitions
     expected = dedent(expected).lstrip('\n')
-    if expected.endswith('\n'):
+    if expected.endswith('\n'):  # pragma: no branch
         expected = expected[:-1]
 
     assert query == expected

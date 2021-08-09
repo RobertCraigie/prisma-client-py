@@ -83,12 +83,12 @@ def invoke() -> None:
                 ),
             )
         elif request.method == 'generate':
-            if request.params is None:
+            if request.params is None:  # pragma: no cover
                 raise RuntimeError('Prisma JSONRPC did not send data to generate.')
 
             generator.run(request.params)
             response = jsonrpc.Response(id=request.id, result=None)
-        else:
+        else:  # pragma: no cover
             raise RuntimeError(f'JSON RPC received unexpected method: {request.method}')
 
         if response is not None:

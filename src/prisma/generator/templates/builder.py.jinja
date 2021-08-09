@@ -321,7 +321,7 @@ class RootNode(Node):
 
     def render(self) -> str:
         content = super().render()
-        if not content:
+        if not content:  # pragma: no cover
             # this should never happen.
             # render() is typed to return None if the node
             # should not be rendered but as this node will

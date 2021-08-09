@@ -1,3 +1,4 @@
 pytest
 pytest-asyncio
 pyright
+coverage==5.3.1

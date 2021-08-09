@@ -10,9 +10,8 @@ from py._path.local import LocalPath
 
 from _pytest.nodes import Node
 from _pytest.config import Config
-from _pytest._io import TerminalWriter
 from _pytest._code import ExceptionInfo
-from _pytest._code.code import TerminalRepr, ReprEntry, ReprFileLocation
+from _pytest._code.code import TerminalRepr
 
 if TYPE_CHECKING:
     from _pytest._code.code import _TracebackStyle
@@ -21,27 +20,16 @@ if TYPE_CHECKING:
 ROOTDIR = Path(__file__).parent.parent.parent
 
 
-class TraceLastReprEntry(ReprEntry):
-    def toterminal(self, tw: TerminalWriter) -> None:
-        if not self.reprfileloc:
-            return
-
-        self.reprfileloc.toterminal(tw)
-        for line in self.lines:
-            red = line.startswith('E   ')
-            tw.line(line, bold=True, red=red)
-
-        return
-
-
 class IntegrationError(AssertionError):
-    def __init__(self, error_message: Optional[str] = None, lineno: int = 0) -> None:
-        self.error_message = error_message or ''
+    def __init__(
+        self, message: Optional[str] = None, lineno: int = 0
+    ) -> None:  # pragma: no cover
+        self.message = message or ''
         self.lineno = lineno
         super().__init__()
 
-    def __str__(self) -> str:
-        return self.error_message
+    def __str__(self) -> str:  # pragma: no cover
+        return self.message
 
 
 def resolve_path(path: LocalPath) -> Path:
@@ -50,7 +38,7 @@ def resolve_path(path: LocalPath) -> Path:
 
 def is_integration_test_file(local_path: LocalPath) -> bool:
     path = resolve_path(local_path)
-    if len(path.parts) != 4:
+    if len(path.parts) != 4:  # pragma: no cover
         return False
 
     return path.parts[:2] == ('tests', 'integrations') and path.parts[-1] == 'test.sh'
@@ -72,7 +60,7 @@ def pytest_ignore_collect(path: LocalPath, config: Config) -> Optional[bool]:
     tests/integrations/basic/tests/test_foo.py
     """
     pathlib_path = resolve_path(path)
-    if pathlib_path.parts[:2] != ('tests', 'integrations'):
+    if pathlib_path.parts[:2] != ('tests', 'integrations'):  # pragma: no cover
         # not an integration test
         return None
 
@@ -95,7 +83,7 @@ def pytest_collect_file(
 @lru_cache(maxsize=None)
 def create_wheels() -> None:
     dist = ROOTDIR / '.tests_cache' / 'dist'
-    if dist.exists():
+    if dist.exists():  # pragma: no branch
         shutil.rmtree(str(dist))
 
     result = subprocess.run(
@@ -105,7 +93,7 @@ def create_wheels() -> None:
         stderr=subprocess.STDOUT,
         cwd=str(ROOTDIR),
     )
-    if result.returncode != 0:
+    if result.returncode != 0:  # pragma: no cover
         print(result.stdout.decode('utf-8'))
         raise RuntimeError('Could not build wheels, see output above.')
 
@@ -127,6 +115,7 @@ class IntegrationTestItem(pytest.Item):
         create_wheels()
 
     def runtest(self) -> None:
+        # TODO: include exit code in pytest failure short description
         result = subprocess.run(
             [str(self.path)],
             cwd=str(self.path.parent),
@@ -135,7 +124,7 @@ class IntegrationTestItem(pytest.Item):
             check=False,
         )
         print(result.stdout.decode('utf-8'))
-        if result.returncode != 0:
+        if result.returncode != 0:  # pragma: no cover
             raise IntegrationError(
                 f'Executing `{self.path}` returned non-zero exit code {result.returncode}'
             )
@@ -144,41 +133,14 @@ class IntegrationTestItem(pytest.Item):
         self,
         excinfo: ExceptionInfo[BaseException],
         style: Optional['_TracebackStyle'] = None,
-    ) -> Union[str, TerminalRepr]:
-        """Remove unnecessary error traceback if applicable
+    ) -> Union[str, TerminalRepr]:  # pragma: no cover
+        if isinstance(excinfo.value, IntegrationError):
+            return f'IntegrationError: {excinfo.value.message}'
 
-        this method is taken directly from pytest-mypy-plugins along with
-        related classes, e.g. TraceLastReprEntry
-        """
-        # NOTE: I do not know how much of this code is required / functioning as expected
-        if excinfo.errisinstance(SystemExit):
-            # We assume that before doing exit() (which raises SystemExit) we've printed
-            # enough context about what happened so that a stack trace is not useful.
-            return excinfo.exconly(tryshort=True)
+        return super().repr_failure(excinfo, style=style)
 
-        if excinfo.errisinstance(IntegrationError):
-            # with traceback removed
-            excinfo = cast(ExceptionInfo[IntegrationError], excinfo)
-            exception_repr = excinfo.getrepr(style='short')
-            exception_repr.reprcrash.message = ''  # type: ignore
-            repr_file_location = (
-                ReprFileLocation(  # pyright: reportGeneralTypeIssues=false
-                    path=self.fspath,
-                    lineno=self.starting_lineno + excinfo.value.lineno,
-                    message='',
-                )
-            )
-            repr_tb_entry = TraceLastReprEntry(
-                exception_repr.reprtraceback.reprentries[-1].lines[1:],
-                None,
-                None,
-                repr_file_location,
-                'short',
-            )
-            exception_repr.reprtraceback.reprentries = [repr_tb_entry]
-            return exception_repr
-
-        return super().repr_failure(excinfo, style='native')
+    def reportinfo(self):
+        return self.fspath, 0, f'integration: {self.name}'
 
 
 class IntegrationTestFile(pytest.File):

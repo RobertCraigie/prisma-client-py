@@ -55,3 +55,7 @@ async def test_lazy_session_open() -> None:
     assert_session_state(http, 'open')
     await http.close()
     assert_session_state(http, 'closed')
+
+
+def test_library_property() -> None:
+    assert HTTP().library == 'aiohttp'

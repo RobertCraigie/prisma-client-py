@@ -19,19 +19,15 @@ def remove_generated_clients() -> None:
         shutil.rmtree(str(output))
 
 
-def pytest_sessionstart(session: pytest.Session) -> None:
-    """Cleanup output files on session start as these are cached in between test runs"""
-    remove_generated_clients()
-
-
 def pytest_sessionfinish(session: pytest.Session) -> None:
-    if not DEBUG_GENERATOR:
+    if not DEBUG_GENERATOR:  # pragma: no branch
         remove_generated_clients()
 
 
 @pytest.fixture(autouse=True, scope='session')
 def generate_clients() -> None:
     """Generate the clients required to run these tests"""
+    remove_generated_clients()
     base = Path(__file__).parent
     for schema in ['sync.schema.prisma', 'async.schema.prisma']:
         maybe_exit(prisma.run(['generate', f'--schema={base.joinpath(schema)}']))

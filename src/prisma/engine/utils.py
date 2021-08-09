@@ -29,9 +29,6 @@ def ensure() -> Path:
     start_time = time.monotonic()
     file = None
     force_version = True
-
-    # TODO: add support for exact binary names
-    # for example "linux-openssl-1.1.x" instead of "linux"
     binary_name = platform.check_for_extension(platform.binary_platform())
 
     name = f'prisma-query-engine-{binary_name}'
@@ -41,6 +38,7 @@ def ensure() -> Path:
     log.debug('Expecting local query engine %s', local_path)
     log.debug('Expecting global query engine %s', global_path)
 
+    # TODO: this resolving should be moved to the binary class
     binary = os.environ.get('PRISMA_QUERY_ENGINE_BINARY')
     if binary:
         log.debug('PRISMA_QUERY_ENGINE_BINARY is defined, using %s', binary)
@@ -77,7 +75,7 @@ def ensure() -> Path:
         .replace('query-engine', '')
         .strip()
     )
-    log.debug('Using query enginve version %s', version)
+    log.debug('Using query engine version %s', version)
 
     if force_version and version != ENGINE_VERSION:
         raise errors.MismatchedVersionsError(expected=ENGINE_VERSION, got=version)

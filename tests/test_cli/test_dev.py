@@ -72,7 +72,7 @@ async def test_playground(testdir: Testdir) -> None:
         assert resp.status == 200
         assert '<title>Rust Playground</title>' in await resp.text()
     finally:
-        if sys.platform == 'win32':
+        if sys.platform == 'win32':  # pragma: no cover
             sig = signal.CTRL_C_EVENT  # pylint: disable=no-member
         else:
             sig = signal.SIGINT
