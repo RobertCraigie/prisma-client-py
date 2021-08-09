@@ -45,7 +45,8 @@ def test_engine_binary_does_not_exist(monkeypatch: MonkeyPatch) -> None:
 
 def test_mismatched_version_error(fake_process: FakeProcess) -> None:
     fake_process.register_subprocess(
-        [QUERY_ENGINE.path, '--version'], stdout='query-engine unexpected-hash'
+        [QUERY_ENGINE.path, '--version'],  # type: ignore[list-item]
+        stdout='query-engine unexpected-hash',
     )
 
     with pytest.raises(errors.MismatchedVersionsError) as exc:
@@ -61,13 +62,15 @@ def test_ensure_local_path(testdir: Testdir, fake_process: FakeProcess) -> None:
     fake_engine.touch()
 
     fake_process.register_subprocess(
-        [fake_engine, '--version'], stdout='query-engine a-different-hash'
+        [fake_engine, '--version'],  # type: ignore[list-item]
+        stdout='query-engine a-different-hash',
     )
     with pytest.raises(errors.MismatchedVersionsError):
         path = utils.ensure()
 
     fake_process.register_subprocess(
-        [fake_engine, '--version'], stdout=f'query-engine {ENGINE_VERSION}'
+        [fake_engine, '--version'],  # type: ignore[list-item]
+        stdout=f'query-engine {ENGINE_VERSION}',
     )
     path = utils.ensure()
     assert path == fake_engine
@@ -78,7 +81,8 @@ def test_ensure_env_override(testdir: Testdir, fake_process: FakeProcess) -> Non
     fake_engine.touch()
 
     fake_process.register_subprocess(
-        [fake_engine, '--version'], stdout='query-engine a-different-hash'
+        [fake_engine, '--version'],  # type: ignore[list-item]
+        stdout='query-engine a-different-hash',
     )
 
     with temp_env_update({'PRISMA_QUERY_ENGINE_BINARY': str(fake_engine)}):

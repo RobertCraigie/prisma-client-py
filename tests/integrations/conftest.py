@@ -83,7 +83,7 @@ def pytest_collect_file(
 @lru_cache(maxsize=None)
 def create_wheels() -> None:
     dist = ROOTDIR / '.tests_cache' / 'dist'
-    if dist.exists():  # pragma: no branch
+    if dist.exists():  # pragma: no cover
         shutil.rmtree(str(dist))
 
     result = subprocess.run(
