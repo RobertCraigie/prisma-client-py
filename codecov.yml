@@ -1,0 +1,23 @@
+coverage:
+  status:
+    project:
+      # default is required to exist
+      default: false
+      tests:
+        target: 100%
+        paths:
+          - "tests/"
+        branches:
+          - master
+      prisma:
+        paths:
+          - "!tests/"
+        target: auto
+
+        # NOTE: flexible on this threshold
+        threshold: 5%
+        branches:
+          - master
+
+ignore:
+  - "src/prisma/generator/templates/**/*"

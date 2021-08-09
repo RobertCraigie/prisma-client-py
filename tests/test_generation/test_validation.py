@@ -1,9 +1,17 @@
+import re
 import subprocess
 
 import pytest
 
 from prisma.utils import temp_env_update
 from ..utils import Testdir
+
+
+def assert_no_generator_output(output: str) -> None:
+    # as we run generation under coverage we need to remove any warnings
+    # for example, coverage.py will warn that the tests module was not imported
+    output = re.sub(r'.* prisma:GeneratorProcess Coverage.py warning:.*', '', output)
+    assert 'prisma:GeneratorProcess' not in output
 
 
 def test_field_name_basemodel_attribute(testdir: Testdir) -> None:
@@ -76,7 +84,7 @@ def test_native_binary_target_no_warning(testdir: Testdir) -> None:
     stdout = result.stdout.decode('utf-8')
     assert 'Warning' not in stdout
     assert 'binaryTargets option' not in stdout
-    assert 'prisma:GeneratorProcess' not in stdout
+    assert_no_generator_output(stdout)
 
 
 def test_binary_targets_warning(testdir: Testdir) -> None:
@@ -86,7 +94,7 @@ def test_binary_targets_warning(testdir: Testdir) -> None:
         )
 
     stdout = result.stdout.decode('utf-8')
-    assert 'prisma:GeneratorProcess' not in stdout
+    assert_no_generator_output(stdout)
     assert (
         'Warning: The binaryTargets option '
         'is not currently supported by Prisma Client Python' in stdout

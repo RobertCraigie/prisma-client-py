@@ -1,0 +1,118 @@
+name: Test
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - "*.md"
+      - ".vscode/**"
+      - "docs/**"
+      - "LICENSE"
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - "*.md"
+      - ".vscode/**"
+      - "docs/**"
+      - "LICENSE"
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    strategy:
+      # TODO: test more python versions
+      max-parallel: 2
+      matrix:
+        include:
+        - python-version: 3.6
+          tox-env: py36
+        - python-version: 3.9
+          tox-env: py39
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # TODO: remove aiohttp when stdlib http is available
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install codecov==2.1.11 .[dev,aiohttp]
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - uses: actions/cache@v2
+        with:
+          path: .mypy_cache
+          key: ${{ runner.os }}-mypy
+          restore-keys: |
+            ${{ runner.os }}-mypy
+
+      # TODO: cache prisma engines
+
+      - name: Setup database
+        # for some reason prisma creates the database where the schema is stored
+        # but when using the prisma query engine it uses the root directory
+        run: |
+          python -m prisma db push --schema=tests/data/schema.prisma --skip-generate
+          cp tests/data/dev.db dev.db
+
+      - name: Run tests
+        # TODO: test postgresql
+        run: |
+          tox -e setup,${{ matrix.tox-env }},report -- --ignore=tests/integrations/postgresql
+
+      - name: Upload coverage
+        run: |
+          codecov --file coverage.xml
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 2
+      matrix:
+        python-version: [3.6]
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/dev.txt
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - uses: actions/cache@v2
+        with:
+          path: .mypy_cache
+          key: ${{ runner.os }}-mypy
+          restore-keys: |
+            ${{ runner.os }}-mypy
+
+      - name: Check linters
+        run: |
+          tox -e lint
