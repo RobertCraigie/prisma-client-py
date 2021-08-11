@@ -106,7 +106,14 @@ def handle_response_errors(resp: Response, data: Any) -> NoReturn:
             if exc is not None:
                 raise exc(error)
 
-            if 'A value is required but not set' in user_facing.get('message', ''):
+            message = user_facing.get('message', '')
+
+            if code == 'P2028':
+                if message.endswith('Last state: \'Expired\'.'):
+                    raise prisma_errors.TransactionExpiredError()
+                raise prisma_errors.TransactionError(message)
+
+            if 'A value is required but not set' in message:
                 raise prisma_errors.MissingRequiredValueError(error)
         except (KeyError, TypeError):
             continue

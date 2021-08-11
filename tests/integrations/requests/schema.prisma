@@ -4,8 +4,9 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-py"
-  http     = "requests"
+  provider        = "prisma-client-py"
+  http            = "requests"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 model User {
@@ -13,4 +14,12 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   name       String
+  profile    Profile?
+}
+
+model Profile {
+  id      Int    @id @default(autoincrement())
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String
+  bio     String
 }

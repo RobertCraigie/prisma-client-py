@@ -143,7 +143,14 @@ class QueryEngine:
                 'Could not connect to the query engine'
             ) from last_exc
 
-    {{ maybe_async_def }}request(self, method: Method, path: str, *, data: Any = None) -> Any:
+    {{ maybe_async_def }}request(
+        self,
+        method: Method,
+        path: str,
+        *,
+        data: Any = None,
+        tx_id: Optional[str] = None,
+    ) -> Any:
         if self.url is None:
             raise errors.NotConnectedError('Not connected to the query engine')
 
@@ -156,6 +163,9 @@ class QueryEngine:
 
         if data is not None:
             kwargs['data'] = data
+
+        if tx_id is not None:
+            kwargs['headers']['X-transaction-id'] = tx_id
 
         url = self.url + path
         log.debug('Sending %s request to %s with data: %s', method, url, data)
