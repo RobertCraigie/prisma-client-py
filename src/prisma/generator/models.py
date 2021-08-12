@@ -192,8 +192,6 @@ class OptionalValueFromEnvVar(BaseModel):
 class Config(BaseSettings):
     """Custom generator config options."""
 
-    # TODO: add support for skipping individual plugins
-    skip_plugins: bool = FieldInfo(default=False)
     http: HttpChoices = HttpChoices.aiohttp
     partial_type_generator: Optional[Module]
     recursive_type_depth: int = FieldInfo(default=5)

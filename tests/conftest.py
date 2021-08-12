@@ -12,7 +12,6 @@ import prisma
 from prisma import Client
 from prisma.cli import setup_logging
 
-from . import contexts
 from .utils import async_run, Runner, Testdir
 
 
@@ -75,8 +74,6 @@ def pytest_collection_modifyitems(
 
 
 def pytest_runtest_setup(item: pytest.Function) -> None:
-    contexts.clear()
-
     if not has_client_fixture(item) or marked_persist_data(item):
         return
 

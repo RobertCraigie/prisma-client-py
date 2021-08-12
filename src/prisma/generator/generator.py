@@ -12,7 +12,6 @@ from .types import PartialModelFields
 from .utils import is_same_path, resolve_template_path, resolve_original_file
 
 from ..utils import DEBUG_GENERATOR
-from ..plugins import PluginContext
 
 
 __all__ = (
@@ -51,10 +50,6 @@ def run(params: Dict[str, Any]) -> None:
 
     if DEBUG_GENERATOR:
         _write_debug_data('data', data.json(indent=2))
-
-    if not config.skip_plugins:
-        ctx = PluginContext(method='generate', data=data)
-        ctx.run()
 
     rootdir = Path(data.generator.output.value)
     if not rootdir.exists():

@@ -94,29 +94,6 @@ def test_schema_not_found(runner: Runner) -> None:
 
 @pytest.mark.parametrize(
     'target,argument,options',
-    [
-        (True, None, 'skip_plugins = true'),  # ensure uses schema property
-        (False, '--use-plugins', None),
-        (False, '--use-plugins', 'skip_plugins = true'),
-        (True, '--skip-plugins', 'skip_plugins = false'),
-        (False, None, None),  # default
-    ],
-)
-def test_skip_plugins_option(
-    runner: Runner,
-    testdir: Testdir,
-    target: bool,
-    argument: Optional[str],
-    options: Optional[str],
-) -> None:
-    def do_assert(data: Dict[str, Any]) -> None:
-        assert data['generator']['config']['skip_plugins'] is target
-
-    run_test(runner, testdir, argument, options, do_assert)
-
-
-@pytest.mark.parametrize(
-    'target,argument,options',
     chain(
         from_enum(HttpChoices, '--http='),
         [

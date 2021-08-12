@@ -22,12 +22,6 @@ log: logging.Logger = logging.getLogger(__name__)
 @options.schema
 @options.watch
 @click.option(
-    '--skip-plugins/--use-plugins',
-    is_flag=True,
-    default=None,
-    help='Whether or not to skip running prisma plugins',
-)
-@click.option(
     '--http',
     type=EnumChoice(HttpChoices),
     help='HTTP client library the generated client will use',

@@ -7,7 +7,6 @@ __license__ = 'APACHE'
 __copyright__ = 'Copyright 2020-2021 RobertCraigie'
 __version__ = '0.0.1'
 
-from .plugins import *
 from .utils import setup_logging
 from . import errors
 
