@@ -21,9 +21,7 @@ from typing import (
 
 import py
 import click
-import pkg_resources
 from click.testing import CliRunner, Result
-from pkg_resources import EntryPoint, Distribution
 
 from prisma.cli import main
 from prisma._types import FuncType
@@ -143,7 +141,7 @@ class Testdir:
     def __init__(self, testdir: 'PytestTestdir') -> None:
         self.testdir = testdir
 
-    def _make_relative(self, path: Union[str, Path]) -> str:
+    def _make_relative(self, path: Union[str, Path]) -> str:  # pragma: no cover
         if not isinstance(path, Path):
             path = Path(path)
 
@@ -151,13 +149,6 @@ class Testdir:
             return str(path)
 
         return str(path.relative_to(self.path))
-
-    @staticmethod
-    def _resolve_name(func: FuncType, name: Optional[str] = None) -> str:
-        if name is None:
-            return func.__name__
-
-        return name
 
     def make_from_function(
         self,
@@ -218,68 +209,6 @@ class Testdir:
         self, *args: Union[str, 'os.PathLike[str]'], **kwargs: Any
     ) -> 'RunResult':
         return self.testdir.runpytest(*args, **kwargs)
-
-    def create_module(
-        self, func: FuncType, name: Optional[str] = None, mod: str = 'mod', **env: Any
-    ) -> None:
-        mod_path = self.path / mod
-        mod_path.mkdir(exist_ok=True)
-        mod_path.joinpath('__init__.py').touch()
-        name = self._resolve_name(func, name)
-        self.make_from_function(func, name=mod_path / name, **env)
-
-    @staticmethod
-    @contextlib.contextmanager
-    def install_module(
-        pkg: Optional[str] = None,
-        install_flags: Optional[List[str]] = None,
-        uninstall_flags: Optional[List[str]] = None,
-    ) -> Iterator[None]:
-        if install_flags is None:  # pragma: no branch
-            install_flags = ['-e', '.']
-
-        if uninstall_flags is None:
-            if pkg is None:  # pragma: no cover
-                raise TypeError('Missing required argument: pkg')
-
-            uninstall_flags = ['-y', pkg]
-
-        try:
-            subprocess.run(['pip', 'install', *install_flags], check=True)
-            yield
-        finally:
-            subprocess.run(['pip', 'uninstall', *uninstall_flags], check=True)
-
-    @contextlib.contextmanager
-    def create_entry_point(
-        self,
-        func: FuncType,
-        name: Optional[str] = None,
-        mod: str = 'mod',
-        clear: bool = True,
-    ) -> Iterator[None]:
-        name = self._resolve_name(func, name)
-        self.create_module(func, name=name, mod=mod)
-
-        entries = None
-
-        try:
-            dist = pkg_resources.get_distribution('prisma.io')
-            entries = dist.get_entry_map()['prisma']
-
-            if clear:  # pragma: no branch
-                # TODO: clear all entries, this curently only clears
-                # entry points defined in the prisma package, other
-                # packages prisma entry points are not cleared
-                entries.clear()
-
-            entries[name] = EntryPoint.parse(
-                f'{name} = {mod}.{name}', dist=Distribution(mod)
-            )
-            yield
-        finally:
-            if entries is not None:  # pragma: no branch
-                entries.pop(name, None)
 
     @contextlib.contextmanager
     def redirect_stdout_to_file(
