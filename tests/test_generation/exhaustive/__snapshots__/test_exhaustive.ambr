@@ -820,6 +820,7 @@
   
   def dumps(obj: Any, **kwargs: Any) -> str:
       kwargs.setdefault('default', serializer)
+      kwargs.setdefault('ensure_ascii', False)
       return json.dumps(obj, **kwargs)
   
   # black does not respect the fmt: off comment without this
@@ -17667,6 +17668,7 @@
   
   def dumps(obj: Any, **kwargs: Any) -> str:
       kwargs.setdefault('default', serializer)
+      kwargs.setdefault('ensure_ascii', False)
       return json.dumps(obj, **kwargs)
   
   # black does not respect the fmt: off comment without this

@@ -64,3 +64,19 @@
   }
   '
 ---
+# name: test_unicode
+  '
+  query {
+    result: findUniqueUser
+    (
+      where: {
+        name: "❤"
+      }
+    )
+    {
+      id
+      name
+    }
+  }
+  '
+---

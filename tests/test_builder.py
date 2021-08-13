@@ -194,6 +194,21 @@ def test_datetime_serialization_tz_unaware(snapshot: SnapshotAssertion) -> None:
     assert query == snapshot
 
 
+def test_unicode(snapshot: SnapshotAssertion) -> None:
+    """Serializing unicode strings does not convert to ASCII"""
+    query = QueryBuilder(
+        operation='query',
+        method='findUnique',
+        model='User',
+        arguments={
+            'where': {
+                'name': '❤',
+            }
+        }
+    ).build_query()
+    assert query == snapshot
+
+
 def test_unknown_model() -> None:
     """Passing unknown model raises an error"""
     with pytest.raises(UnknownModelError) as exc:
