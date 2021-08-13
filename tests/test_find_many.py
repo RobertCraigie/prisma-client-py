@@ -4,6 +4,7 @@ from prisma import Client
 
 @pytest.mark.asyncio
 async def test_find_many(client: Client) -> None:
+    """Filters and ordering work as suggested"""
     posts = [
         await client.post.create({'title': 'Test post 1', 'published': False}),
         await client.post.create({'title': 'Test post 2', 'published': False}),

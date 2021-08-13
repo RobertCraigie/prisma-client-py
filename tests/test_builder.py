@@ -36,6 +36,7 @@ def build_query(
 
 
 def test_basic_building() -> None:
+    """Standard builder usage with and without a model"""
     assert_query_equals(QueryBuilder(
         operation='query',
         method='findUnique',
@@ -72,6 +73,7 @@ def test_basic_building() -> None:
 
 
 def test_invalid_include() -> None:
+    """Invalid include field raises error"""
     with pytest.raises(UnknownRelationalFieldError) as exception:
         QueryBuilder(
             operation='query',
@@ -90,6 +92,7 @@ def test_invalid_include() -> None:
 
 
 def test_include_no_model() -> None:
+    """Trying to include a field without acess to a model raises an error"""
     with pytest.raises(ValueError) as exc:
         build_query(
             operation='mutation',
@@ -101,6 +104,7 @@ def test_include_no_model() -> None:
 
 
 def test_include_with_arguments() -> None:
+    """Including a field with filters"""
     assert_query_equals(QueryBuilder(
         operation='query',
         method='findUnique',
@@ -141,6 +145,7 @@ def test_include_with_arguments() -> None:
 
 
 def test_raw_queries() -> None:
+    """Raw queries serialise paramaters to JSON"""
     assert_query_equals(QueryBuilder(
         operation='mutation',
         method='queryRaw',
@@ -160,6 +165,7 @@ def test_raw_queries() -> None:
 
 
 def test_datetime_serialization_tz_aware(snapshot: SnapshotAssertion) -> None:
+    """Serializing a timezone aware datetime converts to UTC"""
     query = QueryBuilder(
         operation='query',
         method='findUnique',
@@ -174,6 +180,7 @@ def test_datetime_serialization_tz_aware(snapshot: SnapshotAssertion) -> None:
 
 
 def test_datetime_serialization_tz_unaware(snapshot: SnapshotAssertion) -> None:
+    """Serializing a timezone naive datetime converts to UTC"""
     query = QueryBuilder(
         operation='query',
         method='findUnique',
@@ -188,6 +195,7 @@ def test_datetime_serialization_tz_unaware(snapshot: SnapshotAssertion) -> None:
 
 
 def test_unknown_model() -> None:
+    """Passing unknown model raises an error"""
     with pytest.raises(UnknownModelError) as exc:
         QueryBuilder(
             operation='query',
@@ -200,6 +208,7 @@ def test_unknown_model() -> None:
 
 
 def test_unserializable_type() -> None:
+    """Passing an unserializable type raises an error"""
     with pytest.raises(TypeError) as exc:
         QueryBuilder(
             operation='query',
@@ -213,6 +222,7 @@ def test_unserializable_type() -> None:
 
 
 def test_unserializable_instance() -> None:
+    """Passing an unserializable instance raises an error"""
     with pytest.raises(TypeError) as exc:
         QueryBuilder(
             operation='query',
@@ -226,6 +236,7 @@ def test_unserializable_instance() -> None:
 
 
 def test_custom_serialization(snapshot: SnapshotAssertion) -> None:
+    """Registering a custom serializer serializes as expected"""
     class Foo:
         def __init__(self, arg: int) -> None:
             self.arg = arg

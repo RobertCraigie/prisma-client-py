@@ -15,6 +15,7 @@ def assert_no_generator_output(output: str) -> None:
 
 
 def test_field_name_basemodel_attribute(testdir: Testdir) -> None:
+    """Field name shadowing a basemodel attribute is not allowed"""
     schema = (
         testdir.SCHEMA_HEADER
         + '''
@@ -35,6 +36,7 @@ def test_field_name_basemodel_attribute(testdir: Testdir) -> None:
 
 
 def test_field_name_python_keyword(testdir: Testdir) -> None:
+    """Field name shadowing a python keyword is not allowed"""
     schema = (
         testdir.SCHEMA_HEADER
         + '''
@@ -54,6 +56,7 @@ def test_field_name_python_keyword(testdir: Testdir) -> None:
 
 
 def test_unknown_type(testdir: Testdir) -> None:
+    """Unsupported scalar type is not allowed"""
     schema = '''
         datasource db {{
           provider = "postgres"
@@ -78,6 +81,7 @@ def test_unknown_type(testdir: Testdir) -> None:
 
 
 def test_native_binary_target_no_warning(testdir: Testdir) -> None:
+    """binaryTargets only being native does not raise warning"""
     with temp_env_update({'PRISMA_PY_DEBUG': '0'}):
         result = testdir.generate(options='binaryTargets = ["native"]')
 
@@ -88,6 +92,7 @@ def test_native_binary_target_no_warning(testdir: Testdir) -> None:
 
 
 def test_binary_targets_warning(testdir: Testdir) -> None:
+    """Binary targets option being present raises a warning"""
     with temp_env_update({'PRISMA_PY_DEBUG': '0'}):
         result = testdir.generate(
             options='binaryTargets = ["native", "rhel-openssl-1.1.x"]'

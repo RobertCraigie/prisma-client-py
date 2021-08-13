@@ -7,6 +7,7 @@ from prisma import Client
 
 @pytest.mark.asyncio
 async def test_delete_many(client: Client) -> None:
+    """Standard usage"""
     posts = [
         await client.post.create({'title': 'Foo post', 'published': False}),
         await client.post.create({'title': 'Bar post', 'published': False}),

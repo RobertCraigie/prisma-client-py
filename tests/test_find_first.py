@@ -4,6 +4,7 @@ from prisma import Client
 
 @pytest.mark.asyncio
 async def test_find_first(client: Client) -> None:
+    """Skips multiple non-matching records"""
     posts = [
         await client.post.create({'title': 'Test post 1', 'published': False}),
         await client.post.create({'title': 'Test post 2', 'published': False}),

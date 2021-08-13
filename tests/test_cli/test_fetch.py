@@ -22,10 +22,12 @@ def assert_success(result: Result) -> None:
 
 
 def test_fetch(runner: Runner) -> None:
+    """Basic usage, binaries are already cached"""
     assert_success(runner.invoke(['py', 'fetch']))
 
 
 def test_fetch_one_binary_missing(runner: Runner) -> None:
+    """Downloads a binary if it is missing"""
     binary = random.choice(binaries.BINARIES)
     assert binary.path.exists()
     binary.path.unlink()
@@ -35,6 +37,7 @@ def test_fetch_one_binary_missing(runner: Runner) -> None:
 
 
 def test_fetch_force(runner: Runner) -> None:
+    """Passing --force re-downloads an already existing binary"""
     binary = random.choice(binaries.BINARIES)
     assert binary.path.exists()
     old_stat = binary.path.stat()
@@ -54,6 +57,7 @@ def test_fetch_force(runner: Runner) -> None:
 
 
 def test_fetch_force_no_dir(runner: Runner) -> None:
+    """Passing --force when the base directory does not exist"""
     binaries.remove_all()
     shutil.rmtree(str(binaries.GLOBAL_TEMP_DIR))
 

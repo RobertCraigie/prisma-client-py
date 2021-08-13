@@ -63,6 +63,9 @@ def assert_module_not_clean(path: Path) -> None:
 
 
 def test_repeated_rstrip_bug(tmp_path: Path) -> None:
+    """Previously, rendering schema.prisma.jinja would have rendered the file
+    to schema.prism instead of schema.prisma
+    """
     env = Environment(loader=FileSystemLoader(str(tmp_path)))
 
     template = 'schema.prisma.jinja'
@@ -73,6 +76,7 @@ def test_repeated_rstrip_bug(tmp_path: Path) -> None:
 
 
 def test_template_cleanup(testdir: Testdir) -> None:
+    """Cleaning up templates removes all rendered files"""
     path = testdir.path / 'prisma'
     assert not path.exists()
     copy_tree(str(BASE_PACKAGE_DIR), str(path))
@@ -87,6 +91,7 @@ def test_template_cleanup(testdir: Testdir) -> None:
 
 
 def test_template_cleanup_original_files_not_replaced(testdir: Testdir) -> None:
+    """Generating the client twice does not override template backups"""
     path = testdir.path / 'prisma'
     assert not path.exists()
 
@@ -101,6 +106,7 @@ def test_template_cleanup_original_files_not_replaced(testdir: Testdir) -> None:
 
 
 def test_erroneous_template_cleanup(testdir: Testdir) -> None:
+    """Template runtime errors do not result in a partially generated module"""
     path = testdir.path / 'prisma'
     copy_tree(str(BASE_PACKAGE_DIR), str(path))
 

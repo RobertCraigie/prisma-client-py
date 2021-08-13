@@ -4,6 +4,7 @@ from prisma import Client
 
 @pytest.mark.asyncio
 async def test_delete(client: Client) -> None:
+    """Deleting a record with a relationship does not delete the related record"""
     post = await client.post.create(
         {
             'title': 'Hi from Prisma!',
@@ -13,8 +14,6 @@ async def test_delete(client: Client) -> None:
         include={'author': True},
     )
     assert post.title == 'Hi from Prisma!'
-
-    # TODO: we should not have to do this check
     assert post.author is not None
     assert post.author.name == 'Alice'
 
@@ -36,5 +35,6 @@ async def test_delete(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_delete_record_not_found(client: Client) -> None:
+    """Deleting a non-existent record returns None"""
     deleted = await client.post.delete(where={'id': 'ksdjsdh'})
     assert deleted is None

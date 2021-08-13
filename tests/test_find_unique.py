@@ -5,6 +5,7 @@ from prisma import errors, Client
 
 @pytest.mark.asyncio
 async def test_find_unique(client: Client) -> None:
+    """Standard usage"""
     post = await client.post.create(
         {
             'title': 'My post title!',
@@ -20,6 +21,7 @@ async def test_find_unique(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_find_unique_missing_required_args(client: Client) -> None:
+    """Missing field raises an error"""
     with pytest.raises(TypeError):
         await client.post.find_unique()  # type: ignore[call-arg]
 
@@ -34,5 +36,6 @@ async def test_find_unique_missing_required_args(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_find_unique_no_match(client: Client) -> None:
+    """Looking for non-existent record does not error"""
     found = await client.post.find_unique(where={'id': 'sjbsjahs'})
     assert found is None

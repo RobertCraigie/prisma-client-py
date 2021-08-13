@@ -6,6 +6,7 @@ from prisma.enums import Role
 
 @pytest.mark.asyncio
 async def test_create_many(client: Client) -> None:
+    """Standard usage"""
     total = await client.user.create_many(
         [{'name': 'Robert', 'role': Role.ADMIN}, {'name': 'Tegan'}]
     )
@@ -21,6 +22,7 @@ async def test_create_many(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_skip_duplicates(client: Client) -> None:
+    """Skipping duplcates ignores unique constraint errors"""
     user = await client.user.create({'name': 'Robert'})
 
     with pytest.raises(prisma.errors.UniqueViolationError) as exc:

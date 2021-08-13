@@ -6,6 +6,7 @@ from .utils import assert_time_like_now
 
 @pytest.mark.asyncio
 async def test_create(client: Client) -> None:
+    """Basic record creation"""
     post = await client.post.create(
         {
             'title': 'Hi from Prisma!',
@@ -31,6 +32,7 @@ async def test_create(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_create_with_relationship(client: Client) -> None:
+    """Creating a record with a nested relationship record creation"""
     post = await client.post.create(
         {
             'published': False,
@@ -49,6 +51,7 @@ async def test_create_with_relationship(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_create_missing_required_args(client: Client) -> None:
+    """Trying to create a record with a missing required field raises an error"""
     with pytest.raises(TypeError):
         await client.post.create()  # type: ignore[call-arg]
 
@@ -62,6 +65,7 @@ async def test_create_missing_required_args(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_create_unique_violation(client: Client) -> None:
+    """Creating the same record twice raises an error"""
     user = await client.user.create({'name': 'Robert', 'id': 'user-1'})
     assert user.id == 'user-1'
     assert user.name == 'Robert'

@@ -12,6 +12,7 @@ async def post_fixture(client: Client) -> Post:
 
 @pytest.mark.asyncio
 async def test_finds_post(client: Client, post: Post) -> None:
+    """Adding 1 second timedelta finds the post"""
     found = await client.post.find_first(
         where={'created_at': {'lt': post.created_at + datetime.timedelta(seconds=1)}}
     )
@@ -22,6 +23,7 @@ async def test_finds_post(client: Client, post: Post) -> None:
 @pytest.mark.asyncio
 @pytest.mark.persist_data
 async def test_tz_aware(client: Client, post: Post) -> None:
+    """Modifying timezone still finds post"""
     found = await client.post.find_first(
         where={
             'created_at': {

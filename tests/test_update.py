@@ -11,6 +11,7 @@ async def user_id_fixture(client: Client) -> str:
 @pytest.mark.asyncio
 @pytest.mark.persist_data
 async def test_update(client: Client) -> None:
+    """Standard usage"""
     post = await client.post.create(
         {
             'title': 'Hi from Create!',
@@ -47,6 +48,7 @@ async def test_update(client: Client) -> None:
 async def test_update_with_create_disconnect(
     client: Client, user_id: str, method: str
 ) -> None:
+    """Removing a relational field"""
     user = await client.user.find_unique(where={'id': user_id}, include={'posts': True})
     assert user is not None
     assert len(user.posts) == 0
@@ -79,6 +81,7 @@ async def test_update_with_create_disconnect(
 @pytest.mark.asyncio
 @pytest.mark.persist_data
 async def test_atomic_update(client: Client) -> None:
+    """Atomically incrementing a value by 1"""
     post = await client.post.create({'title': 'My Post', 'published': False})
     assert post.title == 'My Post'
     assert post.views == 0
@@ -93,6 +96,7 @@ async def test_atomic_update(client: Client) -> None:
 @pytest.mark.asyncio
 @pytest.mark.persist_data
 async def test_update_record_not_found(client: Client) -> None:
+    """Updating a non-existent record returns None"""
     post = await client.post.update(
         where={'id': 'wow'}, data={'title': 'Hi from Update!'}
     )

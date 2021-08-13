@@ -4,6 +4,7 @@ from prisma import Client
 
 @pytest.mark.asyncio
 async def test_create_many(client: Client) -> None:
+    """Creating multiple records in a single batch"""
     async with client.batch_() as batcher:
         batcher.user.create({'name': 'Robert'})
         batcher.user.create({'name': 'Tegan'})

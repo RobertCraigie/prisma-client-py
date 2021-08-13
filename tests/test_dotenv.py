@@ -6,18 +6,6 @@ from prisma import Client, load_env
 from .utils import Testdir
 
 
-SCHEMA = '''
-generator db {{
-  provider = "coverage run -m prisma"
-  output = "{output}"
-  {options}
-}}
-
-datasource db {{
-  provider = "sqlite"
-  url      = env("_PRISMA_PY_TESTING_DOTENV_DATABSE_URL")
-}}
-'''
 ENV_KEY = '_PRISMA_PY_TESTING_DOTENV_DATABSE_URL'
 
 
@@ -37,6 +25,7 @@ def clear_env() -> None:
 
 @pytest.mark.parametrize('name', ['.env', 'prisma/.env'])
 def test_client_loads_dotenv(testdir: Testdir, name: str) -> None:
+    """Initializing the client overrides os.environ variables"""
     make_env_file(testdir, name=name)
 
     Client(use_dotenv=False)
@@ -47,6 +36,7 @@ def test_client_loads_dotenv(testdir: Testdir, name: str) -> None:
 
 
 def test_load_env_no_files(testdir: Testdir) -> None:
+    """Loading dotenv files without any files present does not error"""
     assert len(list(testdir.path.iterdir())) == 0
     load_env()
     assert ENV_KEY not in os.environ

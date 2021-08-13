@@ -7,6 +7,7 @@ from ..utils import Testdir
 
 
 def test_one_datasource_allowed(testdir: Testdir) -> None:
+    """Prisma only allows one datasource"""
     schema = (
         testdir.SCHEMA_HEADER
         + '''
@@ -29,6 +30,7 @@ def test_one_datasource_allowed(testdir: Testdir) -> None:
 
 
 def test_can_generate_from_env_var(testdir: Testdir) -> None:
+    """Prisma generator output can be resolved from an env variable"""
     schema = '''
     datasource db {{
       provider = "sqlite"

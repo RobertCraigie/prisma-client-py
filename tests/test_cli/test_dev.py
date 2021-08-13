@@ -21,6 +21,8 @@ PRISMA_MODULE = [sys.executable, '-m', 'prisma']
 def test_playground_skip_generate_no_client(
     runner: Runner, monkeypatch: MonkeyPatch
 ) -> None:
+    """Passing --skip-generate with a non-generated client raises an error"""
+
     def mock_return(mod: str) -> bool:
         return False
 
@@ -32,6 +34,8 @@ def test_playground_skip_generate_no_client(
 
 @pytest.mark.asyncio
 async def test_playground(testdir: Testdir) -> None:
+    """Starts local HTTP server"""
+
     def output_reader(proc: 'subprocess.Popen[bytes]', lines: List[str]) -> List[str]:
         assert proc.stdout is not None
         for line in iter(proc.stdout.readline, b''):

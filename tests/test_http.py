@@ -30,6 +30,7 @@ def assert_session_state(http: HTTP, state: State) -> None:
 
 @pytest.mark.asyncio
 async def test_request_on_closed_sessions() -> None:
+    """Attempting to make a request on a closed session raises an error"""
     http = HTTP()
     assert http.closed is False
     await http.close()
@@ -45,6 +46,7 @@ async def test_request_on_closed_sessions() -> None:
 
 @pytest.mark.asyncio
 async def test_lazy_session_open() -> None:
+    """Accessing the session property opens the session"""
     http = HTTP()
     assert_session_state(http, 'initial')
 
@@ -58,4 +60,5 @@ async def test_lazy_session_open() -> None:
 
 
 def test_library_property() -> None:
+    """Purely here for coverage and I didn't feel like adding a pragma: no cover comment"""
     assert HTTP().library == 'aiohttp'

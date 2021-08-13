@@ -9,6 +9,7 @@ from .utils import Testdir
 
 
 def test_create_partial_raises_outside_generation() -> None:
+    """Trying to create a partial type outside of client generation raises an error"""
     with pytest.raises(RuntimeError) as exc:
         User.create_partial('PartialUser', exclude={'name'})
     assert 'outside of client generation' in str(exc.value)
@@ -18,6 +19,7 @@ def test_create_partial_raises_outside_generation() -> None:
 async def test_query_logging_disabled(
     client: Client, capsys: CaptureFixture[str]
 ) -> None:
+    """No queries are logged when query logging is disabled"""
     await client.user.create({'name': 'Robert'})
     captured = capsys.readouterr()
     assert captured.out == ''
@@ -26,6 +28,7 @@ async def test_query_logging_disabled(
 
 @pytest.mark.asyncio
 async def test_logs_sql_queries(testdir: Testdir) -> None:
+    """SQL queries are logged when enabled"""
     client = Client(log_queries=True)
 
     # we have to redirect stdout to a file to capture it as

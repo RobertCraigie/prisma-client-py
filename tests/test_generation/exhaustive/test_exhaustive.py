@@ -36,15 +36,18 @@ FILES = get_files_from_templates(BASE_PACKAGE_DIR / 'generator' / 'templates')
 
 @pytest.mark.parametrize('file', FILES)
 def test_sync(snapshot: SnapshotAssertion, file: str) -> None:
+    """Ensure synchronous client files match"""
     assert SYNC_ROOTDIR.joinpath(file).absolute().read_text() == snapshot
 
 
 @pytest.mark.parametrize('file', FILES)
 def test_async(snapshot: SnapshotAssertion, file: str) -> None:
+    """Ensure asynchronous client files match"""
     assert ASYNC_ROOTDIR.joinpath(file).absolute().read_text() == snapshot
 
 
 def test_sync_client_can_be_imported() -> None:
+    """Synchronous client can be imported"""
     proc = subprocess.run(
         [sys.executable, '-c', 'import prisma; print(prisma.__file__)'],
         cwd=str(SYNC_ROOTDIR.parent),
@@ -55,6 +58,7 @@ def test_sync_client_can_be_imported() -> None:
 
 
 def test_async_client_can_be_imported() -> None:
+    """Asynchronous client can be imported"""
     proc = subprocess.run(
         [sys.executable, '-c', 'import prisma; print(prisma.__file__)'],
         cwd=str(ASYNC_ROOTDIR.parent),

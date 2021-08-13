@@ -59,6 +59,11 @@ def from_enum(
 
 
 def test_unsupported_pydantic_version(runner: Runner, monkeypatch: MonkeyPatch) -> None:
+    """Using an older version of pydantic outputs warning
+
+    We need to use pydantic>=1.8.2 as that added the customise_sources config option to
+    prioritise env variables over init kwargs.
+    """
     monkeypatch.setattr(pydantic, 'VERSION', '1.6.2', raising=True)
     result = runner.invoke(['py', 'generate'])
     assert result.output.startswith(
@@ -68,6 +73,7 @@ def test_unsupported_pydantic_version(runner: Runner, monkeypatch: MonkeyPatch) 
 
 
 def test_bad_http_option(runner: Runner) -> None:
+    """Passing an unknown http library raises an error"""
     result = runner.invoke(['py', 'generate', '--http=foo'])
     assert result.exit_code != 0
     assert 'Error: Invalid value for \'--http\'' in result.output
@@ -77,6 +83,7 @@ def test_bad_http_option(runner: Runner) -> None:
 
 
 def test_prisma_error_non_zero_exit_code(testdir: Testdir, runner: Runner) -> None:
+    """Exits non-zero when the prisma process exits non-zero"""
     path = testdir.make_schema(schema=testdir.default_schema + 'foo')
     result = runner.invoke(['py', 'generate', f'--schema={path}'])
     assert result.exit_code != 0
@@ -84,6 +91,7 @@ def test_prisma_error_non_zero_exit_code(testdir: Testdir, runner: Runner) -> No
 
 
 def test_schema_not_found(runner: Runner) -> None:
+    """Passing non-existent schema raises an error"""
     result = runner.invoke(['py', 'generate', '--schema=foo'])
     assert result.exit_code != 0
     assert (
@@ -109,6 +117,8 @@ def test_http_option(
     argument: Optional[str],
     options: Optional[str],
 ) -> None:
+    """HTTP option is overrided correctly"""
+
     def do_assert(data: Dict[str, Any]) -> None:
         assert data['generator']['config']['http'] == target
 
@@ -135,6 +145,8 @@ def test_partials_option(
     argument: Optional[str],
     options: Optional[str],
 ) -> None:
+    """partial type generator option is overrided correctly"""
+
     def do_assert(data: Dict[str, Any]) -> None:
         partial_type_generator = data['generator']['config']['partial_type_generator']
         if target is None:

@@ -4,6 +4,10 @@ from prisma import Client
 
 @pytest.mark.asyncio
 async def test_update_many(client: Client) -> None:
+    """Filters update correct records
+
+    TODO: refactor this test, its a messs
+    """
     posts = [
         await client.post.create({'title': 'Test post 1', 'published': False}),
         await client.post.create({'title': 'Test post 2', 'published': False}),
