@@ -44,6 +44,9 @@ extra_javascript:
 
 nav:
   - Overview: index.md
+  - API Reference:
+    - Partial Types: reference/partials.md
+  - Limitations: limitations.md
   - Quickstart: quickstart.md
   - Advanced Usage: advanced.md
   - Configuration: config.md
@@ -52,5 +55,3 @@ nav:
   - Partial Types: partial-types.md
   - Type Checkers:
     - Mypy: mypy.md
-  - API Reference:
-    - Partial Types: reference/partials.md

@@ -247,7 +247,10 @@ class {{ model.name }}OrderByInput(TypedDict, total=False):
 {% if recursive_types %}
     {% set where_input_type = model.name + 'WhereInput' %}
 {% else %}
-    {% set where_input_type = model.name + 'WhereInputWithoutRelations' %}
+# Dict[str, Any] is a mypy limitation
+# see https://github.com/RobertCraigie/prisma-client-py/issues/45
+# switch to pyright for improved types, see docs/limitations.md
+    {% set where_input_type = 'Dict[str, Any]' %}
 {% endif %}
 
 {{ model.name }}RelationFilter = TypedDict(
@@ -325,17 +328,6 @@ class {{ current }}(TypedDict, total=False):
     NOT: List['{{ next }}']
     {% endif %}
 {% endcall %}
-
-# this isn't a recursive type as making it so increases mypy runtime
-# even further, this type is only used when pseudo-recursive types
-# are generated anyway, so not much value is lost
-class {{ model.name }}WhereInputWithoutRelations(TypedDict, total=False):
-    """{{ model.name }} arguments for searching without relational fields"""
-    {% for field in model.all_fields %}
-        {%- if not field.relation_name -%}
-            {{'    '}}{{ field.name }}: {{ field.where_input_type }}
-        {% endif %}
-    {% endfor %}
 
 
 {{ model.name }}Keys = Literal[
