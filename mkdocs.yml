@@ -45,6 +45,7 @@ extra_javascript:
 nav:
   - Overview: index.md
   - API Reference:
+    - Common Operations: reference/common.md
     - Partial Types: reference/partials.md
   - Limitations: limitations.md
   - Quickstart: quickstart.md
