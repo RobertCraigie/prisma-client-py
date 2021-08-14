@@ -65,6 +65,7 @@
       'endswith': 'endsWith',
       'order_by': 'orderBy',
       'not_in': 'notIn',
+      'is_not': 'isNot',
       'NOT': 'not',
       'IN': 'in',
   }
@@ -7420,6 +7421,23 @@
   # TODO: cleanup these types
   
   
+  
+  PostRelationFilter = TypedDict(
+      'PostRelationFilter',
+      {
+          'is': 'PostWhereInputWithoutRelations',
+          'is_not': 'PostWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class PostListRelationFilter(TypedDict, total=False):
+      some: 'PostWhereInputWithoutRelations'
+      none: 'PostWhereInputWithoutRelations'
+      every: 'PostWhereInputWithoutRelations'
+  
+  
   class PostInclude(TypedDict, total=False):
       """Post relational arguments"""
       author: Union[bool, 'UserArgsFromPost']
@@ -8081,7 +8099,6 @@
   FindFirstPostArgs = FindManyPostArgsFromPost
   
   
-  # TODO: support relationships here
       
   
   class PostWhereInput(TypedDict, total=False):
@@ -8091,6 +8108,7 @@
       title: Union[str, 'types.StringFilter']
       content: Union[str, 'types.StringFilter']
       published: Union[bool, 'types.BooleanFilter']
+      author: 'UserRelationFilter'
       author_id: Union[int, 'types.IntFilter']
   
       AND: List['PostWhereInputRecursive1']
@@ -8105,6 +8123,7 @@
       title: Union[str, 'types.StringFilter']
       content: Union[str, 'types.StringFilter']
       published: Union[bool, 'types.BooleanFilter']
+      author: 'UserRelationFilter'
       author_id: Union[int, 'types.IntFilter']
   
       AND: List['PostWhereInputRecursive2']
@@ -8114,6 +8133,20 @@
   
   class PostWhereInputRecursive2(TypedDict, total=False):
       """Post arguments for searching"""
+      id: Union[int, 'types.IntFilter']
+      created_at: Union[datetime.datetime, 'types.DateTimeFilter']
+      title: Union[str, 'types.StringFilter']
+      content: Union[str, 'types.StringFilter']
+      published: Union[bool, 'types.BooleanFilter']
+      author: 'UserRelationFilter'
+      author_id: Union[int, 'types.IntFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class PostWhereInputWithoutRelations(TypedDict, total=False):
+      """Post arguments for searching without relational fields"""
       id: Union[int, 'types.IntFilter']
       created_at: Union[datetime.datetime, 'types.DateTimeFilter']
       title: Union[str, 'types.StringFilter']
@@ -8316,6 +8349,23 @@
   
   # recursive User types
   # TODO: cleanup these types
+  
+  
+  
+  UserRelationFilter = TypedDict(
+      'UserRelationFilter',
+      {
+          'is': 'UserWhereInputWithoutRelations',
+          'is_not': 'UserWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class UserListRelationFilter(TypedDict, total=False):
+      some: 'UserWhereInputWithoutRelations'
+      none: 'UserWhereInputWithoutRelations'
+      every: 'UserWhereInputWithoutRelations'
   
   
   class UserInclude(TypedDict, total=False):
@@ -8979,7 +9029,6 @@
   FindFirstUserArgs = FindManyUserArgsFromUser
   
   
-  # TODO: support relationships here
       
   
   class UserWhereInput(TypedDict, total=False):
@@ -8996,6 +9045,7 @@
       optional_enum: 'enums.ABeautifulEnum'
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
+      posts: 'PostListRelationFilter'
   
       AND: List['UserWhereInputRecursive1']
       OR: List['UserWhereInputRecursive1']
@@ -9016,6 +9066,7 @@
       optional_enum: 'enums.ABeautifulEnum'
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
+      posts: 'PostListRelationFilter'
   
       AND: List['UserWhereInputRecursive2']
       OR: List['UserWhereInputRecursive2']
@@ -9024,6 +9075,26 @@
   
   class UserWhereInputRecursive2(TypedDict, total=False):
       """User arguments for searching"""
+      id: Union[int, 'types.IntFilter']
+      email: Union[str, 'types.StringFilter']
+      int: Union[int, 'types.IntFilter']
+      optional_int: Union[int, 'types.IntFilter']
+      float: Union[float, 'types.FloatFilter']
+      optional_float: Union[float, 'types.FloatFilter']
+      string: Union[str, 'types.StringFilter']
+      optional_string: Union[str, 'types.StringFilter']
+      enum: 'enums.ABeautifulEnum'
+      optional_enum: 'enums.ABeautifulEnum'
+      boolean: Union[bool, 'types.BooleanFilter']
+      optional_boolean: Union[bool, 'types.BooleanFilter']
+      posts: 'PostListRelationFilter'
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class UserWhereInputWithoutRelations(TypedDict, total=False):
+      """User arguments for searching without relational fields"""
       id: Union[int, 'types.IntFilter']
       email: Union[str, 'types.StringFilter']
       int: Union[int, 'types.IntFilter']
@@ -9233,6 +9304,23 @@
   
   # recursive M types
   # TODO: cleanup these types
+  
+  
+  
+  MRelationFilter = TypedDict(
+      'MRelationFilter',
+      {
+          'is': 'MWhereInputWithoutRelations',
+          'is_not': 'MWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class MListRelationFilter(TypedDict, total=False):
+      some: 'MWhereInputWithoutRelations'
+      none: 'MWhereInputWithoutRelations'
+      every: 'MWhereInputWithoutRelations'
   
   
   class MInclude(TypedDict, total=False):
@@ -9896,12 +9984,12 @@
   FindFirstMArgs = FindManyMArgsFromM
   
   
-  # TODO: support relationships here
       
   
   class MWhereInput(TypedDict, total=False):
       """M arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      n: 'NListRelationFilter'
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
       float: Union[float, 'types.FloatFilter']
@@ -9921,6 +10009,7 @@
   class MWhereInputRecursive1(TypedDict, total=False):
       """M arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      n: 'NListRelationFilter'
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
       float: Union[float, 'types.FloatFilter']
@@ -9939,6 +10028,25 @@
   
   class MWhereInputRecursive2(TypedDict, total=False):
       """M arguments for searching"""
+      id: Union[int, 'types.IntFilter']
+      n: 'NListRelationFilter'
+      int: Union[int, 'types.IntFilter']
+      optional_int: Union[int, 'types.IntFilter']
+      float: Union[float, 'types.FloatFilter']
+      optional_float: Union[float, 'types.FloatFilter']
+      string: Union[str, 'types.StringFilter']
+      optional_string: Union[str, 'types.StringFilter']
+      enum: 'enums.ABeautifulEnum'
+      optional_enum: 'enums.ABeautifulEnum'
+      boolean: Union[bool, 'types.BooleanFilter']
+      optional_boolean: Union[bool, 'types.BooleanFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class MWhereInputWithoutRelations(TypedDict, total=False):
+      """M arguments for searching without relational fields"""
       id: Union[int, 'types.IntFilter']
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
@@ -10146,6 +10254,23 @@
   
   # recursive N types
   # TODO: cleanup these types
+  
+  
+  
+  NRelationFilter = TypedDict(
+      'NRelationFilter',
+      {
+          'is': 'NWhereInputWithoutRelations',
+          'is_not': 'NWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class NListRelationFilter(TypedDict, total=False):
+      some: 'NWhereInputWithoutRelations'
+      none: 'NWhereInputWithoutRelations'
+      every: 'NWhereInputWithoutRelations'
   
   
   class NInclude(TypedDict, total=False):
@@ -10809,12 +10934,12 @@
   FindFirstNArgs = FindManyNArgsFromN
   
   
-  # TODO: support relationships here
       
   
   class NWhereInput(TypedDict, total=False):
       """N arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      m: 'MListRelationFilter'
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
       float: Union[float, 'types.FloatFilter']
@@ -10834,6 +10959,7 @@
   class NWhereInputRecursive1(TypedDict, total=False):
       """N arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      m: 'MListRelationFilter'
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
       float: Union[float, 'types.FloatFilter']
@@ -10852,6 +10978,25 @@
   
   class NWhereInputRecursive2(TypedDict, total=False):
       """N arguments for searching"""
+      id: Union[int, 'types.IntFilter']
+      m: 'MListRelationFilter'
+      int: Union[int, 'types.IntFilter']
+      optional_int: Union[int, 'types.IntFilter']
+      float: Union[float, 'types.FloatFilter']
+      optional_float: Union[float, 'types.FloatFilter']
+      string: Union[str, 'types.StringFilter']
+      optional_string: Union[str, 'types.StringFilter']
+      enum: 'enums.ABeautifulEnum'
+      optional_enum: 'enums.ABeautifulEnum'
+      boolean: Union[bool, 'types.BooleanFilter']
+      optional_boolean: Union[bool, 'types.BooleanFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class NWhereInputWithoutRelations(TypedDict, total=False):
+      """N arguments for searching without relational fields"""
       id: Union[int, 'types.IntFilter']
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
@@ -11059,6 +11204,23 @@
   
   # recursive OneOptional types
   # TODO: cleanup these types
+  
+  
+  
+  OneOptionalRelationFilter = TypedDict(
+      'OneOptionalRelationFilter',
+      {
+          'is': 'OneOptionalWhereInputWithoutRelations',
+          'is_not': 'OneOptionalWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class OneOptionalListRelationFilter(TypedDict, total=False):
+      some: 'OneOptionalWhereInputWithoutRelations'
+      none: 'OneOptionalWhereInputWithoutRelations'
+      every: 'OneOptionalWhereInputWithoutRelations'
   
   
   class OneOptionalInclude(TypedDict, total=False):
@@ -11722,12 +11884,12 @@
   FindFirstOneOptionalArgs = FindManyOneOptionalArgsFromOneOptional
   
   
-  # TODO: support relationships here
       
   
   class OneOptionalWhereInput(TypedDict, total=False):
       """OneOptional arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      many: 'ManyRequiredListRelationFilter'
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
       float: Union[float, 'types.FloatFilter']
@@ -11747,6 +11909,7 @@
   class OneOptionalWhereInputRecursive1(TypedDict, total=False):
       """OneOptional arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      many: 'ManyRequiredListRelationFilter'
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
       float: Union[float, 'types.FloatFilter']
@@ -11765,6 +11928,25 @@
   
   class OneOptionalWhereInputRecursive2(TypedDict, total=False):
       """OneOptional arguments for searching"""
+      id: Union[int, 'types.IntFilter']
+      many: 'ManyRequiredListRelationFilter'
+      int: Union[int, 'types.IntFilter']
+      optional_int: Union[int, 'types.IntFilter']
+      float: Union[float, 'types.FloatFilter']
+      optional_float: Union[float, 'types.FloatFilter']
+      string: Union[str, 'types.StringFilter']
+      optional_string: Union[str, 'types.StringFilter']
+      enum: 'enums.ABeautifulEnum'
+      optional_enum: 'enums.ABeautifulEnum'
+      boolean: Union[bool, 'types.BooleanFilter']
+      optional_boolean: Union[bool, 'types.BooleanFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class OneOptionalWhereInputWithoutRelations(TypedDict, total=False):
+      """OneOptional arguments for searching without relational fields"""
       id: Union[int, 'types.IntFilter']
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
@@ -11979,6 +12161,23 @@
   
   # recursive ManyRequired types
   # TODO: cleanup these types
+  
+  
+  
+  ManyRequiredRelationFilter = TypedDict(
+      'ManyRequiredRelationFilter',
+      {
+          'is': 'ManyRequiredWhereInputWithoutRelations',
+          'is_not': 'ManyRequiredWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class ManyRequiredListRelationFilter(TypedDict, total=False):
+      some: 'ManyRequiredWhereInputWithoutRelations'
+      none: 'ManyRequiredWhereInputWithoutRelations'
+      every: 'ManyRequiredWhereInputWithoutRelations'
   
   
   class ManyRequiredInclude(TypedDict, total=False):
@@ -12642,12 +12841,12 @@
   FindFirstManyRequiredArgs = FindManyManyRequiredArgsFromManyRequired
   
   
-  # TODO: support relationships here
       
   
   class ManyRequiredWhereInput(TypedDict, total=False):
       """ManyRequired arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      one: 'OneOptionalRelationFilter'
       one_optional_id: Union[int, 'types.IntFilter']
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
@@ -12668,6 +12867,7 @@
   class ManyRequiredWhereInputRecursive1(TypedDict, total=False):
       """ManyRequired arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      one: 'OneOptionalRelationFilter'
       one_optional_id: Union[int, 'types.IntFilter']
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
@@ -12687,6 +12887,26 @@
   
   class ManyRequiredWhereInputRecursive2(TypedDict, total=False):
       """ManyRequired arguments for searching"""
+      id: Union[int, 'types.IntFilter']
+      one: 'OneOptionalRelationFilter'
+      one_optional_id: Union[int, 'types.IntFilter']
+      int: Union[int, 'types.IntFilter']
+      optional_int: Union[int, 'types.IntFilter']
+      float: Union[float, 'types.FloatFilter']
+      optional_float: Union[float, 'types.FloatFilter']
+      string: Union[str, 'types.StringFilter']
+      optional_string: Union[str, 'types.StringFilter']
+      enum: 'enums.ABeautifulEnum'
+      optional_enum: 'enums.ABeautifulEnum'
+      boolean: Union[bool, 'types.BooleanFilter']
+      optional_boolean: Union[bool, 'types.BooleanFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class ManyRequiredWhereInputWithoutRelations(TypedDict, total=False):
+      """ManyRequired arguments for searching without relational fields"""
       id: Union[int, 'types.IntFilter']
       one_optional_id: Union[int, 'types.IntFilter']
       int: Union[int, 'types.IntFilter']
@@ -12863,6 +13083,23 @@
   
   # recursive A types
   # TODO: cleanup these types
+  
+  
+  
+  ARelationFilter = TypedDict(
+      'ARelationFilter',
+      {
+          'is': 'AWhereInputWithoutRelations',
+          'is_not': 'AWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class AListRelationFilter(TypedDict, total=False):
+      some: 'AWhereInputWithoutRelations'
+      none: 'AWhereInputWithoutRelations'
+      every: 'AWhereInputWithoutRelations'
   
   
   class AInclude(TypedDict, total=False):
@@ -13525,7 +13762,6 @@
   FindFirstAArgs = FindManyAArgsFromA
   
   
-  # TODO: support relationships here
       
   
   class AWhereInput(TypedDict, total=False):
@@ -13560,6 +13796,20 @@
   
   class AWhereInputRecursive2(TypedDict, total=False):
       """A arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      email: Union[str, 'types.StringFilter']
+      name: Union[str, 'types.StringFilter']
+      int: Union[int, 'types.IntFilter']
+      sInt: Union[int, 'types.IntFilter']
+      inc_int: Union[int, 'types.IntFilter']
+      inc_sInt: Union[int, 'types.IntFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class AWhereInputWithoutRelations(TypedDict, total=False):
+      """A arguments for searching without relational fields"""
       id: Union[str, 'types.StringFilter']
       email: Union[str, 'types.StringFilter']
       name: Union[str, 'types.StringFilter']
@@ -13691,6 +13941,23 @@
   
   # recursive B types
   # TODO: cleanup these types
+  
+  
+  
+  BRelationFilter = TypedDict(
+      'BRelationFilter',
+      {
+          'is': 'BWhereInputWithoutRelations',
+          'is_not': 'BWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class BListRelationFilter(TypedDict, total=False):
+      some: 'BWhereInputWithoutRelations'
+      none: 'BWhereInputWithoutRelations'
+      every: 'BWhereInputWithoutRelations'
   
   
   class BInclude(TypedDict, total=False):
@@ -14353,7 +14620,6 @@
   FindFirstBArgs = FindManyBArgsFromB
   
   
-  # TODO: support relationships here
       
   
   class BWhereInput(TypedDict, total=False):
@@ -14380,6 +14646,16 @@
   
   class BWhereInputRecursive2(TypedDict, total=False):
       """B arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      float: Union[float, 'types.FloatFilter']
+      d_float: Union[float, 'types.FloatFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class BWhereInputWithoutRelations(TypedDict, total=False):
+      """B arguments for searching without relational fields"""
       id: Union[str, 'types.StringFilter']
       float: Union[float, 'types.FloatFilter']
       d_float: Union[float, 'types.FloatFilter']
@@ -14511,6 +14787,23 @@
   
   # recursive C types
   # TODO: cleanup these types
+  
+  
+  
+  CRelationFilter = TypedDict(
+      'CRelationFilter',
+      {
+          'is': 'CWhereInputWithoutRelations',
+          'is_not': 'CWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class CListRelationFilter(TypedDict, total=False):
+      some: 'CWhereInputWithoutRelations'
+      none: 'CWhereInputWithoutRelations'
+      every: 'CWhereInputWithoutRelations'
   
   
   class CInclude(TypedDict, total=False):
@@ -15173,7 +15466,6 @@
   FindFirstCArgs = FindManyCArgsFromC
   
   
-  # TODO: support relationships here
       
   
   class CWhereInput(TypedDict, total=False):
@@ -15208,6 +15500,20 @@
   
   class CWhereInputRecursive2(TypedDict, total=False):
       """C arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      char: Union[str, 'types.StringFilter']
+      v_char: Union[str, 'types.StringFilter']
+      text: Union[str, 'types.StringFilter']
+      bit: Union[str, 'types.StringFilter']
+      v_bit: Union[str, 'types.StringFilter']
+      uuid: Union[str, 'types.StringFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class CWhereInputWithoutRelations(TypedDict, total=False):
+      """C arguments for searching without relational fields"""
       id: Union[str, 'types.StringFilter']
       char: Union[str, 'types.StringFilter']
       v_char: Union[str, 'types.StringFilter']
@@ -15329,6 +15635,23 @@
   
   # recursive D types
   # TODO: cleanup these types
+  
+  
+  
+  DRelationFilter = TypedDict(
+      'DRelationFilter',
+      {
+          'is': 'DWhereInputWithoutRelations',
+          'is_not': 'DWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class DListRelationFilter(TypedDict, total=False):
+      some: 'DWhereInputWithoutRelations'
+      none: 'DWhereInputWithoutRelations'
+      every: 'DWhereInputWithoutRelations'
   
   
   class DInclude(TypedDict, total=False):
@@ -15991,7 +16314,6 @@
   FindFirstDArgs = FindManyDArgsFromD
   
   
-  # TODO: support relationships here
       
   
   class DWhereInput(TypedDict, total=False):
@@ -16018,6 +16340,16 @@
   
   class DWhereInputRecursive2(TypedDict, total=False):
       """D arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      bool: Union[bool, 'types.BooleanFilter']
+      xml: Union[str, 'types.StringFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class DWhereInputWithoutRelations(TypedDict, total=False):
+      """D arguments for searching without relational fields"""
       id: Union[str, 'types.StringFilter']
       bool: Union[bool, 'types.BooleanFilter']
       xml: Union[str, 'types.StringFilter']
@@ -16134,6 +16466,23 @@
   
   # recursive E types
   # TODO: cleanup these types
+  
+  
+  
+  ERelationFilter = TypedDict(
+      'ERelationFilter',
+      {
+          'is': 'EWhereInputWithoutRelations',
+          'is_not': 'EWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class EListRelationFilter(TypedDict, total=False):
+      some: 'EWhereInputWithoutRelations'
+      none: 'EWhereInputWithoutRelations'
+      every: 'EWhereInputWithoutRelations'
   
   
   class EInclude(TypedDict, total=False):
@@ -16796,7 +17145,6 @@
   FindFirstEArgs = FindManyEArgsFromE
   
   
-  # TODO: support relationships here
       
   
   class EWhereInput(TypedDict, total=False):
@@ -16825,6 +17173,17 @@
   
   class EWhereInputRecursive2(TypedDict, total=False):
       """E arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      date: Union[datetime.datetime, 'types.DateTimeFilter']
+      time: Union[datetime.datetime, 'types.DateTimeFilter']
+      ts: Union[datetime.datetime, 'types.DateTimeFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class EWhereInputWithoutRelations(TypedDict, total=False):
+      """E arguments for searching without relational fields"""
       id: Union[str, 'types.StringFilter']
       date: Union[datetime.datetime, 'types.DateTimeFilter']
       time: Union[datetime.datetime, 'types.DateTimeFilter']
@@ -16913,6 +17272,7 @@
       'endswith': 'endsWith',
       'order_by': 'orderBy',
       'not_in': 'notIn',
+      'is_not': 'isNot',
       'NOT': 'not',
       'IN': 'in',
   }
@@ -24266,6 +24626,23 @@
   # TODO: cleanup these types
   
   
+  
+  PostRelationFilter = TypedDict(
+      'PostRelationFilter',
+      {
+          'is': 'PostWhereInputWithoutRelations',
+          'is_not': 'PostWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class PostListRelationFilter(TypedDict, total=False):
+      some: 'PostWhereInputWithoutRelations'
+      none: 'PostWhereInputWithoutRelations'
+      every: 'PostWhereInputWithoutRelations'
+  
+  
   class PostInclude(TypedDict, total=False):
       """Post relational arguments"""
       author: Union[bool, 'UserArgsFromPost']
@@ -24927,7 +25304,6 @@
   FindFirstPostArgs = FindManyPostArgsFromPost
   
   
-  # TODO: support relationships here
       
   
   class PostWhereInput(TypedDict, total=False):
@@ -24937,6 +25313,7 @@
       title: Union[str, 'types.StringFilter']
       content: Union[str, 'types.StringFilter']
       published: Union[bool, 'types.BooleanFilter']
+      author: 'UserRelationFilter'
       author_id: Union[int, 'types.IntFilter']
   
       AND: List['PostWhereInputRecursive1']
@@ -24951,6 +25328,7 @@
       title: Union[str, 'types.StringFilter']
       content: Union[str, 'types.StringFilter']
       published: Union[bool, 'types.BooleanFilter']
+      author: 'UserRelationFilter'
       author_id: Union[int, 'types.IntFilter']
   
       AND: List['PostWhereInputRecursive2']
@@ -24960,6 +25338,20 @@
   
   class PostWhereInputRecursive2(TypedDict, total=False):
       """Post arguments for searching"""
+      id: Union[int, 'types.IntFilter']
+      created_at: Union[datetime.datetime, 'types.DateTimeFilter']
+      title: Union[str, 'types.StringFilter']
+      content: Union[str, 'types.StringFilter']
+      published: Union[bool, 'types.BooleanFilter']
+      author: 'UserRelationFilter'
+      author_id: Union[int, 'types.IntFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class PostWhereInputWithoutRelations(TypedDict, total=False):
+      """Post arguments for searching without relational fields"""
       id: Union[int, 'types.IntFilter']
       created_at: Union[datetime.datetime, 'types.DateTimeFilter']
       title: Union[str, 'types.StringFilter']
@@ -25162,6 +25554,23 @@
   
   # recursive User types
   # TODO: cleanup these types
+  
+  
+  
+  UserRelationFilter = TypedDict(
+      'UserRelationFilter',
+      {
+          'is': 'UserWhereInputWithoutRelations',
+          'is_not': 'UserWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class UserListRelationFilter(TypedDict, total=False):
+      some: 'UserWhereInputWithoutRelations'
+      none: 'UserWhereInputWithoutRelations'
+      every: 'UserWhereInputWithoutRelations'
   
   
   class UserInclude(TypedDict, total=False):
@@ -25825,7 +26234,6 @@
   FindFirstUserArgs = FindManyUserArgsFromUser
   
   
-  # TODO: support relationships here
       
   
   class UserWhereInput(TypedDict, total=False):
@@ -25842,6 +26250,7 @@
       optional_enum: 'enums.ABeautifulEnum'
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
+      posts: 'PostListRelationFilter'
   
       AND: List['UserWhereInputRecursive1']
       OR: List['UserWhereInputRecursive1']
@@ -25862,6 +26271,7 @@
       optional_enum: 'enums.ABeautifulEnum'
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
+      posts: 'PostListRelationFilter'
   
       AND: List['UserWhereInputRecursive2']
       OR: List['UserWhereInputRecursive2']
@@ -25870,6 +26280,26 @@
   
   class UserWhereInputRecursive2(TypedDict, total=False):
       """User arguments for searching"""
+      id: Union[int, 'types.IntFilter']
+      email: Union[str, 'types.StringFilter']
+      int: Union[int, 'types.IntFilter']
+      optional_int: Union[int, 'types.IntFilter']
+      float: Union[float, 'types.FloatFilter']
+      optional_float: Union[float, 'types.FloatFilter']
+      string: Union[str, 'types.StringFilter']
+      optional_string: Union[str, 'types.StringFilter']
+      enum: 'enums.ABeautifulEnum'
+      optional_enum: 'enums.ABeautifulEnum'
+      boolean: Union[bool, 'types.BooleanFilter']
+      optional_boolean: Union[bool, 'types.BooleanFilter']
+      posts: 'PostListRelationFilter'
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class UserWhereInputWithoutRelations(TypedDict, total=False):
+      """User arguments for searching without relational fields"""
       id: Union[int, 'types.IntFilter']
       email: Union[str, 'types.StringFilter']
       int: Union[int, 'types.IntFilter']
@@ -26079,6 +26509,23 @@
   
   # recursive M types
   # TODO: cleanup these types
+  
+  
+  
+  MRelationFilter = TypedDict(
+      'MRelationFilter',
+      {
+          'is': 'MWhereInputWithoutRelations',
+          'is_not': 'MWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class MListRelationFilter(TypedDict, total=False):
+      some: 'MWhereInputWithoutRelations'
+      none: 'MWhereInputWithoutRelations'
+      every: 'MWhereInputWithoutRelations'
   
   
   class MInclude(TypedDict, total=False):
@@ -26742,12 +27189,12 @@
   FindFirstMArgs = FindManyMArgsFromM
   
   
-  # TODO: support relationships here
       
   
   class MWhereInput(TypedDict, total=False):
       """M arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      n: 'NListRelationFilter'
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
       float: Union[float, 'types.FloatFilter']
@@ -26767,6 +27214,7 @@
   class MWhereInputRecursive1(TypedDict, total=False):
       """M arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      n: 'NListRelationFilter'
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
       float: Union[float, 'types.FloatFilter']
@@ -26785,6 +27233,25 @@
   
   class MWhereInputRecursive2(TypedDict, total=False):
       """M arguments for searching"""
+      id: Union[int, 'types.IntFilter']
+      n: 'NListRelationFilter'
+      int: Union[int, 'types.IntFilter']
+      optional_int: Union[int, 'types.IntFilter']
+      float: Union[float, 'types.FloatFilter']
+      optional_float: Union[float, 'types.FloatFilter']
+      string: Union[str, 'types.StringFilter']
+      optional_string: Union[str, 'types.StringFilter']
+      enum: 'enums.ABeautifulEnum'
+      optional_enum: 'enums.ABeautifulEnum'
+      boolean: Union[bool, 'types.BooleanFilter']
+      optional_boolean: Union[bool, 'types.BooleanFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class MWhereInputWithoutRelations(TypedDict, total=False):
+      """M arguments for searching without relational fields"""
       id: Union[int, 'types.IntFilter']
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
@@ -26992,6 +27459,23 @@
   
   # recursive N types
   # TODO: cleanup these types
+  
+  
+  
+  NRelationFilter = TypedDict(
+      'NRelationFilter',
+      {
+          'is': 'NWhereInputWithoutRelations',
+          'is_not': 'NWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class NListRelationFilter(TypedDict, total=False):
+      some: 'NWhereInputWithoutRelations'
+      none: 'NWhereInputWithoutRelations'
+      every: 'NWhereInputWithoutRelations'
   
   
   class NInclude(TypedDict, total=False):
@@ -27655,12 +28139,12 @@
   FindFirstNArgs = FindManyNArgsFromN
   
   
-  # TODO: support relationships here
       
   
   class NWhereInput(TypedDict, total=False):
       """N arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      m: 'MListRelationFilter'
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
       float: Union[float, 'types.FloatFilter']
@@ -27680,6 +28164,7 @@
   class NWhereInputRecursive1(TypedDict, total=False):
       """N arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      m: 'MListRelationFilter'
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
       float: Union[float, 'types.FloatFilter']
@@ -27698,6 +28183,25 @@
   
   class NWhereInputRecursive2(TypedDict, total=False):
       """N arguments for searching"""
+      id: Union[int, 'types.IntFilter']
+      m: 'MListRelationFilter'
+      int: Union[int, 'types.IntFilter']
+      optional_int: Union[int, 'types.IntFilter']
+      float: Union[float, 'types.FloatFilter']
+      optional_float: Union[float, 'types.FloatFilter']
+      string: Union[str, 'types.StringFilter']
+      optional_string: Union[str, 'types.StringFilter']
+      enum: 'enums.ABeautifulEnum'
+      optional_enum: 'enums.ABeautifulEnum'
+      boolean: Union[bool, 'types.BooleanFilter']
+      optional_boolean: Union[bool, 'types.BooleanFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class NWhereInputWithoutRelations(TypedDict, total=False):
+      """N arguments for searching without relational fields"""
       id: Union[int, 'types.IntFilter']
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
@@ -27905,6 +28409,23 @@
   
   # recursive OneOptional types
   # TODO: cleanup these types
+  
+  
+  
+  OneOptionalRelationFilter = TypedDict(
+      'OneOptionalRelationFilter',
+      {
+          'is': 'OneOptionalWhereInputWithoutRelations',
+          'is_not': 'OneOptionalWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class OneOptionalListRelationFilter(TypedDict, total=False):
+      some: 'OneOptionalWhereInputWithoutRelations'
+      none: 'OneOptionalWhereInputWithoutRelations'
+      every: 'OneOptionalWhereInputWithoutRelations'
   
   
   class OneOptionalInclude(TypedDict, total=False):
@@ -28568,12 +29089,12 @@
   FindFirstOneOptionalArgs = FindManyOneOptionalArgsFromOneOptional
   
   
-  # TODO: support relationships here
       
   
   class OneOptionalWhereInput(TypedDict, total=False):
       """OneOptional arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      many: 'ManyRequiredListRelationFilter'
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
       float: Union[float, 'types.FloatFilter']
@@ -28593,6 +29114,7 @@
   class OneOptionalWhereInputRecursive1(TypedDict, total=False):
       """OneOptional arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      many: 'ManyRequiredListRelationFilter'
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
       float: Union[float, 'types.FloatFilter']
@@ -28611,6 +29133,25 @@
   
   class OneOptionalWhereInputRecursive2(TypedDict, total=False):
       """OneOptional arguments for searching"""
+      id: Union[int, 'types.IntFilter']
+      many: 'ManyRequiredListRelationFilter'
+      int: Union[int, 'types.IntFilter']
+      optional_int: Union[int, 'types.IntFilter']
+      float: Union[float, 'types.FloatFilter']
+      optional_float: Union[float, 'types.FloatFilter']
+      string: Union[str, 'types.StringFilter']
+      optional_string: Union[str, 'types.StringFilter']
+      enum: 'enums.ABeautifulEnum'
+      optional_enum: 'enums.ABeautifulEnum'
+      boolean: Union[bool, 'types.BooleanFilter']
+      optional_boolean: Union[bool, 'types.BooleanFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class OneOptionalWhereInputWithoutRelations(TypedDict, total=False):
+      """OneOptional arguments for searching without relational fields"""
       id: Union[int, 'types.IntFilter']
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
@@ -28825,6 +29366,23 @@
   
   # recursive ManyRequired types
   # TODO: cleanup these types
+  
+  
+  
+  ManyRequiredRelationFilter = TypedDict(
+      'ManyRequiredRelationFilter',
+      {
+          'is': 'ManyRequiredWhereInputWithoutRelations',
+          'is_not': 'ManyRequiredWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class ManyRequiredListRelationFilter(TypedDict, total=False):
+      some: 'ManyRequiredWhereInputWithoutRelations'
+      none: 'ManyRequiredWhereInputWithoutRelations'
+      every: 'ManyRequiredWhereInputWithoutRelations'
   
   
   class ManyRequiredInclude(TypedDict, total=False):
@@ -29488,12 +30046,12 @@
   FindFirstManyRequiredArgs = FindManyManyRequiredArgsFromManyRequired
   
   
-  # TODO: support relationships here
       
   
   class ManyRequiredWhereInput(TypedDict, total=False):
       """ManyRequired arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      one: 'OneOptionalRelationFilter'
       one_optional_id: Union[int, 'types.IntFilter']
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
@@ -29514,6 +30072,7 @@
   class ManyRequiredWhereInputRecursive1(TypedDict, total=False):
       """ManyRequired arguments for searching"""
       id: Union[int, 'types.IntFilter']
+      one: 'OneOptionalRelationFilter'
       one_optional_id: Union[int, 'types.IntFilter']
       int: Union[int, 'types.IntFilter']
       optional_int: Union[int, 'types.IntFilter']
@@ -29533,6 +30092,26 @@
   
   class ManyRequiredWhereInputRecursive2(TypedDict, total=False):
       """ManyRequired arguments for searching"""
+      id: Union[int, 'types.IntFilter']
+      one: 'OneOptionalRelationFilter'
+      one_optional_id: Union[int, 'types.IntFilter']
+      int: Union[int, 'types.IntFilter']
+      optional_int: Union[int, 'types.IntFilter']
+      float: Union[float, 'types.FloatFilter']
+      optional_float: Union[float, 'types.FloatFilter']
+      string: Union[str, 'types.StringFilter']
+      optional_string: Union[str, 'types.StringFilter']
+      enum: 'enums.ABeautifulEnum'
+      optional_enum: 'enums.ABeautifulEnum'
+      boolean: Union[bool, 'types.BooleanFilter']
+      optional_boolean: Union[bool, 'types.BooleanFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class ManyRequiredWhereInputWithoutRelations(TypedDict, total=False):
+      """ManyRequired arguments for searching without relational fields"""
       id: Union[int, 'types.IntFilter']
       one_optional_id: Union[int, 'types.IntFilter']
       int: Union[int, 'types.IntFilter']
@@ -29709,6 +30288,23 @@
   
   # recursive A types
   # TODO: cleanup these types
+  
+  
+  
+  ARelationFilter = TypedDict(
+      'ARelationFilter',
+      {
+          'is': 'AWhereInputWithoutRelations',
+          'is_not': 'AWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class AListRelationFilter(TypedDict, total=False):
+      some: 'AWhereInputWithoutRelations'
+      none: 'AWhereInputWithoutRelations'
+      every: 'AWhereInputWithoutRelations'
   
   
   class AInclude(TypedDict, total=False):
@@ -30371,7 +30967,6 @@
   FindFirstAArgs = FindManyAArgsFromA
   
   
-  # TODO: support relationships here
       
   
   class AWhereInput(TypedDict, total=False):
@@ -30406,6 +31001,20 @@
   
   class AWhereInputRecursive2(TypedDict, total=False):
       """A arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      email: Union[str, 'types.StringFilter']
+      name: Union[str, 'types.StringFilter']
+      int: Union[int, 'types.IntFilter']
+      sInt: Union[int, 'types.IntFilter']
+      inc_int: Union[int, 'types.IntFilter']
+      inc_sInt: Union[int, 'types.IntFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class AWhereInputWithoutRelations(TypedDict, total=False):
+      """A arguments for searching without relational fields"""
       id: Union[str, 'types.StringFilter']
       email: Union[str, 'types.StringFilter']
       name: Union[str, 'types.StringFilter']
@@ -30537,6 +31146,23 @@
   
   # recursive B types
   # TODO: cleanup these types
+  
+  
+  
+  BRelationFilter = TypedDict(
+      'BRelationFilter',
+      {
+          'is': 'BWhereInputWithoutRelations',
+          'is_not': 'BWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class BListRelationFilter(TypedDict, total=False):
+      some: 'BWhereInputWithoutRelations'
+      none: 'BWhereInputWithoutRelations'
+      every: 'BWhereInputWithoutRelations'
   
   
   class BInclude(TypedDict, total=False):
@@ -31199,7 +31825,6 @@
   FindFirstBArgs = FindManyBArgsFromB
   
   
-  # TODO: support relationships here
       
   
   class BWhereInput(TypedDict, total=False):
@@ -31226,6 +31851,16 @@
   
   class BWhereInputRecursive2(TypedDict, total=False):
       """B arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      float: Union[float, 'types.FloatFilter']
+      d_float: Union[float, 'types.FloatFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class BWhereInputWithoutRelations(TypedDict, total=False):
+      """B arguments for searching without relational fields"""
       id: Union[str, 'types.StringFilter']
       float: Union[float, 'types.FloatFilter']
       d_float: Union[float, 'types.FloatFilter']
@@ -31357,6 +31992,23 @@
   
   # recursive C types
   # TODO: cleanup these types
+  
+  
+  
+  CRelationFilter = TypedDict(
+      'CRelationFilter',
+      {
+          'is': 'CWhereInputWithoutRelations',
+          'is_not': 'CWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class CListRelationFilter(TypedDict, total=False):
+      some: 'CWhereInputWithoutRelations'
+      none: 'CWhereInputWithoutRelations'
+      every: 'CWhereInputWithoutRelations'
   
   
   class CInclude(TypedDict, total=False):
@@ -32019,7 +32671,6 @@
   FindFirstCArgs = FindManyCArgsFromC
   
   
-  # TODO: support relationships here
       
   
   class CWhereInput(TypedDict, total=False):
@@ -32054,6 +32705,20 @@
   
   class CWhereInputRecursive2(TypedDict, total=False):
       """C arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      char: Union[str, 'types.StringFilter']
+      v_char: Union[str, 'types.StringFilter']
+      text: Union[str, 'types.StringFilter']
+      bit: Union[str, 'types.StringFilter']
+      v_bit: Union[str, 'types.StringFilter']
+      uuid: Union[str, 'types.StringFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class CWhereInputWithoutRelations(TypedDict, total=False):
+      """C arguments for searching without relational fields"""
       id: Union[str, 'types.StringFilter']
       char: Union[str, 'types.StringFilter']
       v_char: Union[str, 'types.StringFilter']
@@ -32175,6 +32840,23 @@
   
   # recursive D types
   # TODO: cleanup these types
+  
+  
+  
+  DRelationFilter = TypedDict(
+      'DRelationFilter',
+      {
+          'is': 'DWhereInputWithoutRelations',
+          'is_not': 'DWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class DListRelationFilter(TypedDict, total=False):
+      some: 'DWhereInputWithoutRelations'
+      none: 'DWhereInputWithoutRelations'
+      every: 'DWhereInputWithoutRelations'
   
   
   class DInclude(TypedDict, total=False):
@@ -32837,7 +33519,6 @@
   FindFirstDArgs = FindManyDArgsFromD
   
   
-  # TODO: support relationships here
       
   
   class DWhereInput(TypedDict, total=False):
@@ -32864,6 +33545,16 @@
   
   class DWhereInputRecursive2(TypedDict, total=False):
       """D arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      bool: Union[bool, 'types.BooleanFilter']
+      xml: Union[str, 'types.StringFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class DWhereInputWithoutRelations(TypedDict, total=False):
+      """D arguments for searching without relational fields"""
       id: Union[str, 'types.StringFilter']
       bool: Union[bool, 'types.BooleanFilter']
       xml: Union[str, 'types.StringFilter']
@@ -32980,6 +33671,23 @@
   
   # recursive E types
   # TODO: cleanup these types
+  
+  
+  
+  ERelationFilter = TypedDict(
+      'ERelationFilter',
+      {
+          'is': 'EWhereInputWithoutRelations',
+          'is_not': 'EWhereInputWithoutRelations',
+      },
+      total=False,
+  )
+  
+  
+  class EListRelationFilter(TypedDict, total=False):
+      some: 'EWhereInputWithoutRelations'
+      none: 'EWhereInputWithoutRelations'
+      every: 'EWhereInputWithoutRelations'
   
   
   class EInclude(TypedDict, total=False):
@@ -33642,7 +34350,6 @@
   FindFirstEArgs = FindManyEArgsFromE
   
   
-  # TODO: support relationships here
       
   
   class EWhereInput(TypedDict, total=False):
@@ -33671,6 +34378,17 @@
   
   class EWhereInputRecursive2(TypedDict, total=False):
       """E arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      date: Union[datetime.datetime, 'types.DateTimeFilter']
+      time: Union[datetime.datetime, 'types.DateTimeFilter']
+      ts: Union[datetime.datetime, 'types.DateTimeFilter']
+  
+  
+  # this isn't a recursive type as making it so increases mypy runtime
+  # even further, this type is only used when pseudo-recursive types
+  # are generated anyway, so not much value is lost
+  class EWhereInputWithoutRelations(TypedDict, total=False):
+      """E arguments for searching without relational fields"""
       id: Union[str, 'types.StringFilter']
       date: Union[datetime.datetime, 'types.DateTimeFilter']
       time: Union[datetime.datetime, 'types.DateTimeFilter']

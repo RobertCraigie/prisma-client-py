@@ -26,6 +26,9 @@ disable =
   # useless
   missing-kwoa,
 
+  # this should only trigger for tests and I don't care about duplicating code for tests
+  duplicate-code,
+
   # TODO: re-enable this at some point
   missing-docstring,
 

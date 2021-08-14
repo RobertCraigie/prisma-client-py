@@ -426,6 +426,10 @@ class Field(BaseModel):
         typ = self.type
         if typ in FILTER_TYPES:
             return f'Union[{self._actual_python_type}, \'types.{typ}Filter\']'
+        if self.is_relational:
+            if self.is_list:
+                return f'\'{typ}ListRelationFilter\''
+            return f'\'{typ}RelationFilter\''
         return self.python_type
 
     @property

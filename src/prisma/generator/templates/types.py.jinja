@@ -4,11 +4,12 @@ from .utils import _NoneType
 
 
 {% set depth = generator.config.recursive_type_depth %}
+{% set recursive_types = depth == -1 %}
 
 # TODO: cleanup whitespace control
 # TODO: add an argument to signify that the last iteration should be skipped
 {% macro recursive(base) %}
-    {% if depth == -1 %}
+    {% if recursive_types %}
 {{ caller(base, base, '') }}
     {% else %}
     {%+ for i in range(depth) -%}
@@ -243,6 +244,28 @@ class {{ model.name }}OrderByInput(TypedDict, total=False):
 # TODO: cleanup these types
 
 
+{% if recursive_types %}
+    {% set where_input_type = model.name + 'WhereInput' %}
+{% else %}
+    {% set where_input_type = model.name + 'WhereInputWithoutRelations' %}
+{% endif %}
+
+{{ model.name }}RelationFilter = TypedDict(
+    '{{ model.name }}RelationFilter',
+    {
+        'is': '{{ where_input_type }}',
+        'is_not': '{{ where_input_type }}',
+    },
+    total=False,
+)
+
+
+class {{ model.name }}ListRelationFilter(TypedDict, total=False):
+    some: '{{ where_input_type }}'
+    none: '{{ where_input_type }}'
+    every: '{{ where_input_type }}'
+
+
 class {{ model.name }}Include(TypedDict, total=False):
     """{{ model.name }} relational arguments"""
     {% for field in model.relational_fields -%}
@@ -289,14 +312,11 @@ FindMany{{ model.name }}Args = FindMany{{ model.name }}ArgsFrom{{ model.name }}
 FindFirst{{ model.name }}Args = FindMany{{ model.name }}ArgsFrom{{ model.name}}
 
 
-# TODO: support relationships here
 {% call(current, next, iteration) recursive(model.name + 'WhereInput') %}
 class {{ current }}(TypedDict, total=False):
     """{{ model.name }} arguments for searching"""
-    {% for field in model.all_fields %}
-        {%- if not field.relation_name -%}
-            {{'    '}}{{ field.name }}: {{ field.where_input_type }}
-        {% endif %}
+    {% for field in model.all_fields -%}
+        {{'    '}}{{ field.name }}: {{ field.where_input_type }}
     {% endfor %}
 
     {% if next != '' %}
@@ -305,6 +325,18 @@ class {{ current }}(TypedDict, total=False):
     NOT: List['{{ next }}']
     {% endif %}
 {% endcall %}
+
+# this isn't a recursive type as making it so increases mypy runtime
+# even further, this type is only used when pseudo-recursive types
+# are generated anyway, so not much value is lost
+class {{ model.name }}WhereInputWithoutRelations(TypedDict, total=False):
+    """{{ model.name }} arguments for searching without relational fields"""
+    {% for field in model.all_fields %}
+        {%- if not field.relation_name -%}
+            {{'    '}}{{ field.name }}: {{ field.where_input_type }}
+        {% endif %}
+    {% endfor %}
+
 
 {{ model.name }}Keys = Literal[
     {% for field in model.all_fields %}
