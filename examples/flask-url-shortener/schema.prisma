@@ -1,0 +1,16 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:database.db"
+}
+
+generator db {
+  provider = "prisma-client-py"
+  http     = "requests"
+}
+
+model Url {
+  id       Int      @id @default(autoincrement())
+  created  DateTime @default(now())
+  original String
+  clicks   Int      @default(0)
+}
