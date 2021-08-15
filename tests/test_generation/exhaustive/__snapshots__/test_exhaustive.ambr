@@ -1479,7 +1479,6 @@
           skip: Optional[int] = None,
           where: Optional[types.PostWhereInput] = None,
           cursor: Optional[types.PostWhereUniqueInput] = None,
-          include: Optional[types.PostInclude] = None,
           order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -1820,7 +1819,6 @@
           skip: Optional[int] = None,
           where: Optional[types.UserWhereInput] = None,
           cursor: Optional[types.UserWhereUniqueInput] = None,
-          include: Optional[types.UserInclude] = None,
           order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -2161,7 +2159,6 @@
           skip: Optional[int] = None,
           where: Optional[types.MWhereInput] = None,
           cursor: Optional[types.MWhereUniqueInput] = None,
-          include: Optional[types.MInclude] = None,
           order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -2502,7 +2499,6 @@
           skip: Optional[int] = None,
           where: Optional[types.NWhereInput] = None,
           cursor: Optional[types.NWhereUniqueInput] = None,
-          include: Optional[types.NInclude] = None,
           order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -2843,7 +2839,6 @@
           skip: Optional[int] = None,
           where: Optional[types.OneOptionalWhereInput] = None,
           cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
-          include: Optional[types.OneOptionalInclude] = None,
           order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -3184,7 +3179,6 @@
           skip: Optional[int] = None,
           where: Optional[types.ManyRequiredWhereInput] = None,
           cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
-          include: Optional[types.ManyRequiredInclude] = None,
           order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -3525,7 +3519,6 @@
           skip: Optional[int] = None,
           where: Optional[types.AWhereInput] = None,
           cursor: Optional[types.AWhereUniqueInput] = None,
-          include: Optional[types.AInclude] = None,
           order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -3866,7 +3859,6 @@
           skip: Optional[int] = None,
           where: Optional[types.BWhereInput] = None,
           cursor: Optional[types.BWhereUniqueInput] = None,
-          include: Optional[types.BInclude] = None,
           order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -4207,7 +4199,6 @@
           skip: Optional[int] = None,
           where: Optional[types.CWhereInput] = None,
           cursor: Optional[types.CWhereUniqueInput] = None,
-          include: Optional[types.CInclude] = None,
           order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -4548,7 +4539,6 @@
           skip: Optional[int] = None,
           where: Optional[types.DWhereInput] = None,
           cursor: Optional[types.DWhereUniqueInput] = None,
-          include: Optional[types.DInclude] = None,
           order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -4889,7 +4879,6 @@
           skip: Optional[int] = None,
           where: Optional[types.EWhereInput] = None,
           cursor: Optional[types.EWhereUniqueInput] = None,
-          include: Optional[types.EInclude] = None,
           order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -18566,7 +18555,6 @@
           skip: Optional[int] = None,
           where: Optional[types.PostWhereInput] = None,
           cursor: Optional[types.PostWhereUniqueInput] = None,
-          include: Optional[types.PostInclude] = None,
           order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -18907,7 +18895,6 @@
           skip: Optional[int] = None,
           where: Optional[types.UserWhereInput] = None,
           cursor: Optional[types.UserWhereUniqueInput] = None,
-          include: Optional[types.UserInclude] = None,
           order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -19248,7 +19235,6 @@
           skip: Optional[int] = None,
           where: Optional[types.MWhereInput] = None,
           cursor: Optional[types.MWhereUniqueInput] = None,
-          include: Optional[types.MInclude] = None,
           order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -19589,7 +19575,6 @@
           skip: Optional[int] = None,
           where: Optional[types.NWhereInput] = None,
           cursor: Optional[types.NWhereUniqueInput] = None,
-          include: Optional[types.NInclude] = None,
           order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -19930,7 +19915,6 @@
           skip: Optional[int] = None,
           where: Optional[types.OneOptionalWhereInput] = None,
           cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
-          include: Optional[types.OneOptionalInclude] = None,
           order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -20271,7 +20255,6 @@
           skip: Optional[int] = None,
           where: Optional[types.ManyRequiredWhereInput] = None,
           cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
-          include: Optional[types.ManyRequiredInclude] = None,
           order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -20612,7 +20595,6 @@
           skip: Optional[int] = None,
           where: Optional[types.AWhereInput] = None,
           cursor: Optional[types.AWhereUniqueInput] = None,
-          include: Optional[types.AInclude] = None,
           order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -20953,7 +20935,6 @@
           skip: Optional[int] = None,
           where: Optional[types.BWhereInput] = None,
           cursor: Optional[types.BWhereUniqueInput] = None,
-          include: Optional[types.BInclude] = None,
           order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -21294,7 +21275,6 @@
           skip: Optional[int] = None,
           where: Optional[types.CWhereInput] = None,
           cursor: Optional[types.CWhereUniqueInput] = None,
-          include: Optional[types.CInclude] = None,
           order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -21635,7 +21615,6 @@
           skip: Optional[int] = None,
           where: Optional[types.DWhereInput] = None,
           cursor: Optional[types.DWhereUniqueInput] = None,
-          include: Optional[types.DInclude] = None,
           order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
@@ -21976,7 +21955,6 @@
           skip: Optional[int] = None,
           where: Optional[types.EWhereInput] = None,
           cursor: Optional[types.EWhereUniqueInput] = None,
-          include: Optional[types.EInclude] = None,
           order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
       ) -> int:
           # TODO: support select
