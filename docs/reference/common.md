@@ -135,14 +135,14 @@ post = await client.post.find_first(
 ### Multiple Records
 
 ```py
-post = await client.post.find_many(
+posts = await client.post.find_many(
     where={
         'published': True,
     },
 )
 ```
 ```py
-post = await client.post.find_many(
+posts = await client.post.find_many(
     take=5,
     skip=1,
     where={
@@ -281,4 +281,81 @@ total = await client.post.count(
 async with client.batch_() as batcher:
     batcher.user.create({'name': 'Robert'})
     batcher.user.create({'name': 'Tegan'})
+```
+
+## Raw Queries
+
+!!! note
+    SQL queries are sent directly to the database so you must use the syntax for your specific database provider
+
+!!! warning
+    Raw query results are raw dictionaries unless the `model` argument is specified
+
+### Write Queries
+
+```py
+total = await client.execute_raw(
+    '''
+    SELECT *
+    FROM User
+    WHERE User.id = ?
+    ''',
+    'cksca3xm80035f08zjonuubik'
+)
+```
+
+### Selecting Multiple Records
+
+```py
+posts = await client.query_raw(
+    '''
+    SELECT *
+    FROM Post
+    WHERE Post.published IS TRUE
+    '''
+)
+```
+
+#### Type Safety
+
+```py
+from prisma.models import Post
+
+posts = await client.query_raw(
+    '''
+    SELECT *
+    FROM Post
+    WHERE Post.published IS TRUE
+    ''',
+    model=Post,
+)
+```
+
+### Selecting a Single Record
+
+```py
+post = await client.query_first(
+    '''
+    SELECT *
+    FROM Post
+    WHERE Post.published IS TRUE
+    LIMIT 1
+    '''
+)
+```
+
+#### Type Safety
+
+```py
+from prisma.models import Post
+
+post = await client.query_first(
+    '''
+    SELECT *
+    FROM Post
+    WHERE Post.views > 50
+    LIMIT 1
+    ''',
+    model=Post
+)
 ```
