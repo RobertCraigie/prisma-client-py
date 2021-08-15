@@ -7392,7 +7392,7 @@
       # connectOrCreate: 'PostCreateOrConnectWithoutRelationsInput'
   
   
-  class PostUpsertInput(TypedDict, total=False):
+  class PostUpsertInput(TypedDict):
       create: 'PostCreateInput'
       update: 'PostUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -8307,7 +8307,7 @@
       # connectOrCreate: 'UserCreateOrConnectWithoutRelationsInput'
   
   
-  class UserUpsertInput(TypedDict, total=False):
+  class UserUpsertInput(TypedDict):
       create: 'UserCreateInput'
       update: 'UserUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -9248,7 +9248,7 @@
       # connectOrCreate: 'MCreateOrConnectWithoutRelationsInput'
   
   
-  class MUpsertInput(TypedDict, total=False):
+  class MUpsertInput(TypedDict):
       create: 'MCreateInput'
       update: 'MUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -10184,7 +10184,7 @@
       # connectOrCreate: 'NCreateOrConnectWithoutRelationsInput'
   
   
-  class NUpsertInput(TypedDict, total=False):
+  class NUpsertInput(TypedDict):
       create: 'NCreateInput'
       update: 'NUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -11120,7 +11120,7 @@
       # connectOrCreate: 'OneOptionalCreateOrConnectWithoutRelationsInput'
   
   
-  class OneOptionalUpsertInput(TypedDict, total=False):
+  class OneOptionalUpsertInput(TypedDict):
       create: 'OneOptionalCreateInput'
       update: 'OneOptionalUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -12062,7 +12062,7 @@
       # connectOrCreate: 'ManyRequiredCreateOrConnectWithoutRelationsInput'
   
   
-  class ManyRequiredUpsertInput(TypedDict, total=False):
+  class ManyRequiredUpsertInput(TypedDict):
       create: 'ManyRequiredCreateInput'
       update: 'ManyRequiredUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -12974,7 +12974,7 @@
       # connectOrCreate: 'ACreateOrConnectWithoutRelationsInput'
   
   
-  class AUpsertInput(TypedDict, total=False):
+  class AUpsertInput(TypedDict):
       create: 'ACreateInput'
       update: 'AUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -13826,7 +13826,7 @@
       # connectOrCreate: 'BCreateOrConnectWithoutRelationsInput'
   
   
-  class BUpsertInput(TypedDict, total=False):
+  class BUpsertInput(TypedDict):
       create: 'BCreateInput'
       update: 'BUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -14662,7 +14662,7 @@
       # connectOrCreate: 'CCreateOrConnectWithoutRelationsInput'
   
   
-  class CUpsertInput(TypedDict, total=False):
+  class CUpsertInput(TypedDict):
       create: 'CCreateInput'
       update: 'CUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -15504,7 +15504,7 @@
       # connectOrCreate: 'DCreateOrConnectWithoutRelationsInput'
   
   
-  class DUpsertInput(TypedDict, total=False):
+  class DUpsertInput(TypedDict):
       create: 'DCreateInput'
       update: 'DUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -16328,7 +16328,7 @@
       # connectOrCreate: 'ECreateOrConnectWithoutRelationsInput'
   
   
-  class EUpsertInput(TypedDict, total=False):
+  class EUpsertInput(TypedDict):
       create: 'ECreateInput'
       update: 'EUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -24466,7 +24466,7 @@
       # connectOrCreate: 'PostCreateOrConnectWithoutRelationsInput'
   
   
-  class PostUpsertInput(TypedDict, total=False):
+  class PostUpsertInput(TypedDict):
       create: 'PostCreateInput'
       update: 'PostUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -25381,7 +25381,7 @@
       # connectOrCreate: 'UserCreateOrConnectWithoutRelationsInput'
   
   
-  class UserUpsertInput(TypedDict, total=False):
+  class UserUpsertInput(TypedDict):
       create: 'UserCreateInput'
       update: 'UserUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -26322,7 +26322,7 @@
       # connectOrCreate: 'MCreateOrConnectWithoutRelationsInput'
   
   
-  class MUpsertInput(TypedDict, total=False):
+  class MUpsertInput(TypedDict):
       create: 'MCreateInput'
       update: 'MUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -27258,7 +27258,7 @@
       # connectOrCreate: 'NCreateOrConnectWithoutRelationsInput'
   
   
-  class NUpsertInput(TypedDict, total=False):
+  class NUpsertInput(TypedDict):
       create: 'NCreateInput'
       update: 'NUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -28194,7 +28194,7 @@
       # connectOrCreate: 'OneOptionalCreateOrConnectWithoutRelationsInput'
   
   
-  class OneOptionalUpsertInput(TypedDict, total=False):
+  class OneOptionalUpsertInput(TypedDict):
       create: 'OneOptionalCreateInput'
       update: 'OneOptionalUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -29136,7 +29136,7 @@
       # connectOrCreate: 'ManyRequiredCreateOrConnectWithoutRelationsInput'
   
   
-  class ManyRequiredUpsertInput(TypedDict, total=False):
+  class ManyRequiredUpsertInput(TypedDict):
       create: 'ManyRequiredCreateInput'
       update: 'ManyRequiredUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -30048,7 +30048,7 @@
       # connectOrCreate: 'ACreateOrConnectWithoutRelationsInput'
   
   
-  class AUpsertInput(TypedDict, total=False):
+  class AUpsertInput(TypedDict):
       create: 'ACreateInput'
       update: 'AUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -30900,7 +30900,7 @@
       # connectOrCreate: 'BCreateOrConnectWithoutRelationsInput'
   
   
-  class BUpsertInput(TypedDict, total=False):
+  class BUpsertInput(TypedDict):
       create: 'BCreateInput'
       update: 'BUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -31736,7 +31736,7 @@
       # connectOrCreate: 'CCreateOrConnectWithoutRelationsInput'
   
   
-  class CUpsertInput(TypedDict, total=False):
+  class CUpsertInput(TypedDict):
       create: 'CCreateInput'
       update: 'CUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -32578,7 +32578,7 @@
       # connectOrCreate: 'DCreateOrConnectWithoutRelationsInput'
   
   
-  class DUpsertInput(TypedDict, total=False):
+  class DUpsertInput(TypedDict):
       create: 'DCreateInput'
       update: 'DUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   
@@ -33402,7 +33402,7 @@
       # connectOrCreate: 'ECreateOrConnectWithoutRelationsInput'
   
   
-  class EUpsertInput(TypedDict, total=False):
+  class EUpsertInput(TypedDict):
       create: 'ECreateInput'
       update: 'EUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
   

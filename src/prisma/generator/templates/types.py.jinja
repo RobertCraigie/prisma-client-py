@@ -229,7 +229,7 @@ class {{ model.name }}UpdateOneWithoutRelationsInput(TypedDict, total=False):
     # connectOrCreate: '{{ model.name }}CreateOrConnectWithoutRelationsInput'
 
 
-class {{ model.name }}UpsertInput(TypedDict, total=False):
+class {{ model.name }}UpsertInput(TypedDict):
     create: '{{ model.name }}CreateInput'
     update: '{{ model.name }}UpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
