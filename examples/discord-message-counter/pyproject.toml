@@ -1,0 +1,10 @@
+[tool.black]
+skip-string-normalization = true
+
+[tool.pyright]
+include = [
+    "bot.py",
+    "launcher.py",
+]
+
+typeCheckingMode = "strict"

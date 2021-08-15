@@ -1,0 +1,15 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:database.db"
+}
+
+generator db {
+  provider = "prisma-client-py"
+  http     = "aiohttp"
+}
+
+model Channel {
+  // id is a String as Prisma Client Python doesn't support BigInt yet
+  id    String @id
+  total Int    @default(0)
+}
