@@ -9,7 +9,7 @@ source .venv/bin/activate
 set -x
 
 pip install -U pytest pyright coverage==5.3.1
-pip install -U --find-links=../../../.tests_cache/dist prisma.io[requests]
+pip install -U --find-links=../../../.tests_cache/dist prisma-client[requests]
 
 # required due to https://github.com/RobertCraigie/prisma-client-py/issues/35
 HTTP=$(python -c 'import pathlib, prisma; print(pathlib.Path(prisma.__file__).parent / "http.py")')

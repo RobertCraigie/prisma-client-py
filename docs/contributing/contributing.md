@@ -105,7 +105,7 @@ set -x
 To install the prisma package in your integration test you can add the following command, replacing `<EXTRAS>` with whatever extras you need to be installed.
 
 ```sh
-pip install -U --find-links=../../../.tests_cache/dist prisma.io[<EXTRAS>]
+pip install -U --find-links=../../../.tests_cache/dist prisma-client[<EXTRAS>]
 ```
 
 You can now add whatever integration specific commands you need.

@@ -35,7 +35,7 @@ extras = {
 
 
 setup(
-    name='prisma.io',
+    name='prisma-client',
     version=version,
     author='Robert Craigie',
     maintainer='Robert Craigie',
