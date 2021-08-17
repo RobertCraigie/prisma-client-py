@@ -3,6 +3,7 @@ site_url: https://example.com/
 site_dir: build/site
 site_name: Prisma Client Python
 site_description: An auto-generated and fully type-safe database client
+site_author: Robert Craigie
 
 repo_name: RobertCraigie/prisma-client-py
 repo_url: https://github.com/RobertCraigie/prisma-client-py
@@ -47,6 +48,8 @@ nav:
   - API Reference:
     - Common Operations: reference/common.md
     - Partial Types: reference/partials.md
+  - Contributing:
+    - How to Contribute: contributing/contributing.md
   - Limitations: limitations.md
   - Quickstart: quickstart.md
   - Advanced Usage: advanced.md
