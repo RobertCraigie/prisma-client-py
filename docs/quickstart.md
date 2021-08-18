@@ -109,29 +109,35 @@ post description is "Prisma is a database toolkit and makes databases easy.""
 
 ### Setup
 
-1) Install mypy
+!!! note
+    I am the maintainer of the [pyright PyPI package](https://pypi.org/project/pyright/) which is a wrapper over the [official version](https://github.com/microsoft/pyright) which is maintained by microsoft
+
+1) Install pyright
 
 ```sh
-pip install mypy
+pip install pyright
 ```
 
-2) Create a mypy config file `mypy.ini`
+2) Create a `pyproject.toml` file
 
-```ini
-[mypy]
-strict = True
-plugins = prisma.mypy
+```toml
+[tool.pyright]
+include = [
+    "main.py",
+]
+
+typeCheckingMode = "strict"
 ```
 
 ### Usage
 
 ```sh
-mypy .
+pyright
 ```
-
-```sh
-$ mypy .
-Success: no issues found in 1 source file
+```
+Found 1 source file
+0 errors, 0 warnings, 0 infos
+Completed in 1.322sec
 ```
 
 ### Error reporting
@@ -144,25 +150,40 @@ async def main() -> None:
     print(f'Invalid field: {post.invalid_field}')
 ```
 
+Running pyright will now output errors
+
 ```sh
-$ mypy .
-main.py:24: error: "Post" has no attribute "invalid_field"
-Found 1 error in 1 file (checked 1 source file)
+pyright
+```
+```
+Found 1 source file
+/prisma-py-quickstart/main.py
+  /prisma-py-quickstart/main.py:22:34 - error: Cannot access member "invalid_field" for type "Post"
+    Member "invalid_field" is unknown (reportGeneralTypeIssues)
+  /prisma-py-quickstart/main.py:22:29 - error: Type of "invalid_field" is unknown (reportUnknownMemberType)
+2 errors, 0 warnings, 0 infos
+Completed in 1.947sec
 ```
 
-Mypy will also error whenever you try to query by a non-existent field, for example
+Pyright will also error whenever you try to query by a non-existent field, for example
 
 ```py
 async def main() -> None:
     ...
-    found = await client.post.find_unique(where={'unknown_field': post.id})
+    found = await db.post.find_unique(where={'unknown_field': post.id})
     ...
 ```
 
 ```sh
-$ mypy .
-main.py:18: error: Extra key "unknown_field" for TypedDict "PostWhereUniqueInput"
-Found 1 error in 1 file (checked 1 source file)
+pyright
+```
+```
+Found 1 source file
+/prisma-py-quickstart/main.py
+  /programming/prisma-py-quickstart/main.py:22:45 - error: Argument of type "dict[str, str]" cannot be assigned to parameter "where" of type "PostWhereUniqueInput" in function "find_unique"
+    "unknown_field" is an undefined field in type "PostWhereUniqueInput" (reportGeneralTypeIssues)
+1 error, 0 warnings, 0 infos
+Completed in 1.884sec
 ```
 
 
