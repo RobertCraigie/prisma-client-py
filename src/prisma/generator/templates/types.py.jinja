@@ -162,7 +162,6 @@ class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=Fal
     connect: Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]
 
 
-# TODO: what if a relational field is unique?
 class {{ model.name }}WhereUniqueInput(TypedDict, total=False):
     """Unique {{ model.name }} arguments for searching"""
     {% for field in model.all_fields %}

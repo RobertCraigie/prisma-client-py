@@ -7322,7 +7322,6 @@
       connect: Union['PostWhereUniqueInput', List['PostWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class PostWhereUniqueInput(TypedDict, total=False):
       """Unique Post arguments for searching"""
       id: int
@@ -8207,7 +8206,6 @@
       connect: Union['UserWhereUniqueInput', List['UserWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class UserWhereUniqueInput(TypedDict, total=False):
       """Unique User arguments for searching"""
       id: int
@@ -9162,7 +9160,6 @@
       connect: Union['MWhereUniqueInput', List['MWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class MWhereUniqueInput(TypedDict, total=False):
       """Unique M arguments for searching"""
       id: int
@@ -10110,7 +10107,6 @@
       connect: Union['NWhereUniqueInput', List['NWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class NWhereUniqueInput(TypedDict, total=False):
       """Unique N arguments for searching"""
       id: int
@@ -11058,7 +11054,6 @@
       connect: Union['OneOptionalWhereUniqueInput', List['OneOptionalWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class OneOptionalWhereUniqueInput(TypedDict, total=False):
       """Unique OneOptional arguments for searching"""
       id: int
@@ -12006,7 +12001,6 @@
       connect: Union['ManyRequiredWhereUniqueInput', List['ManyRequiredWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class ManyRequiredWhereUniqueInput(TypedDict, total=False):
       """Unique ManyRequired arguments for searching"""
       id: int
@@ -12958,7 +12952,6 @@
       connect: Union['AWhereUniqueInput', List['AWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class AWhereUniqueInput(TypedDict, total=False):
       """Unique A arguments for searching"""
       id: str
@@ -13836,7 +13829,6 @@
       connect: Union['BWhereUniqueInput', List['BWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class BWhereUniqueInput(TypedDict, total=False):
       """Unique B arguments for searching"""
       id: str
@@ -14678,7 +14670,6 @@
       connect: Union['CWhereUniqueInput', List['CWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class CWhereUniqueInput(TypedDict, total=False):
       """Unique C arguments for searching"""
       id: str
@@ -15524,7 +15515,6 @@
       connect: Union['DWhereUniqueInput', List['DWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class DWhereUniqueInput(TypedDict, total=False):
       """Unique D arguments for searching"""
       id: str
@@ -16348,7 +16338,6 @@
       connect: Union['EWhereUniqueInput', List['EWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class EWhereUniqueInput(TypedDict, total=False):
       """Unique E arguments for searching"""
       id: str
@@ -24464,7 +24453,6 @@
       connect: Union['PostWhereUniqueInput', List['PostWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class PostWhereUniqueInput(TypedDict, total=False):
       """Unique Post arguments for searching"""
       id: int
@@ -25349,7 +25337,6 @@
       connect: Union['UserWhereUniqueInput', List['UserWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class UserWhereUniqueInput(TypedDict, total=False):
       """Unique User arguments for searching"""
       id: int
@@ -26304,7 +26291,6 @@
       connect: Union['MWhereUniqueInput', List['MWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class MWhereUniqueInput(TypedDict, total=False):
       """Unique M arguments for searching"""
       id: int
@@ -27252,7 +27238,6 @@
       connect: Union['NWhereUniqueInput', List['NWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class NWhereUniqueInput(TypedDict, total=False):
       """Unique N arguments for searching"""
       id: int
@@ -28200,7 +28185,6 @@
       connect: Union['OneOptionalWhereUniqueInput', List['OneOptionalWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class OneOptionalWhereUniqueInput(TypedDict, total=False):
       """Unique OneOptional arguments for searching"""
       id: int
@@ -29148,7 +29132,6 @@
       connect: Union['ManyRequiredWhereUniqueInput', List['ManyRequiredWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class ManyRequiredWhereUniqueInput(TypedDict, total=False):
       """Unique ManyRequired arguments for searching"""
       id: int
@@ -30100,7 +30083,6 @@
       connect: Union['AWhereUniqueInput', List['AWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class AWhereUniqueInput(TypedDict, total=False):
       """Unique A arguments for searching"""
       id: str
@@ -30978,7 +30960,6 @@
       connect: Union['BWhereUniqueInput', List['BWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class BWhereUniqueInput(TypedDict, total=False):
       """Unique B arguments for searching"""
       id: str
@@ -31820,7 +31801,6 @@
       connect: Union['CWhereUniqueInput', List['CWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class CWhereUniqueInput(TypedDict, total=False):
       """Unique C arguments for searching"""
       id: str
@@ -32666,7 +32646,6 @@
       connect: Union['DWhereUniqueInput', List['DWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class DWhereUniqueInput(TypedDict, total=False):
       """Unique D arguments for searching"""
       id: str
@@ -33490,7 +33469,6 @@
       connect: Union['EWhereUniqueInput', List['EWhereUniqueInput']]
   
   
-  # TODO: what if a relational field is unique?
   class EWhereUniqueInput(TypedDict, total=False):
       """Unique E arguments for searching"""
       id: str
