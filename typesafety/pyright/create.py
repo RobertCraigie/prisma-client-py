@@ -1,0 +1,154 @@
+from prisma import Client
+
+
+async def main(client: Client) -> None:
+    # case: missing arguments
+    await client.post.create()  # E: Argument missing for parameter "data"
+    await client.post.create(
+        data={}  # E: Argument of type "dict[Any, Any]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
+    )
+    await client.post.create(
+        data={  # E: Argument of type "dict[str, str]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
+            'title': '',
+        },
+    )
+
+    # case: minimum required args
+    await client.post.create(
+        data={
+            'title': '',
+            'published': False,
+        },
+    )
+
+    # case: nullable field to null
+    await client.post.create(
+        data={
+            'title': 'foo',
+            'published': False,
+            'desc': None,
+        },
+    )
+
+    # case: setting non-null field to null
+    await client.post.create(
+        data={  # E: Argument of type "dict[str, str | None]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
+            'title': 'foo',
+            'published': None,
+        }
+    )
+
+    # case: one-one relations are non nullable
+    await client.post.create(
+        data={  # E: Argument of type "dict[str, str | bool | None]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
+            'title': 'foo',
+            'published': False,
+            'author': None,
+        },
+    )
+    await client.post.create(
+        data={  # E: Argument of type "dict[str, str | bool | dict[str, None]]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
+            'title': 'foo',
+            'published': False,
+            'author': {
+                'create': None,
+            },
+        }
+    )
+    await client.post.create(
+        data={  # E: Argument of type "dict[str, str | bool | dict[str, None]]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
+            'title': 'foo',
+            'published': False,
+            'author': {
+                'connect': None,
+            },
+        }
+    )
+
+    # case: one-many relations are non nullable
+    await client.post.create(
+        data={  # E: Argument of type "dict[str, str | bool | None]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
+            'title': 'foo',
+            'published': False,
+            'categories': None,
+        },
+    )
+
+
+async def nested_create(client: Client) -> None:
+    # TODO: test invalid cases
+    # case: valid nested create one-one
+    await client.post.create(
+        data={
+            'title': '',
+            'published': False,
+            'author': {
+                'create': {
+                    'name': 'Robert',
+                },
+            },
+        },
+    )
+    await client.post.create(
+        data={
+            'title': '',
+            'published': False,
+            'author': {
+                'connect': {'id': 'a'},
+            },
+        },
+    )
+
+    # case: valid nested create one-many
+    await client.post.create(
+        data={
+            'title': '',
+            'published': False,
+            'categories': {
+                'create': {
+                    'name': 'Category',
+                },
+            },
+        },
+    )
+    await client.post.create(
+        data={
+            'title': '',
+            'published': False,
+            'categories': {
+                'create': [
+                    {
+                        'name': 'Category',
+                    },
+                    {
+                        'name': 'Category 2',
+                    },
+                ],
+            },
+        },
+    )
+    await client.post.create(
+        data={
+            'title': '',
+            'published': False,
+            'categories': {
+                'connect': {'id': 1},
+            },
+        },
+    )
+    await client.post.create(
+        data={
+            'title': '',
+            'published': False,
+            'categories': {
+                'connect': [
+                    {
+                        'id': 1,
+                    },
+                    {
+                        'id': 2,
+                    },
+                ],
+            },
+        },
+    )

@@ -397,6 +397,7 @@ class Arguments(Node):
 
         for arg, value in self.arguments.items():
             if value is None:
+                # ignore None values for convenience
                 continue
 
             if isinstance(value, dict):
@@ -449,9 +450,6 @@ class Data(Node):
         children: List[ChildType] = []
 
         for key, value in self.data.items():
-            if value is None:
-                continue
-
             if isinstance(value, dict):
                 children.append(
                     Key(key, node=Data.create(self.builder, data=value))

@@ -550,6 +550,7 @@
   
           for arg, value in self.arguments.items():
               if value is None:
+                  # ignore None values for convenience
                   continue
   
               if isinstance(value, dict):
@@ -602,9 +603,6 @@
           children: List[ChildType] = []
   
           for key, value in self.data.items():
-              if value is None:
-                  continue
-  
               if isinstance(value, dict):
                   children.append(
                       Key(key, node=Data.create(self.builder, data=value))
@@ -7286,11 +7284,11 @@
   
   class PostOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the Post create method"""
-      id: Optional[int]
-      created_at: Optional[datetime.datetime]
+      id: int
+      created_at: datetime.datetime
       content: Optional[str]
-      published: Optional[bool]
-      author: Optional['UserCreateNestedWithoutRelationsInput']
+      published: bool
+      author: 'UserCreateNestedWithoutRelationsInput'
   
   
   class PostCreateInput(PostOptionalCreateInput):
@@ -7303,10 +7301,10 @@
   
   class PostOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the Post create method, without relations"""
-      id: Optional[int]
-      created_at: Optional[datetime.datetime]
+      id: int
+      created_at: datetime.datetime
       content: Optional[str]
-      published: Optional[bool]
+      published: bool
   
   
   class PostCreateWithoutRelationsInput(PostOptionalCreateWithoutRelationsInput):
@@ -7315,13 +7313,13 @@
   
   
   class PostCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['PostCreateWithoutRelationsInput']
-      connect: Optional['PostWhereUniqueInput']
+      create: 'PostCreateWithoutRelationsInput'
+      connect: 'PostWhereUniqueInput'
   
   
   class PostCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['PostCreateWithoutRelationsInput', List['PostCreateWithoutRelationsInput']]]
-      connect: Optional[Union['PostWhereUniqueInput', List['PostWhereUniqueInput']]]
+      create: Union['PostCreateWithoutRelationsInput', List['PostCreateWithoutRelationsInput']]
+      connect: Union['PostWhereUniqueInput', List['PostWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -7332,21 +7330,21 @@
   
   class PostUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      created_at: Optional[datetime.datetime]
-      title: Optional[str]
+      created_at: datetime.datetime
+      title: str
       content: Optional[str]
-      published: Optional[Union['PostUpdatepublishedInput', bool]]
-      author: Optional['UserUpdateOneWithoutRelationsInput']
+      published: Union['PostUpdatepublishedInput', bool]
+      author: 'UserUpdateOneWithoutRelationsInput'
   
   
   class PostUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[Union['PostUpdateidInput', int]]
-      created_at: Optional[datetime.datetime]
-      title: Optional[str]
+      id: Union['PostUpdateidInput', int]
+      created_at: datetime.datetime
+      title: str
       content: Optional[str]
-      published: Optional[Union['PostUpdatepublishedInput', bool]]
-      author: Optional['UserUpdateOneWithoutRelationsInput']
+      published: Union['PostUpdatepublishedInput', bool]
+      author: 'UserUpdateOneWithoutRelationsInput'
   
   
   class PostUpdateidInput(TypedDict, total=False):
@@ -7355,8 +7353,12 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class PostUpdatepublishedInput(TypedDict, total=False):
       set: bool
+  
+  
   class PostUpdateauthor_idInput(TypedDict, total=False):
       set: int
       increment: int
@@ -7398,12 +7400,12 @@
   
   
   class PostOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      created_at: Optional['SortOrder']
-      title: Optional['SortOrder']
-      content: Optional['SortOrder']
-      published: Optional['SortOrder']
-      author_id: Optional['SortOrder']
+      id: 'SortOrder'
+      created_at: 'SortOrder'
+      title: 'SortOrder'
+      content: 'SortOrder'
+      published: 'SortOrder'
+      author_id: 'SortOrder'
   
   
   # recursive Post types
@@ -8153,13 +8155,13 @@
   
   class UserOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the User create method"""
-      id: Optional[int]
+      id: int
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
       optional_enum: Optional['enums.ABeautifulEnum']
       optional_boolean: Optional[bool]
-      posts: Optional['PostCreateManyNestedWithoutRelationsInput']
+      posts: 'PostCreateManyNestedWithoutRelationsInput'
   
   
   class UserCreateInput(UserOptionalCreateInput):
@@ -8177,7 +8179,7 @@
   
   class UserOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the User create method, without relations"""
-      id: Optional[int]
+      id: int
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -8196,13 +8198,13 @@
   
   
   class UserCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['UserCreateWithoutRelationsInput']
-      connect: Optional['UserWhereUniqueInput']
+      create: 'UserCreateWithoutRelationsInput'
+      connect: 'UserWhereUniqueInput'
   
   
   class UserCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['UserCreateWithoutRelationsInput', List['UserCreateWithoutRelationsInput']]]
-      connect: Optional[Union['UserWhereUniqueInput', List['UserWhereUniqueInput']]]
+      create: Union['UserCreateWithoutRelationsInput', List['UserCreateWithoutRelationsInput']]
+      connect: Union['UserWhereUniqueInput', List['UserWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -8214,34 +8216,34 @@
   
   class UserUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      int: Optional[Union['UserUpdateintInput', int]]
+      int: Union['UserUpdateintInput', int]
       optional_int: Optional[Union['UserUpdateoptional_intInput', int]]
-      float: Optional[Union['UserUpdatefloatInput', float]]
+      float: Union['UserUpdatefloatInput', float]
       optional_float: Optional[Union['UserUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['UserUpdatebooleanInput', bool]]
+      boolean: Union['UserUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['UserUpdateoptional_booleanInput', bool]]
-      posts: Optional['PostUpdateManyWithoutRelationsInput']
+      posts: 'PostUpdateManyWithoutRelationsInput'
   
   
   class UserUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[Union['UserUpdateidInput', int]]
-      email: Optional[str]
-      int: Optional[Union['UserUpdateintInput', int]]
+      id: Union['UserUpdateidInput', int]
+      email: str
+      int: Union['UserUpdateintInput', int]
       optional_int: Optional[Union['UserUpdateoptional_intInput', int]]
-      float: Optional[Union['UserUpdatefloatInput', float]]
+      float: Union['UserUpdatefloatInput', float]
       optional_float: Optional[Union['UserUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['UserUpdatebooleanInput', bool]]
+      boolean: Union['UserUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['UserUpdateoptional_booleanInput', bool]]
-      posts: Optional['PostUpdateManyWithoutRelationsInput']
+      posts: 'PostUpdateManyWithoutRelationsInput'
   
   
   class UserUpdateidInput(TypedDict, total=False):
@@ -8250,32 +8252,44 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class UserUpdateintInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class UserUpdateoptional_intInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class UserUpdatefloatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class UserUpdateoptional_floatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class UserUpdatebooleanInput(TypedDict, total=False):
       set: bool
+  
+  
   class UserUpdateoptional_booleanInput(TypedDict, total=False):
       set: bool
   
@@ -8313,18 +8327,18 @@
   
   
   class UserOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      email: Optional['SortOrder']
-      int: Optional['SortOrder']
-      optional_int: Optional['SortOrder']
-      float: Optional['SortOrder']
-      optional_float: Optional['SortOrder']
-      string: Optional['SortOrder']
-      optional_string: Optional['SortOrder']
-      enum: Optional['SortOrder']
-      optional_enum: Optional['SortOrder']
-      boolean: Optional['SortOrder']
-      optional_boolean: Optional['SortOrder']
+      id: 'SortOrder'
+      email: 'SortOrder'
+      int: 'SortOrder'
+      optional_int: 'SortOrder'
+      float: 'SortOrder'
+      optional_float: 'SortOrder'
+      string: 'SortOrder'
+      optional_string: 'SortOrder'
+      enum: 'SortOrder'
+      optional_enum: 'SortOrder'
+      boolean: 'SortOrder'
+      optional_boolean: 'SortOrder'
   
   
   # recursive User types
@@ -9098,8 +9112,8 @@
   
   class MOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the M create method"""
-      id: Optional[int]
-      n: Optional['NCreateManyNestedWithoutRelationsInput']
+      id: int
+      n: 'NCreateManyNestedWithoutRelationsInput'
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -9121,7 +9135,7 @@
   
   class MOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the M create method, without relations"""
-      id: Optional[int]
+      id: int
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -9139,13 +9153,13 @@
   
   
   class MCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['MCreateWithoutRelationsInput']
-      connect: Optional['MWhereUniqueInput']
+      create: 'MCreateWithoutRelationsInput'
+      connect: 'MWhereUniqueInput'
   
   
   class MCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['MCreateWithoutRelationsInput', List['MCreateWithoutRelationsInput']]]
-      connect: Optional[Union['MWhereUniqueInput', List['MWhereUniqueInput']]]
+      create: Union['MCreateWithoutRelationsInput', List['MCreateWithoutRelationsInput']]
+      connect: Union['MWhereUniqueInput', List['MWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -9156,32 +9170,32 @@
   
   class MUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      n: Optional['NUpdateManyWithoutRelationsInput']
-      int: Optional[Union['MUpdateintInput', int]]
+      n: 'NUpdateManyWithoutRelationsInput'
+      int: Union['MUpdateintInput', int]
       optional_int: Optional[Union['MUpdateoptional_intInput', int]]
-      float: Optional[Union['MUpdatefloatInput', float]]
+      float: Union['MUpdatefloatInput', float]
       optional_float: Optional[Union['MUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['MUpdatebooleanInput', bool]]
+      boolean: Union['MUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['MUpdateoptional_booleanInput', bool]]
   
   
   class MUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[Union['MUpdateidInput', int]]
-      n: Optional['NUpdateManyWithoutRelationsInput']
-      int: Optional[Union['MUpdateintInput', int]]
+      id: Union['MUpdateidInput', int]
+      n: 'NUpdateManyWithoutRelationsInput'
+      int: Union['MUpdateintInput', int]
       optional_int: Optional[Union['MUpdateoptional_intInput', int]]
-      float: Optional[Union['MUpdatefloatInput', float]]
+      float: Union['MUpdatefloatInput', float]
       optional_float: Optional[Union['MUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['MUpdatebooleanInput', bool]]
+      boolean: Union['MUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['MUpdateoptional_booleanInput', bool]]
   
   
@@ -9191,32 +9205,44 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class MUpdateintInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class MUpdateoptional_intInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class MUpdatefloatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class MUpdateoptional_floatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class MUpdatebooleanInput(TypedDict, total=False):
       set: bool
+  
+  
   class MUpdateoptional_booleanInput(TypedDict, total=False):
       set: bool
   
@@ -9254,17 +9280,17 @@
   
   
   class MOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      int: Optional['SortOrder']
-      optional_int: Optional['SortOrder']
-      float: Optional['SortOrder']
-      optional_float: Optional['SortOrder']
-      string: Optional['SortOrder']
-      optional_string: Optional['SortOrder']
-      enum: Optional['SortOrder']
-      optional_enum: Optional['SortOrder']
-      boolean: Optional['SortOrder']
-      optional_boolean: Optional['SortOrder']
+      id: 'SortOrder'
+      int: 'SortOrder'
+      optional_int: 'SortOrder'
+      float: 'SortOrder'
+      optional_float: 'SortOrder'
+      string: 'SortOrder'
+      optional_string: 'SortOrder'
+      enum: 'SortOrder'
+      optional_enum: 'SortOrder'
+      boolean: 'SortOrder'
+      optional_boolean: 'SortOrder'
   
   
   # recursive M types
@@ -10034,8 +10060,8 @@
   
   class NOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the N create method"""
-      id: Optional[int]
-      m: Optional['MCreateManyNestedWithoutRelationsInput']
+      id: int
+      m: 'MCreateManyNestedWithoutRelationsInput'
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -10057,7 +10083,7 @@
   
   class NOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the N create method, without relations"""
-      id: Optional[int]
+      id: int
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -10075,13 +10101,13 @@
   
   
   class NCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['NCreateWithoutRelationsInput']
-      connect: Optional['NWhereUniqueInput']
+      create: 'NCreateWithoutRelationsInput'
+      connect: 'NWhereUniqueInput'
   
   
   class NCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['NCreateWithoutRelationsInput', List['NCreateWithoutRelationsInput']]]
-      connect: Optional[Union['NWhereUniqueInput', List['NWhereUniqueInput']]]
+      create: Union['NCreateWithoutRelationsInput', List['NCreateWithoutRelationsInput']]
+      connect: Union['NWhereUniqueInput', List['NWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -10092,32 +10118,32 @@
   
   class NUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      m: Optional['MUpdateManyWithoutRelationsInput']
-      int: Optional[Union['NUpdateintInput', int]]
+      m: 'MUpdateManyWithoutRelationsInput'
+      int: Union['NUpdateintInput', int]
       optional_int: Optional[Union['NUpdateoptional_intInput', int]]
-      float: Optional[Union['NUpdatefloatInput', float]]
+      float: Union['NUpdatefloatInput', float]
       optional_float: Optional[Union['NUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['NUpdatebooleanInput', bool]]
+      boolean: Union['NUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['NUpdateoptional_booleanInput', bool]]
   
   
   class NUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[Union['NUpdateidInput', int]]
-      m: Optional['MUpdateManyWithoutRelationsInput']
-      int: Optional[Union['NUpdateintInput', int]]
+      id: Union['NUpdateidInput', int]
+      m: 'MUpdateManyWithoutRelationsInput'
+      int: Union['NUpdateintInput', int]
       optional_int: Optional[Union['NUpdateoptional_intInput', int]]
-      float: Optional[Union['NUpdatefloatInput', float]]
+      float: Union['NUpdatefloatInput', float]
       optional_float: Optional[Union['NUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['NUpdatebooleanInput', bool]]
+      boolean: Union['NUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['NUpdateoptional_booleanInput', bool]]
   
   
@@ -10127,32 +10153,44 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class NUpdateintInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class NUpdateoptional_intInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class NUpdatefloatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class NUpdateoptional_floatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class NUpdatebooleanInput(TypedDict, total=False):
       set: bool
+  
+  
   class NUpdateoptional_booleanInput(TypedDict, total=False):
       set: bool
   
@@ -10190,17 +10228,17 @@
   
   
   class NOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      int: Optional['SortOrder']
-      optional_int: Optional['SortOrder']
-      float: Optional['SortOrder']
-      optional_float: Optional['SortOrder']
-      string: Optional['SortOrder']
-      optional_string: Optional['SortOrder']
-      enum: Optional['SortOrder']
-      optional_enum: Optional['SortOrder']
-      boolean: Optional['SortOrder']
-      optional_boolean: Optional['SortOrder']
+      id: 'SortOrder'
+      int: 'SortOrder'
+      optional_int: 'SortOrder'
+      float: 'SortOrder'
+      optional_float: 'SortOrder'
+      string: 'SortOrder'
+      optional_string: 'SortOrder'
+      enum: 'SortOrder'
+      optional_enum: 'SortOrder'
+      boolean: 'SortOrder'
+      optional_boolean: 'SortOrder'
   
   
   # recursive N types
@@ -10970,8 +11008,8 @@
   
   class OneOptionalOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the OneOptional create method"""
-      id: Optional[int]
-      many: Optional['ManyRequiredCreateManyNestedWithoutRelationsInput']
+      id: int
+      many: 'ManyRequiredCreateManyNestedWithoutRelationsInput'
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -10993,7 +11031,7 @@
   
   class OneOptionalOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the OneOptional create method, without relations"""
-      id: Optional[int]
+      id: int
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -11011,13 +11049,13 @@
   
   
   class OneOptionalCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['OneOptionalCreateWithoutRelationsInput']
-      connect: Optional['OneOptionalWhereUniqueInput']
+      create: 'OneOptionalCreateWithoutRelationsInput'
+      connect: 'OneOptionalWhereUniqueInput'
   
   
   class OneOptionalCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['OneOptionalCreateWithoutRelationsInput', List['OneOptionalCreateWithoutRelationsInput']]]
-      connect: Optional[Union['OneOptionalWhereUniqueInput', List['OneOptionalWhereUniqueInput']]]
+      create: Union['OneOptionalCreateWithoutRelationsInput', List['OneOptionalCreateWithoutRelationsInput']]
+      connect: Union['OneOptionalWhereUniqueInput', List['OneOptionalWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -11028,32 +11066,32 @@
   
   class OneOptionalUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      many: Optional['ManyRequiredUpdateManyWithoutRelationsInput']
-      int: Optional[Union['OneOptionalUpdateintInput', int]]
+      many: 'ManyRequiredUpdateManyWithoutRelationsInput'
+      int: Union['OneOptionalUpdateintInput', int]
       optional_int: Optional[Union['OneOptionalUpdateoptional_intInput', int]]
-      float: Optional[Union['OneOptionalUpdatefloatInput', float]]
+      float: Union['OneOptionalUpdatefloatInput', float]
       optional_float: Optional[Union['OneOptionalUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['OneOptionalUpdatebooleanInput', bool]]
+      boolean: Union['OneOptionalUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['OneOptionalUpdateoptional_booleanInput', bool]]
   
   
   class OneOptionalUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[Union['OneOptionalUpdateidInput', int]]
-      many: Optional['ManyRequiredUpdateManyWithoutRelationsInput']
-      int: Optional[Union['OneOptionalUpdateintInput', int]]
+      id: Union['OneOptionalUpdateidInput', int]
+      many: 'ManyRequiredUpdateManyWithoutRelationsInput'
+      int: Union['OneOptionalUpdateintInput', int]
       optional_int: Optional[Union['OneOptionalUpdateoptional_intInput', int]]
-      float: Optional[Union['OneOptionalUpdatefloatInput', float]]
+      float: Union['OneOptionalUpdatefloatInput', float]
       optional_float: Optional[Union['OneOptionalUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['OneOptionalUpdatebooleanInput', bool]]
+      boolean: Union['OneOptionalUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['OneOptionalUpdateoptional_booleanInput', bool]]
   
   
@@ -11063,32 +11101,44 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class OneOptionalUpdateintInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class OneOptionalUpdateoptional_intInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class OneOptionalUpdatefloatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class OneOptionalUpdateoptional_floatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class OneOptionalUpdatebooleanInput(TypedDict, total=False):
       set: bool
+  
+  
   class OneOptionalUpdateoptional_booleanInput(TypedDict, total=False):
       set: bool
   
@@ -11126,17 +11176,17 @@
   
   
   class OneOptionalOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      int: Optional['SortOrder']
-      optional_int: Optional['SortOrder']
-      float: Optional['SortOrder']
-      optional_float: Optional['SortOrder']
-      string: Optional['SortOrder']
-      optional_string: Optional['SortOrder']
-      enum: Optional['SortOrder']
-      optional_enum: Optional['SortOrder']
-      boolean: Optional['SortOrder']
-      optional_boolean: Optional['SortOrder']
+      id: 'SortOrder'
+      int: 'SortOrder'
+      optional_int: 'SortOrder'
+      float: 'SortOrder'
+      optional_float: 'SortOrder'
+      string: 'SortOrder'
+      optional_string: 'SortOrder'
+      enum: 'SortOrder'
+      optional_enum: 'SortOrder'
+      boolean: 'SortOrder'
+      optional_boolean: 'SortOrder'
   
   
   # recursive OneOptional types
@@ -11906,8 +11956,8 @@
   
   class ManyRequiredOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the ManyRequired create method"""
-      id: Optional[int]
-      one: Optional['OneOptionalCreateNestedWithoutRelationsInput']
+      id: int
+      one: 'OneOptionalCreateNestedWithoutRelationsInput'
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -11929,7 +11979,7 @@
   
   class ManyRequiredOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the ManyRequired create method, without relations"""
-      id: Optional[int]
+      id: int
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -11947,13 +11997,13 @@
   
   
   class ManyRequiredCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['ManyRequiredCreateWithoutRelationsInput']
-      connect: Optional['ManyRequiredWhereUniqueInput']
+      create: 'ManyRequiredCreateWithoutRelationsInput'
+      connect: 'ManyRequiredWhereUniqueInput'
   
   
   class ManyRequiredCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['ManyRequiredCreateWithoutRelationsInput', List['ManyRequiredCreateWithoutRelationsInput']]]
-      connect: Optional[Union['ManyRequiredWhereUniqueInput', List['ManyRequiredWhereUniqueInput']]]
+      create: Union['ManyRequiredCreateWithoutRelationsInput', List['ManyRequiredCreateWithoutRelationsInput']]
+      connect: Union['ManyRequiredWhereUniqueInput', List['ManyRequiredWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -11964,32 +12014,32 @@
   
   class ManyRequiredUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      one: Optional['OneOptionalUpdateOneWithoutRelationsInput']
-      int: Optional[Union['ManyRequiredUpdateintInput', int]]
+      one: 'OneOptionalUpdateOneWithoutRelationsInput'
+      int: Union['ManyRequiredUpdateintInput', int]
       optional_int: Optional[Union['ManyRequiredUpdateoptional_intInput', int]]
-      float: Optional[Union['ManyRequiredUpdatefloatInput', float]]
+      float: Union['ManyRequiredUpdatefloatInput', float]
       optional_float: Optional[Union['ManyRequiredUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['ManyRequiredUpdatebooleanInput', bool]]
+      boolean: Union['ManyRequiredUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['ManyRequiredUpdateoptional_booleanInput', bool]]
   
   
   class ManyRequiredUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[Union['ManyRequiredUpdateidInput', int]]
-      one: Optional['OneOptionalUpdateOneWithoutRelationsInput']
-      int: Optional[Union['ManyRequiredUpdateintInput', int]]
+      id: Union['ManyRequiredUpdateidInput', int]
+      one: 'OneOptionalUpdateOneWithoutRelationsInput'
+      int: Union['ManyRequiredUpdateintInput', int]
       optional_int: Optional[Union['ManyRequiredUpdateoptional_intInput', int]]
-      float: Optional[Union['ManyRequiredUpdatefloatInput', float]]
+      float: Union['ManyRequiredUpdatefloatInput', float]
       optional_float: Optional[Union['ManyRequiredUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['ManyRequiredUpdatebooleanInput', bool]]
+      boolean: Union['ManyRequiredUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['ManyRequiredUpdateoptional_booleanInput', bool]]
   
   
@@ -11999,38 +12049,52 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class ManyRequiredUpdateone_optional_idInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class ManyRequiredUpdateintInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class ManyRequiredUpdateoptional_intInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class ManyRequiredUpdatefloatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class ManyRequiredUpdateoptional_floatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class ManyRequiredUpdatebooleanInput(TypedDict, total=False):
       set: bool
+  
+  
   class ManyRequiredUpdateoptional_booleanInput(TypedDict, total=False):
       set: bool
   
@@ -12068,18 +12132,18 @@
   
   
   class ManyRequiredOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      one_optional_id: Optional['SortOrder']
-      int: Optional['SortOrder']
-      optional_int: Optional['SortOrder']
-      float: Optional['SortOrder']
-      optional_float: Optional['SortOrder']
-      string: Optional['SortOrder']
-      optional_string: Optional['SortOrder']
-      enum: Optional['SortOrder']
-      optional_enum: Optional['SortOrder']
-      boolean: Optional['SortOrder']
-      optional_boolean: Optional['SortOrder']
+      id: 'SortOrder'
+      one_optional_id: 'SortOrder'
+      int: 'SortOrder'
+      optional_int: 'SortOrder'
+      float: 'SortOrder'
+      optional_float: 'SortOrder'
+      string: 'SortOrder'
+      optional_string: 'SortOrder'
+      enum: 'SortOrder'
+      optional_enum: 'SortOrder'
+      boolean: 'SortOrder'
+      optional_boolean: 'SortOrder'
   
   
   # recursive ManyRequired types
@@ -12853,10 +12917,10 @@
   
   class AOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the A create method"""
-      id: Optional[str]
+      id: str
       name: Optional[str]
-      inc_int: Optional[int]
-      inc_sInt: Optional[int]
+      inc_int: int
+      inc_sInt: int
   
   
   class ACreateInput(AOptionalCreateInput):
@@ -12871,10 +12935,10 @@
   
   class AOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the A create method, without relations"""
-      id: Optional[str]
+      id: str
       name: Optional[str]
-      inc_int: Optional[int]
-      inc_sInt: Optional[int]
+      inc_int: int
+      inc_sInt: int
   
   
   class ACreateWithoutRelationsInput(AOptionalCreateWithoutRelationsInput):
@@ -12885,13 +12949,13 @@
   
   
   class ACreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['ACreateWithoutRelationsInput']
-      connect: Optional['AWhereUniqueInput']
+      create: 'ACreateWithoutRelationsInput'
+      connect: 'AWhereUniqueInput'
   
   
   class ACreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['ACreateWithoutRelationsInput', List['ACreateWithoutRelationsInput']]]
-      connect: Optional[Union['AWhereUniqueInput', List['AWhereUniqueInput']]]
+      create: Union['ACreateWithoutRelationsInput', List['ACreateWithoutRelationsInput']]
+      connect: Union['AWhereUniqueInput', List['AWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -12904,21 +12968,21 @@
   class AUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
       name: Optional[str]
-      int: Optional[Union['AUpdateintInput', int]]
-      sInt: Optional[Union['AUpdatesIntInput', int]]
-      inc_int: Optional[Union['AUpdateinc_intInput', int]]
-      inc_sInt: Optional[Union['AUpdateinc_sIntInput', int]]
+      int: Union['AUpdateintInput', int]
+      sInt: Union['AUpdatesIntInput', int]
+      inc_int: Union['AUpdateinc_intInput', int]
+      inc_sInt: Union['AUpdateinc_sIntInput', int]
   
   
   class AUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[str]
-      email: Optional[str]
+      id: str
+      email: str
       name: Optional[str]
-      int: Optional[Union['AUpdateintInput', int]]
-      sInt: Optional[Union['AUpdatesIntInput', int]]
-      inc_int: Optional[Union['AUpdateinc_intInput', int]]
-      inc_sInt: Optional[Union['AUpdateinc_sIntInput', int]]
+      int: Union['AUpdateintInput', int]
+      sInt: Union['AUpdatesIntInput', int]
+      inc_int: Union['AUpdateinc_intInput', int]
+      inc_sInt: Union['AUpdateinc_sIntInput', int]
   
   
   class AUpdateintInput(TypedDict, total=False):
@@ -12927,18 +12991,24 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class AUpdatesIntInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class AUpdateinc_intInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class AUpdateinc_sIntInput(TypedDict, total=False):
       set: int
       increment: int
@@ -12980,13 +13050,13 @@
   
   
   class AOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      email: Optional['SortOrder']
-      name: Optional['SortOrder']
-      int: Optional['SortOrder']
-      sInt: Optional['SortOrder']
-      inc_int: Optional['SortOrder']
-      inc_sInt: Optional['SortOrder']
+      id: 'SortOrder'
+      email: 'SortOrder'
+      name: 'SortOrder'
+      int: 'SortOrder'
+      sInt: 'SortOrder'
+      inc_int: 'SortOrder'
+      inc_sInt: 'SortOrder'
   
   
   # recursive A types
@@ -13733,7 +13803,7 @@
   
   class BOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the B create method"""
-      id: Optional[str]
+      id: str
   
   
   class BCreateInput(BOptionalCreateInput):
@@ -13747,7 +13817,7 @@
   
   class BOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the B create method, without relations"""
-      id: Optional[str]
+      id: str
   
   
   class BCreateWithoutRelationsInput(BOptionalCreateWithoutRelationsInput):
@@ -13757,13 +13827,13 @@
   
   
   class BCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['BCreateWithoutRelationsInput']
-      connect: Optional['BWhereUniqueInput']
+      create: 'BCreateWithoutRelationsInput'
+      connect: 'BWhereUniqueInput'
   
   
   class BCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['BCreateWithoutRelationsInput', List['BCreateWithoutRelationsInput']]]
-      connect: Optional[Union['BWhereUniqueInput', List['BWhereUniqueInput']]]
+      create: Union['BCreateWithoutRelationsInput', List['BCreateWithoutRelationsInput']]
+      connect: Union['BWhereUniqueInput', List['BWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -13774,15 +13844,15 @@
   
   class BUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      float: Optional[Union['BUpdatefloatInput', float]]
-      d_float: Optional[Union['BUpdated_floatInput', float]]
+      float: Union['BUpdatefloatInput', float]
+      d_float: Union['BUpdated_floatInput', float]
   
   
   class BUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[str]
-      float: Optional[Union['BUpdatefloatInput', float]]
-      d_float: Optional[Union['BUpdated_floatInput', float]]
+      id: str
+      float: Union['BUpdatefloatInput', float]
+      d_float: Union['BUpdated_floatInput', float]
   
   
   class BUpdatefloatInput(TypedDict, total=False):
@@ -13791,6 +13861,8 @@
       decrement: float
       multiply: float
       divide: float
+  
+  
   class BUpdated_floatInput(TypedDict, total=False):
       set: float
       increment: float
@@ -13832,9 +13904,9 @@
   
   
   class BOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      float: Optional['SortOrder']
-      d_float: Optional['SortOrder']
+      id: 'SortOrder'
+      float: 'SortOrder'
+      d_float: 'SortOrder'
   
   
   # recursive B types
@@ -14565,7 +14637,7 @@
   
   class COptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the C create method"""
-      id: Optional[str]
+      id: str
   
   
   class CCreateInput(COptionalCreateInput):
@@ -14583,7 +14655,7 @@
   
   class COptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the C create method, without relations"""
-      id: Optional[str]
+      id: str
   
   
   class CCreateWithoutRelationsInput(COptionalCreateWithoutRelationsInput):
@@ -14597,13 +14669,13 @@
   
   
   class CCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['CCreateWithoutRelationsInput']
-      connect: Optional['CWhereUniqueInput']
+      create: 'CCreateWithoutRelationsInput'
+      connect: 'CWhereUniqueInput'
   
   
   class CCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['CCreateWithoutRelationsInput', List['CCreateWithoutRelationsInput']]]
-      connect: Optional[Union['CWhereUniqueInput', List['CWhereUniqueInput']]]
+      create: Union['CCreateWithoutRelationsInput', List['CCreateWithoutRelationsInput']]
+      connect: Union['CWhereUniqueInput', List['CWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -14614,25 +14686,23 @@
   
   class CUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      char: Optional[str]
-      v_char: Optional[str]
-      text: Optional[str]
-      bit: Optional[str]
-      v_bit: Optional[str]
-      uuid: Optional[str]
+      char: str
+      v_char: str
+      text: str
+      bit: str
+      v_bit: str
+      uuid: str
   
   
   class CUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[str]
-      char: Optional[str]
-      v_char: Optional[str]
-      text: Optional[str]
-      bit: Optional[str]
-      v_bit: Optional[str]
-      uuid: Optional[str]
-  
-  
+      id: str
+      char: str
+      v_char: str
+      text: str
+      bit: str
+      v_bit: str
+      uuid: str
   
   
   class CUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -14668,13 +14738,13 @@
   
   
   class COrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      char: Optional['SortOrder']
-      v_char: Optional['SortOrder']
-      text: Optional['SortOrder']
-      bit: Optional['SortOrder']
-      v_bit: Optional['SortOrder']
-      uuid: Optional['SortOrder']
+      id: 'SortOrder'
+      char: 'SortOrder'
+      v_char: 'SortOrder'
+      text: 'SortOrder'
+      bit: 'SortOrder'
+      v_bit: 'SortOrder'
+      uuid: 'SortOrder'
   
   
   # recursive C types
@@ -15421,7 +15491,7 @@
   
   class DOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the D create method"""
-      id: Optional[str]
+      id: str
   
   
   class DCreateInput(DOptionalCreateInput):
@@ -15435,7 +15505,7 @@
   
   class DOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the D create method, without relations"""
-      id: Optional[str]
+      id: str
   
   
   class DCreateWithoutRelationsInput(DOptionalCreateWithoutRelationsInput):
@@ -15445,13 +15515,13 @@
   
   
   class DCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['DCreateWithoutRelationsInput']
-      connect: Optional['DWhereUniqueInput']
+      create: 'DCreateWithoutRelationsInput'
+      connect: 'DWhereUniqueInput'
   
   
   class DCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['DCreateWithoutRelationsInput', List['DCreateWithoutRelationsInput']]]
-      connect: Optional[Union['DWhereUniqueInput', List['DWhereUniqueInput']]]
+      create: Union['DCreateWithoutRelationsInput', List['DCreateWithoutRelationsInput']]
+      connect: Union['DWhereUniqueInput', List['DWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -15462,15 +15532,15 @@
   
   class DUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      bool: Optional[Union['DUpdateboolInput', bool]]
-      xml: Optional[str]
+      bool: Union['DUpdateboolInput', bool]
+      xml: str
   
   
   class DUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[str]
-      bool: Optional[Union['DUpdateboolInput', bool]]
-      xml: Optional[str]
+      id: str
+      bool: Union['DUpdateboolInput', bool]
+      xml: str
   
   
   class DUpdateboolInput(TypedDict, total=False):
@@ -15510,9 +15580,9 @@
   
   
   class DOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      bool: Optional['SortOrder']
-      xml: Optional['SortOrder']
+      id: 'SortOrder'
+      bool: 'SortOrder'
+      xml: 'SortOrder'
   
   
   # recursive D types
@@ -16243,7 +16313,7 @@
   
   class EOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the E create method"""
-      id: Optional[str]
+      id: str
   
   
   class ECreateInput(EOptionalCreateInput):
@@ -16258,7 +16328,7 @@
   
   class EOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the E create method, without relations"""
-      id: Optional[str]
+      id: str
   
   
   class ECreateWithoutRelationsInput(EOptionalCreateWithoutRelationsInput):
@@ -16269,13 +16339,13 @@
   
   
   class ECreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['ECreateWithoutRelationsInput']
-      connect: Optional['EWhereUniqueInput']
+      create: 'ECreateWithoutRelationsInput'
+      connect: 'EWhereUniqueInput'
   
   
   class ECreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['ECreateWithoutRelationsInput', List['ECreateWithoutRelationsInput']]]
-      connect: Optional[Union['EWhereUniqueInput', List['EWhereUniqueInput']]]
+      create: Union['ECreateWithoutRelationsInput', List['ECreateWithoutRelationsInput']]
+      connect: Union['EWhereUniqueInput', List['EWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -16286,19 +16356,17 @@
   
   class EUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      date: Optional[datetime.datetime]
-      time: Optional[datetime.datetime]
-      ts: Optional[datetime.datetime]
+      date: datetime.datetime
+      time: datetime.datetime
+      ts: datetime.datetime
   
   
   class EUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[str]
-      date: Optional[datetime.datetime]
-      time: Optional[datetime.datetime]
-      ts: Optional[datetime.datetime]
-  
-  
+      id: str
+      date: datetime.datetime
+      time: datetime.datetime
+      ts: datetime.datetime
   
   
   class EUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -16334,10 +16402,10 @@
   
   
   class EOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      date: Optional['SortOrder']
-      time: Optional['SortOrder']
-      ts: Optional['SortOrder']
+      id: 'SortOrder'
+      date: 'SortOrder'
+      time: 'SortOrder'
+      ts: 'SortOrder'
   
   
   # recursive E types
@@ -17626,6 +17694,7 @@
   
           for arg, value in self.arguments.items():
               if value is None:
+                  # ignore None values for convenience
                   continue
   
               if isinstance(value, dict):
@@ -17678,9 +17747,6 @@
           children: List[ChildType] = []
   
           for key, value in self.data.items():
-              if value is None:
-                  continue
-  
               if isinstance(value, dict):
                   children.append(
                       Key(key, node=Data.create(self.builder, data=value))
@@ -24360,11 +24426,11 @@
   
   class PostOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the Post create method"""
-      id: Optional[int]
-      created_at: Optional[datetime.datetime]
+      id: int
+      created_at: datetime.datetime
       content: Optional[str]
-      published: Optional[bool]
-      author: Optional['UserCreateNestedWithoutRelationsInput']
+      published: bool
+      author: 'UserCreateNestedWithoutRelationsInput'
   
   
   class PostCreateInput(PostOptionalCreateInput):
@@ -24377,10 +24443,10 @@
   
   class PostOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the Post create method, without relations"""
-      id: Optional[int]
-      created_at: Optional[datetime.datetime]
+      id: int
+      created_at: datetime.datetime
       content: Optional[str]
-      published: Optional[bool]
+      published: bool
   
   
   class PostCreateWithoutRelationsInput(PostOptionalCreateWithoutRelationsInput):
@@ -24389,13 +24455,13 @@
   
   
   class PostCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['PostCreateWithoutRelationsInput']
-      connect: Optional['PostWhereUniqueInput']
+      create: 'PostCreateWithoutRelationsInput'
+      connect: 'PostWhereUniqueInput'
   
   
   class PostCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['PostCreateWithoutRelationsInput', List['PostCreateWithoutRelationsInput']]]
-      connect: Optional[Union['PostWhereUniqueInput', List['PostWhereUniqueInput']]]
+      create: Union['PostCreateWithoutRelationsInput', List['PostCreateWithoutRelationsInput']]
+      connect: Union['PostWhereUniqueInput', List['PostWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -24406,21 +24472,21 @@
   
   class PostUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      created_at: Optional[datetime.datetime]
-      title: Optional[str]
+      created_at: datetime.datetime
+      title: str
       content: Optional[str]
-      published: Optional[Union['PostUpdatepublishedInput', bool]]
-      author: Optional['UserUpdateOneWithoutRelationsInput']
+      published: Union['PostUpdatepublishedInput', bool]
+      author: 'UserUpdateOneWithoutRelationsInput'
   
   
   class PostUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[Union['PostUpdateidInput', int]]
-      created_at: Optional[datetime.datetime]
-      title: Optional[str]
+      id: Union['PostUpdateidInput', int]
+      created_at: datetime.datetime
+      title: str
       content: Optional[str]
-      published: Optional[Union['PostUpdatepublishedInput', bool]]
-      author: Optional['UserUpdateOneWithoutRelationsInput']
+      published: Union['PostUpdatepublishedInput', bool]
+      author: 'UserUpdateOneWithoutRelationsInput'
   
   
   class PostUpdateidInput(TypedDict, total=False):
@@ -24429,8 +24495,12 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class PostUpdatepublishedInput(TypedDict, total=False):
       set: bool
+  
+  
   class PostUpdateauthor_idInput(TypedDict, total=False):
       set: int
       increment: int
@@ -24472,12 +24542,12 @@
   
   
   class PostOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      created_at: Optional['SortOrder']
-      title: Optional['SortOrder']
-      content: Optional['SortOrder']
-      published: Optional['SortOrder']
-      author_id: Optional['SortOrder']
+      id: 'SortOrder'
+      created_at: 'SortOrder'
+      title: 'SortOrder'
+      content: 'SortOrder'
+      published: 'SortOrder'
+      author_id: 'SortOrder'
   
   
   # recursive Post types
@@ -25227,13 +25297,13 @@
   
   class UserOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the User create method"""
-      id: Optional[int]
+      id: int
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
       optional_enum: Optional['enums.ABeautifulEnum']
       optional_boolean: Optional[bool]
-      posts: Optional['PostCreateManyNestedWithoutRelationsInput']
+      posts: 'PostCreateManyNestedWithoutRelationsInput'
   
   
   class UserCreateInput(UserOptionalCreateInput):
@@ -25251,7 +25321,7 @@
   
   class UserOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the User create method, without relations"""
-      id: Optional[int]
+      id: int
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -25270,13 +25340,13 @@
   
   
   class UserCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['UserCreateWithoutRelationsInput']
-      connect: Optional['UserWhereUniqueInput']
+      create: 'UserCreateWithoutRelationsInput'
+      connect: 'UserWhereUniqueInput'
   
   
   class UserCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['UserCreateWithoutRelationsInput', List['UserCreateWithoutRelationsInput']]]
-      connect: Optional[Union['UserWhereUniqueInput', List['UserWhereUniqueInput']]]
+      create: Union['UserCreateWithoutRelationsInput', List['UserCreateWithoutRelationsInput']]
+      connect: Union['UserWhereUniqueInput', List['UserWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -25288,34 +25358,34 @@
   
   class UserUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      int: Optional[Union['UserUpdateintInput', int]]
+      int: Union['UserUpdateintInput', int]
       optional_int: Optional[Union['UserUpdateoptional_intInput', int]]
-      float: Optional[Union['UserUpdatefloatInput', float]]
+      float: Union['UserUpdatefloatInput', float]
       optional_float: Optional[Union['UserUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['UserUpdatebooleanInput', bool]]
+      boolean: Union['UserUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['UserUpdateoptional_booleanInput', bool]]
-      posts: Optional['PostUpdateManyWithoutRelationsInput']
+      posts: 'PostUpdateManyWithoutRelationsInput'
   
   
   class UserUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[Union['UserUpdateidInput', int]]
-      email: Optional[str]
-      int: Optional[Union['UserUpdateintInput', int]]
+      id: Union['UserUpdateidInput', int]
+      email: str
+      int: Union['UserUpdateintInput', int]
       optional_int: Optional[Union['UserUpdateoptional_intInput', int]]
-      float: Optional[Union['UserUpdatefloatInput', float]]
+      float: Union['UserUpdatefloatInput', float]
       optional_float: Optional[Union['UserUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['UserUpdatebooleanInput', bool]]
+      boolean: Union['UserUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['UserUpdateoptional_booleanInput', bool]]
-      posts: Optional['PostUpdateManyWithoutRelationsInput']
+      posts: 'PostUpdateManyWithoutRelationsInput'
   
   
   class UserUpdateidInput(TypedDict, total=False):
@@ -25324,32 +25394,44 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class UserUpdateintInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class UserUpdateoptional_intInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class UserUpdatefloatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class UserUpdateoptional_floatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class UserUpdatebooleanInput(TypedDict, total=False):
       set: bool
+  
+  
   class UserUpdateoptional_booleanInput(TypedDict, total=False):
       set: bool
   
@@ -25387,18 +25469,18 @@
   
   
   class UserOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      email: Optional['SortOrder']
-      int: Optional['SortOrder']
-      optional_int: Optional['SortOrder']
-      float: Optional['SortOrder']
-      optional_float: Optional['SortOrder']
-      string: Optional['SortOrder']
-      optional_string: Optional['SortOrder']
-      enum: Optional['SortOrder']
-      optional_enum: Optional['SortOrder']
-      boolean: Optional['SortOrder']
-      optional_boolean: Optional['SortOrder']
+      id: 'SortOrder'
+      email: 'SortOrder'
+      int: 'SortOrder'
+      optional_int: 'SortOrder'
+      float: 'SortOrder'
+      optional_float: 'SortOrder'
+      string: 'SortOrder'
+      optional_string: 'SortOrder'
+      enum: 'SortOrder'
+      optional_enum: 'SortOrder'
+      boolean: 'SortOrder'
+      optional_boolean: 'SortOrder'
   
   
   # recursive User types
@@ -26172,8 +26254,8 @@
   
   class MOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the M create method"""
-      id: Optional[int]
-      n: Optional['NCreateManyNestedWithoutRelationsInput']
+      id: int
+      n: 'NCreateManyNestedWithoutRelationsInput'
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -26195,7 +26277,7 @@
   
   class MOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the M create method, without relations"""
-      id: Optional[int]
+      id: int
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -26213,13 +26295,13 @@
   
   
   class MCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['MCreateWithoutRelationsInput']
-      connect: Optional['MWhereUniqueInput']
+      create: 'MCreateWithoutRelationsInput'
+      connect: 'MWhereUniqueInput'
   
   
   class MCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['MCreateWithoutRelationsInput', List['MCreateWithoutRelationsInput']]]
-      connect: Optional[Union['MWhereUniqueInput', List['MWhereUniqueInput']]]
+      create: Union['MCreateWithoutRelationsInput', List['MCreateWithoutRelationsInput']]
+      connect: Union['MWhereUniqueInput', List['MWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -26230,32 +26312,32 @@
   
   class MUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      n: Optional['NUpdateManyWithoutRelationsInput']
-      int: Optional[Union['MUpdateintInput', int]]
+      n: 'NUpdateManyWithoutRelationsInput'
+      int: Union['MUpdateintInput', int]
       optional_int: Optional[Union['MUpdateoptional_intInput', int]]
-      float: Optional[Union['MUpdatefloatInput', float]]
+      float: Union['MUpdatefloatInput', float]
       optional_float: Optional[Union['MUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['MUpdatebooleanInput', bool]]
+      boolean: Union['MUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['MUpdateoptional_booleanInput', bool]]
   
   
   class MUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[Union['MUpdateidInput', int]]
-      n: Optional['NUpdateManyWithoutRelationsInput']
-      int: Optional[Union['MUpdateintInput', int]]
+      id: Union['MUpdateidInput', int]
+      n: 'NUpdateManyWithoutRelationsInput'
+      int: Union['MUpdateintInput', int]
       optional_int: Optional[Union['MUpdateoptional_intInput', int]]
-      float: Optional[Union['MUpdatefloatInput', float]]
+      float: Union['MUpdatefloatInput', float]
       optional_float: Optional[Union['MUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['MUpdatebooleanInput', bool]]
+      boolean: Union['MUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['MUpdateoptional_booleanInput', bool]]
   
   
@@ -26265,32 +26347,44 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class MUpdateintInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class MUpdateoptional_intInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class MUpdatefloatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class MUpdateoptional_floatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class MUpdatebooleanInput(TypedDict, total=False):
       set: bool
+  
+  
   class MUpdateoptional_booleanInput(TypedDict, total=False):
       set: bool
   
@@ -26328,17 +26422,17 @@
   
   
   class MOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      int: Optional['SortOrder']
-      optional_int: Optional['SortOrder']
-      float: Optional['SortOrder']
-      optional_float: Optional['SortOrder']
-      string: Optional['SortOrder']
-      optional_string: Optional['SortOrder']
-      enum: Optional['SortOrder']
-      optional_enum: Optional['SortOrder']
-      boolean: Optional['SortOrder']
-      optional_boolean: Optional['SortOrder']
+      id: 'SortOrder'
+      int: 'SortOrder'
+      optional_int: 'SortOrder'
+      float: 'SortOrder'
+      optional_float: 'SortOrder'
+      string: 'SortOrder'
+      optional_string: 'SortOrder'
+      enum: 'SortOrder'
+      optional_enum: 'SortOrder'
+      boolean: 'SortOrder'
+      optional_boolean: 'SortOrder'
   
   
   # recursive M types
@@ -27108,8 +27202,8 @@
   
   class NOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the N create method"""
-      id: Optional[int]
-      m: Optional['MCreateManyNestedWithoutRelationsInput']
+      id: int
+      m: 'MCreateManyNestedWithoutRelationsInput'
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -27131,7 +27225,7 @@
   
   class NOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the N create method, without relations"""
-      id: Optional[int]
+      id: int
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -27149,13 +27243,13 @@
   
   
   class NCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['NCreateWithoutRelationsInput']
-      connect: Optional['NWhereUniqueInput']
+      create: 'NCreateWithoutRelationsInput'
+      connect: 'NWhereUniqueInput'
   
   
   class NCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['NCreateWithoutRelationsInput', List['NCreateWithoutRelationsInput']]]
-      connect: Optional[Union['NWhereUniqueInput', List['NWhereUniqueInput']]]
+      create: Union['NCreateWithoutRelationsInput', List['NCreateWithoutRelationsInput']]
+      connect: Union['NWhereUniqueInput', List['NWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -27166,32 +27260,32 @@
   
   class NUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      m: Optional['MUpdateManyWithoutRelationsInput']
-      int: Optional[Union['NUpdateintInput', int]]
+      m: 'MUpdateManyWithoutRelationsInput'
+      int: Union['NUpdateintInput', int]
       optional_int: Optional[Union['NUpdateoptional_intInput', int]]
-      float: Optional[Union['NUpdatefloatInput', float]]
+      float: Union['NUpdatefloatInput', float]
       optional_float: Optional[Union['NUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['NUpdatebooleanInput', bool]]
+      boolean: Union['NUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['NUpdateoptional_booleanInput', bool]]
   
   
   class NUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[Union['NUpdateidInput', int]]
-      m: Optional['MUpdateManyWithoutRelationsInput']
-      int: Optional[Union['NUpdateintInput', int]]
+      id: Union['NUpdateidInput', int]
+      m: 'MUpdateManyWithoutRelationsInput'
+      int: Union['NUpdateintInput', int]
       optional_int: Optional[Union['NUpdateoptional_intInput', int]]
-      float: Optional[Union['NUpdatefloatInput', float]]
+      float: Union['NUpdatefloatInput', float]
       optional_float: Optional[Union['NUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['NUpdatebooleanInput', bool]]
+      boolean: Union['NUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['NUpdateoptional_booleanInput', bool]]
   
   
@@ -27201,32 +27295,44 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class NUpdateintInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class NUpdateoptional_intInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class NUpdatefloatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class NUpdateoptional_floatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class NUpdatebooleanInput(TypedDict, total=False):
       set: bool
+  
+  
   class NUpdateoptional_booleanInput(TypedDict, total=False):
       set: bool
   
@@ -27264,17 +27370,17 @@
   
   
   class NOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      int: Optional['SortOrder']
-      optional_int: Optional['SortOrder']
-      float: Optional['SortOrder']
-      optional_float: Optional['SortOrder']
-      string: Optional['SortOrder']
-      optional_string: Optional['SortOrder']
-      enum: Optional['SortOrder']
-      optional_enum: Optional['SortOrder']
-      boolean: Optional['SortOrder']
-      optional_boolean: Optional['SortOrder']
+      id: 'SortOrder'
+      int: 'SortOrder'
+      optional_int: 'SortOrder'
+      float: 'SortOrder'
+      optional_float: 'SortOrder'
+      string: 'SortOrder'
+      optional_string: 'SortOrder'
+      enum: 'SortOrder'
+      optional_enum: 'SortOrder'
+      boolean: 'SortOrder'
+      optional_boolean: 'SortOrder'
   
   
   # recursive N types
@@ -28044,8 +28150,8 @@
   
   class OneOptionalOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the OneOptional create method"""
-      id: Optional[int]
-      many: Optional['ManyRequiredCreateManyNestedWithoutRelationsInput']
+      id: int
+      many: 'ManyRequiredCreateManyNestedWithoutRelationsInput'
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -28067,7 +28173,7 @@
   
   class OneOptionalOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the OneOptional create method, without relations"""
-      id: Optional[int]
+      id: int
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -28085,13 +28191,13 @@
   
   
   class OneOptionalCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['OneOptionalCreateWithoutRelationsInput']
-      connect: Optional['OneOptionalWhereUniqueInput']
+      create: 'OneOptionalCreateWithoutRelationsInput'
+      connect: 'OneOptionalWhereUniqueInput'
   
   
   class OneOptionalCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['OneOptionalCreateWithoutRelationsInput', List['OneOptionalCreateWithoutRelationsInput']]]
-      connect: Optional[Union['OneOptionalWhereUniqueInput', List['OneOptionalWhereUniqueInput']]]
+      create: Union['OneOptionalCreateWithoutRelationsInput', List['OneOptionalCreateWithoutRelationsInput']]
+      connect: Union['OneOptionalWhereUniqueInput', List['OneOptionalWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -28102,32 +28208,32 @@
   
   class OneOptionalUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      many: Optional['ManyRequiredUpdateManyWithoutRelationsInput']
-      int: Optional[Union['OneOptionalUpdateintInput', int]]
+      many: 'ManyRequiredUpdateManyWithoutRelationsInput'
+      int: Union['OneOptionalUpdateintInput', int]
       optional_int: Optional[Union['OneOptionalUpdateoptional_intInput', int]]
-      float: Optional[Union['OneOptionalUpdatefloatInput', float]]
+      float: Union['OneOptionalUpdatefloatInput', float]
       optional_float: Optional[Union['OneOptionalUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['OneOptionalUpdatebooleanInput', bool]]
+      boolean: Union['OneOptionalUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['OneOptionalUpdateoptional_booleanInput', bool]]
   
   
   class OneOptionalUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[Union['OneOptionalUpdateidInput', int]]
-      many: Optional['ManyRequiredUpdateManyWithoutRelationsInput']
-      int: Optional[Union['OneOptionalUpdateintInput', int]]
+      id: Union['OneOptionalUpdateidInput', int]
+      many: 'ManyRequiredUpdateManyWithoutRelationsInput'
+      int: Union['OneOptionalUpdateintInput', int]
       optional_int: Optional[Union['OneOptionalUpdateoptional_intInput', int]]
-      float: Optional[Union['OneOptionalUpdatefloatInput', float]]
+      float: Union['OneOptionalUpdatefloatInput', float]
       optional_float: Optional[Union['OneOptionalUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['OneOptionalUpdatebooleanInput', bool]]
+      boolean: Union['OneOptionalUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['OneOptionalUpdateoptional_booleanInput', bool]]
   
   
@@ -28137,32 +28243,44 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class OneOptionalUpdateintInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class OneOptionalUpdateoptional_intInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class OneOptionalUpdatefloatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class OneOptionalUpdateoptional_floatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class OneOptionalUpdatebooleanInput(TypedDict, total=False):
       set: bool
+  
+  
   class OneOptionalUpdateoptional_booleanInput(TypedDict, total=False):
       set: bool
   
@@ -28200,17 +28318,17 @@
   
   
   class OneOptionalOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      int: Optional['SortOrder']
-      optional_int: Optional['SortOrder']
-      float: Optional['SortOrder']
-      optional_float: Optional['SortOrder']
-      string: Optional['SortOrder']
-      optional_string: Optional['SortOrder']
-      enum: Optional['SortOrder']
-      optional_enum: Optional['SortOrder']
-      boolean: Optional['SortOrder']
-      optional_boolean: Optional['SortOrder']
+      id: 'SortOrder'
+      int: 'SortOrder'
+      optional_int: 'SortOrder'
+      float: 'SortOrder'
+      optional_float: 'SortOrder'
+      string: 'SortOrder'
+      optional_string: 'SortOrder'
+      enum: 'SortOrder'
+      optional_enum: 'SortOrder'
+      boolean: 'SortOrder'
+      optional_boolean: 'SortOrder'
   
   
   # recursive OneOptional types
@@ -28980,8 +29098,8 @@
   
   class ManyRequiredOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the ManyRequired create method"""
-      id: Optional[int]
-      one: Optional['OneOptionalCreateNestedWithoutRelationsInput']
+      id: int
+      one: 'OneOptionalCreateNestedWithoutRelationsInput'
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -29003,7 +29121,7 @@
   
   class ManyRequiredOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the ManyRequired create method, without relations"""
-      id: Optional[int]
+      id: int
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
@@ -29021,13 +29139,13 @@
   
   
   class ManyRequiredCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['ManyRequiredCreateWithoutRelationsInput']
-      connect: Optional['ManyRequiredWhereUniqueInput']
+      create: 'ManyRequiredCreateWithoutRelationsInput'
+      connect: 'ManyRequiredWhereUniqueInput'
   
   
   class ManyRequiredCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['ManyRequiredCreateWithoutRelationsInput', List['ManyRequiredCreateWithoutRelationsInput']]]
-      connect: Optional[Union['ManyRequiredWhereUniqueInput', List['ManyRequiredWhereUniqueInput']]]
+      create: Union['ManyRequiredCreateWithoutRelationsInput', List['ManyRequiredCreateWithoutRelationsInput']]
+      connect: Union['ManyRequiredWhereUniqueInput', List['ManyRequiredWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -29038,32 +29156,32 @@
   
   class ManyRequiredUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      one: Optional['OneOptionalUpdateOneWithoutRelationsInput']
-      int: Optional[Union['ManyRequiredUpdateintInput', int]]
+      one: 'OneOptionalUpdateOneWithoutRelationsInput'
+      int: Union['ManyRequiredUpdateintInput', int]
       optional_int: Optional[Union['ManyRequiredUpdateoptional_intInput', int]]
-      float: Optional[Union['ManyRequiredUpdatefloatInput', float]]
+      float: Union['ManyRequiredUpdatefloatInput', float]
       optional_float: Optional[Union['ManyRequiredUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['ManyRequiredUpdatebooleanInput', bool]]
+      boolean: Union['ManyRequiredUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['ManyRequiredUpdateoptional_booleanInput', bool]]
   
   
   class ManyRequiredUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[Union['ManyRequiredUpdateidInput', int]]
-      one: Optional['OneOptionalUpdateOneWithoutRelationsInput']
-      int: Optional[Union['ManyRequiredUpdateintInput', int]]
+      id: Union['ManyRequiredUpdateidInput', int]
+      one: 'OneOptionalUpdateOneWithoutRelationsInput'
+      int: Union['ManyRequiredUpdateintInput', int]
       optional_int: Optional[Union['ManyRequiredUpdateoptional_intInput', int]]
-      float: Optional[Union['ManyRequiredUpdatefloatInput', float]]
+      float: Union['ManyRequiredUpdatefloatInput', float]
       optional_float: Optional[Union['ManyRequiredUpdateoptional_floatInput', float]]
-      string: Optional[str]
+      string: str
       optional_string: Optional[str]
-      enum: Optional['enums.ABeautifulEnum']
+      enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
-      boolean: Optional[Union['ManyRequiredUpdatebooleanInput', bool]]
+      boolean: Union['ManyRequiredUpdatebooleanInput', bool]
       optional_boolean: Optional[Union['ManyRequiredUpdateoptional_booleanInput', bool]]
   
   
@@ -29073,38 +29191,52 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class ManyRequiredUpdateone_optional_idInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class ManyRequiredUpdateintInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class ManyRequiredUpdateoptional_intInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class ManyRequiredUpdatefloatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class ManyRequiredUpdateoptional_floatInput(TypedDict, total=False):
       set: float
       increment: float
       decrement: float
       multiply: float
       divide: float
+  
+  
   class ManyRequiredUpdatebooleanInput(TypedDict, total=False):
       set: bool
+  
+  
   class ManyRequiredUpdateoptional_booleanInput(TypedDict, total=False):
       set: bool
   
@@ -29142,18 +29274,18 @@
   
   
   class ManyRequiredOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      one_optional_id: Optional['SortOrder']
-      int: Optional['SortOrder']
-      optional_int: Optional['SortOrder']
-      float: Optional['SortOrder']
-      optional_float: Optional['SortOrder']
-      string: Optional['SortOrder']
-      optional_string: Optional['SortOrder']
-      enum: Optional['SortOrder']
-      optional_enum: Optional['SortOrder']
-      boolean: Optional['SortOrder']
-      optional_boolean: Optional['SortOrder']
+      id: 'SortOrder'
+      one_optional_id: 'SortOrder'
+      int: 'SortOrder'
+      optional_int: 'SortOrder'
+      float: 'SortOrder'
+      optional_float: 'SortOrder'
+      string: 'SortOrder'
+      optional_string: 'SortOrder'
+      enum: 'SortOrder'
+      optional_enum: 'SortOrder'
+      boolean: 'SortOrder'
+      optional_boolean: 'SortOrder'
   
   
   # recursive ManyRequired types
@@ -29927,10 +30059,10 @@
   
   class AOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the A create method"""
-      id: Optional[str]
+      id: str
       name: Optional[str]
-      inc_int: Optional[int]
-      inc_sInt: Optional[int]
+      inc_int: int
+      inc_sInt: int
   
   
   class ACreateInput(AOptionalCreateInput):
@@ -29945,10 +30077,10 @@
   
   class AOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the A create method, without relations"""
-      id: Optional[str]
+      id: str
       name: Optional[str]
-      inc_int: Optional[int]
-      inc_sInt: Optional[int]
+      inc_int: int
+      inc_sInt: int
   
   
   class ACreateWithoutRelationsInput(AOptionalCreateWithoutRelationsInput):
@@ -29959,13 +30091,13 @@
   
   
   class ACreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['ACreateWithoutRelationsInput']
-      connect: Optional['AWhereUniqueInput']
+      create: 'ACreateWithoutRelationsInput'
+      connect: 'AWhereUniqueInput'
   
   
   class ACreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['ACreateWithoutRelationsInput', List['ACreateWithoutRelationsInput']]]
-      connect: Optional[Union['AWhereUniqueInput', List['AWhereUniqueInput']]]
+      create: Union['ACreateWithoutRelationsInput', List['ACreateWithoutRelationsInput']]
+      connect: Union['AWhereUniqueInput', List['AWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -29978,21 +30110,21 @@
   class AUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
       name: Optional[str]
-      int: Optional[Union['AUpdateintInput', int]]
-      sInt: Optional[Union['AUpdatesIntInput', int]]
-      inc_int: Optional[Union['AUpdateinc_intInput', int]]
-      inc_sInt: Optional[Union['AUpdateinc_sIntInput', int]]
+      int: Union['AUpdateintInput', int]
+      sInt: Union['AUpdatesIntInput', int]
+      inc_int: Union['AUpdateinc_intInput', int]
+      inc_sInt: Union['AUpdateinc_sIntInput', int]
   
   
   class AUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[str]
-      email: Optional[str]
+      id: str
+      email: str
       name: Optional[str]
-      int: Optional[Union['AUpdateintInput', int]]
-      sInt: Optional[Union['AUpdatesIntInput', int]]
-      inc_int: Optional[Union['AUpdateinc_intInput', int]]
-      inc_sInt: Optional[Union['AUpdateinc_sIntInput', int]]
+      int: Union['AUpdateintInput', int]
+      sInt: Union['AUpdatesIntInput', int]
+      inc_int: Union['AUpdateinc_intInput', int]
+      inc_sInt: Union['AUpdateinc_sIntInput', int]
   
   
   class AUpdateintInput(TypedDict, total=False):
@@ -30001,18 +30133,24 @@
       decrement: int
       multiply: int
       divide: int
+  
+  
   class AUpdatesIntInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class AUpdateinc_intInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
       multiply: int
       divide: int
+  
+  
   class AUpdateinc_sIntInput(TypedDict, total=False):
       set: int
       increment: int
@@ -30054,13 +30192,13 @@
   
   
   class AOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      email: Optional['SortOrder']
-      name: Optional['SortOrder']
-      int: Optional['SortOrder']
-      sInt: Optional['SortOrder']
-      inc_int: Optional['SortOrder']
-      inc_sInt: Optional['SortOrder']
+      id: 'SortOrder'
+      email: 'SortOrder'
+      name: 'SortOrder'
+      int: 'SortOrder'
+      sInt: 'SortOrder'
+      inc_int: 'SortOrder'
+      inc_sInt: 'SortOrder'
   
   
   # recursive A types
@@ -30807,7 +30945,7 @@
   
   class BOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the B create method"""
-      id: Optional[str]
+      id: str
   
   
   class BCreateInput(BOptionalCreateInput):
@@ -30821,7 +30959,7 @@
   
   class BOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the B create method, without relations"""
-      id: Optional[str]
+      id: str
   
   
   class BCreateWithoutRelationsInput(BOptionalCreateWithoutRelationsInput):
@@ -30831,13 +30969,13 @@
   
   
   class BCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['BCreateWithoutRelationsInput']
-      connect: Optional['BWhereUniqueInput']
+      create: 'BCreateWithoutRelationsInput'
+      connect: 'BWhereUniqueInput'
   
   
   class BCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['BCreateWithoutRelationsInput', List['BCreateWithoutRelationsInput']]]
-      connect: Optional[Union['BWhereUniqueInput', List['BWhereUniqueInput']]]
+      create: Union['BCreateWithoutRelationsInput', List['BCreateWithoutRelationsInput']]
+      connect: Union['BWhereUniqueInput', List['BWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -30848,15 +30986,15 @@
   
   class BUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      float: Optional[Union['BUpdatefloatInput', float]]
-      d_float: Optional[Union['BUpdated_floatInput', float]]
+      float: Union['BUpdatefloatInput', float]
+      d_float: Union['BUpdated_floatInput', float]
   
   
   class BUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[str]
-      float: Optional[Union['BUpdatefloatInput', float]]
-      d_float: Optional[Union['BUpdated_floatInput', float]]
+      id: str
+      float: Union['BUpdatefloatInput', float]
+      d_float: Union['BUpdated_floatInput', float]
   
   
   class BUpdatefloatInput(TypedDict, total=False):
@@ -30865,6 +31003,8 @@
       decrement: float
       multiply: float
       divide: float
+  
+  
   class BUpdated_floatInput(TypedDict, total=False):
       set: float
       increment: float
@@ -30906,9 +31046,9 @@
   
   
   class BOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      float: Optional['SortOrder']
-      d_float: Optional['SortOrder']
+      id: 'SortOrder'
+      float: 'SortOrder'
+      d_float: 'SortOrder'
   
   
   # recursive B types
@@ -31639,7 +31779,7 @@
   
   class COptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the C create method"""
-      id: Optional[str]
+      id: str
   
   
   class CCreateInput(COptionalCreateInput):
@@ -31657,7 +31797,7 @@
   
   class COptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the C create method, without relations"""
-      id: Optional[str]
+      id: str
   
   
   class CCreateWithoutRelationsInput(COptionalCreateWithoutRelationsInput):
@@ -31671,13 +31811,13 @@
   
   
   class CCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['CCreateWithoutRelationsInput']
-      connect: Optional['CWhereUniqueInput']
+      create: 'CCreateWithoutRelationsInput'
+      connect: 'CWhereUniqueInput'
   
   
   class CCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['CCreateWithoutRelationsInput', List['CCreateWithoutRelationsInput']]]
-      connect: Optional[Union['CWhereUniqueInput', List['CWhereUniqueInput']]]
+      create: Union['CCreateWithoutRelationsInput', List['CCreateWithoutRelationsInput']]
+      connect: Union['CWhereUniqueInput', List['CWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -31688,25 +31828,23 @@
   
   class CUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      char: Optional[str]
-      v_char: Optional[str]
-      text: Optional[str]
-      bit: Optional[str]
-      v_bit: Optional[str]
-      uuid: Optional[str]
+      char: str
+      v_char: str
+      text: str
+      bit: str
+      v_bit: str
+      uuid: str
   
   
   class CUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[str]
-      char: Optional[str]
-      v_char: Optional[str]
-      text: Optional[str]
-      bit: Optional[str]
-      v_bit: Optional[str]
-      uuid: Optional[str]
-  
-  
+      id: str
+      char: str
+      v_char: str
+      text: str
+      bit: str
+      v_bit: str
+      uuid: str
   
   
   class CUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -31742,13 +31880,13 @@
   
   
   class COrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      char: Optional['SortOrder']
-      v_char: Optional['SortOrder']
-      text: Optional['SortOrder']
-      bit: Optional['SortOrder']
-      v_bit: Optional['SortOrder']
-      uuid: Optional['SortOrder']
+      id: 'SortOrder'
+      char: 'SortOrder'
+      v_char: 'SortOrder'
+      text: 'SortOrder'
+      bit: 'SortOrder'
+      v_bit: 'SortOrder'
+      uuid: 'SortOrder'
   
   
   # recursive C types
@@ -32495,7 +32633,7 @@
   
   class DOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the D create method"""
-      id: Optional[str]
+      id: str
   
   
   class DCreateInput(DOptionalCreateInput):
@@ -32509,7 +32647,7 @@
   
   class DOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the D create method, without relations"""
-      id: Optional[str]
+      id: str
   
   
   class DCreateWithoutRelationsInput(DOptionalCreateWithoutRelationsInput):
@@ -32519,13 +32657,13 @@
   
   
   class DCreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['DCreateWithoutRelationsInput']
-      connect: Optional['DWhereUniqueInput']
+      create: 'DCreateWithoutRelationsInput'
+      connect: 'DWhereUniqueInput'
   
   
   class DCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['DCreateWithoutRelationsInput', List['DCreateWithoutRelationsInput']]]
-      connect: Optional[Union['DWhereUniqueInput', List['DWhereUniqueInput']]]
+      create: Union['DCreateWithoutRelationsInput', List['DCreateWithoutRelationsInput']]
+      connect: Union['DWhereUniqueInput', List['DWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -32536,15 +32674,15 @@
   
   class DUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      bool: Optional[Union['DUpdateboolInput', bool]]
-      xml: Optional[str]
+      bool: Union['DUpdateboolInput', bool]
+      xml: str
   
   
   class DUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[str]
-      bool: Optional[Union['DUpdateboolInput', bool]]
-      xml: Optional[str]
+      id: str
+      bool: Union['DUpdateboolInput', bool]
+      xml: str
   
   
   class DUpdateboolInput(TypedDict, total=False):
@@ -32584,9 +32722,9 @@
   
   
   class DOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      bool: Optional['SortOrder']
-      xml: Optional['SortOrder']
+      id: 'SortOrder'
+      bool: 'SortOrder'
+      xml: 'SortOrder'
   
   
   # recursive D types
@@ -33317,7 +33455,7 @@
   
   class EOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the E create method"""
-      id: Optional[str]
+      id: str
   
   
   class ECreateInput(EOptionalCreateInput):
@@ -33332,7 +33470,7 @@
   
   class EOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the E create method, without relations"""
-      id: Optional[str]
+      id: str
   
   
   class ECreateWithoutRelationsInput(EOptionalCreateWithoutRelationsInput):
@@ -33343,13 +33481,13 @@
   
   
   class ECreateNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional['ECreateWithoutRelationsInput']
-      connect: Optional['EWhereUniqueInput']
+      create: 'ECreateWithoutRelationsInput'
+      connect: 'EWhereUniqueInput'
   
   
   class ECreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-      create: Optional[Union['ECreateWithoutRelationsInput', List['ECreateWithoutRelationsInput']]]
-      connect: Optional[Union['EWhereUniqueInput', List['EWhereUniqueInput']]]
+      create: Union['ECreateWithoutRelationsInput', List['ECreateWithoutRelationsInput']]
+      connect: Union['EWhereUniqueInput', List['EWhereUniqueInput']]
   
   
   # TODO: what if a relational field is unique?
@@ -33360,19 +33498,17 @@
   
   class EUpdateInput(TypedDict, total=False):
       """Optional arguments for updating a record"""
-      date: Optional[datetime.datetime]
-      time: Optional[datetime.datetime]
-      ts: Optional[datetime.datetime]
+      date: datetime.datetime
+      time: datetime.datetime
+      ts: datetime.datetime
   
   
   class EUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: Optional[str]
-      date: Optional[datetime.datetime]
-      time: Optional[datetime.datetime]
-      ts: Optional[datetime.datetime]
-  
-  
+      id: str
+      date: datetime.datetime
+      time: datetime.datetime
+      ts: datetime.datetime
   
   
   class EUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -33408,10 +33544,10 @@
   
   
   class EOrderByInput(TypedDict, total=False):
-      id: Optional['SortOrder']
-      date: Optional['SortOrder']
-      time: Optional['SortOrder']
-      ts: Optional['SortOrder']
+      id: 'SortOrder'
+      date: 'SortOrder'
+      time: 'SortOrder'
+      ts: 'SortOrder'
   
   
   # recursive E types

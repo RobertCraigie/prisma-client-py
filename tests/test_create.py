@@ -72,3 +72,41 @@ async def test_create_unique_violation(client: Client) -> None:
 
     with pytest.raises(errors.UniqueViolationError):
         await client.user.create({'name': 'Robert', 'id': 'user-1'})
+
+
+@pytest.mark.asyncio
+async def test_setting_field_to_null(client: Client) -> None:
+    """Creating a field with a None value sets the database record to None"""
+    post = await client.post.create(
+        data={
+            'title': 'Post',
+            'published': False,
+            'desc': None,
+        },
+    )
+    assert post.desc is None
+
+
+@pytest.mark.asyncio
+async def test_setting_non_nullable_field_to_null(client: Client) -> None:
+    """Attempting to create a record with a non-nullable field set to null raises an error"""
+    with pytest.raises(errors.MissingRequiredValueError) as exc:
+        await client.post.create(
+            data={
+                'title': 'Post',
+                'published': None,  # type: ignore
+            },
+        )
+
+    assert exc.match(r'published')
+
+
+@pytest.mark.asyncio
+async def test_nullable_relational_field(client: Client) -> None:
+    """Relational fields cannot be set to None"""
+    with pytest.raises(errors.MissingRequiredValueError) as exc:
+        post = await client.post.create(
+            data={'title': 'Post', 'published': False, 'author': None}  # type: ignore
+        )
+
+    assert exc.match(r'author')

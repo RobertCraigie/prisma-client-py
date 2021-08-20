@@ -1,5 +1,9 @@
 import pytest
+import prisma
 from prisma import Client
+
+
+# TODO: update persist_data stuff, some tests shouldn't have it
 
 
 @pytest.fixture(scope='module', name='user_id')
@@ -101,3 +105,50 @@ async def test_update_record_not_found(client: Client) -> None:
         where={'id': 'wow'}, data={'title': 'Hi from Update!'}
     )
     assert post is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.persist_data
+async def test_setting_field_to_null(client: Client) -> None:
+    """Updating a field to None sets the database record to None"""
+    post = await client.post.create(
+        data={
+            'title': 'Post',
+            'published': False,
+            'desc': 'My description',
+        },
+    )
+    assert post.desc == 'My description'
+
+    updated = await client.post.update(
+        where={
+            'id': post.id,
+        },
+        data={'desc': None},
+    )
+    assert updated is not None
+    assert updated.id == post.id
+    assert updated.desc is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.persist_data
+async def test_setting_non_nullable_field_to_null(client: Client) -> None:
+    """Attempting to set a non-nullable field to null raises an error"""
+    post = await client.post.create(
+        data={
+            'title': 'Post',
+            'published': False,
+        },
+    )
+    assert post.published is False
+
+    with pytest.raises(prisma.errors.MissingRequiredValueError) as exc:
+        await client.post.update(
+            where={
+                'id': post.id,
+            },
+            data={'published': None},  # type: ignore
+        )
+
+    assert exc.match(r'published')

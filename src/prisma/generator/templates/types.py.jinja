@@ -117,7 +117,7 @@ class {{ model.name }}OptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the {{ model.name }} create method"""
     {% for field in model.all_fields %}
         {%- if not field.required_on_create and not field.is_read_only -%}
-            {{'    '}}{{ field.name }}: Optional[{{ field.create_input_type }}]
+            {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.create_input_type) }}
         {% endif %}
     {% endfor %}
 
@@ -138,7 +138,7 @@ class {{ model.name }}OptionalCreateWithoutRelationsInput(TypedDict, total=False
     """Optional arguments to the {{ model.name }} create method, without relations"""
     {% for field in model.all_fields %}
         {%- if not field.required_on_create and not field.is_read_only and not field.relation_name -%}
-            {{'    '}}{{ field.name }}: Optional[{{ field.python_type }}]
+            {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.create_input_type) }}
         {% endif %}
     {% endfor %}
 
@@ -153,13 +153,13 @@ class {{ model.name }}CreateWithoutRelationsInput({{ model.name }}OptionalCreate
 
 
 class {{ model.name }}CreateNestedWithoutRelationsInput(TypedDict, total=False):
-    create: Optional['{{ model.name }}CreateWithoutRelationsInput']
-    connect: Optional['{{ model.name }}WhereUniqueInput']
+    create: '{{ model.name }}CreateWithoutRelationsInput'
+    connect: '{{ model.name }}WhereUniqueInput'
 
 
 class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-    create: Optional[Union['{{ model.name }}CreateWithoutRelationsInput', List['{{ model.name }}CreateWithoutRelationsInput']]]
-    connect: Optional[Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]]
+    create: Union['{{ model.name }}CreateWithoutRelationsInput', List['{{ model.name }}CreateWithoutRelationsInput']]
+    connect: Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]
 
 
 # TODO: what if a relational field is unique?
@@ -176,7 +176,7 @@ class {{ model.name }}UpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
     {% for field in model.all_fields %}
         {%- if not field.is_unique and not field.is_id and not field.is_read_only -%}
-            {{'    '}}{{ field.name }}: Optional[{{ field.get_update_input_type(model.name) }}]
+            {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.get_update_input_type(model.name)) }}
         {% endif %}
     {% endfor %}
 
@@ -185,7 +185,7 @@ class {{ model.name }}UpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
     {% for field in model.all_fields %}
         {%- if not field.is_read_only -%}
-            {{'    '}}{{ field.name }}: Optional[{{ field.get_update_input_type(model.name) }}]
+            {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.get_update_input_type(model.name)) }}
         {% endif %}
     {% endfor %}
 
@@ -199,9 +199,9 @@ class {{ model.name }}Update{{ field.name }}Input(TypedDict, total=False):
     multiply: {{ field.atomic_type }}
     divide: {{ field.atomic_type }}
     {% endif %}
+
+
 {% endfor %}
-
-
 class {{ model.name }}UpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['{{ model.name }}CreateWithoutRelationsInput']
     connect: List['{{ model.name }}WhereUniqueInput']
@@ -236,7 +236,7 @@ class {{ model.name }}UpsertInput(TypedDict):
 
 class {{ model.name }}OrderByInput(TypedDict, total=False):
     {% for field in model.scalar_fields %}
-    {{ field.name }}: Optional['SortOrder']
+    {{ field.name }}: 'SortOrder'
     {% endfor %}
 
 

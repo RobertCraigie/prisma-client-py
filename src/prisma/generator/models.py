@@ -469,6 +469,12 @@ class Field(BaseModel):
 
         return self.python_type
 
+    def maybe_optional(self, typ: str) -> str:
+        """Wrap the given type string within `Optional` if applicable"""
+        if self.is_required or self.is_relational:
+            return typ
+        return f'Optional[{typ}]'
+
     def get_update_input_type(self, model: str) -> str:
         if self.is_atomic:
             return f'Union[\'{model}Update{self.name}Input\', {self.atomic_type}]'
