@@ -210,7 +210,8 @@ class Testdir:
     def runpytest(
         self, *args: Union[str, 'os.PathLike[str]'], **kwargs: Any
     ) -> 'RunResult':
-        return self.testdir.runpytest(*args, **kwargs)
+        # pytest-sugar breaks result parsing
+        return self.testdir.runpytest('-p', 'no:sugar', *args, **kwargs)
 
     @contextlib.contextmanager
     def redirect_stdout_to_file(
