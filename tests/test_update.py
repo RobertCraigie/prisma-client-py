@@ -55,7 +55,7 @@ async def test_update_with_create_disconnect(
     """Removing a relational field"""
     user = await client.user.find_unique(where={'id': user_id}, include={'posts': True})
     assert user is not None
-    assert len(user.posts) == 0
+    assert len(user.posts) == 0  # pyright: reportGeneralTypeIssues=false
 
     updated = await client.user.update(
         where={'id': user_id},
@@ -63,15 +63,17 @@ async def test_update_with_create_disconnect(
         include={'posts': True},
     )
     assert updated is not None
-    assert len(updated.posts) == 1
+    assert len(updated.posts) == 1  # pyright: reportGeneralTypeIssues=false
 
     if method == 'disconnect':
+        # pyright: reportOptionalSubscript=false
         updated = await client.user.update(
             where={'id': user_id},
             data={'posts': {'disconnect': [{'id': updated.posts[0].id}]}},
             include={'posts': True},
         )
     else:
+        # pyright: reportOptionalSubscript=false
         updated = await client.user.update(
             where={'id': user_id},
             data={'posts': {'delete': [{'id': updated.posts[0].id}]}},
@@ -79,7 +81,7 @@ async def test_update_with_create_disconnect(
         )
 
     assert updated is not None
-    assert len(updated.posts) == 0
+    assert len(updated.posts) == 0  # pyright: reportGeneralTypeIssues=false
 
 
 @pytest.mark.asyncio

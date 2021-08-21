@@ -117,13 +117,15 @@ class Runner:
 
         def _patched_subprocess_run(
             *args: Any, **kwargs: Any
-        ) -> 'subprocess.CompletedProcess[bytes]':
+        ) -> 'subprocess.CompletedProcess[str]':
             # pylint: disable=subprocess-run-check
             kwargs['stdout'] = subprocess.PIPE
             kwargs['stderr'] = subprocess.PIPE
             kwargs['encoding'] = sys.getdefaultencoding()
 
             process = old_subprocess_run(*args, **kwargs)
+
+            assert isinstance(process.stdout, str)
 
             print(process.stdout)
             print(process.stderr, file=sys.stderr)

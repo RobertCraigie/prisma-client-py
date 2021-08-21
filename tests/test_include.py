@@ -1,3 +1,10 @@
+# disable these pyright errors as they are not actual errors in this context
+# we know that the included 1-M relational field will not be None when
+# we explicitly include it and we can't add code to constrain the type e.g.
+# `assert user.posts is not None`
+# because we use the tests code to ensure that the mypy plugin is working
+# correctly, any actual typing errors will be caught by mypy
+# pyright: reportOptionalSubscript=false, reportOptionalIterable=false
 from typing import List
 
 import pytest
@@ -70,7 +77,7 @@ async def test_find_unique_include(client: Client, user_id: str) -> None:
     user = await client.user.find_unique(where={'id': user_id}, include={'posts': True})
     assert user is not None
     assert user.name == 'Robert'
-    assert len(user.posts) == 4
+    assert len(user.posts) == 4  # pyright: reportGeneralTypeIssues=false
 
     for i, post in enumerate(user.posts, start=1):
         assert post.author is None
@@ -86,7 +93,7 @@ async def test_find_unique_include_take(client: Client, user_id: str) -> None:
         where={'id': user_id}, include={'posts': {'take': 1}}
     )
     assert user is not None
-    assert len(user.posts) == 1
+    assert len(user.posts) == 1  # pyright: reportGeneralTypeIssues=false
 
 
 @pytest.mark.asyncio
@@ -100,7 +107,7 @@ async def test_find_unique_include_where(
         include={'posts': {'where': {'created_at': posts[0].created_at}}},
     )
     assert user is not None
-    assert len(user.posts) == 1
+    assert len(user.posts) == 1  # pyright: reportGeneralTypeIssues=false
     assert user.posts[0].id == posts[0].id
 
 
@@ -115,7 +122,7 @@ async def test_find_unique_include_pagination(
         include={'posts': {'cursor': {'id': posts[0].id}, 'take': 1, 'skip': 1}},
     )
     assert user is not None
-    assert len(user.posts) == 1
+    assert len(user.posts) == 1  # pyright: reportGeneralTypeIssues=false
     assert user.posts[0].id == posts[1].id
 
     user = await client.user.find_unique(
@@ -123,7 +130,7 @@ async def test_find_unique_include_pagination(
         include={'posts': {'cursor': {'id': posts[1].id}, 'take': -1, 'skip': 1}},
     )
     assert user is not None
-    assert len(user.posts) == 1
+    assert len(user.posts) == 1  # pyright: reportGeneralTypeIssues=false
     assert user.posts[0].id == posts[0].id
 
 
@@ -142,7 +149,7 @@ async def test_find_unique_include_nested_where_or(
     assert user is not None
 
     assert posts[0].published is False
-    assert len(user.posts) == 3
+    assert len(user.posts) == 3  # pyright: reportGeneralTypeIssues=false
 
     assert user.posts[0].id == posts[0].id
     assert user.posts[1].id == posts[1].id

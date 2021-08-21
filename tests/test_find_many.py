@@ -141,11 +141,11 @@ async def test_filtering_one_to_many_relation(client: Client) -> None:
 @pytest.mark.asyncio
 async def test_ordering(client: Client) -> None:
     """Ordering by `asc` and `desc` correctly changes the order of the returned records"""
-    posts = [
-        await client.post.create({'title': 'Test post 1', 'published': False}),
-        await client.post.create({'title': 'Test post 2', 'published': False}),
-        await client.post.create({'title': 'Test post 3', 'published': True}),
-    ]
+    async with client.batch_() as batcher:
+        batcher.post.create({'title': 'Test post 1', 'published': False})
+        batcher.post.create({'title': 'Test post 2', 'published': False})
+        batcher.post.create({'title': 'Test post 3', 'published': True})
+
     found = await client.post.find_many(
         where={'title': {'contains': 'Test'}},
         order={'published': 'asc'},

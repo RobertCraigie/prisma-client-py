@@ -105,7 +105,7 @@ async def test_setting_non_nullable_field_to_null(client: Client) -> None:
 async def test_nullable_relational_field(client: Client) -> None:
     """Relational fields cannot be set to None"""
     with pytest.raises(errors.MissingRequiredValueError) as exc:
-        post = await client.post.create(
+        await client.post.create(
             data={'title': 'Post', 'published': False, 'author': None}  # type: ignore
         )
 
