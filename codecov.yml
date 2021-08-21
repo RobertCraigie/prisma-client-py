@@ -8,7 +8,7 @@ coverage:
         paths:
           - "tests/"
         branches:
-          - master
+          - main
       prisma:
         paths:
           - "!tests/"
@@ -17,7 +17,7 @@ coverage:
         # NOTE: flexible on this threshold
         threshold: 5%
         branches:
-          - master
+          - main
 
 ignore:
   - "src/prisma/generator/templates/**/*"
