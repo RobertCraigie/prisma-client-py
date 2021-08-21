@@ -70,7 +70,7 @@ jobs:
       - name: Run tests
         # TODO: test postgresql
         run: |
-          tox -e setup,${{ matrix.tox-env }},report -- --ignore=tests/integrations/postgresql
+          tox -e setup,${{ matrix.tox-env }},typesafety-pyright,report -- --ignore=tests/integrations/postgresql
 
       - name: Upload coverage
         run: |
