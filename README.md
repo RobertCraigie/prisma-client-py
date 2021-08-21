@@ -11,6 +11,8 @@ Prisma Client Python is an unofficial implementation of [Prisma Client JS](https
 
 It's recommended to read the official [prisma docs](https://prisma.io/docs) for all tooling around the Python client, like the [prisma schema file](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema/prisma-schema-file) or [prisma migrate](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-migrate).
 
+You can try out Prisma Client Python online on [gitpod](https://gitpod.io/#https://github.com/RobertCraigie/prisma-py-async-quickstart).
+
 ## Install
 
 See [this](docs/install.md) for installation instructions.
