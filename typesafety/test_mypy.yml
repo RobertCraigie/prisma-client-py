@@ -1,0 +1,225 @@
+- case: all_tests
+  main: |
+    # NOTE: all mypy typesafety tests are contained within a single case
+    # for performance reasons, it took ~40 minutes to test 3 cases on
+    # GitHub Actions which is way too slow
+    from pydantic import BaseModel
+    from prisma import Client
+    from prisma.models import Post, User
+    from prisma.types import (
+      UserInclude,
+      PostCreateInput,
+      PostWhereUniqueInput,
+    )
+
+    class MyModel(BaseModel):
+      id: int
+      title: str
+
+
+    async def test_create_data_incorrect_inputs(client: Client) -> None:
+      await client.post.create()  # E: Missing positional argument "data" in call to "create" of "PostActions"  [call-arg]
+
+      await client.post.create({'published': False})  # E: Missing key "title" for TypedDict "PostCreateInput"  [typeddict-item]
+      await client.post.create({'title': 'Hello, world'})  # E: Missing key "published" for TypedDict "PostCreateInput"  [typeddict-item]
+
+      await client.post.create({'title': 'a', 'published': 'false'})  # E: Incompatible types (expression has type "str", TypedDict item "published" has type "bool")  [typeddict-item]
+
+    async def test_create_optional_data(client: Client) -> None:
+      post = await client.post.create({'title': 'Hello', 'published': True})
+      reveal_type(post)  # N: Revealed type is "prisma.models.Post*"
+      reveal_type(post.id)  # N: Revealed type is "builtins.str"
+      reveal_type(post.title)  # N: Revealed type is "builtins.str"
+      reveal_type(post.published)  # N: Revealed type is "builtins.bool"
+      reveal_type(post.title.lower())  # N: Revealed type is "builtins.str"
+      oops = post.oops  # E: "Post" has no attribute "oops"  [attr-defined]
+
+      post = await client.post.create({'title': 'Hello', 'published': True, 'desc': 'description'})
+      reveal_type(post.id)  # N: Revealed type is "builtins.str"
+      reveal_type(post.desc)  # N: Revealed type is "Union[builtins.str, None]"
+      reveal_type(post.title)  # N: Revealed type is "builtins.str"
+
+    async def test_create_dynamic_data(client: Client) -> None:
+      data = {
+        'title': 'hello',
+        'published': True,
+      }  # type: PostCreateInput
+
+      if True:
+        data['id'] = '983293asdsad'
+        data['invalid'] = True  # E: TypedDict "PostCreateInput" has no key "invalid"  [typeddict-item]
+
+      await client.post.create(data)
+
+    async def test_find_unique_where_incorrect_inputs(client: Client) -> None:
+      await client.post.find_unique()  # E: Missing positional argument "where" in call to "find_unique" of "PostActions"  [call-arg]
+
+      await client.post.find_unique({'published': False})  # E: Extra key "published" for TypedDict "PostWhereUniqueInput"  [typeddict-item]
+      await client.post.find_unique({'title': 'Hello, world'})  # E: Extra key "title" for TypedDict "PostWhereUniqueInput"  [typeddict-item]
+
+      await client.post.find_unique({'id': 2})  # E: Incompatible types (expression has type "int", TypedDict item "id" has type "str")  [typeddict-item]
+
+    async def test_find_unique_output(client: Client) -> None:
+      post = await client.post.find_unique({'id': 'dbkh232'})
+      reveal_type(post)  # N: Revealed type is "Union[prisma.models.Post, None]"
+
+      if post is not None:
+        reveal_type(post.id)  # N: Revealed type is "builtins.str"
+        reveal_type(post.title)  # N: Revealed type is "builtins.str"
+        reveal_type(post.published)  # N: Revealed type is "builtins.bool"
+        reveal_type(post.title.lower())  # N: Revealed type is "builtins.str"
+        oops = post.oops  # E: "Post" has no attribute "oops"  [attr-defined]
+
+    async def test_find_unique_dynamic_where(client: Client) -> None:
+      client = Client()
+
+      data: PostWhereUniqueInput = {}
+
+      if True:
+        data['id'] = '983293asdsad'
+        data['invalid'] = True  # E: TypedDict "PostWhereUniqueInput" has no key "invalid"  [typeddict-item]
+
+      post = await client.post.find_unique(data)
+      reveal_type(post)  # N: Revealed type is "Union[prisma.models.Post, None]"
+
+    async def test_include_removes_optional(client: Client) -> None:
+      user = await client.user.find_unique({'id': '1'}, include={'posts': True})
+      if user is not None:
+        reveal_type(user.posts)  # N: Revealed type is "builtins.list[prisma.models.Post]"
+        if len(user.posts) == 0:
+          print('user does not have any posts!')
+        else:
+          print('user has at least one post')
+
+        reveal_type(user.profile)  # N: Revealed type is "Union[prisma.models.Profile, None]"
+
+      user = await client.user.find_unique(include={'posts': True}, where={'id': '1'})
+      if user is not None:
+        reveal_type(user.posts)  # N: Revealed type is "builtins.list[prisma.models.Post]"
+
+      user = await client.user.find_unique({'id': '1'}, {'posts': True})
+      if user is not None:
+        reveal_type(user.posts)  # N: Revealed type is "builtins.list[prisma.models.Post]"
+
+      user = await client.user.find_unique({'id': '1'}, dict(posts=True))
+      if user is not None:
+        reveal_type(user.posts)  # N: Revealed type is "builtins.list[prisma.models.Post]"
+
+      user = await client.user.find_unique({'id': '1'}, include={'posts': True, 'profile': True})
+      if user is not None:
+        reveal_type(user.posts)  # N: Revealed type is "builtins.list[prisma.models.Post]"
+
+        # profile is still optional as it is optional on a database level
+        reveal_type(user.profile)  # N: Revealed type is "Union[prisma.models.Profile, None]"
+
+      user = await client.user.find_unique({'id': '1'}, include={'posts': False})
+      if user is not None:
+        reveal_type(user.posts)  # N: Revealed type is "Union[builtins.list[prisma.models.Post], None]"
+        reveal_type(user.profile)  # N: Revealed type is "Union[prisma.models.Profile, None]"
+
+      user = await client.user.find_unique({'id': '1'})
+      if user is not None:
+        reveal_type(user.posts)  # N: Revealed type is "Union[builtins.list[prisma.models.Post], None]"
+        reveal_type(user.profile)  # N: Revealed type is "Union[prisma.models.Profile, None]"
+
+    async def test_nested_include(client: Client) -> None:
+      user = await client.user.find_unique(
+        where={'id': '1'},
+        include={
+          'posts': {
+            'include': {
+              'categories': True
+            }
+          }
+        }
+      )
+
+      assert user is not None
+      reveal_type(user.profile)  # N: Revealed type is "Union[prisma.models.Profile, None]"
+
+      # TODO: models.Post shouldn't be duplicated
+      reveal_type(user.posts)  # N: Revealed type is "builtins.list[prisma.models.Post, prisma.models.Post]"
+      reveal_type(user.posts[0].categories)  # N: Revealed type is "builtins.list[prisma.models.Category]"
+
+    async def test_explicit_include_type(client: Client) -> None:
+      user = await client.user.find_unique(
+        where={'id': '1'},
+        include=UserInclude(posts=True)
+      )
+      assert user is not None
+
+      # TODO: why is the type duplicated?
+      reveal_type(user.posts)  # N: Revealed type is "builtins.list[prisma.models.Post, prisma.models.Post]"
+
+    async def test_correct_return_model_type(client: Client) -> None:
+      query = '''
+        SELECT *
+        FROM public."Post"
+        WHERE title = "hi"
+      '''
+      posts = await client.query_raw(query, model=Post)
+      reveal_type(posts)  # N: Revealed type is "builtins.list*[prisma.models.Post*]"
+      post = posts[0]
+      id = post.id
+      oops = post.oops  # E: "Post" has no attribute "oops"  [attr-defined]
+      oops = posts[0].oops  # E: "Post" has no attribute "oops"  [attr-defined]
+
+      users = await client.query_raw(query, model=User)
+      reveal_type(users)  # N: Revealed type is "builtins.list*[prisma.models.User*]"
+      user = users[0]
+      id = user.id
+      name = user.name
+      oops = user.oops  # E: "User" has no attribute "oops"  [attr-defined]
+
+    async def test_no_model(client: Client) -> None:
+      query = '''
+        SELECT *
+        FROM public."Post"
+        WHERE title = "hi"
+      '''
+      posts = await client.query_raw(query)
+      reveal_type(posts)  # N: Revealed type is "Any"
+
+    async def test_bad_model_argument(client: Client) -> None:
+      query = '''
+        SELECT *
+        FROM public."Post"
+        WHERE title = "hi"
+      '''
+      posts = await client.query_raw(query, model=int)  # E: Value of type variable "BaseModelT" of "query_raw" of "Client" cannot be "int"  [type-var]
+
+    async def test_non_prisma_model_basemodel(client: Client) -> None:
+      query = '''
+        SELECT *
+        FROM public."Post"
+        WHERE title = "hi"
+      '''
+      models = await client.query_raw(query, model=MyModel)
+      reveal_type(models)  # N: Revealed type is "builtins.list*[main.MyModel*]"
+      id = models[0].id
+      title = models[0].title
+      oops = models[0].oops  # E: "MyModel" has no attribute "oops"  [attr-defined]
+
+    async def test_one_to_one_relation(client: Client) -> None:
+      """Ensure relational filters are loosely typed"""
+      user = await client.user.find_first(
+          where={
+              'profile': {
+                  'is': {
+                      'bio': {'contains': 'scotland'},
+                  },
+              },
+          }
+      )
+      assert user is not None
+      reveal_type(user) # N: Revealed type is "prisma.models.User"
+
+      await client.user.find_first(
+          where={
+              'profile': {
+                  'is': {
+                      'an_invalid_value': 'foo',
+                  },
+              },
+          },
+      )

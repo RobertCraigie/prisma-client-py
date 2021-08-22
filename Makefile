@@ -24,7 +24,7 @@ pyright:
 
 .PHONY: typesafety
 typesafety:
-	tox -e typesafety $(ARGS)
+	tox -e typesafety-pyright,typesafety-mypy
 
 .PHONY: docs
 docs:
