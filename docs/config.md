@@ -5,8 +5,8 @@ Options are passed to Prisma Client Python using the `generator` block in the `s
 For example:
 ```prisma
 generator db {
-    provider = "prisma-client-py"
-    config_option = "value"
+  provider = "prisma-client-py"
+  config_option = "value"
 }
 ```
 See the [official docs](https://www.prisma.io/docs/concepts/components/prisma-schema/generators) for options that are not specific to Prisma Client Python.
@@ -46,15 +46,15 @@ You can pass either an absolute module import or a path.
 
 ```prisma
 generator db {
-    provider = "prisma-client-py"
-    partial_type_generator = "scripts/partial_types.py"
+  provider = "prisma-client-py"
+  partial_type_generator = "scripts/partial_types.py"
 }
 ```
 
 ```prisma
 generator db {
-    provider = "prisma-client-py"
-    partial_type_generator = "scripts.partial_types"
+  provider = "prisma-client-py"
+  partial_type_generator = "scripts.partial_types"
 }
 ```
 
@@ -72,33 +72,7 @@ This depth can be controlled with the `recursive_type_depth` option, if `-1` is 
 These examples use the following `schema.prisma` models
 
 ```prisma
-model Post {
-    id         String      @default(cuid()) @id
-    title      String
-    author     User?       @relation(fields:  [author_id], references: [id])
-    author_id  String?
-    categories Category[]  @relation(references: [id])
-}
-
-model User {
-    id        String   @default(cuid()) @id
-    name      String
-    posts     Post[]
-    profile   Profile?
-}
-
-model Category {
-    id    Int    @id @default(autoincrement())
-    posts Post[] @relation(references: [id])
-    name  String
-}
-
-model Profile {
-  id      Int    @id @default(autoincrement())
-  user    User   @relation(fields:  [user_id], references: [id])
-  user_id String
-  bio     String
-}
+--8<-- "docs/src_examples/recursive-types.schema.prisma"
 ```
 
 #### Default
@@ -132,8 +106,8 @@ You can do this by setting `recursive_type_depth` to -1.
 
 ```prisma
 generator db {
-    provider = "prisma-client-py"
-    recursive_type_depth = -1
+  provider = "prisma-client-py"
+  recursive_type_depth = -1
 }
 ```
 
@@ -143,8 +117,8 @@ Generating a lot of types can drastically decreas the speed of static type check
 
 ```prisma
 generator db {
-    provider = "prisma-client-py"
-    recursive_type_depth = 2
+  provider = "prisma-client-py"
+  recursive_type_depth = 2
 }
 ```
 
@@ -169,8 +143,8 @@ There is no maximum value, recursive types can be nested arbitrarily deep.
 
 ```prisma
 generator db {
-    provider = "prisma-client-py"
-    recursive_type_depth = 8
+  provider = "prisma-client-py"
+  recursive_type_depth = 8
 }
 ```
 

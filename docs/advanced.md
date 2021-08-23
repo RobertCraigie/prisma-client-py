@@ -11,48 +11,22 @@ So let's introduce a new comment model with a 1 to many relationship with the Po
 
 ```prisma
 model Post {
-    ...
-    comments Comment[]
+  ...
+  comments Comment[]
 }
 
 model Comment {
-    id         String   @default(cuid()) @id
-    created_at DateTime @default(now())
-    content    String
-    post       Post @relation(fields: [post_id], references: [id])
-    post_id    String
+  id         String   @default(cuid()) @id
+  created_at DateTime @default(now())
+  content    String
+  post       Post @relation(fields: [post_id], references: [id])
+  post_id    String
 }
 ```
 
 ??? note "Full Prisma Schema"
     ```prisma
-    datasource db {
-        // could be postgresql or mysql
-        provider = "sqlite"
-        url      = "file:dev.db"
-    }
-
-    generator db {
-        provider = "prisma-client-py"
-    }
-
-    model Post {
-        id         String   @default(cuid()) @id
-        created_at DateTime @default(now())
-        updated_at DateTime @updatedAt
-        title      String
-        published  Boolean
-        desc       String?
-        comments  Comment[]
-    }
-
-    model Comment {
-        id         String   @default(cuid()) @id
-        created_at DateTime @default(now())
-        content    String
-        post       Post @relation(fields: [post_id], references: [id])
-        post_id    String
-    }
+    --8<-- "docs/src_examples/advanced.schema.prisma"
     ```
 
 Whenever you make changes to your model, migrate your database and re-generate your prisma code:

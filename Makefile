@@ -12,6 +12,9 @@ test:
 .PHONY: format
 format:
 	black .
+	for schema in `find docs/src_examples -name '*.schema.prisma'` ; do \
+        prisma format --schema=$$schema ; \
+    done
 
 .PHONY: lint
 lint:
