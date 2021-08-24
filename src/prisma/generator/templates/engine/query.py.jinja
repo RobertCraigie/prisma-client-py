@@ -45,9 +45,14 @@ class QueryEngine:
     def stop(self) -> None:
         self.disconnect()
         {% if is_async %}
-        loop = asyncio.get_event_loop()
-        if not loop.is_closed():
-            loop.create_task(self.close_session())
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            # no event loop in the current thread, we cannot cleanup
+            return
+        else:
+            if not loop.is_closed():
+                loop.create_task(self.close_session())
         {% else %}
         self.close_session()
         {% endif %}
