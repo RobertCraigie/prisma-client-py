@@ -160,6 +160,218 @@ posts = await client.post.find_many(
 )
 ```
 
+### Filtering by Relational Fields
+
+Within the filter you can query for everything you would normally query for, like it was a `find_first()` call on the relational field, for example:
+
+```py
+post = await client.post.find_first(
+    where={
+        'author': {
+            'is': {
+                'name': 'Robert',
+            },
+        },
+    },
+)
+user = await client.user.find_first(
+    where={
+        'name': 'Robert',
+    },
+)
+```
+
+#### One to One
+
+```py
+post = await client.post.find_first(
+    where={
+        'author': {
+            'is': {
+                'name': 'Robert',
+            },
+            'is_not': {
+                'name': 'Tegan',
+            },
+        },
+    },
+)
+```
+
+#### One to Many
+
+##### Excluding
+
+```py
+post = await client.post.find_first(
+    where={
+        'categories': {
+            'none': {
+                'name': 'Exclude Category',
+            },
+        },
+    },
+)
+```
+
+##### At Least One
+
+```py
+post = await client.post.find_first(
+    where={
+        'categories': {
+            'some': {
+                'name': {
+                    'contains': 'Special',
+                },
+            },
+        },
+    },
+)
+```
+
+##### Every
+
+```py
+post = await client.post.find_first(
+    where={
+        'categories': {
+            'every': {
+                'name': {
+                    'contains': 'Category',
+                },
+            },
+        },
+    },
+)
+```
+
+### Filtering by Field Values
+
+!!! note
+    The examples for filtering fields are simply to showcase possible arguments, all the arguments
+    passed together will result in either an invalid query or no records being found.
+
+#### String Fields
+
+```py
+post = await client.post.find_first(
+    where={
+        'desc': 'Must be exact match',
+        # or
+        'desc': {
+            'equals': 'example_string',
+            'not_in': ['ignore_string_1', 'ignore_string_2'],
+            'lt': 'z',
+            'lte': 'y',
+            'gt': 'a',
+            'gte': 'b',
+            'contains': 'string must be present',
+            'startswith': 'must start with string',
+            'endswith': 'must end with string',
+            'IN': ['find_string_1', 'find_string_2'],
+            'NOT': {
+                # recursive type
+                'contains': 'string must not be present',
+                ...
+            },
+        },
+    },
+)
+```
+
+#### Integer Fields
+
+```py
+post = await client.post.find_first(
+    where={
+        'views': 10,
+        # or
+        'views': {
+            'equals': 1,
+            'IN': [1, 2, 3],
+            'not_in': [4, 5, 6],
+            'lt': 10,
+            'lte': 9,
+            'gt': 0,
+            'gte': 1,
+            'NOT': {
+                # recursive type
+                'gt': 10,
+                ...
+            },
+        },
+    },
+)
+```
+
+#### Float Fields
+
+```py
+user = await client.user.find_first(
+    where={
+        'points': 10.0,
+        # or
+        'points': {
+            'equals': 10.0,
+            'IN': [1.2, 1.3, 1.4],
+            'not_in': [4.7, 53.4, 6.8],
+            'lt': 100.5,
+            'lte': 9.9,
+            'gt': 0.0,
+            'gte': 1.2,
+            'NOT': {
+                # recursive type
+                'gt': 10.0,
+                ...
+            },
+        },
+    },
+)
+```
+
+#### DateTime Fields
+
+```py
+from datetime import datetime
+
+post = await client.post.find_first(
+    where={
+        'updated_at': datetime.now(),
+        # or
+        'updated_at': {
+            'equals': datetime.now(),
+            'not_in': [datetime.now(), datetime.utcnow()],
+            'lt': datetime.now(),
+            'lte': datetime.now(),
+            'gt': datetime.now(),
+            'gte': datetime.now(),
+            'IN': [datetime.now(), datetime.utcnow()],
+            'NOT': {
+                # recursive type
+                'equals': datetime.now(),
+                ...
+            },
+        },
+    },
+)
+```
+
+#### Boolean Fields
+
+```py
+post = await client.post.find_first(
+    where={
+        'published': True,
+        # or
+        'published': {
+            'equals': True,
+            'NOT': False,
+        },
+    },
+)
+```
+
 ## Deleting
 
 ### Unique Record
@@ -245,6 +457,52 @@ post = await client.post.upsert(
     include={
         'categories': True,
     }
+)
+```
+
+### Updating Atomic Fields
+
+If a field is an `int` or `float` type then it can be atomically updated, i.e. mathematical operations can be applied without knowledge of the previous value.
+
+#### Integer Fields
+
+```py
+post = await client.post.update(
+    where={
+        'id': 'abc',
+    },
+    data={
+        'views': 1,
+        # or
+        'views': {
+            'set': 5,
+            'increment': 1,
+            'decrement': 2,
+            'multiply': 5,
+            'divide': 10,
+        },
+    },
+)
+```
+
+#### Float Fields
+
+```py
+user = await client.user.update(
+    where={
+        'id': 'abc',
+    },
+    data={
+        'points': 1.0,
+        # or
+        'points': {
+            'set': 1.0,
+            'increment': 1.5,
+            'decrement': 0.5,
+            'multiply': 2.5,
+            'divide': 3.0,
+        },
+    },
 )
 ```
 
