@@ -49,12 +49,12 @@ nav:
     - Batching Queries: reference/batching.md
     - Partial Types: reference/partials.md
   - Setup: setup.md
+  - Quickstart: quickstart.md
   - Type Safety: type-safety.md
   - Type Checkers:
     - Pyright: pyright.md
     - Mypy: mypy.md
   - Limitations: limitations.md
-  - Quickstart: quickstart.md
   - Advanced Usage: advanced.md
   - Configuration: config.md
   - Logging: logging.md

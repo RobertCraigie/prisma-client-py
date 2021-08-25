@@ -31,10 +31,12 @@ typesafety:
 
 .PHONY: docs
 docs:
+	python scripts/docs.py
 	mkdocs build
 
 .PHONY: docs-serve
 docs-serve:
+	python scripts/docs.py
 	mkdocs serve
 
 .PHONY: clean

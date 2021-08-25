@@ -157,9 +157,19 @@ For a more specififc test case look through the tests and find one that is simil
 
 In order to ensure types have been implemented correctly we use [pytest-pyright](https://pytest-pyright.readthedocs.io/) and [pytest-mypy-plugins](https://github.com/TypedDjango/pytest-mypy-plugins).
 
+You can run both pyright and mypy tests with
+
+```sh
+make typesafety
+```
+
 #### Add Pyright Test
 
-To add a new test, simply create a `.py` file in the `typesafety/pyright` directory and run `tox -e typesafety-pyright`.
+To add a new test, simply create a `.py` file in the `typesafety/pyright` directory and run:
+
+```sh
+tox -e typesafety-pyright
+```
 
 See the [pytest-pyright documentation](https://pytest-pyright.readthedocs.io/en/latest/#checking-for-errors) for more information.
 
@@ -167,6 +177,10 @@ See the [pytest-pyright documentation](https://pytest-pyright.readthedocs.io/en/
 
 Mypy tests can be found in the `typesafety` directory.
 
-To add a new test, simply create a `test_*.yml` file in the `typesafety` directory and run `tox -e typesafety-mypy`.
+To add a new test, simply create a `test_*.yml` file in the `typesafety` directory and run:
+
+```sh
+tox -e typesafety-mypy
+```
 
 See the [pytest-mypy-plugins documentation](https://github.com/TypedDjango/pytest-mypy-plugins) for more information.

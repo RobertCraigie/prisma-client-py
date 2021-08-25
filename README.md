@@ -3,127 +3,277 @@
 <div align="center">
     <h1>Prisma Client Python</h1>
     <p><h3 align="center">Type-safe database access for Python</h3></p>
+    <div align="center">
+    <a href="https://github.com/psf/black">
+        <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black">
+    </a>
+    <a href="https://codecov.io/gh/RobertCraigie/prisma-client-py">
+        <img src="https://codecov.io/gh/RobertCraigie/prisma-client-py/branch/main/graph/badge.svg?token=MVMavta8LR"/>
+    </a>
+    <img src="https://img.shields.io/github/workflow/status/RobertCraigie/prisma-client-py/Test/main?label=tests" alt="GitHub Workflow Status (main)">
+    <img src="https://img.shields.io/pypi/pyversions/prisma-client" alt="Supported python versions">
+    <img src="https://img.shields.io/pypi/v/prisma-client" alt="Latest package version">
+    </div>
 </div>
 
 <hr>
 
-Prisma Client Python is an unofficial implementation of [Prisma Client JS](https://github.com/prisma/prisma-client-js) which is an **auto-generated query builder** that enables **type-safe** database access and **reduces boilerplate**. You can use it as an alternative to traditional ORMs such as SQLAlchemy, Django ORM, peewee and most database-specific tools. You can also use it in either an synchronous or an asynchronous context.
+## What is Prisma Client Python?
 
-It's recommended to read the official [prisma docs](https://prisma.io/docs) for all tooling around the Python client, like the [prisma schema file](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema/prisma-schema-file) or [prisma migrate](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-migrate).
+Prisma Client Python is an unofficial implementation of [Prisma](https://github.com/prisma/prisma) which is a **next-generation ORM** that comes  bundled with tools such as [Prisma Migrate](https://www.prisma.io/docs/concepts/components/prisma-migrate) which make working with databases as easy as possible.
 
-You can try out Prisma Client Python online on [gitpod](https://gitpod.io/#https://github.com/RobertCraigie/prisma-py-async-quickstart).
+Prisma Client Python can be used in *any* Python backend application. This can be a REST API, a GraphQL API or *anything* else that needs a database.
 
-## Install
+## Why should you use Prisma Client Python?
 
-See [this](docs/install.md) for installation instructions.
+Unlike other Python ORMs, Prisma Client Python is **fully type safe** and offers native support for usage **with and without** `async`. All you have to do is [specify the type of client](docs/setup.md) you would like to use for your project in the [Prisma schema file](#the-prisma-schema).
 
-## Asynchronous Example
+Core features:
 
-See the [quickstart](docs/quickstart.md) tutorial for more information.
+- [Full type safety](docs/type-safety.md)
+- [With / without async](docs/setup.md)
+- [Recursive and pseudo-recursive types](docs/config.md#recursive-type-depth)
+- [Atomic updates](docs/reference/common.md#updating-atomic-fields)
+- [Complex cross-relational queries](docs/reference/common.md#filtering-by-relational-fields)
+- [Partial type generation](docs/partial-types.md)
+- [Batching write queries](docs/reference/batching.md)
+
+Supported database providers:
+
+- PostgreSQL
+- MySQL
+- SQLite
+- MongoDB (experimental)
+- SQL Server (experimental)
+
+## How does Prisma work?
+
+This section provides a high-level overview of how Prisma works and its most important technical components. For a more thorough introduction, visit the [documentation](docs).
+
+### The Prisma schema
+
+Every project that uses a tool from the Prisma toolkit starts with a [Prisma schema file](https://www.prisma.io/docs/concepts/components/prisma-schema). The Prisma schema allows developers to define their _application models_ in an intuitive data modeling language. It also contains the connection to a database and defines a _generator_:
+
+```prisma
+// database
+datasource db {
+  provider = "sqlite"
+  url      = "file:database.db"
+}
+
+// generator
+generator client {
+  provider = "prisma-client-py"
+}
+
+// data models
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String?
+  views     Int     @default(0)
+  published Boolean @default(false)
+  author    User?   @relation(fields: [author_id], references: [id])
+  author_id Int?
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+  posts Post[]
+}
+```
+
+In this schema, you configure three things:
+
+- **Data source**: Specifies your database connection, in this case we use a local SQLite database however you can also use an environment variable
+- **Generator**: Indicates that you want to generate Prisma Client Python
+- **Data models**: Defines your application models
+
+---
+
+On this page, the focus is on the generator as this is the only part of the schema that is specific to Prisma Client Python, you can learn more about [Data sources](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema/data-sources) and [Data models](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model/) on their respective documentation pages.
+
+### Prisma generator
+
+A prisma schema can define one or more generators, defined by the `generator` block.
+
+A generator determines what assets are created when you run the `prisma generate` command. The `provider` value defines which Prisma Client will be created. In this case as we want to generate Prisma Client Python we use the `prisma-client-py` value.
+
+You can also define where the client will be generated to with the `output` option, by default Prisma Client Python will be generated to the same location it was installed to, whether thats inside a virtual environment, the global python installation or anywhere else that python packages can be imported from.
+
+For more options see [configuring Prisma Client Python](docs/config.md).
+
+---
+
+### Accessing your database with Prisma Client Python
+
+Just want to play around with Prisma Client Python and not worry about any setup? You can try it out online on [gitpod](https://gitpod.io/#https://github.com/RobertCraigie/prisma-py-async-quickstart).
+
+#### Installing Prisma Client Python
+
+The first step with any python project should be to setup a virtual environment to isolate installed packages from your other python projects, however that is out of the scope for this page.
+
+In this example we'll install the dependencies required for an asynchronous client, if you would like to use a synchronous client see [setting up a synchronous client](docs/setup.md#synchronous-client).
+
+```sh
+pip install -U git+https://github.com/RobertCraigie/prisma-client-py#egg=prisma-client[aiohttp]
+```
+
+#### Generating Prisma Client Python
+
+Now that we have Prisma Client Python installed we need to actually generate the client to be able to access the database.
+
+Copy the Prisma schema file shown above to a `schema.prisma` file in the root directory of your project and run:
+
+```sh
+prisma db push
+```
+
+This command will add the data models to your database and generate the client, you should see something like this:
+
+```
+Prisma schema loaded from schema.prisma
+Datasource "db": SQLite database "database.db" at "file:database.db"
+
+SQLite database database.db created at file:database.db
+
+
+🚀  Your database is now in sync with your schema. Done in 26ms
+
+✔ Generated Prisma Client Python to ./.venv/lib/python3.9/site-packages/prisma in 265ms
+```
+
+It should be noted that whenever you make changes to your `schema.prisma` file you will have to re-generate the client, you can do this automatically by running `prisma generate --watch`.
+
+The simplest asynchronous Prisma Client Python application looks something like this:
 
 ```py
 import asyncio
-from prisma.client import Client
+from prisma import Client
 
 async def main() -> None:
-    db = Client()
-    await db.connect()
+    client = Client()
+    await client.connect()
 
-    post = await db.post.create(
-        {
-            'title': 'Hello from prisma!',
-            'desc': 'Prisma is a database toolkit and makes databases easy.',
-            'published': True,
-        }
-    )
-    print(f'created post: {post.json(indent=2, sort_keys=True)}')
+    # write your queries here
 
-    found = await db.post.find_unique(where={'id': post.id})
-    assert found is not None
-    print(f'found post: {found.json(indent=2, sort_keys=True)}')
-
-    await db.disconnect()
-
+    await client.disconnect()
 
 if __name__ == '__main__':
     asyncio.get_event_loop().run_until_complete(main())
 ```
-```prisma
-// schema.prisma
 
-datasource db {
-    // could be postgresql or mysql
-    provider = "sqlite"
-    url      = "file:dev.db"
-}
+#### Query examples
 
-generator db {
-    provider = "prisma-client-py"
-    http     = "aiohttp"
-}
+For a more complete list of queries you can perform with Prisma Client Python see the [documentation](docs/reference/common.md).
 
-model Post {
-    id         String   @default(cuid()) @id
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-    title      String
-    published  Boolean
-    desc       String?
-}
-```
+All query methods return [pydantic models](https://pydantic-docs.helpmanual.io/usage/models/).
 
-## Synchronous Example
+**Retrieve all `User` records from the database**
 
 ```py
-from prisma.client import Client
-
-def main() -> None:
-    db = Client()
-    db.connect()
-
-    post = db.post.create(
-        {
-            'title': 'Hello from prisma!',
-            'desc': 'Prisma is a database toolkit and makes databases easy.',
-            'published': True,
-        }
-    )
-    print(f'created post: {post.json(indent=2, sort_keys=True)}')
-
-    found = db.post.find_unique(where={'id': post.id})
-    assert found is not None
-    print(f'found post: {found.json(indent=2, sort_keys=True)}')
-
-    db.disconnect()
-
-
-if __name__ == '__main__':
-    main()
+users = await client.user.find_many()
 ```
-```prisma
-// schema.prisma
 
-datasource db {
-    // could be postgresql or mysql
-    provider = "sqlite"
-    url      = "file:dev.db"
-}
+**Include the `posts` relation on each returned `User` object**
 
-generator db {
-    provider = "prisma-client-py"
-    http     = "requests"
-}
-
-model Post {
-    id         String   @default(cuid()) @id
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-    title      String
-    published  Boolean
-    desc       String?
-}
+```py
+users = await client.user.find_many(
+    include={
+        'posts': True,
+    },
+)
 ```
+
+**Retrieve all `Post` records that contain `"prisma"`**
+
+```py
+posts = await client.post.find_many(
+    where={
+        'OR': [
+            {'title': {'contains': 'prisma'}}},
+            {'content': {'contains': 'prisma'}}},
+        ]
+    }
+)
+```
+
+**Create a new `User` and a new `Post` record in the same query**
+
+```py
+user = await client.user.create(
+    data={
+        'name': 'Robert',
+        'email': 'robert@craigie.dev',
+        'posts': {
+            'create': {
+                'title': 'My first post from Prisma!',
+            },
+        },
+    },
+)
+```
+
+**Update an existing `Post` record**
+
+```py
+post = await client.post.update(
+    where={
+        'id': 42,
+    },
+    data={
+        'views': {
+            'increment': 1,
+        },
+    },
+)
+```
+
+#### Usage with static type checkers
+
+All Prisma Client Python methods are fully statically typed, this means you can easily catch bugs in your code without having to run it!
+
+For more details see the [documentation](docs/type-safety.md).
+
+## Room for improvement
+
+Prisma Client Python is a new project, as such there are some features that are missing or incomplete.
+
+### Auto completion for query arguments
+
+As far as I am aware there is currently no Python IDE that will add the appropriate completions for the following code:
+
+```py
+user = await client.user.find_first(
+    where={
+        '.'
+    }
+)
+```
+
+Given the cursor is where the `.` is, an IDE should suggest the following completions:
+
+- id
+- email
+- name
+- posts
+
+### Performance
+
+There has currently not been any work done on improving the performance of Prisma Client Python queries, this is something that will be worked on in the future and there is room for massive improvements.
 
 ## Contributing
 
 We use [conventional commits](https://www.conventionalcommits.org) (also known as semantic commits) to ensure consistent and descriptive commit messages.
+
+See the [contributing documentation](docs/contributing/contributing.md) for more information.
+
+## Attributions
+
+This project would not be possible without the work of the amazing folks over at [prisma](https://www.prisma.io).
+
+Massive h/t to [@steebchen](https://github.com/steebchen) for his work on [prisma-client-go](https://github.com/prisma/prisma-client-go) which was incredibly helpful in the creation of this project.
+
+This README is also heavily inspired by the README in the [prisma/prisma](https://github.com/prisma/prisma) repository.
