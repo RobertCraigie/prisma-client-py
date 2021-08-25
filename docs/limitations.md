@@ -11,6 +11,10 @@ be considered fully type safe, however all of the limitations imposed by mypy ca
 by switching to [pyright](https://github.com/microsoft/pyright) and [configuring prisma](config.md#recursive)
 to use recursive types.
 
+### Removing Limitations
+
+You can catch all errors while type checking by using [pyright](https://github.com/microsoft/pyright)
+and [configuring](config.md#recursive) prisma to use recursive types.
 
 ### Filtering by Relational Fields
 
@@ -35,6 +39,3 @@ async def main(client: Client) -> None:
         }
     )
 ```
-
-However you can still catch these errors while type checking by using [pyright](https://github.com/microsoft/pyright)
-and [configuring](config.md#recursive) prisma to use recursive types.
