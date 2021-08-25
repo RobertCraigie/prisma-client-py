@@ -13,7 +13,7 @@ See the [official docs](https://www.prisma.io/docs/concepts/components/prisma-sc
 
 ## HTTP Libraries
 
-See [install](install.md) for more information.
+See [setup](setup.md) for more information.
 
 The HTTP library that will be used by Prisma Client Python can be configured using the `http` option.
 

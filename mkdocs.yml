@@ -47,15 +47,16 @@ nav:
   - Overview: index.md
   - API Reference:
     - Common Operations: reference/common.md
+    - Batching Queries: reference/batching.md
     - Partial Types: reference/partials.md
-  - Contributing:
-    - How to Contribute: contributing/contributing.md
+  - Setup: setup.md
   - Limitations: limitations.md
   - Quickstart: quickstart.md
   - Advanced Usage: advanced.md
   - Configuration: config.md
-  - Installation: install.md
   - Logging: logging.md
   - Partial Types: partial-types.md
+  - Contributing:
+    - How to Contribute: contributing/contributing.md
   - Type Checkers:
     - Mypy: mypy.md
