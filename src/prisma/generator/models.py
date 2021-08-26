@@ -228,7 +228,7 @@ class Config(BaseSettings):
             raise ValueError(
                 f'Missing library for "{value}"\n  '
                 'Did you specify the correct target library in your `schema.prisma` file?\n  '
-                'See https://prisma-client-py.readthedocs.io/config/#http-libraries'
+                'See https://prisma-client-py.readthedocs.io/en/latest/config/#http-libraries'
             ) from exc
 
         return value

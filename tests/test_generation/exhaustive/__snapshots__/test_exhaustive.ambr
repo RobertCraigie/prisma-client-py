@@ -7418,7 +7418,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   PostRelationFilter = TypedDict(
       'PostRelationFilter',
@@ -8350,7 +8350,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   UserRelationFilter = TypedDict(
       'UserRelationFilter',
@@ -9301,7 +9301,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   MRelationFilter = TypedDict(
       'MRelationFilter',
@@ -10248,7 +10248,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   NRelationFilter = TypedDict(
       'NRelationFilter',
@@ -11195,7 +11195,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   OneOptionalRelationFilter = TypedDict(
       'OneOptionalRelationFilter',
@@ -12151,7 +12151,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   ManyRequiredRelationFilter = TypedDict(
       'ManyRequiredRelationFilter',
@@ -13063,7 +13063,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   ARelationFilter = TypedDict(
       'ARelationFilter',
@@ -13912,7 +13912,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   BRelationFilter = TypedDict(
       'BRelationFilter',
@@ -14749,7 +14749,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   CRelationFilter = TypedDict(
       'CRelationFilter',
@@ -15586,7 +15586,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   DRelationFilter = TypedDict(
       'DRelationFilter',
@@ -16408,7 +16408,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   ERelationFilter = TypedDict(
       'ERelationFilter',
@@ -24549,7 +24549,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   PostRelationFilter = TypedDict(
       'PostRelationFilter',
@@ -25481,7 +25481,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   UserRelationFilter = TypedDict(
       'UserRelationFilter',
@@ -26432,7 +26432,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   MRelationFilter = TypedDict(
       'MRelationFilter',
@@ -27379,7 +27379,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   NRelationFilter = TypedDict(
       'NRelationFilter',
@@ -28326,7 +28326,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   OneOptionalRelationFilter = TypedDict(
       'OneOptionalRelationFilter',
@@ -29282,7 +29282,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   ManyRequiredRelationFilter = TypedDict(
       'ManyRequiredRelationFilter',
@@ -30194,7 +30194,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   ARelationFilter = TypedDict(
       'ARelationFilter',
@@ -31043,7 +31043,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   BRelationFilter = TypedDict(
       'BRelationFilter',
@@ -31880,7 +31880,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   CRelationFilter = TypedDict(
       'CRelationFilter',
@@ -32717,7 +32717,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   DRelationFilter = TypedDict(
       'DRelationFilter',
@@ -33539,7 +33539,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
   
   ERelationFilter = TypedDict(
       'ERelationFilter',
