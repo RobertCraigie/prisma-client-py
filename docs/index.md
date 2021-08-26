@@ -20,7 +20,7 @@
 
 ## What is Prisma Client Python?
 
-Prisma Client Python is an unofficial implementation of [Prisma](https://github.com/prisma/prisma) which is a **next-generation ORM** that comes  bundled with tools such as [Prisma Migrate](https://www.prisma.io/docs/concepts/components/prisma-migrate) which make working with databases as easy as possible.
+Prisma Client Python is an unofficial implementation of [Prisma](https://github.com/prisma/prisma) which is a **next-generation ORM** that comes  bundled with tools, such as [Prisma Migrate](https://www.prisma.io/docs/concepts/components/prisma-migrate), which make working with databases as easy as possible.
 
 Prisma Client Python can be used in *any* Python backend application. This can be a REST API, a GraphQL API or *anything* else that needs a database.
 
@@ -87,21 +87,21 @@ model User {
 
 In this schema, you configure three things:
 
-- **Data source**: Specifies your database connection, in this case we use a local SQLite database however you can also use an environment variable
-- **Generator**: Indicates that you want to generate Prisma Client Python
-- **Data models**: Defines your application models
+- **Data source**: Specifies your database connection. In this case we use a local SQLite database however you can also use an environment variable.
+- **Generator**: Indicates that you want to generate Prisma Client Python.
+- **Data models**: Defines your application models.
 
 ---
 
-On this page, the focus is on the generator as this is the only part of the schema that is specific to Prisma Client Python, you can learn more about [Data sources](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema/data-sources) and [Data models](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model/) on their respective documentation pages.
+On this page, the focus is on the generator as this is the only part of the schema that is specific to Prisma Client Python. You can learn more about [Data sources](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-schema/data-sources) and [Data models](https://www.prisma.io/docs/concepts/components/prisma-schema/data-model/) on their respective documentation pages.
 
 ### Prisma generator
 
 A prisma schema can define one or more generators, defined by the `generator` block.
 
-A generator determines what assets are created when you run the `prisma generate` command. The `provider` value defines which Prisma Client will be created. In this case as we want to generate Prisma Client Python we use the `prisma-client-py` value.
+A generator determines what assets are created when you run the `prisma generate` command. The `provider` value defines which Prisma Client will be created. In this case, as we want to generate Prisma Client Python, we use the `prisma-client-py` value.
 
-You can also define where the client will be generated to with the `output` option, by default Prisma Client Python will be generated to the same location it was installed to, whether thats inside a virtual environment, the global python installation or anywhere else that python packages can be imported from.
+You can also define where the client will be generated to with the `output` option. By default Prisma Client Python will be generated to the same location it was installed to, whether thats inside a virtual environment, the global python installation or anywhere else that python packages can be imported from.
 
 For more options see [configuring Prisma Client Python](/config/).
 
@@ -239,7 +239,7 @@ For more details see the [documentation](/type-safety/).
 
 ## Room for improvement
 
-Prisma Client Python is a new project, as such there are some features that are missing or incomplete.
+Prisma Client Python is a new project and as such there are some features that are missing or incomplete.
 
 ### Auto completion for query arguments
 
