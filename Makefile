@@ -5,6 +5,16 @@ bootstrap:
 	cp tests/data/dev.db dev.db
 	pre-commit install
 
+. PHONY: package
+package:
+	rm -rf dist/*
+	python setup.py sdist
+	python setup.py sdist bdist_wheel
+
+. PHONE: release
+release:
+	twine upload dist/*
+
 .PHONY: test
 test:
 	tox $(ARGS)
