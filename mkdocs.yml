@@ -57,7 +57,9 @@ nav:
   - Limitations: limitations.md
   - Advanced Usage: advanced.md
   - Configuration: config.md
+  - Command Line: command-line.md
   - Logging: logging.md
   - Partial Types: partial-types.md
   - Contributing:
     - How to Contribute: contributing/contributing.md
+    - Architecture: contributing/architecture.md
