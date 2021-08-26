@@ -1,13 +1,13 @@
-# Common Operations
+# Query Operations
 
-In lieu of more extensive documentation, this page documents common operations on the prisma client such as
+In lieu of more extensive documentation, this page documents query operations on the prisma client such as
 creating, finding, updating and deleting records.
 
 ## Schema
 
 The examples use the following prisma schema models:
 ```prisma
---8<-- "docs/src_examples/common.schema.prisma"
+--8<-- "docs/src_examples/operations.schema.prisma"
 ```
 
 ## Creating

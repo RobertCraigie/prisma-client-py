@@ -193,8 +193,8 @@ users = await client.user.find_many(
 posts = await client.post.find_many(
     where={
         'OR': [
-            {'title': {'contains': 'prisma'}}},
-            {'content': {'contains': 'prisma'}}},
+            {'title': {'contains': 'prisma'}},
+            {'content': {'contains': 'prisma'}},
         ]
     }
 )
@@ -263,6 +263,14 @@ Given the cursor is where the `.` is, an IDE should suggest the following comple
 ### Performance
 
 There has currently not been any work done on improving the performance of Prisma Client Python queries, this is something that will be worked on in the future and there is room for massive improvements.
+
+### Supported platforms
+
+Only MacOS and Linux are officially supported, windows is not supported yet.
+
+## Version guarantees
+
+Prisma Client Python is not stable, there will be documented breaking changes with new releases.
 
 ## Contributing
 

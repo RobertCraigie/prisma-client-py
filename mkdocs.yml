@@ -45,7 +45,7 @@ extra_javascript:
 nav:
   - Overview: index.md
   - API Reference:
-    - Common Operations: reference/common.md
+    - Query Operations: reference/operations.md
     - Batching Queries: reference/batching.md
     - Partial Types: reference/partials.md
   - Setup: setup.md
