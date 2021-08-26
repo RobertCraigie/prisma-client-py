@@ -13,7 +13,7 @@ Currently supported HTTP libraries are:
 ### Installing
 
 ```sh
-pip install git+https://github.com/RobertCraigie/prisma-client-py#egg=prisma-client[aiohttp]
+pip install prisma-client[aiohttp]
 ```
 
 ### Schema
@@ -54,7 +54,7 @@ Currently supported HTTP libraries are:
 ### Installing
 
 ```sh
-pip install git+https://github.com/RobertCraigie/prisma-client-py#egg=prisma-client[requests]
+pip install prisma-client[requests]
 ```
 
 ### Schema

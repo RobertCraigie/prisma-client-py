@@ -118,7 +118,7 @@ The first step with any python project should be to setup a virtual environment 
 In this example we'll install the dependencies required for an asynchronous client, if you would like to use a synchronous client see [setting up a synchronous client](docs/setup.md#synchronous-client).
 
 ```sh
-pip install -U git+https://github.com/RobertCraigie/prisma-client-py#egg=prisma-client[aiohttp]
+pip install -U prisma-client[aiohttp]
 ```
 
 #### Generating Prisma Client Python
