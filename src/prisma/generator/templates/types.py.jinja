@@ -248,7 +248,7 @@ class {{ model.name }}OrderByInput(TypedDict, total=False):
 {% else %}
 # Dict[str, Any] is a mypy limitation
 # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-# switch to pyright for improved types, see docs/limitations.md
+# switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/limitations/
     {% set where_input_type = 'Dict[str, Any]' %}
 {% endif %}
 
