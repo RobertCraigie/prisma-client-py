@@ -8,6 +8,7 @@ on:
       - ".vscode/**"
       - "docs/**"
       - "LICENSE"
+      - "mkdocs.yml"
   pull_request:
     branches:
       - main
@@ -16,6 +17,7 @@ on:
       - ".vscode/**"
       - "docs/**"
       - "LICENSE"
+      - "mkdocs.yml"
 jobs:
   test:
     name: test
