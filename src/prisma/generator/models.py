@@ -148,7 +148,7 @@ class Data(BaseModel):
 class Datasource(BaseModel):
     # TODO: provider enums
     name: str
-    provider: List[str]
+    provider: str
     active_provider: str = FieldInfo(alias='activeProvider')
     url: 'OptionalValueFromEnvVar'
 
