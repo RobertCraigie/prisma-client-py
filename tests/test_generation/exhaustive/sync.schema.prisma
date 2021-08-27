@@ -134,10 +134,8 @@ model A {
   sInt     Int     @db.SmallInt
   inc_int  Int     @default(autoincrement()) @db.Integer
   inc_sInt Int     @default(autoincrement()) @db.SmallInt
-
-  // TODO
-  // bInt     BigInt @db.BigInt
-  // inc_bInt BigInt @default(autoincrement()) @db.BigInt
+  bInt     BigInt @db.BigInt
+  inc_bInt BigInt @default(autoincrement()) @db.BigInt
 }
 
 model B {

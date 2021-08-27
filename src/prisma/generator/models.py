@@ -36,7 +36,7 @@ except ImportError:
 
 # NOTE: this does not represent all the data that is passed by prisma
 
-ATOMIC_FIELD_TYPES = ['Int', 'Float', 'Boolean']
+ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float', 'Boolean']
 
 TYPE_MAPPING = {
     'String': 'str',
@@ -44,8 +44,9 @@ TYPE_MAPPING = {
     'Boolean': 'bool',
     'Int': 'int',
     'Float': 'float',
+    'BigInt': 'int',
 }
-FILTER_TYPES = ['String', 'DateTime', 'Boolean', 'Int', 'Float']
+FILTER_TYPES = ['String', 'DateTime', 'Boolean', 'Int', 'BigInt', 'Float']
 
 data_ctx: ContextVar['Data'] = ContextVar('data_ctx')
 

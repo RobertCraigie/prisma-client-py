@@ -154,6 +154,8 @@
           'sInt',
           'inc_int',
           'inc_sInt',
+          'bInt',
+          'inc_bInt',
       ],
       'B': [
           'id',
@@ -1013,10 +1015,8 @@
     sInt     Int     @db.SmallInt
     inc_int  Int     @default(autoincrement()) @db.Integer
     inc_sInt Int     @default(autoincrement()) @db.SmallInt
-  
-    // TODO
-    // bInt     BigInt @db.BigInt
-    // inc_bInt BigInt @default(autoincrement()) @db.BigInt
+    bInt     BigInt @db.BigInt
+    inc_bInt BigInt @default(autoincrement()) @db.BigInt
   }
   
   model B {
@@ -6010,6 +6010,8 @@
       sInt: int
       inc_int: int
       inc_sInt: int
+      bInt: int
+      inc_bInt: int
   
       Config = Config
   
@@ -6847,7 +6849,7 @@
       },
   }
   
-  _A_relational_fields: Set[str] = set()
+  _A_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _A_fields: Dict['types.AKeys', PartialModelField] = {
       'id': {
           'name': 'id',
@@ -6891,9 +6893,21 @@
           'optional': False,
           'type': 'int',
       },
+      'bInt': {
+          'name': 'bInt',
+          'is_list': False,
+          'optional': False,
+          'type': 'int',
+      },
+      'inc_bInt': {
+          'name': 'inc_bInt',
+          'is_list': False,
+          'optional': False,
+          'type': 'int',
+      },
   }
   
-  _B_relational_fields: Set[str] = set()
+  _B_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _B_fields: Dict['types.BKeys', PartialModelField] = {
       'id': {
           'name': 'id',
@@ -6915,7 +6929,7 @@
       },
   }
   
-  _C_relational_fields: Set[str] = set()
+  _C_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _C_fields: Dict['types.CKeys', PartialModelField] = {
       'id': {
           'name': 'id',
@@ -6961,7 +6975,7 @@
       },
   }
   
-  _D_relational_fields: Set[str] = set()
+  _D_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _D_fields: Dict['types.DKeys', PartialModelField] = {
       'id': {
           'name': 'id',
@@ -6983,7 +6997,7 @@
       },
   }
   
-  _E_relational_fields: Set[str] = set()
+  _E_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _E_fields: Dict['types.EKeys', PartialModelField] = {
       'id': {
           'name': 'id',
@@ -7251,6 +7265,7 @@
       gte: int
       
   
+  BigIntFilter = IntFilter
       
   
   class FloatFilter(TypedDict, total=False):
@@ -12920,6 +12935,7 @@
       name: Optional[str]
       inc_int: int
       inc_sInt: int
+      inc_bInt: int
   
   
   class ACreateInput(AOptionalCreateInput):
@@ -12927,6 +12943,7 @@
       email: str
       int: int
       sInt: int
+      bInt: int
   
   
   # TODO: remove this in favour of without explicit relations
@@ -12938,6 +12955,7 @@
       name: Optional[str]
       inc_int: int
       inc_sInt: int
+      inc_bInt: int
   
   
   class ACreateWithoutRelationsInput(AOptionalCreateWithoutRelationsInput):
@@ -12945,6 +12963,7 @@
       email: str
       int: int
       sInt: int
+      bInt: int
   
   
   class ACreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -12970,6 +12989,8 @@
       sInt: Union['AUpdatesIntInput', int]
       inc_int: Union['AUpdateinc_intInput', int]
       inc_sInt: Union['AUpdateinc_sIntInput', int]
+      bInt: Union['AUpdatebIntInput', int]
+      inc_bInt: Union['AUpdateinc_bIntInput', int]
   
   
   class AUpdateManyMutationInput(TypedDict, total=False):
@@ -12981,6 +13002,8 @@
       sInt: Union['AUpdatesIntInput', int]
       inc_int: Union['AUpdateinc_intInput', int]
       inc_sInt: Union['AUpdateinc_sIntInput', int]
+      bInt: Union['AUpdatebIntInput', int]
+      inc_bInt: Union['AUpdateinc_bIntInput', int]
   
   
   class AUpdateintInput(TypedDict, total=False):
@@ -13008,6 +13031,22 @@
   
   
   class AUpdateinc_sIntInput(TypedDict, total=False):
+      set: int
+      increment: int
+      decrement: int
+      multiply: int
+      divide: int
+  
+  
+  class AUpdatebIntInput(TypedDict, total=False):
+      set: int
+      increment: int
+      decrement: int
+      multiply: int
+      divide: int
+  
+  
+  class AUpdateinc_bIntInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
@@ -13055,6 +13094,8 @@
       sInt: 'SortOrder'
       inc_int: 'SortOrder'
       inc_sInt: 'SortOrder'
+      bInt: 'SortOrder'
+      inc_bInt: 'SortOrder'
   
   
   # recursive A types
@@ -13752,6 +13793,8 @@
       sInt: Union[int, 'types.IntFilter']
       inc_int: Union[int, 'types.IntFilter']
       inc_sInt: Union[int, 'types.IntFilter']
+      bInt: Union[int, 'types.BigIntFilter']
+      inc_bInt: Union[int, 'types.BigIntFilter']
   
       AND: List['AWhereInputRecursive1']
       OR: List['AWhereInputRecursive1']
@@ -13767,6 +13810,8 @@
       sInt: Union[int, 'types.IntFilter']
       inc_int: Union[int, 'types.IntFilter']
       inc_sInt: Union[int, 'types.IntFilter']
+      bInt: Union[int, 'types.BigIntFilter']
+      inc_bInt: Union[int, 'types.BigIntFilter']
   
       AND: List['AWhereInputRecursive2']
       OR: List['AWhereInputRecursive2']
@@ -13782,6 +13827,8 @@
       sInt: Union[int, 'types.IntFilter']
       inc_int: Union[int, 'types.IntFilter']
       inc_sInt: Union[int, 'types.IntFilter']
+      bInt: Union[int, 'types.BigIntFilter']
+      inc_bInt: Union[int, 'types.BigIntFilter']
   
   
   
@@ -13793,6 +13840,8 @@
       'sInt',
       'inc_int',
       'inc_sInt',
+      'bInt',
+      'inc_bInt',
   ]
   
   ARelationalFieldKeys = _NoneType
@@ -17292,6 +17341,8 @@
           'sInt',
           'inc_int',
           'inc_sInt',
+          'bInt',
+          'inc_bInt',
       ],
       'B': [
           'id',
@@ -18151,10 +18202,8 @@
     sInt     Int     @db.SmallInt
     inc_int  Int     @default(autoincrement()) @db.Integer
     inc_sInt Int     @default(autoincrement()) @db.SmallInt
-  
-    // TODO
-    // bInt     BigInt @db.BigInt
-    // inc_bInt BigInt @default(autoincrement()) @db.BigInt
+    bInt     BigInt @db.BigInt
+    inc_bInt BigInt @default(autoincrement()) @db.BigInt
   }
   
   model B {
@@ -23141,6 +23190,8 @@
       sInt: int
       inc_int: int
       inc_sInt: int
+      bInt: int
+      inc_bInt: int
   
       Config = Config
   
@@ -23978,7 +24029,7 @@
       },
   }
   
-  _A_relational_fields: Set[str] = set()
+  _A_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _A_fields: Dict['types.AKeys', PartialModelField] = {
       'id': {
           'name': 'id',
@@ -24022,9 +24073,21 @@
           'optional': False,
           'type': 'int',
       },
+      'bInt': {
+          'name': 'bInt',
+          'is_list': False,
+          'optional': False,
+          'type': 'int',
+      },
+      'inc_bInt': {
+          'name': 'inc_bInt',
+          'is_list': False,
+          'optional': False,
+          'type': 'int',
+      },
   }
   
-  _B_relational_fields: Set[str] = set()
+  _B_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _B_fields: Dict['types.BKeys', PartialModelField] = {
       'id': {
           'name': 'id',
@@ -24046,7 +24109,7 @@
       },
   }
   
-  _C_relational_fields: Set[str] = set()
+  _C_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _C_fields: Dict['types.CKeys', PartialModelField] = {
       'id': {
           'name': 'id',
@@ -24092,7 +24155,7 @@
       },
   }
   
-  _D_relational_fields: Set[str] = set()
+  _D_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _D_fields: Dict['types.DKeys', PartialModelField] = {
       'id': {
           'name': 'id',
@@ -24114,7 +24177,7 @@
       },
   }
   
-  _E_relational_fields: Set[str] = set()
+  _E_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _E_fields: Dict['types.EKeys', PartialModelField] = {
       'id': {
           'name': 'id',
@@ -24382,6 +24445,7 @@
       gte: int
       
   
+  BigIntFilter = IntFilter
       
   
   class FloatFilter(TypedDict, total=False):
@@ -30051,6 +30115,7 @@
       name: Optional[str]
       inc_int: int
       inc_sInt: int
+      inc_bInt: int
   
   
   class ACreateInput(AOptionalCreateInput):
@@ -30058,6 +30123,7 @@
       email: str
       int: int
       sInt: int
+      bInt: int
   
   
   # TODO: remove this in favour of without explicit relations
@@ -30069,6 +30135,7 @@
       name: Optional[str]
       inc_int: int
       inc_sInt: int
+      inc_bInt: int
   
   
   class ACreateWithoutRelationsInput(AOptionalCreateWithoutRelationsInput):
@@ -30076,6 +30143,7 @@
       email: str
       int: int
       sInt: int
+      bInt: int
   
   
   class ACreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -30101,6 +30169,8 @@
       sInt: Union['AUpdatesIntInput', int]
       inc_int: Union['AUpdateinc_intInput', int]
       inc_sInt: Union['AUpdateinc_sIntInput', int]
+      bInt: Union['AUpdatebIntInput', int]
+      inc_bInt: Union['AUpdateinc_bIntInput', int]
   
   
   class AUpdateManyMutationInput(TypedDict, total=False):
@@ -30112,6 +30182,8 @@
       sInt: Union['AUpdatesIntInput', int]
       inc_int: Union['AUpdateinc_intInput', int]
       inc_sInt: Union['AUpdateinc_sIntInput', int]
+      bInt: Union['AUpdatebIntInput', int]
+      inc_bInt: Union['AUpdateinc_bIntInput', int]
   
   
   class AUpdateintInput(TypedDict, total=False):
@@ -30139,6 +30211,22 @@
   
   
   class AUpdateinc_sIntInput(TypedDict, total=False):
+      set: int
+      increment: int
+      decrement: int
+      multiply: int
+      divide: int
+  
+  
+  class AUpdatebIntInput(TypedDict, total=False):
+      set: int
+      increment: int
+      decrement: int
+      multiply: int
+      divide: int
+  
+  
+  class AUpdateinc_bIntInput(TypedDict, total=False):
       set: int
       increment: int
       decrement: int
@@ -30186,6 +30274,8 @@
       sInt: 'SortOrder'
       inc_int: 'SortOrder'
       inc_sInt: 'SortOrder'
+      bInt: 'SortOrder'
+      inc_bInt: 'SortOrder'
   
   
   # recursive A types
@@ -30883,6 +30973,8 @@
       sInt: Union[int, 'types.IntFilter']
       inc_int: Union[int, 'types.IntFilter']
       inc_sInt: Union[int, 'types.IntFilter']
+      bInt: Union[int, 'types.BigIntFilter']
+      inc_bInt: Union[int, 'types.BigIntFilter']
   
       AND: List['AWhereInputRecursive1']
       OR: List['AWhereInputRecursive1']
@@ -30898,6 +30990,8 @@
       sInt: Union[int, 'types.IntFilter']
       inc_int: Union[int, 'types.IntFilter']
       inc_sInt: Union[int, 'types.IntFilter']
+      bInt: Union[int, 'types.BigIntFilter']
+      inc_bInt: Union[int, 'types.BigIntFilter']
   
       AND: List['AWhereInputRecursive2']
       OR: List['AWhereInputRecursive2']
@@ -30913,6 +31007,8 @@
       sInt: Union[int, 'types.IntFilter']
       inc_int: Union[int, 'types.IntFilter']
       inc_sInt: Union[int, 'types.IntFilter']
+      bInt: Union[int, 'types.BigIntFilter']
+      inc_bInt: Union[int, 'types.BigIntFilter']
   
   
   
@@ -30924,6 +31020,8 @@
       'sInt',
       'inc_int',
       'inc_sInt',
+      'bInt',
+      'inc_bInt',
   ]
   
   ARelationalFieldKeys = _NoneType

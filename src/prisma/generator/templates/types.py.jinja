@@ -95,6 +95,7 @@ class {{ name }}(TypedDict, total=False):
 {% endcall %}
 
 
+BigIntFilter = IntFilter
 {% call(name, next, iteration) recursive('FloatFilter') %}
 class {{ name }}(TypedDict, total=False):
     equals: float

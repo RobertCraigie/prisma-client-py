@@ -41,3 +41,8 @@ model Profile {
   user_id String
   bio     String
 }
+
+model Types {
+  id     Int   @id @default(autoincrement())
+  bigint BigInt
+}

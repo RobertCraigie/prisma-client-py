@@ -42,3 +42,9 @@ model Profile {
   user_id String
   bio     String
 }
+
+// model that just exists for testing different schema types
+model Types {
+  id     Int    @id  @default(autoincrement())
+  bigint BigInt @default(0)
+}
