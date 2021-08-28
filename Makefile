@@ -5,6 +5,11 @@ bootstrap:
 	cp tests/data/dev.db dev.db
 	pre-commit install
 
+.PHONY: database
+database:
+	prisma db push --schema=tests/data/schema.prisma
+	cp tests/data/dev.db dev.db
+
 . PHONY: package
 package:
 	rm -rf dist/*
