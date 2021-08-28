@@ -40,7 +40,7 @@
   #       such as the `Json` type.
   # TODO: optimise for performance (switch to c / cython?)
   # TODO: pass context around differently, relying on the builder instance is
-  #       not ideal, contetx should be local to each node
+  #       not ideal, context should be local to each node
   
   
   import json
@@ -60,7 +60,7 @@
   ChildType = Union['AbstractNode', str]
   
   
-  GLOBAL_ALIASES = {
+  GLOBAL_ALIASES: Dict[str, str] = {
       'startswith': 'startsWith',
       'endswith': 'endsWith',
       'order_by': 'orderBy',
@@ -70,7 +70,7 @@
       'IN': 'in',
   }
   
-  DEFAULT_FIELDS_MAPPING = {
+  DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
       'Post': [
           'id',
           'created_at',
@@ -184,7 +184,7 @@
       ],
   }
   
-  RELATIONAL_FIELD_MAPPINGS = {
+  RELATIONAL_FIELD_MAPPINGS: Dict[str, Dict[str, str]] = {
       'Post': {
           'author': 'User',
       },
@@ -227,8 +227,6 @@
       model: Optional[str]
   
       # mapping of relational fields to include in the result
-      # NOTE: this should be a recursive type
-      # IncludeType = Union[bool, Dict[str, 'IncludeType']]
       include: Optional[Dict[str, Any]]
   
       # arguments to pass to the query
@@ -17227,7 +17225,7 @@
   #       such as the `Json` type.
   # TODO: optimise for performance (switch to c / cython?)
   # TODO: pass context around differently, relying on the builder instance is
-  #       not ideal, contetx should be local to each node
+  #       not ideal, context should be local to each node
   
   
   import json
@@ -17247,7 +17245,7 @@
   ChildType = Union['AbstractNode', str]
   
   
-  GLOBAL_ALIASES = {
+  GLOBAL_ALIASES: Dict[str, str] = {
       'startswith': 'startsWith',
       'endswith': 'endsWith',
       'order_by': 'orderBy',
@@ -17257,7 +17255,7 @@
       'IN': 'in',
   }
   
-  DEFAULT_FIELDS_MAPPING = {
+  DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
       'Post': [
           'id',
           'created_at',
@@ -17371,7 +17369,7 @@
       ],
   }
   
-  RELATIONAL_FIELD_MAPPINGS = {
+  RELATIONAL_FIELD_MAPPINGS: Dict[str, Dict[str, str]] = {
       'Post': {
           'author': 'User',
       },
@@ -17414,8 +17412,6 @@
       model: Optional[str]
   
       # mapping of relational fields to include in the result
-      # NOTE: this should be a recursive type
-      # IncludeType = Union[bool, Dict[str, 'IncludeType']]
       include: Optional[Dict[str, Any]]
   
       # arguments to pass to the query
