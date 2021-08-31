@@ -46,9 +46,6 @@ def test_fetch_force(runner: Runner) -> None:
 
     new_stat = binary.path.stat()
 
-    # file identification number, difference proves deletion and creation
-    assert old_stat.st_ino != new_stat.st_ino
-
     # modified time
     assert old_stat.st_mtime_ns != new_stat.st_mtime_ns
 

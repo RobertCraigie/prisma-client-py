@@ -33,8 +33,8 @@ Core features:
 - [Full type safety](https://prisma-client-py.readthedocs.io/en/latest/type-safety/)
 - [With / without async](https://prisma-client-py.readthedocs.io/en/latest/setup/)
 - [Recursive and pseudo-recursive types](https://prisma-client-py.readthedocs.io/en/latest/config/#recursive-type-depth)
-- [Atomic updates](https://prisma-client-py.readthedocs.io/en/latest/reference/common/#updating-atomic-fields)
-- [Complex cross-relational queries](https://prisma-client-py.readthedocs.io/en/latest/reference/common/#filtering-by-relational-fields)
+- [Atomic updates](https://prisma-client-py.readthedocs.io/en/latest/reference/operations/#updating-atomic-fields)
+- [Complex cross-relational queries](https://prisma-client-py.readthedocs.io/en/latest/reference/operations/#filtering-by-relational-fields)
 - [Partial type generation](https://prisma-client-py.readthedocs.io/en/latest/partial-types/)
 - [Batching write queries](https://prisma-client-py.readthedocs.io/en/latest/reference/batching/)
 
@@ -167,7 +167,7 @@ if __name__ == '__main__':
 
 #### Query examples
 
-For a more complete list of queries you can perform with Prisma Client Python see the [documentation](https://prisma-client-py.readthedocs.io/en/latest/reference/common/).
+For a more complete list of queries you can perform with Prisma Client Python see the [documentation](https://prisma-client-py.readthedocs.io/en/latest/reference/operations/).
 
 All query methods return [pydantic models](https://pydantic-docs.helpmanual.io/usage/models/).
 
