@@ -13,7 +13,7 @@ pip install -U --force-reinstall --find-links=../../../.tests_cache/dist prisma-
 
 # required due to https://github.com/RobertCraigie/prisma-client-py/issues/35
 HTTP=$(python -c 'import pathlib, prisma; print(pathlib.Path(prisma.__file__).parent / "http.py")')
-cp ../../../src/prisma/http.py.original $HTTP
+cp ../../../prisma/http.py.original $HTTP 2>/dev/null || :
 
 prisma db push --accept-data-loss --force-reset
 
