@@ -1,4 +1,4 @@
-{% set is_async = generator.config.http == 'aiohttp' %}
+{% set is_async = generator.config.http in ('aiohttp', 'httpx-async') %}
 
 {% if is_async %}
     {% set maybe_await = 'await ' %}
