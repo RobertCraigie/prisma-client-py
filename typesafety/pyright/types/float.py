@@ -5,19 +5,19 @@ async def filtering(client: Client) -> None:
     # case: all valid filter fields
     await client.types.find_first(
         where={
-            'bigint': 237283,
+            'float_': 237283,
         },
     )
     await client.types.find_first(
         where={
-            'bigint': {
+            'float_': {
                 'NOT': 173283,
             },
         },
     )
     await client.types.find_first(
         where={
-            'bigint': {
+            'float_': {
                 'NOT': {
                     'NOT': {
                         'NOT': {
@@ -32,7 +32,7 @@ async def filtering(client: Client) -> None:
     )
     await client.types.find_first(
         where={
-            'bigint': {
+            'float_': {
                 'equals': 2,
                 'IN': [2, 3, 4],
                 'not_in': [5, 6, 7],
@@ -59,61 +59,61 @@ async def filtering(client: Client) -> None:
     # case: invalid types
     await client.types.find_first(
         where={  # E: Argument of type "dict[str, str]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
-            'bigint': 'foo',
+            'float_': 'foo',
         },
     )
     await client.types.find_first(
         where={  # E: Argument of type "dict[str, dict[str, str]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
-            'bigint': {
+            'float_': {
                 'equals': '1',
             },
         },
     )
     await client.types.find_first(
         where={  # E: Argument of type "dict[str, dict[str, list[str | int]]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
-            'bigint': {
+            'float_': {
                 'IN': ['1', 2],
             },
         },
     )
     await client.types.find_first(
         where={  # E: Argument of type "dict[str, dict[str, list[int | str]]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
-            'bigint': {
+            'float_': {
                 'not_in': [2, '3'],
             },
         },
     )
     await client.types.find_first(
         where={  # E: Argument of type "dict[str, dict[str, list[int]]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
-            'bigint': {
+            'float_': {
                 'lt': [2],
             },
         },
     )
     await client.types.find_first(
         where={  # E: Argument of type "dict[str, dict[str, tuple[_T_co@tuple]]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
-            'bigint': {
+            'float_': {
                 'lte': tuple(),
             },
         },
     )
     await client.types.find_first(
         where={  # E: Argument of type "dict[str, dict[str, str]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
-            'bigint': {
+            'float_': {
                 'gt': '1',
             },
         },
     )
     await client.types.find_first(
         where={  # E: Argument of type "dict[str, dict[str, Client]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
-            'bigint': {
+            'float_': {
                 'gte': client,
             },
         },
     )
     await client.types.find_first(
         where={
-            'bigint': {
+            'float_': {
                 'NOT': {
                     'equals': 5,
                 },
@@ -129,7 +129,7 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={
-            'bigint': 290521015266836500,
+            'float_': 290521015266836500,
         },
     )
 
@@ -138,7 +138,7 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={
-            'bigint': {
+            'float_': {
                 'set': 540521015266836500,
             },
         },
@@ -150,7 +150,7 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={
-            'bigint': {
+            'float_': {
                 'multiply': 10,
             },
         },
@@ -162,7 +162,7 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={
-            'bigint': {
+            'float_': {
                 'divide': 2,
             },
         },
@@ -174,7 +174,7 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={
-            'bigint': {
+            'float_': {
                 'increment': 15,
             },
         },
@@ -186,7 +186,7 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={
-            'bigint': {
+            'float_': {
                 'decrement': 15,
             },
         },
@@ -198,7 +198,7 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={  # E: # E: Argument of type "dict[str, dict[str, int]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
-            'bigint': {
+            'float_': {
                 'foo': 15,
             },
         },
@@ -210,7 +210,7 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={  # E: Argument of type "dict[str, list[Any]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
-            'bigint': [],
+            'float_': [],
         },
     )
     await client.types.update(
@@ -218,7 +218,7 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={  # E: Argument of type "dict[str, dict[str, str]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
-            'bigint': {
+            'float_': {
                 'decrement': 'a',
             },
         },
@@ -228,7 +228,7 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={  # E: Argument of type "dict[str, dict[str, Client]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
-            'bigint': {
+            'float_': {
                 'increment': client,
             },
         },
@@ -238,7 +238,7 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={  # E: Argument of type "dict[str, dict[str, Any]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
-            'bigint': {
+            'float_': {
                 'multiply': set(),
             },
         },
@@ -248,7 +248,7 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={  # E: Argument of type "dict[str, dict[str, Any]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
-            'bigint': {
+            'float_': {
                 'divide': set(),
             },
         },
@@ -260,7 +260,7 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={  # E: Argument of type "dict[str, dict[str, int]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
-            'bigint': {
+            'float_': {
                 'divide': 5,
                 'multiply': 2,
             },
@@ -273,6 +273,6 @@ async def updating(client: Client) -> None:
             'id': 1,
         },
         data={  # E: Argument of type "dict[str, dict[Any, Any]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
-            'bigint': {},
+            'float_': {},
         },
     )

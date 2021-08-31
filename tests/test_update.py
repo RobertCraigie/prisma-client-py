@@ -37,7 +37,7 @@ async def test_update(client: Client) -> None:
     updated = await client.post.update(
         where={'id': post.id},
         include={'author': True},
-        data={'published': {'set': False}, 'desc': 'Updated desc.'},
+        data={'published': False, 'desc': 'Updated desc.'},
     )
     assert updated is not None
     assert updated.published is False

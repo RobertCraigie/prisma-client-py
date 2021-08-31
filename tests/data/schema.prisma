@@ -45,6 +45,8 @@ model Profile {
 
 // model that just exists for testing different schema types
 model Types {
-  id     Int    @id  @default(autoincrement())
-  bigint BigInt @default(0)
+  id      Int    @id @default(autoincrement())
+  bigint  BigInt @default(0)
+  integer Int    @default(0)
+  float_  Float  @default(0)
 }
