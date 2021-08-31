@@ -56,7 +56,7 @@ docs-serve:
 
 .PHONY: clean
 clean:
-	python tests/scripts/cleanup.py
+	python scripts/cleanup.py
 	rm -rf /tmp/tox/prisma-client-py
 	rm -rf `find . -name __pycache__`
 	rm -rf `find examples -name '.venv' `
