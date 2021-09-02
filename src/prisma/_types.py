@@ -9,9 +9,11 @@ if sys.version_info >= (3, 8):
     from typing import (  # pylint: disable=no-name-in-module, unused-import
         TypedDict,
         Literal,
+        Protocol,
+        runtime_checkable,
     )
 else:
-    from typing_extensions import TypedDict, Literal
+    from typing_extensions import TypedDict, Literal, Protocol, runtime_checkable
 
 
 Method = Literal['GET', 'POST']
