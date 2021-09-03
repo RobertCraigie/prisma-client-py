@@ -77,7 +77,7 @@ def test_unknown_type(testdir: Testdir) -> None:
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(schema=schema)
 
-    assert 'Unknown scalar type: Json' in str(exc.value.output, 'utf-8')
+    assert 'Unsupported scalar field type: Json' in str(exc.value.output, 'utf-8')
 
 
 def test_native_binary_target_no_warning(testdir: Testdir) -> None:

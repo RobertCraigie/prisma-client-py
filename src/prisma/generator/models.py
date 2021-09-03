@@ -355,7 +355,7 @@ class Field(BaseModel):
 
         if kind == 'scalar':
             if type_ is not None and type_ not in TYPE_MAPPING:
-                raise ValueError(f'Unknown scalar type: {type_}')
+                raise ValueError(f'Unsupported scalar field type: {type_}')
 
         return values
 
