@@ -8,8 +8,8 @@ set +x
 source .venv/bin/activate
 set -x
 
-pip install -U 'pyright>=0.0.7'
-pip install -U --force-reinstall --find-links=../../../.tests_cache/dist prisma-client[requests]
+pip install -U 'pyright>=0.0.7' -r ../../../requirements/requests.txt
+pip install -U --force-reinstall ../../../.tests_cache/dist/*.whl
 
 TYPES=$(python -c 'import pathlib, prisma; print(pathlib.Path(prisma.__file__).parent / "types.py")')
 
