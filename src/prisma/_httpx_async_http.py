@@ -16,8 +16,12 @@ class HTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
     session: httpx.AsyncClient
 
     async def download(self, url: str, dest: str) -> None:
-        resp: httpx.Response
-        async with self.session.stream("GET", url, timeout=None) as resp:
+        # pyright thinks that stream() doesn't return a context manager
+        # due to how httpx handles compatability imports
+        # https://github.com/encode/httpx/discussions/1829
+        async with self.session.stream(
+            'GET', url, timeout=None
+        ) as resp:  # pyright: reportGeneralTypeIssues=false
             with open(dest, 'wb') as fd:
                 async for chunk in resp.aiter_bytes():
                     fd.write(chunk)
