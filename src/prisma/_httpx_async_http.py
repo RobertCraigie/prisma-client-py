@@ -27,6 +27,10 @@ class HTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
                     fd.write(chunk)
 
     async def request(self, method: Method, url: str, **kwargs: Any) -> 'Response':
+        content = kwargs.pop('data', None)
+        if content is not None:
+            kwargs['content'] = content
+
         return Response(await self.session.request(method, url, **kwargs))
 
     def open(self) -> None:
