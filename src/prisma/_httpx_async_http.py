@@ -74,7 +74,7 @@ class Response(AbstractResponse[httpx.Response]):
         return self.original.status_code
 
     async def json(self, **kwargs: Any) -> Any:
-        return await self.original.json(**kwargs)
+        return self.original.json(**kwargs)
 
     async def text(self, **kwargs: Any) -> Any:
         return self.original.content.decode(**kwargs)
