@@ -15,7 +15,7 @@ class HTTP(AbstractHTTP[httpx.Client, httpx.Response]):
     session: httpx.Client
 
     def download(self, url: str, dest: str) -> None:
-        with self.session.stream("GET", url, timeout=None) as resp:
+        with self.session.stream('GET', url, timeout=None) as resp:
             with open(dest, 'wb') as fd:
                 for chunk in resp.iter_bytes():
                     fd.write(chunk)
