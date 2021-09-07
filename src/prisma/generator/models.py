@@ -45,8 +45,17 @@ TYPE_MAPPING = {
     'Int': 'int',
     'Float': 'float',
     'BigInt': 'int',
+    'Json': '\'fields.Json\'',
 }
-FILTER_TYPES = ['String', 'DateTime', 'Boolean', 'Int', 'BigInt', 'Float']
+FILTER_TYPES = [
+    'String',
+    'DateTime',
+    'Boolean',
+    'Int',
+    'BigInt',
+    'Float',
+    'Json',
+]
 
 data_ctx: ContextVar['Data'] = ContextVar('data_ctx')
 

@@ -71,13 +71,13 @@ def test_unknown_type(testdir: Testdir) -> None:
 
         model User {{
             id   String @id
-            meta Json
+            meta Bytes
         }}
     '''
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(schema=schema)
 
-    assert 'Unsupported scalar field type: Json' in str(exc.value.output, 'utf-8')
+    assert 'Unsupported scalar field type: Bytes' in str(exc.value.output, 'utf-8')
 
 
 def test_native_binary_target_no_warning(testdir: Testdir) -> None:

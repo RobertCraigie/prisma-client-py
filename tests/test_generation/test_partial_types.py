@@ -9,8 +9,8 @@ from ..utils import Testdir
 
 SCHEMA = '''
 datasource db {{
-  provider = "sqlite"
-  url      = "file:dev.db"
+  provider = "postgres"
+  url      = env("DB_URL")
 }}
 
 generator db {{
@@ -26,6 +26,7 @@ model Post {{
   title       String
   published   Boolean
   desc        String?
+  meta        Json?
   comments    Comment[]
   author_id   String
   author      User      @relation(fields: [author_id], references: [id])
@@ -49,8 +50,8 @@ model User {{
 }}
 
 model Foo {{
-    id   String @id @default(cuid())
-    text String
+  id   String @id @default(cuid())
+  text String
 }}
 '''
 
@@ -96,6 +97,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             'title': True,
             'published': True,
             'desc': False,
+            'meta': False,
             'comments': False,
             'author': False,
             'author_id': True,
@@ -154,6 +156,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
                     'title',
                     'published',
                     'desc',
+                    'meta',
                     'comments',
                     'author',
                     'author_id',
@@ -171,6 +174,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
                     'updated_at',
                     'published',
                     'desc',
+                    'meta',
                     'comments',
                     'author',
                     'author_id',

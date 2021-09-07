@@ -1,10 +1,10 @@
 {% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import recursive_types with context %}
 # -- template types.py.jinja --
 from .utils import _NoneType
 
 
 {% set depth = generator.config.recursive_type_depth %}
-{% set recursive_types = depth == -1 %}
 
 # TODO: cleanup whitespace control
 # TODO: add an argument to signify that the last iteration should be skipped
@@ -37,6 +37,39 @@ from .utils import _NoneType
 
 
 SortOrder = Literal['asc', 'desc']
+
+# types that can be serialized to json by our query builder
+{% if recursive_types %}
+Serializable = Union[
+    None,
+    bool,
+    float,
+    int,
+    str,
+    datetime.datetime,
+    List['Serializable'],
+    Dict[None, 'Serializable'],
+    Dict[bool, 'Serializable'],
+    Dict[float, 'Serializable'],
+    Dict[int, 'Serializable'],
+    Dict[str, 'Serializable'],
+]
+{% else %}
+Serializable = Union[
+    None,
+    bool,
+    float,
+    int,
+    str,
+    datetime.datetime,
+    List[Any],
+    Dict[None, Any],
+    Dict[bool, Any],
+    Dict[float, Any],
+    Dict[int, Any],
+    Dict[str, Any],
+]
+{% endif %}
 
 
 {% call(name, next, iteration) recursive('StringFilter') %}
@@ -109,6 +142,12 @@ class {{ name }}(TypedDict, total=False):
         NOT: Union[float, '{{ next }}']
     {% endif %}
 {% endcall %}
+
+# TODO: preview feature for improving JSON filtering
+class JsonFilter(TypedDict, total=False):
+    equals: 'fields.Json'
+    NOT: 'fields.Json'
+
 
 class _FloatSetInput(TypedDict):
     set: float
@@ -394,4 +433,4 @@ class {{ current }}(TypedDict, total=False):
 
 
 # we have to import ourselves as types can be namespaced to types
-from . import types, enums, models
+from . import types, enums, models, fields

@@ -6,7 +6,7 @@ datasource db {
 }
 
 generator db {
-  provider             = "python3 -m prisma"
+  provider             = "prisma-client-py"
   recursive_type_depth = 3
   http                 = "requests"
   output               = "../../../.tests_cache/generation/exhaustive/__prisma_sync_output__/prisma"
@@ -31,10 +31,6 @@ model User {
   optional_float   Float?
   string           String
   optional_string  String?
-
-  // TODO
-  // json_            Json
-  // optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
   boolean          Boolean
@@ -51,10 +47,6 @@ model M {
   optional_float   Float?
   string           String
   optional_string  String?
-
-  // TODO
-  // json_            Json
-  // optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
   boolean          Boolean
@@ -70,10 +62,8 @@ model N {
   optional_float   Float?
   string           String
   optional_string  String?
-
-  // TODO
-  // json_            Json
-  // optional_json    Json?
+  json_            Json
+  optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
   boolean          Boolean
@@ -89,10 +79,6 @@ model OneOptional {
   optional_float   Float?
   string           String
   optional_string  String?
-
-  // TODO
-  // json_            Json
-  // optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
   boolean          Boolean
@@ -110,10 +96,6 @@ model ManyRequired {
   optional_float   Float?
   string           String
   optional_string  String?
-
-  // TODO
-  // json_            Json
-  // optional_json    Json?
   enum             ABeautifulEnum
   optional_enum    ABeautifulEnum?
   boolean          Boolean
@@ -162,10 +144,10 @@ model D {
   id    String  @id @default(cuid())
   bool  Boolean @db.Boolean
   xml   String  @db.Xml
+  json_ Json    @db.Json
+  jsonb Json    @db.JsonB
 
   // TODO
-  // json_ Json    @db.Json
-  // jsonb Json    @db.JsonB
   // byteA Bytes   @db.ByteA
 }
 

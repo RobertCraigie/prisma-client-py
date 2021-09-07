@@ -372,6 +372,29 @@ post = await client.post.find_first(
 )
 ```
 
+#### Json Fields
+
+!!! note
+    Json fields must match _exactly_.
+
+!!! warning
+    Json fields are not supported on SQLite
+
+```py
+from prisma import Json
+
+user = await client.user.find_first(
+    where={
+        'meta': Json({'country': 'Scotland'})
+        # or
+        'meta': {
+            'equals': Json.keys(country='Scotland'),
+            'NOT': Json(['foo']),
+        }
+    }
+)
+```
+
 ## Deleting
 
 ### Unique Record
