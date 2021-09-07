@@ -5,7 +5,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client-py"
-  http     = "httpx"
+  http     = "httpx-sync"
 }
 
 model User {
