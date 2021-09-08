@@ -80,11 +80,9 @@ class BaseModel(PydanticBaseModel):
         }
 
 
-class HttpChoices(str, enum.Enum):
-    aiohttp = 'aiohttp'
-    requests = 'requests'
-    httpx_sync = 'httpx-sync'
-    httpx_async = 'httpx-async'
+class InterfaceChoices(str, enum.Enum):
+    sync = 'sync'
+    asyncio = 'asyncio'
 
 
 class Module(BaseModel):
@@ -204,7 +202,7 @@ class OptionalValueFromEnvVar(BaseModel):
 class Config(BaseSettings):
     """Custom generator config options."""
 
-    http: HttpChoices = HttpChoices.aiohttp
+    interface: InterfaceChoices = InterfaceChoices.asyncio
     partial_type_generator: Optional[Module]
     recursive_type_depth: int = FieldInfo(default=5)
 
@@ -224,28 +222,25 @@ class Config(BaseSettings):
             # prioritise env settings over init settings
             return env_settings, init_settings, file_secret_settings
 
-    @validator('http', always=True, allow_reuse=True)
+    @root_validator(pre=True)
     @classmethod
-    def http_matches_installed_library(cls, value: HttpChoices) -> str:
-        # pyright: reportUnusedImport=false
-        try:
-            if value == 'aiohttp':
-                import aiohttp
-            elif value == 'requests':
-                import requests
-            elif value in ('httpx-sync', 'httpx-async'):
-                import httpx
+    def removed_http_option_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        http = values.get('http')
+        if http is not None:
+            if http in {'aiohttp', 'httpx-async'}:
+                option = 'asyncio'
+            elif http in {'requests', 'httpx-sync'}:
+                option = 'sync'
             else:  # pragma: no cover
-                raise RuntimeError(f'Unhandled validator check for {value}')
-        except ModuleNotFoundError as exc:
-            # pylint: disable=line-too-long
-            raise ValueError(
-                f'Missing library for "{value}"\n  '
-                'Did you specify the correct target library in your `schema.prisma` file?\n  '
-                'See https://prisma-client-py.readthedocs.io/en/latest/config/#http-libraries'
-            ) from exc
+                # invalid http option, let pydantic handle the error
+                return values
 
-        return value
+            raise ValueError(
+                'The http option has been removed in favour of the interface option.\n'
+                '  Please remove the http option from your Prisma schema and replace it with:\n'
+                f'  interface = "{option}"'
+            )
+        return values
 
     @validator('partial_type_generator', pre=True, always=True, allow_reuse=True)
     @classmethod

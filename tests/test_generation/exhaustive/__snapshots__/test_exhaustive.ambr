@@ -904,8 +904,8 @@
   
   generator db {
     provider             = "prisma-client-py"
+    interface            = "asyncio"
     recursive_type_depth = 3
-    http                 = "aiohttp"
     output               = "../../../.tests_cache/generation/exhaustive/__prisma_async_output__/prisma"
   }
   
@@ -1013,8 +1013,8 @@
     sInt     Int     @db.SmallInt
     inc_int  Int     @default(autoincrement()) @db.Integer
     inc_sInt Int     @default(autoincrement()) @db.SmallInt
-    bInt     BigInt @db.BigInt
-    inc_bInt BigInt @default(autoincrement()) @db.BigInt
+    bInt     BigInt  @db.BigInt
+    inc_bInt BigInt  @default(autoincrement()) @db.BigInt
   }
   
   model B {
@@ -1207,7 +1207,7 @@
               arguments=arguments,
               root_selection=root_selection,
           )
-          return await self._engine.request('POST', '/', data=builder.build())
+          return await self._engine.request('POST', '/', content=builder.build())
   
       @property
       def _engine(self) -> QueryEngine:
@@ -1270,7 +1270,7 @@
               ],
               'transaction': True,
           }
-          await self.__client._engine.request('POST', '/', data=dumps(payload))
+          await self.__client._engine.request('POST', '/', content=dumps(payload))
   
       async def __aenter__(self) -> 'Batch':
           return self
@@ -5206,7 +5206,7 @@
                   'Could not connect to the query engine'
               ) from last_exc
   
-      async def request(self, method: Method, path: str, *, data: Any = None) -> Any:
+      async def request(self, method: Method, path: str, *, content: Any = None) -> Any:
           if self.url is None:
               raise errors.NotConnectedError('Not connected to the query engine')
   
@@ -5217,11 +5217,11 @@
               }
           }
   
-          if data is not None:
-              kwargs['data'] = data
+          if content is not None:
+              kwargs['content'] = content
   
           url = self.url + path
-          log.debug('Sending %s request to %s with data: %s', method, url, data)
+          log.debug('Sending %s request to %s with content: %s', method, url, content)
   
           resp = await self.session.request(method, url, **kwargs)
   
@@ -5427,7 +5427,7 @@
       from typing_extensions import TypedDict, Literal
   
   # -- template http.py.jinja --
-  from ._aiohttp_http import *
+  from ._async_http import *
   
   '
 ---
@@ -17996,8 +17996,8 @@
   
   generator db {
     provider             = "prisma-client-py"
+    interface            = "sync"
     recursive_type_depth = 3
-    http                 = "requests"
     output               = "../../../.tests_cache/generation/exhaustive/__prisma_sync_output__/prisma"
   }
   
@@ -18105,8 +18105,8 @@
     sInt     Int     @db.SmallInt
     inc_int  Int     @default(autoincrement()) @db.Integer
     inc_sInt Int     @default(autoincrement()) @db.SmallInt
-    bInt     BigInt @db.BigInt
-    inc_bInt BigInt @default(autoincrement()) @db.BigInt
+    bInt     BigInt  @db.BigInt
+    inc_bInt BigInt  @default(autoincrement()) @db.BigInt
   }
   
   model B {
@@ -18299,7 +18299,7 @@
               arguments=arguments,
               root_selection=root_selection,
           )
-          return self._engine.request('POST', '/', data=builder.build())
+          return self._engine.request('POST', '/', content=builder.build())
   
       @property
       def _engine(self) -> QueryEngine:
@@ -18362,7 +18362,7 @@
               ],
               'transaction': True,
           }
-          self.__client._engine.request('POST', '/', data=dumps(payload))
+          self.__client._engine.request('POST', '/', content=dumps(payload))
   
       def __enter__(self) -> 'Batch':
           return self
@@ -22291,7 +22291,7 @@
                   'Could not connect to the query engine'
               ) from last_exc
   
-      def request(self, method: Method, path: str, *, data: Any = None) -> Any:
+      def request(self, method: Method, path: str, *, content: Any = None) -> Any:
           if self.url is None:
               raise errors.NotConnectedError('Not connected to the query engine')
   
@@ -22302,11 +22302,11 @@
               }
           }
   
-          if data is not None:
-              kwargs['data'] = data
+          if content is not None:
+              kwargs['content'] = content
   
           url = self.url + path
-          log.debug('Sending %s request to %s with data: %s', method, url, data)
+          log.debug('Sending %s request to %s with content: %s', method, url, content)
   
           resp = self.session.request(method, url, **kwargs)
   
@@ -22512,7 +22512,7 @@
       from typing_extensions import TypedDict, Literal
   
   # -- template http.py.jinja --
-  from ._requests_http import *
+  from ._sync_http import *
   
   '
 ---

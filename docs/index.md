@@ -115,10 +115,10 @@ Just want to play around with Prisma Client Python and not worry about any setup
 
 The first step with any python project should be to setup a virtual environment to isolate installed packages from your other python projects, however that is out of the scope for this page.
 
-In this example we'll install the dependencies required for an asynchronous client, if you would like to use a synchronous client see [setting up a synchronous client](https://prisma-client-py.readthedocs.io/en/latest/setup/#synchronous-client).
+In this example we'll use an asynchronous client, if you would like to use a synchronous client see [setting up a synchronous client](https://prisma-client-py.readthedocs.io/en/latest/setup/#synchronous-client).
 
 ```sh
-pip install -U prisma-client[aiohttp]
+pip install -U prisma-client
 ```
 
 #### Generating Prisma Client Python

@@ -7,7 +7,7 @@ import pydantic
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from prisma.utils import temp_env_update
-from prisma.generator.models import HttpChoices
+from prisma.generator.models import InterfaceChoices
 
 from ..utils import Testdir, Runner
 
@@ -72,14 +72,14 @@ def test_unsupported_pydantic_version(runner: Runner, monkeypatch: MonkeyPatch) 
     )
 
 
-def test_bad_http_option(runner: Runner) -> None:
-    """Passing an unknown http library raises an error"""
-    result = runner.invoke(['py', 'generate', '--http=foo'])
+def test_bad_interface_option(runner: Runner) -> None:
+    """Passing an unknown interface option raises an error"""
+    result = runner.invoke(['py', 'generate', '--interface=foo'])
     assert result.exit_code != 0
-    assert 'Error: Invalid value for \'--http\'' in result.output
+    assert 'Error: Invalid value for \'--interface\'' in result.output
     assert 'foo' in result.output
-    assert 'aiohttp' in result.output
-    assert 'requests' in result.output
+    assert 'sync' in result.output
+    assert 'asyncio' in result.output
 
 
 def test_prisma_error_non_zero_exit_code(testdir: Testdir, runner: Runner) -> None:
@@ -103,24 +103,24 @@ def test_schema_not_found(runner: Runner) -> None:
 @pytest.mark.parametrize(
     'target,argument,options',
     chain(
-        from_enum(HttpChoices, '--http='),
+        from_enum(InterfaceChoices, '--interface='),
         [
-            ('requests', None, 'http = requests'),  # ensure uses schema property
-            ('aiohttp', '--http=aiohttp', 'http = requests'),  # ensure overrides
+            ('sync', None, 'interface = sync'),  # ensure uses schema property
+            ('asyncio', '--interface=asyncio', 'interface = sync'),  # ensure overrides
         ],
     ),
 )
-def test_http_option(
+def test_interface_option(
     testdir: Testdir,
     runner: Runner,
     target: str,
     argument: Optional[str],
     options: Optional[str],
 ) -> None:
-    """HTTP option is overrided correctly"""
+    """interface option is overrided correctly"""
 
     def do_assert(data: Dict[str, Any]) -> None:
-        assert data['generator']['config']['http'] == target
+        assert data['generator']['config']['interface'] == target
 
     run_test(runner, testdir, argument, options, do_assert)
 

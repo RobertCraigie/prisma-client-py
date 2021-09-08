@@ -1,2 +1,2 @@
 discord.py==1.7.1
-prisma-client[aiohttp]
+prisma-client

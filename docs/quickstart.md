@@ -35,7 +35,7 @@ Note that you will have to run the activation command on every new shell instanc
 <!-- TODO: show how to setup a synchronous as well and explain the difference -->
 
 ```sh
-pip install prisma-client[aiohttp]
+pip install prisma-client
 ```
 
 4) Prepare your database schema in a `schema.prisma` file.
@@ -45,7 +45,6 @@ For example, a simple schema with an sqlite database and one model would look li
 ```prisma
 --8<-- "docs/src_examples/async/index.schema.prisma"
 ```
-
 
 To get this up and running in your database, we use the Prisma migration
 tool [`db push`](https://www.prisma.io/docs/reference/api-reference/command-reference#db-push)

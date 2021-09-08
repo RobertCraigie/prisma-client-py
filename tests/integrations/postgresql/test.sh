@@ -8,7 +8,7 @@ set +x
 source .venv/bin/activate
 set -x
 
-pip install -U -r requirements.txt -r ../../../requirements/aiohttp.txt
+pip install -U -r requirements.txt
 pip install -U --force-reinstall ../../../.tests_cache/dist/*.whl
 
 prisma db push --accept-data-loss --force-reset

@@ -5,8 +5,8 @@ datasource db {
 }
 
 generator db {
-  provider = "prisma-client-py"
-  http     = "requests"
+  provider  = "prisma-client-py"
+  interface = "sync"
 }
 
 model Post {

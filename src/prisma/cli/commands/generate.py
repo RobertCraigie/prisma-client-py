@@ -8,7 +8,7 @@ import pydantic
 
 from .. import prisma, options
 from ..utils import EnumChoice, PathlibPath, warning
-from ...generator.models import HttpChoices
+from ...generator.models import InterfaceChoices
 
 
 ARG_TO_CONFIG_KEY = {
@@ -22,14 +22,14 @@ log: logging.Logger = logging.getLogger(__name__)
 @options.schema
 @options.watch
 @click.option(
-    '--http',
-    type=EnumChoice(HttpChoices),
-    help='HTTP client library the generated client will use',
+    '--interface',
+    type=EnumChoice(InterfaceChoices),
+    help='Method that the client will use to interface with Prisma',
 )
 @click.option(
     '--partials',
     type=PathlibPath(exists=True, readable=True),
-    help="Partial type generator location",
+    help='Partial type generator location',
 )
 def cli(schema: Optional[Path], watch: bool, **kwargs: Any) -> None:
     """Generate prisma artifacts with modified config options"""
