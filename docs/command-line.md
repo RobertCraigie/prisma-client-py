@@ -16,11 +16,12 @@ Adds support for modifying Prisma Client Python schema [options](config.md) with
 Usage: prisma py generate [OPTIONS]
 
 Options:
-  --schema FILE              The location of the Prisma schema file.
-  --watch                    Watch the Prisma schema and rerun after a change
-  --http [aiohttp|requests]  HTTP client library the generated client will use
-  --partials PATH            Partial type generator location
-  --help                     Show this message and exit.
+  --schema FILE               The location of the Prisma schema file.
+  --watch                     Watch the Prisma schema and rerun after a change
+  --interface [sync|asyncio]  Method that the client will use to interface
+                              with Prisma
+  --partials PATH             Partial type generator location
+  --help                      Show this message and exit.
 ```
 
 ### Version

@@ -7,8 +7,8 @@ datasource db {
 
 generator db {
   provider             = "prisma-client-py"
+  interface            = "sync"
   recursive_type_depth = 3
-  http                 = "requests"
   output               = "../../../.tests_cache/generation/exhaustive/__prisma_sync_output__/prisma"
 }
 
@@ -116,8 +116,8 @@ model A {
   sInt     Int     @db.SmallInt
   inc_int  Int     @default(autoincrement()) @db.Integer
   inc_sInt Int     @default(autoincrement()) @db.SmallInt
-  bInt     BigInt @db.BigInt
-  inc_bInt BigInt @default(autoincrement()) @db.BigInt
+  bInt     BigInt  @db.BigInt
+  inc_bInt BigInt  @default(autoincrement()) @db.BigInt
 }
 
 model B {

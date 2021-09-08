@@ -1,4 +1,4 @@
-{% set is_async = generator.config.http in ('aiohttp', 'httpx-async') %}
+{% set is_async = generator.config.interface == 'asyncio' %}
 {% set recursive_types = generator.config.recursive_type_depth == -1 %}
 
 {% if is_async %}

@@ -29,9 +29,6 @@ if not version:
 extras = {
     'dev': requirements('dev.txt'),
     'docs': requirements('docs.txt'),
-    'aiohttp': requirements('aiohttp.txt'),
-    'requests': requirements('requests.txt'),
-    'httpx': requirements('httpx.txt'),
 }
 
 

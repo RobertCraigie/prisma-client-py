@@ -39,8 +39,7 @@ def assert_module_is_clean(path: Path) -> None:
                 content = template.read_text()
 
                 # basic check to ensure that the original file has been reinstated
-                assert 'aiohttp' in content
-                assert 'requests' in content
+                assert 'template' not in content
             else:  # pragma: no cover
                 assert False, f'Unhandled check for {template}'
         else:
@@ -54,8 +53,7 @@ def assert_module_not_clean(path: Path) -> None:
                 content = template.read_text()
 
                 # basic check to ensure that the original file has been replaced
-                assert 'aiohttp' in content
-                assert 'requests' not in content
+                assert 'template' in content
             else:  # pragma: no cover
                 assert False, f'Unhandled check for {template}'
         else:

@@ -1,7 +1,7 @@
 from typing import cast
 
 import pytest
-import aiohttp
+import httpx
 from prisma.http import HTTP
 from prisma._types import Literal
 from prisma.utils import _NoneType
@@ -18,7 +18,7 @@ def assert_session_state(http: HTTP, state: State) -> None:
     if state == 'initial':
         assert http._session is _NoneType
     elif state == 'open':
-        assert isinstance(http._session, aiohttp.ClientSession)
+        assert isinstance(http._session, httpx.AsyncClient)
     elif state == 'closed':
         with pytest.raises(HTTPClientClosedError):
             assert http.session
@@ -57,8 +57,3 @@ async def test_lazy_session_open() -> None:
     assert_session_state(http, 'open')
     await http.close()
     assert_session_state(http, 'closed')
-
-
-def test_library_property() -> None:
-    """Purely here for coverage and I didn't feel like adding a pragma: no cover comment"""
-    assert HTTP().library == 'aiohttp'

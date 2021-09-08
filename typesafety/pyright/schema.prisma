@@ -5,8 +5,8 @@ datasource db {
 
 generator db {
   provider               = "prisma-client-py"
+  interface              = "asyncio"
   recursive_type_depth   = -1
-  http                   = "aiohttp"
 }
 
 model Post {

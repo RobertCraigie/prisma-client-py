@@ -11,23 +11,24 @@ generator db {
 ```
 See the [official docs](https://www.prisma.io/docs/concepts/components/prisma-schema/generators) for options that are not specific to Prisma Client Python.
 
-## HTTP Libraries
+## Interface
 
 See [setup](setup.md) for more information.
 
-The HTTP library that will be used by Prisma Client Python can be configured using the `http` option.
+This option configures the method you will use to interface with the client.
 
 Valid values are:
 
-* aiohttp
-* requests
+* asyncio
+* sync
 
-If aiohttp is used then the generated client will be asynchronous, e.g.
+If `asyncio` is used then the generated client will be asynchronous and code must be ran using asyncio, e.g.
+
 ```py
 user = await client.user.find_unique(where={'id': 'user_id'})
 ```
 
-And if requests is used then the generated client will be synchronous, e.g.
+And if `sync` is used then the generated client will be synchronous, e.g.
 ```py
 user = client.user.find_unique(where={'id': 'user_id'})
 ```

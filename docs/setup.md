@@ -1,33 +1,29 @@
 # Setup
 
-As Prisma Client Python supports generating both async and non-async clients, there is some differences required when installing and configuring the client.
+As Prisma Client Python supports generating both async and non-async clients, there is some differences required when generating the client.
 
-For example you must specify the http library that the client will use to communicate with the internal [query engine](https://www.prisma.io/docs/concepts/overview/under-the-hood#prisma-engines).
+## Installing
 
-## Asynchronous client
-
-Currently supported HTTP libraries are:
-
-* [aiohttp](https://github.com/aio-libs/aiohttp)
-
-### Installing
+Prisma Client Python can be installed from [PyPi](https://pypi.org/project/prisma-client/) with [pip](https://pip.pypa.io/en/stable/)
 
 ```sh
-pip install prisma-client[aiohttp]
+pip install prisma-client
 ```
+
+## Asyncio
 
 ### Schema
 
 ```prisma
 generator client {
-  provider = "prisma-client-py"
-  http     = "aiohttp"
+  provider  = "prisma-client-py"
+  interface = "asyncio"
 }
 ```
 
 ### Boilerplate
 
-The minimum code required to get starting using an asynchronous client:
+The minimum code required to get starting using asyncio:
 
 ```py
 import asyncio
@@ -47,22 +43,12 @@ if __name__ == '__main__':
 
 ## Synchronous client
 
-Currently supported HTTP libraries are:
-
-* [requests](https://github.com/psf/requests)
-
-### Installing
-
-```sh
-pip install prisma-client[requests]
-```
-
 ### Schema
 
 ```prisma
 generator client {
-  provider = "prisma-client-py"
-  http     = "requests"
+  provider  = "prisma-client-py"
+  interface = "sync"
 }
 ```
 
