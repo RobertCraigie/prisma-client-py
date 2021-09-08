@@ -22,4 +22,13 @@ if HTTP is None:
 
 
 if HTTP is None:
+    try:
+        import httpx
+    except ImportError:
+        pass
+    else:
+        from ._httpx_async_http import HTTP, Response, client
+
+
+if HTTP is None:
     raise ImportError('Either aiohttp or requests must be installed.')
