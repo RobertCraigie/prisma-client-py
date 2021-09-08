@@ -22,6 +22,7 @@ disable =
   # using pyright for these now
   unused-import,
   unused-variable,
+  not-async-context-manager,
 
   # useless
   missing-kwoa,
