@@ -2,7 +2,12 @@
 # -- template http.py.jinja --
 {% if generator.config.http == 'aiohttp' %}
 from ._aiohttp_http import *
-{% else %}
+{% elif generator.config.http == 'requests' %}
 from ._requests_http import *
+{% elif generator.config.http == 'httpx-async' %}
+from ._httpx_async_http import *
+{% elif generator.config.http == 'httpx-sync' %}
+from ._httpx_sync_http import *
+{% else %}
+{{ 0 / 0 }}
 {% endif %}
-

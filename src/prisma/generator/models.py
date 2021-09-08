@@ -83,6 +83,8 @@ class BaseModel(PydanticBaseModel):
 class HttpChoices(str, enum.Enum):
     aiohttp = 'aiohttp'
     requests = 'requests'
+    httpx_sync = 'httpx-sync'
+    httpx_async = 'httpx-async'
 
 
 class Module(BaseModel):
@@ -231,6 +233,8 @@ class Config(BaseSettings):
                 import aiohttp
             elif value == 'requests':
                 import requests
+            elif value in ('httpx-sync', 'httpx-async'):
+                import httpx
             else:  # pragma: no cover
                 raise RuntimeError(f'Unhandled validator check for {value}')
         except ModuleNotFoundError as exc:
