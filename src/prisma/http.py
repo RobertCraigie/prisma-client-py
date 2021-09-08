@@ -31,4 +31,4 @@ if HTTP is None:
 
 
 if HTTP is None:
-    raise ImportError('Either aiohttp or requests must be installed.')
+    raise ImportError('Either aiohttp, requests or httpx must be installed.')
