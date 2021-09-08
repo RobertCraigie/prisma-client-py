@@ -13,6 +13,7 @@ from . import errors
 
 try:
     from .client import *
+    from .fields import *
     from . import models, partials, types
 except ModuleNotFoundError:
     # code has not been generated yet

@@ -1,6 +1,6 @@
 datasource db {
-  provider = "sqlite"
-  url      = "file:dev.db"
+  provider = "postgres"
+  url      = env("PG_URL")
 }
 
 generator client {
@@ -15,6 +15,7 @@ model User {
   name       String
   posts      Post[]
   profile    Profile?
+  meta       Json
 }
 
 model Post {

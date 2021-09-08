@@ -1,10 +1,10 @@
 {% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import recursive_types with context %}
 # -- template types.py.jinja --
 from .utils import _NoneType
 
 
 {% set depth = generator.config.recursive_type_depth %}
-{% set recursive_types = depth == -1 %}
 
 # TODO: cleanup whitespace control
 # TODO: add an argument to signify that the last iteration should be skipped
@@ -37,6 +37,39 @@ from .utils import _NoneType
 
 
 SortOrder = Literal['asc', 'desc']
+
+# types that can be serialized to json by our query builder
+{% if recursive_types %}
+Serializable = Union[
+    None,
+    bool,
+    float,
+    int,
+    str,
+    datetime.datetime,
+    List['Serializable'],
+    Dict[None, 'Serializable'],
+    Dict[bool, 'Serializable'],
+    Dict[float, 'Serializable'],
+    Dict[int, 'Serializable'],
+    Dict[str, 'Serializable'],
+]
+{% else %}
+Serializable = Union[
+    None,
+    bool,
+    float,
+    int,
+    str,
+    datetime.datetime,
+    List[Any],
+    Dict[None, Any],
+    Dict[bool, Any],
+    Dict[float, Any],
+    Dict[int, Any],
+    Dict[str, Any],
+]
+{% endif %}
 
 
 {% call(name, next, iteration) recursive('StringFilter') %}
@@ -110,6 +143,68 @@ class {{ name }}(TypedDict, total=False):
     {% endif %}
 {% endcall %}
 
+# TODO: preview feature for improving JSON filtering
+class JsonFilter(TypedDict, total=False):
+    equals: 'fields.Json'
+    NOT: 'fields.Json'
+
+
+class _FloatSetInput(TypedDict):
+    set: float
+
+
+class _FloatDivideInput(TypedDict):
+    divide: float
+
+
+class _FloatMultiplyInput(TypedDict):
+    multiply: float
+
+
+class _FloatIncrementInput(TypedDict):
+    increment: float
+
+
+class _FloatDecrementInput(TypedDict):
+    decrement: float
+
+
+class _IntSetInput(TypedDict):
+    set: int
+
+
+class _IntDivideInput(TypedDict):
+    divide: int
+
+
+class _IntMultiplyInput(TypedDict):
+    multiply: int
+
+
+class _IntIncrementInput(TypedDict):
+    increment: int
+
+
+class _IntDecrementInput(TypedDict):
+    decrement: int
+
+
+AtomicFloatInput = Union[
+    _FloatSetInput,
+    _FloatDivideInput,
+    _FloatMultiplyInput,
+    _FloatIncrementInput,
+    _FloatDecrementInput,
+]
+AtomicIntInput = Union[
+    _IntSetInput,
+    _IntDivideInput,
+    _IntMultiplyInput,
+    _IntIncrementInput,
+    _IntDecrementInput,
+]
+AtomicBigIntInput = AtomicIntInput
+
 
 {% for model in dmmf.datamodel.models %}
 # {{ model.name }} types
@@ -176,7 +271,7 @@ class {{ model.name }}UpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
     {% for field in model.all_fields %}
         {%- if not field.is_unique and not field.is_id and not field.is_read_only -%}
-            {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.get_update_input_type(model.name)) }}
+            {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.get_update_input_type()) }}
         {% endif %}
     {% endfor %}
 
@@ -185,23 +280,11 @@ class {{ model.name }}UpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
     {% for field in model.all_fields %}
         {%- if not field.is_read_only -%}
-            {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.get_update_input_type(model.name)) }}
+            {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.get_update_input_type()) }}
         {% endif %}
     {% endfor %}
 
 
-{% for field in model.atomic_fields %}
-class {{ model.name }}Update{{ field.name }}Input(TypedDict, total=False):
-    set: {{ field.atomic_type }}
-    {% if field.type != 'Boolean' %}
-    increment: {{ field.atomic_type }}
-    decrement: {{ field.atomic_type }}
-    multiply: {{ field.atomic_type }}
-    divide: {{ field.atomic_type }}
-    {% endif %}
-
-
-{% endfor %}
 class {{ model.name }}UpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['{{ model.name }}CreateWithoutRelationsInput']
     connect: List['{{ model.name }}WhereUniqueInput']
@@ -350,4 +433,4 @@ class {{ current }}(TypedDict, total=False):
 
 
 # we have to import ourselves as types can be namespaced to types
-from . import types, enums, models
+from . import types, enums, models, fields

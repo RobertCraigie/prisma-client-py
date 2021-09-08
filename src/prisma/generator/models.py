@@ -36,7 +36,7 @@ except ImportError:
 
 # NOTE: this does not represent all the data that is passed by prisma
 
-ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float', 'Boolean']
+ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float']
 
 TYPE_MAPPING = {
     'String': 'str',
@@ -45,8 +45,17 @@ TYPE_MAPPING = {
     'Int': 'int',
     'Float': 'float',
     'BigInt': 'int',
+    'Json': '\'fields.Json\'',
 }
-FILTER_TYPES = ['String', 'DateTime', 'Boolean', 'Int', 'BigInt', 'Float']
+FILTER_TYPES = [
+    'String',
+    'DateTime',
+    'Boolean',
+    'Int',
+    'BigInt',
+    'Float',
+    'Json',
+]
 
 data_ctx: ContextVar['Data'] = ContextVar('data_ctx')
 
@@ -359,7 +368,7 @@ class Field(BaseModel):
 
         if kind == 'scalar':
             if type_ is not None and type_ not in TYPE_MAPPING:
-                raise ValueError(f'Unknown scalar type: {type_}')
+                raise ValueError(f'Unsupported scalar field type: {type_}')
 
         return values
 
@@ -464,25 +473,19 @@ class Field(BaseModel):
     def is_atomic(self) -> bool:
         return self.type in ATOMIC_FIELD_TYPES
 
-    @property
-    def atomic_type(self) -> str:
-        if not self.is_atomic:
-            raise TypeError('Field is not atomic')
-
-        if self.is_list:
-            return f'List[{self.python_type}]'
-
-        return self.python_type
-
     def maybe_optional(self, typ: str) -> str:
         """Wrap the given type string within `Optional` if applicable"""
         if self.is_required or self.is_relational:
             return typ
         return f'Optional[{typ}]'
 
-    def get_update_input_type(self, model: str) -> str:
+    def get_update_input_type(self) -> str:
         if self.is_atomic:
-            return f'Union[\'{model}Update{self.name}Input\', {self.atomic_type}]'
+            if self.is_list:
+                raise NotImplementedError(
+                    'Atomic updates for scalar list types not implemented yet.'
+                )
+            return f'Union[Atomic{self.type}Input, {self.python_type}]'
 
         if self.kind == 'object':
             if self.is_list:

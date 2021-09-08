@@ -4,7 +4,7 @@ datasource db {
 }
 
 generator db {
-  provider             = "python3 -m prisma"
+  provider             = "prisma-client-py"
   recursive_type_depth = -1
   http                 = "aiohttp"
 }
@@ -19,14 +19,19 @@ model User {
 }
 
 model Post {
-  id         String     @id @default(cuid())
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
+  id         String   @id @default(cuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
   title      String
-  published  Boolean    @default(false)
-  views      Int        @default(0)
-  author     User?      @relation(fields: [author_id], references: [id])
+  published  Boolean  @default(false)
+  views      Int      @default(0)
+  author     User?    @relation(fields: [author_id], references: [id])
   author_id  String?
+}
+
+model Types {
+  id       String @id @default(cuid())
+  json_obj Json?  @default("{}")
 }
 
 enum Role {

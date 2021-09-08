@@ -21,6 +21,3 @@ BaseModelT = TypeVar('BaseModelT', bound=BaseModel)
 # TODO: use a TypeVar
 FuncType = Callable[..., Any]
 CoroType = Callable[..., Coroutine[Any, Any, Any]]
-
-# NOTE: this should be a recursive type
-Serializable = Union[None, bool, float, int, str, List[Any], Dict[Any, Any]]

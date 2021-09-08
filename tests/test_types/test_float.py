@@ -5,197 +5,197 @@ from prisma.errors import DataError
 
 @pytest.mark.asyncio
 async def test_filtering(client: Client) -> None:
-    """Finding records by a BigInt value"""
+    """Finding records by a a float value"""
     async with client.batch_() as batcher:
         for i in range(10):
-            batcher.types.create({'bigint': i + 1})
+            batcher.types.create({'float_': i + 1})
 
-    total = await client.types.count(where={'bigint': {'gte': 5}})
+    total = await client.types.count(where={'float_': {'gte': 5}})
     assert total == 6
 
     found = await client.types.find_first(
         where={
-            'bigint': {
+            'float_': {
                 'equals': 2,
             },
         },
     )
     assert found is not None
-    assert found.bigint == 2
+    assert found.float_ == 2
 
     results = await client.types.find_many(
         where={
-            'bigint': {
+            'float_': {
                 'IN': [1, 5, 7],
             },
         },
         order={
-            'bigint': 'asc',
+            'float_': 'asc',
         },
     )
     assert len(results) == 3
-    assert results[0].bigint == 1
-    assert results[1].bigint == 5
-    assert results[2].bigint == 7
+    assert results[0].float_ == 1
+    assert results[1].float_ == 5
+    assert results[2].float_ == 7
 
     results = await client.types.find_many(
         where={
-            'bigint': {
+            'float_': {
                 'not_in': [1, 2, 3, 4, 6, 7, 8, 9],
             },
         },
         order={
-            'bigint': 'asc',
+            'float_': 'asc',
         },
     )
     assert len(results) == 2
-    assert results[0].bigint == 5
-    assert results[1].bigint == 10
+    assert results[0].float_ == 5
+    assert results[1].float_ == 10
 
     found = await client.types.find_first(
         where={
-            'bigint': {
+            'float_': {
                 'lt': 5,
             },
         },
         order={
-            'bigint': 'desc',
+            'float_': 'desc',
         },
     )
     assert found is not None
-    assert found.bigint == 4
+    assert found.float_ == 4
 
     found = await client.types.find_first(
         where={
-            'bigint': {
+            'float_': {
                 'lte': 5,
             },
         },
         order={
-            'bigint': 'desc',
+            'float_': 'desc',
         },
     )
     assert found is not None
-    assert found.bigint == 5
+    assert found.float_ == 5
 
     found = await client.types.find_first(
         where={
-            'bigint': {
+            'float_': {
                 'gt': 5,
             },
         },
         order={
-            'bigint': 'asc',
+            'float_': 'asc',
         },
     )
     assert found is not None
-    assert found.bigint == 6
+    assert found.float_ == 6
 
     found = await client.types.find_first(
         where={
-            'bigint': {
+            'float_': {
                 'gte': 6,
             },
         },
         order={
-            'bigint': 'asc',
+            'float_': 'asc',
         },
     )
     assert found is not None
-    assert found.bigint == 6
+    assert found.float_ == 6
 
     found = await client.types.find_first(
         where={
-            'bigint': {
+            'float_': {
                 'NOT': 1,
             },
         },
-        order={'bigint': 'asc'},
+        order={'float_': 'asc'},
     )
     assert found is not None
-    assert found.bigint == 2
+    assert found.float_ == 2
 
 
 @pytest.mark.asyncio
 async def test_atomic_update(client: Client) -> None:
-    """Atomically updating a BigInt value"""
-    model = await client.types.create({'id': 1, 'bigint': 1})
-    assert model.bigint == 1
+    """Atomically updating a float value"""
+    model = await client.types.create({'id': 1, 'float_': 1})
+    assert model.float_ == 1
 
     updated = await client.types.update(
         where={
             'id': 1,
         },
         data={
-            'bigint': {'increment': 5},
+            'float_': {'increment': 5},
         },
     )
     assert updated is not None
-    assert updated.bigint == 6
+    assert updated.float_ == 6
 
     updated = await client.types.update(
         where={
             'id': 1,
         },
         data={
-            'bigint': {
+            'float_': {
                 'set': 20,
             },
         },
     )
     assert updated is not None
-    assert updated.bigint == 20
+    assert updated.float_ == 20
 
     updated = await client.types.update(
         where={
             'id': 1,
         },
         data={
-            'bigint': {
+            'float_': {
                 'decrement': 5,
             },
         },
     )
     assert updated is not None
-    assert updated.bigint == 15
+    assert updated.float_ == 15
 
     updated = await client.types.update(
         where={
             'id': 1,
         },
         data={
-            'bigint': {
+            'float_': {
                 'multiply': 2,
             },
         },
     )
     assert updated is not None
-    assert updated.bigint == 30
+    assert updated.float_ == 30
 
     updated = await client.types.update(
         where={
             'id': 1,
         },
         data={
-            'bigint': {
+            'float_': {
                 'divide': 3,
             },
         },
     )
     assert updated is not None
-    assert updated.bigint == 10
+    assert updated.float_ == 10
 
 
 @pytest.mark.asyncio
 async def test_atomic_update_invalid_input(client: Client) -> None:
-    """BigInt atomic update only allows one field to be passed"""
+    """Float atomic update only allows one field to be passed"""
     with pytest.raises(DataError) as exc:
         await client.types.update(
             where={
                 'id': 1,
             },
             data={  # pyright: reportGeneralTypeIssues=false
-                'bigint': {  # type: ignore
+                'float_': {  # type: ignore
                     'divide': 1,
                     'multiply': 2,
                 },
