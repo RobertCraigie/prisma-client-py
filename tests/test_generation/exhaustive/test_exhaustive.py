@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List
 
 import pytest
-from syrupy import SnapshotAssertion
+from syrupy.assertion import SnapshotAssertion
 
 from prisma.generator import BASE_PACKAGE_DIR
 from prisma.generator.utils import remove_suffix
