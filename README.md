@@ -270,7 +270,11 @@ Only MacOS and Linux are officially supported, windows is not supported yet.
 
 ## Version guarantees
 
-Prisma Client Python is not stable, there will be documented breaking changes with new releases.
+Prisma Client Python is _not_ stable.
+
+Breaking changes will be documented and released under a new **MINOR** version following this format.
+
+`MAJOR`.`MINOR`.`PATCH`
 
 ## Contributing
 
