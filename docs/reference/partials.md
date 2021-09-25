@@ -1,6 +1,6 @@
 # Partial Types
 
-Prisma Client Python exposes an interface for creating partial models at generation time based off of schema-defined models, see [partial-types](../partial-types.md) for more information.
+Prisma Client Python exposes an interface for creating partial models at generation time based off of schema-defined models, see [partial-types](partial-types.md) for more information.
 
 Each model defined in the schema can have partial types generated based off of it. The API looks like this:
 ```py

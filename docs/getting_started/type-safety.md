@@ -44,6 +44,6 @@ Among other improvements your IDE will:
 - suggest more appropriate completions
 - highlight errors in your code
 
-[^1]: There are some limitations on this which are enabled by default, see [limitations](limitations.md) for why they are imposed and how to remove them.
+[^1]: There are some limitations on this which are enabled by default, see [limitations](../reference/limitations.md) for why they are imposed and how to remove them.
 
 [^2]: Type hints are not enforced at runtime

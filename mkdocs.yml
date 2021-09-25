@@ -22,6 +22,9 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
   logo: 'logo.svg'
   favicon: 'favicon.png'
   font:
@@ -43,23 +46,24 @@ extra_javascript:
   - scripts/highlight.js
 
 nav:
-  - Overview: index.md
-  - API Reference:
+  - Home: index.md
+  - Getting Started:
+    - Setup: getting_started/setup.md
+    - Type Safety: getting_started/type-safety.md
+    - Quick Start: getting_started/quickstart.md
+    - Advanced Usage: getting_started/advanced.md
+  - Reference:
     - Query Operations: reference/operations.md
     - Batching Queries: reference/batching.md
     - Partial Types: reference/partials.md
-  - Setup: setup.md
-  - Quickstart: quickstart.md
-  - Type Safety: type-safety.md
-  - Type Checkers:
-    - Pyright: pyright.md
-    - Mypy: mypy.md
-  - Limitations: limitations.md
-  - Advanced Usage: advanced.md
-  - Configuration: config.md
-  - Command Line: command-line.md
-  - Logging: logging.md
-  - Partial Types: partial-types.md
+    - Type Checkers:
+      - Pyright: reference/type_checkers/pyright.md
+      - Mypy: reference/type_checkers/mypy.md
+    - Limitations: reference/limitations.md
+    - Configuration: reference/config.md
+    - Command Line: reference/command-line.md
+    - Logging: reference/logging.md
+    - Partial Types: reference/partial-types.md
   - Contributing:
     - How to Contribute: contributing/contributing.md
     - Architecture: contributing/architecture.md

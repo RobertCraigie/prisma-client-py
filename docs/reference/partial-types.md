@@ -5,7 +5,7 @@ This is useful in situations where only certain fields of a model are available 
 
 Partial models are generated to `prisma.partials`.
 
-See [config](config.md#partial-type-generator) for configuration details and the [reference](reference/partials.md) for API documentation.
+See [config](config.md#partial-type-generator) for configuration details and the [reference](partials.md) for API documentation.
 
 ## Example
 
