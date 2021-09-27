@@ -106,7 +106,7 @@ Serializable = Union[
         'gte': datetime.datetime,
         'in': List[datetime.datetime],
         {%+ if next != '' -%}
-            'not': Union[datetime.datetime, '{{ next }}'],
+            'not': '{{ next }}',
         {% endif %}
     },
     total=False,
@@ -436,9 +436,9 @@ class {{ current }}(TypedDict, total=False):
     {% endfor %}
 
     {% if next != '' %}
-    AND: Union['{{ next }}', List['{{ next }}']]
+    AND: List['{{ next }}']
     OR: List['{{ next }}']
-    NOT: Union['{{ next }}', List['{{ next }}']]
+    NOT: List['{{ next }}']
     {% endif %}
 {% endcall %}
 
