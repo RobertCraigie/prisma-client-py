@@ -266,7 +266,9 @@ There has currently not been any work done on improving the performance of Prism
 
 ### Supported platforms
 
-Only MacOS and Linux are officially supported, windows is not supported yet.
+Only MacOS and Linux are officially supported.
+
+Windows is unofficially supported as tests are not currently ran on windows.
 
 ## Version guarantees
 
