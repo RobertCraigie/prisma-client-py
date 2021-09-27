@@ -106,7 +106,7 @@ Serializable = Union[
         'gte': datetime.datetime,
         'in': List[datetime.datetime],
         {%+ if next != '' -%}
-            'not': '{{ next }}',
+            'not': Union[datetime.datetime, '{{ next }}'],
         {% endif %}
     },
     total=False,
