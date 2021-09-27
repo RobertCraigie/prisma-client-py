@@ -63,9 +63,11 @@ async def test_find_first(client: Client) -> None:
 
     post = await client.post.find_first(
         where={
-            'NOT': {
-                'published': True,
-            },
+            'NOT': [
+                {
+                    'published': True,
+                },
+            ],
         },
         order={
             'created_at': 'asc',
@@ -101,9 +103,11 @@ async def test_find_first(client: Client) -> None:
             'title': {
                 'contains': 'Test',
             },
-            'AND': {
-                'published': True,
-            },
+            'AND': [
+                {
+                    'published': True,
+                },
+            ],
         },
     )
     assert post is not None
