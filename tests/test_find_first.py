@@ -6,44 +6,12 @@ from prisma import Client
 async def test_find_first(client: Client) -> None:
     """Skips multiple non-matching records"""
     posts = [
-        await client.post.create(
-            {
-                'title': 'Test post 1',
-                'published': False,
-                'views': 100,
-            }
-        ),
-        await client.post.create(
-            {
-                'title': 'Test post 2',
-                'published': False,
-            }
-        ),
-        await client.post.create(
-            {
-                'title': 'Test post 3',
-                'published': False,
-            }
-        ),
-        await client.post.create(
-            {
-                'title': 'Test post 4',
-                'published': True,
-                'views': 500,
-            }
-        ),
-        await client.post.create(
-            {
-                'title': 'Test post 5',
-                'published': False,
-            }
-        ),
-        await client.post.create(
-            {
-                'title': 'Test post 6',
-                'published': True,
-            }
-        ),
+        await client.post.create({'title': 'Test post 1', 'published': False}),
+        await client.post.create({'title': 'Test post 2', 'published': False}),
+        await client.post.create({'title': 'Test post 3', 'published': False}),
+        await client.post.create({'title': 'Test post 4', 'published': True}),
+        await client.post.create({'title': 'Test post 5', 'published': False}),
+        await client.post.create({'title': 'Test post 6', 'published': True}),
     ]
 
     post = await client.post.find_first(where={'published': True})
@@ -60,116 +28,6 @@ async def test_find_first(client: Client) -> None:
     assert post.id == posts[5].id
     assert post.title == 'Test post 6'
     assert post.published is True
-
-    post = await client.post.find_first(
-        where={
-            'NOT': {
-                'published': True,
-            },
-        },
-        order={
-            'created_at': 'asc',
-        },
-    )
-    assert post is not None
-    assert post.title == 'Test post 1'
-
-    post = await client.post.find_first(
-        where={
-            'NOT': [
-                {
-                    'title': {
-                        'contains': '1',
-                    },
-                },
-                {
-                    'title': {
-                        'contains': '2',
-                    },
-                },
-            ],
-        },
-        order={
-            'created_at': 'asc',
-        },
-    )
-    assert post is not None
-    assert post.title == 'Test post 3'
-
-    post = await client.post.find_first(
-        where={
-            'title': {
-                'contains': 'Test',
-            },
-            'AND': {
-                'published': True,
-            },
-        },
-    )
-    assert post is not None
-    assert post.title == 'Test post 4'
-
-    post = await client.post.find_first(
-        where={
-            'AND': [
-                {
-                    'published': True,
-                },
-                {
-                    'title': {
-                        'contains': 'Test',
-                    }
-                },
-            ],
-        },
-    )
-    assert post is not None
-    assert post.title == 'Test post 4'
-
-    post = await client.post.find_first(
-        where={
-            'views': {
-                'gt': 100,
-            },
-            'OR': [
-                {
-                    'published': False,
-                },
-            ],
-        }
-    )
-    assert post is None
-
-    post = await client.post.find_first(
-        where={
-            'OR': [
-                {
-                    'views': {
-                        'gt': 100,
-                    },
-                },
-                {
-                    'published': False,
-                },
-            ]
-        }
-    )
-    assert post is not None
-    assert post.title == 'Test post 1'
-
-    post = await client.post.find_first(
-        where={
-            'OR': [
-                {
-                    'views': {
-                        'gt': 100,
-                    },
-                },
-            ]
-        }
-    )
-    assert post is not None
-    assert post.title == 'Test post 4'
 
 
 @pytest.mark.asyncio

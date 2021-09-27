@@ -11,17 +11,17 @@ async def filtering(client: Client) -> None:
     await client.types.find_first(
         where={
             'bigint': {
-                'not': 173283,
+                'NOT': 173283,
             },
         },
     )
     await client.types.find_first(
         where={
             'bigint': {
-                'not': {
-                    'not': {
-                        'not': {
-                            'not': {
+                'NOT': {
+                    'NOT': {
+                        'NOT': {
+                            'NOT': {
                                 'equals': 1,
                             },
                         },
@@ -34,21 +34,21 @@ async def filtering(client: Client) -> None:
         where={
             'bigint': {
                 'equals': 2,
-                'in': [2, 3, 4],
+                'IN': [2, 3, 4],
                 'not_in': [5, 6, 7],
                 'lt': 3,
                 'lte': 2,
                 'gt': 1,
                 'gte': 2,
-                'not': {
+                'NOT': {
                     'equals': 2,
-                    'in': [2, 3, 4],
+                    'IN': [2, 3, 4],
                     'not_in': [5, 6, 7],
                     'lt': 3,
                     'lte': 2,
                     'gt': 1,
                     'gte': 2,
-                    'not': {
+                    'NOT': {
                         'equals': 3,
                     },
                 },
@@ -72,7 +72,7 @@ async def filtering(client: Client) -> None:
     await client.types.find_first(
         where={  # E: Argument of type "dict[str, dict[str, list[str | int]]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
             'bigint': {
-                'in': ['1', 2],
+                'IN': ['1', 2],
             },
         },
     )
@@ -114,7 +114,7 @@ async def filtering(client: Client) -> None:
     await client.types.find_first(
         where={
             'bigint': {
-                'not': {
+                'NOT': {
                     'equals': 5,
                 },
             },

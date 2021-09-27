@@ -26,7 +26,7 @@ async def test_filtering(client: Client) -> None:
     results = await client.types.find_many(
         where={
             'bigint': {
-                'in': [1, 5, 7],
+                'IN': [1, 5, 7],
             },
         },
         order={
@@ -107,7 +107,7 @@ async def test_filtering(client: Client) -> None:
     found = await client.types.find_first(
         where={
             'bigint': {
-                'not': 1,
+                'NOT': 1,
             },
         },
         order={'bigint': 'asc'},

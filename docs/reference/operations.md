@@ -269,8 +269,8 @@ post = await client.post.find_first(
             'contains': 'string must be present',
             'startswith': 'must start with string',
             'endswith': 'must end with string',
-            'in': ['find_string_1', 'find_string_2'],
-            'not': {
+            'IN': ['find_string_1', 'find_string_2'],
+            'NOT': {
                 # recursive type
                 'contains': 'string must not be present',
                 ...
@@ -289,13 +289,13 @@ post = await client.post.find_first(
         # or
         'views': {
             'equals': 1,
-            'in': [1, 2, 3],
+            'IN': [1, 2, 3],
             'not_in': [4, 5, 6],
             'lt': 10,
             'lte': 9,
             'gt': 0,
             'gte': 1,
-            'not': {
+            'NOT': {
                 # recursive type
                 'gt': 10,
                 ...
@@ -314,13 +314,13 @@ user = await client.user.find_first(
         # or
         'points': {
             'equals': 10.0,
-            'in': [1.2, 1.3, 1.4],
+            'IN': [1.2, 1.3, 1.4],
             'not_in': [4.7, 53.4, 6.8],
             'lt': 100.5,
             'lte': 9.9,
             'gt': 0.0,
             'gte': 1.2,
-            'not': {
+            'NOT': {
                 # recursive type
                 'gt': 10.0,
                 ...
@@ -346,8 +346,8 @@ post = await client.post.find_first(
             'lte': datetime.now(),
             'gt': datetime.now(),
             'gte': datetime.now(),
-            'in': [datetime.now(), datetime.utcnow()],
-            'not': {
+            'IN': [datetime.now(), datetime.utcnow()],
+            'NOT': {
                 # recursive type
                 'equals': datetime.now(),
                 ...
@@ -366,7 +366,7 @@ post = await client.post.find_first(
         # or
         'published': {
             'equals': True,
-            'not': False,
+            'NOT': False,
         },
     },
 )
