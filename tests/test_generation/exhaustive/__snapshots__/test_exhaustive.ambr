@@ -67,8 +67,6 @@
       'order_by': 'orderBy',
       'not_in': 'notIn',
       'is_not': 'isNot',
-      'NOT': 'not',
-      'IN': 'in',
   }
   
   DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
@@ -7284,168 +7282,248 @@
   
       
   
-  class StringFilter(TypedDict, total=False):
-      equals: str
-      not_in: List[str]
-      lt: str
-      lte: str
-      gt: str
-      gte: str
-      contains: str
-      startswith: str
-      endswith: str
-      IN: List[str]
-      NOT: Union[str, 'StringFilterRecursive1']
+  StringFilter = TypedDict(
+      'StringFilter',
+      {
+          'equals': str,
+          'not_in': List[str],
+          'lt': str,
+          'lte': str,
+          'gt': str,
+          'gte': str,
+          'contains': str,
+          'startswith': str,
+          'endswith': str,
+          'in': List[str],
+          'not': Union[str, 'StringFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class StringFilterRecursive1(TypedDict, total=False):
-      equals: str
-      not_in: List[str]
-      lt: str
-      lte: str
-      gt: str
-      gte: str
-      contains: str
-      startswith: str
-      endswith: str
-      IN: List[str]
-      NOT: Union[str, 'StringFilterRecursive2']
+  StringFilterRecursive1 = TypedDict(
+      'StringFilterRecursive1',
+      {
+          'equals': str,
+          'not_in': List[str],
+          'lt': str,
+          'lte': str,
+          'gt': str,
+          'gte': str,
+          'contains': str,
+          'startswith': str,
+          'endswith': str,
+          'in': List[str],
+          'not': Union[str, 'StringFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class StringFilterRecursive2(TypedDict, total=False):
-      equals: str
-      not_in: List[str]
-      lt: str
-      lte: str
-      gt: str
-      gte: str
-      contains: str
-      startswith: str
-      endswith: str
-      IN: List[str]
-      
-      
-  
-  class DateTimeFilter(TypedDict, total=False):
-      equals: datetime.datetime
-      not_in: List[datetime.datetime]
-      lt: datetime.datetime
-      lte: datetime.datetime
-      gt: datetime.datetime
-      gte: datetime.datetime
-      IN: List[datetime.datetime]
-      NOT: 'DateTimeFilterRecursive1'
-  
-  
-  class DateTimeFilterRecursive1(TypedDict, total=False):
-      equals: datetime.datetime
-      not_in: List[datetime.datetime]
-      lt: datetime.datetime
-      lte: datetime.datetime
-      gt: datetime.datetime
-      gte: datetime.datetime
-      IN: List[datetime.datetime]
-      NOT: 'DateTimeFilterRecursive2'
-  
-  
-  class DateTimeFilterRecursive2(TypedDict, total=False):
-      equals: datetime.datetime
-      not_in: List[datetime.datetime]
-      lt: datetime.datetime
-      lte: datetime.datetime
-      gt: datetime.datetime
-      gte: datetime.datetime
-      IN: List[datetime.datetime]
-      
+  StringFilterRecursive2 = TypedDict(
+      'StringFilterRecursive2',
+      {
+          'equals': str,
+          'not_in': List[str],
+          'lt': str,
+          'lte': str,
+          'gt': str,
+          'gte': str,
+          'contains': str,
+          'startswith': str,
+          'endswith': str,
+          'in': List[str],
+              },
+      total=False,
+  )
   
       
   
-  class BooleanFilter(TypedDict, total=False):
-      equals: bool
-      NOT: Union[bool, 'BooleanFilterRecursive1']
+  DateTimeFilter = TypedDict(
+      'DateTimeFilter',
+      {
+          'equals': datetime.datetime,
+          'not_in': List[datetime.datetime],
+          'lt': datetime.datetime,
+          'lte': datetime.datetime,
+          'gt': datetime.datetime,
+          'gte': datetime.datetime,
+          'in': List[datetime.datetime],
+          'not': Union[datetime.datetime, 'DateTimeFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class BooleanFilterRecursive1(TypedDict, total=False):
-      equals: bool
-      NOT: Union[bool, 'BooleanFilterRecursive2']
+  DateTimeFilterRecursive1 = TypedDict(
+      'DateTimeFilterRecursive1',
+      {
+          'equals': datetime.datetime,
+          'not_in': List[datetime.datetime],
+          'lt': datetime.datetime,
+          'lte': datetime.datetime,
+          'gt': datetime.datetime,
+          'gte': datetime.datetime,
+          'in': List[datetime.datetime],
+          'not': Union[datetime.datetime, 'DateTimeFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class BooleanFilterRecursive2(TypedDict, total=False):
-      equals: bool
+  DateTimeFilterRecursive2 = TypedDict(
+      'DateTimeFilterRecursive2',
+      {
+          'equals': datetime.datetime,
+          'not_in': List[datetime.datetime],
+          'lt': datetime.datetime,
+          'lte': datetime.datetime,
+          'gt': datetime.datetime,
+          'gte': datetime.datetime,
+          'in': List[datetime.datetime],
+              },
+      total=False,
+  )
+  
+  
       
   
+  BooleanFilter = TypedDict(
+      'BooleanFilter',
+      {
+          'equals': bool,
+          'not': Union[bool, 'BooleanFilterRecursive1'],
+      },
+      total=False,
+  )
+  
+  
+  BooleanFilterRecursive1 = TypedDict(
+      'BooleanFilterRecursive1',
+      {
+          'equals': bool,
+          'not': Union[bool, 'BooleanFilterRecursive2'],
+      },
+      total=False,
+  )
+  
+  
+  BooleanFilterRecursive2 = TypedDict(
+      'BooleanFilterRecursive2',
+      {
+          'equals': bool,
+              },
+      total=False,
+  )
+  
+  
       
   
-  class IntFilter(TypedDict, total=False):
-      equals: int
-      IN: List[int]
-      not_in: List[int]
-      lt: int
-      lte: int
-      gt: int
-      gte: int
-      NOT: Union[int, 'IntFilterRecursive1']
+  IntFilter = TypedDict(
+      'IntFilter',
+      {
+          'equals': int,
+          'not_in': List[int],
+          'lt': int,
+          'lte': int,
+          'gt': int,
+          'gte': int,
+          'in': List[int],
+          'not': Union[int, 'IntFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class IntFilterRecursive1(TypedDict, total=False):
-      equals: int
-      IN: List[int]
-      not_in: List[int]
-      lt: int
-      lte: int
-      gt: int
-      gte: int
-      NOT: Union[int, 'IntFilterRecursive2']
+  IntFilterRecursive1 = TypedDict(
+      'IntFilterRecursive1',
+      {
+          'equals': int,
+          'not_in': List[int],
+          'lt': int,
+          'lte': int,
+          'gt': int,
+          'gte': int,
+          'in': List[int],
+          'not': Union[int, 'IntFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class IntFilterRecursive2(TypedDict, total=False):
-      equals: int
-      IN: List[int]
-      not_in: List[int]
-      lt: int
-      lte: int
-      gt: int
-      gte: int
-      
+  IntFilterRecursive2 = TypedDict(
+      'IntFilterRecursive2',
+      {
+          'equals': int,
+          'not_in': List[int],
+          'lt': int,
+          'lte': int,
+          'gt': int,
+          'gte': int,
+          'in': List[int],
+              },
+      total=False,
+  )
+  
   
   BigIntFilter = IntFilter
       
   
-  class FloatFilter(TypedDict, total=False):
-      equals: float
-      IN: List[float]
-      not_in: List[float]
-      lt: float
-      lte: float
-      gt: float
-      gte: float
-      NOT: Union[float, 'FloatFilterRecursive1']
+  FloatFilter = TypedDict(
+      'FloatFilter',
+      {
+          'equals': float,
+          'not_in': List[float],
+          'lt': float,
+          'lte': float,
+          'gt': float,
+          'gte': float,
+          'in': List[float],
+          'not': Union[float, 'FloatFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class FloatFilterRecursive1(TypedDict, total=False):
-      equals: float
-      IN: List[float]
-      not_in: List[float]
-      lt: float
-      lte: float
-      gt: float
-      gte: float
-      NOT: Union[float, 'FloatFilterRecursive2']
+  FloatFilterRecursive1 = TypedDict(
+      'FloatFilterRecursive1',
+      {
+          'equals': float,
+          'not_in': List[float],
+          'lt': float,
+          'lte': float,
+          'gt': float,
+          'gte': float,
+          'in': List[float],
+          'not': Union[float, 'FloatFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class FloatFilterRecursive2(TypedDict, total=False):
-      equals: float
-      IN: List[float]
-      not_in: List[float]
-      lt: float
-      lte: float
-      gt: float
-      gte: float
-      
+  FloatFilterRecursive2 = TypedDict(
+      'FloatFilterRecursive2',
+      {
+          'equals': float,
+          'not_in': List[float],
+          'lt': float,
+          'lte': float,
+          'gt': float,
+          'gte': float,
+          'in': List[float],
+              },
+      total=False,
+  )
+  
   # TODO: preview feature for improving JSON filtering
-  class JsonFilter(TypedDict, total=False):
-      equals: 'fields.Json'
-      NOT: 'fields.Json'
+  JsonFilter = TypedDict(
+      'JsonFilter',
+      {
+          'equals': 'fields.Json',
+          'not': 'fields.Json',
+      },
+      total=False,
+  )
   
   
   class _FloatSetInput(TypedDict):
@@ -8309,9 +8387,9 @@
       author: 'UserRelationFilter'
       author_id: Union[int, 'types.IntFilter']
   
-      AND: List['PostWhereInputRecursive1']
+      AND: Union['PostWhereInputRecursive1', List['PostWhereInputRecursive1']]
       OR: List['PostWhereInputRecursive1']
-      NOT: List['PostWhereInputRecursive1']
+      NOT: Union['PostWhereInputRecursive1', List['PostWhereInputRecursive1']]
   
   
   class PostWhereInputRecursive1(TypedDict, total=False):
@@ -8324,9 +8402,9 @@
       author: 'UserRelationFilter'
       author_id: Union[int, 'types.IntFilter']
   
-      AND: List['PostWhereInputRecursive2']
+      AND: Union['PostWhereInputRecursive2', List['PostWhereInputRecursive2']]
       OR: List['PostWhereInputRecursive2']
-      NOT: List['PostWhereInputRecursive2']
+      NOT: Union['PostWhereInputRecursive2', List['PostWhereInputRecursive2']]
   
   
   class PostWhereInputRecursive2(TypedDict, total=False):
@@ -9199,9 +9277,9 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
       posts: 'PostListRelationFilter'
   
-      AND: List['UserWhereInputRecursive1']
+      AND: Union['UserWhereInputRecursive1', List['UserWhereInputRecursive1']]
       OR: List['UserWhereInputRecursive1']
-      NOT: List['UserWhereInputRecursive1']
+      NOT: Union['UserWhereInputRecursive1', List['UserWhereInputRecursive1']]
   
   
   class UserWhereInputRecursive1(TypedDict, total=False):
@@ -9220,9 +9298,9 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
       posts: 'PostListRelationFilter'
   
-      AND: List['UserWhereInputRecursive2']
+      AND: Union['UserWhereInputRecursive2', List['UserWhereInputRecursive2']]
       OR: List['UserWhereInputRecursive2']
-      NOT: List['UserWhereInputRecursive2']
+      NOT: Union['UserWhereInputRecursive2', List['UserWhereInputRecursive2']]
   
   
   class UserWhereInputRecursive2(TypedDict, total=False):
@@ -10101,9 +10179,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['MWhereInputRecursive1']
+      AND: Union['MWhereInputRecursive1', List['MWhereInputRecursive1']]
       OR: List['MWhereInputRecursive1']
-      NOT: List['MWhereInputRecursive1']
+      NOT: Union['MWhereInputRecursive1', List['MWhereInputRecursive1']]
   
   
   class MWhereInputRecursive1(TypedDict, total=False):
@@ -10121,9 +10199,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['MWhereInputRecursive2']
+      AND: Union['MWhereInputRecursive2', List['MWhereInputRecursive2']]
       OR: List['MWhereInputRecursive2']
-      NOT: List['MWhereInputRecursive2']
+      NOT: Union['MWhereInputRecursive2', List['MWhereInputRecursive2']]
   
   
   class MWhereInputRecursive2(TypedDict, total=False):
@@ -11012,9 +11090,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['NWhereInputRecursive1']
+      AND: Union['NWhereInputRecursive1', List['NWhereInputRecursive1']]
       OR: List['NWhereInputRecursive1']
-      NOT: List['NWhereInputRecursive1']
+      NOT: Union['NWhereInputRecursive1', List['NWhereInputRecursive1']]
   
   
   class NWhereInputRecursive1(TypedDict, total=False):
@@ -11034,9 +11112,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['NWhereInputRecursive2']
+      AND: Union['NWhereInputRecursive2', List['NWhereInputRecursive2']]
       OR: List['NWhereInputRecursive2']
-      NOT: List['NWhereInputRecursive2']
+      NOT: Union['NWhereInputRecursive2', List['NWhereInputRecursive2']]
   
   
   class NWhereInputRecursive2(TypedDict, total=False):
@@ -11917,9 +11995,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['OneOptionalWhereInputRecursive1']
+      AND: Union['OneOptionalWhereInputRecursive1', List['OneOptionalWhereInputRecursive1']]
       OR: List['OneOptionalWhereInputRecursive1']
-      NOT: List['OneOptionalWhereInputRecursive1']
+      NOT: Union['OneOptionalWhereInputRecursive1', List['OneOptionalWhereInputRecursive1']]
   
   
   class OneOptionalWhereInputRecursive1(TypedDict, total=False):
@@ -11937,9 +12015,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['OneOptionalWhereInputRecursive2']
+      AND: Union['OneOptionalWhereInputRecursive2', List['OneOptionalWhereInputRecursive2']]
       OR: List['OneOptionalWhereInputRecursive2']
-      NOT: List['OneOptionalWhereInputRecursive2']
+      NOT: Union['OneOptionalWhereInputRecursive2', List['OneOptionalWhereInputRecursive2']]
   
   
   class OneOptionalWhereInputRecursive2(TypedDict, total=False):
@@ -12818,9 +12896,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['ManyRequiredWhereInputRecursive1']
+      AND: Union['ManyRequiredWhereInputRecursive1', List['ManyRequiredWhereInputRecursive1']]
       OR: List['ManyRequiredWhereInputRecursive1']
-      NOT: List['ManyRequiredWhereInputRecursive1']
+      NOT: Union['ManyRequiredWhereInputRecursive1', List['ManyRequiredWhereInputRecursive1']]
   
   
   class ManyRequiredWhereInputRecursive1(TypedDict, total=False):
@@ -12839,9 +12917,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['ManyRequiredWhereInputRecursive2']
+      AND: Union['ManyRequiredWhereInputRecursive2', List['ManyRequiredWhereInputRecursive2']]
       OR: List['ManyRequiredWhereInputRecursive2']
-      NOT: List['ManyRequiredWhereInputRecursive2']
+      NOT: Union['ManyRequiredWhereInputRecursive2', List['ManyRequiredWhereInputRecursive2']]
   
   
   class ManyRequiredWhereInputRecursive2(TypedDict, total=False):
@@ -13703,9 +13781,9 @@
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
   
-      AND: List['AWhereInputRecursive1']
+      AND: Union['AWhereInputRecursive1', List['AWhereInputRecursive1']]
       OR: List['AWhereInputRecursive1']
-      NOT: List['AWhereInputRecursive1']
+      NOT: Union['AWhereInputRecursive1', List['AWhereInputRecursive1']]
   
   
   class AWhereInputRecursive1(TypedDict, total=False):
@@ -13720,9 +13798,9 @@
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
   
-      AND: List['AWhereInputRecursive2']
+      AND: Union['AWhereInputRecursive2', List['AWhereInputRecursive2']]
       OR: List['AWhereInputRecursive2']
-      NOT: List['AWhereInputRecursive2']
+      NOT: Union['AWhereInputRecursive2', List['AWhereInputRecursive2']]
   
   
   class AWhereInputRecursive2(TypedDict, total=False):
@@ -14538,9 +14616,9 @@
       float: Union[float, 'types.FloatFilter']
       d_float: Union[float, 'types.FloatFilter']
   
-      AND: List['BWhereInputRecursive1']
+      AND: Union['BWhereInputRecursive1', List['BWhereInputRecursive1']]
       OR: List['BWhereInputRecursive1']
-      NOT: List['BWhereInputRecursive1']
+      NOT: Union['BWhereInputRecursive1', List['BWhereInputRecursive1']]
   
   
   class BWhereInputRecursive1(TypedDict, total=False):
@@ -14549,9 +14627,9 @@
       float: Union[float, 'types.FloatFilter']
       d_float: Union[float, 'types.FloatFilter']
   
-      AND: List['BWhereInputRecursive2']
+      AND: Union['BWhereInputRecursive2', List['BWhereInputRecursive2']]
       OR: List['BWhereInputRecursive2']
-      NOT: List['BWhereInputRecursive2']
+      NOT: Union['BWhereInputRecursive2', List['BWhereInputRecursive2']]
   
   
   class BWhereInputRecursive2(TypedDict, total=False):
@@ -15379,9 +15457,9 @@
       v_bit: Union[str, 'types.StringFilter']
       uuid: Union[str, 'types.StringFilter']
   
-      AND: List['CWhereInputRecursive1']
+      AND: Union['CWhereInputRecursive1', List['CWhereInputRecursive1']]
       OR: List['CWhereInputRecursive1']
-      NOT: List['CWhereInputRecursive1']
+      NOT: Union['CWhereInputRecursive1', List['CWhereInputRecursive1']]
   
   
   class CWhereInputRecursive1(TypedDict, total=False):
@@ -15394,9 +15472,9 @@
       v_bit: Union[str, 'types.StringFilter']
       uuid: Union[str, 'types.StringFilter']
   
-      AND: List['CWhereInputRecursive2']
+      AND: Union['CWhereInputRecursive2', List['CWhereInputRecursive2']]
       OR: List['CWhereInputRecursive2']
-      NOT: List['CWhereInputRecursive2']
+      NOT: Union['CWhereInputRecursive2', List['CWhereInputRecursive2']]
   
   
   class CWhereInputRecursive2(TypedDict, total=False):
@@ -16220,9 +16298,9 @@
       json_: Union['fields.Json', 'types.JsonFilter']
       jsonb: Union['fields.Json', 'types.JsonFilter']
   
-      AND: List['DWhereInputRecursive1']
+      AND: Union['DWhereInputRecursive1', List['DWhereInputRecursive1']]
       OR: List['DWhereInputRecursive1']
-      NOT: List['DWhereInputRecursive1']
+      NOT: Union['DWhereInputRecursive1', List['DWhereInputRecursive1']]
   
   
   class DWhereInputRecursive1(TypedDict, total=False):
@@ -16233,9 +16311,9 @@
       json_: Union['fields.Json', 'types.JsonFilter']
       jsonb: Union['fields.Json', 'types.JsonFilter']
   
-      AND: List['DWhereInputRecursive2']
+      AND: Union['DWhereInputRecursive2', List['DWhereInputRecursive2']]
       OR: List['DWhereInputRecursive2']
-      NOT: List['DWhereInputRecursive2']
+      NOT: Union['DWhereInputRecursive2', List['DWhereInputRecursive2']]
   
   
   class DWhereInputRecursive2(TypedDict, total=False):
@@ -17049,9 +17127,9 @@
       time: Union[datetime.datetime, 'types.DateTimeFilter']
       ts: Union[datetime.datetime, 'types.DateTimeFilter']
   
-      AND: List['EWhereInputRecursive1']
+      AND: Union['EWhereInputRecursive1', List['EWhereInputRecursive1']]
       OR: List['EWhereInputRecursive1']
-      NOT: List['EWhereInputRecursive1']
+      NOT: Union['EWhereInputRecursive1', List['EWhereInputRecursive1']]
   
   
   class EWhereInputRecursive1(TypedDict, total=False):
@@ -17061,9 +17139,9 @@
       time: Union[datetime.datetime, 'types.DateTimeFilter']
       ts: Union[datetime.datetime, 'types.DateTimeFilter']
   
-      AND: List['EWhereInputRecursive2']
+      AND: Union['EWhereInputRecursive2', List['EWhereInputRecursive2']]
       OR: List['EWhereInputRecursive2']
-      NOT: List['EWhereInputRecursive2']
+      NOT: Union['EWhereInputRecursive2', List['EWhereInputRecursive2']]
   
   
   class EWhereInputRecursive2(TypedDict, total=False):
@@ -17159,8 +17237,6 @@
       'order_by': 'orderBy',
       'not_in': 'notIn',
       'is_not': 'isNot',
-      'NOT': 'not',
-      'IN': 'in',
   }
   
   DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
@@ -24369,168 +24445,248 @@
   
       
   
-  class StringFilter(TypedDict, total=False):
-      equals: str
-      not_in: List[str]
-      lt: str
-      lte: str
-      gt: str
-      gte: str
-      contains: str
-      startswith: str
-      endswith: str
-      IN: List[str]
-      NOT: Union[str, 'StringFilterRecursive1']
+  StringFilter = TypedDict(
+      'StringFilter',
+      {
+          'equals': str,
+          'not_in': List[str],
+          'lt': str,
+          'lte': str,
+          'gt': str,
+          'gte': str,
+          'contains': str,
+          'startswith': str,
+          'endswith': str,
+          'in': List[str],
+          'not': Union[str, 'StringFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class StringFilterRecursive1(TypedDict, total=False):
-      equals: str
-      not_in: List[str]
-      lt: str
-      lte: str
-      gt: str
-      gte: str
-      contains: str
-      startswith: str
-      endswith: str
-      IN: List[str]
-      NOT: Union[str, 'StringFilterRecursive2']
+  StringFilterRecursive1 = TypedDict(
+      'StringFilterRecursive1',
+      {
+          'equals': str,
+          'not_in': List[str],
+          'lt': str,
+          'lte': str,
+          'gt': str,
+          'gte': str,
+          'contains': str,
+          'startswith': str,
+          'endswith': str,
+          'in': List[str],
+          'not': Union[str, 'StringFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class StringFilterRecursive2(TypedDict, total=False):
-      equals: str
-      not_in: List[str]
-      lt: str
-      lte: str
-      gt: str
-      gte: str
-      contains: str
-      startswith: str
-      endswith: str
-      IN: List[str]
-      
-      
-  
-  class DateTimeFilter(TypedDict, total=False):
-      equals: datetime.datetime
-      not_in: List[datetime.datetime]
-      lt: datetime.datetime
-      lte: datetime.datetime
-      gt: datetime.datetime
-      gte: datetime.datetime
-      IN: List[datetime.datetime]
-      NOT: 'DateTimeFilterRecursive1'
-  
-  
-  class DateTimeFilterRecursive1(TypedDict, total=False):
-      equals: datetime.datetime
-      not_in: List[datetime.datetime]
-      lt: datetime.datetime
-      lte: datetime.datetime
-      gt: datetime.datetime
-      gte: datetime.datetime
-      IN: List[datetime.datetime]
-      NOT: 'DateTimeFilterRecursive2'
-  
-  
-  class DateTimeFilterRecursive2(TypedDict, total=False):
-      equals: datetime.datetime
-      not_in: List[datetime.datetime]
-      lt: datetime.datetime
-      lte: datetime.datetime
-      gt: datetime.datetime
-      gte: datetime.datetime
-      IN: List[datetime.datetime]
-      
+  StringFilterRecursive2 = TypedDict(
+      'StringFilterRecursive2',
+      {
+          'equals': str,
+          'not_in': List[str],
+          'lt': str,
+          'lte': str,
+          'gt': str,
+          'gte': str,
+          'contains': str,
+          'startswith': str,
+          'endswith': str,
+          'in': List[str],
+              },
+      total=False,
+  )
   
       
   
-  class BooleanFilter(TypedDict, total=False):
-      equals: bool
-      NOT: Union[bool, 'BooleanFilterRecursive1']
+  DateTimeFilter = TypedDict(
+      'DateTimeFilter',
+      {
+          'equals': datetime.datetime,
+          'not_in': List[datetime.datetime],
+          'lt': datetime.datetime,
+          'lte': datetime.datetime,
+          'gt': datetime.datetime,
+          'gte': datetime.datetime,
+          'in': List[datetime.datetime],
+          'not': Union[datetime.datetime, 'DateTimeFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class BooleanFilterRecursive1(TypedDict, total=False):
-      equals: bool
-      NOT: Union[bool, 'BooleanFilterRecursive2']
+  DateTimeFilterRecursive1 = TypedDict(
+      'DateTimeFilterRecursive1',
+      {
+          'equals': datetime.datetime,
+          'not_in': List[datetime.datetime],
+          'lt': datetime.datetime,
+          'lte': datetime.datetime,
+          'gt': datetime.datetime,
+          'gte': datetime.datetime,
+          'in': List[datetime.datetime],
+          'not': Union[datetime.datetime, 'DateTimeFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class BooleanFilterRecursive2(TypedDict, total=False):
-      equals: bool
+  DateTimeFilterRecursive2 = TypedDict(
+      'DateTimeFilterRecursive2',
+      {
+          'equals': datetime.datetime,
+          'not_in': List[datetime.datetime],
+          'lt': datetime.datetime,
+          'lte': datetime.datetime,
+          'gt': datetime.datetime,
+          'gte': datetime.datetime,
+          'in': List[datetime.datetime],
+              },
+      total=False,
+  )
+  
+  
       
   
+  BooleanFilter = TypedDict(
+      'BooleanFilter',
+      {
+          'equals': bool,
+          'not': Union[bool, 'BooleanFilterRecursive1'],
+      },
+      total=False,
+  )
+  
+  
+  BooleanFilterRecursive1 = TypedDict(
+      'BooleanFilterRecursive1',
+      {
+          'equals': bool,
+          'not': Union[bool, 'BooleanFilterRecursive2'],
+      },
+      total=False,
+  )
+  
+  
+  BooleanFilterRecursive2 = TypedDict(
+      'BooleanFilterRecursive2',
+      {
+          'equals': bool,
+              },
+      total=False,
+  )
+  
+  
       
   
-  class IntFilter(TypedDict, total=False):
-      equals: int
-      IN: List[int]
-      not_in: List[int]
-      lt: int
-      lte: int
-      gt: int
-      gte: int
-      NOT: Union[int, 'IntFilterRecursive1']
+  IntFilter = TypedDict(
+      'IntFilter',
+      {
+          'equals': int,
+          'not_in': List[int],
+          'lt': int,
+          'lte': int,
+          'gt': int,
+          'gte': int,
+          'in': List[int],
+          'not': Union[int, 'IntFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class IntFilterRecursive1(TypedDict, total=False):
-      equals: int
-      IN: List[int]
-      not_in: List[int]
-      lt: int
-      lte: int
-      gt: int
-      gte: int
-      NOT: Union[int, 'IntFilterRecursive2']
+  IntFilterRecursive1 = TypedDict(
+      'IntFilterRecursive1',
+      {
+          'equals': int,
+          'not_in': List[int],
+          'lt': int,
+          'lte': int,
+          'gt': int,
+          'gte': int,
+          'in': List[int],
+          'not': Union[int, 'IntFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class IntFilterRecursive2(TypedDict, total=False):
-      equals: int
-      IN: List[int]
-      not_in: List[int]
-      lt: int
-      lte: int
-      gt: int
-      gte: int
-      
+  IntFilterRecursive2 = TypedDict(
+      'IntFilterRecursive2',
+      {
+          'equals': int,
+          'not_in': List[int],
+          'lt': int,
+          'lte': int,
+          'gt': int,
+          'gte': int,
+          'in': List[int],
+              },
+      total=False,
+  )
+  
   
   BigIntFilter = IntFilter
       
   
-  class FloatFilter(TypedDict, total=False):
-      equals: float
-      IN: List[float]
-      not_in: List[float]
-      lt: float
-      lte: float
-      gt: float
-      gte: float
-      NOT: Union[float, 'FloatFilterRecursive1']
+  FloatFilter = TypedDict(
+      'FloatFilter',
+      {
+          'equals': float,
+          'not_in': List[float],
+          'lt': float,
+          'lte': float,
+          'gt': float,
+          'gte': float,
+          'in': List[float],
+          'not': Union[float, 'FloatFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class FloatFilterRecursive1(TypedDict, total=False):
-      equals: float
-      IN: List[float]
-      not_in: List[float]
-      lt: float
-      lte: float
-      gt: float
-      gte: float
-      NOT: Union[float, 'FloatFilterRecursive2']
+  FloatFilterRecursive1 = TypedDict(
+      'FloatFilterRecursive1',
+      {
+          'equals': float,
+          'not_in': List[float],
+          'lt': float,
+          'lte': float,
+          'gt': float,
+          'gte': float,
+          'in': List[float],
+          'not': Union[float, 'FloatFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class FloatFilterRecursive2(TypedDict, total=False):
-      equals: float
-      IN: List[float]
-      not_in: List[float]
-      lt: float
-      lte: float
-      gt: float
-      gte: float
-      
+  FloatFilterRecursive2 = TypedDict(
+      'FloatFilterRecursive2',
+      {
+          'equals': float,
+          'not_in': List[float],
+          'lt': float,
+          'lte': float,
+          'gt': float,
+          'gte': float,
+          'in': List[float],
+              },
+      total=False,
+  )
+  
   # TODO: preview feature for improving JSON filtering
-  class JsonFilter(TypedDict, total=False):
-      equals: 'fields.Json'
-      NOT: 'fields.Json'
+  JsonFilter = TypedDict(
+      'JsonFilter',
+      {
+          'equals': 'fields.Json',
+          'not': 'fields.Json',
+      },
+      total=False,
+  )
   
   
   class _FloatSetInput(TypedDict):
@@ -25394,9 +25550,9 @@
       author: 'UserRelationFilter'
       author_id: Union[int, 'types.IntFilter']
   
-      AND: List['PostWhereInputRecursive1']
+      AND: Union['PostWhereInputRecursive1', List['PostWhereInputRecursive1']]
       OR: List['PostWhereInputRecursive1']
-      NOT: List['PostWhereInputRecursive1']
+      NOT: Union['PostWhereInputRecursive1', List['PostWhereInputRecursive1']]
   
   
   class PostWhereInputRecursive1(TypedDict, total=False):
@@ -25409,9 +25565,9 @@
       author: 'UserRelationFilter'
       author_id: Union[int, 'types.IntFilter']
   
-      AND: List['PostWhereInputRecursive2']
+      AND: Union['PostWhereInputRecursive2', List['PostWhereInputRecursive2']]
       OR: List['PostWhereInputRecursive2']
-      NOT: List['PostWhereInputRecursive2']
+      NOT: Union['PostWhereInputRecursive2', List['PostWhereInputRecursive2']]
   
   
   class PostWhereInputRecursive2(TypedDict, total=False):
@@ -26284,9 +26440,9 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
       posts: 'PostListRelationFilter'
   
-      AND: List['UserWhereInputRecursive1']
+      AND: Union['UserWhereInputRecursive1', List['UserWhereInputRecursive1']]
       OR: List['UserWhereInputRecursive1']
-      NOT: List['UserWhereInputRecursive1']
+      NOT: Union['UserWhereInputRecursive1', List['UserWhereInputRecursive1']]
   
   
   class UserWhereInputRecursive1(TypedDict, total=False):
@@ -26305,9 +26461,9 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
       posts: 'PostListRelationFilter'
   
-      AND: List['UserWhereInputRecursive2']
+      AND: Union['UserWhereInputRecursive2', List['UserWhereInputRecursive2']]
       OR: List['UserWhereInputRecursive2']
-      NOT: List['UserWhereInputRecursive2']
+      NOT: Union['UserWhereInputRecursive2', List['UserWhereInputRecursive2']]
   
   
   class UserWhereInputRecursive2(TypedDict, total=False):
@@ -27186,9 +27342,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['MWhereInputRecursive1']
+      AND: Union['MWhereInputRecursive1', List['MWhereInputRecursive1']]
       OR: List['MWhereInputRecursive1']
-      NOT: List['MWhereInputRecursive1']
+      NOT: Union['MWhereInputRecursive1', List['MWhereInputRecursive1']]
   
   
   class MWhereInputRecursive1(TypedDict, total=False):
@@ -27206,9 +27362,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['MWhereInputRecursive2']
+      AND: Union['MWhereInputRecursive2', List['MWhereInputRecursive2']]
       OR: List['MWhereInputRecursive2']
-      NOT: List['MWhereInputRecursive2']
+      NOT: Union['MWhereInputRecursive2', List['MWhereInputRecursive2']]
   
   
   class MWhereInputRecursive2(TypedDict, total=False):
@@ -28097,9 +28253,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['NWhereInputRecursive1']
+      AND: Union['NWhereInputRecursive1', List['NWhereInputRecursive1']]
       OR: List['NWhereInputRecursive1']
-      NOT: List['NWhereInputRecursive1']
+      NOT: Union['NWhereInputRecursive1', List['NWhereInputRecursive1']]
   
   
   class NWhereInputRecursive1(TypedDict, total=False):
@@ -28119,9 +28275,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['NWhereInputRecursive2']
+      AND: Union['NWhereInputRecursive2', List['NWhereInputRecursive2']]
       OR: List['NWhereInputRecursive2']
-      NOT: List['NWhereInputRecursive2']
+      NOT: Union['NWhereInputRecursive2', List['NWhereInputRecursive2']]
   
   
   class NWhereInputRecursive2(TypedDict, total=False):
@@ -29002,9 +29158,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['OneOptionalWhereInputRecursive1']
+      AND: Union['OneOptionalWhereInputRecursive1', List['OneOptionalWhereInputRecursive1']]
       OR: List['OneOptionalWhereInputRecursive1']
-      NOT: List['OneOptionalWhereInputRecursive1']
+      NOT: Union['OneOptionalWhereInputRecursive1', List['OneOptionalWhereInputRecursive1']]
   
   
   class OneOptionalWhereInputRecursive1(TypedDict, total=False):
@@ -29022,9 +29178,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['OneOptionalWhereInputRecursive2']
+      AND: Union['OneOptionalWhereInputRecursive2', List['OneOptionalWhereInputRecursive2']]
       OR: List['OneOptionalWhereInputRecursive2']
-      NOT: List['OneOptionalWhereInputRecursive2']
+      NOT: Union['OneOptionalWhereInputRecursive2', List['OneOptionalWhereInputRecursive2']]
   
   
   class OneOptionalWhereInputRecursive2(TypedDict, total=False):
@@ -29903,9 +30059,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['ManyRequiredWhereInputRecursive1']
+      AND: Union['ManyRequiredWhereInputRecursive1', List['ManyRequiredWhereInputRecursive1']]
       OR: List['ManyRequiredWhereInputRecursive1']
-      NOT: List['ManyRequiredWhereInputRecursive1']
+      NOT: Union['ManyRequiredWhereInputRecursive1', List['ManyRequiredWhereInputRecursive1']]
   
   
   class ManyRequiredWhereInputRecursive1(TypedDict, total=False):
@@ -29924,9 +30080,9 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
-      AND: List['ManyRequiredWhereInputRecursive2']
+      AND: Union['ManyRequiredWhereInputRecursive2', List['ManyRequiredWhereInputRecursive2']]
       OR: List['ManyRequiredWhereInputRecursive2']
-      NOT: List['ManyRequiredWhereInputRecursive2']
+      NOT: Union['ManyRequiredWhereInputRecursive2', List['ManyRequiredWhereInputRecursive2']]
   
   
   class ManyRequiredWhereInputRecursive2(TypedDict, total=False):
@@ -30788,9 +30944,9 @@
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
   
-      AND: List['AWhereInputRecursive1']
+      AND: Union['AWhereInputRecursive1', List['AWhereInputRecursive1']]
       OR: List['AWhereInputRecursive1']
-      NOT: List['AWhereInputRecursive1']
+      NOT: Union['AWhereInputRecursive1', List['AWhereInputRecursive1']]
   
   
   class AWhereInputRecursive1(TypedDict, total=False):
@@ -30805,9 +30961,9 @@
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
   
-      AND: List['AWhereInputRecursive2']
+      AND: Union['AWhereInputRecursive2', List['AWhereInputRecursive2']]
       OR: List['AWhereInputRecursive2']
-      NOT: List['AWhereInputRecursive2']
+      NOT: Union['AWhereInputRecursive2', List['AWhereInputRecursive2']]
   
   
   class AWhereInputRecursive2(TypedDict, total=False):
@@ -31623,9 +31779,9 @@
       float: Union[float, 'types.FloatFilter']
       d_float: Union[float, 'types.FloatFilter']
   
-      AND: List['BWhereInputRecursive1']
+      AND: Union['BWhereInputRecursive1', List['BWhereInputRecursive1']]
       OR: List['BWhereInputRecursive1']
-      NOT: List['BWhereInputRecursive1']
+      NOT: Union['BWhereInputRecursive1', List['BWhereInputRecursive1']]
   
   
   class BWhereInputRecursive1(TypedDict, total=False):
@@ -31634,9 +31790,9 @@
       float: Union[float, 'types.FloatFilter']
       d_float: Union[float, 'types.FloatFilter']
   
-      AND: List['BWhereInputRecursive2']
+      AND: Union['BWhereInputRecursive2', List['BWhereInputRecursive2']]
       OR: List['BWhereInputRecursive2']
-      NOT: List['BWhereInputRecursive2']
+      NOT: Union['BWhereInputRecursive2', List['BWhereInputRecursive2']]
   
   
   class BWhereInputRecursive2(TypedDict, total=False):
@@ -32464,9 +32620,9 @@
       v_bit: Union[str, 'types.StringFilter']
       uuid: Union[str, 'types.StringFilter']
   
-      AND: List['CWhereInputRecursive1']
+      AND: Union['CWhereInputRecursive1', List['CWhereInputRecursive1']]
       OR: List['CWhereInputRecursive1']
-      NOT: List['CWhereInputRecursive1']
+      NOT: Union['CWhereInputRecursive1', List['CWhereInputRecursive1']]
   
   
   class CWhereInputRecursive1(TypedDict, total=False):
@@ -32479,9 +32635,9 @@
       v_bit: Union[str, 'types.StringFilter']
       uuid: Union[str, 'types.StringFilter']
   
-      AND: List['CWhereInputRecursive2']
+      AND: Union['CWhereInputRecursive2', List['CWhereInputRecursive2']]
       OR: List['CWhereInputRecursive2']
-      NOT: List['CWhereInputRecursive2']
+      NOT: Union['CWhereInputRecursive2', List['CWhereInputRecursive2']]
   
   
   class CWhereInputRecursive2(TypedDict, total=False):
@@ -33305,9 +33461,9 @@
       json_: Union['fields.Json', 'types.JsonFilter']
       jsonb: Union['fields.Json', 'types.JsonFilter']
   
-      AND: List['DWhereInputRecursive1']
+      AND: Union['DWhereInputRecursive1', List['DWhereInputRecursive1']]
       OR: List['DWhereInputRecursive1']
-      NOT: List['DWhereInputRecursive1']
+      NOT: Union['DWhereInputRecursive1', List['DWhereInputRecursive1']]
   
   
   class DWhereInputRecursive1(TypedDict, total=False):
@@ -33318,9 +33474,9 @@
       json_: Union['fields.Json', 'types.JsonFilter']
       jsonb: Union['fields.Json', 'types.JsonFilter']
   
-      AND: List['DWhereInputRecursive2']
+      AND: Union['DWhereInputRecursive2', List['DWhereInputRecursive2']]
       OR: List['DWhereInputRecursive2']
-      NOT: List['DWhereInputRecursive2']
+      NOT: Union['DWhereInputRecursive2', List['DWhereInputRecursive2']]
   
   
   class DWhereInputRecursive2(TypedDict, total=False):
@@ -34134,9 +34290,9 @@
       time: Union[datetime.datetime, 'types.DateTimeFilter']
       ts: Union[datetime.datetime, 'types.DateTimeFilter']
   
-      AND: List['EWhereInputRecursive1']
+      AND: Union['EWhereInputRecursive1', List['EWhereInputRecursive1']]
       OR: List['EWhereInputRecursive1']
-      NOT: List['EWhereInputRecursive1']
+      NOT: Union['EWhereInputRecursive1', List['EWhereInputRecursive1']]
   
   
   class EWhereInputRecursive1(TypedDict, total=False):
@@ -34146,9 +34302,9 @@
       time: Union[datetime.datetime, 'types.DateTimeFilter']
       ts: Union[datetime.datetime, 'types.DateTimeFilter']
   
-      AND: List['EWhereInputRecursive2']
+      AND: Union['EWhereInputRecursive2', List['EWhereInputRecursive2']]
       OR: List['EWhereInputRecursive2']
-      NOT: List['EWhereInputRecursive2']
+      NOT: Union['EWhereInputRecursive2', List['EWhereInputRecursive2']]
   
   
   class EWhereInputRecursive2(TypedDict, total=False):
