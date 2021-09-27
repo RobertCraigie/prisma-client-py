@@ -131,7 +131,7 @@ async def test_base_filtering(client: Client) -> None:
     found = await client.types.find_first(
         where={
             'json_obj': {
-                'NOT': Json.keys(country='Scotland'),
+                'not': Json.keys(country='Scotland'),
             },
         },
     )
@@ -140,7 +140,7 @@ async def test_base_filtering(client: Client) -> None:
     found = await client.types.find_first(
         where={
             'json_obj': {
-                'NOT': Json.keys(countries=['Scotland']),
+                'not': Json.keys(countries=['Scotland']),
             },
         },
     )

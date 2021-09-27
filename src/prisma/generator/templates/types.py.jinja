@@ -73,80 +73,110 @@ Serializable = Union[
 
 
 {% call(name, next, iteration) recursive('StringFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: str
-    not_in: List[str]
-    lt: str
-    lte: str
-    gt: str
-    gte: str
-    contains: str
-    startswith: str
-    endswith: str
-    IN: List[str]
-    {%+ if next != '' -%}
-        NOT: Union[str, '{{ next }}']
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': str,
+        'not_in': List[str],
+        'lt': str,
+        'lte': str,
+        'gt': str,
+        'gte': str,
+        'contains': str,
+        'startswith': str,
+        'endswith': str,
+        'in': List[str],
+        {%+ if next != '' -%}
+            'not': Union[str, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
 {% call(name, next, iteration) recursive('DateTimeFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: datetime.datetime
-    not_in: List[datetime.datetime]
-    lt: datetime.datetime
-    lte: datetime.datetime
-    gt: datetime.datetime
-    gte: datetime.datetime
-    IN: List[datetime.datetime]
-    {%+ if next != '' -%}
-        NOT: '{{ next }}'
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': datetime.datetime,
+        'not_in': List[datetime.datetime],
+        'lt': datetime.datetime,
+        'lte': datetime.datetime,
+        'gt': datetime.datetime,
+        'gte': datetime.datetime,
+        'in': List[datetime.datetime],
+        {%+ if next != '' -%}
+            'not': Union[datetime.datetime, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
 
 {% call(name, next, iteration) recursive('BooleanFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: bool
-    {%+ if next != '' -%}
-        NOT: Union[bool, '{{ next }}']
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': bool,
+        {%+ if next != '' -%}
+            'not': Union[bool, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
 
 {% call(name, next, iteration) recursive('IntFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: int
-    IN: List[int]
-    not_in: List[int]
-    lt: int
-    lte: int
-    gt: int
-    gte: int
-    {%+ if next != '' -%}
-        NOT: Union[int, '{{ next }}']
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': int,
+        'not_in': List[int],
+        'lt': int,
+        'lte': int,
+        'gt': int,
+        'gte': int,
+        'in': List[int],
+        {%+ if next != '' -%}
+            'not': Union[int, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
 
 BigIntFilter = IntFilter
 {% call(name, next, iteration) recursive('FloatFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: float
-    IN: List[float]
-    not_in: List[float]
-    lt: float
-    lte: float
-    gt: float
-    gte: float
-    {%+ if next != '' -%}
-        NOT: Union[float, '{{ next }}']
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': float,
+        'not_in': List[float],
+        'lt': float,
+        'lte': float,
+        'gt': float,
+        'gte': float,
+        'in': List[float],
+        {%+ if next != '' -%}
+            'not': Union[float, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
 # TODO: preview feature for improving JSON filtering
-class JsonFilter(TypedDict, total=False):
-    equals: 'fields.Json'
-    NOT: 'fields.Json'
+JsonFilter = TypedDict(
+    'JsonFilter',
+    {
+        'equals': 'fields.Json',
+        'not': 'fields.Json',
+    },
+    total=False,
+)
 
 
 class _FloatSetInput(TypedDict):
@@ -406,6 +436,8 @@ class {{ current }}(TypedDict, total=False):
     {% endfor %}
 
     {% if next != '' %}
+    # should be noted that AND and NOT should be Union['{{ next }}', List['{{ next }}']]
+    # but this causes mypy to hang ¯\_(ツ)_/¯
     AND: List['{{ next }}']
     OR: List['{{ next }}']
     NOT: List['{{ next }}']
