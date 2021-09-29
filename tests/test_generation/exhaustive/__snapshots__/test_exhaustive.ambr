@@ -1487,9 +1487,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -1827,9 +1827,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -2167,9 +2167,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -2507,9 +2507,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -2847,9 +2847,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -3187,9 +3187,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -3527,9 +3527,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -3867,9 +3867,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -4207,9 +4207,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -4547,9 +4547,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -4887,9 +4887,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -5156,6 +5156,7 @@
               PRISMA_DML=self.dml,
               RUST_LOG='error',
               RUST_LOG_FORMAT='json',
+              PRISMA_CLIENT_ENGINE_TYPE='binary',
           )
   
           if DEBUG:
@@ -18701,9 +18702,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -19041,9 +19042,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -19381,9 +19382,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -19721,9 +19722,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -20061,9 +20062,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -20401,9 +20402,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -20741,9 +20742,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -21081,9 +21082,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -21421,9 +21422,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -21761,9 +21762,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -22101,9 +22102,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -22363,6 +22364,7 @@
               PRISMA_DML=self.dml,
               RUST_LOG='error',
               RUST_LOG_FORMAT='json',
+              PRISMA_CLIENT_ENGINE_TYPE='binary',
           )
   
           if DEBUG:

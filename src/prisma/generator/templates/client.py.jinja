@@ -435,9 +435,9 @@ class {{ model.name }}Actions:
                 'order_by': order,
                 'cursor': cursor,
             },
-            root_selection=['count { _all }'],
+            root_selection=['_count { _all }'],
         )
-        return cast(int, resp['data']['result']['count']['_all'])
+        return cast(int, resp['data']['result']['_count']['_all'])
 
     {{ maybe_async_def }}delete_many(
         self,
