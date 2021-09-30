@@ -40,6 +40,7 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.superfences
   - admonition
+  - mdx_include
 
 extra_javascript:
   - https://unpkg.com/shiki@0.9.6
@@ -49,9 +50,23 @@ nav:
   - Home: index.md
   - Getting Started:
     - Setup: getting_started/setup.md
+    - Editor: getting_started/editor.md
     - Type Safety: getting_started/type-safety.md
     - Quick Start: getting_started/quickstart.md
     - Advanced Usage: getting_started/advanced.md
+  - Usage:
+    - Schema: usage/schema.md
+    - Connecting: usage/connecting.md
+    - Creating Records: usage/creating.md
+    - usage/finding.md
+    - usage/finding-relational.md
+    - usage/finding-multiple.md
+    - usage/updating.md
+    - usage/upserting.md
+    - usage/deleting.md
+    - usage/counting.md
+    - usage/batching.md
+    - usage/raw-sql.md
   - Reference:
     - Query Operations: reference/operations.md
     - Batching Queries: reference/batching.md
