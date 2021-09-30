@@ -5426,7 +5426,11 @@
       from typing_extensions import TypedDict, Literal
   
   # -- template http.py.jinja --
-  from ._async_http import *
+  from ._async_http import (
+      HTTP as HTTP,
+      Response as Response,
+      client as client,
+  )
   
   '
 ---
@@ -22634,7 +22638,11 @@
       from typing_extensions import TypedDict, Literal
   
   # -- template http.py.jinja --
-  from ._sync_http import *
+  from ._sync_http import (
+      HTTP as HTTP,
+      Response as Response,
+      client as client,
+  )
   
   '
 ---
