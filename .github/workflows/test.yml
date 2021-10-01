@@ -208,7 +208,7 @@ jobs:
 
       - name: Run tests
         run: |
-          tox -e setup,py39,report -- --ignore=tests/integrations/postgresql
+          tox -e setup,py39,report -- tests/integrations/postgresql
         env:
           PRISMA_PY_POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/postgres
 
