@@ -10,4 +10,3 @@ async def test_create_many(client: Client) -> None:
         batcher.user.create({'name': 'Tegan'})
 
     assert await client.user.count() == 2
-    assert False
