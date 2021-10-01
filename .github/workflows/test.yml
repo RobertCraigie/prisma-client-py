@@ -163,6 +163,11 @@ jobs:
   postgres:
     name: postgres
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+        - python-version: 3.9
+          tox-env: py39
 
     services:
       postgres:
@@ -187,10 +192,10 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Set up Python 3.9
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v1
         with:
-          python-version: 3.9
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
@@ -208,7 +213,7 @@ jobs:
 
       - name: Run tests
         run: |
-          tox -e setup,py39,report -- tests/integrations/postgresql
+          tox -e setup,${{ matrix.tox-env }},report -- tests/integrations/postgresql
         env:
           PRISMA_PY_POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/postgres
 
