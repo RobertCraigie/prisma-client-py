@@ -20,9 +20,9 @@
 
 ## What is Prisma Client Python?
 
-Prisma Client Python is an unofficial implementation of [Prisma](https://github.com/prisma/prisma) which is a **next-generation ORM** that comes  bundled with tools, such as [Prisma Migrate](https://www.prisma.io/docs/concepts/components/prisma-migrate), which make working with databases as easy as possible.
+Prisma Client Python is an unofficial implementation of [Prisma](https://github.com/prisma/prisma) which is a **next-generation ORM** that comes bundled with tools, such as [Prisma Migrate](https://www.prisma.io/docs/concepts/components/prisma-migrate), which make working with databases as easy as possible.
 
-Prisma Client Python can be used in *any* Python backend application. This can be a REST API, a GraphQL API or *anything* else that needs a database.
+Prisma Client Python can be used in _any_ Python backend application. This can be a REST API, a GraphQL API or _anything_ else that needs a database.
 
 ## Why should you use Prisma Client Python?
 
@@ -243,17 +243,22 @@ Prisma Client Python is a new project and as such there are some features that a
 
 ### Auto completion for query arguments
 
-As far as I am aware there is currently no Python IDE that will add the appropriate completions for the following code:
+Prisma Client Python query arguments make use of `TypedDict` types. While there is very limited support for completion of these types within the Python ecosystem some editors do support it.
+
+Supported editors / extensions:
+
+- VSCode with [pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance) v2021.9.4 or higher
+- Sublime Text with [LSP-Pyright](https://github.com/sublimelsp/LSP-pyright) v1.1.96 or higher
 
 ```py
 user = await client.user.find_first(
     where={
-        '.'
+        '|'
     }
 )
 ```
 
-Given the cursor is where the `.` is, an IDE should suggest the following completions:
+Given the cursor is where the `|` is, an IDE should suggest the following completions:
 
 - id
 - email
