@@ -4,7 +4,7 @@
     # for performance reasons, it took ~40 minutes to test 3 cases on
     # GitHub Actions which is way too slow
     from pydantic import BaseModel
-    from prisma import Client
+    from prisma import Client, Json
     from prisma.models import Post, User
     from prisma.types import (
       UserInclude,

@@ -102,10 +102,11 @@ source .venv/bin/activate
 set -x
 ```
 
-To install the prisma package in your integration test you can add the following command, replacing `<EXTRAS>` with whatever extras you need to be installed.
+To install the prisma package in your integration test you can add the following commands, replacing `<EXTRA>` with whatever extra you need to be installed.
 
 ```sh
-pip install -U --force-reinstall --find-links=../../../.tests_cache/dist prisma-client[<EXTRAS>]
+pip install -U -r ../../../requirements/<EXTRA>.txt
+pip install -U --force-reinstall ../../../.tests_cache/dist/*.whl
 ```
 
 You can now add whatever integration specific commands you need.

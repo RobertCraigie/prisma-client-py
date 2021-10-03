@@ -4,8 +4,8 @@ datasource db {
 }
 
 generator db {
-  provider = "prisma-client-py"
-  http     = "aiohttp"
+  provider  = "prisma-client-py"
+  interface = "asyncio"
 }
 
 model User {

@@ -115,10 +115,10 @@ Just want to play around with Prisma Client Python and not worry about any setup
 
 The first step with any python project should be to setup a virtual environment to isolate installed packages from your other python projects, however that is out of the scope for this page.
 
-In this example we'll install the dependencies required for an asynchronous client, if you would like to use a synchronous client see [setting up a synchronous client](https://prisma-client-py.readthedocs.io/en/latest/setup/#synchronous-client).
+In this example we'll use an asynchronous client, if you would like to use a synchronous client see [setting up a synchronous client](https://prisma-client-py.readthedocs.io/en/latest/setup/#synchronous-client).
 
 ```sh
-pip install -U prisma-client[aiohttp]
+pip install -U prisma-client
 ```
 
 #### Generating Prisma Client Python
@@ -266,11 +266,17 @@ There has currently not been any work done on improving the performance of Prism
 
 ### Supported platforms
 
-Only MacOS and Linux are officially supported, windows is not supported yet.
+Only MacOS and Linux are officially supported.
+
+Windows is unofficially supported as tests are not currently ran on windows.
 
 ## Version guarantees
 
-Prisma Client Python is not stable, there will be documented breaking changes with new releases.
+Prisma Client Python is _not_ stable.
+
+Breaking changes will be documented and released under a new **MINOR** version following this format.
+
+`MAJOR`.`MINOR`.`PATCH`
 
 ## Contributing
 

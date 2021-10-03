@@ -1,10 +1,10 @@
 {% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import recursive_types with context %}
 # -- template types.py.jinja --
 from .utils import _NoneType
 
 
 {% set depth = generator.config.recursive_type_depth %}
-{% set recursive_types = depth == -1 %}
 
 # TODO: cleanup whitespace control
 # TODO: add an argument to signify that the last iteration should be skipped
@@ -38,77 +38,146 @@ from .utils import _NoneType
 
 SortOrder = Literal['asc', 'desc']
 
+# types that can be serialized to json by our query builder
+{% if recursive_types %}
+Serializable = Union[
+    None,
+    bool,
+    float,
+    int,
+    str,
+    datetime.datetime,
+    List['Serializable'],
+    Dict[None, 'Serializable'],
+    Dict[bool, 'Serializable'],
+    Dict[float, 'Serializable'],
+    Dict[int, 'Serializable'],
+    Dict[str, 'Serializable'],
+]
+{% else %}
+Serializable = Union[
+    None,
+    bool,
+    float,
+    int,
+    str,
+    datetime.datetime,
+    List[Any],
+    Dict[None, Any],
+    Dict[bool, Any],
+    Dict[float, Any],
+    Dict[int, Any],
+    Dict[str, Any],
+]
+{% endif %}
+
 
 {% call(name, next, iteration) recursive('StringFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: str
-    not_in: List[str]
-    lt: str
-    lte: str
-    gt: str
-    gte: str
-    contains: str
-    startswith: str
-    endswith: str
-    IN: List[str]
-    {%+ if next != '' -%}
-        NOT: Union[str, '{{ next }}']
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': str,
+        'not_in': List[str],
+        'lt': str,
+        'lte': str,
+        'gt': str,
+        'gte': str,
+        'contains': str,
+        'startswith': str,
+        'endswith': str,
+        'in': List[str],
+        {%+ if next != '' -%}
+            'not': Union[str, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
 {% call(name, next, iteration) recursive('DateTimeFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: datetime.datetime
-    not_in: List[datetime.datetime]
-    lt: datetime.datetime
-    lte: datetime.datetime
-    gt: datetime.datetime
-    gte: datetime.datetime
-    IN: List[datetime.datetime]
-    {%+ if next != '' -%}
-        NOT: '{{ next }}'
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': datetime.datetime,
+        'not_in': List[datetime.datetime],
+        'lt': datetime.datetime,
+        'lte': datetime.datetime,
+        'gt': datetime.datetime,
+        'gte': datetime.datetime,
+        'in': List[datetime.datetime],
+        {%+ if next != '' -%}
+            'not': Union[datetime.datetime, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
 
 {% call(name, next, iteration) recursive('BooleanFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: bool
-    {%+ if next != '' -%}
-        NOT: Union[bool, '{{ next }}']
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': bool,
+        {%+ if next != '' -%}
+            'not': Union[bool, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
 
 {% call(name, next, iteration) recursive('IntFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: int
-    IN: List[int]
-    not_in: List[int]
-    lt: int
-    lte: int
-    gt: int
-    gte: int
-    {%+ if next != '' -%}
-        NOT: Union[int, '{{ next }}']
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': int,
+        'not_in': List[int],
+        'lt': int,
+        'lte': int,
+        'gt': int,
+        'gte': int,
+        'in': List[int],
+        {%+ if next != '' -%}
+            'not': Union[int, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
 
 BigIntFilter = IntFilter
 {% call(name, next, iteration) recursive('FloatFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: float
-    IN: List[float]
-    not_in: List[float]
-    lt: float
-    lte: float
-    gt: float
-    gte: float
-    {%+ if next != '' -%}
-        NOT: Union[float, '{{ next }}']
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': float,
+        'not_in': List[float],
+        'lt': float,
+        'lte': float,
+        'gt': float,
+        'gte': float,
+        'in': List[float],
+        {%+ if next != '' -%}
+            'not': Union[float, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
+
+# TODO: preview feature for improving JSON filtering
+JsonFilter = TypedDict(
+    'JsonFilter',
+    {
+        'equals': 'fields.Json',
+        'not': 'fields.Json',
+    },
+    total=False,
+)
+
 
 class _FloatSetInput(TypedDict):
     set: float
@@ -367,6 +436,8 @@ class {{ current }}(TypedDict, total=False):
     {% endfor %}
 
     {% if next != '' %}
+    # should be noted that AND and NOT should be Union['{{ next }}', List['{{ next }}']]
+    # but this causes mypy to hang ¯\_(ツ)_/¯
     AND: List['{{ next }}']
     OR: List['{{ next }}']
     NOT: List['{{ next }}']
@@ -394,4 +465,4 @@ class {{ current }}(TypedDict, total=False):
 
 
 # we have to import ourselves as types can be namespaced to types
-from . import types, enums, models
+from . import types, enums, models, fields

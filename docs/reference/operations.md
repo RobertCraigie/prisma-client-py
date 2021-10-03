@@ -269,8 +269,8 @@ post = await client.post.find_first(
             'contains': 'string must be present',
             'startswith': 'must start with string',
             'endswith': 'must end with string',
-            'IN': ['find_string_1', 'find_string_2'],
-            'NOT': {
+            'in': ['find_string_1', 'find_string_2'],
+            'not': {
                 # recursive type
                 'contains': 'string must not be present',
                 ...
@@ -289,13 +289,13 @@ post = await client.post.find_first(
         # or
         'views': {
             'equals': 1,
-            'IN': [1, 2, 3],
+            'in': [1, 2, 3],
             'not_in': [4, 5, 6],
             'lt': 10,
             'lte': 9,
             'gt': 0,
             'gte': 1,
-            'NOT': {
+            'not': {
                 # recursive type
                 'gt': 10,
                 ...
@@ -314,13 +314,13 @@ user = await client.user.find_first(
         # or
         'points': {
             'equals': 10.0,
-            'IN': [1.2, 1.3, 1.4],
+            'in': [1.2, 1.3, 1.4],
             'not_in': [4.7, 53.4, 6.8],
             'lt': 100.5,
             'lte': 9.9,
             'gt': 0.0,
             'gte': 1.2,
-            'NOT': {
+            'not': {
                 # recursive type
                 'gt': 10.0,
                 ...
@@ -346,8 +346,8 @@ post = await client.post.find_first(
             'lte': datetime.now(),
             'gt': datetime.now(),
             'gte': datetime.now(),
-            'IN': [datetime.now(), datetime.utcnow()],
-            'NOT': {
+            'in': [datetime.now(), datetime.utcnow()],
+            'not': {
                 # recursive type
                 'equals': datetime.now(),
                 ...
@@ -366,9 +366,32 @@ post = await client.post.find_first(
         # or
         'published': {
             'equals': True,
-            'NOT': False,
+            'not': False,
         },
     },
+)
+```
+
+#### Json Fields
+
+!!! note
+    Json fields must match _exactly_.
+
+!!! warning
+    Json fields are not supported on SQLite
+
+```py
+from prisma import Json
+
+user = await client.user.find_first(
+    where={
+        'meta': Json({'country': 'Scotland'})
+        # or
+        'meta': {
+            'equals': Json.keys(country='Scotland'),
+            'NOT': Json(['foo']),
+        }
+    }
 )
 ```
 

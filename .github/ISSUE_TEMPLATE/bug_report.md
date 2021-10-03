@@ -35,6 +35,10 @@ Steps to reproduce the behavior:
 <!-- Your Prisma schema, Prisma Client Python queries, ...
 Do not include your database credentials when sharing your Prisma schema! -->
 
+```prisma
+
+```
+
 ## Environment & setup
 
 <!-- In which environment does the problem occur -->
@@ -43,7 +47,7 @@ Do not include your database credentials when sharing your Prisma schema! -->
 - Database: <!--[PostgreSQL, MySQL, MariaDB or SQLite]-->
 - Python version: <!--[Run `python -V` to see your Python version]-->
 - Prisma version:
-<!--[Run `python -m prisma -v` to see your Prisma version and paste it between the ´´´]-->
+<!--[Run `prisma py version` to see your Prisma version and paste it between the ´´´]-->
 
 ```
 

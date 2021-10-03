@@ -1,8 +1,17 @@
 {% include '_header.py.jinja' %}
 # -- template http.py.jinja --
-{% if generator.config.http == 'aiohttp' %}
-from ._aiohttp_http import *
+{% if generator.config.interface == 'asyncio' %}
+from ._async_http import (
+    HTTP as HTTP,
+    Response as Response,
+    client as client,
+)
+{% elif generator.config.interface == 'sync' %}
+from ._sync_http import (
+    HTTP as HTTP,
+    Response as Response,
+    client as client,
+)
 {% else %}
-from ._requests_http import *
+{{ 0 / 0 }}
 {% endif %}
-

@@ -71,13 +71,13 @@ def test_unknown_type(testdir: Testdir) -> None:
 
         model User {{
             id   String @id
-            meta Json
+            meta Bytes
         }}
     '''
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(schema=schema)
 
-    assert 'Unknown scalar type: Json' in str(exc.value.output, 'utf-8')
+    assert 'Unsupported scalar field type: Bytes' in str(exc.value.output, 'utf-8')
 
 
 def test_native_binary_target_no_warning(testdir: Testdir) -> None:
@@ -104,3 +104,27 @@ def test_binary_targets_warning(testdir: Testdir) -> None:
         'Warning: The binaryTargets option '
         'is not currently supported by Prisma Client Python' in stdout
     )
+
+
+@pytest.mark.parametrize(
+    'http,new',
+    [
+        ('aiohttp', 'asyncio'),
+        ('requests', 'sync'),
+    ],
+)
+def test_old_http_option(testdir: Testdir, http: str, new: str) -> None:
+    """A helpful error is raised if the old http config option is used"""
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(options=f'http = "{http}"')
+
+    stdout = exc.value.stdout.decode('utf-8')
+    assert (
+        'The http option has been removed '
+        'in favour of the interface option.' in stdout
+    )
+    assert (
+        'Please remove the http option from '
+        'your Prisma schema and replace it with:' in stdout
+    )
+    assert f'interface = "{new}"' in stdout

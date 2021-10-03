@@ -102,6 +102,7 @@ class QueryEngine:
             PRISMA_DML=self.dml,
             RUST_LOG='error',
             RUST_LOG_FORMAT='json',
+            PRISMA_CLIENT_ENGINE_TYPE='binary',
         )
 
         if DEBUG:
@@ -148,7 +149,7 @@ class QueryEngine:
                 'Could not connect to the query engine'
             ) from last_exc
 
-    {{ maybe_async_def }}request(self, method: Method, path: str, *, data: Any = None) -> Any:
+    {{ maybe_async_def }}request(self, method: Method, path: str, *, content: Any = None) -> Any:
         if self.url is None:
             raise errors.NotConnectedError('Not connected to the query engine')
 
@@ -159,11 +160,11 @@ class QueryEngine:
             }
         }
 
-        if data is not None:
-            kwargs['data'] = data
+        if content is not None:
+            kwargs['content'] = content
 
         url = self.url + path
-        log.debug('Sending %s request to %s with data: %s', method, url, data)
+        log.debug('Sending %s request to %s with content: %s', method, url, content)
 
         resp = {{ maybe_await }}self.session.request(method, url, **kwargs)
 

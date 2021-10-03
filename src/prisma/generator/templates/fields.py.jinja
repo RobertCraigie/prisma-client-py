@@ -1,0 +1,68 @@
+{% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import recursive_types with context %}
+# -- template fields.py.jinja --
+from pydantic import Json as _PydanticJson
+
+
+__all__ = (
+    'Json',
+)
+
+
+_JsonKeys = Union[
+    None,
+    bool,
+    float,
+    int,
+    str,
+]
+
+
+# inherit from _PydanticJson so that pydantic will automatically
+# transform the json string into python objects.
+class Json(_PydanticJson):
+    data: 'Serializable'
+
+    def __init__(self, data: 'Serializable') -> None:
+        self.data = data
+        super().__init__()
+
+    @classmethod
+    def keys(cls, **data: 'Serializable') -> 'Json':
+        return cls(data)
+
+    if TYPE_CHECKING:
+        # Fields that are of the `Json` type are automatically
+        # de-serialized from json to the corresponding python type
+        # when the model is created, e.g.
+        #
+        # User(json_obj='{"foo": null}') -> User(json_obj={'foo': None})
+        #
+        # As we don't know what the type will actually be at runtime
+        # we add methods here for convenience so that naive access
+        # to the field is still allowed, e.g.
+        #
+        # user.json_obj['foo']
+        # user.json_obj[1]
+        # user.json_obj[1:5]
+        #
+        # It should be noted that users will still have
+        # to validate / cast fields to the type they are expecting
+        # for any strict type binding or nested index calls to work, e.g.
+        #
+        # isinstance(user.json_obj, dict)
+        # cast(Dict[str, Any], user.json_obj)
+        # prisma.validate(ExpectedType, user.json_obj)  # NOTE: not implemented yet
+        @overload  # type: ignore
+        def __getitem__(self, i: slice) -> List['Serializable']:
+            ...
+
+        @overload
+        def __getitem__(self, i: '_JsonKeys') -> 'Serializable':  # pyright: reportIncompatibleMethodOverride=false
+            ...
+
+        def __getitem__(self, i: Union['_JsonKeys', slice]) -> 'Serializable':
+            ...
+
+
+from .types import Serializable

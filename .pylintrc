@@ -22,12 +22,17 @@ disable =
   # using pyright for these now
   unused-import,
   unused-variable,
+  not-async-context-manager,
 
   # useless
   missing-kwoa,
 
   # this should only trigger for tests and I don't care about duplicating code for tests
   duplicate-code,
+
+  # importing using an alias but without renaming is used to explicitly declare a variable
+  # as being re-exported by the module
+  useless-import-alias,
 
   # TODO: re-enable this at some point
   missing-docstring,

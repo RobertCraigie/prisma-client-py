@@ -27,7 +27,11 @@ def run(
     log.debug('Using Prisma CLI at %s', path)
     log.debug('Running prisma command with args: %s', args)
 
-    default_env = {'PRISMA_HIDE_UPDATE_MESSAGE': 'true', **os.environ}
+    default_env = {
+        **os.environ,
+        'PRISMA_HIDE_UPDATE_MESSAGE': 'true',
+        'PRISMA_CLI_QUERY_ENGINE_TYPE': 'binary',
+    }
     if env is not None:
         env = {**default_env, **env}
     else:

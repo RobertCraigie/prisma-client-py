@@ -20,7 +20,8 @@ from datetime import timezone
 from abc import abstractmethod, ABC
 from functools import singledispatch
 
-from ._types import Serializable
+from . import fields
+from .types import Serializable
 from .errors import UnknownModelError, UnknownRelationalFieldError
 
 
@@ -35,8 +36,6 @@ GLOBAL_ALIASES: Dict[str, str] = {
     'order_by': 'orderBy',
     'not_in': 'notIn',
     'is_not': 'isNot',
-    'NOT': 'not',
-    'IN': 'in',
 }
 
 DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
@@ -660,6 +659,19 @@ def serialize_datetime(dt: datetime.datetime) -> str:
         dt = dt.astimezone(timezone.utc)
 
     return dt.isoformat()
+
+
+@serializer.register(fields.Json)
+def serialize_json(obj: fields.Json) -> str:
+    """Serialize a Json wrapper to a json string.
+
+    This is used as a hook to override our default behaviour when building
+    queries which would treat data like {'hello': 'world'} as a Data node
+    when we instead want it to be rendered as a raw json string.
+
+    This should only be used for fields that are of the `Json` type.
+    """
+    return dumps(obj.data)
 
 
 def dumps(obj: Any, **kwargs: Any) -> str:

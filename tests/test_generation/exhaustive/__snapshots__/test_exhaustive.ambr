@@ -51,7 +51,8 @@
   from abc import abstractmethod, ABC
   from functools import singledispatch
   
-  from ._types import Serializable
+  from . import fields
+  from .types import Serializable
   from .errors import UnknownModelError, UnknownRelationalFieldError
   
   
@@ -66,8 +67,6 @@
       'order_by': 'orderBy',
       'not_in': 'notIn',
       'is_not': 'isNot',
-      'NOT': 'not',
-      'IN': 'in',
   }
   
   DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
@@ -114,6 +113,8 @@
           'optional_float',
           'string',
           'optional_string',
+          'json_',
+          'optional_json',
           'enum',
           'optional_enum',
           'boolean',
@@ -175,6 +176,8 @@
           'id',
           'bool',
           'xml',
+          'json_',
+          'jsonb',
       ],
       'E': [
           'id',
@@ -817,6 +820,19 @@
       return dt.isoformat()
   
   
+  @serializer.register(fields.Json)
+  def serialize_json(obj: fields.Json) -> str:
+      """Serialize a Json wrapper to a json string.
+  
+      This is used as a hook to override our default behaviour when building
+      queries which would treat data like {'hello': 'world'} as a Data node
+      when we instead want it to be rendered as a raw json string.
+  
+      This should only be used for fields that are of the `Json` type.
+      """
+      return dumps(obj.data)
+  
+  
   def dumps(obj: Any, **kwargs: Any) -> str:
       kwargs.setdefault('default', serializer)
       kwargs.setdefault('ensure_ascii', False)
@@ -885,9 +901,9 @@
   }
   
   generator db {
-    provider             = "python3 -m prisma"
+    provider             = "prisma-client-py"
+    interface            = "asyncio"
     recursive_type_depth = 3
-    http                 = "aiohttp"
     output               = "../../../.tests_cache/generation/exhaustive/__prisma_async_output__/prisma"
   }
   
@@ -910,10 +926,6 @@
     optional_float   Float?
     string           String
     optional_string  String?
-  
-    // TODO
-    // json_            Json
-    // optional_json    Json?
     enum             ABeautifulEnum
     optional_enum    ABeautifulEnum?
     boolean          Boolean
@@ -930,10 +942,6 @@
     optional_float   Float?
     string           String
     optional_string  String?
-  
-    // TODO
-    // json_            Json
-    // optional_json    Json?
     enum             ABeautifulEnum
     optional_enum    ABeautifulEnum?
     boolean          Boolean
@@ -949,10 +957,8 @@
     optional_float   Float?
     string           String
     optional_string  String?
-  
-    // TODO
-    // json_            Json
-    // optional_json    Json?
+    json_            Json
+    optional_json    Json?
     enum             ABeautifulEnum
     optional_enum    ABeautifulEnum?
     boolean          Boolean
@@ -968,10 +974,6 @@
     optional_float   Float?
     string           String
     optional_string  String?
-  
-    // TODO
-    // json_            Json
-    // optional_json    Json?
     enum             ABeautifulEnum
     optional_enum    ABeautifulEnum?
     boolean          Boolean
@@ -989,10 +991,6 @@
     optional_float   Float?
     string           String
     optional_string  String?
-  
-    // TODO
-    // json_            Json
-    // optional_json    Json?
     enum             ABeautifulEnum
     optional_enum    ABeautifulEnum?
     boolean          Boolean
@@ -1013,8 +1011,8 @@
     sInt     Int     @db.SmallInt
     inc_int  Int     @default(autoincrement()) @db.Integer
     inc_sInt Int     @default(autoincrement()) @db.SmallInt
-    bInt     BigInt @db.BigInt
-    inc_bInt BigInt @default(autoincrement()) @db.BigInt
+    bInt     BigInt  @db.BigInt
+    inc_bInt BigInt  @default(autoincrement()) @db.BigInt
   }
   
   model B {
@@ -1041,10 +1039,10 @@
     id    String  @id @default(cuid())
     bool  Boolean @db.Boolean
     xml   String  @db.Xml
+    json_ Json    @db.Json
+    jsonb Json    @db.JsonB
   
     // TODO
-    // json_ Json    @db.Json
-    // jsonb Json    @db.JsonB
     // byteA Bytes   @db.ByteA
   }
   
@@ -1207,7 +1205,7 @@
               arguments=arguments,
               root_selection=root_selection,
           )
-          return await self._engine.request('POST', '/', data=builder.build())
+          return await self._engine.request('POST', '/', content=builder.build())
   
       @property
       def _engine(self) -> QueryEngine:
@@ -1270,7 +1268,7 @@
               ],
               'transaction': True,
           }
-          await self.__client._engine.request('POST', '/', data=dumps(payload))
+          await self.__client._engine.request('POST', '/', content=dumps(payload))
   
       async def __aenter__(self) -> 'Batch':
           return self
@@ -1489,9 +1487,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -1829,9 +1827,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -2169,9 +2167,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -2509,9 +2507,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -2849,9 +2847,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -3189,9 +3187,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -3529,9 +3527,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -3869,9 +3867,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -4209,9 +4207,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -4549,9 +4547,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -4889,9 +4887,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -5158,6 +5156,7 @@
               PRISMA_DML=self.dml,
               RUST_LOG='error',
               RUST_LOG_FORMAT='json',
+              PRISMA_CLIENT_ENGINE_TYPE='binary',
           )
   
           if DEBUG:
@@ -5206,7 +5205,7 @@
                   'Could not connect to the query engine'
               ) from last_exc
   
-      async def request(self, method: Method, path: str, *, data: Any = None) -> Any:
+      async def request(self, method: Method, path: str, *, content: Any = None) -> Any:
           if self.url is None:
               raise errors.NotConnectedError('Not connected to the query engine')
   
@@ -5217,11 +5216,11 @@
               }
           }
   
-          if data is not None:
-              kwargs['data'] = data
+          if content is not None:
+              kwargs['content'] = content
   
           url = self.url + path
-          log.debug('Sending %s request to %s with data: %s', method, url, data)
+          log.debug('Sending %s request to %s with content: %s', method, url, content)
   
           resp = await self.session.request(method, url, **kwargs)
   
@@ -5292,6 +5291,107 @@
   
   '
 ---
+# name: test_async[fields.py]
+  '
+  # -*- coding: utf-8 -*-
+  # code generated by Prisma. DO NOT EDIT.
+  # pylint: disable=all
+  # pyright: reportUnusedImport=false
+  # fmt: off
+  
+  # global imports for type checking
+  import sys
+  import datetime
+  from typing import (
+      TYPE_CHECKING,
+      Optional,
+      Iterable,
+      Iterator,
+      Mapping,
+      Tuple,
+      Union,
+      List,
+      Dict,
+      Type,
+      Any,
+      Set,
+      overload,
+      cast,
+  )
+  
+  if sys.version_info >= (3, 8):
+      from typing import TypedDict, Literal
+  else:
+      from typing_extensions import TypedDict, Literal
+  
+  # -- template fields.py.jinja --
+  from pydantic import Json as _PydanticJson
+  
+  
+  __all__ = (
+      'Json',
+  )
+  
+  
+  _JsonKeys = Union[
+      None,
+      bool,
+      float,
+      int,
+      str,
+  ]
+  
+  
+  # inherit from _PydanticJson so that pydantic will automatically
+  # transform the json string into python objects.
+  class Json(_PydanticJson):
+      data: 'Serializable'
+  
+      def __init__(self, data: 'Serializable') -> None:
+          self.data = data
+          super().__init__()
+  
+      @classmethod
+      def keys(cls, **data: 'Serializable') -> 'Json':
+          return cls(data)
+  
+      if TYPE_CHECKING:
+          # Fields that are of the `Json` type are automatically
+          # de-serialized from json to the corresponding python type
+          # when the model is created, e.g.
+          #
+          # User(json_obj='{"foo": null}') -> User(json_obj={'foo': None})
+          #
+          # As we don't know what the type will actually be at runtime
+          # we add methods here for convenience so that naive access
+          # to the field is still allowed, e.g.
+          #
+          # user.json_obj['foo']
+          # user.json_obj[1]
+          # user.json_obj[1:5]
+          #
+          # It should be noted that users will still have
+          # to validate / cast fields to the type they are expecting
+          # for any strict type binding or nested index calls to work, e.g.
+          #
+          # isinstance(user.json_obj, dict)
+          # cast(Dict[str, Any], user.json_obj)
+          # prisma.validate(ExpectedType, user.json_obj)  # NOTE: not implemented yet
+          @overload  # type: ignore
+          def __getitem__(self, i: slice) -> List['Serializable']:
+              ...
+  
+          @overload
+          def __getitem__(self, i: '_JsonKeys') -> 'Serializable':  # pyright: reportIncompatibleMethodOverride=false
+              ...
+  
+          def __getitem__(self, i: Union['_JsonKeys', slice]) -> 'Serializable':
+              ...
+  
+  
+  from .types import Serializable
+  '
+---
 # name: test_async[http.py]
   '
   # -*- coding: utf-8 -*-
@@ -5326,7 +5426,11 @@
       from typing_extensions import TypedDict, Literal
   
   # -- template http.py.jinja --
-  from ._aiohttp_http import *
+  from ._async_http import (
+      HTTP as HTTP,
+      Response as Response,
+      client as client,
+  )
   
   '
 ---
@@ -5367,7 +5471,7 @@
   import os
   from pydantic import BaseConfig, BaseModel, Field
   
-  from . import types, enums, errors
+  from . import types, enums, errors, fields
   from .generator import partial_models_ctx, PartialModelField
   
   
@@ -5696,6 +5800,8 @@
       optional_float: Optional[float]
       string: str
       optional_string: Optional[str]
+      json_: 'fields.Json'
+      optional_json: Optional['fields.Json']
       enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
       boolean: bool
@@ -6245,6 +6351,8 @@
       id: str
       bool: bool
       xml: str
+      json_: 'fields.Json'
+      jsonb: 'fields.Json'
   
       Config = Config
   
@@ -6659,6 +6767,18 @@
           'optional': True,
           'type': 'str',
       },
+      'json_': {
+          'name': 'json_',
+          'is_list': False,
+          'optional': False,
+          'type': 'fields.Json',
+      },
+      'optional_json': {
+          'name': 'optional_json',
+          'is_list': False,
+          'optional': True,
+          'type': 'fields.Json',
+      },
       'enum': {
           'name': 'enum',
           'is_list': False,
@@ -6993,6 +7113,18 @@
           'optional': False,
           'type': 'str',
       },
+      'json_': {
+          'name': 'json_',
+          'is_list': False,
+          'optional': False,
+          'type': 'fields.Json',
+      },
+      'jsonb': {
+          'name': 'jsonb',
+          'is_list': False,
+          'optional': False,
+          'type': 'fields.Json',
+      },
   }
   
   _E_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
@@ -7079,7 +7211,7 @@
   
   # -- template partials.py.jinja --
   from pydantic import BaseModel, Field
-  from . import types, models
+  from . import types, models, fields
   
   
   
@@ -7136,167 +7268,269 @@
   
   SortOrder = Literal['asc', 'desc']
   
+  # types that can be serialized to json by our query builder
+  Serializable = Union[
+      None,
+      bool,
+      float,
+      int,
+      str,
+      datetime.datetime,
+      List[Any],
+      Dict[None, Any],
+      Dict[bool, Any],
+      Dict[float, Any],
+      Dict[int, Any],
+      Dict[str, Any],
+  ]
+  
   
       
   
-  class StringFilter(TypedDict, total=False):
-      equals: str
-      not_in: List[str]
-      lt: str
-      lte: str
-      gt: str
-      gte: str
-      contains: str
-      startswith: str
-      endswith: str
-      IN: List[str]
-      NOT: Union[str, 'StringFilterRecursive1']
+  StringFilter = TypedDict(
+      'StringFilter',
+      {
+          'equals': str,
+          'not_in': List[str],
+          'lt': str,
+          'lte': str,
+          'gt': str,
+          'gte': str,
+          'contains': str,
+          'startswith': str,
+          'endswith': str,
+          'in': List[str],
+          'not': Union[str, 'StringFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class StringFilterRecursive1(TypedDict, total=False):
-      equals: str
-      not_in: List[str]
-      lt: str
-      lte: str
-      gt: str
-      gte: str
-      contains: str
-      startswith: str
-      endswith: str
-      IN: List[str]
-      NOT: Union[str, 'StringFilterRecursive2']
+  StringFilterRecursive1 = TypedDict(
+      'StringFilterRecursive1',
+      {
+          'equals': str,
+          'not_in': List[str],
+          'lt': str,
+          'lte': str,
+          'gt': str,
+          'gte': str,
+          'contains': str,
+          'startswith': str,
+          'endswith': str,
+          'in': List[str],
+          'not': Union[str, 'StringFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class StringFilterRecursive2(TypedDict, total=False):
-      equals: str
-      not_in: List[str]
-      lt: str
-      lte: str
-      gt: str
-      gte: str
-      contains: str
-      startswith: str
-      endswith: str
-      IN: List[str]
-      
-      
-  
-  class DateTimeFilter(TypedDict, total=False):
-      equals: datetime.datetime
-      not_in: List[datetime.datetime]
-      lt: datetime.datetime
-      lte: datetime.datetime
-      gt: datetime.datetime
-      gte: datetime.datetime
-      IN: List[datetime.datetime]
-      NOT: 'DateTimeFilterRecursive1'
-  
-  
-  class DateTimeFilterRecursive1(TypedDict, total=False):
-      equals: datetime.datetime
-      not_in: List[datetime.datetime]
-      lt: datetime.datetime
-      lte: datetime.datetime
-      gt: datetime.datetime
-      gte: datetime.datetime
-      IN: List[datetime.datetime]
-      NOT: 'DateTimeFilterRecursive2'
-  
-  
-  class DateTimeFilterRecursive2(TypedDict, total=False):
-      equals: datetime.datetime
-      not_in: List[datetime.datetime]
-      lt: datetime.datetime
-      lte: datetime.datetime
-      gt: datetime.datetime
-      gte: datetime.datetime
-      IN: List[datetime.datetime]
-      
+  StringFilterRecursive2 = TypedDict(
+      'StringFilterRecursive2',
+      {
+          'equals': str,
+          'not_in': List[str],
+          'lt': str,
+          'lte': str,
+          'gt': str,
+          'gte': str,
+          'contains': str,
+          'startswith': str,
+          'endswith': str,
+          'in': List[str],
+              },
+      total=False,
+  )
   
       
   
-  class BooleanFilter(TypedDict, total=False):
-      equals: bool
-      NOT: Union[bool, 'BooleanFilterRecursive1']
+  DateTimeFilter = TypedDict(
+      'DateTimeFilter',
+      {
+          'equals': datetime.datetime,
+          'not_in': List[datetime.datetime],
+          'lt': datetime.datetime,
+          'lte': datetime.datetime,
+          'gt': datetime.datetime,
+          'gte': datetime.datetime,
+          'in': List[datetime.datetime],
+          'not': Union[datetime.datetime, 'DateTimeFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class BooleanFilterRecursive1(TypedDict, total=False):
-      equals: bool
-      NOT: Union[bool, 'BooleanFilterRecursive2']
+  DateTimeFilterRecursive1 = TypedDict(
+      'DateTimeFilterRecursive1',
+      {
+          'equals': datetime.datetime,
+          'not_in': List[datetime.datetime],
+          'lt': datetime.datetime,
+          'lte': datetime.datetime,
+          'gt': datetime.datetime,
+          'gte': datetime.datetime,
+          'in': List[datetime.datetime],
+          'not': Union[datetime.datetime, 'DateTimeFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class BooleanFilterRecursive2(TypedDict, total=False):
-      equals: bool
+  DateTimeFilterRecursive2 = TypedDict(
+      'DateTimeFilterRecursive2',
+      {
+          'equals': datetime.datetime,
+          'not_in': List[datetime.datetime],
+          'lt': datetime.datetime,
+          'lte': datetime.datetime,
+          'gt': datetime.datetime,
+          'gte': datetime.datetime,
+          'in': List[datetime.datetime],
+              },
+      total=False,
+  )
+  
+  
       
   
+  BooleanFilter = TypedDict(
+      'BooleanFilter',
+      {
+          'equals': bool,
+          'not': Union[bool, 'BooleanFilterRecursive1'],
+      },
+      total=False,
+  )
+  
+  
+  BooleanFilterRecursive1 = TypedDict(
+      'BooleanFilterRecursive1',
+      {
+          'equals': bool,
+          'not': Union[bool, 'BooleanFilterRecursive2'],
+      },
+      total=False,
+  )
+  
+  
+  BooleanFilterRecursive2 = TypedDict(
+      'BooleanFilterRecursive2',
+      {
+          'equals': bool,
+              },
+      total=False,
+  )
+  
+  
       
   
-  class IntFilter(TypedDict, total=False):
-      equals: int
-      IN: List[int]
-      not_in: List[int]
-      lt: int
-      lte: int
-      gt: int
-      gte: int
-      NOT: Union[int, 'IntFilterRecursive1']
+  IntFilter = TypedDict(
+      'IntFilter',
+      {
+          'equals': int,
+          'not_in': List[int],
+          'lt': int,
+          'lte': int,
+          'gt': int,
+          'gte': int,
+          'in': List[int],
+          'not': Union[int, 'IntFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class IntFilterRecursive1(TypedDict, total=False):
-      equals: int
-      IN: List[int]
-      not_in: List[int]
-      lt: int
-      lte: int
-      gt: int
-      gte: int
-      NOT: Union[int, 'IntFilterRecursive2']
+  IntFilterRecursive1 = TypedDict(
+      'IntFilterRecursive1',
+      {
+          'equals': int,
+          'not_in': List[int],
+          'lt': int,
+          'lte': int,
+          'gt': int,
+          'gte': int,
+          'in': List[int],
+          'not': Union[int, 'IntFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class IntFilterRecursive2(TypedDict, total=False):
-      equals: int
-      IN: List[int]
-      not_in: List[int]
-      lt: int
-      lte: int
-      gt: int
-      gte: int
-      
+  IntFilterRecursive2 = TypedDict(
+      'IntFilterRecursive2',
+      {
+          'equals': int,
+          'not_in': List[int],
+          'lt': int,
+          'lte': int,
+          'gt': int,
+          'gte': int,
+          'in': List[int],
+              },
+      total=False,
+  )
+  
   
   BigIntFilter = IntFilter
       
   
-  class FloatFilter(TypedDict, total=False):
-      equals: float
-      IN: List[float]
-      not_in: List[float]
-      lt: float
-      lte: float
-      gt: float
-      gte: float
-      NOT: Union[float, 'FloatFilterRecursive1']
+  FloatFilter = TypedDict(
+      'FloatFilter',
+      {
+          'equals': float,
+          'not_in': List[float],
+          'lt': float,
+          'lte': float,
+          'gt': float,
+          'gte': float,
+          'in': List[float],
+          'not': Union[float, 'FloatFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class FloatFilterRecursive1(TypedDict, total=False):
-      equals: float
-      IN: List[float]
-      not_in: List[float]
-      lt: float
-      lte: float
-      gt: float
-      gte: float
-      NOT: Union[float, 'FloatFilterRecursive2']
+  FloatFilterRecursive1 = TypedDict(
+      'FloatFilterRecursive1',
+      {
+          'equals': float,
+          'not_in': List[float],
+          'lt': float,
+          'lte': float,
+          'gt': float,
+          'gte': float,
+          'in': List[float],
+          'not': Union[float, 'FloatFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class FloatFilterRecursive2(TypedDict, total=False):
-      equals: float
-      IN: List[float]
-      not_in: List[float]
-      lt: float
-      lte: float
-      gt: float
-      gte: float
-      
+  FloatFilterRecursive2 = TypedDict(
+      'FloatFilterRecursive2',
+      {
+          'equals': float,
+          'not_in': List[float],
+          'lt': float,
+          'lte': float,
+          'gt': float,
+          'gte': float,
+          'in': List[float],
+              },
+      total=False,
+  )
+  
+  # TODO: preview feature for improving JSON filtering
+  JsonFilter = TypedDict(
+      'JsonFilter',
+      {
+          'equals': 'fields.Json',
+          'not': 'fields.Json',
+      },
+      total=False,
+  )
+  
+  
   class _FloatSetInput(TypedDict):
       set: float
   
@@ -8158,6 +8392,8 @@
       author: 'UserRelationFilter'
       author_id: Union[int, 'types.IntFilter']
   
+      # should be noted that AND and NOT should be Union['PostWhereInputRecursive1', List['PostWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['PostWhereInputRecursive1']
       OR: List['PostWhereInputRecursive1']
       NOT: List['PostWhereInputRecursive1']
@@ -8173,6 +8409,8 @@
       author: 'UserRelationFilter'
       author_id: Union[int, 'types.IntFilter']
   
+      # should be noted that AND and NOT should be Union['PostWhereInputRecursive2', List['PostWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['PostWhereInputRecursive2']
       OR: List['PostWhereInputRecursive2']
       NOT: List['PostWhereInputRecursive2']
@@ -9048,6 +9286,8 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
       posts: 'PostListRelationFilter'
   
+      # should be noted that AND and NOT should be Union['UserWhereInputRecursive1', List['UserWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['UserWhereInputRecursive1']
       OR: List['UserWhereInputRecursive1']
       NOT: List['UserWhereInputRecursive1']
@@ -9069,6 +9309,8 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
       posts: 'PostListRelationFilter'
   
+      # should be noted that AND and NOT should be Union['UserWhereInputRecursive2', List['UserWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['UserWhereInputRecursive2']
       OR: List['UserWhereInputRecursive2']
       NOT: List['UserWhereInputRecursive2']
@@ -9950,6 +10192,8 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['MWhereInputRecursive1', List['MWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['MWhereInputRecursive1']
       OR: List['MWhereInputRecursive1']
       NOT: List['MWhereInputRecursive1']
@@ -9970,6 +10214,8 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['MWhereInputRecursive2', List['MWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['MWhereInputRecursive2']
       OR: List['MWhereInputRecursive2']
       NOT: List['MWhereInputRecursive2']
@@ -10020,6 +10266,7 @@
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
+      optional_json: Optional['fields.Json']
       optional_enum: Optional['enums.ABeautifulEnum']
       optional_boolean: Optional[bool]
   
@@ -10029,6 +10276,7 @@
       int: int
       float: float
       string: str
+      json_: 'fields.Json'
       enum: 'enums.ABeautifulEnum'
       boolean: bool
   
@@ -10042,6 +10290,7 @@
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
+      optional_json: Optional['fields.Json']
       optional_enum: Optional['enums.ABeautifulEnum']
       optional_boolean: Optional[bool]
   
@@ -10051,6 +10300,7 @@
       int: int
       float: float
       string: str
+      json_: 'fields.Json'
       enum: 'enums.ABeautifulEnum'
       boolean: bool
   
@@ -10079,6 +10329,8 @@
       optional_float: Optional[Union[AtomicFloatInput, float]]
       string: str
       optional_string: Optional[str]
+      json_: 'fields.Json'
+      optional_json: Optional['fields.Json']
       enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
       boolean: bool
@@ -10095,6 +10347,8 @@
       optional_float: Optional[Union[AtomicFloatInput, float]]
       string: str
       optional_string: Optional[str]
+      json_: 'fields.Json'
+      optional_json: Optional['fields.Json']
       enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
       boolean: bool
@@ -10141,6 +10395,8 @@
       optional_float: 'SortOrder'
       string: 'SortOrder'
       optional_string: 'SortOrder'
+      json_: 'SortOrder'
+      optional_json: 'SortOrder'
       enum: 'SortOrder'
       optional_enum: 'SortOrder'
       boolean: 'SortOrder'
@@ -10844,11 +11100,15 @@
       optional_float: Union[float, 'types.FloatFilter']
       string: Union[str, 'types.StringFilter']
       optional_string: Union[str, 'types.StringFilter']
+      json_: Union['fields.Json', 'types.JsonFilter']
+      optional_json: Union['fields.Json', 'types.JsonFilter']
       enum: 'enums.ABeautifulEnum'
       optional_enum: 'enums.ABeautifulEnum'
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['NWhereInputRecursive1', List['NWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['NWhereInputRecursive1']
       OR: List['NWhereInputRecursive1']
       NOT: List['NWhereInputRecursive1']
@@ -10864,11 +11124,15 @@
       optional_float: Union[float, 'types.FloatFilter']
       string: Union[str, 'types.StringFilter']
       optional_string: Union[str, 'types.StringFilter']
+      json_: Union['fields.Json', 'types.JsonFilter']
+      optional_json: Union['fields.Json', 'types.JsonFilter']
       enum: 'enums.ABeautifulEnum'
       optional_enum: 'enums.ABeautifulEnum'
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['NWhereInputRecursive2', List['NWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['NWhereInputRecursive2']
       OR: List['NWhereInputRecursive2']
       NOT: List['NWhereInputRecursive2']
@@ -10884,6 +11148,8 @@
       optional_float: Union[float, 'types.FloatFilter']
       string: Union[str, 'types.StringFilter']
       optional_string: Union[str, 'types.StringFilter']
+      json_: Union['fields.Json', 'types.JsonFilter']
+      optional_json: Union['fields.Json', 'types.JsonFilter']
       enum: 'enums.ABeautifulEnum'
       optional_enum: 'enums.ABeautifulEnum'
       boolean: Union[bool, 'types.BooleanFilter']
@@ -10900,6 +11166,8 @@
       'optional_float',
       'string',
       'optional_string',
+      'json_',
+      'optional_json',
       'enum',
       'optional_enum',
       'boolean',
@@ -11748,6 +12016,8 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive1', List['OneOptionalWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['OneOptionalWhereInputRecursive1']
       OR: List['OneOptionalWhereInputRecursive1']
       NOT: List['OneOptionalWhereInputRecursive1']
@@ -11768,6 +12038,8 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive2', List['OneOptionalWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['OneOptionalWhereInputRecursive2']
       OR: List['OneOptionalWhereInputRecursive2']
       NOT: List['OneOptionalWhereInputRecursive2']
@@ -12649,6 +12921,8 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive1', List['ManyRequiredWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['ManyRequiredWhereInputRecursive1']
       OR: List['ManyRequiredWhereInputRecursive1']
       NOT: List['ManyRequiredWhereInputRecursive1']
@@ -12670,6 +12944,8 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive2', List['ManyRequiredWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['ManyRequiredWhereInputRecursive2']
       OR: List['ManyRequiredWhereInputRecursive2']
       NOT: List['ManyRequiredWhereInputRecursive2']
@@ -13534,6 +13810,8 @@
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
   
+      # should be noted that AND and NOT should be Union['AWhereInputRecursive1', List['AWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['AWhereInputRecursive1']
       OR: List['AWhereInputRecursive1']
       NOT: List['AWhereInputRecursive1']
@@ -13551,6 +13829,8 @@
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
   
+      # should be noted that AND and NOT should be Union['AWhereInputRecursive2', List['AWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['AWhereInputRecursive2']
       OR: List['AWhereInputRecursive2']
       NOT: List['AWhereInputRecursive2']
@@ -14369,6 +14649,8 @@
       float: Union[float, 'types.FloatFilter']
       d_float: Union[float, 'types.FloatFilter']
   
+      # should be noted that AND and NOT should be Union['BWhereInputRecursive1', List['BWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['BWhereInputRecursive1']
       OR: List['BWhereInputRecursive1']
       NOT: List['BWhereInputRecursive1']
@@ -14380,6 +14662,8 @@
       float: Union[float, 'types.FloatFilter']
       d_float: Union[float, 'types.FloatFilter']
   
+      # should be noted that AND and NOT should be Union['BWhereInputRecursive2', List['BWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['BWhereInputRecursive2']
       OR: List['BWhereInputRecursive2']
       NOT: List['BWhereInputRecursive2']
@@ -15210,6 +15494,8 @@
       v_bit: Union[str, 'types.StringFilter']
       uuid: Union[str, 'types.StringFilter']
   
+      # should be noted that AND and NOT should be Union['CWhereInputRecursive1', List['CWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['CWhereInputRecursive1']
       OR: List['CWhereInputRecursive1']
       NOT: List['CWhereInputRecursive1']
@@ -15225,6 +15511,8 @@
       v_bit: Union[str, 'types.StringFilter']
       uuid: Union[str, 'types.StringFilter']
   
+      # should be noted that AND and NOT should be Union['CWhereInputRecursive2', List['CWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['CWhereInputRecursive2']
       OR: List['CWhereInputRecursive2']
       NOT: List['CWhereInputRecursive2']
@@ -15265,6 +15553,8 @@
       """Required arguments to the D create method"""
       bool: bool
       xml: str
+      json_: 'fields.Json'
+      jsonb: 'fields.Json'
   
   
   # TODO: remove this in favour of without explicit relations
@@ -15279,6 +15569,8 @@
       """Required arguments to the D create method, without relations"""
       bool: bool
       xml: str
+      json_: 'fields.Json'
+      jsonb: 'fields.Json'
   
   
   class DCreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -15300,6 +15592,8 @@
       """Optional arguments for updating a record"""
       bool: bool
       xml: str
+      json_: 'fields.Json'
+      jsonb: 'fields.Json'
   
   
   class DUpdateManyMutationInput(TypedDict, total=False):
@@ -15307,6 +15601,8 @@
       id: str
       bool: bool
       xml: str
+      json_: 'fields.Json'
+      jsonb: 'fields.Json'
   
   
   class DUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -15345,6 +15641,8 @@
       id: 'SortOrder'
       bool: 'SortOrder'
       xml: 'SortOrder'
+      json_: 'SortOrder'
+      jsonb: 'SortOrder'
   
   
   # recursive D types
@@ -16038,7 +16336,11 @@
       id: Union[str, 'types.StringFilter']
       bool: Union[bool, 'types.BooleanFilter']
       xml: Union[str, 'types.StringFilter']
+      json_: Union['fields.Json', 'types.JsonFilter']
+      jsonb: Union['fields.Json', 'types.JsonFilter']
   
+      # should be noted that AND and NOT should be Union['DWhereInputRecursive1', List['DWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['DWhereInputRecursive1']
       OR: List['DWhereInputRecursive1']
       NOT: List['DWhereInputRecursive1']
@@ -16049,7 +16351,11 @@
       id: Union[str, 'types.StringFilter']
       bool: Union[bool, 'types.BooleanFilter']
       xml: Union[str, 'types.StringFilter']
+      json_: Union['fields.Json', 'types.JsonFilter']
+      jsonb: Union['fields.Json', 'types.JsonFilter']
   
+      # should be noted that AND and NOT should be Union['DWhereInputRecursive2', List['DWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['DWhereInputRecursive2']
       OR: List['DWhereInputRecursive2']
       NOT: List['DWhereInputRecursive2']
@@ -16060,6 +16366,8 @@
       id: Union[str, 'types.StringFilter']
       bool: Union[bool, 'types.BooleanFilter']
       xml: Union[str, 'types.StringFilter']
+      json_: Union['fields.Json', 'types.JsonFilter']
+      jsonb: Union['fields.Json', 'types.JsonFilter']
   
   
   
@@ -16067,6 +16375,8 @@
       'id',
       'bool',
       'xml',
+      'json_',
+      'jsonb',
   ]
   
   DRelationalFieldKeys = _NoneType
@@ -16862,6 +17172,8 @@
       time: Union[datetime.datetime, 'types.DateTimeFilter']
       ts: Union[datetime.datetime, 'types.DateTimeFilter']
   
+      # should be noted that AND and NOT should be Union['EWhereInputRecursive1', List['EWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['EWhereInputRecursive1']
       OR: List['EWhereInputRecursive1']
       NOT: List['EWhereInputRecursive1']
@@ -16874,6 +17186,8 @@
       time: Union[datetime.datetime, 'types.DateTimeFilter']
       ts: Union[datetime.datetime, 'types.DateTimeFilter']
   
+      # should be noted that AND and NOT should be Union['EWhereInputRecursive2', List['EWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['EWhereInputRecursive2']
       OR: List['EWhereInputRecursive2']
       NOT: List['EWhereInputRecursive2']
@@ -16900,7 +17214,7 @@
   
   
   # we have to import ourselves as types can be namespaced to types
-  from . import types, enums, models
+  from . import types, enums, models, fields
   '
 ---
 # name: test_sync[builder.py]
@@ -16956,7 +17270,8 @@
   from abc import abstractmethod, ABC
   from functools import singledispatch
   
-  from ._types import Serializable
+  from . import fields
+  from .types import Serializable
   from .errors import UnknownModelError, UnknownRelationalFieldError
   
   
@@ -16971,8 +17286,6 @@
       'order_by': 'orderBy',
       'not_in': 'notIn',
       'is_not': 'isNot',
-      'NOT': 'not',
-      'IN': 'in',
   }
   
   DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
@@ -17019,6 +17332,8 @@
           'optional_float',
           'string',
           'optional_string',
+          'json_',
+          'optional_json',
           'enum',
           'optional_enum',
           'boolean',
@@ -17080,6 +17395,8 @@
           'id',
           'bool',
           'xml',
+          'json_',
+          'jsonb',
       ],
       'E': [
           'id',
@@ -17722,6 +18039,19 @@
       return dt.isoformat()
   
   
+  @serializer.register(fields.Json)
+  def serialize_json(obj: fields.Json) -> str:
+      """Serialize a Json wrapper to a json string.
+  
+      This is used as a hook to override our default behaviour when building
+      queries which would treat data like {'hello': 'world'} as a Data node
+      when we instead want it to be rendered as a raw json string.
+  
+      This should only be used for fields that are of the `Json` type.
+      """
+      return dumps(obj.data)
+  
+  
   def dumps(obj: Any, **kwargs: Any) -> str:
       kwargs.setdefault('default', serializer)
       kwargs.setdefault('ensure_ascii', False)
@@ -17790,9 +18120,9 @@
   }
   
   generator db {
-    provider             = "python3 -m prisma"
+    provider             = "prisma-client-py"
+    interface            = "sync"
     recursive_type_depth = 3
-    http                 = "requests"
     output               = "../../../.tests_cache/generation/exhaustive/__prisma_sync_output__/prisma"
   }
   
@@ -17815,10 +18145,6 @@
     optional_float   Float?
     string           String
     optional_string  String?
-  
-    // TODO
-    // json_            Json
-    // optional_json    Json?
     enum             ABeautifulEnum
     optional_enum    ABeautifulEnum?
     boolean          Boolean
@@ -17835,10 +18161,6 @@
     optional_float   Float?
     string           String
     optional_string  String?
-  
-    // TODO
-    // json_            Json
-    // optional_json    Json?
     enum             ABeautifulEnum
     optional_enum    ABeautifulEnum?
     boolean          Boolean
@@ -17854,10 +18176,8 @@
     optional_float   Float?
     string           String
     optional_string  String?
-  
-    // TODO
-    // json_            Json
-    // optional_json    Json?
+    json_            Json
+    optional_json    Json?
     enum             ABeautifulEnum
     optional_enum    ABeautifulEnum?
     boolean          Boolean
@@ -17873,10 +18193,6 @@
     optional_float   Float?
     string           String
     optional_string  String?
-  
-    // TODO
-    // json_            Json
-    // optional_json    Json?
     enum             ABeautifulEnum
     optional_enum    ABeautifulEnum?
     boolean          Boolean
@@ -17894,10 +18210,6 @@
     optional_float   Float?
     string           String
     optional_string  String?
-  
-    // TODO
-    // json_            Json
-    // optional_json    Json?
     enum             ABeautifulEnum
     optional_enum    ABeautifulEnum?
     boolean          Boolean
@@ -17918,8 +18230,8 @@
     sInt     Int     @db.SmallInt
     inc_int  Int     @default(autoincrement()) @db.Integer
     inc_sInt Int     @default(autoincrement()) @db.SmallInt
-    bInt     BigInt @db.BigInt
-    inc_bInt BigInt @default(autoincrement()) @db.BigInt
+    bInt     BigInt  @db.BigInt
+    inc_bInt BigInt  @default(autoincrement()) @db.BigInt
   }
   
   model B {
@@ -17946,10 +18258,10 @@
     id    String  @id @default(cuid())
     bool  Boolean @db.Boolean
     xml   String  @db.Xml
+    json_ Json    @db.Json
+    jsonb Json    @db.JsonB
   
     // TODO
-    // json_ Json    @db.Json
-    // jsonb Json    @db.JsonB
     // byteA Bytes   @db.ByteA
   }
   
@@ -18112,7 +18424,7 @@
               arguments=arguments,
               root_selection=root_selection,
           )
-          return self._engine.request('POST', '/', data=builder.build())
+          return self._engine.request('POST', '/', content=builder.build())
   
       @property
       def _engine(self) -> QueryEngine:
@@ -18175,7 +18487,7 @@
               ],
               'transaction': True,
           }
-          self.__client._engine.request('POST', '/', data=dumps(payload))
+          self.__client._engine.request('POST', '/', content=dumps(payload))
   
       def __enter__(self) -> 'Batch':
           return self
@@ -18394,9 +18706,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -18734,9 +19046,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -19074,9 +19386,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -19414,9 +19726,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -19754,9 +20066,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -20094,9 +20406,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -20434,9 +20746,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -20774,9 +21086,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -21114,9 +21426,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -21454,9 +21766,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -21794,9 +22106,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -22056,6 +22368,7 @@
               PRISMA_DML=self.dml,
               RUST_LOG='error',
               RUST_LOG_FORMAT='json',
+              PRISMA_CLIENT_ENGINE_TYPE='binary',
           )
   
           if DEBUG:
@@ -22104,7 +22417,7 @@
                   'Could not connect to the query engine'
               ) from last_exc
   
-      def request(self, method: Method, path: str, *, data: Any = None) -> Any:
+      def request(self, method: Method, path: str, *, content: Any = None) -> Any:
           if self.url is None:
               raise errors.NotConnectedError('Not connected to the query engine')
   
@@ -22115,11 +22428,11 @@
               }
           }
   
-          if data is not None:
-              kwargs['data'] = data
+          if content is not None:
+              kwargs['content'] = content
   
           url = self.url + path
-          log.debug('Sending %s request to %s with data: %s', method, url, data)
+          log.debug('Sending %s request to %s with content: %s', method, url, content)
   
           resp = self.session.request(method, url, **kwargs)
   
@@ -22190,6 +22503,107 @@
   
   '
 ---
+# name: test_sync[fields.py]
+  '
+  # -*- coding: utf-8 -*-
+  # code generated by Prisma. DO NOT EDIT.
+  # pylint: disable=all
+  # pyright: reportUnusedImport=false
+  # fmt: off
+  
+  # global imports for type checking
+  import sys
+  import datetime
+  from typing import (
+      TYPE_CHECKING,
+      Optional,
+      Iterable,
+      Iterator,
+      Mapping,
+      Tuple,
+      Union,
+      List,
+      Dict,
+      Type,
+      Any,
+      Set,
+      overload,
+      cast,
+  )
+  
+  if sys.version_info >= (3, 8):
+      from typing import TypedDict, Literal
+  else:
+      from typing_extensions import TypedDict, Literal
+  
+  # -- template fields.py.jinja --
+  from pydantic import Json as _PydanticJson
+  
+  
+  __all__ = (
+      'Json',
+  )
+  
+  
+  _JsonKeys = Union[
+      None,
+      bool,
+      float,
+      int,
+      str,
+  ]
+  
+  
+  # inherit from _PydanticJson so that pydantic will automatically
+  # transform the json string into python objects.
+  class Json(_PydanticJson):
+      data: 'Serializable'
+  
+      def __init__(self, data: 'Serializable') -> None:
+          self.data = data
+          super().__init__()
+  
+      @classmethod
+      def keys(cls, **data: 'Serializable') -> 'Json':
+          return cls(data)
+  
+      if TYPE_CHECKING:
+          # Fields that are of the `Json` type are automatically
+          # de-serialized from json to the corresponding python type
+          # when the model is created, e.g.
+          #
+          # User(json_obj='{"foo": null}') -> User(json_obj={'foo': None})
+          #
+          # As we don't know what the type will actually be at runtime
+          # we add methods here for convenience so that naive access
+          # to the field is still allowed, e.g.
+          #
+          # user.json_obj['foo']
+          # user.json_obj[1]
+          # user.json_obj[1:5]
+          #
+          # It should be noted that users will still have
+          # to validate / cast fields to the type they are expecting
+          # for any strict type binding or nested index calls to work, e.g.
+          #
+          # isinstance(user.json_obj, dict)
+          # cast(Dict[str, Any], user.json_obj)
+          # prisma.validate(ExpectedType, user.json_obj)  # NOTE: not implemented yet
+          @overload  # type: ignore
+          def __getitem__(self, i: slice) -> List['Serializable']:
+              ...
+  
+          @overload
+          def __getitem__(self, i: '_JsonKeys') -> 'Serializable':  # pyright: reportIncompatibleMethodOverride=false
+              ...
+  
+          def __getitem__(self, i: Union['_JsonKeys', slice]) -> 'Serializable':
+              ...
+  
+  
+  from .types import Serializable
+  '
+---
 # name: test_sync[http.py]
   '
   # -*- coding: utf-8 -*-
@@ -22224,7 +22638,11 @@
       from typing_extensions import TypedDict, Literal
   
   # -- template http.py.jinja --
-  from ._requests_http import *
+  from ._sync_http import (
+      HTTP as HTTP,
+      Response as Response,
+      client as client,
+  )
   
   '
 ---
@@ -22265,7 +22683,7 @@
   import os
   from pydantic import BaseConfig, BaseModel, Field
   
-  from . import types, enums, errors
+  from . import types, enums, errors, fields
   from .generator import partial_models_ctx, PartialModelField
   
   
@@ -22594,6 +23012,8 @@
       optional_float: Optional[float]
       string: str
       optional_string: Optional[str]
+      json_: 'fields.Json'
+      optional_json: Optional['fields.Json']
       enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
       boolean: bool
@@ -23143,6 +23563,8 @@
       id: str
       bool: bool
       xml: str
+      json_: 'fields.Json'
+      jsonb: 'fields.Json'
   
       Config = Config
   
@@ -23557,6 +23979,18 @@
           'optional': True,
           'type': 'str',
       },
+      'json_': {
+          'name': 'json_',
+          'is_list': False,
+          'optional': False,
+          'type': 'fields.Json',
+      },
+      'optional_json': {
+          'name': 'optional_json',
+          'is_list': False,
+          'optional': True,
+          'type': 'fields.Json',
+      },
       'enum': {
           'name': 'enum',
           'is_list': False,
@@ -23891,6 +24325,18 @@
           'optional': False,
           'type': 'str',
       },
+      'json_': {
+          'name': 'json_',
+          'is_list': False,
+          'optional': False,
+          'type': 'fields.Json',
+      },
+      'jsonb': {
+          'name': 'jsonb',
+          'is_list': False,
+          'optional': False,
+          'type': 'fields.Json',
+      },
   }
   
   _E_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
@@ -23977,7 +24423,7 @@
   
   # -- template partials.py.jinja --
   from pydantic import BaseModel, Field
-  from . import types, models
+  from . import types, models, fields
   
   
   
@@ -24034,167 +24480,269 @@
   
   SortOrder = Literal['asc', 'desc']
   
+  # types that can be serialized to json by our query builder
+  Serializable = Union[
+      None,
+      bool,
+      float,
+      int,
+      str,
+      datetime.datetime,
+      List[Any],
+      Dict[None, Any],
+      Dict[bool, Any],
+      Dict[float, Any],
+      Dict[int, Any],
+      Dict[str, Any],
+  ]
+  
   
       
   
-  class StringFilter(TypedDict, total=False):
-      equals: str
-      not_in: List[str]
-      lt: str
-      lte: str
-      gt: str
-      gte: str
-      contains: str
-      startswith: str
-      endswith: str
-      IN: List[str]
-      NOT: Union[str, 'StringFilterRecursive1']
+  StringFilter = TypedDict(
+      'StringFilter',
+      {
+          'equals': str,
+          'not_in': List[str],
+          'lt': str,
+          'lte': str,
+          'gt': str,
+          'gte': str,
+          'contains': str,
+          'startswith': str,
+          'endswith': str,
+          'in': List[str],
+          'not': Union[str, 'StringFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class StringFilterRecursive1(TypedDict, total=False):
-      equals: str
-      not_in: List[str]
-      lt: str
-      lte: str
-      gt: str
-      gte: str
-      contains: str
-      startswith: str
-      endswith: str
-      IN: List[str]
-      NOT: Union[str, 'StringFilterRecursive2']
+  StringFilterRecursive1 = TypedDict(
+      'StringFilterRecursive1',
+      {
+          'equals': str,
+          'not_in': List[str],
+          'lt': str,
+          'lte': str,
+          'gt': str,
+          'gte': str,
+          'contains': str,
+          'startswith': str,
+          'endswith': str,
+          'in': List[str],
+          'not': Union[str, 'StringFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class StringFilterRecursive2(TypedDict, total=False):
-      equals: str
-      not_in: List[str]
-      lt: str
-      lte: str
-      gt: str
-      gte: str
-      contains: str
-      startswith: str
-      endswith: str
-      IN: List[str]
-      
-      
-  
-  class DateTimeFilter(TypedDict, total=False):
-      equals: datetime.datetime
-      not_in: List[datetime.datetime]
-      lt: datetime.datetime
-      lte: datetime.datetime
-      gt: datetime.datetime
-      gte: datetime.datetime
-      IN: List[datetime.datetime]
-      NOT: 'DateTimeFilterRecursive1'
-  
-  
-  class DateTimeFilterRecursive1(TypedDict, total=False):
-      equals: datetime.datetime
-      not_in: List[datetime.datetime]
-      lt: datetime.datetime
-      lte: datetime.datetime
-      gt: datetime.datetime
-      gte: datetime.datetime
-      IN: List[datetime.datetime]
-      NOT: 'DateTimeFilterRecursive2'
-  
-  
-  class DateTimeFilterRecursive2(TypedDict, total=False):
-      equals: datetime.datetime
-      not_in: List[datetime.datetime]
-      lt: datetime.datetime
-      lte: datetime.datetime
-      gt: datetime.datetime
-      gte: datetime.datetime
-      IN: List[datetime.datetime]
-      
+  StringFilterRecursive2 = TypedDict(
+      'StringFilterRecursive2',
+      {
+          'equals': str,
+          'not_in': List[str],
+          'lt': str,
+          'lte': str,
+          'gt': str,
+          'gte': str,
+          'contains': str,
+          'startswith': str,
+          'endswith': str,
+          'in': List[str],
+              },
+      total=False,
+  )
   
       
   
-  class BooleanFilter(TypedDict, total=False):
-      equals: bool
-      NOT: Union[bool, 'BooleanFilterRecursive1']
+  DateTimeFilter = TypedDict(
+      'DateTimeFilter',
+      {
+          'equals': datetime.datetime,
+          'not_in': List[datetime.datetime],
+          'lt': datetime.datetime,
+          'lte': datetime.datetime,
+          'gt': datetime.datetime,
+          'gte': datetime.datetime,
+          'in': List[datetime.datetime],
+          'not': Union[datetime.datetime, 'DateTimeFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class BooleanFilterRecursive1(TypedDict, total=False):
-      equals: bool
-      NOT: Union[bool, 'BooleanFilterRecursive2']
+  DateTimeFilterRecursive1 = TypedDict(
+      'DateTimeFilterRecursive1',
+      {
+          'equals': datetime.datetime,
+          'not_in': List[datetime.datetime],
+          'lt': datetime.datetime,
+          'lte': datetime.datetime,
+          'gt': datetime.datetime,
+          'gte': datetime.datetime,
+          'in': List[datetime.datetime],
+          'not': Union[datetime.datetime, 'DateTimeFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class BooleanFilterRecursive2(TypedDict, total=False):
-      equals: bool
+  DateTimeFilterRecursive2 = TypedDict(
+      'DateTimeFilterRecursive2',
+      {
+          'equals': datetime.datetime,
+          'not_in': List[datetime.datetime],
+          'lt': datetime.datetime,
+          'lte': datetime.datetime,
+          'gt': datetime.datetime,
+          'gte': datetime.datetime,
+          'in': List[datetime.datetime],
+              },
+      total=False,
+  )
+  
+  
       
   
+  BooleanFilter = TypedDict(
+      'BooleanFilter',
+      {
+          'equals': bool,
+          'not': Union[bool, 'BooleanFilterRecursive1'],
+      },
+      total=False,
+  )
+  
+  
+  BooleanFilterRecursive1 = TypedDict(
+      'BooleanFilterRecursive1',
+      {
+          'equals': bool,
+          'not': Union[bool, 'BooleanFilterRecursive2'],
+      },
+      total=False,
+  )
+  
+  
+  BooleanFilterRecursive2 = TypedDict(
+      'BooleanFilterRecursive2',
+      {
+          'equals': bool,
+              },
+      total=False,
+  )
+  
+  
       
   
-  class IntFilter(TypedDict, total=False):
-      equals: int
-      IN: List[int]
-      not_in: List[int]
-      lt: int
-      lte: int
-      gt: int
-      gte: int
-      NOT: Union[int, 'IntFilterRecursive1']
+  IntFilter = TypedDict(
+      'IntFilter',
+      {
+          'equals': int,
+          'not_in': List[int],
+          'lt': int,
+          'lte': int,
+          'gt': int,
+          'gte': int,
+          'in': List[int],
+          'not': Union[int, 'IntFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class IntFilterRecursive1(TypedDict, total=False):
-      equals: int
-      IN: List[int]
-      not_in: List[int]
-      lt: int
-      lte: int
-      gt: int
-      gte: int
-      NOT: Union[int, 'IntFilterRecursive2']
+  IntFilterRecursive1 = TypedDict(
+      'IntFilterRecursive1',
+      {
+          'equals': int,
+          'not_in': List[int],
+          'lt': int,
+          'lte': int,
+          'gt': int,
+          'gte': int,
+          'in': List[int],
+          'not': Union[int, 'IntFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class IntFilterRecursive2(TypedDict, total=False):
-      equals: int
-      IN: List[int]
-      not_in: List[int]
-      lt: int
-      lte: int
-      gt: int
-      gte: int
-      
+  IntFilterRecursive2 = TypedDict(
+      'IntFilterRecursive2',
+      {
+          'equals': int,
+          'not_in': List[int],
+          'lt': int,
+          'lte': int,
+          'gt': int,
+          'gte': int,
+          'in': List[int],
+              },
+      total=False,
+  )
+  
   
   BigIntFilter = IntFilter
       
   
-  class FloatFilter(TypedDict, total=False):
-      equals: float
-      IN: List[float]
-      not_in: List[float]
-      lt: float
-      lte: float
-      gt: float
-      gte: float
-      NOT: Union[float, 'FloatFilterRecursive1']
+  FloatFilter = TypedDict(
+      'FloatFilter',
+      {
+          'equals': float,
+          'not_in': List[float],
+          'lt': float,
+          'lte': float,
+          'gt': float,
+          'gte': float,
+          'in': List[float],
+          'not': Union[float, 'FloatFilterRecursive1'],
+      },
+      total=False,
+  )
   
   
-  class FloatFilterRecursive1(TypedDict, total=False):
-      equals: float
-      IN: List[float]
-      not_in: List[float]
-      lt: float
-      lte: float
-      gt: float
-      gte: float
-      NOT: Union[float, 'FloatFilterRecursive2']
+  FloatFilterRecursive1 = TypedDict(
+      'FloatFilterRecursive1',
+      {
+          'equals': float,
+          'not_in': List[float],
+          'lt': float,
+          'lte': float,
+          'gt': float,
+          'gte': float,
+          'in': List[float],
+          'not': Union[float, 'FloatFilterRecursive2'],
+      },
+      total=False,
+  )
   
   
-  class FloatFilterRecursive2(TypedDict, total=False):
-      equals: float
-      IN: List[float]
-      not_in: List[float]
-      lt: float
-      lte: float
-      gt: float
-      gte: float
-      
+  FloatFilterRecursive2 = TypedDict(
+      'FloatFilterRecursive2',
+      {
+          'equals': float,
+          'not_in': List[float],
+          'lt': float,
+          'lte': float,
+          'gt': float,
+          'gte': float,
+          'in': List[float],
+              },
+      total=False,
+  )
+  
+  # TODO: preview feature for improving JSON filtering
+  JsonFilter = TypedDict(
+      'JsonFilter',
+      {
+          'equals': 'fields.Json',
+          'not': 'fields.Json',
+      },
+      total=False,
+  )
+  
+  
   class _FloatSetInput(TypedDict):
       set: float
   
@@ -25056,6 +25604,8 @@
       author: 'UserRelationFilter'
       author_id: Union[int, 'types.IntFilter']
   
+      # should be noted that AND and NOT should be Union['PostWhereInputRecursive1', List['PostWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['PostWhereInputRecursive1']
       OR: List['PostWhereInputRecursive1']
       NOT: List['PostWhereInputRecursive1']
@@ -25071,6 +25621,8 @@
       author: 'UserRelationFilter'
       author_id: Union[int, 'types.IntFilter']
   
+      # should be noted that AND and NOT should be Union['PostWhereInputRecursive2', List['PostWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['PostWhereInputRecursive2']
       OR: List['PostWhereInputRecursive2']
       NOT: List['PostWhereInputRecursive2']
@@ -25946,6 +26498,8 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
       posts: 'PostListRelationFilter'
   
+      # should be noted that AND and NOT should be Union['UserWhereInputRecursive1', List['UserWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['UserWhereInputRecursive1']
       OR: List['UserWhereInputRecursive1']
       NOT: List['UserWhereInputRecursive1']
@@ -25967,6 +26521,8 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
       posts: 'PostListRelationFilter'
   
+      # should be noted that AND and NOT should be Union['UserWhereInputRecursive2', List['UserWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['UserWhereInputRecursive2']
       OR: List['UserWhereInputRecursive2']
       NOT: List['UserWhereInputRecursive2']
@@ -26848,6 +27404,8 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['MWhereInputRecursive1', List['MWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['MWhereInputRecursive1']
       OR: List['MWhereInputRecursive1']
       NOT: List['MWhereInputRecursive1']
@@ -26868,6 +27426,8 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['MWhereInputRecursive2', List['MWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['MWhereInputRecursive2']
       OR: List['MWhereInputRecursive2']
       NOT: List['MWhereInputRecursive2']
@@ -26918,6 +27478,7 @@
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
+      optional_json: Optional['fields.Json']
       optional_enum: Optional['enums.ABeautifulEnum']
       optional_boolean: Optional[bool]
   
@@ -26927,6 +27488,7 @@
       int: int
       float: float
       string: str
+      json_: 'fields.Json'
       enum: 'enums.ABeautifulEnum'
       boolean: bool
   
@@ -26940,6 +27502,7 @@
       optional_int: Optional[int]
       optional_float: Optional[float]
       optional_string: Optional[str]
+      optional_json: Optional['fields.Json']
       optional_enum: Optional['enums.ABeautifulEnum']
       optional_boolean: Optional[bool]
   
@@ -26949,6 +27512,7 @@
       int: int
       float: float
       string: str
+      json_: 'fields.Json'
       enum: 'enums.ABeautifulEnum'
       boolean: bool
   
@@ -26977,6 +27541,8 @@
       optional_float: Optional[Union[AtomicFloatInput, float]]
       string: str
       optional_string: Optional[str]
+      json_: 'fields.Json'
+      optional_json: Optional['fields.Json']
       enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
       boolean: bool
@@ -26993,6 +27559,8 @@
       optional_float: Optional[Union[AtomicFloatInput, float]]
       string: str
       optional_string: Optional[str]
+      json_: 'fields.Json'
+      optional_json: Optional['fields.Json']
       enum: 'enums.ABeautifulEnum'
       optional_enum: Optional['enums.ABeautifulEnum']
       boolean: bool
@@ -27039,6 +27607,8 @@
       optional_float: 'SortOrder'
       string: 'SortOrder'
       optional_string: 'SortOrder'
+      json_: 'SortOrder'
+      optional_json: 'SortOrder'
       enum: 'SortOrder'
       optional_enum: 'SortOrder'
       boolean: 'SortOrder'
@@ -27742,11 +28312,15 @@
       optional_float: Union[float, 'types.FloatFilter']
       string: Union[str, 'types.StringFilter']
       optional_string: Union[str, 'types.StringFilter']
+      json_: Union['fields.Json', 'types.JsonFilter']
+      optional_json: Union['fields.Json', 'types.JsonFilter']
       enum: 'enums.ABeautifulEnum'
       optional_enum: 'enums.ABeautifulEnum'
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['NWhereInputRecursive1', List['NWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['NWhereInputRecursive1']
       OR: List['NWhereInputRecursive1']
       NOT: List['NWhereInputRecursive1']
@@ -27762,11 +28336,15 @@
       optional_float: Union[float, 'types.FloatFilter']
       string: Union[str, 'types.StringFilter']
       optional_string: Union[str, 'types.StringFilter']
+      json_: Union['fields.Json', 'types.JsonFilter']
+      optional_json: Union['fields.Json', 'types.JsonFilter']
       enum: 'enums.ABeautifulEnum'
       optional_enum: 'enums.ABeautifulEnum'
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['NWhereInputRecursive2', List['NWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['NWhereInputRecursive2']
       OR: List['NWhereInputRecursive2']
       NOT: List['NWhereInputRecursive2']
@@ -27782,6 +28360,8 @@
       optional_float: Union[float, 'types.FloatFilter']
       string: Union[str, 'types.StringFilter']
       optional_string: Union[str, 'types.StringFilter']
+      json_: Union['fields.Json', 'types.JsonFilter']
+      optional_json: Union['fields.Json', 'types.JsonFilter']
       enum: 'enums.ABeautifulEnum'
       optional_enum: 'enums.ABeautifulEnum'
       boolean: Union[bool, 'types.BooleanFilter']
@@ -27798,6 +28378,8 @@
       'optional_float',
       'string',
       'optional_string',
+      'json_',
+      'optional_json',
       'enum',
       'optional_enum',
       'boolean',
@@ -28646,6 +29228,8 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive1', List['OneOptionalWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['OneOptionalWhereInputRecursive1']
       OR: List['OneOptionalWhereInputRecursive1']
       NOT: List['OneOptionalWhereInputRecursive1']
@@ -28666,6 +29250,8 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive2', List['OneOptionalWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['OneOptionalWhereInputRecursive2']
       OR: List['OneOptionalWhereInputRecursive2']
       NOT: List['OneOptionalWhereInputRecursive2']
@@ -29547,6 +30133,8 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive1', List['ManyRequiredWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['ManyRequiredWhereInputRecursive1']
       OR: List['ManyRequiredWhereInputRecursive1']
       NOT: List['ManyRequiredWhereInputRecursive1']
@@ -29568,6 +30156,8 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+      # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive2', List['ManyRequiredWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['ManyRequiredWhereInputRecursive2']
       OR: List['ManyRequiredWhereInputRecursive2']
       NOT: List['ManyRequiredWhereInputRecursive2']
@@ -30432,6 +31022,8 @@
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
   
+      # should be noted that AND and NOT should be Union['AWhereInputRecursive1', List['AWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['AWhereInputRecursive1']
       OR: List['AWhereInputRecursive1']
       NOT: List['AWhereInputRecursive1']
@@ -30449,6 +31041,8 @@
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
   
+      # should be noted that AND and NOT should be Union['AWhereInputRecursive2', List['AWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['AWhereInputRecursive2']
       OR: List['AWhereInputRecursive2']
       NOT: List['AWhereInputRecursive2']
@@ -31267,6 +31861,8 @@
       float: Union[float, 'types.FloatFilter']
       d_float: Union[float, 'types.FloatFilter']
   
+      # should be noted that AND and NOT should be Union['BWhereInputRecursive1', List['BWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['BWhereInputRecursive1']
       OR: List['BWhereInputRecursive1']
       NOT: List['BWhereInputRecursive1']
@@ -31278,6 +31874,8 @@
       float: Union[float, 'types.FloatFilter']
       d_float: Union[float, 'types.FloatFilter']
   
+      # should be noted that AND and NOT should be Union['BWhereInputRecursive2', List['BWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['BWhereInputRecursive2']
       OR: List['BWhereInputRecursive2']
       NOT: List['BWhereInputRecursive2']
@@ -32108,6 +32706,8 @@
       v_bit: Union[str, 'types.StringFilter']
       uuid: Union[str, 'types.StringFilter']
   
+      # should be noted that AND and NOT should be Union['CWhereInputRecursive1', List['CWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['CWhereInputRecursive1']
       OR: List['CWhereInputRecursive1']
       NOT: List['CWhereInputRecursive1']
@@ -32123,6 +32723,8 @@
       v_bit: Union[str, 'types.StringFilter']
       uuid: Union[str, 'types.StringFilter']
   
+      # should be noted that AND and NOT should be Union['CWhereInputRecursive2', List['CWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['CWhereInputRecursive2']
       OR: List['CWhereInputRecursive2']
       NOT: List['CWhereInputRecursive2']
@@ -32163,6 +32765,8 @@
       """Required arguments to the D create method"""
       bool: bool
       xml: str
+      json_: 'fields.Json'
+      jsonb: 'fields.Json'
   
   
   # TODO: remove this in favour of without explicit relations
@@ -32177,6 +32781,8 @@
       """Required arguments to the D create method, without relations"""
       bool: bool
       xml: str
+      json_: 'fields.Json'
+      jsonb: 'fields.Json'
   
   
   class DCreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -32198,6 +32804,8 @@
       """Optional arguments for updating a record"""
       bool: bool
       xml: str
+      json_: 'fields.Json'
+      jsonb: 'fields.Json'
   
   
   class DUpdateManyMutationInput(TypedDict, total=False):
@@ -32205,6 +32813,8 @@
       id: str
       bool: bool
       xml: str
+      json_: 'fields.Json'
+      jsonb: 'fields.Json'
   
   
   class DUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -32243,6 +32853,8 @@
       id: 'SortOrder'
       bool: 'SortOrder'
       xml: 'SortOrder'
+      json_: 'SortOrder'
+      jsonb: 'SortOrder'
   
   
   # recursive D types
@@ -32936,7 +33548,11 @@
       id: Union[str, 'types.StringFilter']
       bool: Union[bool, 'types.BooleanFilter']
       xml: Union[str, 'types.StringFilter']
+      json_: Union['fields.Json', 'types.JsonFilter']
+      jsonb: Union['fields.Json', 'types.JsonFilter']
   
+      # should be noted that AND and NOT should be Union['DWhereInputRecursive1', List['DWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['DWhereInputRecursive1']
       OR: List['DWhereInputRecursive1']
       NOT: List['DWhereInputRecursive1']
@@ -32947,7 +33563,11 @@
       id: Union[str, 'types.StringFilter']
       bool: Union[bool, 'types.BooleanFilter']
       xml: Union[str, 'types.StringFilter']
+      json_: Union['fields.Json', 'types.JsonFilter']
+      jsonb: Union['fields.Json', 'types.JsonFilter']
   
+      # should be noted that AND and NOT should be Union['DWhereInputRecursive2', List['DWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['DWhereInputRecursive2']
       OR: List['DWhereInputRecursive2']
       NOT: List['DWhereInputRecursive2']
@@ -32958,6 +33578,8 @@
       id: Union[str, 'types.StringFilter']
       bool: Union[bool, 'types.BooleanFilter']
       xml: Union[str, 'types.StringFilter']
+      json_: Union['fields.Json', 'types.JsonFilter']
+      jsonb: Union['fields.Json', 'types.JsonFilter']
   
   
   
@@ -32965,6 +33587,8 @@
       'id',
       'bool',
       'xml',
+      'json_',
+      'jsonb',
   ]
   
   DRelationalFieldKeys = _NoneType
@@ -33760,6 +34384,8 @@
       time: Union[datetime.datetime, 'types.DateTimeFilter']
       ts: Union[datetime.datetime, 'types.DateTimeFilter']
   
+      # should be noted that AND and NOT should be Union['EWhereInputRecursive1', List['EWhereInputRecursive1']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['EWhereInputRecursive1']
       OR: List['EWhereInputRecursive1']
       NOT: List['EWhereInputRecursive1']
@@ -33772,6 +34398,8 @@
       time: Union[datetime.datetime, 'types.DateTimeFilter']
       ts: Union[datetime.datetime, 'types.DateTimeFilter']
   
+      # should be noted that AND and NOT should be Union['EWhereInputRecursive2', List['EWhereInputRecursive2']]
+      # but this causes mypy to hang ¯\_(ツ)_/¯
       AND: List['EWhereInputRecursive2']
       OR: List['EWhereInputRecursive2']
       NOT: List['EWhereInputRecursive2']
@@ -33798,6 +34426,6 @@
   
   
   # we have to import ourselves as types can be namespaced to types
-  from . import types, enums, models
+  from . import types, enums, models, fields
   '
 ---

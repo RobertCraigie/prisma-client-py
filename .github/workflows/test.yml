@@ -44,11 +44,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # TODO: remove aiohttp when stdlib http is available
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install codecov==2.1.11 .[dev,aiohttp]
+          pip install codecov==2.1.11 .[dev]
 
       - uses: actions/cache@v2
         with:
@@ -74,7 +73,6 @@ jobs:
           cp tests/data/dev.db dev.db
 
       - name: Run tests
-        # TODO: test postgresql
         run: |
           tox -e setup,${{ matrix.tox-env }},report -- --ignore=tests/integrations/postgresql
 
@@ -101,11 +99,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # TODO: remove aiohttp when stdlib http is available
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install .[dev,aiohttp]
+          pip install .[dev]
 
       - uses: actions/cache@v2
         with:
@@ -156,6 +153,69 @@ jobs:
       - name: Check linters
         run: |
           tox -e lint,report
+
+      - name: Upload coverage
+        run: |
+          codecov --file coverage.xml
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  postgres:
+    name: postgres
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+        - python-version: 3.9
+          tox-env: py39
+
+    services:
+      postgres:
+        # Docker Hub image
+        image: postgres
+
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install codecov==2.1.11 .[dev]
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # TODO: cache prisma engines
+
+      - name: Run tests
+        run: |
+          tox -e setup,${{ matrix.tox-env }},report -- tests/integrations/postgresql
+        env:
+          PRISMA_PY_POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/postgres
 
       - name: Upload coverage
         run: |
