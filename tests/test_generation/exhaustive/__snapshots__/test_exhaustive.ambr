@@ -8393,7 +8393,7 @@
       author_id: Union[int, 'types.IntFilter']
   
       # should be noted that AND and NOT should be Union['PostWhereInputRecursive1', List['PostWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['PostWhereInputRecursive1']
       OR: List['PostWhereInputRecursive1']
       NOT: List['PostWhereInputRecursive1']
@@ -8410,7 +8410,7 @@
       author_id: Union[int, 'types.IntFilter']
   
       # should be noted that AND and NOT should be Union['PostWhereInputRecursive2', List['PostWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['PostWhereInputRecursive2']
       OR: List['PostWhereInputRecursive2']
       NOT: List['PostWhereInputRecursive2']
@@ -9287,7 +9287,7 @@
       posts: 'PostListRelationFilter'
   
       # should be noted that AND and NOT should be Union['UserWhereInputRecursive1', List['UserWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['UserWhereInputRecursive1']
       OR: List['UserWhereInputRecursive1']
       NOT: List['UserWhereInputRecursive1']
@@ -9310,7 +9310,7 @@
       posts: 'PostListRelationFilter'
   
       # should be noted that AND and NOT should be Union['UserWhereInputRecursive2', List['UserWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['UserWhereInputRecursive2']
       OR: List['UserWhereInputRecursive2']
       NOT: List['UserWhereInputRecursive2']
@@ -10193,7 +10193,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['MWhereInputRecursive1', List['MWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['MWhereInputRecursive1']
       OR: List['MWhereInputRecursive1']
       NOT: List['MWhereInputRecursive1']
@@ -10215,7 +10215,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['MWhereInputRecursive2', List['MWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['MWhereInputRecursive2']
       OR: List['MWhereInputRecursive2']
       NOT: List['MWhereInputRecursive2']
@@ -11108,7 +11108,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['NWhereInputRecursive1', List['NWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['NWhereInputRecursive1']
       OR: List['NWhereInputRecursive1']
       NOT: List['NWhereInputRecursive1']
@@ -11132,7 +11132,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['NWhereInputRecursive2', List['NWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['NWhereInputRecursive2']
       OR: List['NWhereInputRecursive2']
       NOT: List['NWhereInputRecursive2']
@@ -12017,7 +12017,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive1', List['OneOptionalWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['OneOptionalWhereInputRecursive1']
       OR: List['OneOptionalWhereInputRecursive1']
       NOT: List['OneOptionalWhereInputRecursive1']
@@ -12039,7 +12039,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive2', List['OneOptionalWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['OneOptionalWhereInputRecursive2']
       OR: List['OneOptionalWhereInputRecursive2']
       NOT: List['OneOptionalWhereInputRecursive2']
@@ -12922,7 +12922,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive1', List['ManyRequiredWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['ManyRequiredWhereInputRecursive1']
       OR: List['ManyRequiredWhereInputRecursive1']
       NOT: List['ManyRequiredWhereInputRecursive1']
@@ -12945,7 +12945,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive2', List['ManyRequiredWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['ManyRequiredWhereInputRecursive2']
       OR: List['ManyRequiredWhereInputRecursive2']
       NOT: List['ManyRequiredWhereInputRecursive2']
@@ -13811,7 +13811,7 @@
       inc_bInt: Union[int, 'types.BigIntFilter']
   
       # should be noted that AND and NOT should be Union['AWhereInputRecursive1', List['AWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['AWhereInputRecursive1']
       OR: List['AWhereInputRecursive1']
       NOT: List['AWhereInputRecursive1']
@@ -13830,7 +13830,7 @@
       inc_bInt: Union[int, 'types.BigIntFilter']
   
       # should be noted that AND and NOT should be Union['AWhereInputRecursive2', List['AWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['AWhereInputRecursive2']
       OR: List['AWhereInputRecursive2']
       NOT: List['AWhereInputRecursive2']
@@ -14650,7 +14650,7 @@
       d_float: Union[float, 'types.FloatFilter']
   
       # should be noted that AND and NOT should be Union['BWhereInputRecursive1', List['BWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['BWhereInputRecursive1']
       OR: List['BWhereInputRecursive1']
       NOT: List['BWhereInputRecursive1']
@@ -14663,7 +14663,7 @@
       d_float: Union[float, 'types.FloatFilter']
   
       # should be noted that AND and NOT should be Union['BWhereInputRecursive2', List['BWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['BWhereInputRecursive2']
       OR: List['BWhereInputRecursive2']
       NOT: List['BWhereInputRecursive2']
@@ -15495,7 +15495,7 @@
       uuid: Union[str, 'types.StringFilter']
   
       # should be noted that AND and NOT should be Union['CWhereInputRecursive1', List['CWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['CWhereInputRecursive1']
       OR: List['CWhereInputRecursive1']
       NOT: List['CWhereInputRecursive1']
@@ -15512,7 +15512,7 @@
       uuid: Union[str, 'types.StringFilter']
   
       # should be noted that AND and NOT should be Union['CWhereInputRecursive2', List['CWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['CWhereInputRecursive2']
       OR: List['CWhereInputRecursive2']
       NOT: List['CWhereInputRecursive2']
@@ -16340,7 +16340,7 @@
       jsonb: Union['fields.Json', 'types.JsonFilter']
   
       # should be noted that AND and NOT should be Union['DWhereInputRecursive1', List['DWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['DWhereInputRecursive1']
       OR: List['DWhereInputRecursive1']
       NOT: List['DWhereInputRecursive1']
@@ -16355,7 +16355,7 @@
       jsonb: Union['fields.Json', 'types.JsonFilter']
   
       # should be noted that AND and NOT should be Union['DWhereInputRecursive2', List['DWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['DWhereInputRecursive2']
       OR: List['DWhereInputRecursive2']
       NOT: List['DWhereInputRecursive2']
@@ -17173,7 +17173,7 @@
       ts: Union[datetime.datetime, 'types.DateTimeFilter']
   
       # should be noted that AND and NOT should be Union['EWhereInputRecursive1', List['EWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['EWhereInputRecursive1']
       OR: List['EWhereInputRecursive1']
       NOT: List['EWhereInputRecursive1']
@@ -17187,7 +17187,7 @@
       ts: Union[datetime.datetime, 'types.DateTimeFilter']
   
       # should be noted that AND and NOT should be Union['EWhereInputRecursive2', List['EWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['EWhereInputRecursive2']
       OR: List['EWhereInputRecursive2']
       NOT: List['EWhereInputRecursive2']
@@ -25605,7 +25605,7 @@
       author_id: Union[int, 'types.IntFilter']
   
       # should be noted that AND and NOT should be Union['PostWhereInputRecursive1', List['PostWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['PostWhereInputRecursive1']
       OR: List['PostWhereInputRecursive1']
       NOT: List['PostWhereInputRecursive1']
@@ -25622,7 +25622,7 @@
       author_id: Union[int, 'types.IntFilter']
   
       # should be noted that AND and NOT should be Union['PostWhereInputRecursive2', List['PostWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['PostWhereInputRecursive2']
       OR: List['PostWhereInputRecursive2']
       NOT: List['PostWhereInputRecursive2']
@@ -26499,7 +26499,7 @@
       posts: 'PostListRelationFilter'
   
       # should be noted that AND and NOT should be Union['UserWhereInputRecursive1', List['UserWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['UserWhereInputRecursive1']
       OR: List['UserWhereInputRecursive1']
       NOT: List['UserWhereInputRecursive1']
@@ -26522,7 +26522,7 @@
       posts: 'PostListRelationFilter'
   
       # should be noted that AND and NOT should be Union['UserWhereInputRecursive2', List['UserWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['UserWhereInputRecursive2']
       OR: List['UserWhereInputRecursive2']
       NOT: List['UserWhereInputRecursive2']
@@ -27405,7 +27405,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['MWhereInputRecursive1', List['MWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['MWhereInputRecursive1']
       OR: List['MWhereInputRecursive1']
       NOT: List['MWhereInputRecursive1']
@@ -27427,7 +27427,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['MWhereInputRecursive2', List['MWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['MWhereInputRecursive2']
       OR: List['MWhereInputRecursive2']
       NOT: List['MWhereInputRecursive2']
@@ -28320,7 +28320,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['NWhereInputRecursive1', List['NWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['NWhereInputRecursive1']
       OR: List['NWhereInputRecursive1']
       NOT: List['NWhereInputRecursive1']
@@ -28344,7 +28344,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['NWhereInputRecursive2', List['NWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['NWhereInputRecursive2']
       OR: List['NWhereInputRecursive2']
       NOT: List['NWhereInputRecursive2']
@@ -29229,7 +29229,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive1', List['OneOptionalWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['OneOptionalWhereInputRecursive1']
       OR: List['OneOptionalWhereInputRecursive1']
       NOT: List['OneOptionalWhereInputRecursive1']
@@ -29251,7 +29251,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive2', List['OneOptionalWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['OneOptionalWhereInputRecursive2']
       OR: List['OneOptionalWhereInputRecursive2']
       NOT: List['OneOptionalWhereInputRecursive2']
@@ -30134,7 +30134,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive1', List['ManyRequiredWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['ManyRequiredWhereInputRecursive1']
       OR: List['ManyRequiredWhereInputRecursive1']
       NOT: List['ManyRequiredWhereInputRecursive1']
@@ -30157,7 +30157,7 @@
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
       # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive2', List['ManyRequiredWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['ManyRequiredWhereInputRecursive2']
       OR: List['ManyRequiredWhereInputRecursive2']
       NOT: List['ManyRequiredWhereInputRecursive2']
@@ -31023,7 +31023,7 @@
       inc_bInt: Union[int, 'types.BigIntFilter']
   
       # should be noted that AND and NOT should be Union['AWhereInputRecursive1', List['AWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['AWhereInputRecursive1']
       OR: List['AWhereInputRecursive1']
       NOT: List['AWhereInputRecursive1']
@@ -31042,7 +31042,7 @@
       inc_bInt: Union[int, 'types.BigIntFilter']
   
       # should be noted that AND and NOT should be Union['AWhereInputRecursive2', List['AWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['AWhereInputRecursive2']
       OR: List['AWhereInputRecursive2']
       NOT: List['AWhereInputRecursive2']
@@ -31862,7 +31862,7 @@
       d_float: Union[float, 'types.FloatFilter']
   
       # should be noted that AND and NOT should be Union['BWhereInputRecursive1', List['BWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['BWhereInputRecursive1']
       OR: List['BWhereInputRecursive1']
       NOT: List['BWhereInputRecursive1']
@@ -31875,7 +31875,7 @@
       d_float: Union[float, 'types.FloatFilter']
   
       # should be noted that AND and NOT should be Union['BWhereInputRecursive2', List['BWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['BWhereInputRecursive2']
       OR: List['BWhereInputRecursive2']
       NOT: List['BWhereInputRecursive2']
@@ -32707,7 +32707,7 @@
       uuid: Union[str, 'types.StringFilter']
   
       # should be noted that AND and NOT should be Union['CWhereInputRecursive1', List['CWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['CWhereInputRecursive1']
       OR: List['CWhereInputRecursive1']
       NOT: List['CWhereInputRecursive1']
@@ -32724,7 +32724,7 @@
       uuid: Union[str, 'types.StringFilter']
   
       # should be noted that AND and NOT should be Union['CWhereInputRecursive2', List['CWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['CWhereInputRecursive2']
       OR: List['CWhereInputRecursive2']
       NOT: List['CWhereInputRecursive2']
@@ -33552,7 +33552,7 @@
       jsonb: Union['fields.Json', 'types.JsonFilter']
   
       # should be noted that AND and NOT should be Union['DWhereInputRecursive1', List['DWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['DWhereInputRecursive1']
       OR: List['DWhereInputRecursive1']
       NOT: List['DWhereInputRecursive1']
@@ -33567,7 +33567,7 @@
       jsonb: Union['fields.Json', 'types.JsonFilter']
   
       # should be noted that AND and NOT should be Union['DWhereInputRecursive2', List['DWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['DWhereInputRecursive2']
       OR: List['DWhereInputRecursive2']
       NOT: List['DWhereInputRecursive2']
@@ -34385,7 +34385,7 @@
       ts: Union[datetime.datetime, 'types.DateTimeFilter']
   
       # should be noted that AND and NOT should be Union['EWhereInputRecursive1', List['EWhereInputRecursive1']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['EWhereInputRecursive1']
       OR: List['EWhereInputRecursive1']
       NOT: List['EWhereInputRecursive1']
@@ -34399,7 +34399,7 @@
       ts: Union[datetime.datetime, 'types.DateTimeFilter']
   
       # should be noted that AND and NOT should be Union['EWhereInputRecursive2', List['EWhereInputRecursive2']]
-      # but this causes mypy to hang ¯\_(ツ)_/¯
+      # but this causes mypy to hang :/
       AND: List['EWhereInputRecursive2']
       OR: List['EWhereInputRecursive2']
       NOT: List['EWhereInputRecursive2']
