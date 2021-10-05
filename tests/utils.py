@@ -152,6 +152,12 @@ class Testdir:
 
         return str(path.relative_to(self.path))
 
+    def _escape_path(self, path: Union[str, Path]) -> str:
+        if isinstance(path, Path):  # pragma: no branch
+            path = str(path.absolute())
+
+        return path.replace('\\', '\\\\')
+
     def make_from_function(
         self,
         function: FuncType,
@@ -200,7 +206,11 @@ class Testdir:
 
         path = self.path.joinpath('schema.prisma')
         path.write_text(
-            schema.format(output=self.path.joinpath(output), options=options, **extra)
+            schema.format(
+                output=self._escape_path(self.path.joinpath(output)),
+                options=options,
+                **extra,
+            )
         )
         return path
 
