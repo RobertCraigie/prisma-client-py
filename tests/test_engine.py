@@ -86,7 +86,7 @@ def test_mismatched_version_error(fake_process: FakeProcess) -> None:
 def test_ensure_local_path(testdir: Testdir, fake_process: FakeProcess) -> None:
     """Query engine in current directory required to be the expected version"""
     fake_engine = testdir.path / platform.check_for_extension(
-        f'prisma-query-engine-{platform.name()}'
+        f'prisma-query-engine-{platform.binary_platform()}'
     )
     fake_engine.touch()
 
