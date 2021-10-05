@@ -28,7 +28,7 @@ def get_files_from_templates(directory: Path) -> List[str]:
             else:
                 name = str(template.relative_to(template.parent.parent))
 
-            files.append(remove_suffix(name, '.jinja').replace('/', '//'))
+            files.append(remove_suffix(name, '.jinja').replace('\\', '/'))
 
     return files
 
