@@ -152,12 +152,6 @@ class Testdir:
 
         return str(path.relative_to(self.path))
 
-    def _escape_path(self, path: Union[str, Path]) -> str:
-        if isinstance(path, Path):  # pragma: no branch
-            path = str(path.absolute())
-
-        return path.replace('\\', '\\\\')
-
     def make_from_function(
         self,
         function: FuncType,
@@ -207,7 +201,7 @@ class Testdir:
         path = self.path.joinpath('schema.prisma')
         path.write_text(
             schema.format(
-                output=self._escape_path(self.path.joinpath(output)),
+                output=escape_path(self.path.joinpath(output)),
                 options=options,
                 **extra,
             )
@@ -314,3 +308,10 @@ def assert_query_equals(query: Union[str, QueryBuilder], expected: str) -> None:
         expected = expected[:-1]
 
     assert query == expected
+
+
+def escape_path(path: Union[str, Path]) -> str:
+    if isinstance(path, Path):  # pragma: no branch
+        path = str(path.absolute())
+
+    return path.replace('\\', '\\\\')
