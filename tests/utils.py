@@ -200,7 +200,11 @@ class Testdir:
 
         path = self.path.joinpath('schema.prisma')
         path.write_text(
-            schema.format(output=self.path.joinpath(output), options=options, **extra)
+            schema.format(
+                output=escape_path(self.path.joinpath(output)),
+                options=options,
+                **extra,
+            )
         )
         return path
 
@@ -304,3 +308,10 @@ def assert_query_equals(query: Union[str, QueryBuilder], expected: str) -> None:
         expected = expected[:-1]
 
     assert query == expected
+
+
+def escape_path(path: Union[str, Path]) -> str:
+    if isinstance(path, Path):  # pragma: no branch
+        path = str(path.absolute())
+
+    return path.replace('\\', '\\\\')

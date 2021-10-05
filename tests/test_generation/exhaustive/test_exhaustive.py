@@ -11,6 +11,10 @@ from prisma.generator.utils import remove_suffix
 from .utils import ROOTDIR
 
 
+def _clean_line(proc: 'subprocess.CompletedProcess[bytes]') -> str:
+    return proc.stdout.decode('utf-8').rstrip('\n').rstrip('\r')
+
+
 def get_files_from_templates(directory: Path) -> List[str]:
     """Return a list of all auto-generated python modules"""
     files: List[str] = []
@@ -24,7 +28,7 @@ def get_files_from_templates(directory: Path) -> List[str]:
             else:
                 name = str(template.relative_to(template.parent.parent))
 
-            files.append(remove_suffix(name, '.jinja'))
+            files.append(remove_suffix(name, '.jinja').replace('\\', '/'))
 
     return files
 
@@ -54,7 +58,7 @@ def test_sync_client_can_be_imported() -> None:
         check=True,
         stdout=subprocess.PIPE,
     )
-    assert proc.stdout.decode('utf-8').rstrip('\n') == str(SYNC_ROOTDIR / '__init__.py')
+    assert _clean_line(proc) == str(SYNC_ROOTDIR / '__init__.py')
 
 
 def test_async_client_can_be_imported() -> None:
@@ -65,6 +69,4 @@ def test_async_client_can_be_imported() -> None:
         check=True,
         stdout=subprocess.PIPE,
     )
-    assert proc.stdout.decode('utf-8').rstrip('\n') == str(
-        ASYNC_ROOTDIR / '__init__.py'
-    )
+    assert _clean_line(proc) == str(ASYNC_ROOTDIR / '__init__.py')

@@ -1,3 +1,4 @@
+import sys
 import json
 import logging
 from pathlib import Path
@@ -124,7 +125,7 @@ def render_template(
             log.debug('Making backup of %s', file)
             file.rename(original)
 
-    file.write_text(output)
+    file.write_bytes(output.encode(sys.getdefaultencoding()))
     log.debug('Rendered template to %s', file.absolute())
 
 
