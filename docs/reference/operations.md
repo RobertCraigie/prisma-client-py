@@ -389,9 +389,73 @@ user = await client.user.find_first(
         # or
         'meta': {
             'equals': Json.keys(country='Scotland'),
-            'NOT': Json(['foo']),
+            'not': Json(['foo']),
         }
     }
+)
+```
+
+### Combining arguments
+
+All of the above mentioned filters can be combined with other filters using `AND`, `NOT` and `OR`.
+
+#### AND
+
+The following query will return the first post where the title contains the words `prisma` and `test`.
+
+```py
+post = await client.post.find_first(
+    where={
+        'AND': [
+            {
+                'title': {
+                    'contains': 'prisma',
+                },
+            },
+            {
+                'title': {
+                    'contains': 'test',
+                },
+            },
+        ],
+    },
+)
+```
+
+#### OR
+
+The following query will return the first post where the title contains the word `prisma` or is published.
+
+```py
+post = await client.post.find_first(
+    where={
+        'OR': [
+            {
+                'title': {
+                    'contains': 'prisma',
+                },
+            },
+            {
+                'published': True,
+            },
+        ],
+    },
+)
+```
+
+#### NOT
+
+The following query will return the first post where the title is not `My test post`
+
+```py
+post = await client.post.find_first(
+    where={
+        'NOT' [
+            {
+                'title': 'My test post',
+            },
+        ],
+    },
 )
 ```
 
