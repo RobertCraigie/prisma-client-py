@@ -6,7 +6,7 @@ from typing import Dict, Any, Optional
 from contextvars import ContextVar
 from distutils.dir_util import copy_tree
 
-from jinja2 import Environment, PackageLoader
+from jinja2 import Environment, FileSystemLoader
 
 from .models import Data
 from .types import PartialModelFields
@@ -35,7 +35,7 @@ OVERRIDING_TEMPLATES = {'http.py.jinja'}
 DEFAULT_ENV = Environment(
     trim_blocks=True,
     lstrip_blocks=True,
-    loader=PackageLoader('prisma.generator', 'templates'),
+    loader=FileSystemLoader(Path(__file__).parent / 'templates'),
 )
 partial_models_ctx: ContextVar[Dict[str, PartialModelFields]] = ContextVar(
     'partial_models_ctx', default={}
