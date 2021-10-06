@@ -6,12 +6,13 @@ from typing import Type, TypeVar, Any, cast
 from pydantic import BaseModel, Extra, create_model_from_typeddict
 from pydantic.typing import is_typeddict
 
-from ._types import TypedDict, Protocol, runtime_checkable
+from ._types import Protocol, runtime_checkable
 
 
 __all__ = ('validate',)
 
-TypedDictT = TypeVar('TypedDictT', bound=TypedDict)
+# NOTE: we should use bound=TypedDict but mypy does not support this
+T = TypeVar('T')
 
 
 class Config:
@@ -46,7 +47,7 @@ def patch_pydantic() -> None:
     annotated_types.create_model_from_typeddict = patched_create_model
 
 
-def validate(typ: Type[TypedDictT], data: Any) -> TypedDictT:
+def validate(typ: Type[T], data: Any) -> T:
     """Validate untrusted data matches a given TypedDict
 
     For example:
@@ -77,4 +78,4 @@ def validate(typ: Type[TypedDictT], data: Any) -> TypedDictT:
         typ.__pydantic_model__ = model  # type: ignore
 
     instance = model.parse_obj(data)
-    return cast(TypedDictT, instance.dict(exclude_unset=True))
+    return cast(T, instance.dict(exclude_unset=True))

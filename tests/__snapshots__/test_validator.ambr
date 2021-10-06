@@ -23,22 +23,13 @@
 # name: test_recursive
   '
   4 validation errors for FloatFilter
-  NOT
+  not
     value is not a valid float (type=type_error.float)
-  NOT -> NOT
+  not -> not
     value is not a valid float (type=type_error.float)
-  NOT -> NOT -> NOT
+  not -> not -> not
     value is not a valid float (type=type_error.float)
-  NOT -> NOT -> NOT -> __root__
+  not -> not -> not -> __root__
     FloatFilterRecursive3 expected dict not str (type=type_error)
   '
----
-# name: test_recursive.1
-  <class 'dict'> {
-    'NOT': <class 'dict'> {
-      'NOT': <class 'dict'> {
-        'NOT': 193.4,
-      },
-    },
-  }
 ---

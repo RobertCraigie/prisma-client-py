@@ -4,7 +4,7 @@ from typing import Callable, Coroutine, TypeVar, Any
 from pydantic import BaseModel
 
 
-if sys.version_info >= (3, 8):
+if sys.version_info >= (3, 9):
     from typing import (  # pylint: disable=no-name-in-module, unused-import
         TypedDict as TypedDict,
         Protocol as Protocol,

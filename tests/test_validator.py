@@ -2,7 +2,7 @@ import pytest
 
 # TODO: should we re-export this?
 from pydantic import ValidationError
-from syrupy import SnapshotAssertion
+from syrupy.assertion import SnapshotAssertion
 
 from prisma import validate, types
 
@@ -12,7 +12,7 @@ class Foo:
 
 
 def test_simple() -> None:
-    """TODO"""
+    """Basic usage with correct data"""
     validated = validate(types.IntFilter, {'equals': 1})
     assert validated == {'equals': 1}
 
@@ -21,20 +21,20 @@ def test_simple() -> None:
 
 
 def test_disallows_non_typeddict_type(snapshot: SnapshotAssertion) -> None:
-    """TODO"""
+    """Validating against non TypedDict types throws an error"""
     with pytest.raises(TypeError) as exc:
-        validate(Foo, None)  # type: ignore
+        validate(Foo, None)
 
     assert str(exc.value) == snapshot
 
     with pytest.raises(TypeError) as exc:
-        validate(dict, None)  # type: ignore
+        validate(dict, None)
 
     assert str(exc.value) == snapshot
 
 
 def test_non_dictionary_values(snapshot: SnapshotAssertion) -> None:
-    """TODO"""
+    """Validating a non-dictionary value throws an error"""
     with pytest.raises(ValidationError) as exc:
         validate(types.UserCreateInput, None)
 
@@ -42,19 +42,18 @@ def test_non_dictionary_values(snapshot: SnapshotAssertion) -> None:
 
 
 def test_recursive(snapshot: SnapshotAssertion) -> None:
-    """TODO"""
+    """Validating recursive types works as expected"""
     with pytest.raises(ValidationError) as exc:
-        validate(types.FloatFilter, {'NOT': {'NOT': {'NOT': 'a'}}})
+        validate(types.FloatFilter, {'not': {'not': {'not': 'a'}}})
 
     assert str(exc.value) == snapshot
 
-    validated = validate(types.FloatFilter, {'NOT': {'NOT': {'NOT': 193.4}}})
-    assert validated == {'NOT': {'NOT': {'NOT': 193.4}}}
-    assert validated == snapshot
+    validated = validate(types.FloatFilter, {'not': {'not': {'not': '193.4'}}})
+    assert validated == {'not': {'not': {'not': 193.4}}}
 
 
 def test_missing_values(snapshot: SnapshotAssertion) -> None:
-    """TODO"""
+    """TypedDict with required keys is correctly validated"""
     with pytest.raises(ValidationError) as exc:
         validate(types.PostCreateInput, {})
 
@@ -67,6 +66,7 @@ def test_optional_values() -> None:
     assert validated == {'title': 'My Title', 'published': True}
 
     validated = validate(
-        types.PostCreateInput, dict(title='My Title', published=True, desc=None)
+        typ=types.PostCreateInput,
+        data=dict(title='My Title', published=True, desc=None),
     )
     assert validated == {'title': 'My Title', 'published': True, 'desc': None}
