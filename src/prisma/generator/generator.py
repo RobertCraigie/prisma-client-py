@@ -95,6 +95,10 @@ def cleanup_templates(rootdir: Path, *, env: Optional[Environment] = None) -> No
         file = resolve_template_path(rootdir=rootdir, name=name)
         original = resolve_original_file(file)
         if original.exists():
+            if file.exists():
+                log.debug('Removing overridden template at %s', file)
+                file.unlink()
+
             log.debug('Renaming file at %s to %s', original, file)
             original.rename(file)
         elif file.exists() and name not in OVERRIDING_TEMPLATES:
