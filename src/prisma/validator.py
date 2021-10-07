@@ -69,7 +69,8 @@ def validate(type: Type[T], data: Any) -> T:  # pylint: disable=redefined-builti
     # as we need to be able to update forward references
     if isinstance(type, CachedModel):
         # cache the model on the type object, mirroring how pydantic works
-        model = type.__pydantic_model__
+        # mypy thinks this is unreachable, we know it isn't, just ignore
+        model = type.__pydantic_model__  # type: ignore[unreachable]
     else:
         # type ignore required as pydantic is typed with a custom
         # TypedDict type instead of the standard library version
