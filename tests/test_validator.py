@@ -1,6 +1,4 @@
 import pytest
-
-# TODO: should we re-export this?
 from pydantic import ValidationError
 from syrupy.assertion import SnapshotAssertion
 
@@ -70,3 +68,11 @@ def test_optional_values() -> None:
         data=dict(title='My Title', published=True, desc=None),
     )
     assert validated == {'title': 'My Title', 'published': True, 'desc': None}
+
+
+def test_disallows_extra_values(snapshot: SnapshotAssertion) -> None:
+    """Fields that are not present in the TypedDict are not allowed"""
+    with pytest.raises(ValidationError) as exc:
+        validate(types.PostCreateInput, {'foo': 'bar'})
+
+    assert str(exc.value) == snapshot

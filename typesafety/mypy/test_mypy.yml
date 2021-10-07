@@ -227,7 +227,3 @@
 
     def test_validator() -> None:
       reveal_type(validate(PostCreateInput, {}))  # N: Revealed type is "prisma.types.PostCreateInput*"
-
-      # case: non-typeddict type
-      # TODO: this should error?
-      validate(MyModel, None)

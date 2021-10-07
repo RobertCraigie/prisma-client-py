@@ -1,3 +1,14 @@
+# name: test_disallows_extra_values
+  '
+  3 validation errors for PostCreateInput
+  title
+    field required (type=value_error.missing)
+  published
+    field required (type=value_error.missing)
+  foo
+    extra fields not permitted (type=value_error.extra)
+  '
+---
 # name: test_disallows_non_typeddict_type
   "Only TypedDict types are supported, got: <class 'tests.test_validator.Foo'> instead."
 ---

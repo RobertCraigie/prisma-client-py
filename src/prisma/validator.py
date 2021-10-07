@@ -30,7 +30,7 @@ def _get_module(typ: Type[Any]) -> ModuleType:
 
 @lru_cache(maxsize=None)
 def patch_pydantic() -> None:
-    """Pydantic does not resolve forward references for TypedDict types properly
+    """Pydantic does not resolve forward references for TypedDict types properly yet
 
     see https://github.com/samuelcolvin/pydantic/pull/2761
     """

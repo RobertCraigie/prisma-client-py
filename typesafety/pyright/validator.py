@@ -11,7 +11,5 @@ def validator() -> None:
     reveal_type(validated)  # T: PostCreateInput
 
     # case: non-typeddict type
-    validate(
-        Foo,  # E: Argument of type "Type[Foo]" cannot be assigned to parameter "typ" of type "Type[TypedDictT@validate]" in function "validate"
-        {},
-    )
+    # these are allowed as we cannot type the TypeVar properly due to a mypy limitation
+    validate(Foo, {})
