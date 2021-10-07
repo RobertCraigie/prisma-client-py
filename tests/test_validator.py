@@ -67,7 +67,11 @@ def test_optional_values() -> None:
         type=types.PostCreateInput,
         data=dict(title='My Title', published=True, desc=None),
     )
-    assert validated == {'title': 'My Title', 'published': True, 'desc': None}  # type: ignore[comparison-overlap]
+    assert validated == {  # type: ignore[comparison-overlap]
+        'title': 'My Title',
+        'published': True,
+        'desc': None,
+    }
 
 
 def test_disallows_extra_values(snapshot: SnapshotAssertion) -> None:
