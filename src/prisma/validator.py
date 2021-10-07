@@ -24,7 +24,7 @@ class CachedModel(Protocol):
     __pydantic_model__: BaseModel
 
 
-def get_module(typ: Type[Any]) -> ModuleType:
+def _get_module(typ: Type[Any]) -> ModuleType:
     return sys.modules[typ.__module__]
 
 
@@ -47,7 +47,7 @@ def patch_pydantic() -> None:
     annotated_types.create_model_from_typeddict = patched_create_model
 
 
-def validate(typ: Type[T], data: Any) -> T:
+def validate(type: Type[T], data: Any) -> T:  # pylint: disable=redefined-builtin
     """Validate untrusted data matches a given TypedDict
 
     For example:
@@ -62,20 +62,20 @@ def validate(typ: Type[T], data: Any) -> T:
     # monkey patching fails
     patch_pydantic()
 
-    if not is_typeddict(typ):
-        raise TypeError(f'Only TypedDict types are supported, got: {typ} instead.')
+    if not is_typeddict(type):
+        raise TypeError(f'Only TypedDict types are supported, got: {type} instead.')
 
     # we cannot use pydantic's builtin type -> model resolver
     # as we need to be able to update forward references
-    if isinstance(typ, CachedModel):
+    if isinstance(type, CachedModel):
         # cache the model on the type object, mirroring how pydantic works
-        model = typ.__pydantic_model__
+        model = type.__pydantic_model__
     else:
         # type ignore required as pydantic is typed with a custom
         # TypedDict type instead of the standard library version
-        model = create_model_from_typeddict(typ, __config__=Config)  # type: ignore
-        model.update_forward_refs(**vars(get_module(typ)))
-        typ.__pydantic_model__ = model  # type: ignore
+        model = create_model_from_typeddict(type, __config__=Config)  # type: ignore
+        model.update_forward_refs(**vars(_get_module(type)))
+        type.__pydantic_model__ = model  # type: ignore
 
     instance = model.parse_obj(data)
     return cast(T, instance.dict(exclude_unset=True))

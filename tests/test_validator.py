@@ -11,7 +11,7 @@ class Foo:
     pass
 
 
-def test_simple() -> None:
+def test_valid() -> None:
     """Basic usage with correct data"""
     validated = validate(types.IntFilter, {'equals': 1})
     assert validated == {'equals': 1}
@@ -66,7 +66,7 @@ def test_optional_values() -> None:
     assert validated == {'title': 'My Title', 'published': True}
 
     validated = validate(
-        typ=types.PostCreateInput,
+        type=types.PostCreateInput,
         data=dict(title='My Title', published=True, desc=None),
     )
     assert validated == {'title': 'My Title', 'published': True, 'desc': None}
