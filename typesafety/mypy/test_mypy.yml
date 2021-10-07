@@ -11,6 +11,7 @@
       PostCreateInput,
       PostWhereUniqueInput,
     )
+    from prisma.validator import validate
 
     class MyModel(BaseModel):
       id: int
@@ -223,3 +224,6 @@
               },
           },
       )
+
+    def test_validator() -> None:
+      reveal_type(validate(PostCreateInput, {}))  # N: Revealed type is "prisma.types.PostCreateInput*"

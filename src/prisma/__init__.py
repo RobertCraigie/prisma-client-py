@@ -8,6 +8,7 @@ __version__ = '0.2.0'
 
 from .utils import setup_logging
 from . import errors as errors
+from .validator import *
 
 
 try:
