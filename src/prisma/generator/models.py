@@ -205,6 +205,7 @@ class Config(BaseSettings):
     interface: InterfaceChoices = InterfaceChoices.asyncio
     partial_type_generator: Optional[Module]
     recursive_type_depth: int = FieldInfo(default=5)
+    validate_arguments: bool = True
 
     class Config(BaseSettings.Config):
         extra: Extra = Extra.forbid

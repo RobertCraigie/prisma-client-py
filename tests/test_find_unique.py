@@ -1,5 +1,6 @@
 import pytest
 
+import prisma
 from prisma import errors, Client
 
 
@@ -22,16 +23,17 @@ async def test_find_unique(client: Client) -> None:
 @pytest.mark.asyncio
 async def test_find_unique_missing_required_args(client: Client) -> None:
     """Missing field raises an error"""
-    with pytest.raises(TypeError):
-        await client.post.find_unique()  # type: ignore[call-arg]
+    with prisma.disable_validation():
+        with pytest.raises(TypeError):
+            await client.post.find_unique()  # type: ignore[call-arg]
 
-    # TODO: more constrained error type
-    with pytest.raises(errors.DataError):
-        await client.post.find_unique(
-            {  # type: ignore[typeddict-item]
-                'title': 'Hi from Prisma!',
-            }
-        )
+        # TODO: more constrained error type
+        with pytest.raises(errors.DataError):
+            await client.post.find_unique(
+                {  # type: ignore[typeddict-item]
+                    'title': 'Hi from Prisma!',
+                }
+            )
 
 
 @pytest.mark.asyncio

@@ -1,4 +1,5 @@
 import pytest
+import prisma
 from prisma import Client
 from prisma.errors import DataError
 
@@ -189,18 +190,19 @@ async def test_atomic_update(client: Client) -> None:
 @pytest.mark.asyncio
 async def test_atomic_update_invalid_input(client: Client) -> None:
     """Float atomic update only allows one field to be passed"""
-    with pytest.raises(DataError) as exc:
-        await client.types.update(
-            where={
-                'id': 1,
-            },
-            data={  # pyright: reportGeneralTypeIssues=false
-                'float_': {  # type: ignore
-                    'divide': 1,
-                    'multiply': 2,
+    with prisma.disable_validation():
+        with pytest.raises(DataError) as exc:
+            await client.types.update(
+                where={
+                    'id': 1,
                 },
-            },
-        )
+                data={  # pyright: reportGeneralTypeIssues=false
+                    'float_': {  # type: ignore
+                        'divide': 1,
+                        'multiply': 2,
+                    },
+                },
+            )
 
     message = exc.value.args[0]
     assert isinstance(message, str)

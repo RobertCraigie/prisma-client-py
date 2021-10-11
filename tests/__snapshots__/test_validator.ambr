@@ -31,6 +31,20 @@
     UserCreateInput expected dict not NoneType (type=type_error)
   '
 ---
+# name: test_patch_respects_arguments
+  '
+  1 validation error for UserCreateInput
+  name
+    field required (type=value_error.missing)
+  '
+---
+# name: test_patch_respects_arguments.1
+  '
+  1 validation error for UserCreateInput
+  foo
+    extra fields not permitted (type=value_error.extra)
+  '
+---
 # name: test_recursive
   '
   4 validation errors for FloatFilter
@@ -42,5 +56,12 @@
     value is not a valid float (type=type_error.float)
   not -> not -> not -> __root__
     FloatFilterRecursive3 expected dict not str (type=type_error)
+  '
+---
+# name: test_validate_arguments
+  '
+  1 validation error for Create
+  data -> name
+    field required (type=value_error.missing)
   '
 ---

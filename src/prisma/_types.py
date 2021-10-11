@@ -27,3 +27,4 @@ BaseModelT = TypeVar('BaseModelT', bound=BaseModel)
 # TODO: use a TypeVar
 FuncType = Callable[..., Any]
 CoroType = Callable[..., Coroutine[Any, Any, Any]]
+AnyCallableT = TypeVar('AnyCallableT', bound=FuncType)

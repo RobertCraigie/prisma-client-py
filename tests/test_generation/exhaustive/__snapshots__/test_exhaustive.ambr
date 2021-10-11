@@ -885,6 +885,7 @@
   from ._types import BaseModelT
   from .engine import QueryEngine
   from .builder import QueryBuilder
+  from .validator import lazy_validate_arguments
   
   
   __all__ = (
@@ -1287,6 +1288,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       async def create(
           self,
           data: types.PostCreateInput,
@@ -1303,6 +1305,7 @@
           )
           return models.Post.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def create_many(
           self,
           data: List[types.PostCreateWithoutRelationsInput],
@@ -1324,6 +1327,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def delete(
           self,
           where: types.PostWhereUniqueInput,
@@ -1344,6 +1348,7 @@
   
           return models.Post.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def find_unique(
           self,
           where: types.PostWhereUniqueInput,
@@ -1363,6 +1368,7 @@
               return None
           return models.Post.parse_obj(result)
   
+      @lazy_validate_arguments
       async def find_many(
           self,
           take: Optional[int] = None,
@@ -1387,6 +1393,7 @@
           )
           return [models.Post.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       async def find_first(
           self,
           skip: Optional[int] = None,
@@ -1412,6 +1419,7 @@
               return None
           return models.Post.parse_obj(result)
   
+      @lazy_validate_arguments
       async def update(
           self,
           data: types.PostUpdateInput,
@@ -1434,6 +1442,7 @@
   
           return models.Post.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def upsert(
           self,
           where: types.PostWhereUniqueInput,
@@ -1453,6 +1462,7 @@
           )
           return models.Post.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def update_many(
           self,
           data: types.PostUpdateManyMutationInput,
@@ -1467,6 +1477,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def count(
           self,
           take: Optional[int] = None,
@@ -1491,6 +1502,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       async def delete_many(
           self,
           where: Optional[types.PostWhereInput] = None
@@ -1511,6 +1523,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.PostCreateInput,
@@ -1526,6 +1539,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.PostCreateWithoutRelationsInput],
@@ -1546,6 +1560,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.PostWhereUniqueInput,
@@ -1561,6 +1576,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.PostUpdateInput,
@@ -1578,6 +1594,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.PostWhereUniqueInput,
@@ -1596,6 +1613,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.PostUpdateManyMutationInput,
@@ -1609,6 +1627,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.PostWhereInput] = None,
@@ -1627,6 +1646,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       async def create(
           self,
           data: types.UserCreateInput,
@@ -1643,6 +1663,7 @@
           )
           return models.User.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def create_many(
           self,
           data: List[types.UserCreateWithoutRelationsInput],
@@ -1664,6 +1685,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def delete(
           self,
           where: types.UserWhereUniqueInput,
@@ -1684,6 +1706,7 @@
   
           return models.User.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def find_unique(
           self,
           where: types.UserWhereUniqueInput,
@@ -1703,6 +1726,7 @@
               return None
           return models.User.parse_obj(result)
   
+      @lazy_validate_arguments
       async def find_many(
           self,
           take: Optional[int] = None,
@@ -1727,6 +1751,7 @@
           )
           return [models.User.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       async def find_first(
           self,
           skip: Optional[int] = None,
@@ -1752,6 +1777,7 @@
               return None
           return models.User.parse_obj(result)
   
+      @lazy_validate_arguments
       async def update(
           self,
           data: types.UserUpdateInput,
@@ -1774,6 +1800,7 @@
   
           return models.User.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def upsert(
           self,
           where: types.UserWhereUniqueInput,
@@ -1793,6 +1820,7 @@
           )
           return models.User.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def update_many(
           self,
           data: types.UserUpdateManyMutationInput,
@@ -1807,6 +1835,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def count(
           self,
           take: Optional[int] = None,
@@ -1831,6 +1860,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       async def delete_many(
           self,
           where: Optional[types.UserWhereInput] = None
@@ -1851,6 +1881,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.UserCreateInput,
@@ -1866,6 +1897,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.UserCreateWithoutRelationsInput],
@@ -1886,6 +1918,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.UserWhereUniqueInput,
@@ -1901,6 +1934,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.UserUpdateInput,
@@ -1918,6 +1952,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.UserWhereUniqueInput,
@@ -1936,6 +1971,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.UserUpdateManyMutationInput,
@@ -1949,6 +1985,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.UserWhereInput] = None,
@@ -1967,6 +2004,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       async def create(
           self,
           data: types.MCreateInput,
@@ -1983,6 +2021,7 @@
           )
           return models.M.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def create_many(
           self,
           data: List[types.MCreateWithoutRelationsInput],
@@ -2004,6 +2043,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def delete(
           self,
           where: types.MWhereUniqueInput,
@@ -2024,6 +2064,7 @@
   
           return models.M.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def find_unique(
           self,
           where: types.MWhereUniqueInput,
@@ -2043,6 +2084,7 @@
               return None
           return models.M.parse_obj(result)
   
+      @lazy_validate_arguments
       async def find_many(
           self,
           take: Optional[int] = None,
@@ -2067,6 +2109,7 @@
           )
           return [models.M.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       async def find_first(
           self,
           skip: Optional[int] = None,
@@ -2092,6 +2135,7 @@
               return None
           return models.M.parse_obj(result)
   
+      @lazy_validate_arguments
       async def update(
           self,
           data: types.MUpdateInput,
@@ -2114,6 +2158,7 @@
   
           return models.M.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def upsert(
           self,
           where: types.MWhereUniqueInput,
@@ -2133,6 +2178,7 @@
           )
           return models.M.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def update_many(
           self,
           data: types.MUpdateManyMutationInput,
@@ -2147,6 +2193,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def count(
           self,
           take: Optional[int] = None,
@@ -2171,6 +2218,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       async def delete_many(
           self,
           where: Optional[types.MWhereInput] = None
@@ -2191,6 +2239,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.MCreateInput,
@@ -2206,6 +2255,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.MCreateWithoutRelationsInput],
@@ -2226,6 +2276,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.MWhereUniqueInput,
@@ -2241,6 +2292,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.MUpdateInput,
@@ -2258,6 +2310,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.MWhereUniqueInput,
@@ -2276,6 +2329,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.MUpdateManyMutationInput,
@@ -2289,6 +2343,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.MWhereInput] = None,
@@ -2307,6 +2362,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       async def create(
           self,
           data: types.NCreateInput,
@@ -2323,6 +2379,7 @@
           )
           return models.N.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def create_many(
           self,
           data: List[types.NCreateWithoutRelationsInput],
@@ -2344,6 +2401,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def delete(
           self,
           where: types.NWhereUniqueInput,
@@ -2364,6 +2422,7 @@
   
           return models.N.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def find_unique(
           self,
           where: types.NWhereUniqueInput,
@@ -2383,6 +2442,7 @@
               return None
           return models.N.parse_obj(result)
   
+      @lazy_validate_arguments
       async def find_many(
           self,
           take: Optional[int] = None,
@@ -2407,6 +2467,7 @@
           )
           return [models.N.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       async def find_first(
           self,
           skip: Optional[int] = None,
@@ -2432,6 +2493,7 @@
               return None
           return models.N.parse_obj(result)
   
+      @lazy_validate_arguments
       async def update(
           self,
           data: types.NUpdateInput,
@@ -2454,6 +2516,7 @@
   
           return models.N.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def upsert(
           self,
           where: types.NWhereUniqueInput,
@@ -2473,6 +2536,7 @@
           )
           return models.N.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def update_many(
           self,
           data: types.NUpdateManyMutationInput,
@@ -2487,6 +2551,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def count(
           self,
           take: Optional[int] = None,
@@ -2511,6 +2576,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       async def delete_many(
           self,
           where: Optional[types.NWhereInput] = None
@@ -2531,6 +2597,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.NCreateInput,
@@ -2546,6 +2613,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.NCreateWithoutRelationsInput],
@@ -2566,6 +2634,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.NWhereUniqueInput,
@@ -2581,6 +2650,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.NUpdateInput,
@@ -2598,6 +2668,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.NWhereUniqueInput,
@@ -2616,6 +2687,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.NUpdateManyMutationInput,
@@ -2629,6 +2701,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.NWhereInput] = None,
@@ -2647,6 +2720,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       async def create(
           self,
           data: types.OneOptionalCreateInput,
@@ -2663,6 +2737,7 @@
           )
           return models.OneOptional.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def create_many(
           self,
           data: List[types.OneOptionalCreateWithoutRelationsInput],
@@ -2684,6 +2759,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def delete(
           self,
           where: types.OneOptionalWhereUniqueInput,
@@ -2704,6 +2780,7 @@
   
           return models.OneOptional.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def find_unique(
           self,
           where: types.OneOptionalWhereUniqueInput,
@@ -2723,6 +2800,7 @@
               return None
           return models.OneOptional.parse_obj(result)
   
+      @lazy_validate_arguments
       async def find_many(
           self,
           take: Optional[int] = None,
@@ -2747,6 +2825,7 @@
           )
           return [models.OneOptional.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       async def find_first(
           self,
           skip: Optional[int] = None,
@@ -2772,6 +2851,7 @@
               return None
           return models.OneOptional.parse_obj(result)
   
+      @lazy_validate_arguments
       async def update(
           self,
           data: types.OneOptionalUpdateInput,
@@ -2794,6 +2874,7 @@
   
           return models.OneOptional.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def upsert(
           self,
           where: types.OneOptionalWhereUniqueInput,
@@ -2813,6 +2894,7 @@
           )
           return models.OneOptional.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def update_many(
           self,
           data: types.OneOptionalUpdateManyMutationInput,
@@ -2827,6 +2909,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def count(
           self,
           take: Optional[int] = None,
@@ -2851,6 +2934,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       async def delete_many(
           self,
           where: Optional[types.OneOptionalWhereInput] = None
@@ -2871,6 +2955,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.OneOptionalCreateInput,
@@ -2886,6 +2971,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.OneOptionalCreateWithoutRelationsInput],
@@ -2906,6 +2992,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.OneOptionalWhereUniqueInput,
@@ -2921,6 +3008,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.OneOptionalUpdateInput,
@@ -2938,6 +3026,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.OneOptionalWhereUniqueInput,
@@ -2956,6 +3045,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.OneOptionalUpdateManyMutationInput,
@@ -2969,6 +3059,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.OneOptionalWhereInput] = None,
@@ -2987,6 +3078,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       async def create(
           self,
           data: types.ManyRequiredCreateInput,
@@ -3003,6 +3095,7 @@
           )
           return models.ManyRequired.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def create_many(
           self,
           data: List[types.ManyRequiredCreateWithoutRelationsInput],
@@ -3024,6 +3117,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def delete(
           self,
           where: types.ManyRequiredWhereUniqueInput,
@@ -3044,6 +3138,7 @@
   
           return models.ManyRequired.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def find_unique(
           self,
           where: types.ManyRequiredWhereUniqueInput,
@@ -3063,6 +3158,7 @@
               return None
           return models.ManyRequired.parse_obj(result)
   
+      @lazy_validate_arguments
       async def find_many(
           self,
           take: Optional[int] = None,
@@ -3087,6 +3183,7 @@
           )
           return [models.ManyRequired.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       async def find_first(
           self,
           skip: Optional[int] = None,
@@ -3112,6 +3209,7 @@
               return None
           return models.ManyRequired.parse_obj(result)
   
+      @lazy_validate_arguments
       async def update(
           self,
           data: types.ManyRequiredUpdateInput,
@@ -3134,6 +3232,7 @@
   
           return models.ManyRequired.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def upsert(
           self,
           where: types.ManyRequiredWhereUniqueInput,
@@ -3153,6 +3252,7 @@
           )
           return models.ManyRequired.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def update_many(
           self,
           data: types.ManyRequiredUpdateManyMutationInput,
@@ -3167,6 +3267,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def count(
           self,
           take: Optional[int] = None,
@@ -3191,6 +3292,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       async def delete_many(
           self,
           where: Optional[types.ManyRequiredWhereInput] = None
@@ -3211,6 +3313,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.ManyRequiredCreateInput,
@@ -3226,6 +3329,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.ManyRequiredCreateWithoutRelationsInput],
@@ -3246,6 +3350,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.ManyRequiredWhereUniqueInput,
@@ -3261,6 +3366,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.ManyRequiredUpdateInput,
@@ -3278,6 +3384,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.ManyRequiredWhereUniqueInput,
@@ -3296,6 +3403,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.ManyRequiredUpdateManyMutationInput,
@@ -3309,6 +3417,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.ManyRequiredWhereInput] = None,
@@ -3327,6 +3436,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       async def create(
           self,
           data: types.ACreateInput,
@@ -3343,6 +3453,7 @@
           )
           return models.A.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def create_many(
           self,
           data: List[types.ACreateWithoutRelationsInput],
@@ -3364,6 +3475,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def delete(
           self,
           where: types.AWhereUniqueInput,
@@ -3384,6 +3496,7 @@
   
           return models.A.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def find_unique(
           self,
           where: types.AWhereUniqueInput,
@@ -3403,6 +3516,7 @@
               return None
           return models.A.parse_obj(result)
   
+      @lazy_validate_arguments
       async def find_many(
           self,
           take: Optional[int] = None,
@@ -3427,6 +3541,7 @@
           )
           return [models.A.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       async def find_first(
           self,
           skip: Optional[int] = None,
@@ -3452,6 +3567,7 @@
               return None
           return models.A.parse_obj(result)
   
+      @lazy_validate_arguments
       async def update(
           self,
           data: types.AUpdateInput,
@@ -3474,6 +3590,7 @@
   
           return models.A.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def upsert(
           self,
           where: types.AWhereUniqueInput,
@@ -3493,6 +3610,7 @@
           )
           return models.A.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def update_many(
           self,
           data: types.AUpdateManyMutationInput,
@@ -3507,6 +3625,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def count(
           self,
           take: Optional[int] = None,
@@ -3531,6 +3650,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       async def delete_many(
           self,
           where: Optional[types.AWhereInput] = None
@@ -3551,6 +3671,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.ACreateInput,
@@ -3566,6 +3687,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.ACreateWithoutRelationsInput],
@@ -3586,6 +3708,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.AWhereUniqueInput,
@@ -3601,6 +3724,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.AUpdateInput,
@@ -3618,6 +3742,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.AWhereUniqueInput,
@@ -3636,6 +3761,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.AUpdateManyMutationInput,
@@ -3649,6 +3775,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.AWhereInput] = None,
@@ -3667,6 +3794,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       async def create(
           self,
           data: types.BCreateInput,
@@ -3683,6 +3811,7 @@
           )
           return models.B.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def create_many(
           self,
           data: List[types.BCreateWithoutRelationsInput],
@@ -3704,6 +3833,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def delete(
           self,
           where: types.BWhereUniqueInput,
@@ -3724,6 +3854,7 @@
   
           return models.B.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def find_unique(
           self,
           where: types.BWhereUniqueInput,
@@ -3743,6 +3874,7 @@
               return None
           return models.B.parse_obj(result)
   
+      @lazy_validate_arguments
       async def find_many(
           self,
           take: Optional[int] = None,
@@ -3767,6 +3899,7 @@
           )
           return [models.B.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       async def find_first(
           self,
           skip: Optional[int] = None,
@@ -3792,6 +3925,7 @@
               return None
           return models.B.parse_obj(result)
   
+      @lazy_validate_arguments
       async def update(
           self,
           data: types.BUpdateInput,
@@ -3814,6 +3948,7 @@
   
           return models.B.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def upsert(
           self,
           where: types.BWhereUniqueInput,
@@ -3833,6 +3968,7 @@
           )
           return models.B.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def update_many(
           self,
           data: types.BUpdateManyMutationInput,
@@ -3847,6 +3983,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def count(
           self,
           take: Optional[int] = None,
@@ -3871,6 +4008,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       async def delete_many(
           self,
           where: Optional[types.BWhereInput] = None
@@ -3891,6 +4029,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.BCreateInput,
@@ -3906,6 +4045,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.BCreateWithoutRelationsInput],
@@ -3926,6 +4066,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.BWhereUniqueInput,
@@ -3941,6 +4082,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.BUpdateInput,
@@ -3958,6 +4100,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.BWhereUniqueInput,
@@ -3976,6 +4119,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.BUpdateManyMutationInput,
@@ -3989,6 +4133,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.BWhereInput] = None,
@@ -4007,6 +4152,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       async def create(
           self,
           data: types.CCreateInput,
@@ -4023,6 +4169,7 @@
           )
           return models.C.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def create_many(
           self,
           data: List[types.CCreateWithoutRelationsInput],
@@ -4044,6 +4191,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def delete(
           self,
           where: types.CWhereUniqueInput,
@@ -4064,6 +4212,7 @@
   
           return models.C.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def find_unique(
           self,
           where: types.CWhereUniqueInput,
@@ -4083,6 +4232,7 @@
               return None
           return models.C.parse_obj(result)
   
+      @lazy_validate_arguments
       async def find_many(
           self,
           take: Optional[int] = None,
@@ -4107,6 +4257,7 @@
           )
           return [models.C.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       async def find_first(
           self,
           skip: Optional[int] = None,
@@ -4132,6 +4283,7 @@
               return None
           return models.C.parse_obj(result)
   
+      @lazy_validate_arguments
       async def update(
           self,
           data: types.CUpdateInput,
@@ -4154,6 +4306,7 @@
   
           return models.C.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def upsert(
           self,
           where: types.CWhereUniqueInput,
@@ -4173,6 +4326,7 @@
           )
           return models.C.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def update_many(
           self,
           data: types.CUpdateManyMutationInput,
@@ -4187,6 +4341,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def count(
           self,
           take: Optional[int] = None,
@@ -4211,6 +4366,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       async def delete_many(
           self,
           where: Optional[types.CWhereInput] = None
@@ -4231,6 +4387,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.CCreateInput,
@@ -4246,6 +4403,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.CCreateWithoutRelationsInput],
@@ -4266,6 +4424,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.CWhereUniqueInput,
@@ -4281,6 +4440,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.CUpdateInput,
@@ -4298,6 +4458,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.CWhereUniqueInput,
@@ -4316,6 +4477,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.CUpdateManyMutationInput,
@@ -4329,6 +4491,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.CWhereInput] = None,
@@ -4347,6 +4510,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       async def create(
           self,
           data: types.DCreateInput,
@@ -4363,6 +4527,7 @@
           )
           return models.D.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def create_many(
           self,
           data: List[types.DCreateWithoutRelationsInput],
@@ -4384,6 +4549,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def delete(
           self,
           where: types.DWhereUniqueInput,
@@ -4404,6 +4570,7 @@
   
           return models.D.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def find_unique(
           self,
           where: types.DWhereUniqueInput,
@@ -4423,6 +4590,7 @@
               return None
           return models.D.parse_obj(result)
   
+      @lazy_validate_arguments
       async def find_many(
           self,
           take: Optional[int] = None,
@@ -4447,6 +4615,7 @@
           )
           return [models.D.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       async def find_first(
           self,
           skip: Optional[int] = None,
@@ -4472,6 +4641,7 @@
               return None
           return models.D.parse_obj(result)
   
+      @lazy_validate_arguments
       async def update(
           self,
           data: types.DUpdateInput,
@@ -4494,6 +4664,7 @@
   
           return models.D.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def upsert(
           self,
           where: types.DWhereUniqueInput,
@@ -4513,6 +4684,7 @@
           )
           return models.D.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def update_many(
           self,
           data: types.DUpdateManyMutationInput,
@@ -4527,6 +4699,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def count(
           self,
           take: Optional[int] = None,
@@ -4551,6 +4724,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       async def delete_many(
           self,
           where: Optional[types.DWhereInput] = None
@@ -4571,6 +4745,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.DCreateInput,
@@ -4586,6 +4761,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.DCreateWithoutRelationsInput],
@@ -4606,6 +4782,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.DWhereUniqueInput,
@@ -4621,6 +4798,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.DUpdateInput,
@@ -4638,6 +4816,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.DWhereUniqueInput,
@@ -4656,6 +4835,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.DUpdateManyMutationInput,
@@ -4669,6 +4849,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.DWhereInput] = None,
@@ -4687,6 +4868,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       async def create(
           self,
           data: types.ECreateInput,
@@ -4703,6 +4885,7 @@
           )
           return models.E.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def create_many(
           self,
           data: List[types.ECreateWithoutRelationsInput],
@@ -4724,6 +4907,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def delete(
           self,
           where: types.EWhereUniqueInput,
@@ -4744,6 +4928,7 @@
   
           return models.E.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def find_unique(
           self,
           where: types.EWhereUniqueInput,
@@ -4763,6 +4948,7 @@
               return None
           return models.E.parse_obj(result)
   
+      @lazy_validate_arguments
       async def find_many(
           self,
           take: Optional[int] = None,
@@ -4787,6 +4973,7 @@
           )
           return [models.E.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       async def find_first(
           self,
           skip: Optional[int] = None,
@@ -4812,6 +4999,7 @@
               return None
           return models.E.parse_obj(result)
   
+      @lazy_validate_arguments
       async def update(
           self,
           data: types.EUpdateInput,
@@ -4834,6 +5022,7 @@
   
           return models.E.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def upsert(
           self,
           where: types.EWhereUniqueInput,
@@ -4853,6 +5042,7 @@
           )
           return models.E.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       async def update_many(
           self,
           data: types.EUpdateManyMutationInput,
@@ -4867,6 +5057,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       async def count(
           self,
           take: Optional[int] = None,
@@ -4891,6 +5082,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       async def delete_many(
           self,
           where: Optional[types.EWhereInput] = None
@@ -4911,6 +5103,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.ECreateInput,
@@ -4926,6 +5119,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.ECreateWithoutRelationsInput],
@@ -4946,6 +5140,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.EWhereUniqueInput,
@@ -4961,6 +5156,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.EUpdateInput,
@@ -4978,6 +5174,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.EWhereUniqueInput,
@@ -4996,6 +5193,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.EUpdateManyMutationInput,
@@ -5009,6 +5207,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.EWhereInput] = None,
@@ -18104,6 +18303,7 @@
   from ._types import BaseModelT
   from .engine import QueryEngine
   from .builder import QueryBuilder
+  from .validator import lazy_validate_arguments
   
   
   __all__ = (
@@ -18506,6 +18706,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.PostCreateInput,
@@ -18522,6 +18723,7 @@
           )
           return models.Post.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.PostCreateWithoutRelationsInput],
@@ -18543,6 +18745,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.PostWhereUniqueInput,
@@ -18563,6 +18766,7 @@
   
           return models.Post.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def find_unique(
           self,
           where: types.PostWhereUniqueInput,
@@ -18582,6 +18786,7 @@
               return None
           return models.Post.parse_obj(result)
   
+      @lazy_validate_arguments
       def find_many(
           self,
           take: Optional[int] = None,
@@ -18606,6 +18811,7 @@
           )
           return [models.Post.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       def find_first(
           self,
           skip: Optional[int] = None,
@@ -18631,6 +18837,7 @@
               return None
           return models.Post.parse_obj(result)
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.PostUpdateInput,
@@ -18653,6 +18860,7 @@
   
           return models.Post.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.PostWhereUniqueInput,
@@ -18672,6 +18880,7 @@
           )
           return models.Post.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.PostUpdateManyMutationInput,
@@ -18686,6 +18895,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def count(
           self,
           take: Optional[int] = None,
@@ -18710,6 +18920,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.PostWhereInput] = None
@@ -18730,6 +18941,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.PostCreateInput,
@@ -18745,6 +18957,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.PostCreateWithoutRelationsInput],
@@ -18765,6 +18978,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.PostWhereUniqueInput,
@@ -18780,6 +18994,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.PostUpdateInput,
@@ -18797,6 +19012,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.PostWhereUniqueInput,
@@ -18815,6 +19031,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.PostUpdateManyMutationInput,
@@ -18828,6 +19045,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.PostWhereInput] = None,
@@ -18846,6 +19064,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.UserCreateInput,
@@ -18862,6 +19081,7 @@
           )
           return models.User.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.UserCreateWithoutRelationsInput],
@@ -18883,6 +19103,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.UserWhereUniqueInput,
@@ -18903,6 +19124,7 @@
   
           return models.User.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def find_unique(
           self,
           where: types.UserWhereUniqueInput,
@@ -18922,6 +19144,7 @@
               return None
           return models.User.parse_obj(result)
   
+      @lazy_validate_arguments
       def find_many(
           self,
           take: Optional[int] = None,
@@ -18946,6 +19169,7 @@
           )
           return [models.User.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       def find_first(
           self,
           skip: Optional[int] = None,
@@ -18971,6 +19195,7 @@
               return None
           return models.User.parse_obj(result)
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.UserUpdateInput,
@@ -18993,6 +19218,7 @@
   
           return models.User.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.UserWhereUniqueInput,
@@ -19012,6 +19238,7 @@
           )
           return models.User.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.UserUpdateManyMutationInput,
@@ -19026,6 +19253,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def count(
           self,
           take: Optional[int] = None,
@@ -19050,6 +19278,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.UserWhereInput] = None
@@ -19070,6 +19299,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.UserCreateInput,
@@ -19085,6 +19315,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.UserCreateWithoutRelationsInput],
@@ -19105,6 +19336,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.UserWhereUniqueInput,
@@ -19120,6 +19352,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.UserUpdateInput,
@@ -19137,6 +19370,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.UserWhereUniqueInput,
@@ -19155,6 +19389,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.UserUpdateManyMutationInput,
@@ -19168,6 +19403,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.UserWhereInput] = None,
@@ -19186,6 +19422,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.MCreateInput,
@@ -19202,6 +19439,7 @@
           )
           return models.M.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.MCreateWithoutRelationsInput],
@@ -19223,6 +19461,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.MWhereUniqueInput,
@@ -19243,6 +19482,7 @@
   
           return models.M.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def find_unique(
           self,
           where: types.MWhereUniqueInput,
@@ -19262,6 +19502,7 @@
               return None
           return models.M.parse_obj(result)
   
+      @lazy_validate_arguments
       def find_many(
           self,
           take: Optional[int] = None,
@@ -19286,6 +19527,7 @@
           )
           return [models.M.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       def find_first(
           self,
           skip: Optional[int] = None,
@@ -19311,6 +19553,7 @@
               return None
           return models.M.parse_obj(result)
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.MUpdateInput,
@@ -19333,6 +19576,7 @@
   
           return models.M.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.MWhereUniqueInput,
@@ -19352,6 +19596,7 @@
           )
           return models.M.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.MUpdateManyMutationInput,
@@ -19366,6 +19611,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def count(
           self,
           take: Optional[int] = None,
@@ -19390,6 +19636,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.MWhereInput] = None
@@ -19410,6 +19657,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.MCreateInput,
@@ -19425,6 +19673,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.MCreateWithoutRelationsInput],
@@ -19445,6 +19694,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.MWhereUniqueInput,
@@ -19460,6 +19710,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.MUpdateInput,
@@ -19477,6 +19728,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.MWhereUniqueInput,
@@ -19495,6 +19747,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.MUpdateManyMutationInput,
@@ -19508,6 +19761,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.MWhereInput] = None,
@@ -19526,6 +19780,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.NCreateInput,
@@ -19542,6 +19797,7 @@
           )
           return models.N.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.NCreateWithoutRelationsInput],
@@ -19563,6 +19819,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.NWhereUniqueInput,
@@ -19583,6 +19840,7 @@
   
           return models.N.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def find_unique(
           self,
           where: types.NWhereUniqueInput,
@@ -19602,6 +19860,7 @@
               return None
           return models.N.parse_obj(result)
   
+      @lazy_validate_arguments
       def find_many(
           self,
           take: Optional[int] = None,
@@ -19626,6 +19885,7 @@
           )
           return [models.N.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       def find_first(
           self,
           skip: Optional[int] = None,
@@ -19651,6 +19911,7 @@
               return None
           return models.N.parse_obj(result)
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.NUpdateInput,
@@ -19673,6 +19934,7 @@
   
           return models.N.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.NWhereUniqueInput,
@@ -19692,6 +19954,7 @@
           )
           return models.N.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.NUpdateManyMutationInput,
@@ -19706,6 +19969,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def count(
           self,
           take: Optional[int] = None,
@@ -19730,6 +19994,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.NWhereInput] = None
@@ -19750,6 +20015,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.NCreateInput,
@@ -19765,6 +20031,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.NCreateWithoutRelationsInput],
@@ -19785,6 +20052,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.NWhereUniqueInput,
@@ -19800,6 +20068,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.NUpdateInput,
@@ -19817,6 +20086,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.NWhereUniqueInput,
@@ -19835,6 +20105,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.NUpdateManyMutationInput,
@@ -19848,6 +20119,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.NWhereInput] = None,
@@ -19866,6 +20138,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.OneOptionalCreateInput,
@@ -19882,6 +20155,7 @@
           )
           return models.OneOptional.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.OneOptionalCreateWithoutRelationsInput],
@@ -19903,6 +20177,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.OneOptionalWhereUniqueInput,
@@ -19923,6 +20198,7 @@
   
           return models.OneOptional.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def find_unique(
           self,
           where: types.OneOptionalWhereUniqueInput,
@@ -19942,6 +20218,7 @@
               return None
           return models.OneOptional.parse_obj(result)
   
+      @lazy_validate_arguments
       def find_many(
           self,
           take: Optional[int] = None,
@@ -19966,6 +20243,7 @@
           )
           return [models.OneOptional.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       def find_first(
           self,
           skip: Optional[int] = None,
@@ -19991,6 +20269,7 @@
               return None
           return models.OneOptional.parse_obj(result)
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.OneOptionalUpdateInput,
@@ -20013,6 +20292,7 @@
   
           return models.OneOptional.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.OneOptionalWhereUniqueInput,
@@ -20032,6 +20312,7 @@
           )
           return models.OneOptional.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.OneOptionalUpdateManyMutationInput,
@@ -20046,6 +20327,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def count(
           self,
           take: Optional[int] = None,
@@ -20070,6 +20352,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.OneOptionalWhereInput] = None
@@ -20090,6 +20373,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.OneOptionalCreateInput,
@@ -20105,6 +20389,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.OneOptionalCreateWithoutRelationsInput],
@@ -20125,6 +20410,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.OneOptionalWhereUniqueInput,
@@ -20140,6 +20426,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.OneOptionalUpdateInput,
@@ -20157,6 +20444,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.OneOptionalWhereUniqueInput,
@@ -20175,6 +20463,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.OneOptionalUpdateManyMutationInput,
@@ -20188,6 +20477,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.OneOptionalWhereInput] = None,
@@ -20206,6 +20496,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.ManyRequiredCreateInput,
@@ -20222,6 +20513,7 @@
           )
           return models.ManyRequired.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.ManyRequiredCreateWithoutRelationsInput],
@@ -20243,6 +20535,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.ManyRequiredWhereUniqueInput,
@@ -20263,6 +20556,7 @@
   
           return models.ManyRequired.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def find_unique(
           self,
           where: types.ManyRequiredWhereUniqueInput,
@@ -20282,6 +20576,7 @@
               return None
           return models.ManyRequired.parse_obj(result)
   
+      @lazy_validate_arguments
       def find_many(
           self,
           take: Optional[int] = None,
@@ -20306,6 +20601,7 @@
           )
           return [models.ManyRequired.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       def find_first(
           self,
           skip: Optional[int] = None,
@@ -20331,6 +20627,7 @@
               return None
           return models.ManyRequired.parse_obj(result)
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.ManyRequiredUpdateInput,
@@ -20353,6 +20650,7 @@
   
           return models.ManyRequired.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.ManyRequiredWhereUniqueInput,
@@ -20372,6 +20670,7 @@
           )
           return models.ManyRequired.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.ManyRequiredUpdateManyMutationInput,
@@ -20386,6 +20685,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def count(
           self,
           take: Optional[int] = None,
@@ -20410,6 +20710,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.ManyRequiredWhereInput] = None
@@ -20430,6 +20731,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.ManyRequiredCreateInput,
@@ -20445,6 +20747,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.ManyRequiredCreateWithoutRelationsInput],
@@ -20465,6 +20768,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.ManyRequiredWhereUniqueInput,
@@ -20480,6 +20784,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.ManyRequiredUpdateInput,
@@ -20497,6 +20802,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.ManyRequiredWhereUniqueInput,
@@ -20515,6 +20821,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.ManyRequiredUpdateManyMutationInput,
@@ -20528,6 +20835,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.ManyRequiredWhereInput] = None,
@@ -20546,6 +20854,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.ACreateInput,
@@ -20562,6 +20871,7 @@
           )
           return models.A.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.ACreateWithoutRelationsInput],
@@ -20583,6 +20893,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.AWhereUniqueInput,
@@ -20603,6 +20914,7 @@
   
           return models.A.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def find_unique(
           self,
           where: types.AWhereUniqueInput,
@@ -20622,6 +20934,7 @@
               return None
           return models.A.parse_obj(result)
   
+      @lazy_validate_arguments
       def find_many(
           self,
           take: Optional[int] = None,
@@ -20646,6 +20959,7 @@
           )
           return [models.A.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       def find_first(
           self,
           skip: Optional[int] = None,
@@ -20671,6 +20985,7 @@
               return None
           return models.A.parse_obj(result)
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.AUpdateInput,
@@ -20693,6 +21008,7 @@
   
           return models.A.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.AWhereUniqueInput,
@@ -20712,6 +21028,7 @@
           )
           return models.A.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.AUpdateManyMutationInput,
@@ -20726,6 +21043,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def count(
           self,
           take: Optional[int] = None,
@@ -20750,6 +21068,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.AWhereInput] = None
@@ -20770,6 +21089,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.ACreateInput,
@@ -20785,6 +21105,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.ACreateWithoutRelationsInput],
@@ -20805,6 +21126,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.AWhereUniqueInput,
@@ -20820,6 +21142,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.AUpdateInput,
@@ -20837,6 +21160,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.AWhereUniqueInput,
@@ -20855,6 +21179,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.AUpdateManyMutationInput,
@@ -20868,6 +21193,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.AWhereInput] = None,
@@ -20886,6 +21212,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.BCreateInput,
@@ -20902,6 +21229,7 @@
           )
           return models.B.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.BCreateWithoutRelationsInput],
@@ -20923,6 +21251,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.BWhereUniqueInput,
@@ -20943,6 +21272,7 @@
   
           return models.B.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def find_unique(
           self,
           where: types.BWhereUniqueInput,
@@ -20962,6 +21292,7 @@
               return None
           return models.B.parse_obj(result)
   
+      @lazy_validate_arguments
       def find_many(
           self,
           take: Optional[int] = None,
@@ -20986,6 +21317,7 @@
           )
           return [models.B.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       def find_first(
           self,
           skip: Optional[int] = None,
@@ -21011,6 +21343,7 @@
               return None
           return models.B.parse_obj(result)
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.BUpdateInput,
@@ -21033,6 +21366,7 @@
   
           return models.B.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.BWhereUniqueInput,
@@ -21052,6 +21386,7 @@
           )
           return models.B.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.BUpdateManyMutationInput,
@@ -21066,6 +21401,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def count(
           self,
           take: Optional[int] = None,
@@ -21090,6 +21426,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.BWhereInput] = None
@@ -21110,6 +21447,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.BCreateInput,
@@ -21125,6 +21463,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.BCreateWithoutRelationsInput],
@@ -21145,6 +21484,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.BWhereUniqueInput,
@@ -21160,6 +21500,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.BUpdateInput,
@@ -21177,6 +21518,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.BWhereUniqueInput,
@@ -21195,6 +21537,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.BUpdateManyMutationInput,
@@ -21208,6 +21551,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.BWhereInput] = None,
@@ -21226,6 +21570,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.CCreateInput,
@@ -21242,6 +21587,7 @@
           )
           return models.C.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.CCreateWithoutRelationsInput],
@@ -21263,6 +21609,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.CWhereUniqueInput,
@@ -21283,6 +21630,7 @@
   
           return models.C.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def find_unique(
           self,
           where: types.CWhereUniqueInput,
@@ -21302,6 +21650,7 @@
               return None
           return models.C.parse_obj(result)
   
+      @lazy_validate_arguments
       def find_many(
           self,
           take: Optional[int] = None,
@@ -21326,6 +21675,7 @@
           )
           return [models.C.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       def find_first(
           self,
           skip: Optional[int] = None,
@@ -21351,6 +21701,7 @@
               return None
           return models.C.parse_obj(result)
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.CUpdateInput,
@@ -21373,6 +21724,7 @@
   
           return models.C.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.CWhereUniqueInput,
@@ -21392,6 +21744,7 @@
           )
           return models.C.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.CUpdateManyMutationInput,
@@ -21406,6 +21759,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def count(
           self,
           take: Optional[int] = None,
@@ -21430,6 +21784,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.CWhereInput] = None
@@ -21450,6 +21805,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.CCreateInput,
@@ -21465,6 +21821,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.CCreateWithoutRelationsInput],
@@ -21485,6 +21842,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.CWhereUniqueInput,
@@ -21500,6 +21858,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.CUpdateInput,
@@ -21517,6 +21876,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.CWhereUniqueInput,
@@ -21535,6 +21895,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.CUpdateManyMutationInput,
@@ -21548,6 +21909,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.CWhereInput] = None,
@@ -21566,6 +21928,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.DCreateInput,
@@ -21582,6 +21945,7 @@
           )
           return models.D.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.DCreateWithoutRelationsInput],
@@ -21603,6 +21967,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.DWhereUniqueInput,
@@ -21623,6 +21988,7 @@
   
           return models.D.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def find_unique(
           self,
           where: types.DWhereUniqueInput,
@@ -21642,6 +22008,7 @@
               return None
           return models.D.parse_obj(result)
   
+      @lazy_validate_arguments
       def find_many(
           self,
           take: Optional[int] = None,
@@ -21666,6 +22033,7 @@
           )
           return [models.D.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       def find_first(
           self,
           skip: Optional[int] = None,
@@ -21691,6 +22059,7 @@
               return None
           return models.D.parse_obj(result)
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.DUpdateInput,
@@ -21713,6 +22082,7 @@
   
           return models.D.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.DWhereUniqueInput,
@@ -21732,6 +22102,7 @@
           )
           return models.D.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.DUpdateManyMutationInput,
@@ -21746,6 +22117,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def count(
           self,
           take: Optional[int] = None,
@@ -21770,6 +22142,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.DWhereInput] = None
@@ -21790,6 +22163,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.DCreateInput,
@@ -21805,6 +22179,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.DCreateWithoutRelationsInput],
@@ -21825,6 +22200,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.DWhereUniqueInput,
@@ -21840,6 +22216,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.DUpdateInput,
@@ -21857,6 +22234,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.DWhereUniqueInput,
@@ -21875,6 +22253,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.DUpdateManyMutationInput,
@@ -21888,6 +22267,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.DWhereInput] = None,
@@ -21906,6 +22286,7 @@
       def __init__(self, client: Client):
           self._client = client
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.ECreateInput,
@@ -21922,6 +22303,7 @@
           )
           return models.E.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.ECreateWithoutRelationsInput],
@@ -21943,6 +22325,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.EWhereUniqueInput,
@@ -21963,6 +22346,7 @@
   
           return models.E.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def find_unique(
           self,
           where: types.EWhereUniqueInput,
@@ -21982,6 +22366,7 @@
               return None
           return models.E.parse_obj(result)
   
+      @lazy_validate_arguments
       def find_many(
           self,
           take: Optional[int] = None,
@@ -22006,6 +22391,7 @@
           )
           return [models.E.parse_obj(r) for r in resp['data']['result']]
   
+      @lazy_validate_arguments
       def find_first(
           self,
           skip: Optional[int] = None,
@@ -22031,6 +22417,7 @@
               return None
           return models.E.parse_obj(result)
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.EUpdateInput,
@@ -22053,6 +22440,7 @@
   
           return models.E.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.EWhereUniqueInput,
@@ -22072,6 +22460,7 @@
           )
           return models.E.parse_obj(resp['data']['result'])
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.EUpdateManyMutationInput,
@@ -22086,6 +22475,7 @@
           )
           return int(resp['data']['result']['count'])
   
+      @lazy_validate_arguments
       def count(
           self,
           take: Optional[int] = None,
@@ -22110,6 +22500,7 @@
           )
           return cast(int, resp['data']['result']['_count']['_all'])
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.EWhereInput] = None
@@ -22130,6 +22521,7 @@
       def __init__(self, batcher: Batch) -> None:
           self._batcher = batcher
   
+      @lazy_validate_arguments
       def create(
           self,
           data: types.ECreateInput,
@@ -22145,6 +22537,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def create_many(
           self,
           data: List[types.ECreateWithoutRelationsInput],
@@ -22165,6 +22558,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete(
           self,
           where: types.EWhereUniqueInput,
@@ -22180,6 +22574,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update(
           self,
           data: types.EUpdateInput,
@@ -22197,6 +22592,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def upsert(
           self,
           where: types.EWhereUniqueInput,
@@ -22215,6 +22611,7 @@
               },
           )
   
+      @lazy_validate_arguments
       def update_many(
           self,
           data: types.EUpdateManyMutationInput,
@@ -22228,6 +22625,7 @@
               root_selection=['count'],
           )
   
+      @lazy_validate_arguments
       def delete_many(
           self,
           where: Optional[types.EWhereInput] = None,

@@ -57,6 +57,8 @@ good-names =
   dt,
   fd,
   to,
+  tb,
+  Model,
 
 
 [VARIABLES]

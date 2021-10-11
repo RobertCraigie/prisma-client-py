@@ -1,5 +1,5 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations with context %}
+{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, maybe_validate_arguments, methods, operations with context %}
 # -- template client.py.jinja --
 from types import TracebackType
 from collections import defaultdict
@@ -9,6 +9,7 @@ from . import types, models, errors
 from ._types import BaseModelT
 from .engine import QueryEngine
 from .builder import QueryBuilder
+from .validator import lazy_validate_arguments
 
 
 __all__ = (
@@ -235,6 +236,7 @@ class {{ model.name }}Actions:
     def __init__(self, client: Client):
         self._client = client
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}create(
         self,
         data: types.{{ model.name }}CreateInput,
@@ -251,6 +253,7 @@ class {{ model.name }}Actions:
         )
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}create_many(
         self,
         data: List[types.{{ model.name }}CreateWithoutRelationsInput],
@@ -272,6 +275,7 @@ class {{ model.name }}Actions:
         )
         return int(resp['data']['result']['count'])
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}delete(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
@@ -292,6 +296,7 @@ class {{ model.name }}Actions:
 
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}find_unique(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
@@ -311,6 +316,7 @@ class {{ model.name }}Actions:
             return None
         return models.{{ model.name }}.parse_obj(result)
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}find_many(
         self,
         take: Optional[int] = None,
@@ -335,6 +341,7 @@ class {{ model.name }}Actions:
         )
         return [models.{{ model.name }}.parse_obj(r) for r in resp['data']['result']]
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}find_first(
         self,
         skip: Optional[int] = None,
@@ -360,6 +367,7 @@ class {{ model.name }}Actions:
             return None
         return models.{{ model.name }}.parse_obj(result)
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}update(
         self,
         data: types.{{ model.name }}UpdateInput,
@@ -382,6 +390,7 @@ class {{ model.name }}Actions:
 
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}upsert(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
@@ -401,6 +410,7 @@ class {{ model.name }}Actions:
         )
         return models.{{ model.name }}.parse_obj(resp['data']['result'])
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}update_many(
         self,
         data: types.{{ model.name }}UpdateManyMutationInput,
@@ -415,6 +425,7 @@ class {{ model.name }}Actions:
         )
         return int(resp['data']['result']['count'])
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}count(
         self,
         take: Optional[int] = None,
@@ -439,6 +450,7 @@ class {{ model.name }}Actions:
         )
         return cast(int, resp['data']['result']['_count']['_all'])
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}delete_many(
         self,
         where: Optional[types.{{ model.name }}WhereInput] = None
@@ -459,6 +471,7 @@ class {{ model.name }}BatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    {{ maybe_validate_arguments }}
     def create(
         self,
         data: types.{{ model.name }}CreateInput,
@@ -474,6 +487,7 @@ class {{ model.name }}BatchActions:
             },
         )
 
+    {{ maybe_validate_arguments }}
     def create_many(
         self,
         data: List[types.{{ model.name }}CreateWithoutRelationsInput],
@@ -494,6 +508,7 @@ class {{ model.name }}BatchActions:
             root_selection=['count'],
         )
 
+    {{ maybe_validate_arguments }}
     def delete(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
@@ -509,6 +524,7 @@ class {{ model.name }}BatchActions:
             },
         )
 
+    {{ maybe_validate_arguments }}
     def update(
         self,
         data: types.{{ model.name }}UpdateInput,
@@ -526,6 +542,7 @@ class {{ model.name }}BatchActions:
             },
         )
 
+    {{ maybe_validate_arguments }}
     def upsert(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
@@ -544,6 +561,7 @@ class {{ model.name }}BatchActions:
             },
         )
 
+    {{ maybe_validate_arguments }}
     def update_many(
         self,
         data: types.{{ model.name }}UpdateManyMutationInput,
@@ -557,6 +575,7 @@ class {{ model.name }}BatchActions:
             root_selection=['count'],
         )
 
+    {{ maybe_validate_arguments }}
     def delete_many(
         self,
         where: Optional[types.{{ model.name }}WhereInput] = None,
