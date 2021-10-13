@@ -9,7 +9,7 @@ async def test_catches_not_connected() -> None:
     with pytest.raises(errors.ClientNotConnectedError) as exc:
         await client.post.delete_many()
 
-    assert 'await client.connect()' in str(exc)
+    assert 'connect()' in str(exc)
 
 
 @pytest.mark.asyncio
