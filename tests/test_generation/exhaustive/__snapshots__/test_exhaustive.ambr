@@ -7266,6 +7266,7 @@
   # TODO: add an argument to signify that the last iteration should be skipped
   
   
+  SortMode = Literal['default', 'insensitive']
   SortOrder = Literal['asc', 'desc']
   
   # types that can be serialized to json by our query builder
@@ -7301,6 +7302,7 @@
           'endswith': str,
           'in': List[str],
           'not': Union[str, 'StringFilterRecursive1'],
+          'mode': SortMode,
       },
       total=False,
   )
@@ -7320,6 +7322,7 @@
           'endswith': str,
           'in': List[str],
           'not': Union[str, 'StringFilterRecursive2'],
+          'mode': SortMode,
       },
       total=False,
   )
@@ -7338,7 +7341,8 @@
           'startswith': str,
           'endswith': str,
           'in': List[str],
-              },
+                  'mode': SortMode,
+      },
       total=False,
   )
   
@@ -24478,6 +24482,7 @@
   # TODO: add an argument to signify that the last iteration should be skipped
   
   
+  SortMode = Literal['default', 'insensitive']
   SortOrder = Literal['asc', 'desc']
   
   # types that can be serialized to json by our query builder
@@ -24513,6 +24518,7 @@
           'endswith': str,
           'in': List[str],
           'not': Union[str, 'StringFilterRecursive1'],
+          'mode': SortMode,
       },
       total=False,
   )
@@ -24532,6 +24538,7 @@
           'endswith': str,
           'in': List[str],
           'not': Union[str, 'StringFilterRecursive2'],
+          'mode': SortMode,
       },
       total=False,
   )
@@ -24550,7 +24557,8 @@
           'startswith': str,
           'endswith': str,
           'in': List[str],
-              },
+                  'mode': SortMode,
+      },
       total=False,
   )
   
