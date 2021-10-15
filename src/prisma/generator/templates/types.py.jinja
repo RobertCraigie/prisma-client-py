@@ -1,5 +1,5 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import recursive_types with context %}
+{% from '_utils.py.jinja' import recursive_types, active_provider with context %}
 # -- template types.py.jinja --
 from .utils import _NoneType
 
@@ -36,6 +36,7 @@ from .utils import _NoneType
 {% endmacro %}
 
 
+SortMode = Literal['default', 'insensitive']
 SortOrder = Literal['asc', 'desc']
 
 # types that can be serialized to json by our query builder
@@ -88,6 +89,9 @@ Serializable = Union[
         'in': List[str],
         {%+ if next != '' -%}
             'not': Union[str, '{{ next }}'],
+        {% endif %}
+        {%+ if active_provider in ['postgresql', 'mongodb'] -%}
+            'mode': SortMode,
         {% endif %}
     },
     total=False,

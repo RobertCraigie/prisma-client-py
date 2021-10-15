@@ -254,6 +254,9 @@ post = await client.post.find_first(
 
 #### String Fields
 
+!!! warning
+    Case insensitive filtering is only available on PostgreSQL and MongoDB
+
 ```py
 post = await client.post.find_first(
     where={
@@ -270,9 +273,11 @@ post = await client.post.find_first(
             'startswith': 'must start with string',
             'endswith': 'must end with string',
             'in': ['find_string_1', 'find_string_2'],
+            'mode': 'insensitive',
             'not': {
                 # recursive type
                 'contains': 'string must not be present',
+                'mode': 'default',
                 ...
             },
         },
