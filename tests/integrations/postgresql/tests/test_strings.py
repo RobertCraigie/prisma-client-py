@@ -34,7 +34,7 @@ async def test_case_sensitivity(client: Client) -> None:
             },
         },
         order={
-            'name': 'asc',
+            'created_at': 'asc',
         },
     )
     assert len(users) == 2
