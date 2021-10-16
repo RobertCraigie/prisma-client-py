@@ -1084,7 +1084,14 @@
       d: 'DActions'
       e: 'EActions'
   
-      def __init__(self, *, use_dotenv: bool = True, log_queries: bool = False) -> None:
+      def __init__(
+          self,
+          *,
+          use_dotenv: bool = True,
+          log_queries: bool = False,
+          # no idea why this type ignore is required, pyright works correctly, mypy does not
+          datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
+      ) -> None:
           self.post = PostActions(self)
           self.user = UserActions(self)
           self.m = MActions(self)
@@ -1099,6 +1106,7 @@
           self.__engine: Optional[QueryEngine] = None
           self._active_provider = 'postgresql'
           self._log_queries = log_queries
+          self._datasource = datasource
   
           if use_dotenv:
               load_env()
@@ -1120,7 +1128,16 @@
           if self.__engine is None:
               self.__engine = QueryEngine(dml=SCHEMA, log_queries=self._log_queries)
   
-          await self.__engine.connect(timeout=timeout)
+          datasources: Optional[List[types.DatasourceOverride]] = None
+          if self._datasource is not None:
+              ds = self._datasource.copy()
+              ds.setdefault('name', 'db')
+              datasources = [ds]
+  
+          await self.__engine.connect(
+              timeout=timeout,
+              datasources=datasources,
+          )
   
       async def disconnect(self) -> None:
           """Disconnect the Prisma query engine."""
@@ -5075,6 +5092,8 @@
   from .._types import Method
   from ..binaries import platform
   from ..utils import time_since, _env_bool
+  from ..types import DatasourceOverride
+  from ..builder import dumps
   
   
   __all__ = ('QueryEngine',)
@@ -5129,7 +5148,11 @@
           if self.session and not self.session.closed:
               await self.session.close()
   
-      async def connect(self, timeout: int = 10) -> None:
+      async def connect(
+          self,
+          timeout: int = 10,
+          datasources: Optional[List[DatasourceOverride]] = None,
+      ) -> None:
           log.debug('Connecting to query engine')
           if self.process is not None:
               raise errors.AlreadyConnectedError('Already connected to the query engine')
@@ -5138,14 +5161,19 @@
           self.file = file = utils.ensure()
   
           try:
-              await self.spawn(file, timeout=timeout)
+              await self.spawn(file, timeout=timeout, datasources=datasources)
           except Exception:
               self.disconnect()
               raise
   
           log.debug('Connecting to query engine took %s', time_since(start))
   
-      async def spawn(self, file: Path, timeout: int = 10) -> None:
+      async def spawn(
+          self,
+          file: Path,
+          timeout: int = 10,
+          datasources: Optional[List[DatasourceOverride]] = None,
+      ) -> None:
           port = utils.get_open_port()
           log.debug('Running query engine on port %i', port)
   
@@ -5161,6 +5189,9 @@
   
           if DEBUG:
               env.update(RUST_LOG='info')
+          
+          if datasources is not None:
+              env.update(OVERWRITE_DATASOURCES=dumps(datasources))
   
           # TODO: remove the noise from these query logs
           if self._log_queries:
@@ -7268,6 +7299,16 @@
   
   SortMode = Literal['default', 'insensitive']
   SortOrder = Literal['asc', 'desc']
+  
+  
+  class _DatasourceOverrideOptional(TypedDict, total=False):
+      env: str
+      name: str
+  
+  
+  class DatasourceOverride(_DatasourceOverrideOptional):
+      url: str
+  
   
   # types that can be serialized to json by our query builder
   Serializable = Union[
@@ -18307,7 +18348,14 @@
       d: 'DActions'
       e: 'EActions'
   
-      def __init__(self, *, use_dotenv: bool = True, log_queries: bool = False) -> None:
+      def __init__(
+          self,
+          *,
+          use_dotenv: bool = True,
+          log_queries: bool = False,
+          # no idea why this type ignore is required, pyright works correctly, mypy does not
+          datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
+      ) -> None:
           self.post = PostActions(self)
           self.user = UserActions(self)
           self.m = MActions(self)
@@ -18322,6 +18370,7 @@
           self.__engine: Optional[QueryEngine] = None
           self._active_provider = 'postgresql'
           self._log_queries = log_queries
+          self._datasource = datasource
   
           if use_dotenv:
               load_env()
@@ -18343,7 +18392,16 @@
           if self.__engine is None:
               self.__engine = QueryEngine(dml=SCHEMA, log_queries=self._log_queries)
   
-          self.__engine.connect(timeout=timeout)
+          datasources: Optional[List[types.DatasourceOverride]] = None
+          if self._datasource is not None:
+              ds = self._datasource.copy()
+              ds.setdefault('name', 'db')
+              datasources = [ds]
+  
+          self.__engine.connect(
+              timeout=timeout,
+              datasources=datasources,
+          )
   
       def disconnect(self) -> None:
           """Disconnect the Prisma query engine."""
@@ -22298,6 +22356,8 @@
   from .._types import Method
   from ..binaries import platform
   from ..utils import time_since, _env_bool
+  from ..types import DatasourceOverride
+  from ..builder import dumps
   
   
   __all__ = ('QueryEngine',)
@@ -22345,7 +22405,11 @@
           if self.session and not self.session.closed:
               self.session.close()
   
-      def connect(self, timeout: int = 10) -> None:
+      def connect(
+          self,
+          timeout: int = 10,
+          datasources: Optional[List[DatasourceOverride]] = None,
+      ) -> None:
           log.debug('Connecting to query engine')
           if self.process is not None:
               raise errors.AlreadyConnectedError('Already connected to the query engine')
@@ -22354,14 +22418,19 @@
           self.file = file = utils.ensure()
   
           try:
-              self.spawn(file, timeout=timeout)
+              self.spawn(file, timeout=timeout, datasources=datasources)
           except Exception:
               self.disconnect()
               raise
   
           log.debug('Connecting to query engine took %s', time_since(start))
   
-      def spawn(self, file: Path, timeout: int = 10) -> None:
+      def spawn(
+          self,
+          file: Path,
+          timeout: int = 10,
+          datasources: Optional[List[DatasourceOverride]] = None,
+      ) -> None:
           port = utils.get_open_port()
           log.debug('Running query engine on port %i', port)
   
@@ -22377,6 +22446,9 @@
   
           if DEBUG:
               env.update(RUST_LOG='info')
+          
+          if datasources is not None:
+              env.update(OVERWRITE_DATASOURCES=dumps(datasources))
   
           # TODO: remove the noise from these query logs
           if self._log_queries:
@@ -24484,6 +24556,16 @@
   
   SortMode = Literal['default', 'insensitive']
   SortOrder = Literal['asc', 'desc']
+  
+  
+  class _DatasourceOverrideOptional(TypedDict, total=False):
+      env: str
+      name: str
+  
+  
+  class DatasourceOverride(_DatasourceOverrideOptional):
+      url: str
+  
   
   # types that can be serialized to json by our query builder
   Serializable = Union[

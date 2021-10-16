@@ -39,6 +39,16 @@ from .utils import _NoneType
 SortMode = Literal['default', 'insensitive']
 SortOrder = Literal['asc', 'desc']
 
+
+class _DatasourceOverrideOptional(TypedDict, total=False):
+    env: str
+    name: str
+
+
+class DatasourceOverride(_DatasourceOverrideOptional):
+    url: str
+
+
 # types that can be serialized to json by our query builder
 {% if recursive_types %}
 Serializable = Union[

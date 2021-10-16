@@ -41,13 +41,21 @@ class Client:
     {{ model.name.lower() }}: '{{ model.name }}Actions'
     {% endfor %}
 
-    def __init__(self, *, use_dotenv: bool = True, log_queries: bool = False) -> None:
+    def __init__(
+        self,
+        *,
+        use_dotenv: bool = True,
+        log_queries: bool = False,
+        # no idea why this type ignore is required, pyright works correctly, mypy does not
+        datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
+    ) -> None:
         {% for model in dmmf.datamodel.models %}
         self.{{ model.name.lower() }} = {{ model.name }}Actions(self)
         {% endfor %}
         self.__engine: Optional[QueryEngine] = None
         self._active_provider = '{{ datasources[0].active_provider }}'
         self._log_queries = log_queries
+        self._datasource = datasource
 
         if use_dotenv:
             load_env()
@@ -69,7 +77,16 @@ class Client:
         if self.__engine is None:
             self.__engine = QueryEngine(dml=SCHEMA, log_queries=self._log_queries)
 
-        {{ maybe_await }}self.__engine.connect(timeout=timeout)
+        datasources: Optional[List[types.DatasourceOverride]] = None
+        if self._datasource is not None:
+            ds = self._datasource.copy()
+            ds.setdefault('name', '{{ datasources[0].name }}')
+            datasources = [ds]
+
+        {{ maybe_await }}self.__engine.connect(
+            timeout=timeout,
+            datasources=datasources,
+        )
 
     {{ maybe_async_def }}disconnect(self) -> None:
         """Disconnect the Prisma query engine."""
