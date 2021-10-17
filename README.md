@@ -11,8 +11,8 @@
         <img src="https://codecov.io/gh/RobertCraigie/prisma-client-py/branch/main/graph/badge.svg?token=MVMavta8LR"/>
     </a>
     <img src="https://img.shields.io/github/workflow/status/RobertCraigie/prisma-client-py/Test/main?label=tests" alt="GitHub Workflow Status (main)">
-    <img src="https://img.shields.io/pypi/pyversions/prisma-client" alt="Supported python versions">
-    <img src="https://img.shields.io/pypi/v/prisma-client" alt="Latest package version">
+    <img src="https://img.shields.io/pypi/pyversions/prisma" alt="Supported python versions">
+    <img src="https://img.shields.io/pypi/v/prisma" alt="Latest package version">
     </div>
 </div>
 
@@ -118,7 +118,7 @@ The first step with any python project should be to setup a virtual environment 
 In this example we'll use an asynchronous client, if you would like to use a synchronous client see [setting up a synchronous client](https://prisma-client-py.readthedocs.io/en/latest/setup/#synchronous-client).
 
 ```sh
-pip install -U prisma-client
+pip install -U prisma
 ```
 
 #### Generating Prisma Client Python
