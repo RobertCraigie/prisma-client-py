@@ -26,16 +26,16 @@ Prisma Client Python can be used in _any_ Python backend application. This can b
 
 ## Why should you use Prisma Client Python?
 
-Unlike other Python ORMs, Prisma Client Python is **fully type safe** and offers native support for usage **with and without** `async`. All you have to do is [specify the type of client](https://prisma-client-py.readthedocs.io/en/latest/setup/) you would like to use for your project in the [Prisma schema file](#the-prisma-schema).
+Unlike other Python ORMs, Prisma Client Python is **fully type safe** and offers native support for usage **with and without** `async`. All you have to do is [specify the type of client](https://prisma-client-py.readthedocs.io/en/latest/getting_started/setup/) you would like to use for your project in the [Prisma schema file](#the-prisma-schema).
 
 Core features:
 
-- [Full type safety](https://prisma-client-py.readthedocs.io/en/latest/type-safety/)
-- [With / without async](https://prisma-client-py.readthedocs.io/en/latest/setup/)
-- [Recursive and pseudo-recursive types](https://prisma-client-py.readthedocs.io/en/latest/config/#recursive-type-depth)
+- [Full type safety](https://prisma-client-py.readthedocs.io/en/latest/getting_started/type-safety/)
+- [With / without async](https://prisma-client-py.readthedocs.io/en/latest/getting_started/setup/)
+- [Recursive and pseudo-recursive types](https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive-type-depth)
 - [Atomic updates](https://prisma-client-py.readthedocs.io/en/latest/reference/operations/#updating-atomic-fields)
 - [Complex cross-relational queries](https://prisma-client-py.readthedocs.io/en/latest/reference/operations/#filtering-by-relational-fields)
-- [Partial type generation](https://prisma-client-py.readthedocs.io/en/latest/partial-types/)
+- [Partial type generation](https://prisma-client-py.readthedocs.io/en/latest/reference/partial-types/)
 - [Batching write queries](https://prisma-client-py.readthedocs.io/en/latest/reference/batching/)
 
 Supported database providers:
@@ -103,7 +103,7 @@ A generator determines what assets are created when you run the `prisma generate
 
 You can also define where the client will be generated to with the `output` option. By default Prisma Client Python will be generated to the same location it was installed to, whether thats inside a virtual environment, the global python installation or anywhere else that python packages can be imported from.
 
-For more options see [configuring Prisma Client Python](https://prisma-client-py.readthedocs.io/en/latest/config/).
+For more options see [configuring Prisma Client Python](https://prisma-client-py.readthedocs.io/en/latest/reference/config/).
 
 ---
 
@@ -115,7 +115,7 @@ Just want to play around with Prisma Client Python and not worry about any setup
 
 The first step with any python project should be to setup a virtual environment to isolate installed packages from your other python projects, however that is out of the scope for this page.
 
-In this example we'll use an asynchronous client, if you would like to use a synchronous client see [setting up a synchronous client](https://prisma-client-py.readthedocs.io/en/latest/setup/#synchronous-client).
+In this example we'll use an asynchronous client, if you would like to use a synchronous client see [setting up a synchronous client](https://prisma-client-py.readthedocs.io/en/latest/getting_started/setup/#synchronous-client).
 
 ```sh
 pip install -U prisma
@@ -235,7 +235,7 @@ post = await client.post.update(
 
 All Prisma Client Python methods are fully statically typed, this means you can easily catch bugs in your code without having to run it!
 
-For more details see the [documentation](https://prisma-client-py.readthedocs.io/en/latest/type-safety/).
+For more details see the [documentation](https://prisma-client-py.readthedocs.io/en/latest/getting_started/type-safety/).
 
 ## Room for improvement
 
