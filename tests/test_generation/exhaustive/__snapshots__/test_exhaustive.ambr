@@ -7242,7 +7242,7 @@
   
   # -- template partials.py.jinja --
   from pydantic import BaseModel, Field
-  from . import types, models, fields
+  from . import types, models, fields, enums
   
   
   
@@ -24499,7 +24499,7 @@
   
   # -- template partials.py.jinja --
   from pydantic import BaseModel, Field
-  from . import types, models, fields
+  from . import types, models, fields, enums
   
   
   
