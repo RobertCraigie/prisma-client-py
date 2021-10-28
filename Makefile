@@ -12,12 +12,15 @@ database:
 
 . PHONY: package
 package:
+	python scripts/cleanup.py
 	rm -rf dist/*
 	python setup.py sdist
 	python setup.py sdist bdist_wheel
+	sh scripts/check_pkg.sh
 
 . PHONE: release
 release:
+	sh scripts/check_pkg.sh
 	twine upload dist/*
 
 .PHONY: test
