@@ -5,7 +5,7 @@ from types import TracebackType
 from collections import defaultdict
 from pydantic import BaseModel, validate_arguments
 
-from . import types, models, errors
+from . import types, models, errors, actions
 from ._types import BaseModelT
 from .engine import QueryEngine
 from .builder import QueryBuilder
@@ -14,11 +14,16 @@ from .builder import QueryBuilder
 __all__ = (
     'Client',
     'load_env',
+    'register',
+    'get_client',
 )
 
 SCHEMA = '''
 {{ datamodel }}
 '''
+
+RegisteredClient = Union['Client', Callable[[], 'Client']]
+_registered_client: Optional[RegisteredClient] = None
 
 
 def load_env(*, override: bool = True, **kwargs: Any) -> None:
@@ -36,9 +41,49 @@ def load_env(*, override: bool = True, **kwargs: Any) -> None:
     load_dotenv('prisma/.env', override=override, **kwargs)
 
 
+def register(client: RegisteredClient) -> None:
+    """Register a client instance to be retrieved by `get_client()`
+
+    This function _must_ only be called once, preferrably as soon as possible
+    to avoid any potentially confusing errors with threads or processes.
+    """
+    global _registered_client
+
+    if _registered_client is not None:
+        raise errors.ClientAlreadyRegisteredError()
+
+    if not isinstance(client, Client) and not callable(client):
+        raise TypeError(
+            f'Expected either a {Client} instance or a function that returns a {Client} but got {client} instead.'
+        )
+
+    _registered_client = client
+
+
+def get_client() -> 'Client':
+    """Get the registered client instance
+
+    Raises errors.ClientNotRegisteredError() if no client instance has been registered.
+    """
+    registered = _registered_client
+    if registered is None:
+        raise errors.ClientNotRegisteredError() from None
+
+    if isinstance(registered, Client):
+        return registered
+
+    client = registered()
+    if not isinstance(client, Client):  # pyright: reportUnnecessaryIsInstance=false
+        raise TypeError(
+            f'Registered function returned {client} instead of a {Client} instance.'
+        )
+
+    return client
+
+
 class Client:
     {% for model in dmmf.datamodel.models %}
-    {{ model.name.lower() }}: '{{ model.name }}Actions'
+    {{ model.name.lower() }}: 'actions.{{ model.name }}Actions[models.{{ model.name }}]'
     {% endfor %}
 
     def __init__(
@@ -50,7 +95,7 @@ class Client:
         datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
     ) -> None:
         {% for model in dmmf.datamodel.models %}
-        self.{{ model.name.lower() }} = {{ model.name }}Actions(self)
+        self.{{ model.name.lower() }} = actions.{{ model.name }}Actions[models.{{ model.name }}](self, models.{{ model.name }})
         {% endfor %}
         self.__engine: Optional[QueryEngine] = None
         self._active_provider = '{{ datasources[0].active_provider }}'
@@ -247,228 +292,6 @@ class Batch:
     {% endif %}
 
 {% for model in dmmf.datamodel.models %}
-
-class {{ model.name }}Actions:
-    def __init__(self, client: Client):
-        self._client = client
-
-    {{ maybe_async_def }}create(
-        self,
-        data: types.{{ model.name }}CreateInput,
-        include: Optional[types.{{ model.name}}Include] = None
-    ) -> models.{{ model.name }}:
-        resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.create }}',
-            method='{{ methods.create }}',
-            model='{{ model.name }}',
-            arguments={
-                'data': data,
-                'include': include,
-            },
-        )
-        return models.{{ model.name }}.parse_obj(resp['data']['result'])
-
-    {{ maybe_async_def }}create_many(
-        self,
-        data: List[types.{{ model.name }}CreateWithoutRelationsInput],
-        *,
-        skip_duplicates: Optional[bool] = None,
-    ) -> int:
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
-
-        resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.create_many }}',
-            method='{{ methods.create_many }}',
-            model='{{ model.name }}',
-            arguments={
-                'data': data,
-                'skipDuplicates': skip_duplicates,
-            },
-            root_selection=['count'],
-        )
-        return int(resp['data']['result']['count'])
-
-    {{ maybe_async_def }}delete(
-        self,
-        where: types.{{ model.name }}WhereUniqueInput,
-        include: Optional[types.{{ model.name}}Include] = None
-    ) -> Optional[models.{{ model.name }}]:
-        try:
-            resp = {{ maybe_await }}self._client._execute(
-                operation='{{ operations.delete }}',
-                method='{{ methods.delete }}',
-                model='{{ model.name }}',
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return models.{{ model.name }}.parse_obj(resp['data']['result'])
-
-    {{ maybe_async_def }}find_unique(
-        self,
-        where: types.{{ model.name }}WhereUniqueInput,
-        include: Optional[types.{{ model.name}}Include] = None
-    ) -> Optional[models.{{ model.name }}]:
-        resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.find_unique }}',
-            method='{{ methods.find_unique }}',
-            model='{{ model.name }}',
-            arguments={
-                'where': where,
-                'include': include,
-            },
-        )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return models.{{ model.name }}.parse_obj(result)
-
-    {{ maybe_async_def }}find_many(
-        self,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        where: Optional[types.{{ model.name }}WhereInput] = None,
-        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
-        include: Optional[types.{{ model.name }}Include] = None,
-        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
-    ) -> List[models.{{ model.name }}]:
-        resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.find_many }}',
-            method='{{ methods.find_many }}',
-            model='{{ model.name }}',
-            arguments={
-                'take': take,
-                'skip': skip,
-                'where': where,
-                'order_by': order,
-                'cursor': cursor,
-                'include': include,
-            },
-        )
-        return [models.{{ model.name }}.parse_obj(r) for r in resp['data']['result']]
-
-    {{ maybe_async_def }}find_first(
-        self,
-        skip: Optional[int] = None,
-        where: Optional[types.{{ model.name }}WhereInput] = None,
-        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
-        include: Optional[types.{{ model.name }}Include] = None,
-        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
-    ) -> Optional[models.{{ model.name }}]:
-        resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.find_first }}',
-            method='{{ methods.find_first }}',
-            model='{{ model.name }}',
-            arguments={
-                'skip': skip,
-                'where': where,
-                'order_by': order,
-                'cursor': cursor,
-                'include': include
-            },
-        )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return models.{{ model.name }}.parse_obj(result)
-
-    {{ maybe_async_def }}update(
-        self,
-        data: types.{{ model.name }}UpdateInput,
-        where: types.{{ model.name }}WhereUniqueInput,
-        include: Optional[types.{{ model.name}}Include] = None
-    ) -> Optional[models.{{ model.name }}]:
-        try:
-            resp = {{ maybe_await }}self._client._execute(
-                operation='{{ operations["update"] }}',
-                method='{{ methods["update"] }}',
-                model='{{ model.name }}',
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return models.{{ model.name }}.parse_obj(resp['data']['result'])
-
-    {{ maybe_async_def }}upsert(
-        self,
-        where: types.{{ model.name }}WhereUniqueInput,
-        data: types.{{ model.name }}UpsertInput,
-        include: Optional[types.{{ model.name}}Include] = None,
-    ) -> models.{{ model.name}}:
-        resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.upsert }}',
-            method='{{ methods.upsert }}',
-            model='{{ model.name }}',
-            arguments={
-                'where': where,
-                'include': include,
-                'create': data.get('create'),
-                'update': data.get('update'),
-            },
-        )
-        return models.{{ model.name }}.parse_obj(resp['data']['result'])
-
-    {{ maybe_async_def }}update_many(
-        self,
-        data: types.{{ model.name }}UpdateManyMutationInput,
-        where: types.{{ model.name }}WhereInput,
-    ) -> int:
-        resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.update_many }}',
-            method='{{ methods.update_many }}',
-            model='{{ model.name }}',
-            arguments={'data': data, 'where': where,},
-            root_selection=['count'],
-        )
-        return int(resp['data']['result']['count'])
-
-    {{ maybe_async_def }}count(
-        self,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        where: Optional[types.{{ model.name }}WhereInput] = None,
-        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
-        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
-    ) -> int:
-        # TODO: support select
-        resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.count }}',
-            method='{{ methods.count }}',
-            model='{{ model.name }}',
-            arguments={
-                'take': take,
-                'skip': skip,
-                'where': where,
-                'order_by': order,
-                'cursor': cursor,
-            },
-            root_selection=['_count { _all }'],
-        )
-        return cast(int, resp['data']['result']['_count']['_all'])
-
-    {{ maybe_async_def }}delete_many(
-        self,
-        where: Optional[types.{{ model.name }}WhereInput] = None
-    ) -> int:
-        resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.delete_many }}',
-            method='{{ methods.delete_many }}',
-            model='{{ model.name }}',
-            arguments={'where': where},
-            root_selection=['count'],
-        )
-        return int(resp['data']['result']['count'])
-
 
 # NOTE: some arguments are meaningless in this context but are included
 # for completeness sake

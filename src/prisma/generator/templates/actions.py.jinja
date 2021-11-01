@@ -1,0 +1,236 @@
+{% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations with context %}
+# -- template builder.py.jinja --
+from . import types, errors
+from ._types import BaseModelT
+
+
+if TYPE_CHECKING:
+    from .client import Client
+
+
+{% for model in dmmf.datamodel.models %}
+
+class {{ model.name }}Actions(Generic[BaseModelT]):
+    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
+        self._client = client
+        self._model = model
+
+    {{ maybe_async_def }}create(
+        self,
+        data: types.{{ model.name }}CreateInput,
+        include: Optional[types.{{ model.name}}Include] = None
+    ) -> BaseModelT:
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.create }}',
+            method='{{ methods.create }}',
+            model='{{ model.name }}',
+            arguments={
+                'data': data,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
+    {{ maybe_async_def }}create_many(
+        self,
+        data: List[types.{{ model.name }}CreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> int:
+        if self._client._active_provider == 'sqlite':
+            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.create_many }}',
+            method='{{ methods.create_many }}',
+            model='{{ model.name }}',
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+            root_selection=['count'],
+        )
+        return int(resp['data']['result']['count'])
+
+    {{ maybe_async_def }}delete(
+        self,
+        where: types.{{ model.name }}WhereUniqueInput,
+        include: Optional[types.{{ model.name}}Include] = None
+    ) -> Optional[BaseModelT]:
+        try:
+            resp = {{ maybe_await }}self._client._execute(
+                operation='{{ operations.delete }}',
+                method='{{ methods.delete }}',
+                model='{{ model.name }}',
+                arguments={
+                    'where': where,
+                    'include': include,
+                },
+            )
+        except errors.RecordNotFoundError:
+            return None
+
+        return self._model.parse_obj(resp['data']['result'])
+
+    {{ maybe_async_def }}find_unique(
+        self,
+        where: types.{{ model.name }}WhereUniqueInput,
+        include: Optional[types.{{ model.name}}Include] = None
+    ) -> Optional[BaseModelT]:
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.find_unique }}',
+            method='{{ methods.find_unique }}',
+            model='{{ model.name }}',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        result = resp['data']['result']
+        if result is None:
+            return None
+        return self._model.parse_obj(result)
+
+    {{ maybe_async_def }}find_many(
+        self,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.{{ model.name }}WhereInput] = None,
+        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
+        include: Optional[types.{{ model.name }}Include] = None,
+        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
+    ) -> List[BaseModelT]:
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.find_many }}',
+            method='{{ methods.find_many }}',
+            model='{{ model.name }}',
+            arguments={
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+            },
+        )
+        return [self._model.parse_obj(r) for r in resp['data']['result']]
+
+    {{ maybe_async_def }}find_first(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.{{ model.name }}WhereInput] = None,
+        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
+        include: Optional[types.{{ model.name }}Include] = None,
+        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
+    ) -> Optional[BaseModelT]:
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.find_first }}',
+            method='{{ methods.find_first }}',
+            model='{{ model.name }}',
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include
+            },
+        )
+        result = resp['data']['result']
+        if result is None:
+            return None
+        return self._model.parse_obj(result)
+
+    {{ maybe_async_def }}update(
+        self,
+        data: types.{{ model.name }}UpdateInput,
+        where: types.{{ model.name }}WhereUniqueInput,
+        include: Optional[types.{{ model.name}}Include] = None
+    ) -> Optional[BaseModelT]:
+        try:
+            resp = {{ maybe_await }}self._client._execute(
+                operation='{{ operations["update"] }}',
+                method='{{ methods["update"] }}',
+                model='{{ model.name }}',
+                arguments={
+                    'data': data,
+                    'where': where,
+                    'include': include,
+                },
+            )
+        except errors.RecordNotFoundError:
+            return None
+
+        return self._model.parse_obj(resp['data']['result'])
+
+    {{ maybe_async_def }}upsert(
+        self,
+        where: types.{{ model.name }}WhereUniqueInput,
+        data: types.{{ model.name }}UpsertInput,
+        include: Optional[types.{{ model.name}}Include] = None,
+    ) -> BaseModelT:
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.upsert }}',
+            method='{{ methods.upsert }}',
+            model='{{ model.name }}',
+            arguments={
+                'where': where,
+                'include': include,
+                'create': data.get('create'),
+                'update': data.get('update'),
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
+    {{ maybe_async_def }}update_many(
+        self,
+        data: types.{{ model.name }}UpdateManyMutationInput,
+        where: types.{{ model.name }}WhereInput,
+    ) -> int:
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.update_many }}',
+            method='{{ methods.update_many }}',
+            model='{{ model.name }}',
+            arguments={'data': data, 'where': where,},
+            root_selection=['count'],
+        )
+        return int(resp['data']['result']['count'])
+
+    {{ maybe_async_def }}count(
+        self,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.{{ model.name }}WhereInput] = None,
+        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
+        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
+    ) -> int:
+        # TODO: support select
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.count }}',
+            method='{{ methods.count }}',
+            model='{{ model.name }}',
+            arguments={
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+            },
+            root_selection=['count { _all }'],
+        )
+        return cast(int, resp['data']['result']['count']['_all'])
+
+    {{ maybe_async_def }}delete_many(
+        self,
+        where: Optional[types.{{ model.name }}WhereInput] = None
+    ) -> int:
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.delete_many }}',
+            method='{{ methods.delete_many }}',
+            model='{{ model.name }}',
+            arguments={'where': where},
+            root_selection=['count'],
+        )
+        return int(resp['data']['result']['count'])
+
+{% endfor %}

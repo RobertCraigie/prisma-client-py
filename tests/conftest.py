@@ -3,8 +3,7 @@ import os
 import sys
 import asyncio
 import inspect
-from typing import Any, List, Iterator, TYPE_CHECKING
-from contextvars import ContextVar
+from typing import List, Iterator, TYPE_CHECKING
 
 import pytest
 
@@ -12,25 +11,28 @@ import prisma
 from prisma import Client
 from prisma.cli import setup_logging
 
-from .utils import async_run, Runner, Testdir
+from .utils import Runner, Testdir
 
 
 if TYPE_CHECKING:
     from _pytest.config import Config
+    from _pytest.fixtures import FixtureRequest
     from _pytest.monkeypatch import MonkeyPatch
     from _pytest.pytester import Testdir as PytestTestdir
 
 
 pytest_plugins = ['pytester']
-client_ctx: ContextVar['Client'] = ContextVar('client_ctx', default=Client())
 LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
 
 
+prisma.register(Client())
+
+
 @pytest.fixture(name='client', scope='session')
-def client_fixture() -> prisma.Client:
-    client = client_ctx.get()
-    async_run(client.connect())
-    async_run(cleanup_client(client))
+async def client_fixture() -> Client:
+    client = prisma.get_client()
+    await client.connect()
+    await cleanup_client(client)
     return client
 
 
@@ -73,21 +75,19 @@ def pytest_collection_modifyitems(
     items.sort(key=lambda item: item.__class__.__name__ == 'IntegrationTestItem')
 
 
-def pytest_runtest_setup(item: pytest.Function) -> None:
-    if not has_client_fixture(item) or marked_persist_data(item):
+@pytest.fixture(name='cleanup_client', autouse=True)
+async def cleanup_client_fixture(request: 'FixtureRequest', client: Client) -> None:
+    if not client.is_connected():
+        await client.connect()
+
+    item = request.node
+    if not isinstance(item, pytest.Item) or marked_persist_data(item):
         return
 
-    client = client_ctx.get()
-    if client.is_connected():
-        async_run(cleanup_client(client))
+    await cleanup_client(client)
 
 
-def has_client_fixture(item: Any) -> bool:
-    # TODO: more strict check
-    return hasattr(item, 'fixturenames') and 'client' in item.fixturenames
-
-
-def marked_persist_data(item: pytest.Function) -> bool:
+def marked_persist_data(item: pytest.Item) -> bool:
     for marker in item.iter_markers():
         if marker.name == 'persist_data':
             return True

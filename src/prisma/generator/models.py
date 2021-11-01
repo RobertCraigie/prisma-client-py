@@ -382,6 +382,12 @@ class Field(BaseModel):
                 f'use a different field name with \'@map("{name}")\'.'
             )
 
+        if name == 'prisma':
+            raise ValueError(
+                'Field name "prisma" shadows a Prisma Client Python method; '
+                'use a different field name with \'@map("prisma")\'.'
+            )
+
         return name
 
     # TODO: cache the properties
