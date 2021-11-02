@@ -77,7 +77,7 @@ def pytest_collection_modifyitems(
 
 @pytest.fixture(name='cleanup_client', autouse=True)
 async def cleanup_client_fixture(request: 'FixtureRequest', client: Client) -> None:
-    if not client.is_connected():
+    if not client.is_connected():  # pragma: no branch
         await client.connect()
 
     item = request.node

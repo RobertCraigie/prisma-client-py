@@ -1,6 +1,7 @@
 import threading
-from typing import Optional, Any
+from typing import Optional, NoReturn, Any
 
+import pytest
 from prisma import Client
 from prisma.models import User
 
@@ -35,6 +36,19 @@ def test_create() -> None:
     user = User.prisma().create({'name': 'Robert'})
     assert isinstance(user, User)
     assert user.name == 'Robert'
+
+
+def test_propagating_thread() -> None:
+    """Ensure PropagatingThread correctly propagates exceptions"""
+
+    def runner() -> NoReturn:
+        raise RuntimeError()
+
+    thread = PropagatingThread(target=runner)
+    thread.start()
+
+    with pytest.raises(RuntimeError):
+        thread.join()
 
 
 def test_threading(client: Client) -> None:

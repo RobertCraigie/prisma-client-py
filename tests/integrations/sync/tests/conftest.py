@@ -10,7 +10,7 @@ def pytest_sessionstart(session: pytest.Session) -> None:
     # by pytest multiple times
     try:
         register(Client())
-    except prisma.errors.ClientAlreadyRegisteredError:
+    except prisma.errors.ClientAlreadyRegisteredError:  # pragma: no cover
         pass
 
 
