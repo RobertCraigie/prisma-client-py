@@ -67,7 +67,7 @@
 
     async def test_find_unique_output(client: Client) -> None:
       post = await client.post.find_unique({'id': 'dbkh232'})
-      reveal_type(post)  # N: Revealed type is "Union[prisma.models.Post, None]"
+      reveal_type(post)  # N: Revealed type is "Union[prisma.models.Post*, None]"
 
       if post is not None:
         reveal_type(post.id)  # N: Revealed type is "builtins.str"
@@ -86,7 +86,7 @@
         data['invalid'] = True  # E: TypedDict "PostWhereUniqueInput" has no key "invalid"  [typeddict-item]
 
       post = await client.post.find_unique(data)
-      reveal_type(post)  # N: Revealed type is "Union[prisma.models.Post, None]"
+      reveal_type(post)  # N: Revealed type is "Union[prisma.models.Post*, None]"
 
     async def test_include_removes_optional(client: Client) -> None:
       user = await client.user.find_unique({'id': '1'}, include={'posts': True})
@@ -218,7 +218,7 @@
           }
       )
       assert user is not None
-      reveal_type(user) # N: Revealed type is "prisma.models.User"
+      reveal_type(user) # N: Revealed type is "prisma.models.User*"
 
       await client.user.find_first(
           where={
@@ -239,4 +239,4 @@
           'name': 'Robert',
         },
       )
-      reveal_type(user.hello)  # N: Revealed type is "str"
+      reveal_type(user.hello)  # N: Revealed type is "bultins.str"
