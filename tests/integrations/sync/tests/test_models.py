@@ -24,7 +24,7 @@ class PropagatingThread(threading.Thread):
         except BaseException as e:
             self.exc = e
 
-    def join(self, timeout: int = None) -> None:
+    def join(self, timeout: Optional[float] = None) -> None:
         super().join(timeout)
         if self.exc is not None:
             raise self.exc
