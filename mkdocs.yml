@@ -54,6 +54,7 @@ nav:
     - Advanced Usage: getting_started/advanced.md
   - Reference:
     - Query Operations: reference/operations.md
+    - Model Based Access: reference/model-actions.md
     - Batching Queries: reference/batching.md
     - Partial Types: reference/partials.md
     - Type Checkers:

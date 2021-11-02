@@ -147,7 +147,7 @@ SQLite database database.db created at file:database.db
 
 It should be noted that whenever you make changes to your `schema.prisma` file you will have to re-generate the client, you can do this automatically by running `prisma generate --watch`.
 
-The simplest asynchronous Prisma Client Python application looks something like this:
+The simplest asynchronous Prisma Client Python application will either look something like this:
 
 ```py
 import asyncio
@@ -158,6 +158,36 @@ async def main() -> None:
     await client.connect()
 
     # write your queries here
+    user = await client.user.create(
+        data={
+            'name': 'Robert',
+        }.
+    )
+
+    await client.disconnect()
+
+if __name__ == '__main__':
+    asyncio.get_event_loop().run_until_complete(main())
+```
+
+or like this:
+
+```py
+import asyncio
+from prisma import Client, register
+from prisma.models import User
+
+async def main() -> None:
+    client = Client()
+    register(client)
+    await client.connect()
+
+    # write your queries here
+    user = await User.prisma().create(
+        data={
+            'name': 'Robert',
+        }.
+    )
 
     await client.disconnect()
 

@@ -17,6 +17,6 @@ cp ../../../prisma/http.py.original $HTTP 2>/dev/null || :
 
 prisma db push --accept-data-loss --force-reset
 
-coverage run -m pytest --confcutdir=. -x tests
+coverage run -m pytest --confcutdir=. tests
 
 pyright tests

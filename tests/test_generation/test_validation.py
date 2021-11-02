@@ -55,6 +55,26 @@ def test_field_name_python_keyword(testdir: Testdir) -> None:
     )
 
 
+def test_field_name_prisma_not_allowed(testdir: Testdir) -> None:
+    """Field name "prisma" is not allowed as it overrides our own method"""
+    schema = (
+        testdir.SCHEMA_HEADER
+        + '''
+        model User {{
+            id     String @id
+            prisma String
+        }}
+    '''
+    )
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    assert (
+        'Field name "prisma" shadows a Prisma Client Python method; '
+        'use a different field name with \'@map("prisma")\''
+    ) in str(exc.value.output, 'utf-8')
+
+
 def test_unknown_type(testdir: Testdir) -> None:
     """Unsupported scalar type is not allowed"""
     schema = '''

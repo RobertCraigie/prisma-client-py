@@ -2,7 +2,6 @@ import os
 import sys
 import uuid
 import inspect
-import asyncio
 import textwrap
 import subprocess
 import contextlib
@@ -10,7 +9,6 @@ from pathlib import Path
 from textwrap import dedent
 from datetime import datetime
 from typing import (
-    Coroutine,
     Any,
     Optional,
     List,
@@ -261,10 +259,6 @@ def get_source_from_function(function: FuncType, **env: Any) -> str:
         lines.insert(start, f'{name} = {value}')
 
     return IMPORT_RELOADER + '\n'.join(lines)
-
-
-def async_run(coro: Coroutine[Any, Any, Any]) -> Any:
-    return asyncio.get_event_loop().run_until_complete(coro)
 
 
 def assert_similar_time(dt1: datetime, dt2: datetime, threshold: float = 0.5) -> None:
