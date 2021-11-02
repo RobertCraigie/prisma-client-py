@@ -33,7 +33,7 @@
   else:
       from typing_extensions import TypedDict, Literal
   
-  # -- template builder.py.jinja --
+  # -- template actions.py.jinja --
   from . import types, errors
   from ._types import BaseModelT
   
@@ -248,9 +248,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -471,9 +471,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -694,9 +694,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -917,9 +917,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -1140,9 +1140,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -1363,9 +1363,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -1586,9 +1586,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -1809,9 +1809,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -2032,9 +2032,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -2255,9 +2255,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -2478,9 +2478,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       async def delete_many(
           self,
@@ -3600,7 +3600,10 @@
   
   
   def get_client() -> 'Client':
-      """Get the registered client instance"""
+      """Get the registered client instance
+  
+      Raises errors.ClientNotRegisteredError() if no client instance has been registered.
+      """
       registered = _registered_client
       if registered is None:
           raise errors.ClientNotRegisteredError() from None
@@ -17482,7 +17485,7 @@
   else:
       from typing_extensions import TypedDict, Literal
   
-  # -- template builder.py.jinja --
+  # -- template actions.py.jinja --
   from . import types, errors
   from ._types import BaseModelT
   
@@ -17697,9 +17700,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -17920,9 +17923,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -18143,9 +18146,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -18366,9 +18369,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -18589,9 +18592,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -18812,9 +18815,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -19035,9 +19038,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -19258,9 +19261,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -19481,9 +19484,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -19704,9 +19707,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -19927,9 +19930,9 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['count { _all }'],
+              root_selection=['_count { _all }'],
           )
-          return cast(int, resp['data']['result']['count']['_all'])
+          return cast(int, resp['data']['result']['_count']['_all'])
   
       def delete_many(
           self,
@@ -21049,7 +21052,10 @@
   
   
   def get_client() -> 'Client':
-      """Get the registered client instance"""
+      """Get the registered client instance
+  
+      Raises errors.ClientNotRegisteredError() if no client instance has been registered.
+      """
       registered = _registered_client
       if registered is None:
           raise errors.ClientNotRegisteredError() from None

@@ -1,6 +1,6 @@
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations with context %}
-# -- template builder.py.jinja --
+# -- template actions.py.jinja --
 from . import types, errors
 from ._types import BaseModelT
 
@@ -216,9 +216,9 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
                 'order_by': order,
                 'cursor': cursor,
             },
-            root_selection=['count { _all }'],
+            root_selection=['_count { _all }'],
         )
-        return cast(int, resp['data']['result']['count']['_all'])
+        return cast(int, resp['data']['result']['_count']['_all'])
 
     {{ maybe_async_def }}delete_many(
         self,
