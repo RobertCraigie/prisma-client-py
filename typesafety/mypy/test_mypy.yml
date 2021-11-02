@@ -239,4 +239,4 @@
           'name': 'Robert',
         },
       )
-      reveal_type(user.hello)  # N: Revealed type is "bultins.str"
+      reveal_type(user.hello)  # N: Revealed type is "builtins.str"
