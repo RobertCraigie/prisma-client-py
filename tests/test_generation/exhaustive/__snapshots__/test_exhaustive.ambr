@@ -42,11 +42,24 @@
       from .client import Client
   
   
-  
   class PostActions(Generic[BaseModelT]):
       def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
           self._model = model
+  
+      async def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return await self._client.query_raw(query, *args, model=self._model)
+  
+      async def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
@@ -271,6 +284,20 @@
           self._client = client
           self._model = model
   
+      async def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return await self._client.query_raw(query, *args, model=self._model)
+  
+      async def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return await self._client.query_first(query, *args, model=self._model)
+  
       async def create(
           self,
           data: types.UserCreateInput,
@@ -493,6 +520,20 @@
       def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
           self._model = model
+  
+      async def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return await self._client.query_raw(query, *args, model=self._model)
+  
+      async def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
@@ -717,6 +758,20 @@
           self._client = client
           self._model = model
   
+      async def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return await self._client.query_raw(query, *args, model=self._model)
+  
+      async def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return await self._client.query_first(query, *args, model=self._model)
+  
       async def create(
           self,
           data: types.NCreateInput,
@@ -939,6 +994,20 @@
       def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
           self._model = model
+  
+      async def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return await self._client.query_raw(query, *args, model=self._model)
+  
+      async def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
@@ -1163,6 +1232,20 @@
           self._client = client
           self._model = model
   
+      async def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return await self._client.query_raw(query, *args, model=self._model)
+  
+      async def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return await self._client.query_first(query, *args, model=self._model)
+  
       async def create(
           self,
           data: types.ManyRequiredCreateInput,
@@ -1385,6 +1468,20 @@
       def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
           self._model = model
+  
+      async def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return await self._client.query_raw(query, *args, model=self._model)
+  
+      async def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
@@ -1609,6 +1706,20 @@
           self._client = client
           self._model = model
   
+      async def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return await self._client.query_raw(query, *args, model=self._model)
+  
+      async def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return await self._client.query_first(query, *args, model=self._model)
+  
       async def create(
           self,
           data: types.BCreateInput,
@@ -1831,6 +1942,20 @@
       def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
           self._model = model
+  
+      async def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return await self._client.query_raw(query, *args, model=self._model)
+  
+      async def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
@@ -2055,6 +2180,20 @@
           self._client = client
           self._model = model
   
+      async def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return await self._client.query_raw(query, *args, model=self._model)
+  
+      async def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return await self._client.query_first(query, *args, model=self._model)
+  
       async def create(
           self,
           data: types.DCreateInput,
@@ -2277,6 +2416,20 @@
       def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
           self._model = model
+  
+      async def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return await self._client.query_raw(query, *args, model=self._model)
+  
+      async def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
@@ -17494,11 +17647,24 @@
       from .client import Client
   
   
-  
   class PostActions(Generic[BaseModelT]):
       def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
           self._model = model
+  
+      def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return self._client.query_raw(query, *args, model=self._model)
+  
+      def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
@@ -17723,6 +17889,20 @@
           self._client = client
           self._model = model
   
+      def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return self._client.query_raw(query, *args, model=self._model)
+  
+      def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return self._client.query_first(query, *args, model=self._model)
+  
       def create(
           self,
           data: types.UserCreateInput,
@@ -17945,6 +18125,20 @@
       def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
           self._model = model
+  
+      def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return self._client.query_raw(query, *args, model=self._model)
+  
+      def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
@@ -18169,6 +18363,20 @@
           self._client = client
           self._model = model
   
+      def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return self._client.query_raw(query, *args, model=self._model)
+  
+      def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return self._client.query_first(query, *args, model=self._model)
+  
       def create(
           self,
           data: types.NCreateInput,
@@ -18391,6 +18599,20 @@
       def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
           self._model = model
+  
+      def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return self._client.query_raw(query, *args, model=self._model)
+  
+      def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
@@ -18615,6 +18837,20 @@
           self._client = client
           self._model = model
   
+      def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return self._client.query_raw(query, *args, model=self._model)
+  
+      def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return self._client.query_first(query, *args, model=self._model)
+  
       def create(
           self,
           data: types.ManyRequiredCreateInput,
@@ -18837,6 +19073,20 @@
       def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
           self._model = model
+  
+      def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return self._client.query_raw(query, *args, model=self._model)
+  
+      def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
@@ -19061,6 +19311,20 @@
           self._client = client
           self._model = model
   
+      def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return self._client.query_raw(query, *args, model=self._model)
+  
+      def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return self._client.query_first(query, *args, model=self._model)
+  
       def create(
           self,
           data: types.BCreateInput,
@@ -19283,6 +19547,20 @@
       def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
           self._model = model
+  
+      def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return self._client.query_raw(query, *args, model=self._model)
+  
+      def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
@@ -19507,6 +19785,20 @@
           self._client = client
           self._model = model
   
+      def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return self._client.query_raw(query, *args, model=self._model)
+  
+      def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return self._client.query_first(query, *args, model=self._model)
+  
       def create(
           self,
           data: types.DCreateInput,
@@ -19729,6 +20021,20 @@
       def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
           self._model = model
+  
+      def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List[BaseModelT]:
+          return self._client.query_raw(query, *args, model=self._model)
+  
+      def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional[BaseModelT]:
+          return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,

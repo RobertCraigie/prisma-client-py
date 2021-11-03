@@ -221,3 +221,31 @@ async def test_delete_many() -> None:
     )
     assert total == 1
     assert await User.prisma().count() == 2
+
+
+@pytest.mark.asyncio
+async def test_query_raw() -> None:
+    """Ensure results are transformed to the expected BaseModel"""
+    users = [
+        await User.prisma().create({'name': 'Robert'}),
+        await User.prisma().create({'name': 'Tegan'}),
+    ]
+    results = await User.prisma().query_raw(
+        'SELECT id, name FROM User WHERE id = ?', users[1].id
+    )
+    assert len(results) == 1
+    assert results[0].name == 'Tegan'
+
+
+@pytest.mark.asyncio
+async def test_query_first() -> None:
+    """Ensure results are transformed to the expected BaseModel"""
+    users = [
+        await User.prisma().create({'name': 'Robert'}),
+        await User.prisma().create({'name': 'Tegan'}),
+    ]
+    user = await User.prisma().query_first(
+        'SELECT * FROM User WHERE id = ? LIMIT 1', users[1].id
+    )
+    assert user is not None
+    assert user.name == 'Tegan'

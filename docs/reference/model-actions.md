@@ -128,3 +128,24 @@ post = await Post.prisma().update(
     }
 )
 ```
+
+#### Executing raw queries
+
+!!! warning
+    SQL queries are sent directly to the database so you must use the syntax for your specific database provider
+
+```py
+from prisma.models import user
+
+users = await User.prisma().query_raw(
+    'SELECT * FROM User WHERE name = "?"', 'Robert'
+)
+```
+
+```py
+from prisma.models import user
+
+user = await User.prisma().query_first(
+    'SELECT * FROM User WHERE name = "?" LIMIT 1', 'Robert'
+)
+```

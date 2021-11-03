@@ -8,13 +8,26 @@ from ._types import BaseModelT
 if TYPE_CHECKING:
     from .client import Client
 
-
 {% for model in dmmf.datamodel.models %}
 
 class {{ model.name }}Actions(Generic[BaseModelT]):
     def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
         self._client = client
         self._model = model
+
+    {{ maybe_async_def }}query_raw(
+        self,
+        query: str,
+        *args: Any,
+    ) -> List[BaseModelT]:
+        return {{ maybe_await }}self._client.query_raw(query, *args, model=self._model)
+
+    {{ maybe_async_def }}query_first(
+        self,
+        query: str,
+        *args: Any,
+    ) -> Optional[BaseModelT]:
+        return {{ maybe_await }}self._client.query_first(query, *args, model=self._model)
 
     {{ maybe_async_def }}create(
         self,
