@@ -241,15 +241,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       async def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.PostWhereInput] = None,
           cursor: Optional[types.PostWhereUniqueInput] = None,
           order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      async def count(
+          self,
+          select: types.PostCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.PostWhereInput] = None,
+          cursor: Optional[types.PostWhereUniqueInput] = None,
+          order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
+      ) -> types.PostCountAggregateOutput:
+          ...
+  
+      async def count(
+          self,
+          select: Optional[types.PostCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.PostWhereInput] = None,
+          cursor: Optional[types.PostWhereUniqueInput] = None,
+          order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
+      ) -> Union[int, types.PostCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -261,9 +298,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.PostCountAggregateOutput, resp['data']['result']['_count'])
   
       async def delete_many(
           self,
@@ -478,15 +519,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       async def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.UserWhereInput] = None,
           cursor: Optional[types.UserWhereUniqueInput] = None,
           order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      async def count(
+          self,
+          select: types.UserCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.UserWhereInput] = None,
+          cursor: Optional[types.UserWhereUniqueInput] = None,
+          order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
+      ) -> types.UserCountAggregateOutput:
+          ...
+  
+      async def count(
+          self,
+          select: Optional[types.UserCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.UserWhereInput] = None,
+          cursor: Optional[types.UserWhereUniqueInput] = None,
+          order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
+      ) -> Union[int, types.UserCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -498,9 +576,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.UserCountAggregateOutput, resp['data']['result']['_count'])
   
       async def delete_many(
           self,
@@ -715,15 +797,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       async def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.MWhereInput] = None,
           cursor: Optional[types.MWhereUniqueInput] = None,
           order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      async def count(
+          self,
+          select: types.MCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.MWhereInput] = None,
+          cursor: Optional[types.MWhereUniqueInput] = None,
+          order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
+      ) -> types.MCountAggregateOutput:
+          ...
+  
+      async def count(
+          self,
+          select: Optional[types.MCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.MWhereInput] = None,
+          cursor: Optional[types.MWhereUniqueInput] = None,
+          order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
+      ) -> Union[int, types.MCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -735,9 +854,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.MCountAggregateOutput, resp['data']['result']['_count'])
   
       async def delete_many(
           self,
@@ -952,15 +1075,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       async def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.NWhereInput] = None,
           cursor: Optional[types.NWhereUniqueInput] = None,
           order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      async def count(
+          self,
+          select: types.NCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.NWhereInput] = None,
+          cursor: Optional[types.NWhereUniqueInput] = None,
+          order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
+      ) -> types.NCountAggregateOutput:
+          ...
+  
+      async def count(
+          self,
+          select: Optional[types.NCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.NWhereInput] = None,
+          cursor: Optional[types.NWhereUniqueInput] = None,
+          order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
+      ) -> Union[int, types.NCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -972,9 +1132,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.NCountAggregateOutput, resp['data']['result']['_count'])
   
       async def delete_many(
           self,
@@ -1189,15 +1353,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       async def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.OneOptionalWhereInput] = None,
           cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
           order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      async def count(
+          self,
+          select: types.OneOptionalCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.OneOptionalWhereInput] = None,
+          cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
+          order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
+      ) -> types.OneOptionalCountAggregateOutput:
+          ...
+  
+      async def count(
+          self,
+          select: Optional[types.OneOptionalCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.OneOptionalWhereInput] = None,
+          cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
+          order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
+      ) -> Union[int, types.OneOptionalCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -1209,9 +1410,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.OneOptionalCountAggregateOutput, resp['data']['result']['_count'])
   
       async def delete_many(
           self,
@@ -1426,15 +1631,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       async def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.ManyRequiredWhereInput] = None,
           cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
           order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      async def count(
+          self,
+          select: types.ManyRequiredCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.ManyRequiredWhereInput] = None,
+          cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
+          order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
+      ) -> types.ManyRequiredCountAggregateOutput:
+          ...
+  
+      async def count(
+          self,
+          select: Optional[types.ManyRequiredCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.ManyRequiredWhereInput] = None,
+          cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
+          order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
+      ) -> Union[int, types.ManyRequiredCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -1446,9 +1688,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.ManyRequiredCountAggregateOutput, resp['data']['result']['_count'])
   
       async def delete_many(
           self,
@@ -1663,15 +1909,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       async def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.AWhereInput] = None,
           cursor: Optional[types.AWhereUniqueInput] = None,
           order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      async def count(
+          self,
+          select: types.ACountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.AWhereInput] = None,
+          cursor: Optional[types.AWhereUniqueInput] = None,
+          order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
+      ) -> types.ACountAggregateOutput:
+          ...
+  
+      async def count(
+          self,
+          select: Optional[types.ACountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.AWhereInput] = None,
+          cursor: Optional[types.AWhereUniqueInput] = None,
+          order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
+      ) -> Union[int, types.ACountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -1683,9 +1966,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.ACountAggregateOutput, resp['data']['result']['_count'])
   
       async def delete_many(
           self,
@@ -1900,15 +2187,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       async def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.BWhereInput] = None,
           cursor: Optional[types.BWhereUniqueInput] = None,
           order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      async def count(
+          self,
+          select: types.BCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.BWhereInput] = None,
+          cursor: Optional[types.BWhereUniqueInput] = None,
+          order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
+      ) -> types.BCountAggregateOutput:
+          ...
+  
+      async def count(
+          self,
+          select: Optional[types.BCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.BWhereInput] = None,
+          cursor: Optional[types.BWhereUniqueInput] = None,
+          order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
+      ) -> Union[int, types.BCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -1920,9 +2244,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.BCountAggregateOutput, resp['data']['result']['_count'])
   
       async def delete_many(
           self,
@@ -2137,15 +2465,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       async def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.CWhereInput] = None,
           cursor: Optional[types.CWhereUniqueInput] = None,
           order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      async def count(
+          self,
+          select: types.CCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.CWhereInput] = None,
+          cursor: Optional[types.CWhereUniqueInput] = None,
+          order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
+      ) -> types.CCountAggregateOutput:
+          ...
+  
+      async def count(
+          self,
+          select: Optional[types.CCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.CWhereInput] = None,
+          cursor: Optional[types.CWhereUniqueInput] = None,
+          order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
+      ) -> Union[int, types.CCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -2157,9 +2522,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.CCountAggregateOutput, resp['data']['result']['_count'])
   
       async def delete_many(
           self,
@@ -2374,15 +2743,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       async def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.DWhereInput] = None,
           cursor: Optional[types.DWhereUniqueInput] = None,
           order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      async def count(
+          self,
+          select: types.DCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.DWhereInput] = None,
+          cursor: Optional[types.DWhereUniqueInput] = None,
+          order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
+      ) -> types.DCountAggregateOutput:
+          ...
+  
+      async def count(
+          self,
+          select: Optional[types.DCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.DWhereInput] = None,
+          cursor: Optional[types.DWhereUniqueInput] = None,
+          order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
+      ) -> Union[int, types.DCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -2394,9 +2800,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.DCountAggregateOutput, resp['data']['result']['_count'])
   
       async def delete_many(
           self,
@@ -2611,15 +3021,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       async def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.EWhereInput] = None,
           cursor: Optional[types.EWhereUniqueInput] = None,
           order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      async def count(
+          self,
+          select: types.ECountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.EWhereInput] = None,
+          cursor: Optional[types.EWhereUniqueInput] = None,
+          order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
+      ) -> types.ECountAggregateOutput:
+          ...
+  
+      async def count(
+          self,
+          select: Optional[types.ECountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.EWhereInput] = None,
+          cursor: Optional[types.EWhereUniqueInput] = None,
+          order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
+      ) -> Union[int, types.ECountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -2631,9 +3078,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.ECountAggregateOutput, resp['data']['result']['_count'])
   
       async def delete_many(
           self,
@@ -8814,6 +9265,35 @@
   
   
   
+  PostCountAggregateInput = TypedDict(
+      'PostCountAggregateInput',
+      {
+          'id': bool,
+          'created_at': bool,
+          'title': bool,
+          'content': bool,
+          'published': bool,
+          'author_id': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  PostCountAggregateOutput = TypedDict(
+      'PostCountAggregateOutput',
+      {
+          'id': int,
+          'created_at': int,
+          'title': int,
+          'content': int,
+          'published': int,
+          'author_id': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   PostKeys = Literal[
       'id',
       'created_at',
@@ -9720,6 +10200,47 @@
   
   
   
+  UserCountAggregateInput = TypedDict(
+      'UserCountAggregateInput',
+      {
+          'id': bool,
+          'email': bool,
+          'int': bool,
+          'optional_int': bool,
+          'float': bool,
+          'optional_float': bool,
+          'string': bool,
+          'optional_string': bool,
+          'enum': bool,
+          'optional_enum': bool,
+          'boolean': bool,
+          'optional_boolean': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  UserCountAggregateOutput = TypedDict(
+      'UserCountAggregateOutput',
+      {
+          'id': int,
+          'email': int,
+          'int': int,
+          'optional_int': int,
+          'float': int,
+          'optional_float': int,
+          'string': int,
+          'optional_string': int,
+          'enum': int,
+          'optional_enum': int,
+          'boolean': int,
+          'optional_boolean': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   UserKeys = Literal[
       'id',
       'email',
@@ -10622,6 +11143,45 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+  
+  
+  MCountAggregateInput = TypedDict(
+      'MCountAggregateInput',
+      {
+          'id': bool,
+          'int': bool,
+          'optional_int': bool,
+          'float': bool,
+          'optional_float': bool,
+          'string': bool,
+          'optional_string': bool,
+          'enum': bool,
+          'optional_enum': bool,
+          'boolean': bool,
+          'optional_boolean': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  MCountAggregateOutput = TypedDict(
+      'MCountAggregateOutput',
+      {
+          'id': int,
+          'int': int,
+          'optional_int': int,
+          'float': int,
+          'optional_float': int,
+          'string': int,
+          'optional_string': int,
+          'enum': int,
+          'optional_enum': int,
+          'boolean': int,
+          'optional_boolean': int,
+          '_all': int,
+      },
+      total=False,
+  )
   
   
   MKeys = Literal[
@@ -11543,6 +12103,49 @@
   
   
   
+  NCountAggregateInput = TypedDict(
+      'NCountAggregateInput',
+      {
+          'id': bool,
+          'int': bool,
+          'optional_int': bool,
+          'float': bool,
+          'optional_float': bool,
+          'string': bool,
+          'optional_string': bool,
+          'json_': bool,
+          'optional_json': bool,
+          'enum': bool,
+          'optional_enum': bool,
+          'boolean': bool,
+          'optional_boolean': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  NCountAggregateOutput = TypedDict(
+      'NCountAggregateOutput',
+      {
+          'id': int,
+          'int': int,
+          'optional_int': int,
+          'float': int,
+          'optional_float': int,
+          'string': int,
+          'optional_string': int,
+          'json_': int,
+          'optional_json': int,
+          'enum': int,
+          'optional_enum': int,
+          'boolean': int,
+          'optional_boolean': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   NKeys = Literal[
       'id',
       'm',
@@ -12446,6 +13049,45 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+  
+  
+  OneOptionalCountAggregateInput = TypedDict(
+      'OneOptionalCountAggregateInput',
+      {
+          'id': bool,
+          'int': bool,
+          'optional_int': bool,
+          'float': bool,
+          'optional_float': bool,
+          'string': bool,
+          'optional_string': bool,
+          'enum': bool,
+          'optional_enum': bool,
+          'boolean': bool,
+          'optional_boolean': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  OneOptionalCountAggregateOutput = TypedDict(
+      'OneOptionalCountAggregateOutput',
+      {
+          'id': int,
+          'int': int,
+          'optional_int': int,
+          'float': int,
+          'optional_float': int,
+          'string': int,
+          'optional_string': int,
+          'enum': int,
+          'optional_enum': int,
+          'boolean': int,
+          'optional_boolean': int,
+          '_all': int,
+      },
+      total=False,
+  )
   
   
   OneOptionalKeys = Literal[
@@ -13355,6 +13997,47 @@
   
   
   
+  ManyRequiredCountAggregateInput = TypedDict(
+      'ManyRequiredCountAggregateInput',
+      {
+          'id': bool,
+          'one_optional_id': bool,
+          'int': bool,
+          'optional_int': bool,
+          'float': bool,
+          'optional_float': bool,
+          'string': bool,
+          'optional_string': bool,
+          'enum': bool,
+          'optional_enum': bool,
+          'boolean': bool,
+          'optional_boolean': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  ManyRequiredCountAggregateOutput = TypedDict(
+      'ManyRequiredCountAggregateOutput',
+      {
+          'id': int,
+          'one_optional_id': int,
+          'int': int,
+          'optional_int': int,
+          'float': int,
+          'optional_float': int,
+          'string': int,
+          'optional_string': int,
+          'enum': int,
+          'optional_enum': int,
+          'boolean': int,
+          'optional_boolean': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   ManyRequiredKeys = Literal[
       'id',
       'one',
@@ -14236,6 +14919,41 @@
   
   
   
+  ACountAggregateInput = TypedDict(
+      'ACountAggregateInput',
+      {
+          'id': bool,
+          'email': bool,
+          'name': bool,
+          'int': bool,
+          'sInt': bool,
+          'inc_int': bool,
+          'inc_sInt': bool,
+          'bInt': bool,
+          'inc_bInt': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  ACountAggregateOutput = TypedDict(
+      'ACountAggregateOutput',
+      {
+          'id': int,
+          'email': int,
+          'name': int,
+          'int': int,
+          'sInt': int,
+          'inc_int': int,
+          'inc_sInt': int,
+          'bInt': int,
+          'inc_bInt': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   AKeys = Literal[
       'id',
       'email',
@@ -15061,6 +15779,29 @@
       float: Union[float, 'types.FloatFilter']
       d_float: Union[float, 'types.FloatFilter']
   
+  
+  
+  BCountAggregateInput = TypedDict(
+      'BCountAggregateInput',
+      {
+          'id': bool,
+          'float': bool,
+          'd_float': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  BCountAggregateOutput = TypedDict(
+      'BCountAggregateOutput',
+      {
+          'id': int,
+          'float': int,
+          'd_float': int,
+          '_all': int,
+      },
+      total=False,
+  )
   
   
   BKeys = Literal[
@@ -15916,6 +16657,37 @@
   
   
   
+  CCountAggregateInput = TypedDict(
+      'CCountAggregateInput',
+      {
+          'id': bool,
+          'char': bool,
+          'v_char': bool,
+          'text': bool,
+          'bit': bool,
+          'v_bit': bool,
+          'uuid': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  CCountAggregateOutput = TypedDict(
+      'CCountAggregateOutput',
+      {
+          'id': int,
+          'char': int,
+          'v_char': int,
+          'text': int,
+          'bit': int,
+          'v_bit': int,
+          'uuid': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   CKeys = Literal[
       'id',
       'char',
@@ -16757,6 +17529,33 @@
   
   
   
+  DCountAggregateInput = TypedDict(
+      'DCountAggregateInput',
+      {
+          'id': bool,
+          'bool': bool,
+          'xml': bool,
+          'json_': bool,
+          'jsonb': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  DCountAggregateOutput = TypedDict(
+      'DCountAggregateOutput',
+      {
+          'id': int,
+          'bool': int,
+          'xml': int,
+          'json_': int,
+          'jsonb': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   DKeys = Literal[
       'id',
       'bool',
@@ -17588,6 +18387,31 @@
   
   
   
+  ECountAggregateInput = TypedDict(
+      'ECountAggregateInput',
+      {
+          'id': bool,
+          'date': bool,
+          'time': bool,
+          'ts': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  ECountAggregateOutput = TypedDict(
+      'ECountAggregateOutput',
+      {
+          'id': int,
+          'date': int,
+          'time': int,
+          'ts': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   EKeys = Literal[
       'id',
       'date',
@@ -17846,15 +18670,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.PostWhereInput] = None,
           cursor: Optional[types.PostWhereUniqueInput] = None,
           order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      def count(
+          self,
+          select: types.PostCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.PostWhereInput] = None,
+          cursor: Optional[types.PostWhereUniqueInput] = None,
+          order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
+      ) -> types.PostCountAggregateOutput:
+          ...
+  
+      def count(
+          self,
+          select: Optional[types.PostCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.PostWhereInput] = None,
+          cursor: Optional[types.PostWhereUniqueInput] = None,
+          order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
+      ) -> Union[int, types.PostCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -17866,9 +18727,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.PostCountAggregateOutput, resp['data']['result']['_count'])
   
       def delete_many(
           self,
@@ -18083,15 +18948,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.UserWhereInput] = None,
           cursor: Optional[types.UserWhereUniqueInput] = None,
           order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      def count(
+          self,
+          select: types.UserCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.UserWhereInput] = None,
+          cursor: Optional[types.UserWhereUniqueInput] = None,
+          order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
+      ) -> types.UserCountAggregateOutput:
+          ...
+  
+      def count(
+          self,
+          select: Optional[types.UserCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.UserWhereInput] = None,
+          cursor: Optional[types.UserWhereUniqueInput] = None,
+          order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
+      ) -> Union[int, types.UserCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -18103,9 +19005,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.UserCountAggregateOutput, resp['data']['result']['_count'])
   
       def delete_many(
           self,
@@ -18320,15 +19226,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.MWhereInput] = None,
           cursor: Optional[types.MWhereUniqueInput] = None,
           order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      def count(
+          self,
+          select: types.MCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.MWhereInput] = None,
+          cursor: Optional[types.MWhereUniqueInput] = None,
+          order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
+      ) -> types.MCountAggregateOutput:
+          ...
+  
+      def count(
+          self,
+          select: Optional[types.MCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.MWhereInput] = None,
+          cursor: Optional[types.MWhereUniqueInput] = None,
+          order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
+      ) -> Union[int, types.MCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -18340,9 +19283,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.MCountAggregateOutput, resp['data']['result']['_count'])
   
       def delete_many(
           self,
@@ -18557,15 +19504,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.NWhereInput] = None,
           cursor: Optional[types.NWhereUniqueInput] = None,
           order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      def count(
+          self,
+          select: types.NCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.NWhereInput] = None,
+          cursor: Optional[types.NWhereUniqueInput] = None,
+          order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
+      ) -> types.NCountAggregateOutput:
+          ...
+  
+      def count(
+          self,
+          select: Optional[types.NCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.NWhereInput] = None,
+          cursor: Optional[types.NWhereUniqueInput] = None,
+          order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
+      ) -> Union[int, types.NCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -18577,9 +19561,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.NCountAggregateOutput, resp['data']['result']['_count'])
   
       def delete_many(
           self,
@@ -18794,15 +19782,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.OneOptionalWhereInput] = None,
           cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
           order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      def count(
+          self,
+          select: types.OneOptionalCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.OneOptionalWhereInput] = None,
+          cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
+          order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
+      ) -> types.OneOptionalCountAggregateOutput:
+          ...
+  
+      def count(
+          self,
+          select: Optional[types.OneOptionalCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.OneOptionalWhereInput] = None,
+          cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
+          order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
+      ) -> Union[int, types.OneOptionalCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -18814,9 +19839,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.OneOptionalCountAggregateOutput, resp['data']['result']['_count'])
   
       def delete_many(
           self,
@@ -19031,15 +20060,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.ManyRequiredWhereInput] = None,
           cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
           order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      def count(
+          self,
+          select: types.ManyRequiredCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.ManyRequiredWhereInput] = None,
+          cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
+          order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
+      ) -> types.ManyRequiredCountAggregateOutput:
+          ...
+  
+      def count(
+          self,
+          select: Optional[types.ManyRequiredCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.ManyRequiredWhereInput] = None,
+          cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
+          order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
+      ) -> Union[int, types.ManyRequiredCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -19051,9 +20117,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.ManyRequiredCountAggregateOutput, resp['data']['result']['_count'])
   
       def delete_many(
           self,
@@ -19268,15 +20338,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.AWhereInput] = None,
           cursor: Optional[types.AWhereUniqueInput] = None,
           order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      def count(
+          self,
+          select: types.ACountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.AWhereInput] = None,
+          cursor: Optional[types.AWhereUniqueInput] = None,
+          order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
+      ) -> types.ACountAggregateOutput:
+          ...
+  
+      def count(
+          self,
+          select: Optional[types.ACountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.AWhereInput] = None,
+          cursor: Optional[types.AWhereUniqueInput] = None,
+          order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
+      ) -> Union[int, types.ACountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -19288,9 +20395,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.ACountAggregateOutput, resp['data']['result']['_count'])
   
       def delete_many(
           self,
@@ -19505,15 +20616,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.BWhereInput] = None,
           cursor: Optional[types.BWhereUniqueInput] = None,
           order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      def count(
+          self,
+          select: types.BCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.BWhereInput] = None,
+          cursor: Optional[types.BWhereUniqueInput] = None,
+          order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
+      ) -> types.BCountAggregateOutput:
+          ...
+  
+      def count(
+          self,
+          select: Optional[types.BCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.BWhereInput] = None,
+          cursor: Optional[types.BWhereUniqueInput] = None,
+          order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
+      ) -> Union[int, types.BCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -19525,9 +20673,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.BCountAggregateOutput, resp['data']['result']['_count'])
   
       def delete_many(
           self,
@@ -19742,15 +20894,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.CWhereInput] = None,
           cursor: Optional[types.CWhereUniqueInput] = None,
           order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      def count(
+          self,
+          select: types.CCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.CWhereInput] = None,
+          cursor: Optional[types.CWhereUniqueInput] = None,
+          order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
+      ) -> types.CCountAggregateOutput:
+          ...
+  
+      def count(
+          self,
+          select: Optional[types.CCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.CWhereInput] = None,
+          cursor: Optional[types.CWhereUniqueInput] = None,
+          order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
+      ) -> Union[int, types.CCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -19762,9 +20951,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.CCountAggregateOutput, resp['data']['result']['_count'])
   
       def delete_many(
           self,
@@ -19979,15 +21172,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.DWhereInput] = None,
           cursor: Optional[types.DWhereUniqueInput] = None,
           order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      def count(
+          self,
+          select: types.DCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.DWhereInput] = None,
+          cursor: Optional[types.DWhereUniqueInput] = None,
+          order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
+      ) -> types.DCountAggregateOutput:
+          ...
+  
+      def count(
+          self,
+          select: Optional[types.DCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.DWhereInput] = None,
+          cursor: Optional[types.DWhereUniqueInput] = None,
+          order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
+      ) -> Union[int, types.DCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -19999,9 +21229,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.DCountAggregateOutput, resp['data']['result']['_count'])
   
       def delete_many(
           self,
@@ -20216,15 +21450,52 @@
           )
           return int(resp['data']['result']['count'])
   
+      @overload
       def count(
           self,
+          select: None = None,
           take: Optional[int] = None,
           skip: Optional[int] = None,
           where: Optional[types.EWhereInput] = None,
           cursor: Optional[types.EWhereUniqueInput] = None,
           order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
       ) -> int:
-          # TODO: support select
+          ...
+  
+      @overload
+      def count(
+          self,
+          select: types.ECountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.EWhereInput] = None,
+          cursor: Optional[types.EWhereUniqueInput] = None,
+          order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
+      ) -> types.ECountAggregateOutput:
+          ...
+  
+      def count(
+          self,
+          select: Optional[types.ECountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.EWhereInput] = None,
+          cursor: Optional[types.EWhereUniqueInput] = None,
+          order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
+      ) -> Union[int, types.ECountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -20236,9 +21507,13 @@
                   'order_by': order,
                   'cursor': cursor,
               },
-              root_selection=['_count { _all }'],
+              root_selection=root_selection,
           )
-          return cast(int, resp['data']['result']['_count']['_all'])
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.ECountAggregateOutput, resp['data']['result']['_count'])
   
       def delete_many(
           self,
@@ -26412,6 +27687,35 @@
   
   
   
+  PostCountAggregateInput = TypedDict(
+      'PostCountAggregateInput',
+      {
+          'id': bool,
+          'created_at': bool,
+          'title': bool,
+          'content': bool,
+          'published': bool,
+          'author_id': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  PostCountAggregateOutput = TypedDict(
+      'PostCountAggregateOutput',
+      {
+          'id': int,
+          'created_at': int,
+          'title': int,
+          'content': int,
+          'published': int,
+          'author_id': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   PostKeys = Literal[
       'id',
       'created_at',
@@ -27318,6 +28622,47 @@
   
   
   
+  UserCountAggregateInput = TypedDict(
+      'UserCountAggregateInput',
+      {
+          'id': bool,
+          'email': bool,
+          'int': bool,
+          'optional_int': bool,
+          'float': bool,
+          'optional_float': bool,
+          'string': bool,
+          'optional_string': bool,
+          'enum': bool,
+          'optional_enum': bool,
+          'boolean': bool,
+          'optional_boolean': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  UserCountAggregateOutput = TypedDict(
+      'UserCountAggregateOutput',
+      {
+          'id': int,
+          'email': int,
+          'int': int,
+          'optional_int': int,
+          'float': int,
+          'optional_float': int,
+          'string': int,
+          'optional_string': int,
+          'enum': int,
+          'optional_enum': int,
+          'boolean': int,
+          'optional_boolean': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   UserKeys = Literal[
       'id',
       'email',
@@ -28220,6 +29565,45 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+  
+  
+  MCountAggregateInput = TypedDict(
+      'MCountAggregateInput',
+      {
+          'id': bool,
+          'int': bool,
+          'optional_int': bool,
+          'float': bool,
+          'optional_float': bool,
+          'string': bool,
+          'optional_string': bool,
+          'enum': bool,
+          'optional_enum': bool,
+          'boolean': bool,
+          'optional_boolean': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  MCountAggregateOutput = TypedDict(
+      'MCountAggregateOutput',
+      {
+          'id': int,
+          'int': int,
+          'optional_int': int,
+          'float': int,
+          'optional_float': int,
+          'string': int,
+          'optional_string': int,
+          'enum': int,
+          'optional_enum': int,
+          'boolean': int,
+          'optional_boolean': int,
+          '_all': int,
+      },
+      total=False,
+  )
   
   
   MKeys = Literal[
@@ -29141,6 +30525,49 @@
   
   
   
+  NCountAggregateInput = TypedDict(
+      'NCountAggregateInput',
+      {
+          'id': bool,
+          'int': bool,
+          'optional_int': bool,
+          'float': bool,
+          'optional_float': bool,
+          'string': bool,
+          'optional_string': bool,
+          'json_': bool,
+          'optional_json': bool,
+          'enum': bool,
+          'optional_enum': bool,
+          'boolean': bool,
+          'optional_boolean': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  NCountAggregateOutput = TypedDict(
+      'NCountAggregateOutput',
+      {
+          'id': int,
+          'int': int,
+          'optional_int': int,
+          'float': int,
+          'optional_float': int,
+          'string': int,
+          'optional_string': int,
+          'json_': int,
+          'optional_json': int,
+          'enum': int,
+          'optional_enum': int,
+          'boolean': int,
+          'optional_boolean': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   NKeys = Literal[
       'id',
       'm',
@@ -30044,6 +31471,45 @@
       boolean: Union[bool, 'types.BooleanFilter']
       optional_boolean: Union[bool, 'types.BooleanFilter']
   
+  
+  
+  OneOptionalCountAggregateInput = TypedDict(
+      'OneOptionalCountAggregateInput',
+      {
+          'id': bool,
+          'int': bool,
+          'optional_int': bool,
+          'float': bool,
+          'optional_float': bool,
+          'string': bool,
+          'optional_string': bool,
+          'enum': bool,
+          'optional_enum': bool,
+          'boolean': bool,
+          'optional_boolean': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  OneOptionalCountAggregateOutput = TypedDict(
+      'OneOptionalCountAggregateOutput',
+      {
+          'id': int,
+          'int': int,
+          'optional_int': int,
+          'float': int,
+          'optional_float': int,
+          'string': int,
+          'optional_string': int,
+          'enum': int,
+          'optional_enum': int,
+          'boolean': int,
+          'optional_boolean': int,
+          '_all': int,
+      },
+      total=False,
+  )
   
   
   OneOptionalKeys = Literal[
@@ -30953,6 +32419,47 @@
   
   
   
+  ManyRequiredCountAggregateInput = TypedDict(
+      'ManyRequiredCountAggregateInput',
+      {
+          'id': bool,
+          'one_optional_id': bool,
+          'int': bool,
+          'optional_int': bool,
+          'float': bool,
+          'optional_float': bool,
+          'string': bool,
+          'optional_string': bool,
+          'enum': bool,
+          'optional_enum': bool,
+          'boolean': bool,
+          'optional_boolean': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  ManyRequiredCountAggregateOutput = TypedDict(
+      'ManyRequiredCountAggregateOutput',
+      {
+          'id': int,
+          'one_optional_id': int,
+          'int': int,
+          'optional_int': int,
+          'float': int,
+          'optional_float': int,
+          'string': int,
+          'optional_string': int,
+          'enum': int,
+          'optional_enum': int,
+          'boolean': int,
+          'optional_boolean': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   ManyRequiredKeys = Literal[
       'id',
       'one',
@@ -31834,6 +33341,41 @@
   
   
   
+  ACountAggregateInput = TypedDict(
+      'ACountAggregateInput',
+      {
+          'id': bool,
+          'email': bool,
+          'name': bool,
+          'int': bool,
+          'sInt': bool,
+          'inc_int': bool,
+          'inc_sInt': bool,
+          'bInt': bool,
+          'inc_bInt': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  ACountAggregateOutput = TypedDict(
+      'ACountAggregateOutput',
+      {
+          'id': int,
+          'email': int,
+          'name': int,
+          'int': int,
+          'sInt': int,
+          'inc_int': int,
+          'inc_sInt': int,
+          'bInt': int,
+          'inc_bInt': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   AKeys = Literal[
       'id',
       'email',
@@ -32659,6 +34201,29 @@
       float: Union[float, 'types.FloatFilter']
       d_float: Union[float, 'types.FloatFilter']
   
+  
+  
+  BCountAggregateInput = TypedDict(
+      'BCountAggregateInput',
+      {
+          'id': bool,
+          'float': bool,
+          'd_float': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  BCountAggregateOutput = TypedDict(
+      'BCountAggregateOutput',
+      {
+          'id': int,
+          'float': int,
+          'd_float': int,
+          '_all': int,
+      },
+      total=False,
+  )
   
   
   BKeys = Literal[
@@ -33514,6 +35079,37 @@
   
   
   
+  CCountAggregateInput = TypedDict(
+      'CCountAggregateInput',
+      {
+          'id': bool,
+          'char': bool,
+          'v_char': bool,
+          'text': bool,
+          'bit': bool,
+          'v_bit': bool,
+          'uuid': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  CCountAggregateOutput = TypedDict(
+      'CCountAggregateOutput',
+      {
+          'id': int,
+          'char': int,
+          'v_char': int,
+          'text': int,
+          'bit': int,
+          'v_bit': int,
+          'uuid': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   CKeys = Literal[
       'id',
       'char',
@@ -34355,6 +35951,33 @@
   
   
   
+  DCountAggregateInput = TypedDict(
+      'DCountAggregateInput',
+      {
+          'id': bool,
+          'bool': bool,
+          'xml': bool,
+          'json_': bool,
+          'jsonb': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  DCountAggregateOutput = TypedDict(
+      'DCountAggregateOutput',
+      {
+          'id': int,
+          'bool': int,
+          'xml': int,
+          'json_': int,
+          'jsonb': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
   DKeys = Literal[
       'id',
       'bool',
@@ -35184,6 +36807,31 @@
       time: Union[datetime.datetime, 'types.DateTimeFilter']
       ts: Union[datetime.datetime, 'types.DateTimeFilter']
   
+  
+  
+  ECountAggregateInput = TypedDict(
+      'ECountAggregateInput',
+      {
+          'id': bool,
+          'date': bool,
+          'time': bool,
+          'ts': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  ECountAggregateOutput = TypedDict(
+      'ECountAggregateOutput',
+      {
+          'id': int,
+          'date': int,
+          'time': int,
+          'ts': int,
+          '_all': int,
+      },
+      total=False,
+  )
   
   
   EKeys = Literal[

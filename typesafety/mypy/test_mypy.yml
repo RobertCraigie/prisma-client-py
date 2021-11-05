@@ -240,3 +240,14 @@
         },
       )
       reveal_type(user.hello)  # N: Revealed type is "builtins.str"
+
+    async def test_count_select(client: Client) -> None:
+      count = await client.post.count()
+      reveal_type(count)  # N: Revealed type is "builtins.int*"
+
+      # NOTE: we can't just reveal_type(results) as mypy prints an overly verbose type, e.g.
+      # TypedDict('prisma.types.PostCountAggregateOutput', {'id'?: builtins.int})
+      results = await client.post.count(select={'desc': True})
+      desc_count = results.get('desc')
+      if desc_count is not None:
+        reveal_type(desc_count)  # N: Revealed type is "builtins.int"
