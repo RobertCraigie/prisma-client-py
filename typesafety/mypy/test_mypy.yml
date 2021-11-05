@@ -250,4 +250,4 @@
       results = await client.post.count(select={'desc': True})
       desc_count = results.get('desc')
       if desc_count is not None:
-        reveal_type(desc_count)  # N: Revealed type is "int"
+        reveal_type(desc_count)  # N: Revealed type is "builtins.int"
