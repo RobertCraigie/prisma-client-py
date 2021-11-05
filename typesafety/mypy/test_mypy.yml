@@ -240,3 +240,10 @@
         },
       )
       reveal_type(user.hello)  # N: Revealed type is "builtins.str"
+
+    async def test_count_select(client: Client) -> None:
+      count = await client.post.count()
+      reveal_type(count)  # N: Revealed type is "builtins.int"
+
+      results = await client.post.count(select={'desc': True})
+      reveal_type(results)  # N: Revealed type is "prisma.types.PostCreateInput"
