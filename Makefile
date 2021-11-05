@@ -38,6 +38,10 @@ format:
 lint:
 	tox -e lint
 
+.PHONY: mypy
+mypy:
+	tox -e mypy
+
 .PHONY: pyright
 pyright:
 	prisma generate --schema=tests/data/schema.prisma
