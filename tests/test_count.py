@@ -27,6 +27,11 @@ async def test_select(client: Client) -> None:
         batcher.post.create({'title': 'Foo 2', 'published': False, 'desc': 'A'})
 
     count = await client.post.count(
+        select={},
+    )
+    assert count == {'_all': 2}
+
+    count = await client.post.count(
         select={
             'desc': True,
         },

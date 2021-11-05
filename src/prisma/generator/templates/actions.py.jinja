@@ -212,38 +212,42 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
     @overload
     {{ maybe_async_def }}count(
         self,
+        select: None = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
         where: Optional[types.{{ model.name }}WhereInput] = None,
         cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
-        select: None = None,
     ) -> int:
         ...
 
     @overload
     {{ maybe_async_def }}count(
         self,
+        select: types.{{ model.name }}CountAggregateInput,
         take: Optional[int] = None,
         skip: Optional[int] = None,
         where: Optional[types.{{ model.name }}WhereInput] = None,
         cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
-        select: types.{{ model.name }}CountAggregateInput = ...,
     ) -> types.{{ model.name }}CountAggregateOutput:
         ...
 
     {{ maybe_async_def }}count(
         self,
+        select: Optional[types.{{ model.name }}CountAggregateInput] = None,
         take: Optional[int] = None,
         skip: Optional[int] = None,
         where: Optional[types.{{ model.name }}WhereInput] = None,
         cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
-        select: Optional[types.{{ model.name }}CountAggregateInput] = None,
     ) -> Union[int, types.{{ model.name }}CountAggregateOutput]:
         # TODO: this selection building should be moved to the QueryBuilder
-        if select is None:
+        #
+        # note the distinction between checking for `not select` here `select is None`
+        # later is to handle the case that the given select dictionary is empty, this
+        # is a limitation of our types.
+        if not select:
             root_selection = ['_count { _all }']
         else:
             {% raw %}
@@ -269,7 +273,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         if select is None:
             return cast(int, resp['data']['result']['_count']['_all'])
         else:
-            return resp['data']['result']['_count']
+            return cast(types.{{ model.name }}CountAggregateOutput, resp['data']['result']['_count'])
 
     {{ maybe_async_def }}delete_many(
         self,
