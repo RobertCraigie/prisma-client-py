@@ -17,3 +17,26 @@ async def test_count_no_results(client: Client) -> None:
     """No results returns 0"""
     total = await client.post.count(where={'title': 'kdbsajdh'})
     assert total == 0
+
+
+@pytest.mark.asyncio
+async def test_select(client: Client) -> None:
+    """Selecting a field counts non-null values"""
+    async with client.batch_() as batcher:
+        batcher.post.create({'title': 'Foo', 'published': False})
+        batcher.post.create({'title': 'Foo 2', 'published': False, 'desc': 'A'})
+
+    count = await client.post.count(
+        select={
+            'desc': True,
+        },
+    )
+    assert count == {'desc': 1}
+
+    count = await client.post.count(
+        select={
+            '_all': True,
+            'desc': True,
+        },
+    )
+    assert count == {'_all': 2, 'desc': 1}

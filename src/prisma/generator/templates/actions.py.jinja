@@ -209,6 +209,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         )
         return int(resp['data']['result']['count'])
 
+    @overload
     {{ maybe_async_def }}count(
         self,
         take: Optional[int] = None,
@@ -216,8 +217,41 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         where: Optional[types.{{ model.name }}WhereInput] = None,
         cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
+        select: None = None,
     ) -> int:
-        # TODO: support select
+        ...
+
+    @overload
+    {{ maybe_async_def }}count(
+        self,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.{{ model.name }}WhereInput] = None,
+        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
+        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
+        select: types.{{ model.name }}CountAggregateInput = ...,
+    ) -> types.{{ model.name }}CountAggregateOutput:
+        ...
+
+    {{ maybe_async_def }}count(
+        self,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        where: Optional[types.{{ model.name }}WhereInput] = None,
+        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
+        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
+        select: Optional[types.{{ model.name }}CountAggregateInput] = None,
+    ) -> Union[int, types.{{ model.name }}CountAggregateOutput]:
+        # TODO: this selection building should be moved to the QueryBuilder
+        if select is None:
+            root_selection = ['_count { _all }']
+        else:
+            {% raw %}
+            root_selection = [
+                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+            ]
+            {% endraw %}
+
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.count }}',
             method='{{ methods.count }}',
@@ -229,9 +263,13 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
                 'order_by': order,
                 'cursor': cursor,
             },
-            root_selection=['_count { _all }'],
+            root_selection=root_selection,
         )
-        return cast(int, resp['data']['result']['_count']['_all'])
+
+        if select is None:
+            return cast(int, resp['data']['result']['_count']['_all'])
+        else:
+            return resp['data']['result']['_count']
 
     {{ maybe_async_def }}delete_many(
         self,

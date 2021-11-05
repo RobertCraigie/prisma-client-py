@@ -459,6 +459,29 @@ class {{ current }}(TypedDict, total=False):
 {% endcall %}
 
 
+{{ model.name }}CountAggregateInput = TypedDict(
+    '{{ model.name }}CountAggregateInput',
+    {
+        {% for field in model.scalar_fields %}
+        '{{ field.name }}': bool,
+        {% endfor %}
+        '_all': bool,
+    },
+    total=False,
+)
+
+{{ model.name }}CountAggregateOutput = TypedDict(
+    '{{ model.name }}CountAggregateOutput',
+    {
+        {% for field in model.scalar_fields %}
+        '{{ field.name }}': int,
+        {% endfor %}
+        '_all': int,
+    },
+    total=False,
+)
+
+
 {{ model.name }}Keys = Literal[
     {% for field in model.all_fields %}
     '{{ field.name }}',
