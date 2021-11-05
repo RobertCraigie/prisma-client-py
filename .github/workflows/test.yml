@@ -143,12 +143,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - uses: actions/cache@v2
-        with:
-          path: .mypy_cache
-          key: ${{ runner.os }}-mypy
-          restore-keys: |
-            ${{ runner.os }}-mypy
+      - name: Cache mypy cache
+        uses: AustinScola/mypy-cache-github-action@v1
 
       - name: Check linters
         run: |
