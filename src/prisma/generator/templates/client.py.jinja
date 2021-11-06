@@ -83,7 +83,7 @@ def get_client() -> 'Client':
 
 class Client:
     {% for model in dmmf.datamodel.models %}
-    {{ model.name.lower() }}: 'actions.{{ model.name }}Actions[models.{{ model.name }}]'
+    {{ model.name.lower() }}: 'actions.{{ model.name }}Actions'
     {% endfor %}
 
     def __init__(
@@ -95,7 +95,7 @@ class Client:
         datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
     ) -> None:
         {% for model in dmmf.datamodel.models %}
-        self.{{ model.name.lower() }} = actions.{{ model.name }}Actions[models.{{ model.name }}](self, models.{{ model.name }})
+        self.{{ model.name.lower() }} = actions.{{ model.name }}Actions(self)
         {% endfor %}
         self.__engine: Optional[QueryEngine] = None
         self._active_provider = '{{ datasources[0].active_provider }}'

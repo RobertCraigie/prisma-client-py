@@ -2,7 +2,6 @@
 {% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations with context %}
 # -- template actions.py.jinja --
 from . import types, errors
-from ._types import BaseModelT
 
 
 if TYPE_CHECKING:
@@ -10,30 +9,30 @@ if TYPE_CHECKING:
 
 {% for model in dmmf.datamodel.models %}
 
-class {{ model.name }}Actions(Generic[BaseModelT]):
-    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
+class {{ model.name }}Actions:
+    def __init__(self, client: 'Client') -> None:
         self._client = client
-        self._model = model
+        self._model = models.{{ model.name }}
 
     {{ maybe_async_def }}query_raw(
         self,
         query: str,
         *args: Any,
-    ) -> List[BaseModelT]:
+    ) -> List['models.{{ model.name }}']:
         return {{ maybe_await }}self._client.query_raw(query, *args, model=self._model)
 
     {{ maybe_async_def }}query_first(
         self,
         query: str,
         *args: Any,
-    ) -> Optional[BaseModelT]:
+    ) -> Optional['models.{{ model.name }}']:
         return {{ maybe_await }}self._client.query_first(query, *args, model=self._model)
 
     {{ maybe_async_def }}create(
         self,
         data: types.{{ model.name }}CreateInput,
         include: Optional[types.{{ model.name}}Include] = None
-    ) -> BaseModelT:
+    ) -> 'models.{{ model.name }}':
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.create }}',
             method='{{ methods.create }}',
@@ -70,7 +69,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         self,
         where: types.{{ model.name }}WhereUniqueInput,
         include: Optional[types.{{ model.name}}Include] = None
-    ) -> Optional[BaseModelT]:
+    ) -> Optional['models.{{ model.name }}']:
         try:
             resp = {{ maybe_await }}self._client._execute(
                 operation='{{ operations.delete }}',
@@ -90,7 +89,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         self,
         where: types.{{ model.name }}WhereUniqueInput,
         include: Optional[types.{{ model.name}}Include] = None
-    ) -> Optional[BaseModelT]:
+    ) -> Optional['models.{{ model.name }}']:
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.find_unique }}',
             method='{{ methods.find_unique }}',
@@ -113,7 +112,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
         include: Optional[types.{{ model.name }}Include] = None,
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
-    ) -> List[BaseModelT]:
+    ) -> List['models.{{ model.name }}']:
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.find_many }}',
             method='{{ methods.find_many }}',
@@ -136,7 +135,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
         include: Optional[types.{{ model.name }}Include] = None,
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
-    ) -> Optional[BaseModelT]:
+    ) -> Optional['models.{{ model.name }}']:
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.find_first }}',
             method='{{ methods.find_first }}',
@@ -159,7 +158,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         data: types.{{ model.name }}UpdateInput,
         where: types.{{ model.name }}WhereUniqueInput,
         include: Optional[types.{{ model.name}}Include] = None
-    ) -> Optional[BaseModelT]:
+    ) -> Optional['models.{{ model.name }}']:
         try:
             resp = {{ maybe_await }}self._client._execute(
                 operation='{{ operations["update"] }}',
@@ -181,7 +180,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         where: types.{{ model.name }}WhereUniqueInput,
         data: types.{{ model.name }}UpsertInput,
         include: Optional[types.{{ model.name}}Include] = None,
-    ) -> BaseModelT:
+    ) -> 'models.{{ model.name }}':
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.upsert }}',
             method='{{ methods.upsert }}',
@@ -289,3 +288,6 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         return int(resp['data']['result']['count'])
 
 {% endfor %}
+
+from . import models
+
