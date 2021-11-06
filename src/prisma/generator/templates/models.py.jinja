@@ -30,10 +30,10 @@ class {{ model.name }}(BaseModel):
     Config = Config
 
     @classmethod
-    def prisma(cls) -> 'actions.{{ model.name }}Actions':
+    def prisma(cls: Type[BaseModelT]) -> 'actions.{{ model.name }}Actions[BaseModelT]':
         from .client import get_client
 
-        return actions.{{ model.name }}Actions(get_client())
+        return actions.{{ model.name }}Actions[BaseModelT](get_client(), cls)
 
     @staticmethod
     def create_partial(

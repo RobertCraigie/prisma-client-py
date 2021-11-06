@@ -140,5 +140,6 @@ src/prisma/generator/debug-params.json
 .tests_cache/
 *.db
 
+
 # OS files
 .DS_Store

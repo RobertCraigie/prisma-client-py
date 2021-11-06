@@ -35,36 +35,37 @@
   
   # -- template actions.py.jinja --
   from . import types, errors
+  from ._types import BaseModelT
   
   
   if TYPE_CHECKING:
       from .client import Client
   
   
-  class PostActions:
-      def __init__(self, client: 'Client') -> None:
+  class PostActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.Post
+          self._model = model
   
       async def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.Post']:
+      ) -> List[BaseModelT]:
           return await self._client.query_raw(query, *args, model=self._model)
   
       async def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.Post']:
+      ) -> Optional[BaseModelT]:
           return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
           data: types.PostCreateInput,
           include: Optional[types.PostInclude] = None
-      ) -> 'models.Post':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='createOne',
@@ -101,7 +102,7 @@
           self,
           where: types.PostWhereUniqueInput,
           include: Optional[types.PostInclude] = None
-      ) -> Optional['models.Post']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -121,7 +122,7 @@
           self,
           where: types.PostWhereUniqueInput,
           include: Optional[types.PostInclude] = None
-      ) -> Optional['models.Post']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findUnique',
@@ -144,7 +145,7 @@
           cursor: Optional[types.PostWhereUniqueInput] = None,
           include: Optional[types.PostInclude] = None,
           order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
-      ) -> List['models.Post']:
+      ) -> List[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findMany',
@@ -167,7 +168,7 @@
           cursor: Optional[types.PostWhereUniqueInput] = None,
           include: Optional[types.PostInclude] = None,
           order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
-      ) -> Optional['models.Post']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findFirst',
@@ -190,7 +191,7 @@
           data: types.PostUpdateInput,
           where: types.PostWhereUniqueInput,
           include: Optional[types.PostInclude] = None
-      ) -> Optional['models.Post']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -212,7 +213,7 @@
           where: types.PostWhereUniqueInput,
           data: types.PostUpsertInput,
           include: Optional[types.PostInclude] = None,
-      ) -> 'models.Post':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -319,30 +320,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class UserActions:
-      def __init__(self, client: 'Client') -> None:
+  class UserActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.User
+          self._model = model
   
       async def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.User']:
+      ) -> List[BaseModelT]:
           return await self._client.query_raw(query, *args, model=self._model)
   
       async def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.User']:
+      ) -> Optional[BaseModelT]:
           return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
           data: types.UserCreateInput,
           include: Optional[types.UserInclude] = None
-      ) -> 'models.User':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='createOne',
@@ -379,7 +380,7 @@
           self,
           where: types.UserWhereUniqueInput,
           include: Optional[types.UserInclude] = None
-      ) -> Optional['models.User']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -399,7 +400,7 @@
           self,
           where: types.UserWhereUniqueInput,
           include: Optional[types.UserInclude] = None
-      ) -> Optional['models.User']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findUnique',
@@ -422,7 +423,7 @@
           cursor: Optional[types.UserWhereUniqueInput] = None,
           include: Optional[types.UserInclude] = None,
           order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
-      ) -> List['models.User']:
+      ) -> List[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findMany',
@@ -445,7 +446,7 @@
           cursor: Optional[types.UserWhereUniqueInput] = None,
           include: Optional[types.UserInclude] = None,
           order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
-      ) -> Optional['models.User']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findFirst',
@@ -468,7 +469,7 @@
           data: types.UserUpdateInput,
           where: types.UserWhereUniqueInput,
           include: Optional[types.UserInclude] = None
-      ) -> Optional['models.User']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -490,7 +491,7 @@
           where: types.UserWhereUniqueInput,
           data: types.UserUpsertInput,
           include: Optional[types.UserInclude] = None,
-      ) -> 'models.User':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -597,30 +598,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class MActions:
-      def __init__(self, client: 'Client') -> None:
+  class MActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.M
+          self._model = model
   
       async def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.M']:
+      ) -> List[BaseModelT]:
           return await self._client.query_raw(query, *args, model=self._model)
   
       async def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.M']:
+      ) -> Optional[BaseModelT]:
           return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
           data: types.MCreateInput,
           include: Optional[types.MInclude] = None
-      ) -> 'models.M':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='createOne',
@@ -657,7 +658,7 @@
           self,
           where: types.MWhereUniqueInput,
           include: Optional[types.MInclude] = None
-      ) -> Optional['models.M']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -677,7 +678,7 @@
           self,
           where: types.MWhereUniqueInput,
           include: Optional[types.MInclude] = None
-      ) -> Optional['models.M']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findUnique',
@@ -700,7 +701,7 @@
           cursor: Optional[types.MWhereUniqueInput] = None,
           include: Optional[types.MInclude] = None,
           order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
-      ) -> List['models.M']:
+      ) -> List[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findMany',
@@ -723,7 +724,7 @@
           cursor: Optional[types.MWhereUniqueInput] = None,
           include: Optional[types.MInclude] = None,
           order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
-      ) -> Optional['models.M']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findFirst',
@@ -746,7 +747,7 @@
           data: types.MUpdateInput,
           where: types.MWhereUniqueInput,
           include: Optional[types.MInclude] = None
-      ) -> Optional['models.M']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -768,7 +769,7 @@
           where: types.MWhereUniqueInput,
           data: types.MUpsertInput,
           include: Optional[types.MInclude] = None,
-      ) -> 'models.M':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -875,30 +876,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class NActions:
-      def __init__(self, client: 'Client') -> None:
+  class NActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.N
+          self._model = model
   
       async def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.N']:
+      ) -> List[BaseModelT]:
           return await self._client.query_raw(query, *args, model=self._model)
   
       async def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.N']:
+      ) -> Optional[BaseModelT]:
           return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
           data: types.NCreateInput,
           include: Optional[types.NInclude] = None
-      ) -> 'models.N':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='createOne',
@@ -935,7 +936,7 @@
           self,
           where: types.NWhereUniqueInput,
           include: Optional[types.NInclude] = None
-      ) -> Optional['models.N']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -955,7 +956,7 @@
           self,
           where: types.NWhereUniqueInput,
           include: Optional[types.NInclude] = None
-      ) -> Optional['models.N']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findUnique',
@@ -978,7 +979,7 @@
           cursor: Optional[types.NWhereUniqueInput] = None,
           include: Optional[types.NInclude] = None,
           order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
-      ) -> List['models.N']:
+      ) -> List[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findMany',
@@ -1001,7 +1002,7 @@
           cursor: Optional[types.NWhereUniqueInput] = None,
           include: Optional[types.NInclude] = None,
           order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
-      ) -> Optional['models.N']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findFirst',
@@ -1024,7 +1025,7 @@
           data: types.NUpdateInput,
           where: types.NWhereUniqueInput,
           include: Optional[types.NInclude] = None
-      ) -> Optional['models.N']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -1046,7 +1047,7 @@
           where: types.NWhereUniqueInput,
           data: types.NUpsertInput,
           include: Optional[types.NInclude] = None,
-      ) -> 'models.N':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -1153,30 +1154,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class OneOptionalActions:
-      def __init__(self, client: 'Client') -> None:
+  class OneOptionalActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.OneOptional
+          self._model = model
   
       async def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.OneOptional']:
+      ) -> List[BaseModelT]:
           return await self._client.query_raw(query, *args, model=self._model)
   
       async def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.OneOptional']:
+      ) -> Optional[BaseModelT]:
           return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
           data: types.OneOptionalCreateInput,
           include: Optional[types.OneOptionalInclude] = None
-      ) -> 'models.OneOptional':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='createOne',
@@ -1213,7 +1214,7 @@
           self,
           where: types.OneOptionalWhereUniqueInput,
           include: Optional[types.OneOptionalInclude] = None
-      ) -> Optional['models.OneOptional']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -1233,7 +1234,7 @@
           self,
           where: types.OneOptionalWhereUniqueInput,
           include: Optional[types.OneOptionalInclude] = None
-      ) -> Optional['models.OneOptional']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findUnique',
@@ -1256,7 +1257,7 @@
           cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
           include: Optional[types.OneOptionalInclude] = None,
           order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
-      ) -> List['models.OneOptional']:
+      ) -> List[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findMany',
@@ -1279,7 +1280,7 @@
           cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
           include: Optional[types.OneOptionalInclude] = None,
           order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
-      ) -> Optional['models.OneOptional']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findFirst',
@@ -1302,7 +1303,7 @@
           data: types.OneOptionalUpdateInput,
           where: types.OneOptionalWhereUniqueInput,
           include: Optional[types.OneOptionalInclude] = None
-      ) -> Optional['models.OneOptional']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -1324,7 +1325,7 @@
           where: types.OneOptionalWhereUniqueInput,
           data: types.OneOptionalUpsertInput,
           include: Optional[types.OneOptionalInclude] = None,
-      ) -> 'models.OneOptional':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -1431,30 +1432,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class ManyRequiredActions:
-      def __init__(self, client: 'Client') -> None:
+  class ManyRequiredActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.ManyRequired
+          self._model = model
   
       async def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.ManyRequired']:
+      ) -> List[BaseModelT]:
           return await self._client.query_raw(query, *args, model=self._model)
   
       async def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.ManyRequired']:
+      ) -> Optional[BaseModelT]:
           return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
           data: types.ManyRequiredCreateInput,
           include: Optional[types.ManyRequiredInclude] = None
-      ) -> 'models.ManyRequired':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='createOne',
@@ -1491,7 +1492,7 @@
           self,
           where: types.ManyRequiredWhereUniqueInput,
           include: Optional[types.ManyRequiredInclude] = None
-      ) -> Optional['models.ManyRequired']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -1511,7 +1512,7 @@
           self,
           where: types.ManyRequiredWhereUniqueInput,
           include: Optional[types.ManyRequiredInclude] = None
-      ) -> Optional['models.ManyRequired']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findUnique',
@@ -1534,7 +1535,7 @@
           cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
           include: Optional[types.ManyRequiredInclude] = None,
           order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
-      ) -> List['models.ManyRequired']:
+      ) -> List[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findMany',
@@ -1557,7 +1558,7 @@
           cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
           include: Optional[types.ManyRequiredInclude] = None,
           order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
-      ) -> Optional['models.ManyRequired']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findFirst',
@@ -1580,7 +1581,7 @@
           data: types.ManyRequiredUpdateInput,
           where: types.ManyRequiredWhereUniqueInput,
           include: Optional[types.ManyRequiredInclude] = None
-      ) -> Optional['models.ManyRequired']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -1602,7 +1603,7 @@
           where: types.ManyRequiredWhereUniqueInput,
           data: types.ManyRequiredUpsertInput,
           include: Optional[types.ManyRequiredInclude] = None,
-      ) -> 'models.ManyRequired':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -1709,30 +1710,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class AActions:
-      def __init__(self, client: 'Client') -> None:
+  class AActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.A
+          self._model = model
   
       async def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.A']:
+      ) -> List[BaseModelT]:
           return await self._client.query_raw(query, *args, model=self._model)
   
       async def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.A']:
+      ) -> Optional[BaseModelT]:
           return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
           data: types.ACreateInput,
           include: Optional[types.AInclude] = None
-      ) -> 'models.A':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='createOne',
@@ -1769,7 +1770,7 @@
           self,
           where: types.AWhereUniqueInput,
           include: Optional[types.AInclude] = None
-      ) -> Optional['models.A']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -1789,7 +1790,7 @@
           self,
           where: types.AWhereUniqueInput,
           include: Optional[types.AInclude] = None
-      ) -> Optional['models.A']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findUnique',
@@ -1812,7 +1813,7 @@
           cursor: Optional[types.AWhereUniqueInput] = None,
           include: Optional[types.AInclude] = None,
           order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
-      ) -> List['models.A']:
+      ) -> List[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findMany',
@@ -1835,7 +1836,7 @@
           cursor: Optional[types.AWhereUniqueInput] = None,
           include: Optional[types.AInclude] = None,
           order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
-      ) -> Optional['models.A']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findFirst',
@@ -1858,7 +1859,7 @@
           data: types.AUpdateInput,
           where: types.AWhereUniqueInput,
           include: Optional[types.AInclude] = None
-      ) -> Optional['models.A']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -1880,7 +1881,7 @@
           where: types.AWhereUniqueInput,
           data: types.AUpsertInput,
           include: Optional[types.AInclude] = None,
-      ) -> 'models.A':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -1987,30 +1988,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class BActions:
-      def __init__(self, client: 'Client') -> None:
+  class BActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.B
+          self._model = model
   
       async def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.B']:
+      ) -> List[BaseModelT]:
           return await self._client.query_raw(query, *args, model=self._model)
   
       async def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.B']:
+      ) -> Optional[BaseModelT]:
           return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
           data: types.BCreateInput,
           include: Optional[types.BInclude] = None
-      ) -> 'models.B':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='createOne',
@@ -2047,7 +2048,7 @@
           self,
           where: types.BWhereUniqueInput,
           include: Optional[types.BInclude] = None
-      ) -> Optional['models.B']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -2067,7 +2068,7 @@
           self,
           where: types.BWhereUniqueInput,
           include: Optional[types.BInclude] = None
-      ) -> Optional['models.B']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findUnique',
@@ -2090,7 +2091,7 @@
           cursor: Optional[types.BWhereUniqueInput] = None,
           include: Optional[types.BInclude] = None,
           order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
-      ) -> List['models.B']:
+      ) -> List[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findMany',
@@ -2113,7 +2114,7 @@
           cursor: Optional[types.BWhereUniqueInput] = None,
           include: Optional[types.BInclude] = None,
           order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
-      ) -> Optional['models.B']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findFirst',
@@ -2136,7 +2137,7 @@
           data: types.BUpdateInput,
           where: types.BWhereUniqueInput,
           include: Optional[types.BInclude] = None
-      ) -> Optional['models.B']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -2158,7 +2159,7 @@
           where: types.BWhereUniqueInput,
           data: types.BUpsertInput,
           include: Optional[types.BInclude] = None,
-      ) -> 'models.B':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -2265,30 +2266,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class CActions:
-      def __init__(self, client: 'Client') -> None:
+  class CActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.C
+          self._model = model
   
       async def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.C']:
+      ) -> List[BaseModelT]:
           return await self._client.query_raw(query, *args, model=self._model)
   
       async def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.C']:
+      ) -> Optional[BaseModelT]:
           return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
           data: types.CCreateInput,
           include: Optional[types.CInclude] = None
-      ) -> 'models.C':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='createOne',
@@ -2325,7 +2326,7 @@
           self,
           where: types.CWhereUniqueInput,
           include: Optional[types.CInclude] = None
-      ) -> Optional['models.C']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -2345,7 +2346,7 @@
           self,
           where: types.CWhereUniqueInput,
           include: Optional[types.CInclude] = None
-      ) -> Optional['models.C']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findUnique',
@@ -2368,7 +2369,7 @@
           cursor: Optional[types.CWhereUniqueInput] = None,
           include: Optional[types.CInclude] = None,
           order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
-      ) -> List['models.C']:
+      ) -> List[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findMany',
@@ -2391,7 +2392,7 @@
           cursor: Optional[types.CWhereUniqueInput] = None,
           include: Optional[types.CInclude] = None,
           order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
-      ) -> Optional['models.C']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findFirst',
@@ -2414,7 +2415,7 @@
           data: types.CUpdateInput,
           where: types.CWhereUniqueInput,
           include: Optional[types.CInclude] = None
-      ) -> Optional['models.C']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -2436,7 +2437,7 @@
           where: types.CWhereUniqueInput,
           data: types.CUpsertInput,
           include: Optional[types.CInclude] = None,
-      ) -> 'models.C':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -2543,30 +2544,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class DActions:
-      def __init__(self, client: 'Client') -> None:
+  class DActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.D
+          self._model = model
   
       async def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.D']:
+      ) -> List[BaseModelT]:
           return await self._client.query_raw(query, *args, model=self._model)
   
       async def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.D']:
+      ) -> Optional[BaseModelT]:
           return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
           data: types.DCreateInput,
           include: Optional[types.DInclude] = None
-      ) -> 'models.D':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='createOne',
@@ -2603,7 +2604,7 @@
           self,
           where: types.DWhereUniqueInput,
           include: Optional[types.DInclude] = None
-      ) -> Optional['models.D']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -2623,7 +2624,7 @@
           self,
           where: types.DWhereUniqueInput,
           include: Optional[types.DInclude] = None
-      ) -> Optional['models.D']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findUnique',
@@ -2646,7 +2647,7 @@
           cursor: Optional[types.DWhereUniqueInput] = None,
           include: Optional[types.DInclude] = None,
           order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
-      ) -> List['models.D']:
+      ) -> List[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findMany',
@@ -2669,7 +2670,7 @@
           cursor: Optional[types.DWhereUniqueInput] = None,
           include: Optional[types.DInclude] = None,
           order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
-      ) -> Optional['models.D']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findFirst',
@@ -2692,7 +2693,7 @@
           data: types.DUpdateInput,
           where: types.DWhereUniqueInput,
           include: Optional[types.DInclude] = None
-      ) -> Optional['models.D']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -2714,7 +2715,7 @@
           where: types.DWhereUniqueInput,
           data: types.DUpsertInput,
           include: Optional[types.DInclude] = None,
-      ) -> 'models.D':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -2821,30 +2822,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class EActions:
-      def __init__(self, client: 'Client') -> None:
+  class EActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.E
+          self._model = model
   
       async def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.E']:
+      ) -> List[BaseModelT]:
           return await self._client.query_raw(query, *args, model=self._model)
   
       async def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.E']:
+      ) -> Optional[BaseModelT]:
           return await self._client.query_first(query, *args, model=self._model)
   
       async def create(
           self,
           data: types.ECreateInput,
           include: Optional[types.EInclude] = None
-      ) -> 'models.E':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='createOne',
@@ -2881,7 +2882,7 @@
           self,
           where: types.EWhereUniqueInput,
           include: Optional[types.EInclude] = None
-      ) -> Optional['models.E']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -2901,7 +2902,7 @@
           self,
           where: types.EWhereUniqueInput,
           include: Optional[types.EInclude] = None
-      ) -> Optional['models.E']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findUnique',
@@ -2924,7 +2925,7 @@
           cursor: Optional[types.EWhereUniqueInput] = None,
           include: Optional[types.EInclude] = None,
           order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
-      ) -> List['models.E']:
+      ) -> List[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findMany',
@@ -2947,7 +2948,7 @@
           cursor: Optional[types.EWhereUniqueInput] = None,
           include: Optional[types.EInclude] = None,
           order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
-      ) -> Optional['models.E']:
+      ) -> Optional[BaseModelT]:
           resp = await self._client._execute(
               operation='query',
               method='findFirst',
@@ -2970,7 +2971,7 @@
           data: types.EUpdateInput,
           where: types.EWhereUniqueInput,
           include: Optional[types.EInclude] = None
-      ) -> Optional['models.E']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = await self._client._execute(
                   operation='mutation',
@@ -2992,7 +2993,7 @@
           where: types.EWhereUniqueInput,
           data: types.EUpsertInput,
           include: Optional[types.EInclude] = None,
-      ) -> 'models.E':
+      ) -> BaseModelT:
           resp = await self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -3098,8 +3099,6 @@
           )
           return int(resp['data']['result']['count'])
   
-  
-  from . import models
   
   '
 ---
@@ -4226,17 +4225,17 @@
   
   
   class Client:
-      post: 'actions.PostActions'
-      user: 'actions.UserActions'
-      m: 'actions.MActions'
-      n: 'actions.NActions'
-      oneoptional: 'actions.OneOptionalActions'
-      manyrequired: 'actions.ManyRequiredActions'
-      a: 'actions.AActions'
-      b: 'actions.BActions'
-      c: 'actions.CActions'
-      d: 'actions.DActions'
-      e: 'actions.EActions'
+      post: 'actions.PostActions[models.Post]'
+      user: 'actions.UserActions[models.User]'
+      m: 'actions.MActions[models.M]'
+      n: 'actions.NActions[models.N]'
+      oneoptional: 'actions.OneOptionalActions[models.OneOptional]'
+      manyrequired: 'actions.ManyRequiredActions[models.ManyRequired]'
+      a: 'actions.AActions[models.A]'
+      b: 'actions.BActions[models.B]'
+      c: 'actions.CActions[models.C]'
+      d: 'actions.DActions[models.D]'
+      e: 'actions.EActions[models.E]'
   
       def __init__(
           self,
@@ -4246,17 +4245,17 @@
           # no idea why this type ignore is required, pyright works correctly, mypy does not
           datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
       ) -> None:
-          self.post = actions.PostActions(self)
-          self.user = actions.UserActions(self)
-          self.m = actions.MActions(self)
-          self.n = actions.NActions(self)
-          self.oneoptional = actions.OneOptionalActions(self)
-          self.manyrequired = actions.ManyRequiredActions(self)
-          self.a = actions.AActions(self)
-          self.b = actions.BActions(self)
-          self.c = actions.CActions(self)
-          self.d = actions.DActions(self)
-          self.e = actions.EActions(self)
+          self.post = actions.PostActions[models.Post](self, models.Post)
+          self.user = actions.UserActions[models.User](self, models.User)
+          self.m = actions.MActions[models.M](self, models.M)
+          self.n = actions.NActions[models.N](self, models.N)
+          self.oneoptional = actions.OneOptionalActions[models.OneOptional](self, models.OneOptional)
+          self.manyrequired = actions.ManyRequiredActions[models.ManyRequired](self, models.ManyRequired)
+          self.a = actions.AActions[models.A](self, models.A)
+          self.b = actions.BActions[models.B](self, models.B)
+          self.c = actions.CActions[models.C](self, models.C)
+          self.d = actions.DActions[models.D](self, models.D)
+          self.e = actions.EActions[models.E](self, models.E)
           self.__engine: Optional[QueryEngine] = None
           self._active_provider = 'postgresql'
           self._log_queries = log_queries
@@ -6249,10 +6248,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.PostActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.PostActions[BaseModelT]':
           from .client import get_client
   
-          return actions.PostActions(get_client())
+          return actions.PostActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -6360,10 +6359,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.UserActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.UserActions[BaseModelT]':
           from .client import get_client
   
-          return actions.UserActions(get_client())
+          return actions.UserActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -6470,10 +6469,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.MActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.MActions[BaseModelT]':
           from .client import get_client
   
-          return actions.MActions(get_client())
+          return actions.MActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -6582,10 +6581,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.NActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.NActions[BaseModelT]':
           from .client import get_client
   
-          return actions.NActions(get_client())
+          return actions.NActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -6692,10 +6691,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.OneOptionalActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.OneOptionalActions[BaseModelT]':
           from .client import get_client
   
-          return actions.OneOptionalActions(get_client())
+          return actions.OneOptionalActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -6803,10 +6802,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.ManyRequiredActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.ManyRequiredActions[BaseModelT]':
           from .client import get_client
   
-          return actions.ManyRequiredActions(get_client())
+          return actions.ManyRequiredActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -6910,10 +6909,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.AActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.AActions[BaseModelT]':
           from .client import get_client
   
-          return actions.AActions(get_client())
+          return actions.AActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -6993,10 +6992,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.BActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.BActions[BaseModelT]':
           from .client import get_client
   
-          return actions.BActions(get_client())
+          return actions.BActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -7080,10 +7079,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.CActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.CActions[BaseModelT]':
           from .client import get_client
   
-          return actions.CActions(get_client())
+          return actions.CActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -7165,10 +7164,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.DActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.DActions[BaseModelT]':
           from .client import get_client
   
-          return actions.DActions(get_client())
+          return actions.DActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -7249,10 +7248,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.EActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.EActions[BaseModelT]':
           from .client import get_client
   
-          return actions.EActions(get_client())
+          return actions.EActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -18465,36 +18464,37 @@
   
   # -- template actions.py.jinja --
   from . import types, errors
+  from ._types import BaseModelT
   
   
   if TYPE_CHECKING:
       from .client import Client
   
   
-  class PostActions:
-      def __init__(self, client: 'Client') -> None:
+  class PostActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.Post
+          self._model = model
   
       def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.Post']:
+      ) -> List[BaseModelT]:
           return self._client.query_raw(query, *args, model=self._model)
   
       def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.Post']:
+      ) -> Optional[BaseModelT]:
           return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
           data: types.PostCreateInput,
           include: Optional[types.PostInclude] = None
-      ) -> 'models.Post':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='createOne',
@@ -18531,7 +18531,7 @@
           self,
           where: types.PostWhereUniqueInput,
           include: Optional[types.PostInclude] = None
-      ) -> Optional['models.Post']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -18551,7 +18551,7 @@
           self,
           where: types.PostWhereUniqueInput,
           include: Optional[types.PostInclude] = None
-      ) -> Optional['models.Post']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findUnique',
@@ -18574,7 +18574,7 @@
           cursor: Optional[types.PostWhereUniqueInput] = None,
           include: Optional[types.PostInclude] = None,
           order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
-      ) -> List['models.Post']:
+      ) -> List[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findMany',
@@ -18597,7 +18597,7 @@
           cursor: Optional[types.PostWhereUniqueInput] = None,
           include: Optional[types.PostInclude] = None,
           order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
-      ) -> Optional['models.Post']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findFirst',
@@ -18620,7 +18620,7 @@
           data: types.PostUpdateInput,
           where: types.PostWhereUniqueInput,
           include: Optional[types.PostInclude] = None
-      ) -> Optional['models.Post']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -18642,7 +18642,7 @@
           where: types.PostWhereUniqueInput,
           data: types.PostUpsertInput,
           include: Optional[types.PostInclude] = None,
-      ) -> 'models.Post':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -18749,30 +18749,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class UserActions:
-      def __init__(self, client: 'Client') -> None:
+  class UserActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.User
+          self._model = model
   
       def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.User']:
+      ) -> List[BaseModelT]:
           return self._client.query_raw(query, *args, model=self._model)
   
       def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.User']:
+      ) -> Optional[BaseModelT]:
           return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
           data: types.UserCreateInput,
           include: Optional[types.UserInclude] = None
-      ) -> 'models.User':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='createOne',
@@ -18809,7 +18809,7 @@
           self,
           where: types.UserWhereUniqueInput,
           include: Optional[types.UserInclude] = None
-      ) -> Optional['models.User']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -18829,7 +18829,7 @@
           self,
           where: types.UserWhereUniqueInput,
           include: Optional[types.UserInclude] = None
-      ) -> Optional['models.User']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findUnique',
@@ -18852,7 +18852,7 @@
           cursor: Optional[types.UserWhereUniqueInput] = None,
           include: Optional[types.UserInclude] = None,
           order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
-      ) -> List['models.User']:
+      ) -> List[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findMany',
@@ -18875,7 +18875,7 @@
           cursor: Optional[types.UserWhereUniqueInput] = None,
           include: Optional[types.UserInclude] = None,
           order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
-      ) -> Optional['models.User']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findFirst',
@@ -18898,7 +18898,7 @@
           data: types.UserUpdateInput,
           where: types.UserWhereUniqueInput,
           include: Optional[types.UserInclude] = None
-      ) -> Optional['models.User']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -18920,7 +18920,7 @@
           where: types.UserWhereUniqueInput,
           data: types.UserUpsertInput,
           include: Optional[types.UserInclude] = None,
-      ) -> 'models.User':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -19027,30 +19027,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class MActions:
-      def __init__(self, client: 'Client') -> None:
+  class MActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.M
+          self._model = model
   
       def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.M']:
+      ) -> List[BaseModelT]:
           return self._client.query_raw(query, *args, model=self._model)
   
       def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.M']:
+      ) -> Optional[BaseModelT]:
           return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
           data: types.MCreateInput,
           include: Optional[types.MInclude] = None
-      ) -> 'models.M':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='createOne',
@@ -19087,7 +19087,7 @@
           self,
           where: types.MWhereUniqueInput,
           include: Optional[types.MInclude] = None
-      ) -> Optional['models.M']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -19107,7 +19107,7 @@
           self,
           where: types.MWhereUniqueInput,
           include: Optional[types.MInclude] = None
-      ) -> Optional['models.M']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findUnique',
@@ -19130,7 +19130,7 @@
           cursor: Optional[types.MWhereUniqueInput] = None,
           include: Optional[types.MInclude] = None,
           order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
-      ) -> List['models.M']:
+      ) -> List[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findMany',
@@ -19153,7 +19153,7 @@
           cursor: Optional[types.MWhereUniqueInput] = None,
           include: Optional[types.MInclude] = None,
           order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
-      ) -> Optional['models.M']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findFirst',
@@ -19176,7 +19176,7 @@
           data: types.MUpdateInput,
           where: types.MWhereUniqueInput,
           include: Optional[types.MInclude] = None
-      ) -> Optional['models.M']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -19198,7 +19198,7 @@
           where: types.MWhereUniqueInput,
           data: types.MUpsertInput,
           include: Optional[types.MInclude] = None,
-      ) -> 'models.M':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -19305,30 +19305,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class NActions:
-      def __init__(self, client: 'Client') -> None:
+  class NActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.N
+          self._model = model
   
       def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.N']:
+      ) -> List[BaseModelT]:
           return self._client.query_raw(query, *args, model=self._model)
   
       def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.N']:
+      ) -> Optional[BaseModelT]:
           return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
           data: types.NCreateInput,
           include: Optional[types.NInclude] = None
-      ) -> 'models.N':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='createOne',
@@ -19365,7 +19365,7 @@
           self,
           where: types.NWhereUniqueInput,
           include: Optional[types.NInclude] = None
-      ) -> Optional['models.N']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -19385,7 +19385,7 @@
           self,
           where: types.NWhereUniqueInput,
           include: Optional[types.NInclude] = None
-      ) -> Optional['models.N']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findUnique',
@@ -19408,7 +19408,7 @@
           cursor: Optional[types.NWhereUniqueInput] = None,
           include: Optional[types.NInclude] = None,
           order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
-      ) -> List['models.N']:
+      ) -> List[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findMany',
@@ -19431,7 +19431,7 @@
           cursor: Optional[types.NWhereUniqueInput] = None,
           include: Optional[types.NInclude] = None,
           order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
-      ) -> Optional['models.N']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findFirst',
@@ -19454,7 +19454,7 @@
           data: types.NUpdateInput,
           where: types.NWhereUniqueInput,
           include: Optional[types.NInclude] = None
-      ) -> Optional['models.N']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -19476,7 +19476,7 @@
           where: types.NWhereUniqueInput,
           data: types.NUpsertInput,
           include: Optional[types.NInclude] = None,
-      ) -> 'models.N':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -19583,30 +19583,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class OneOptionalActions:
-      def __init__(self, client: 'Client') -> None:
+  class OneOptionalActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.OneOptional
+          self._model = model
   
       def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.OneOptional']:
+      ) -> List[BaseModelT]:
           return self._client.query_raw(query, *args, model=self._model)
   
       def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.OneOptional']:
+      ) -> Optional[BaseModelT]:
           return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
           data: types.OneOptionalCreateInput,
           include: Optional[types.OneOptionalInclude] = None
-      ) -> 'models.OneOptional':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='createOne',
@@ -19643,7 +19643,7 @@
           self,
           where: types.OneOptionalWhereUniqueInput,
           include: Optional[types.OneOptionalInclude] = None
-      ) -> Optional['models.OneOptional']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -19663,7 +19663,7 @@
           self,
           where: types.OneOptionalWhereUniqueInput,
           include: Optional[types.OneOptionalInclude] = None
-      ) -> Optional['models.OneOptional']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findUnique',
@@ -19686,7 +19686,7 @@
           cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
           include: Optional[types.OneOptionalInclude] = None,
           order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
-      ) -> List['models.OneOptional']:
+      ) -> List[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findMany',
@@ -19709,7 +19709,7 @@
           cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
           include: Optional[types.OneOptionalInclude] = None,
           order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
-      ) -> Optional['models.OneOptional']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findFirst',
@@ -19732,7 +19732,7 @@
           data: types.OneOptionalUpdateInput,
           where: types.OneOptionalWhereUniqueInput,
           include: Optional[types.OneOptionalInclude] = None
-      ) -> Optional['models.OneOptional']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -19754,7 +19754,7 @@
           where: types.OneOptionalWhereUniqueInput,
           data: types.OneOptionalUpsertInput,
           include: Optional[types.OneOptionalInclude] = None,
-      ) -> 'models.OneOptional':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -19861,30 +19861,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class ManyRequiredActions:
-      def __init__(self, client: 'Client') -> None:
+  class ManyRequiredActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.ManyRequired
+          self._model = model
   
       def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.ManyRequired']:
+      ) -> List[BaseModelT]:
           return self._client.query_raw(query, *args, model=self._model)
   
       def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.ManyRequired']:
+      ) -> Optional[BaseModelT]:
           return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
           data: types.ManyRequiredCreateInput,
           include: Optional[types.ManyRequiredInclude] = None
-      ) -> 'models.ManyRequired':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='createOne',
@@ -19921,7 +19921,7 @@
           self,
           where: types.ManyRequiredWhereUniqueInput,
           include: Optional[types.ManyRequiredInclude] = None
-      ) -> Optional['models.ManyRequired']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -19941,7 +19941,7 @@
           self,
           where: types.ManyRequiredWhereUniqueInput,
           include: Optional[types.ManyRequiredInclude] = None
-      ) -> Optional['models.ManyRequired']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findUnique',
@@ -19964,7 +19964,7 @@
           cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
           include: Optional[types.ManyRequiredInclude] = None,
           order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
-      ) -> List['models.ManyRequired']:
+      ) -> List[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findMany',
@@ -19987,7 +19987,7 @@
           cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
           include: Optional[types.ManyRequiredInclude] = None,
           order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
-      ) -> Optional['models.ManyRequired']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findFirst',
@@ -20010,7 +20010,7 @@
           data: types.ManyRequiredUpdateInput,
           where: types.ManyRequiredWhereUniqueInput,
           include: Optional[types.ManyRequiredInclude] = None
-      ) -> Optional['models.ManyRequired']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -20032,7 +20032,7 @@
           where: types.ManyRequiredWhereUniqueInput,
           data: types.ManyRequiredUpsertInput,
           include: Optional[types.ManyRequiredInclude] = None,
-      ) -> 'models.ManyRequired':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -20139,30 +20139,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class AActions:
-      def __init__(self, client: 'Client') -> None:
+  class AActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.A
+          self._model = model
   
       def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.A']:
+      ) -> List[BaseModelT]:
           return self._client.query_raw(query, *args, model=self._model)
   
       def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.A']:
+      ) -> Optional[BaseModelT]:
           return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
           data: types.ACreateInput,
           include: Optional[types.AInclude] = None
-      ) -> 'models.A':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='createOne',
@@ -20199,7 +20199,7 @@
           self,
           where: types.AWhereUniqueInput,
           include: Optional[types.AInclude] = None
-      ) -> Optional['models.A']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -20219,7 +20219,7 @@
           self,
           where: types.AWhereUniqueInput,
           include: Optional[types.AInclude] = None
-      ) -> Optional['models.A']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findUnique',
@@ -20242,7 +20242,7 @@
           cursor: Optional[types.AWhereUniqueInput] = None,
           include: Optional[types.AInclude] = None,
           order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
-      ) -> List['models.A']:
+      ) -> List[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findMany',
@@ -20265,7 +20265,7 @@
           cursor: Optional[types.AWhereUniqueInput] = None,
           include: Optional[types.AInclude] = None,
           order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
-      ) -> Optional['models.A']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findFirst',
@@ -20288,7 +20288,7 @@
           data: types.AUpdateInput,
           where: types.AWhereUniqueInput,
           include: Optional[types.AInclude] = None
-      ) -> Optional['models.A']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -20310,7 +20310,7 @@
           where: types.AWhereUniqueInput,
           data: types.AUpsertInput,
           include: Optional[types.AInclude] = None,
-      ) -> 'models.A':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -20417,30 +20417,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class BActions:
-      def __init__(self, client: 'Client') -> None:
+  class BActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.B
+          self._model = model
   
       def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.B']:
+      ) -> List[BaseModelT]:
           return self._client.query_raw(query, *args, model=self._model)
   
       def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.B']:
+      ) -> Optional[BaseModelT]:
           return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
           data: types.BCreateInput,
           include: Optional[types.BInclude] = None
-      ) -> 'models.B':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='createOne',
@@ -20477,7 +20477,7 @@
           self,
           where: types.BWhereUniqueInput,
           include: Optional[types.BInclude] = None
-      ) -> Optional['models.B']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -20497,7 +20497,7 @@
           self,
           where: types.BWhereUniqueInput,
           include: Optional[types.BInclude] = None
-      ) -> Optional['models.B']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findUnique',
@@ -20520,7 +20520,7 @@
           cursor: Optional[types.BWhereUniqueInput] = None,
           include: Optional[types.BInclude] = None,
           order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
-      ) -> List['models.B']:
+      ) -> List[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findMany',
@@ -20543,7 +20543,7 @@
           cursor: Optional[types.BWhereUniqueInput] = None,
           include: Optional[types.BInclude] = None,
           order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
-      ) -> Optional['models.B']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findFirst',
@@ -20566,7 +20566,7 @@
           data: types.BUpdateInput,
           where: types.BWhereUniqueInput,
           include: Optional[types.BInclude] = None
-      ) -> Optional['models.B']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -20588,7 +20588,7 @@
           where: types.BWhereUniqueInput,
           data: types.BUpsertInput,
           include: Optional[types.BInclude] = None,
-      ) -> 'models.B':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -20695,30 +20695,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class CActions:
-      def __init__(self, client: 'Client') -> None:
+  class CActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.C
+          self._model = model
   
       def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.C']:
+      ) -> List[BaseModelT]:
           return self._client.query_raw(query, *args, model=self._model)
   
       def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.C']:
+      ) -> Optional[BaseModelT]:
           return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
           data: types.CCreateInput,
           include: Optional[types.CInclude] = None
-      ) -> 'models.C':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='createOne',
@@ -20755,7 +20755,7 @@
           self,
           where: types.CWhereUniqueInput,
           include: Optional[types.CInclude] = None
-      ) -> Optional['models.C']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -20775,7 +20775,7 @@
           self,
           where: types.CWhereUniqueInput,
           include: Optional[types.CInclude] = None
-      ) -> Optional['models.C']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findUnique',
@@ -20798,7 +20798,7 @@
           cursor: Optional[types.CWhereUniqueInput] = None,
           include: Optional[types.CInclude] = None,
           order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
-      ) -> List['models.C']:
+      ) -> List[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findMany',
@@ -20821,7 +20821,7 @@
           cursor: Optional[types.CWhereUniqueInput] = None,
           include: Optional[types.CInclude] = None,
           order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
-      ) -> Optional['models.C']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findFirst',
@@ -20844,7 +20844,7 @@
           data: types.CUpdateInput,
           where: types.CWhereUniqueInput,
           include: Optional[types.CInclude] = None
-      ) -> Optional['models.C']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -20866,7 +20866,7 @@
           where: types.CWhereUniqueInput,
           data: types.CUpsertInput,
           include: Optional[types.CInclude] = None,
-      ) -> 'models.C':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -20973,30 +20973,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class DActions:
-      def __init__(self, client: 'Client') -> None:
+  class DActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.D
+          self._model = model
   
       def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.D']:
+      ) -> List[BaseModelT]:
           return self._client.query_raw(query, *args, model=self._model)
   
       def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.D']:
+      ) -> Optional[BaseModelT]:
           return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
           data: types.DCreateInput,
           include: Optional[types.DInclude] = None
-      ) -> 'models.D':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='createOne',
@@ -21033,7 +21033,7 @@
           self,
           where: types.DWhereUniqueInput,
           include: Optional[types.DInclude] = None
-      ) -> Optional['models.D']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -21053,7 +21053,7 @@
           self,
           where: types.DWhereUniqueInput,
           include: Optional[types.DInclude] = None
-      ) -> Optional['models.D']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findUnique',
@@ -21076,7 +21076,7 @@
           cursor: Optional[types.DWhereUniqueInput] = None,
           include: Optional[types.DInclude] = None,
           order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
-      ) -> List['models.D']:
+      ) -> List[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findMany',
@@ -21099,7 +21099,7 @@
           cursor: Optional[types.DWhereUniqueInput] = None,
           include: Optional[types.DInclude] = None,
           order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
-      ) -> Optional['models.D']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findFirst',
@@ -21122,7 +21122,7 @@
           data: types.DUpdateInput,
           where: types.DWhereUniqueInput,
           include: Optional[types.DInclude] = None
-      ) -> Optional['models.D']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -21144,7 +21144,7 @@
           where: types.DWhereUniqueInput,
           data: types.DUpsertInput,
           include: Optional[types.DInclude] = None,
-      ) -> 'models.D':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -21251,30 +21251,30 @@
           return int(resp['data']['result']['count'])
   
   
-  class EActions:
-      def __init__(self, client: 'Client') -> None:
+  class EActions(Generic[BaseModelT]):
+      def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
           self._client = client
-          self._model = models.E
+          self._model = model
   
       def query_raw(
           self,
           query: str,
           *args: Any,
-      ) -> List['models.E']:
+      ) -> List[BaseModelT]:
           return self._client.query_raw(query, *args, model=self._model)
   
       def query_first(
           self,
           query: str,
           *args: Any,
-      ) -> Optional['models.E']:
+      ) -> Optional[BaseModelT]:
           return self._client.query_first(query, *args, model=self._model)
   
       def create(
           self,
           data: types.ECreateInput,
           include: Optional[types.EInclude] = None
-      ) -> 'models.E':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='createOne',
@@ -21311,7 +21311,7 @@
           self,
           where: types.EWhereUniqueInput,
           include: Optional[types.EInclude] = None
-      ) -> Optional['models.E']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -21331,7 +21331,7 @@
           self,
           where: types.EWhereUniqueInput,
           include: Optional[types.EInclude] = None
-      ) -> Optional['models.E']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findUnique',
@@ -21354,7 +21354,7 @@
           cursor: Optional[types.EWhereUniqueInput] = None,
           include: Optional[types.EInclude] = None,
           order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
-      ) -> List['models.E']:
+      ) -> List[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findMany',
@@ -21377,7 +21377,7 @@
           cursor: Optional[types.EWhereUniqueInput] = None,
           include: Optional[types.EInclude] = None,
           order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
-      ) -> Optional['models.E']:
+      ) -> Optional[BaseModelT]:
           resp = self._client._execute(
               operation='query',
               method='findFirst',
@@ -21400,7 +21400,7 @@
           data: types.EUpdateInput,
           where: types.EWhereUniqueInput,
           include: Optional[types.EInclude] = None
-      ) -> Optional['models.E']:
+      ) -> Optional[BaseModelT]:
           try:
               resp = self._client._execute(
                   operation='mutation',
@@ -21422,7 +21422,7 @@
           where: types.EWhereUniqueInput,
           data: types.EUpsertInput,
           include: Optional[types.EInclude] = None,
-      ) -> 'models.E':
+      ) -> BaseModelT:
           resp = self._client._execute(
               operation='mutation',
               method='upsertOne',
@@ -21528,8 +21528,6 @@
           )
           return int(resp['data']['result']['count'])
   
-  
-  from . import models
   
   '
 ---
@@ -22656,17 +22654,17 @@
   
   
   class Client:
-      post: 'actions.PostActions'
-      user: 'actions.UserActions'
-      m: 'actions.MActions'
-      n: 'actions.NActions'
-      oneoptional: 'actions.OneOptionalActions'
-      manyrequired: 'actions.ManyRequiredActions'
-      a: 'actions.AActions'
-      b: 'actions.BActions'
-      c: 'actions.CActions'
-      d: 'actions.DActions'
-      e: 'actions.EActions'
+      post: 'actions.PostActions[models.Post]'
+      user: 'actions.UserActions[models.User]'
+      m: 'actions.MActions[models.M]'
+      n: 'actions.NActions[models.N]'
+      oneoptional: 'actions.OneOptionalActions[models.OneOptional]'
+      manyrequired: 'actions.ManyRequiredActions[models.ManyRequired]'
+      a: 'actions.AActions[models.A]'
+      b: 'actions.BActions[models.B]'
+      c: 'actions.CActions[models.C]'
+      d: 'actions.DActions[models.D]'
+      e: 'actions.EActions[models.E]'
   
       def __init__(
           self,
@@ -22676,17 +22674,17 @@
           # no idea why this type ignore is required, pyright works correctly, mypy does not
           datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
       ) -> None:
-          self.post = actions.PostActions(self)
-          self.user = actions.UserActions(self)
-          self.m = actions.MActions(self)
-          self.n = actions.NActions(self)
-          self.oneoptional = actions.OneOptionalActions(self)
-          self.manyrequired = actions.ManyRequiredActions(self)
-          self.a = actions.AActions(self)
-          self.b = actions.BActions(self)
-          self.c = actions.CActions(self)
-          self.d = actions.DActions(self)
-          self.e = actions.EActions(self)
+          self.post = actions.PostActions[models.Post](self, models.Post)
+          self.user = actions.UserActions[models.User](self, models.User)
+          self.m = actions.MActions[models.M](self, models.M)
+          self.n = actions.NActions[models.N](self, models.N)
+          self.oneoptional = actions.OneOptionalActions[models.OneOptional](self, models.OneOptional)
+          self.manyrequired = actions.ManyRequiredActions[models.ManyRequired](self, models.ManyRequired)
+          self.a = actions.AActions[models.A](self, models.A)
+          self.b = actions.BActions[models.B](self, models.B)
+          self.c = actions.CActions[models.C](self, models.C)
+          self.d = actions.DActions[models.D](self, models.D)
+          self.e = actions.EActions[models.E](self, models.E)
           self.__engine: Optional[QueryEngine] = None
           self._active_provider = 'postgresql'
           self._log_queries = log_queries
@@ -24672,10 +24670,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.PostActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.PostActions[BaseModelT]':
           from .client import get_client
   
-          return actions.PostActions(get_client())
+          return actions.PostActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -24783,10 +24781,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.UserActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.UserActions[BaseModelT]':
           from .client import get_client
   
-          return actions.UserActions(get_client())
+          return actions.UserActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -24893,10 +24891,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.MActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.MActions[BaseModelT]':
           from .client import get_client
   
-          return actions.MActions(get_client())
+          return actions.MActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -25005,10 +25003,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.NActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.NActions[BaseModelT]':
           from .client import get_client
   
-          return actions.NActions(get_client())
+          return actions.NActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -25115,10 +25113,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.OneOptionalActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.OneOptionalActions[BaseModelT]':
           from .client import get_client
   
-          return actions.OneOptionalActions(get_client())
+          return actions.OneOptionalActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -25226,10 +25224,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.ManyRequiredActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.ManyRequiredActions[BaseModelT]':
           from .client import get_client
   
-          return actions.ManyRequiredActions(get_client())
+          return actions.ManyRequiredActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -25333,10 +25331,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.AActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.AActions[BaseModelT]':
           from .client import get_client
   
-          return actions.AActions(get_client())
+          return actions.AActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -25416,10 +25414,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.BActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.BActions[BaseModelT]':
           from .client import get_client
   
-          return actions.BActions(get_client())
+          return actions.BActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -25503,10 +25501,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.CActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.CActions[BaseModelT]':
           from .client import get_client
   
-          return actions.CActions(get_client())
+          return actions.CActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -25588,10 +25586,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.DActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.DActions[BaseModelT]':
           from .client import get_client
   
-          return actions.DActions(get_client())
+          return actions.DActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
@@ -25672,10 +25670,10 @@
       Config = Config
   
       @classmethod
-      def prisma(cls) -> 'actions.EActions':
+      def prisma(cls: Type[BaseModelT]) -> 'actions.EActions[BaseModelT]':
           from .client import get_client
   
-          return actions.EActions(get_client())
+          return actions.EActions[BaseModelT](get_client(), cls)
   
       @staticmethod
       def create_partial(
