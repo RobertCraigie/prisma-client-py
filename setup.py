@@ -29,15 +29,14 @@ if not version:
 extras = {
     'dev': requirements('dev.txt'),
     'docs': requirements('docs.txt'),
-    'aiohttp': requirements('aiohttp.txt'),
-    'requests': requirements('requests.txt'),
 }
 
 
 setup(
-    name='prisma.io',
+    name='prisma',
     version=version,
     author='Robert Craigie',
+    author_email='robert@craigie.dev',
     maintainer='Robert Craigie',
     license='APACHE',
     url='https://github.com/RobertCraigie/prisma-client-py',
@@ -47,7 +46,6 @@ setup(
     long_description_content_type='text/markdown',
     packages=find_packages(where='src', include=['prisma', 'prisma.*']),
     package_dir={'': 'src'},
-    project_urls={},
     python_requires='>=3',
     package_data={'': ['generator/templates/**/*.py.jinja', 'py.typed']},
     include_package_data=True,
@@ -63,6 +61,20 @@ setup(
         ],
         'prisma': [],
     },
+    project_urls={
+        'Documentation': 'https://prisma-client-py.readthedocs.io',
+        'Source': 'https://github.com/RobertCraigie/prisma-client-py',
+        'Tracker': 'https://github.com/RobertCraigie/prisma-client-py/issues',
+    },
+    keywords=[
+        'orm',
+        'mysql',
+        'typing',
+        'prisma',
+        'sqlite',
+        'database',
+        'postgresql',
+    ],
     classifiers=[
         'Development Status :: 1 - Planning',
         'Intended Audience :: Developers',

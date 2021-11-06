@@ -1,7 +1,7 @@
 {% include '_header.py.jinja' %}
 # -- template partials.py.jinja --
 from pydantic import BaseModel, Field
-from . import types, models
+from . import types, models, fields, enums
 
 
 {% for name, fields in partial_models.items() %}

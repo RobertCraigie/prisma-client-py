@@ -21,9 +21,11 @@ exclude = '''
 [tool.pyright]
 include = [
     "src",
+    "tests",
 ]
 ignore = [
-    "tmp",
+    # TODO: this should not ignore tests/integrations/conftest.py
+    "tests/integrations/**/*",
 ]
 pythonVersion = "3.9"
 

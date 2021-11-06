@@ -5,6 +5,24 @@ bootstrap:
 	cp tests/data/dev.db dev.db
 	pre-commit install
 
+.PHONY: database
+database:
+	prisma db push --schema=tests/data/schema.prisma
+	cp tests/data/dev.db dev.db
+
+. PHONY: package
+package:
+	python scripts/cleanup.py
+	rm -rf dist/*
+	python setup.py sdist
+	python setup.py sdist bdist_wheel
+	sh scripts/check_pkg.sh
+
+. PHONE: release
+release:
+	sh scripts/check_pkg.sh
+	twine upload dist/*
+
 .PHONY: test
 test:
 	tox $(ARGS)
@@ -12,10 +30,17 @@ test:
 .PHONY: format
 format:
 	black .
+	for schema in `find docs/src_examples -name '*.schema.prisma'` ; do \
+        prisma format --schema=$$schema ; \
+    done
 
 .PHONY: lint
 lint:
 	tox -e lint
+
+.PHONY: mypy
+mypy:
+	tox -e mypy
 
 .PHONY: pyright
 pyright:
@@ -24,19 +49,21 @@ pyright:
 
 .PHONY: typesafety
 typesafety:
-	tox -e typesafety $(ARGS)
+	tox -e typesafety-pyright,typesafety-mypy
 
 .PHONY: docs
 docs:
+	python scripts/docs.py
 	mkdocs build
 
 .PHONY: docs-serve
 docs-serve:
+	python scripts/docs.py
 	mkdocs serve
 
 .PHONY: clean
 clean:
-	python tests/scripts/cleanup.py
+	python scripts/cleanup.py
 	rm -rf /tmp/tox/prisma-client-py
 	rm -rf `find . -name __pycache__`
 	rm -rf `find examples -name '.venv' `

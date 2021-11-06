@@ -9,7 +9,7 @@
 #       such as the `Json` type.
 # TODO: optimise for performance (switch to c / cython?)
 # TODO: pass context around differently, relying on the builder instance is
-#       not ideal, contetx should be local to each node
+#       not ideal, context should be local to each node
 
 
 import json
@@ -20,7 +20,8 @@ from datetime import timezone
 from abc import abstractmethod, ABC
 from functools import singledispatch
 
-from ._types import Serializable
+from . import fields
+from .types import Serializable
 from .errors import UnknownModelError, UnknownRelationalFieldError
 
 
@@ -29,17 +30,15 @@ log: logging.Logger = logging.getLogger(__name__)
 ChildType = Union['AbstractNode', str]
 
 
-GLOBAL_ALIASES = {
+GLOBAL_ALIASES: Dict[str, str] = {
     'startswith': 'startsWith',
     'endswith': 'endsWith',
     'order_by': 'orderBy',
     'not_in': 'notIn',
     'is_not': 'isNot',
-    'NOT': 'not',
-    'IN': 'in',
 }
 
-DEFAULT_FIELDS_MAPPING = {
+DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
     {% for model in dmmf.datamodel.models %}
     '{{ model.name }}': [
         {% for field in model.scalar_fields %}
@@ -49,7 +48,7 @@ DEFAULT_FIELDS_MAPPING = {
     {% endfor %}
 }
 
-RELATIONAL_FIELD_MAPPINGS = {
+RELATIONAL_FIELD_MAPPINGS: Dict[str, Dict[str, str]] = {
     {% for model in dmmf.datamodel.models %}
     '{{ model.name }}': {
         {% for field in model.relational_fields %}
@@ -71,8 +70,6 @@ class QueryBuilder:
     model: Optional[str]
 
     # mapping of relational fields to include in the result
-    # NOTE: this should be a recursive type
-    # IncludeType = Union[bool, Dict[str, 'IncludeType']]
     include: Optional[Dict[str, Any]]
 
     # arguments to pass to the query
@@ -397,6 +394,7 @@ class Arguments(Node):
 
         for arg, value in self.arguments.items():
             if value is None:
+                # ignore None values for convenience
                 continue
 
             if isinstance(value, dict):
@@ -449,9 +447,6 @@ class Data(Node):
         children: List[ChildType] = []
 
         for key, value in self.data.items():
-            if value is None:
-                continue
-
             if isinstance(value, dict):
                 children.append(
                     Key(key, node=Data.create(self.builder, data=value))
@@ -664,6 +659,19 @@ def serialize_datetime(dt: datetime.datetime) -> str:
         dt = dt.astimezone(timezone.utc)
 
     return dt.isoformat()
+
+
+@serializer.register(fields.Json)
+def serialize_json(obj: fields.Json) -> str:
+    """Serialize a Json wrapper to a json string.
+
+    This is used as a hook to override our default behaviour when building
+    queries which would treat data like {'hello': 'world'} as a Data node
+    when we instead want it to be rendered as a raw json string.
+
+    This should only be used for fields that are of the `Json` type.
+    """
+    return dumps(obj.data)
 
 
 def dumps(obj: Any, **kwargs: Any) -> str:

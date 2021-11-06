@@ -3,7 +3,8 @@
 import os
 from pydantic import BaseConfig, BaseModel, Field
 
-from . import types, enums, errors
+from . import types, enums, errors, fields
+from ._types import BaseModelT
 from .generator import partial_models_ctx, PartialModelField
 
 
@@ -27,6 +28,12 @@ class {{ model.name }}(BaseModel):
     {% endfor %}
 
     Config = Config
+
+    @classmethod
+    def prisma(cls: Type[BaseModelT]) -> 'actions.{{ model.name }}Actions[BaseModelT]':
+        from .client import get_client
+
+        return actions.{{ model.name }}Actions[BaseModelT](get_client(), cls)
 
     @staticmethod
     def create_partial(
@@ -130,7 +137,7 @@ class {{ model.name }}(BaseModel):
         {% endfor %}
     }
 {% else -%}
-    _{{ model.name }}_relational_fields: Set[str] = set()
+    _{{ model.name }}_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
 {% endif %}
 _{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] = {
     {% for field in model.all_fields %}
@@ -148,7 +155,7 @@ _{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] 
 
 # we have to import ourselves as relation types are namespaced to models
 # e.g. models.Post
-from . import models
+from . import models, actions
 
 # required to support relationships between models
 {% for model in dmmf.datamodel.models %}

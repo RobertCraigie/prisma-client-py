@@ -4,4 +4,7 @@ include requirements/*.txt
 include src/prisma/py.typed
 recursive-include src/prisma/generator/templates/ *.py.jinja
 
+# include the backups of templates that replace modules
+recursive-include src/prisma/ *.py.original
+
 global-exclude *.pyc

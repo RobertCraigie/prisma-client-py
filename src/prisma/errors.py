@@ -11,8 +11,6 @@ __all__ = (
     'RecordNotFoundError',
     'HTTPClientClosedError',
     'ClientNotConnectedError',
-    'PluginError',
-    'PluginMissingRequiredHookError',
 )
 
 
@@ -20,11 +18,23 @@ class PrismaError(Exception):
     pass
 
 
+class ClientNotRegisteredError(PrismaError):
+    def __init__(self) -> None:
+        super().__init__(
+            'No client instance registered; You must call prisma.register(prisma.Client())'
+        )
+
+
+class ClientAlreadyRegisteredError(PrismaError):
+    def __init__(self) -> None:
+        super().__init__('A client has already been registered.')
+
+
 class ClientNotConnectedError(PrismaError):
     def __init__(self) -> None:
         super().__init__(
             'Client is not connected to the query engine, '
-            'you must `await client.connect()` before attempting to query data.'
+            'you must call `connect()` before attempting to query data.'
         )
 
 
@@ -82,14 +92,6 @@ class TableNotFoundError(DataError):
 
 
 class RecordNotFoundError(DataError):
-    pass
-
-
-class PluginError(PrismaError):
-    pass
-
-
-class PluginMissingRequiredHookError(PluginError):
     pass
 
 

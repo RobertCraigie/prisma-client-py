@@ -36,7 +36,7 @@ except ImportError:
 
 # NOTE: this does not represent all the data that is passed by prisma
 
-ATOMIC_FIELD_TYPES = ['Int', 'Float', 'Boolean']
+ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float']
 
 TYPE_MAPPING = {
     'String': 'str',
@@ -44,8 +44,18 @@ TYPE_MAPPING = {
     'Boolean': 'bool',
     'Int': 'int',
     'Float': 'float',
+    'BigInt': 'int',
+    'Json': '\'fields.Json\'',
 }
-FILTER_TYPES = ['String', 'DateTime', 'Boolean', 'Int', 'Float']
+FILTER_TYPES = [
+    'String',
+    'DateTime',
+    'Boolean',
+    'Int',
+    'BigInt',
+    'Float',
+    'Json',
+]
 
 data_ctx: ContextVar['Data'] = ContextVar('data_ctx')
 
@@ -70,9 +80,9 @@ class BaseModel(PydanticBaseModel):
         }
 
 
-class HttpChoices(str, enum.Enum):
-    aiohttp = 'aiohttp'
-    requests = 'requests'
+class InterfaceChoices(str, enum.Enum):
+    sync = 'sync'
+    asyncio = 'asyncio'
 
 
 class Module(BaseModel):
@@ -148,7 +158,7 @@ class Data(BaseModel):
 class Datasource(BaseModel):
     # TODO: provider enums
     name: str
-    provider: List[str]
+    provider: str
     active_provider: str = FieldInfo(alias='activeProvider')
     url: 'OptionalValueFromEnvVar'
 
@@ -192,7 +202,7 @@ class OptionalValueFromEnvVar(BaseModel):
 class Config(BaseSettings):
     """Custom generator config options."""
 
-    http: HttpChoices = HttpChoices.aiohttp
+    interface: InterfaceChoices = InterfaceChoices.asyncio
     partial_type_generator: Optional[Module]
     recursive_type_depth: int = FieldInfo(default=5)
 
@@ -212,26 +222,25 @@ class Config(BaseSettings):
             # prioritise env settings over init settings
             return env_settings, init_settings, file_secret_settings
 
-    @validator('http', always=True, allow_reuse=True)
+    @root_validator(pre=True)
     @classmethod
-    def http_matches_installed_library(cls, value: HttpChoices) -> str:
-        # pyright: reportUnusedImport=false
-        try:
-            if value == 'aiohttp':
-                import aiohttp
-            elif value == 'requests':
-                import requests
+    def removed_http_option_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        http = values.get('http')
+        if http is not None:
+            if http in {'aiohttp', 'httpx-async'}:
+                option = 'asyncio'
+            elif http in {'requests', 'httpx-sync'}:
+                option = 'sync'
             else:  # pragma: no cover
-                raise RuntimeError(f'Unhandled validator check for {value}')
-        except ModuleNotFoundError as exc:
-            # pylint: disable=line-too-long
-            raise ValueError(
-                f'Missing library for "{value}"\n  '
-                'Did you specify the correct target library in your `schema.prisma` file?\n  '
-                'See https://github.com/RobertCraigie/prisma-client-py/blob/master/docs/config.md#http-libraries'
-            ) from exc
+                # invalid http option, let pydantic handle the error
+                return values
 
-        return value
+            raise ValueError(
+                'The http option has been removed in favour of the interface option.\n'
+                '  Please remove the http option from your Prisma schema and replace it with:\n'
+                f'  interface = "{option}"'
+            )
+        return values
 
     @validator('partial_type_generator', pre=True, always=True, allow_reuse=True)
     @classmethod
@@ -354,7 +363,7 @@ class Field(BaseModel):
 
         if kind == 'scalar':
             if type_ is not None and type_ not in TYPE_MAPPING:
-                raise ValueError(f'Unknown scalar type: {type_}')
+                raise ValueError(f'Unsupported scalar field type: {type_}')
 
         return values
 
@@ -371,6 +380,12 @@ class Field(BaseModel):
             raise ValueError(
                 f'Field name "{name}" shadows a Python keyword; '
                 f'use a different field name with \'@map("{name}")\'.'
+            )
+
+        if name == 'prisma':
+            raise ValueError(
+                'Field name "prisma" shadows a Prisma Client Python method; '
+                'use a different field name with \'@map("prisma")\'.'
             )
 
         return name
@@ -459,19 +474,19 @@ class Field(BaseModel):
     def is_atomic(self) -> bool:
         return self.type in ATOMIC_FIELD_TYPES
 
-    @property
-    def atomic_type(self) -> str:
-        if not self.is_atomic:
-            raise TypeError('Field is not atomic')
+    def maybe_optional(self, typ: str) -> str:
+        """Wrap the given type string within `Optional` if applicable"""
+        if self.is_required or self.is_relational:
+            return typ
+        return f'Optional[{typ}]'
 
-        if self.is_list:
-            return f'List[{self.python_type}]'
-
-        return self.python_type
-
-    def get_update_input_type(self, model: str) -> str:
+    def get_update_input_type(self) -> str:
         if self.is_atomic:
-            return f'Union[\'{model}Update{self.name}Input\', {self.atomic_type}]'
+            if self.is_list:
+                raise NotImplementedError(
+                    'Atomic updates for scalar list types not implemented yet.'
+                )
+            return f'Union[Atomic{self.type}Input, {self.python_type}]'
 
         if self.kind == 'object':
             if self.is_list:

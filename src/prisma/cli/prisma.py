@@ -6,7 +6,7 @@ from typing import List, Optional, Dict
 
 import click
 
-from .. import generator, jsonrpc, binaries
+from .. import generator, jsonrpc, binaries, __version__
 
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -27,7 +27,11 @@ def run(
     log.debug('Using Prisma CLI at %s', path)
     log.debug('Running prisma command with args: %s', args)
 
-    default_env = {'PRISMA_HIDE_UPDATE_MESSAGE': 'true', **os.environ}
+    default_env = {
+        **os.environ,
+        'PRISMA_HIDE_UPDATE_MESSAGE': 'true',
+        'PRISMA_CLI_QUERY_ENGINE_TYPE': 'binary',
+    }
     if env is not None:
         env = {**default_env, **env}
     else:
@@ -78,7 +82,7 @@ def invoke() -> None:
                 result=dict(
                     manifest=jsonrpc.Manifest(
                         defaultOutput=str(generator.BASE_PACKAGE_DIR.absolute()),
-                        prettyName='Prisma Client Python',
+                        prettyName=f'Prisma Client Python (v{__version__})',
                     )
                 ),
             )

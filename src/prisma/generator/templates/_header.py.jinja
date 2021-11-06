@@ -12,6 +12,8 @@ from typing import (
     Optional,
     Iterable,
     Iterator,
+    Callable,
+    Generic,
     Mapping,
     Tuple,
     Union,
@@ -24,7 +26,7 @@ from typing import (
     cast,
 )
 
-if sys.version_info >= (3, 8):
+if sys.version_info >= (3, 9):
     from typing import TypedDict, Literal
 else:
     from typing_extensions import TypedDict, Literal

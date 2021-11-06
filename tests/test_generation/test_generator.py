@@ -6,6 +6,7 @@ from distutils.dir_util import copy_tree
 
 import pytest
 from jinja2 import Environment, FileSystemLoader
+from prisma import __version__
 from prisma.generator import BASE_PACKAGE_DIR, render_template, cleanup_templates
 from prisma.generator.generator import OVERRIDING_TEMPLATES
 from prisma.generator.utils import resolve_template_path
@@ -39,8 +40,7 @@ def assert_module_is_clean(path: Path) -> None:
                 content = template.read_text()
 
                 # basic check to ensure that the original file has been reinstated
-                assert 'aiohttp' in content
-                assert 'requests' in content
+                assert 'template' not in content
             else:  # pragma: no cover
                 assert False, f'Unhandled check for {template}'
         else:
@@ -54,8 +54,7 @@ def assert_module_not_clean(path: Path) -> None:
                 content = template.read_text()
 
                 # basic check to ensure that the original file has been replaced
-                assert 'aiohttp' in content
-                assert 'requests' not in content
+                assert 'template' in content
             else:  # pragma: no cover
                 assert False, f'Unhandled check for {template}'
         else:
@@ -125,3 +124,9 @@ def test_erroneous_template_cleanup(testdir: Testdir) -> None:
     assert template in output
 
     assert_module_is_clean(path)
+
+
+def test_generation_version_number(testdir: Testdir) -> None:
+    """Ensure the version number is shown when the client is generated"""
+    stdout = testdir.generate().stdout.decode('utf-8')
+    assert f'Generated Prisma Client Python (v{__version__})' in stdout

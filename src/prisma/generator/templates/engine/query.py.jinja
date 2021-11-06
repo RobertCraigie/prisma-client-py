@@ -17,6 +17,8 @@ from ..utils import DEBUG
 from .._types import Method
 from ..binaries import platform
 from ..utils import time_since, _env_bool
+from ..types import DatasourceOverride
+from ..builder import dumps
 
 
 __all__ = ('QueryEngine',)
@@ -45,9 +47,14 @@ class QueryEngine:
     def stop(self) -> None:
         self.disconnect()
         {% if is_async %}
-        loop = asyncio.get_event_loop()
-        if not loop.is_closed():
-            loop.create_task(self.close_session())
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            # no event loop in the current thread, we cannot cleanup
+            return
+        else:
+            if not loop.is_closed():
+                loop.create_task(self.close_session())
         {% else %}
         self.close_session()
         {% endif %}
@@ -70,7 +77,11 @@ class QueryEngine:
         if self.session and not self.session.closed:
             {{ maybe_await }}self.session.close()
 
-    {{ maybe_async_def }}connect(self, timeout: int = 10) -> None:
+    {{ maybe_async_def }}connect(
+        self,
+        timeout: int = 10,
+        datasources: Optional[List[DatasourceOverride]] = None,
+    ) -> None:
         log.debug('Connecting to query engine')
         if self.process is not None:
             raise errors.AlreadyConnectedError('Already connected to the query engine')
@@ -79,14 +90,19 @@ class QueryEngine:
         self.file = file = utils.ensure()
 
         try:
-            {{ maybe_await }}self.spawn(file, timeout=timeout)
+            {{ maybe_await }}self.spawn(file, timeout=timeout, datasources=datasources)
         except Exception:
             self.disconnect()
             raise
 
         log.debug('Connecting to query engine took %s', time_since(start))
 
-    {{ maybe_async_def }}spawn(self, file: Path, timeout: int = 10) -> None:
+    {{ maybe_async_def }}spawn(
+        self,
+        file: Path,
+        timeout: int = 10,
+        datasources: Optional[List[DatasourceOverride]] = None,
+    ) -> None:
         port = utils.get_open_port()
         log.debug('Running query engine on port %i', port)
 
@@ -97,10 +113,14 @@ class QueryEngine:
             PRISMA_DML=self.dml,
             RUST_LOG='error',
             RUST_LOG_FORMAT='json',
+            PRISMA_CLIENT_ENGINE_TYPE='binary',
         )
 
         if DEBUG:
             env.update(RUST_LOG='info')
+
+        if datasources is not None:
+            env.update(OVERWRITE_DATASOURCES=dumps(datasources))
 
         # TODO: remove the noise from these query logs
         if self._log_queries:
@@ -143,7 +163,7 @@ class QueryEngine:
                 'Could not connect to the query engine'
             ) from last_exc
 
-    {{ maybe_async_def }}request(self, method: Method, path: str, *, data: Any = None) -> Any:
+    {{ maybe_async_def }}request(self, method: Method, path: str, *, content: Any = None) -> Any:
         if self.url is None:
             raise errors.NotConnectedError('Not connected to the query engine')
 
@@ -154,11 +174,11 @@ class QueryEngine:
             }
         }
 
-        if data is not None:
-            kwargs['data'] = data
+        if content is not None:
+            kwargs['content'] = content
 
         url = self.url + path
-        log.debug('Sending %s request to %s with data: %s', method, url, data)
+        log.debug('Sending %s request to %s with content: %s', method, url, content)
 
         resp = {{ maybe_await }}self.session.request(method, url, **kwargs)
 

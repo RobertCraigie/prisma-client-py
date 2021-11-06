@@ -1,19 +1,24 @@
 # -*- coding: utf-8 -*-
-# pyright: reportUnusedImport=false
 
 __title__ = 'prisma'
 __author__ = 'RobertCraigie'
 __license__ = 'APACHE'
 __copyright__ = 'Copyright 2020-2021 RobertCraigie'
-__version__ = '0.0.1'
+__version__ = '0.3.0a'
 
 from .utils import setup_logging
-from . import errors
+from . import errors as errors
+from .validator import *
 
 
 try:
     from .client import *
-    from . import models, partials, types
+    from .fields import *
+    from . import (
+        models as models,
+        partials as partials,
+        types as types,
+    )
 except ModuleNotFoundError:
     # code has not been generated yet
     # TODO: this could swallow unexpected errors

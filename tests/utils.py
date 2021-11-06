@@ -2,7 +2,6 @@ import os
 import sys
 import uuid
 import inspect
-import asyncio
 import textwrap
 import subprocess
 import contextlib
@@ -10,7 +9,6 @@ from pathlib import Path
 from textwrap import dedent
 from datetime import datetime
 from typing import (
-    Coroutine,
     Any,
     Optional,
     List,
@@ -117,13 +115,15 @@ class Runner:
 
         def _patched_subprocess_run(
             *args: Any, **kwargs: Any
-        ) -> 'subprocess.CompletedProcess[bytes]':
+        ) -> 'subprocess.CompletedProcess[str]':
             # pylint: disable=subprocess-run-check
             kwargs['stdout'] = subprocess.PIPE
             kwargs['stderr'] = subprocess.PIPE
             kwargs['encoding'] = sys.getdefaultencoding()
 
             process = old_subprocess_run(*args, **kwargs)
+
+            assert isinstance(process.stdout, str)
 
             print(process.stdout)
             print(process.stderr, file=sys.stderr)
@@ -198,7 +198,11 @@ class Testdir:
 
         path = self.path.joinpath('schema.prisma')
         path.write_text(
-            schema.format(output=self.path.joinpath(output), options=options, **extra)
+            schema.format(
+                output=escape_path(self.path.joinpath(output)),
+                options=options,
+                **extra,
+            )
         )
         return path
 
@@ -208,7 +212,8 @@ class Testdir:
     def runpytest(
         self, *args: Union[str, 'os.PathLike[str]'], **kwargs: Any
     ) -> 'RunResult':
-        return self.testdir.runpytest(*args, **kwargs)
+        # pytest-sugar breaks result parsing
+        return self.testdir.runpytest('-p', 'no:sugar', *args, **kwargs)
 
     @contextlib.contextmanager
     def redirect_stdout_to_file(
@@ -256,8 +261,23 @@ def get_source_from_function(function: FuncType, **env: Any) -> str:
     return IMPORT_RELOADER + '\n'.join(lines)
 
 
-def async_run(coro: Coroutine[Any, Any, Any]) -> Any:
-    return asyncio.get_event_loop().run_until_complete(coro)
+def assert_similar_time(dt1: datetime, dt2: datetime, threshold: float = 0.5) -> None:
+    """Assert the delta between the two datetimes is less than the given threshold (in seconds).
+
+    This is required as there seems to be small data loss when marshalling and unmarshalling
+    datetimes, for example:
+
+    2021-09-26T15:00:18.708000+00:00 -> 2021-09-26T15:00:18.708776+00:00
+
+    This issue does not appear to be solvable by us, please create an issue if you know of a solution.
+    """
+    if dt1 > dt2:
+        delta = dt1 - dt2
+    else:
+        delta = dt2 - dt1
+
+    assert delta.days == 0
+    assert delta.total_seconds() < threshold
 
 
 def assert_time_like_now(dt: datetime, threshold: int = 10) -> None:
@@ -282,3 +302,10 @@ def assert_query_equals(query: Union[str, QueryBuilder], expected: str) -> None:
         expected = expected[:-1]
 
     assert query == expected
+
+
+def escape_path(path: Union[str, Path]) -> str:
+    if isinstance(path, Path):  # pragma: no branch
+        path = str(path.absolute())
+
+    return path.replace('\\', '\\\\')

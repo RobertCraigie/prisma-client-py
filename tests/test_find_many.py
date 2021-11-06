@@ -1,4 +1,5 @@
 import pytest
+import prisma
 from prisma import Client
 
 
@@ -135,3 +136,39 @@ async def test_filtering_one_to_many_relation(client: Client) -> None:
 
     users = await client.user.find_many(where={'posts': {'some': {'title': 'foo'}}})
     assert len(users) == 0
+
+
+@pytest.mark.asyncio
+async def test_ordering(client: Client) -> None:
+    """Ordering by `asc` and `desc` correctly changes the order of the returned records"""
+    async with client.batch_() as batcher:
+        batcher.post.create({'title': 'Test post 1', 'published': False})
+        batcher.post.create({'title': 'Test post 2', 'published': False})
+        batcher.post.create({'title': 'Test post 3', 'published': True})
+
+    found = await client.post.find_many(
+        where={'title': {'contains': 'Test'}},
+        order={'published': 'asc'},
+    )
+    assert len(found) == 3
+    assert found[0].published is False
+    assert found[1].published is False
+    assert found[2].published is True
+
+    found = await client.post.find_many(
+        where={'title': {'contains': 'Test'}},
+        order={'published': 'desc'},
+    )
+    assert len(found) == 3
+    assert found[0].published is True
+    assert found[1].published is False
+    assert found[2].published is False
+
+
+@pytest.mark.asyncio
+async def test_order_field_not_nullable(client: Client) -> None:
+    """Order by fields, if present, cannot be None"""
+    with pytest.raises(prisma.errors.MissingRequiredValueError) as exc:
+        await client.post.find_many(order={'desc': None})  # type: ignore
+
+    assert exc.match(r'desc')

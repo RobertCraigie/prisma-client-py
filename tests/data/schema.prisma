@@ -4,9 +4,9 @@ datasource db {
 }
 
 generator db {
-  provider               = "python3 -m prisma"
+  provider               = "prisma-client-py"
+  interface              = "asyncio"
   recursive_type_depth   = 5
-  http                   = "aiohttp"
   partial_type_generator = "tests/scripts/partial_type_generator.py"
 }
 
@@ -41,4 +41,15 @@ model Profile {
   user    User   @relation(fields: [user_id], references: [id])
   user_id String
   bio     String
+}
+
+// model that just exists for testing different schema types
+model Types {
+  id       Int      @id @default(autoincrement())
+  bool     Boolean  @default(false)
+  string   String   @default("")
+  bigint   BigInt   @default(0)
+  integer  Int      @default(0)
+  float_   Float    @default(0)
+  datetime DateTime @default(now())
 }

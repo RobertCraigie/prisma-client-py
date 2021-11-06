@@ -4,9 +4,9 @@ datasource db {
 }
 
 generator db {
-  provider               = "prisma-client-py"
-  recursive_type_depth   = -1
-  http                   = "aiohttp"
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = -1
 }
 
 model Post {
@@ -40,4 +40,16 @@ model Profile {
   user    User   @relation(fields: [user_id], references: [id])
   user_id String
   bio     String
+}
+
+// model that just exists for testing different schema types
+model Types {
+  id       Int      @id @default(autoincrement())
+  bool     Boolean  @default(false)
+  string   String   @default("")
+  bigint   BigInt   @default(0)
+  integer  Int      @default(0)
+  float_   Float    @default(0)
+  json_obj Json     @default("{}")
+  datetime DateTime @default(now())
 }

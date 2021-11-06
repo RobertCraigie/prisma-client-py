@@ -9,7 +9,7 @@ source .venv/bin/activate
 set -x
 
 pip install -U -r requirements.txt
-pip install -U --find-links=../../../.tests_cache/dist prisma.io[aiohttp]
+pip install -U --force-reinstall ../../../.tests_cache/dist/*.whl
 
 prisma db push --accept-data-loss --force-reset
 

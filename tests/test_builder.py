@@ -4,7 +4,7 @@ import datetime
 from typing import Dict, Any
 
 import pytest
-from syrupy import SnapshotAssertion
+from syrupy.assertion import SnapshotAssertion
 from prisma.utils import _NoneType
 from prisma.builder import QueryBuilder, serializer
 from prisma.errors import UnknownRelationalFieldError, UnknownModelError
@@ -257,7 +257,7 @@ def test_custom_serialization(snapshot: SnapshotAssertion) -> None:
             self.arg = arg
 
     @serializer.register(Foo)
-    def custom_serializer(inst: Foo) -> int:
+    def custom_serializer(inst: Foo) -> int:  # pyright: reportUnusedFunction=false
         return inst.arg
 
     query = QueryBuilder(

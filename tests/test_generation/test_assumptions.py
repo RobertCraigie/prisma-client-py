@@ -55,3 +55,32 @@ def test_can_generate_from_env_var(testdir: Testdir) -> None:
         {'PRISMA_TEST_ASSUMPTIONS_OUTPUT': str(testdir.path / 'prisma')}
     ):
         testdir.generate(schema=schema)
+
+
+def test_relational_field_cannot_be_unique(testdir: Testdir) -> None:
+    """Prisma does not allow relational fields to be unique"""
+    schema = (
+        testdir.SCHEMA_HEADER
+        + '''
+    model User {{
+        id    Int    @id @default(autoincrement())
+        name  String
+        posts Post[]
+    }}
+
+    model Post {{
+        id         Int    @id @default(autoincrement())
+        author     User   @relation(fields: [author_id], references: [id]) @unique
+        author_id  Int
+    }}
+    '''
+    )
+
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    output = exc.value.output.decode('utf-8')
+    assert (
+        'The field `author` is a relation field and cannot be marked with `unique`.'
+        in output
+    )

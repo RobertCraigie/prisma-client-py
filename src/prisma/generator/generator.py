@@ -1,3 +1,4 @@
+import sys
 import json
 import logging
 from pathlib import Path
@@ -5,7 +6,7 @@ from typing import Dict, Any, Optional
 from contextvars import ContextVar
 from distutils.dir_util import copy_tree
 
-from jinja2 import Environment, PackageLoader
+from jinja2 import Environment, FileSystemLoader
 
 from .models import Data
 from .types import PartialModelFields
@@ -34,7 +35,7 @@ OVERRIDING_TEMPLATES = {'http.py.jinja'}
 DEFAULT_ENV = Environment(
     trim_blocks=True,
     lstrip_blocks=True,
-    loader=PackageLoader('prisma.generator', 'templates'),
+    loader=FileSystemLoader(Path(__file__).parent / 'templates'),
 )
 partial_models_ctx: ContextVar[Dict[str, PartialModelFields]] = ContextVar(
     'partial_models_ctx', default={}
@@ -94,6 +95,10 @@ def cleanup_templates(rootdir: Path, *, env: Optional[Environment] = None) -> No
         file = resolve_template_path(rootdir=rootdir, name=name)
         original = resolve_original_file(file)
         if original.exists():
+            if file.exists():
+                log.debug('Removing overridden template at %s', file)
+                file.unlink()
+
             log.debug('Renaming file at %s to %s', original, file)
             original.rename(file)
         elif file.exists() and name not in OVERRIDING_TEMPLATES:
@@ -124,7 +129,7 @@ def render_template(
             log.debug('Making backup of %s', file)
             file.rename(original)
 
-    file.write_text(output)
+    file.write_bytes(output.encode(sys.getdefaultencoding()))
     log.debug('Rendered template to %s', file.absolute())
 
 
