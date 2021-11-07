@@ -1,7 +1,7 @@
 import asyncio
 import contextlib
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, Optional
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
@@ -26,7 +26,7 @@ QUERY_ENGINE = next(  # pragma: no branch
 @contextlib.contextmanager
 def no_event_loop() -> Iterator[None]:
     try:
-        current = get_running_loop()
+        current: Optional[asyncio.AbstractEventLoop] = get_running_loop()
     except RuntimeError:
         current = None
 
