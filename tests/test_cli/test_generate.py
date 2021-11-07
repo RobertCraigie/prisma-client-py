@@ -1,5 +1,6 @@
 import json
 from enum import Enum
+from pathlib import Path
 from itertools import chain
 from typing import Optional, Iterator, Dict, Any, Callable, Generator, Tuple, Type
 
@@ -152,7 +153,8 @@ def test_partials_option(
         if target is None:
             assert partial_type_generator is None
         else:
-            assert partial_type_generator['spec'] == target
+            actual = Path(partial_type_generator['spec']).absolute()
+            assert actual == Path(target).absolute()
 
     def partials() -> None:  # mark: filedef
         pass

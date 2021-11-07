@@ -10,6 +10,7 @@ import pytest
 import prisma
 from prisma import Client
 from prisma.cli import setup_logging
+from prisma.utils import get_or_create_event_loop
 
 from .utils import Runner, Testdir
 
@@ -38,7 +39,7 @@ async def client_fixture() -> Client:
 
 @pytest.fixture(scope='session')
 def event_loop() -> asyncio.AbstractEventLoop:
-    return asyncio.get_event_loop()
+    return get_or_create_event_loop()
 
 
 @pytest.fixture()

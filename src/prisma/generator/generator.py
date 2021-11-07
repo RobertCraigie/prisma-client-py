@@ -4,14 +4,12 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
 from contextvars import ContextVar
-from distutils.dir_util import copy_tree
 
 from jinja2 import Environment, FileSystemLoader
 
 from .models import Data
 from .types import PartialModelFields
-from .utils import is_same_path, resolve_template_path, resolve_original_file
-
+from .utils import is_same_path, resolve_template_path, resolve_original_file, copy_tree
 from ..utils import DEBUG_GENERATOR
 
 
@@ -57,7 +55,7 @@ def run(params: Dict[str, Any]) -> None:
         rootdir.mkdir(parents=True, exist_ok=True)
 
     if not is_same_path(BASE_PACKAGE_DIR, rootdir):
-        copy_tree(str(BASE_PACKAGE_DIR), str(rootdir))
+        copy_tree(BASE_PACKAGE_DIR, rootdir)
 
     params = vars(data)
 

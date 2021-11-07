@@ -67,6 +67,7 @@ callbacks =
   plugin,
   _hook,
   mock_,
+  _patched_,
 
 
 [SIMILARITIES]

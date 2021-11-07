@@ -2,14 +2,13 @@ import sys
 import subprocess
 from pathlib import Path
 from typing import Iterator
-from distutils.dir_util import copy_tree
 
 import pytest
 from jinja2 import Environment, FileSystemLoader
 from prisma import __version__
 from prisma.generator import BASE_PACKAGE_DIR, render_template, cleanup_templates
 from prisma.generator.generator import OVERRIDING_TEMPLATES
-from prisma.generator.utils import resolve_template_path
+from prisma.generator.utils import resolve_template_path, copy_tree
 
 from ..utils import Testdir
 
@@ -78,7 +77,7 @@ def test_template_cleanup(testdir: Testdir) -> None:
     """Cleaning up templates removes all rendered files"""
     path = testdir.path / 'prisma'
     assert not path.exists()
-    copy_tree(str(BASE_PACKAGE_DIR), str(path))
+    copy_tree(BASE_PACKAGE_DIR, path)
 
     assert_module_not_clean(path)
     cleanup_templates(path)
@@ -107,7 +106,7 @@ def test_template_cleanup_original_files_not_replaced(testdir: Testdir) -> None:
 def test_erroneous_template_cleanup(testdir: Testdir) -> None:
     """Template runtime errors do not result in a partially generated module"""
     path = testdir.path / 'prisma'
-    copy_tree(str(BASE_PACKAGE_DIR), str(path))
+    copy_tree(BASE_PACKAGE_DIR, path)
 
     assert_module_not_clean(path)
 
