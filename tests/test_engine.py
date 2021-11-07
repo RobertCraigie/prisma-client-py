@@ -13,6 +13,7 @@ from prisma.binaries import platform
 from prisma.binaries import BINARIES, ENGINE_VERSION
 from prisma.engine import errors, utils
 from prisma.engine.query import QueryEngine
+from prisma._compat import get_running_loop
 
 from .utils import Testdir
 
@@ -24,7 +25,10 @@ QUERY_ENGINE = next(  # pragma: no branch
 
 @contextlib.contextmanager
 def no_event_loop() -> Iterator[None]:
-    current = asyncio.get_event_loop()
+    try:
+        current = get_running_loop()
+    except RuntimeError:
+        current = None
 
     try:
         asyncio.set_event_loop(None)

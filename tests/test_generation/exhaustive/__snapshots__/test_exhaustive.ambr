@@ -5807,6 +5807,7 @@
   from ..utils import time_since, _env_bool
   from ..types import DatasourceOverride
   from ..builder import dumps
+  from .._compat import get_running_loop
   
   
   __all__ = ('QueryEngine',)
@@ -5835,7 +5836,7 @@
       def stop(self) -> None:
           self.disconnect()
           try:
-              loop = asyncio.get_event_loop()
+              loop = get_running_loop()
           except RuntimeError:
               # no event loop in the current thread, we cannot cleanup
               return
@@ -24236,6 +24237,7 @@
   from ..utils import time_since, _env_bool
   from ..types import DatasourceOverride
   from ..builder import dumps
+  from .._compat import get_running_loop
   
   
   __all__ = ('QueryEngine',)
