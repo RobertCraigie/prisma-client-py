@@ -34,6 +34,10 @@ except ImportError:
     SettingsSourceCallable = Any  # type: ignore
 
 
+from ..utils import DEBUG_GENERATOR
+from ..binaries.constants import ENGINE_VERSION
+
+
 # NOTE: this does not represent all the data that is passed by prisma
 
 ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float']
@@ -153,6 +157,22 @@ class Data(BaseModel):
         data = super().parse_obj(obj)
         data_ctx.set(data)
         return data
+
+    @root_validator(pre=True, allow_reuse=True)
+    @classmethod
+    def validate_version(cls, values: Dict[Any, Any]) -> Dict[Any, Any]:
+        # TODO: test this
+        version = values.get('version')
+        if not DEBUG_GENERATOR and version != ENGINE_VERSION:
+            raise ValueError(
+                f'Prisma Client Python expected Prisma version: {ENGINE_VERSION} '
+                f'but got: {version}\n'
+                '  If this is intentional, set the PRISMA_PY_DEBUG_GENERATOR environment '
+                'variable to 1 and try again.\n'
+                '  Are you sure you are generating the client using the python CLI?\n'
+                '  e.g. python3 -m prisma generate'
+            )
+        return values
 
 
 class Datasource(BaseModel):
