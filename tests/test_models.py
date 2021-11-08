@@ -249,3 +249,15 @@ async def test_query_first() -> None:
     )
     assert user is not None
     assert user.name == 'Tegan'
+
+
+def test_subclassing_disallowed() -> None:
+    """Subclassing a prisma model without using recursive types is not allowed,
+    this is because generic classes create a massive performance hit on mypy.
+    """
+    with pytest.raises(RuntimeError) as exc:
+
+        class MyUser(User):  # pyright: reportUnusedClass=false
+            pass
+
+    assert 'pseudo-recursive types' in exc.value.args[0]

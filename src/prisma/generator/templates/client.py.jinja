@@ -1,9 +1,7 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations with context %}
+{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types with context %}
 # -- template client.py.jinja --
 from types import TracebackType
-from collections import defaultdict
-from pydantic import BaseModel, validate_arguments
 
 from . import types, models, errors, actions
 from ._types import BaseModelT
@@ -83,7 +81,11 @@ def get_client() -> 'Client':
 
 class Client:
     {% for model in dmmf.datamodel.models %}
+    {% if recursive_types %}
     {{ model.name.lower() }}: 'actions.{{ model.name }}Actions[models.{{ model.name }}]'
+    {% else %}
+    {{ model.name.lower() }}: 'actions.{{ model.name }}Actions'
+    {% endif %}
     {% endfor %}
 
     def __init__(
@@ -95,7 +97,11 @@ class Client:
         datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
     ) -> None:
         {% for model in dmmf.datamodel.models %}
+        {% if recursive_types %}
         self.{{ model.name.lower() }} = actions.{{ model.name }}Actions[models.{{ model.name }}](self, models.{{ model.name }})
+        {% else %}
+        self.{{ model.name.lower() }} = actions.{{ model.name }}Actions(self, models.{{ model.name }})
+        {% endif %}
         {% endfor %}
         self.__engine: Optional[QueryEngine] = None
         self._active_provider = '{{ datasources[0].active_provider }}'
