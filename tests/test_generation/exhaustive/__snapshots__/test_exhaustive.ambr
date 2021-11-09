@@ -15,7 +15,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -3122,7 +3121,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -3970,7 +3968,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -5773,7 +5770,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -6012,7 +6008,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -6060,7 +6055,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -6164,7 +6158,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -6209,7 +6202,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -6262,7 +6254,7 @@
   
           return actions.PostActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -6381,7 +6373,7 @@
   
           return actions.UserActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -6499,7 +6491,7 @@
   
           return actions.MActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -6619,7 +6611,7 @@
   
           return actions.NActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -6737,7 +6729,7 @@
   
           return actions.OneOptionalActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -6856,7 +6848,7 @@
   
           return actions.ManyRequiredActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -6971,7 +6963,7 @@
   
           return actions.AActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -7062,7 +7054,7 @@
   
           return actions.BActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -7157,7 +7149,7 @@
   
           return actions.CActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -7250,7 +7242,7 @@
   
           return actions.DActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -7342,7 +7334,7 @@
   
           return actions.EActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -8109,7 +8101,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -8160,7 +8151,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -18543,7 +18533,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -21650,7 +21639,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -22498,7 +22486,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -24301,7 +24288,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -24533,7 +24519,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -24581,7 +24566,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -24685,7 +24669,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -24730,7 +24713,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -24783,7 +24765,7 @@
   
           return actions.PostActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -24902,7 +24884,7 @@
   
           return actions.UserActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -25020,7 +25002,7 @@
   
           return actions.MActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -25140,7 +25122,7 @@
   
           return actions.NActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -25258,7 +25240,7 @@
   
           return actions.OneOptionalActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -25377,7 +25359,7 @@
   
           return actions.ManyRequiredActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -25492,7 +25474,7 @@
   
           return actions.AActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -25583,7 +25565,7 @@
   
           return actions.BActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -25678,7 +25660,7 @@
   
           return actions.CActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -25771,7 +25753,7 @@
   
           return actions.DActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -25863,7 +25845,7 @@
   
           return actions.EActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
           raise RuntimeError(
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
@@ -26630,7 +26612,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,
@@ -26681,7 +26662,6 @@
       Iterable,
       Iterator,
       Callable,
-      NoReturn,
       Generic,
       Mapping,
       Tuple,

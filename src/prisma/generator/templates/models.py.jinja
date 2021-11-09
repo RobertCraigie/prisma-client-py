@@ -43,7 +43,7 @@ class {{ model.name }}(BaseModel):
 
         return actions.{{ model.name }}Actions(get_client(), cls)
 
-    def __init_subclass__(cls, *args: Any, **kwargs: Any) -> NoReturn:
+    def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
         raise RuntimeError(
             'Prisma models cannot be subclassed with pseudo-recursive types;\n'
             'This is because mypy does not work well with this pattern;\n'

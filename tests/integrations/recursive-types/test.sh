@@ -11,6 +11,8 @@ set -x
 pip install -U 'pyright>=0.0.7'
 pip install -U --force-reinstall ../../../.tests_cache/dist/*.whl
 
-PRISMA=$(python -c 'import pathlib, prisma; print(pathlib.Path(prisma.__file__).parent)')
+prisma generate
 
-pyright $PRISMA
+# TODO: check the whole package
+TYPES=$(python -c 'import pathlib, prisma; print(pathlib.Path(prisma.__file__).parent / "types.py")')
+pyright $TYPES
