@@ -4,7 +4,7 @@ __title__ = 'prisma'
 __author__ = 'RobertCraigie'
 __license__ = 'APACHE'
 __copyright__ = 'Copyright 2020-2021 RobertCraigie'
-__version__ = '0.3.0'
+__version__ = '0.3.1a'
 
 from .utils import setup_logging
 from . import errors as errors
