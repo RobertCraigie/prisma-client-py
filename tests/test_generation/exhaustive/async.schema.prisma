@@ -141,14 +141,12 @@ model C {
 }
 
 model D {
-  id    String  @id @default(cuid())
-  bool  Boolean @db.Boolean
-  xml   String  @db.Xml
-  json_ Json    @db.Json
-  jsonb Json    @db.JsonB
-
-  // TODO
-  // byteA Bytes   @db.ByteA
+  id     String  @id @default(cuid())
+  bool   Boolean @db.Boolean
+  xml    String  @db.Xml
+  json_  Json    @db.Json
+  jsonb  Json    @db.JsonB
+  binary Bytes   @db.ByteA
 }
 
 model E {

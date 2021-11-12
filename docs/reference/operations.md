@@ -400,6 +400,26 @@ user = await client.user.find_first(
 )
 ```
 
+#### Bytes Fields
+
+!!! note
+    Bytes fields are encoded to and from [Base64](https://en.wikipedia.org/wiki/Base64)
+
+```py
+from prisma import Base64
+
+profile = await client.profile.find_first(
+    where={
+        'image': Base64.encode(b'my binary data'),
+        # or
+        'image': {
+            'equals': Base64.encode(b'my binary data'),
+            'not': Base64(b'WW91IGZvdW5kIGFuIGVhc3RlciBlZ2chIExldCBAUm9iZXJ0Q3JhaWdpZSBrbm93IDop'),
+        },
+    },
+)
+```
+
 ### Combining arguments
 
 All of the above mentioned filters can be combined with other filters using `AND`, `NOT` and `OR`.

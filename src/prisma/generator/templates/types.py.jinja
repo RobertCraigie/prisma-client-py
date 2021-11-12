@@ -182,6 +182,19 @@ BigIntFilter = IntFilter
 )
 {% endcall %}
 
+{% call(name, next, iteration) recursive('BytesFilter') %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': 'fields.Base64',
+        {%+ if next != '' -%}
+            'not': Union['fields.Base64', '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
+{% endcall %}
+
 # TODO: preview feature for improving JSON filtering
 JsonFilter = TypedDict(
     'JsonFilter',

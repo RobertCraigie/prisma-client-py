@@ -44,6 +44,7 @@ ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float']
 
 TYPE_MAPPING = {
     'String': 'str',
+    'Bytes': '\'fields.Base64\'',
     'DateTime': 'datetime.datetime',
     'Boolean': 'bool',
     'Int': 'int',
@@ -53,6 +54,7 @@ TYPE_MAPPING = {
 }
 FILTER_TYPES = [
     'String',
+    'Bytes',
     'DateTime',
     'Boolean',
     'Int',
@@ -350,6 +352,11 @@ class Model(BaseModel):
             return False
         else:
             return True
+
+    def get_fields_of_type(self, typ: str) -> Iterator['Field']:
+        for field in self.scalar_fields:
+            if field.type == typ:
+                yield field
 
 
 class Field(BaseModel):
