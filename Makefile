@@ -30,7 +30,7 @@ test:
 .PHONY: format
 format:
 	black .
-	for schema in `find docs/src_examples -name '*.schema.prisma'` ; do \
+	for schema in `find . -name '*.schema.prisma'` ; do \
         prisma format --schema=$$schema ; \
     done
 
