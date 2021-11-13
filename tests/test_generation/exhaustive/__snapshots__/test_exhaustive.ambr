@@ -27,11 +27,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template actions.py.jinja --
   from . import types, errors
@@ -3133,11 +3129,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template builder.py.jinja --
   
@@ -3987,11 +3979,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template client.py.jinja --
   from types import TracebackType
@@ -5787,11 +5775,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template engine/query.py.jinja --
   
@@ -6025,11 +6009,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template enums.py.jinja --
   from enum import Enum
@@ -6072,11 +6052,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template fields.py.jinja --
   import base64
@@ -6220,11 +6196,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template http.py.jinja --
   from ._async_http import (
@@ -6264,11 +6236,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template models.py.jinja --
   import os
@@ -8175,11 +8143,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template partials.py.jinja --
   from pydantic import BaseModel, Field, validator
@@ -8225,11 +8189,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template types.py.jinja --
   from .utils import _NoneType
@@ -18648,11 +18608,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template actions.py.jinja --
   from . import types, errors
@@ -21754,11 +21710,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template builder.py.jinja --
   
@@ -22608,11 +22560,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template client.py.jinja --
   from types import TracebackType
@@ -24408,11 +24356,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template engine/query.py.jinja --
   
@@ -24639,11 +24583,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template enums.py.jinja --
   from enum import Enum
@@ -24686,11 +24626,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template fields.py.jinja --
   import base64
@@ -24834,11 +24770,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template http.py.jinja --
   from ._sync_http import (
@@ -24878,11 +24810,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template models.py.jinja --
   import os
@@ -26789,11 +26717,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template partials.py.jinja --
   from pydantic import BaseModel, Field, validator
@@ -26839,11 +26763,7 @@
       overload,
       cast,
   )
-  
-  if sys.version_info >= (3, 9):
-      from typing import TypedDict, Literal
-  else:
-      from typing_extensions import TypedDict, Literal
+  from typing_extensions import TypedDict, Literal
   
   # -- template types.py.jinja --
   from .utils import _NoneType
