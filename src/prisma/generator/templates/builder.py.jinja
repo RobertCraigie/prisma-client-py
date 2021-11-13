@@ -674,6 +674,12 @@ def serialize_json(obj: fields.Json) -> str:
     return dumps(obj.data)
 
 
+@serializer.register(fields.Base64)
+def serialize_base64(obj: fields.Base64) -> str:
+    """Serialize a Base64 wrapper object to raw binary data"""
+    return str(obj)
+
+
 def dumps(obj: Any, **kwargs: Any) -> str:
     kwargs.setdefault('default', serializer)
     kwargs.setdefault('ensure_ascii', False)

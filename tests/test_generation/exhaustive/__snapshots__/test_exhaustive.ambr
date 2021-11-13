@@ -3286,6 +3286,7 @@
           'xml',
           'json_',
           'jsonb',
+          'binary',
       ],
       'E': [
           'id',
@@ -3941,6 +3942,12 @@
       return dumps(obj.data)
   
   
+  @serializer.register(fields.Base64)
+  def serialize_base64(obj: fields.Base64) -> str:
+      """Serialize a Base64 wrapper object to raw binary data"""
+      return str(obj)
+  
+  
   def dumps(obj: Any, **kwargs: Any) -> str:
       kwargs.setdefault('default', serializer)
       kwargs.setdefault('ensure_ascii', False)
@@ -4146,14 +4153,12 @@
   }
   
   model D {
-    id    String  @id @default(cuid())
-    bool  Boolean @db.Boolean
-    xml   String  @db.Xml
-    json_ Json    @db.Json
-    jsonb Json    @db.JsonB
-  
-    // TODO
-    // byteA Bytes   @db.ByteA
+    id     String  @id @default(cuid())
+    bool   Boolean @db.Boolean
+    xml    String  @db.Xml
+    json_  Json    @db.Json
+    jsonb  Json    @db.JsonB
+    binary Bytes   @db.ByteA
   }
   
   model E {
@@ -6074,11 +6079,13 @@
       from typing_extensions import TypedDict, Literal
   
   # -- template fields.py.jinja --
+  import base64
   from pydantic import Json as _PydanticJson
   
   
   __all__ = (
       'Json',
+      'Base64',
   )
   
   
@@ -6089,6 +6096,10 @@
       int,
       str,
   ]
+  
+  # Base64 data should only be valid ascii, we limit our encoding to ascii so that
+  # any erroneous data is caught as early on as possible.
+  BASE64_ENCODING = 'ascii'
   
   
   # inherit from _PydanticJson so that pydantic will automatically
@@ -6136,6 +6147,45 @@
   
           def __getitem__(self, i: Union['_JsonKeys', slice]) -> 'Serializable':
               ...
+  
+  
+  class Base64:
+      def __init__(self, raw: bytes) -> None:
+          self._raw = raw
+  
+      @classmethod
+      def encode(cls, value: bytes) -> 'Base64':
+          """Encode bytes into valid Base64"""
+          return cls(base64.b64encode(value))
+  
+      def decode(self, encoding: str = BASE64_ENCODING) -> bytes:
+          """Decode from Base64 to the original bytes object"""
+          return base64.b64decode(self._raw)
+  
+      # NOTE: we explicitly use a different encoding here as we are decoding
+      # to the original data provided by the user, this data does not have
+      # the limitation of being ascii only that the raw Base64 data does
+      def decode_str(self, encoding: str = 'utf-8') -> str:
+          """Decode from Base64 to the original string
+  
+          This decodes using the `utf-8` encoding by default,
+          you can customise the encoding like so:
+  
+          ```py
+          value = b64.decode_str('ascii')
+          ```
+          """
+          return self.decode().decode(encoding)
+  
+      def __str__(self) -> str:
+          return self._raw.decode(BASE64_ENCODING)
+  
+      def __repr__(self) -> str:
+          return f'{self.__class__.__name__}({self._raw})'  # type: ignore[str-bytes-safe]
+  
+      @classmethod
+      def _internal_from_prisma(cls, value: str) -> 'Base64':
+          return cls(bytes(value, BASE64_ENCODING))
   
   
   from .types import Serializable
@@ -6222,7 +6272,7 @@
   
   # -- template models.py.jinja --
   import os
-  from pydantic import BaseConfig, BaseModel, Field
+  from pydantic import BaseConfig, BaseModel, Field, validator
   
   from . import types, enums, errors, fields
   from ._types import BaseModelT
@@ -6231,6 +6281,7 @@
   
   class Config(BaseConfig):
       use_enum_values: bool = True
+      arbitrary_types_allowed: bool = True
       allow_population_by_field_name: bool = True
   
   
@@ -7233,6 +7284,7 @@
       xml: str
       json_: 'fields.Json'
       jsonb: 'fields.Json'
+      binary: 'fields.Base64'
   
       Config = Config
   
@@ -7319,6 +7371,10 @@
           partial_models_ctx.set(models)
           _created_partial_types.add(name)
   
+      @validator('binary', pre=True, allow_reuse=True)
+      @classmethod
+      def _prisma_binary_bytes_validator(cls, value: Any) -> fields.Base64:
+          return fields.Base64._internal_from_prisma(value)
   
   class E(BaseModel):
       id: str
@@ -8033,6 +8089,12 @@
           'optional': False,
           'type': 'fields.Json',
       },
+      'binary': {
+          'name': 'binary',
+          'is_list': False,
+          'optional': False,
+          'type': 'fields.Base64',
+      },
   }
   
   _E_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
@@ -8120,7 +8182,7 @@
       from typing_extensions import TypedDict, Literal
   
   # -- template partials.py.jinja --
-  from pydantic import BaseModel, Field
+  from pydantic import BaseModel, Field, validator
   from . import types, models, fields, enums
   
   
@@ -8442,6 +8504,36 @@
           'gt': float,
           'gte': float,
           'in': List[float],
+              },
+      total=False,
+  )
+  
+      
+  
+  BytesFilter = TypedDict(
+      'BytesFilter',
+      {
+          'equals': 'fields.Base64',
+          'not': Union['fields.Base64', 'BytesFilterRecursive1'],
+      },
+      total=False,
+  )
+  
+  
+  BytesFilterRecursive1 = TypedDict(
+      'BytesFilterRecursive1',
+      {
+          'equals': 'fields.Base64',
+          'not': Union['fields.Base64', 'BytesFilterRecursive2'],
+      },
+      total=False,
+  )
+  
+  
+  BytesFilterRecursive2 = TypedDict(
+      'BytesFilterRecursive2',
+      {
+          'equals': 'fields.Base64',
               },
       total=False,
   )
@@ -16802,6 +16894,7 @@
       xml: str
       json_: 'fields.Json'
       jsonb: 'fields.Json'
+      binary: 'fields.Base64'
   
   
   # TODO: remove this in favour of without explicit relations
@@ -16818,6 +16911,7 @@
       xml: str
       json_: 'fields.Json'
       jsonb: 'fields.Json'
+      binary: 'fields.Base64'
   
   
   class DCreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -16841,6 +16935,7 @@
       xml: str
       json_: 'fields.Json'
       jsonb: 'fields.Json'
+      binary: 'fields.Base64'
   
   
   class DUpdateManyMutationInput(TypedDict, total=False):
@@ -16850,6 +16945,7 @@
       xml: str
       json_: 'fields.Json'
       jsonb: 'fields.Json'
+      binary: 'fields.Base64'
   
   
   class DUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -16890,6 +16986,7 @@
       xml: 'SortOrder'
       json_: 'SortOrder'
       jsonb: 'SortOrder'
+      binary: 'SortOrder'
   
   
   # recursive D types
@@ -17585,6 +17682,7 @@
       xml: Union[str, 'types.StringFilter']
       json_: Union['fields.Json', 'types.JsonFilter']
       jsonb: Union['fields.Json', 'types.JsonFilter']
+      binary: Union['fields.Base64', 'types.BytesFilter']
   
       # should be noted that AND and NOT should be Union['DWhereInputRecursive1', List['DWhereInputRecursive1']]
       # but this causes mypy to hang :/
@@ -17600,6 +17698,7 @@
       xml: Union[str, 'types.StringFilter']
       json_: Union['fields.Json', 'types.JsonFilter']
       jsonb: Union['fields.Json', 'types.JsonFilter']
+      binary: Union['fields.Base64', 'types.BytesFilter']
   
       # should be noted that AND and NOT should be Union['DWhereInputRecursive2', List['DWhereInputRecursive2']]
       # but this causes mypy to hang :/
@@ -17615,6 +17714,7 @@
       xml: Union[str, 'types.StringFilter']
       json_: Union['fields.Json', 'types.JsonFilter']
       jsonb: Union['fields.Json', 'types.JsonFilter']
+      binary: Union['fields.Base64', 'types.BytesFilter']
   
   
   
@@ -17626,6 +17726,7 @@
           'xml': bool,
           'json_': bool,
           'jsonb': bool,
+          'binary': bool,
           '_all': bool,
       },
       total=False,
@@ -17639,6 +17740,7 @@
           'xml': int,
           'json_': int,
           'jsonb': int,
+          'binary': int,
           '_all': int,
       },
       total=False,
@@ -17651,6 +17753,7 @@
       'xml',
       'json_',
       'jsonb',
+      'binary',
   ]
   
   DRelationalFieldKeys = _NoneType
@@ -21804,6 +21907,7 @@
           'xml',
           'json_',
           'jsonb',
+          'binary',
       ],
       'E': [
           'id',
@@ -22459,6 +22563,12 @@
       return dumps(obj.data)
   
   
+  @serializer.register(fields.Base64)
+  def serialize_base64(obj: fields.Base64) -> str:
+      """Serialize a Base64 wrapper object to raw binary data"""
+      return str(obj)
+  
+  
   def dumps(obj: Any, **kwargs: Any) -> str:
       kwargs.setdefault('default', serializer)
       kwargs.setdefault('ensure_ascii', False)
@@ -22664,14 +22774,12 @@
   }
   
   model D {
-    id    String  @id @default(cuid())
-    bool  Boolean @db.Boolean
-    xml   String  @db.Xml
-    json_ Json    @db.Json
-    jsonb Json    @db.JsonB
-  
-    // TODO
-    // byteA Bytes   @db.ByteA
+    id     String  @id @default(cuid())
+    bool   Boolean @db.Boolean
+    xml    String  @db.Xml
+    json_  Json    @db.Json
+    jsonb  Json    @db.JsonB
+    binary Bytes   @db.ByteA
   }
   
   model E {
@@ -24585,11 +24693,13 @@
       from typing_extensions import TypedDict, Literal
   
   # -- template fields.py.jinja --
+  import base64
   from pydantic import Json as _PydanticJson
   
   
   __all__ = (
       'Json',
+      'Base64',
   )
   
   
@@ -24600,6 +24710,10 @@
       int,
       str,
   ]
+  
+  # Base64 data should only be valid ascii, we limit our encoding to ascii so that
+  # any erroneous data is caught as early on as possible.
+  BASE64_ENCODING = 'ascii'
   
   
   # inherit from _PydanticJson so that pydantic will automatically
@@ -24647,6 +24761,45 @@
   
           def __getitem__(self, i: Union['_JsonKeys', slice]) -> 'Serializable':
               ...
+  
+  
+  class Base64:
+      def __init__(self, raw: bytes) -> None:
+          self._raw = raw
+  
+      @classmethod
+      def encode(cls, value: bytes) -> 'Base64':
+          """Encode bytes into valid Base64"""
+          return cls(base64.b64encode(value))
+  
+      def decode(self, encoding: str = BASE64_ENCODING) -> bytes:
+          """Decode from Base64 to the original bytes object"""
+          return base64.b64decode(self._raw)
+  
+      # NOTE: we explicitly use a different encoding here as we are decoding
+      # to the original data provided by the user, this data does not have
+      # the limitation of being ascii only that the raw Base64 data does
+      def decode_str(self, encoding: str = 'utf-8') -> str:
+          """Decode from Base64 to the original string
+  
+          This decodes using the `utf-8` encoding by default,
+          you can customise the encoding like so:
+  
+          ```py
+          value = b64.decode_str('ascii')
+          ```
+          """
+          return self.decode().decode(encoding)
+  
+      def __str__(self) -> str:
+          return self._raw.decode(BASE64_ENCODING)
+  
+      def __repr__(self) -> str:
+          return f'{self.__class__.__name__}({self._raw})'  # type: ignore[str-bytes-safe]
+  
+      @classmethod
+      def _internal_from_prisma(cls, value: str) -> 'Base64':
+          return cls(bytes(value, BASE64_ENCODING))
   
   
   from .types import Serializable
@@ -24733,7 +24886,7 @@
   
   # -- template models.py.jinja --
   import os
-  from pydantic import BaseConfig, BaseModel, Field
+  from pydantic import BaseConfig, BaseModel, Field, validator
   
   from . import types, enums, errors, fields
   from ._types import BaseModelT
@@ -24742,6 +24895,7 @@
   
   class Config(BaseConfig):
       use_enum_values: bool = True
+      arbitrary_types_allowed: bool = True
       allow_population_by_field_name: bool = True
   
   
@@ -25744,6 +25898,7 @@
       xml: str
       json_: 'fields.Json'
       jsonb: 'fields.Json'
+      binary: 'fields.Base64'
   
       Config = Config
   
@@ -25830,6 +25985,10 @@
           partial_models_ctx.set(models)
           _created_partial_types.add(name)
   
+      @validator('binary', pre=True, allow_reuse=True)
+      @classmethod
+      def _prisma_binary_bytes_validator(cls, value: Any) -> fields.Base64:
+          return fields.Base64._internal_from_prisma(value)
   
   class E(BaseModel):
       id: str
@@ -26544,6 +26703,12 @@
           'optional': False,
           'type': 'fields.Json',
       },
+      'binary': {
+          'name': 'binary',
+          'is_list': False,
+          'optional': False,
+          'type': 'fields.Base64',
+      },
   }
   
   _E_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
@@ -26631,7 +26796,7 @@
       from typing_extensions import TypedDict, Literal
   
   # -- template partials.py.jinja --
-  from pydantic import BaseModel, Field
+  from pydantic import BaseModel, Field, validator
   from . import types, models, fields, enums
   
   
@@ -26953,6 +27118,36 @@
           'gt': float,
           'gte': float,
           'in': List[float],
+              },
+      total=False,
+  )
+  
+      
+  
+  BytesFilter = TypedDict(
+      'BytesFilter',
+      {
+          'equals': 'fields.Base64',
+          'not': Union['fields.Base64', 'BytesFilterRecursive1'],
+      },
+      total=False,
+  )
+  
+  
+  BytesFilterRecursive1 = TypedDict(
+      'BytesFilterRecursive1',
+      {
+          'equals': 'fields.Base64',
+          'not': Union['fields.Base64', 'BytesFilterRecursive2'],
+      },
+      total=False,
+  )
+  
+  
+  BytesFilterRecursive2 = TypedDict(
+      'BytesFilterRecursive2',
+      {
+          'equals': 'fields.Base64',
               },
       total=False,
   )
@@ -35313,6 +35508,7 @@
       xml: str
       json_: 'fields.Json'
       jsonb: 'fields.Json'
+      binary: 'fields.Base64'
   
   
   # TODO: remove this in favour of without explicit relations
@@ -35329,6 +35525,7 @@
       xml: str
       json_: 'fields.Json'
       jsonb: 'fields.Json'
+      binary: 'fields.Base64'
   
   
   class DCreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -35352,6 +35549,7 @@
       xml: str
       json_: 'fields.Json'
       jsonb: 'fields.Json'
+      binary: 'fields.Base64'
   
   
   class DUpdateManyMutationInput(TypedDict, total=False):
@@ -35361,6 +35559,7 @@
       xml: str
       json_: 'fields.Json'
       jsonb: 'fields.Json'
+      binary: 'fields.Base64'
   
   
   class DUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -35401,6 +35600,7 @@
       xml: 'SortOrder'
       json_: 'SortOrder'
       jsonb: 'SortOrder'
+      binary: 'SortOrder'
   
   
   # recursive D types
@@ -36096,6 +36296,7 @@
       xml: Union[str, 'types.StringFilter']
       json_: Union['fields.Json', 'types.JsonFilter']
       jsonb: Union['fields.Json', 'types.JsonFilter']
+      binary: Union['fields.Base64', 'types.BytesFilter']
   
       # should be noted that AND and NOT should be Union['DWhereInputRecursive1', List['DWhereInputRecursive1']]
       # but this causes mypy to hang :/
@@ -36111,6 +36312,7 @@
       xml: Union[str, 'types.StringFilter']
       json_: Union['fields.Json', 'types.JsonFilter']
       jsonb: Union['fields.Json', 'types.JsonFilter']
+      binary: Union['fields.Base64', 'types.BytesFilter']
   
       # should be noted that AND and NOT should be Union['DWhereInputRecursive2', List['DWhereInputRecursive2']]
       # but this causes mypy to hang :/
@@ -36126,6 +36328,7 @@
       xml: Union[str, 'types.StringFilter']
       json_: Union['fields.Json', 'types.JsonFilter']
       jsonb: Union['fields.Json', 'types.JsonFilter']
+      binary: Union['fields.Base64', 'types.BytesFilter']
   
   
   
@@ -36137,6 +36340,7 @@
           'xml': bool,
           'json_': bool,
           'jsonb': bool,
+          'binary': bool,
           '_all': bool,
       },
       total=False,
@@ -36150,6 +36354,7 @@
           'xml': int,
           'json_': int,
           'jsonb': int,
+          'binary': int,
           '_all': int,
       },
       total=False,
@@ -36162,6 +36367,7 @@
       'xml',
       'json_',
       'jsonb',
+      'binary',
   ]
   
   DRelationalFieldKeys = _NoneType

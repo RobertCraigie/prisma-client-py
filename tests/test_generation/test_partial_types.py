@@ -30,6 +30,7 @@ model Post {{
   comments    Comment[]
   author_id   String
   author      User      @relation(fields: [author_id], references: [id])
+  thumbnail   Bytes?
 }}
 
 model Comment {{
@@ -101,6 +102,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             'comments': False,
             'author': False,
             'author_id': True,
+            'thumbnail': False,
         }
 
         def common_entries(
@@ -160,6 +162,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
                     'comments',
                     'author',
                     'author_id',
+                    'thumbnail',
                 },
             )
 
@@ -178,6 +181,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
                     'comments',
                     'author',
                     'author_id',
+                    'thumbnail',
                 },
             )
 
