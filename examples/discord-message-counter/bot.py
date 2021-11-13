@@ -56,7 +56,7 @@ async def total(ctx: Context, channel: Optional[discord.TextChannel] = None) -> 
     if channel is None and isinstance(ctx.channel, discord.TextChannel):
         channel = ctx.channel
     else:
-        await ctx.send('Could not resolve channel, TODO')
+        await ctx.send('Could not resolve channel, this should never happen')
         return
 
     record = await ctx.bot.prisma.channel.find_unique(
