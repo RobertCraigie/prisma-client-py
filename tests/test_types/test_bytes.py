@@ -1,6 +1,7 @@
 import pytest
 from prisma import Client
 from prisma.fields import Base64
+from prisma.models import Types
 
 
 @pytest.mark.asyncio
@@ -48,3 +49,16 @@ async def test_filtering(client: Client) -> None:
     )
     assert found is not None
     assert found.bytes.decode() == b'a'
+
+
+@pytest.mark.asyncio
+async def test_json(client: Client) -> None:
+    """Base64 fields can be serialised to and from JSON"""
+    record = await client.types.create(
+        data={
+            'bytes': Base64.encode(b'foo'),
+        },
+    )
+    model = Types.parse_raw(record.json())
+    assert isinstance(model.bytes, Base64)
+    assert model.bytes.decode() == b'foo'
