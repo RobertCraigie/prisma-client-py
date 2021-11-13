@@ -103,7 +103,7 @@ class Base64:
         return self._raw.decode(BASE64_ENCODING)
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}({self._raw})'
+        return f'{self.__class__.__name__}({self._raw})'  # type: ignore[str-bytes-safe]
 
     @classmethod
     def _internal_from_prisma(cls, value: str) -> 'Base64':
