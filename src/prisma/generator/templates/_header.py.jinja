@@ -25,10 +25,6 @@ from typing import (
     overload,
     cast,
 )
-
-if sys.version_info >= (3, 9, 2):
-    from typing import TypedDict, Literal
-else:
-    from typing_extensions import TypedDict, Literal
+from typing_extensions import TypedDict, Literal
 
 
