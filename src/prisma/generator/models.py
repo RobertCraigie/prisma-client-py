@@ -188,7 +188,7 @@ class Datasource(BaseModel):
 class Generator(BaseModel):
     name: str
     output: 'ValueFromEnvVar'
-    provider: 'ValueFromEnvVar'
+    provider: 'OptionalValueFromEnvVar'
     config: 'Config'
     binary_targets: List['ValueFromEnvVar'] = FieldInfo(alias='binaryTargets')
     preview_features: List[str] = FieldInfo(alias='previewFeatures')
