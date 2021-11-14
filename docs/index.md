@@ -20,13 +20,17 @@
 
 ## What is Prisma Client Python?
 
-Prisma Client Python is an unofficial implementation of [Prisma](https://github.com/prisma/prisma) which is a **next-generation ORM** that comes bundled with tools, such as [Prisma Migrate](https://www.prisma.io/docs/concepts/components/prisma-migrate), which make working with databases as easy as possible.
+Prisma Client Python is a next-generation ORM built on top of [Prisma](https://github.com/prisma/prisma) that has been designed from the ground up for ease of use and correctness.
 
 Prisma Client Python can be used in _any_ Python backend application. This can be a REST API, a GraphQL API or _anything_ else that needs a database.
+
+![GIF showcasing Prisma Client Python usage](./showcase.gif)
 
 ## Why should you use Prisma Client Python?
 
 Unlike other Python ORMs, Prisma Client Python is **fully type safe** and offers native support for usage **with and without** `async`. All you have to do is [specify the type of client](https://prisma-client-py.readthedocs.io/en/latest/getting_started/setup/) you would like to use for your project in the [Prisma schema file](#the-prisma-schema).
+
+However, the arguably best feature that Prisma Client Python provides is [autocompletion support](#auto-completion-for-query-arguments) (see the GIF above). This makes writing database queries easier than ever!
 
 Core features:
 
