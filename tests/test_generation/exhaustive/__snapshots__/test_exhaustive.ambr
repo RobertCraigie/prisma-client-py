@@ -3154,20 +3154,13 @@
   from . import fields
   from .types import Serializable
   from .errors import UnknownModelError, UnknownRelationalFieldError
+  from ._constants import QUERY_BUILDER_ALIASES
   
   
   log: logging.Logger = logging.getLogger(__name__)
   
   ChildType = Union['AbstractNode', str]
   
-  
-  GLOBAL_ALIASES: Dict[str, str] = {
-      'startswith': 'startsWith',
-      'endswith': 'endsWith',
-      'order_by': 'orderBy',
-      'not_in': 'notIn',
-      'is_not': 'isNot',
-  }
   
   DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
       'Post': [
@@ -3437,7 +3430,7 @@
           """
           transformed = dict()
           for key, value in arguments.items():
-              alias = GLOBAL_ALIASES.get(key, key)
+              alias = QUERY_BUILDER_ALIASES.get(key, key)
               if isinstance(value, dict):
                   transformed[alias] = self._transform_aliases(arguments=value)
               else:
@@ -21739,20 +21732,13 @@
   from . import fields
   from .types import Serializable
   from .errors import UnknownModelError, UnknownRelationalFieldError
+  from ._constants import QUERY_BUILDER_ALIASES
   
   
   log: logging.Logger = logging.getLogger(__name__)
   
   ChildType = Union['AbstractNode', str]
   
-  
-  GLOBAL_ALIASES: Dict[str, str] = {
-      'startswith': 'startsWith',
-      'endswith': 'endsWith',
-      'order_by': 'orderBy',
-      'not_in': 'notIn',
-      'is_not': 'isNot',
-  }
   
   DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
       'Post': [
@@ -22022,7 +22008,7 @@
           """
           transformed = dict()
           for key, value in arguments.items():
-              alias = GLOBAL_ALIASES.get(key, key)
+              alias = QUERY_BUILDER_ALIASES.get(key, key)
               if isinstance(value, dict):
                   transformed[alias] = self._transform_aliases(arguments=value)
               else:

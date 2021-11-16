@@ -80,6 +80,30 @@ def test_field_name_prisma_not_allowed(testdir: Testdir) -> None:
     ) in str(exc.value.output, 'utf-8')
 
 
+def test_field_name_matching_query_builder_alias_not_allowed(testdir: Testdir) -> None:
+    """A field name that is the same as an alias used by our internal query builder
+    is not allowed as it will lead to confusing error messages
+
+    https://github.com/RobertCraigie/prisma-client-py/issues/124
+    """
+    schema = (
+        testdir.SCHEMA_HEADER
+        + '''
+        model User {{
+            id       String @id
+            order_by String
+        }}
+    '''
+    )
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    assert (
+        'Field name "order_by" shadows an internal keyword; '
+        'use a different field name with \'@map("order_by")\''
+    ) in str(exc.value.output, 'utf-8')
+
+
 def test_unknown_type(testdir: Testdir) -> None:
     """Unsupported scalar type is not allowed"""
     # TODO: will have to remove this test eventually
