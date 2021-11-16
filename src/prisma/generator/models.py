@@ -35,6 +35,7 @@ except ImportError:
 
 
 from ..utils import DEBUG_GENERATOR
+from .._constants import QUERY_BUILDER_ALIASES
 from ..binaries.constants import ENGINE_VERSION
 
 
@@ -413,6 +414,12 @@ class Field(BaseModel):
             raise ValueError(
                 'Field name "prisma" shadows a Prisma Client Python method; '
                 'use a different field name with \'@map("prisma")\'.'
+            )
+
+        if name in QUERY_BUILDER_ALIASES:
+            raise ValueError(
+                f'Field name "{name}" shadows an internal keyword; '
+                f'use a different field name with \'@map("{name}")\''
             )
 
         return name
