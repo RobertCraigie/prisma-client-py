@@ -6275,7 +6275,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -6394,7 +6394,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -6512,7 +6512,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -6632,7 +6632,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -6750,7 +6750,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -6869,7 +6869,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -6984,7 +6984,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -7075,7 +7075,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -7170,7 +7170,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -7264,7 +7264,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -7360,7 +7360,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -8676,7 +8676,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   PostRelationFilter = TypedDict(
       'PostRelationFilter',
@@ -9593,7 +9593,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   UserRelationFilter = TypedDict(
       'UserRelationFilter',
@@ -10541,7 +10541,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   MRelationFilter = TypedDict(
       'MRelationFilter',
@@ -11493,7 +11493,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   NRelationFilter = TypedDict(
       'NRelationFilter',
@@ -12447,7 +12447,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   OneOptionalRelationFilter = TypedDict(
       'OneOptionalRelationFilter',
@@ -13390,7 +13390,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   ManyRequiredRelationFilter = TypedDict(
       'ManyRequiredRelationFilter',
@@ -14325,7 +14325,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   ARelationFilter = TypedDict(
       'ARelationFilter',
@@ -15205,7 +15205,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   BRelationFilter = TypedDict(
       'BRelationFilter',
@@ -16069,7 +16069,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   CRelationFilter = TypedDict(
       'CRelationFilter',
@@ -16952,7 +16952,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   DRelationFilter = TypedDict(
       'DRelationFilter',
@@ -17819,7 +17819,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   ERelationFilter = TypedDict(
       'ERelationFilter',
@@ -24846,7 +24846,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -24965,7 +24965,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -25083,7 +25083,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -25203,7 +25203,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -25321,7 +25321,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -25440,7 +25440,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -25555,7 +25555,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -25646,7 +25646,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -25741,7 +25741,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -25835,7 +25835,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -25931,7 +25931,7 @@
               'Prisma models cannot be subclassed with pseudo-recursive types;\n'
               'This is because mypy does not work well with this pattern;\n'
               'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
           )
   
       @staticmethod
@@ -27247,7 +27247,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   PostRelationFilter = TypedDict(
       'PostRelationFilter',
@@ -28164,7 +28164,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   UserRelationFilter = TypedDict(
       'UserRelationFilter',
@@ -29112,7 +29112,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   MRelationFilter = TypedDict(
       'MRelationFilter',
@@ -30064,7 +30064,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   NRelationFilter = TypedDict(
       'NRelationFilter',
@@ -31018,7 +31018,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   OneOptionalRelationFilter = TypedDict(
       'OneOptionalRelationFilter',
@@ -31961,7 +31961,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   ManyRequiredRelationFilter = TypedDict(
       'ManyRequiredRelationFilter',
@@ -32896,7 +32896,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   ARelationFilter = TypedDict(
       'ARelationFilter',
@@ -33776,7 +33776,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   BRelationFilter = TypedDict(
       'BRelationFilter',
@@ -34640,7 +34640,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   CRelationFilter = TypedDict(
       'CRelationFilter',
@@ -35523,7 +35523,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   DRelationFilter = TypedDict(
       'DRelationFilter',
@@ -36390,7 +36390,7 @@
   
   # Dict[str, Any] is a mypy limitation
   # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
   
   ERelationFilter = TypedDict(
       'ERelationFilter',
