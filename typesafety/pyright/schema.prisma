@@ -38,11 +38,11 @@ model Category {
 model Profile {
   id      Int    @id @default(autoincrement())
   user    User   @relation(fields: [user_id], references: [id])
-  user_id String
+  user_id String @unique
   bio     String
 }
 
-// model that just exists for testing different schema types
+// models that just exists for testing different schema types
 model Types {
   id       Int      @id @default(autoincrement())
   bool     Boolean  @default(false)
@@ -53,4 +53,25 @@ model Types {
   float_   Float    @default(0)
   json_obj Json     @default("{}")
   datetime DateTime @default(now())
+}
+
+model Lists {
+  id           String     @id @default(cuid())
+  strings      String[]
+  bytes        Bytes[]
+  dates        DateTime[]
+  bools        Boolean[]
+  ints         Int[]
+  floats       Float[]
+  bigints      BigInt[]
+  json_objects Json[]
+  roles        Role[]
+  // TODO
+  // decimals     Decimal[]
+}
+
+enum Role {
+  USER
+  ADMIN
+  EDITOR
 }

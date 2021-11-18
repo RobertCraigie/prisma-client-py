@@ -3,6 +3,7 @@ import enum
 import importlib
 from pathlib import Path
 from keyword import iskeyword
+from itertools import chain
 from importlib import machinery, util as importlib_util
 from importlib.abc import InspectLoader
 from contextvars import ContextVar
@@ -36,6 +37,7 @@ except ImportError:
 
 from ..utils import DEBUG_GENERATOR
 from .._constants import QUERY_BUILDER_ALIASES
+from ..errors import UnsupportedListTypeError
 from ..binaries.constants import ENGINE_VERSION
 
 
@@ -73,6 +75,14 @@ def get_config() -> 'Config':
 
 def get_datamodel() -> 'Datamodel':
     return data_ctx.get().dmmf.datamodel
+
+
+def get_list_types() -> chain[Tuple[str, str]]:
+    # WARNING: do not edit this function without also editing Field.is_supported_scalar_list_type()
+    return chain(
+        ((t, TYPE_MAPPING[t]) for t in FILTER_TYPES),
+        ((enum.name, f'\'enums.{enum.name}\'') for enum in get_datamodel().enums),
+    )
 
 
 def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
@@ -143,7 +153,11 @@ class Module(BaseModel):
 
 
 class Data(BaseModel):
-    """Root model for the data that prisma provides to the generator."""
+    """Root model for the data that prisma provides to the generator.
+
+    WARNING: only one instance of this class may exist at any given time and
+    instances should only be constructed using the Data.parse_obj() method
+    """
 
     datamodel: str
     version: str
@@ -160,6 +174,16 @@ class Data(BaseModel):
         data = super().parse_obj(obj)
         data_ctx.set(data)
         return data
+
+    def to_params(self) -> Dict[str, Any]:
+        """Get the parameters that should be sent to Jinja templates"""
+        params = vars(self)
+
+        # add utility functions
+        for func in [get_list_types]:
+            params[func.__name__] = func
+
+        return params
 
     @root_validator(pre=True, allow_reuse=True)
     @classmethod
@@ -473,12 +497,18 @@ class Field(BaseModel):
     @property
     def where_input_type(self) -> str:
         typ = self.type
-        if typ in FILTER_TYPES:
-            return f'Union[{self._actual_python_type}, \'types.{typ}Filter\']'
         if self.is_relational:
             if self.is_list:
                 return f'\'{typ}ListRelationFilter\''
             return f'\'{typ}RelationFilter\''
+
+        if self.is_list:
+            self.check_supported_scalar_list_type()
+            return f'\'types.{typ}ListFilter\''
+
+        if typ in FILTER_TYPES:
+            return f'Union[{self._actual_python_type}, \'types.{typ}Filter\']'
+
         return self.python_type
 
     @property
@@ -494,6 +524,7 @@ class Field(BaseModel):
             and not self.is_updated_at
             and not self.has_default_value
             and not self.relation_name
+            and not self.is_list
         )
 
     @property
@@ -515,19 +546,23 @@ class Field(BaseModel):
         return f'Optional[{typ}]'
 
     def get_update_input_type(self) -> str:
-        if self.is_atomic:
-            if self.is_list:
-                raise NotImplementedError(
-                    'Atomic updates for scalar list types not implemented yet.'
-                )
-            return f'Union[Atomic{self.type}Input, {self.python_type}]'
-
         if self.kind == 'object':
             if self.is_list:
                 return f'\'{self.type}UpdateManyWithoutRelationsInput\''
             return f'\'{self.type}UpdateOneWithoutRelationsInput\''
 
+        if self.is_list:
+            self.check_supported_scalar_list_type()
+            return f'\'types.{self.type}ListUpdate\''
+
+        if self.is_atomic:
+            return f'Union[Atomic{self.type}Input, {self.python_type}]'
+
         return self.python_type
+
+    def check_supported_scalar_list_type(self) -> None:
+        if not self.type in FILTER_TYPES and self.kind != 'enum':
+            raise UnsupportedListTypeError(self.type)
 
     def get_relational_model(self) -> Optional['Model']:
         if not self.is_relational:

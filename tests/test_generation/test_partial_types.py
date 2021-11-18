@@ -47,6 +47,8 @@ model User {{
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
   name         String
+  bytes        Bytes
+  bytes_list   Bytes[]
   posts        Post[]
 }}
 
@@ -79,6 +81,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
         import datetime
         from typing import Type, Dict, Iterator, Any, Tuple, Set, Optional
         from pydantic import BaseModel
+        from prisma import Base64
         from prisma.partials import (  # type: ignore[attr-defined]
             # pyright: reportGeneralTypeIssues = false
             PostWithoutDesc,
@@ -89,6 +92,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             PostRequiredAuthor,
             PostModifiedAuthor,
             UserModifiedPosts,
+            UserBytesList,
         )
 
         base_fields = {
@@ -213,6 +217,21 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
 
             assert field.outer_type_.__module__ == 'typing'
 
+        def test_bytes() -> None:
+            """Ensure Base64 fields can be used"""
+            # mock prisma behaviour
+            model = UserBytesList.parse_obj(
+                {
+                    'bytes': str(Base64.encode(b'bar')),
+                    'bytes_list': [
+                        str(Base64.encode(b'foo')),
+                        str(Base64.encode(b'baz')),
+                    ],
+                }
+            )
+            assert model.bytes == Base64.encode(b'bar')
+            assert model.bytes_list == [Base64.encode(b'foo'), Base64.encode(b'baz')]
+
     def generator() -> None:  # mark: filedef
         from prisma.models import Post, User
 
@@ -228,12 +247,17 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
         Post.create_partial('PostRequiredAuthor', required=['author'])
         Post.create_partial('PostModifiedAuthor', relations={'author': 'UserOnlyName'})
 
-        User.create_partial('UserModifiedPosts', relations={'posts': 'PostOnlyId'})
+        User.create_partial(
+            'UserModifiedPosts',
+            exclude={'bytes', 'bytes_list'},
+            relations={'posts': 'PostOnlyId'},
+        )
+        User.create_partial('UserBytesList', include={'bytes', 'bytes_list'})
 
     testdir.make_from_function(generator, name=location)
     testdir.generate(SCHEMA, options)
     testdir.make_from_function(tests)
-    testdir.runpytest().assert_outcomes(passed=8)
+    testdir.runpytest().assert_outcomes(passed=9)
 
 
 @pytest.mark.parametrize('argument', ['exclude', 'include', 'required', 'optional'])

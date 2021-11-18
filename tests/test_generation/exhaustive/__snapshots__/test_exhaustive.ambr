@@ -1706,6 +1706,284 @@
           return int(resp['data']['result']['count'])
   
   
+  class ListsActions:
+      def __init__(self, client: 'Client', model: Type['models.Lists']) -> None:
+          self._client = client
+          self._model = model
+  
+      async def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List['models.Lists']:
+          return await self._client.query_raw(query, *args, model=self._model)
+  
+      async def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional['models.Lists']:
+          return await self._client.query_first(query, *args, model=self._model)
+  
+      async def create(
+          self,
+          data: types.ListsCreateInput,
+          include: Optional[types.ListsInclude] = None
+      ) -> 'models.Lists':
+          resp = await self._client._execute(
+              operation='mutation',
+              method='createOne',
+              model='Lists',
+              arguments={
+                  'data': data,
+                  'include': include,
+              },
+          )
+          return self._model.parse_obj(resp['data']['result'])
+  
+      async def create_many(
+          self,
+          data: List[types.ListsCreateWithoutRelationsInput],
+          *,
+          skip_duplicates: Optional[bool] = None,
+      ) -> int:
+          if self._client._active_provider == 'sqlite':
+              raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+  
+          resp = await self._client._execute(
+              operation='mutation',
+              method='createMany',
+              model='Lists',
+              arguments={
+                  'data': data,
+                  'skipDuplicates': skip_duplicates,
+              },
+              root_selection=['count'],
+          )
+          return int(resp['data']['result']['count'])
+  
+      async def delete(
+          self,
+          where: types.ListsWhereUniqueInput,
+          include: Optional[types.ListsInclude] = None
+      ) -> Optional['models.Lists']:
+          try:
+              resp = await self._client._execute(
+                  operation='mutation',
+                  method='deleteOne',
+                  model='Lists',
+                  arguments={
+                      'where': where,
+                      'include': include,
+                  },
+              )
+          except errors.RecordNotFoundError:
+              return None
+  
+          return self._model.parse_obj(resp['data']['result'])
+  
+      async def find_unique(
+          self,
+          where: types.ListsWhereUniqueInput,
+          include: Optional[types.ListsInclude] = None
+      ) -> Optional['models.Lists']:
+          resp = await self._client._execute(
+              operation='query',
+              method='findUnique',
+              model='Lists',
+              arguments={
+                  'where': where,
+                  'include': include,
+              },
+          )
+          result = resp['data']['result']
+          if result is None:
+              return None
+          return self._model.parse_obj(result)
+  
+      async def find_many(
+          self,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.ListsWhereInput] = None,
+          cursor: Optional[types.ListsWhereUniqueInput] = None,
+          include: Optional[types.ListsInclude] = None,
+          order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
+      ) -> List['models.Lists']:
+          resp = await self._client._execute(
+              operation='query',
+              method='findMany',
+              model='Lists',
+              arguments={
+                  'take': take,
+                  'skip': skip,
+                  'where': where,
+                  'order_by': order,
+                  'cursor': cursor,
+                  'include': include,
+              },
+          )
+          return [self._model.parse_obj(r) for r in resp['data']['result']]
+  
+      async def find_first(
+          self,
+          skip: Optional[int] = None,
+          where: Optional[types.ListsWhereInput] = None,
+          cursor: Optional[types.ListsWhereUniqueInput] = None,
+          include: Optional[types.ListsInclude] = None,
+          order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
+      ) -> Optional['models.Lists']:
+          resp = await self._client._execute(
+              operation='query',
+              method='findFirst',
+              model='Lists',
+              arguments={
+                  'skip': skip,
+                  'where': where,
+                  'order_by': order,
+                  'cursor': cursor,
+                  'include': include
+              },
+          )
+          result = resp['data']['result']
+          if result is None:
+              return None
+          return self._model.parse_obj(result)
+  
+      async def update(
+          self,
+          data: types.ListsUpdateInput,
+          where: types.ListsWhereUniqueInput,
+          include: Optional[types.ListsInclude] = None
+      ) -> Optional['models.Lists']:
+          try:
+              resp = await self._client._execute(
+                  operation='mutation',
+                  method='updateOne',
+                  model='Lists',
+                  arguments={
+                      'data': data,
+                      'where': where,
+                      'include': include,
+                  },
+              )
+          except errors.RecordNotFoundError:
+              return None
+  
+          return self._model.parse_obj(resp['data']['result'])
+  
+      async def upsert(
+          self,
+          where: types.ListsWhereUniqueInput,
+          data: types.ListsUpsertInput,
+          include: Optional[types.ListsInclude] = None,
+      ) -> 'models.Lists':
+          resp = await self._client._execute(
+              operation='mutation',
+              method='upsertOne',
+              model='Lists',
+              arguments={
+                  'where': where,
+                  'include': include,
+                  'create': data.get('create'),
+                  'update': data.get('update'),
+              },
+          )
+          return self._model.parse_obj(resp['data']['result'])
+  
+      async def update_many(
+          self,
+          data: types.ListsUpdateManyMutationInput,
+          where: types.ListsWhereInput,
+      ) -> int:
+          resp = await self._client._execute(
+              operation='mutation',
+              method='updateMany',
+              model='Lists',
+              arguments={'data': data, 'where': where,},
+              root_selection=['count'],
+          )
+          return int(resp['data']['result']['count'])
+  
+      @overload
+      async def count(
+          self,
+          select: None = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.ListsWhereInput] = None,
+          cursor: Optional[types.ListsWhereUniqueInput] = None,
+          order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
+      ) -> int:
+          ...
+  
+      @overload
+      async def count(
+          self,
+          select: types.ListsCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.ListsWhereInput] = None,
+          cursor: Optional[types.ListsWhereUniqueInput] = None,
+          order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
+      ) -> types.ListsCountAggregateOutput:
+          ...
+  
+      async def count(
+          self,
+          select: Optional[types.ListsCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.ListsWhereInput] = None,
+          cursor: Optional[types.ListsWhereUniqueInput] = None,
+          order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
+      ) -> Union[int, types.ListsCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
+          resp = await self._client._execute(
+              operation='query',
+              method='aggregate',
+              model='Lists',
+              arguments={
+                  'take': take,
+                  'skip': skip,
+                  'where': where,
+                  'order_by': order,
+                  'cursor': cursor,
+              },
+              root_selection=root_selection,
+          )
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.ListsCountAggregateOutput, resp['data']['result']['_count'])
+  
+      async def delete_many(
+          self,
+          where: Optional[types.ListsWhereInput] = None
+      ) -> int:
+          resp = await self._client._execute(
+              operation='mutation',
+              method='deleteMany',
+              model='Lists',
+              arguments={'where': where},
+              root_selection=['count'],
+          )
+          return int(resp['data']['result']['count'])
+  
+  
   class AActions:
       def __init__(self, client: 'Client', model: Type['models.A']) -> None:
           self._client = client
@@ -3240,6 +3518,17 @@
           'boolean',
           'optional_boolean',
       ],
+      'Lists': [
+          'id',
+          'strings',
+          'bytes',
+          'dates',
+          'bools',
+          'ints',
+          'floats',
+          'bigints',
+          'json_objects',
+      ],
       'A': [
           'id',
           'email',
@@ -3299,6 +3588,8 @@
       },
       'ManyRequired': {
           'one': 'OneOptional',
+      },
+      'Lists': {
       },
       'A': {
       },
@@ -4095,6 +4386,20 @@
     optional_boolean Boolean?
   }
   
+  model Lists {
+    id           String     @id @default(cuid())
+    strings      String[]
+    bytes        Bytes[]
+    dates        DateTime[]
+    bools        Boolean[]
+    ints         Int[]
+    floats       Float[]
+    bigints      BigInt[]
+    json_objects Json[]
+    // TODO
+    // decimals     Decimal[]
+  }
+  
   enum ABeautifulEnum {
     A
     B
@@ -4217,6 +4522,7 @@
       n: 'actions.NActions'
       oneoptional: 'actions.OneOptionalActions'
       manyrequired: 'actions.ManyRequiredActions'
+      lists: 'actions.ListsActions'
       a: 'actions.AActions'
       b: 'actions.BActions'
       c: 'actions.CActions'
@@ -4237,6 +4543,7 @@
           self.n = actions.NActions(self, models.N)
           self.oneoptional = actions.OneOptionalActions(self, models.OneOptional)
           self.manyrequired = actions.ManyRequiredActions(self, models.ManyRequired)
+          self.lists = actions.ListsActions(self, models.Lists)
           self.a = actions.AActions(self, models.A)
           self.b = actions.BActions(self, models.B)
           self.c = actions.CActions(self, models.C)
@@ -4380,6 +4687,7 @@
       n: 'NBatchActions'
       oneoptional: 'OneOptionalBatchActions'
       manyrequired: 'ManyRequiredBatchActions'
+      lists: 'ListsBatchActions'
       a: 'ABatchActions'
       b: 'BBatchActions'
       c: 'CBatchActions'
@@ -4396,6 +4704,7 @@
           self.n = NBatchActions(self)
           self.oneoptional = OneOptionalBatchActions(self)
           self.manyrequired = ManyRequiredBatchActions(self)
+          self.lists = ListsBatchActions(self)
           self.a = ABatchActions(self)
           self.b = BBatchActions(self)
           self.c = CBatchActions(self)
@@ -5141,6 +5450,124 @@
               operation='mutation',
               method='deleteMany',
               model='ManyRequired',
+              arguments={'where': where},
+              root_selection=['count'],
+          )
+  
+  
+  
+  # NOTE: some arguments are meaningless in this context but are included
+  # for completeness sake
+  class ListsBatchActions:
+      def __init__(self, batcher: Batch) -> None:
+          self._batcher = batcher
+  
+      def create(
+          self,
+          data: types.ListsCreateInput,
+          include: Optional[types.ListsInclude] = None
+      ) -> None:
+          self._batcher._add(
+              operation='mutation',
+              method='createOne',
+              model='Lists',
+              arguments={
+                  'data': data,
+                  'include': include,
+              },
+          )
+  
+      def create_many(
+          self,
+          data: List[types.ListsCreateWithoutRelationsInput],
+          *,
+          skip_duplicates: Optional[bool] = None,
+      ) -> None:
+          if self._batcher._active_provider == 'sqlite':
+              raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+  
+          self._batcher._add(
+              operation='mutation',
+              method='createMany',
+              model='Lists',
+              arguments={
+                  'data': data,
+                  'skipDuplicates': skip_duplicates,
+              },
+              root_selection=['count'],
+          )
+  
+      def delete(
+          self,
+          where: types.ListsWhereUniqueInput,
+          include: Optional[types.ListsInclude] = None,
+      ) -> None:
+          self._batcher._add(
+              operation='mutation',
+              method='deleteOne',
+              model='Lists',
+              arguments={
+                  'where': where,
+                  'include': include,
+              },
+          )
+  
+      def update(
+          self,
+          data: types.ListsUpdateInput,
+          where: types.ListsWhereUniqueInput,
+          include: Optional[types.ListsInclude] = None
+      ) -> None:
+          self._batcher._add(
+              operation='mutation',
+              method='updateOne',
+              model='Lists',
+              arguments={
+                  'data': data,
+                  'where': where,
+                  'include': include,
+              },
+          )
+  
+      def upsert(
+          self,
+          where: types.ListsWhereUniqueInput,
+          data: types.ListsUpsertInput,
+          include: Optional[types.ListsInclude] = None,
+      ) -> None:
+          self._batcher._add(
+              operation='mutation',
+              method='upsertOne',
+              model='Lists',
+              arguments={
+                  'where': where,
+                  'include': include,
+                  'create': data.get('create'),
+                  'update': data.get('update'),
+              },
+          )
+  
+      def update_many(
+          self,
+          data: types.ListsUpdateManyMutationInput,
+          where: types.ListsWhereInput,
+      ) -> None:
+          self._batcher._add(
+              operation='mutation',
+              method='updateMany',
+              model='Lists',
+              arguments={'data': data, 'where': where,},
+              root_selection=['count'],
+          )
+  
+      def delete_many(
+          self,
+          where: Optional[types.ListsWhereInput] = None,
+      ) -> None:
+          self._batcher._add(
+              operation='mutation',
+              method='deleteMany',
+              model='Lists',
               arguments={'where': where},
               root_selection=['count'],
           )
@@ -6159,7 +6586,10 @@
           return False
   
       @classmethod
-      def _internal_from_prisma(cls, value: str) -> 'Base64':
+      def _internal_from_prisma(cls, value: Union[str, List[str]]) -> Union['Base64', List['Base64']]:
+          if isinstance(value, list):
+              return [cls(bytes(item, BASE64_ENCODING)) for item in value]
+  
           return cls(bytes(value, BASE64_ENCODING))
   
   
@@ -6966,6 +7396,107 @@
           _created_partial_types.add(name)
   
   
+  class Lists(BaseModel):
+      id: str
+      strings: List[str]
+      bytes: List['fields.Base64']
+      dates: List[datetime.datetime]
+      bools: List[bool]
+      ints: List[int]
+      floats: List[float]
+      bigints: List[int]
+      json_objects: List['fields.Json']
+  
+      Config = Config
+  
+      @classmethod
+      def prisma(cls) -> 'actions.ListsActions':
+          from .client import get_client
+  
+          return actions.ListsActions(get_client(), cls)
+  
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
+          raise RuntimeError(
+              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
+              'This is because mypy does not work well with this pattern;\n'
+              'See the documentation for how to generate fully recursive types: \n'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
+          )
+  
+      @staticmethod
+      def create_partial(
+          name: str,
+          include: Optional[Iterable['types.ListsKeys']] = None,
+          exclude: Optional[Iterable['types.ListsKeys']] = None,
+          required: Optional[Iterable['types.ListsKeys']] = None,
+          optional: Optional[Iterable['types.ListsKeys']] = None,
+          relations: Optional[Mapping['types.ListsRelationalFieldKeys', str]] = None,
+      ) -> None:
+          if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
+              raise RuntimeError(
+                  'Attempted to create a partial type outside of client generation.'
+              )
+  
+          if name in _created_partial_types:
+              raise ValueError(f'Partial type "{name}" has already been created.')
+  
+          if include is not None and exclude is not None:
+              raise TypeError(f'Exclude and include are mutually exclusive.')
+  
+          if required and optional:
+              shared = set(required) & set(optional)
+              if shared:
+                  raise ValueError(f'Cannot make the same field(s) required and optional {shared}')
+  
+          fields: Dict['types.ListsKeys', PartialModelField] = {}
+  
+          try:
+              if include:
+                  for field in include:
+                      fields[field] = _Lists_fields[field]
+              elif exclude:
+                  for field in exclude:
+                      if field not in _Lists_fields:
+                          raise KeyError(field)
+  
+                  fields = {
+                      key: data
+                      for key, data in _Lists_fields.items()
+                      if key not in exclude
+                  }
+              else:
+                  fields = _Lists_fields.copy()
+  
+              if required:
+                  for field in required:
+                      fields[field] = fields[field].copy()
+                      fields[field]['optional'] = False
+  
+              if optional:
+                  for field in optional:
+                      fields[field] = fields[field].copy()
+                      fields[field]['optional'] = True
+  
+              if relations:
+                  raise ValueError('Model: "Lists" has no relational fields.')
+          except KeyError as exc:
+              raise ValueError(
+                  f'{exc.args[0]} is not a valid Lists / {name} field.'
+              ) from None
+  
+          models = partial_models_ctx.get()
+  
+          # mypy does not like this as we are assigning a
+          # Dict[Literal[str]] to a Dict[str] but this is fine
+          models[name] = fields  # type: ignore[assignment]
+          partial_models_ctx.set(models)
+          _created_partial_types.add(name)
+  
+      @validator('bytes', pre=True, allow_reuse=True)
+      @classmethod
+      def _prisma_bytes_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
+          return fields.Base64._internal_from_prisma(value)
+  
   class A(BaseModel):
       id: str
       email: str
@@ -7344,7 +7875,7 @@
   
       @validator('binary', pre=True, allow_reuse=True)
       @classmethod
-      def _prisma_binary_bytes_validator(cls, value: Any) -> fields.Base64:
+      def _prisma_binary_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
           return fields.Base64._internal_from_prisma(value)
   
   class E(BaseModel):
@@ -7902,6 +8433,64 @@
       },
   }
   
+  _Lists_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
+  _Lists_fields: Dict['types.ListsKeys', PartialModelField] = {
+      'id': {
+          'name': 'id',
+          'is_list': False,
+          'optional': False,
+          'type': 'str',
+      },
+      'strings': {
+          'name': 'strings',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[str]',
+      },
+      'bytes': {
+          'name': 'bytes',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[\'fields.Base64\']',
+      },
+      'dates': {
+          'name': 'dates',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[datetime.datetime]',
+      },
+      'bools': {
+          'name': 'bools',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[bool]',
+      },
+      'ints': {
+          'name': 'ints',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[int]',
+      },
+      'floats': {
+          'name': 'floats',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[float]',
+      },
+      'bigints': {
+          'name': 'bigints',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[int]',
+      },
+      'json_objects': {
+          'name': 'json_objects',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[\'fields.Json\']',
+      },
+  }
+  
   _A_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _A_fields: Dict['types.AKeys', PartialModelField] = {
       'id': {
@@ -8109,6 +8698,7 @@
   N.update_forward_refs()
   OneOptional.update_forward_refs()
   ManyRequired.update_forward_refs()
+  Lists.update_forward_refs()
   A.update_forward_refs()
   B.update_forward_refs()
   C.update_forward_refs()
@@ -8567,6 +9157,393 @@
       _IntDecrementInput,
   ]
   AtomicBigIntInput = AtomicIntInput
+  
+  class _StringListFilterEqualsInput(TypedDict):
+      equals: Optional[List[str]]
+  
+  
+  class _StringListFilterHasInput(TypedDict):
+      has: str
+  
+  
+  class _StringListFilterHasEveryInput(TypedDict):
+      has_every: List[str]
+  
+  
+  class _StringListFilterHasSomeInput(TypedDict):
+      has_some: List[str]
+  
+  
+  class _StringListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  StringListFilter = Union[
+      _StringListFilterHasInput,
+      _StringListFilterEqualsInput,
+      _StringListFilterHasSomeInput,
+      _StringListFilterIsEmptyInput,
+      _StringListFilterHasEveryInput,
+  ]
+  
+  
+  class _StringListUpdateSet(TypedDict):
+      set: List[str]
+  
+  
+  class _StringListUpdatePush(TypedDict):
+      push: List[str]
+  
+  
+  StringListUpdate = Union[
+      List[str],
+      _StringListUpdateSet,
+      _StringListUpdatePush,
+  ]
+  
+  class _BytesListFilterEqualsInput(TypedDict):
+      equals: Optional[List['fields.Base64']]
+  
+  
+  class _BytesListFilterHasInput(TypedDict):
+      has: 'fields.Base64'
+  
+  
+  class _BytesListFilterHasEveryInput(TypedDict):
+      has_every: List['fields.Base64']
+  
+  
+  class _BytesListFilterHasSomeInput(TypedDict):
+      has_some: List['fields.Base64']
+  
+  
+  class _BytesListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  BytesListFilter = Union[
+      _BytesListFilterHasInput,
+      _BytesListFilterEqualsInput,
+      _BytesListFilterHasSomeInput,
+      _BytesListFilterIsEmptyInput,
+      _BytesListFilterHasEveryInput,
+  ]
+  
+  
+  class _BytesListUpdateSet(TypedDict):
+      set: List['fields.Base64']
+  
+  
+  class _BytesListUpdatePush(TypedDict):
+      push: List['fields.Base64']
+  
+  
+  BytesListUpdate = Union[
+      List['fields.Base64'],
+      _BytesListUpdateSet,
+      _BytesListUpdatePush,
+  ]
+  
+  class _DateTimeListFilterEqualsInput(TypedDict):
+      equals: Optional[List[datetime.datetime]]
+  
+  
+  class _DateTimeListFilterHasInput(TypedDict):
+      has: datetime.datetime
+  
+  
+  class _DateTimeListFilterHasEveryInput(TypedDict):
+      has_every: List[datetime.datetime]
+  
+  
+  class _DateTimeListFilterHasSomeInput(TypedDict):
+      has_some: List[datetime.datetime]
+  
+  
+  class _DateTimeListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  DateTimeListFilter = Union[
+      _DateTimeListFilterHasInput,
+      _DateTimeListFilterEqualsInput,
+      _DateTimeListFilterHasSomeInput,
+      _DateTimeListFilterIsEmptyInput,
+      _DateTimeListFilterHasEveryInput,
+  ]
+  
+  
+  class _DateTimeListUpdateSet(TypedDict):
+      set: List[datetime.datetime]
+  
+  
+  class _DateTimeListUpdatePush(TypedDict):
+      push: List[datetime.datetime]
+  
+  
+  DateTimeListUpdate = Union[
+      List[datetime.datetime],
+      _DateTimeListUpdateSet,
+      _DateTimeListUpdatePush,
+  ]
+  
+  class _BooleanListFilterEqualsInput(TypedDict):
+      equals: Optional[List[bool]]
+  
+  
+  class _BooleanListFilterHasInput(TypedDict):
+      has: bool
+  
+  
+  class _BooleanListFilterHasEveryInput(TypedDict):
+      has_every: List[bool]
+  
+  
+  class _BooleanListFilterHasSomeInput(TypedDict):
+      has_some: List[bool]
+  
+  
+  class _BooleanListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  BooleanListFilter = Union[
+      _BooleanListFilterHasInput,
+      _BooleanListFilterEqualsInput,
+      _BooleanListFilterHasSomeInput,
+      _BooleanListFilterIsEmptyInput,
+      _BooleanListFilterHasEveryInput,
+  ]
+  
+  
+  class _BooleanListUpdateSet(TypedDict):
+      set: List[bool]
+  
+  
+  class _BooleanListUpdatePush(TypedDict):
+      push: List[bool]
+  
+  
+  BooleanListUpdate = Union[
+      List[bool],
+      _BooleanListUpdateSet,
+      _BooleanListUpdatePush,
+  ]
+  
+  class _IntListFilterEqualsInput(TypedDict):
+      equals: Optional[List[int]]
+  
+  
+  class _IntListFilterHasInput(TypedDict):
+      has: int
+  
+  
+  class _IntListFilterHasEveryInput(TypedDict):
+      has_every: List[int]
+  
+  
+  class _IntListFilterHasSomeInput(TypedDict):
+      has_some: List[int]
+  
+  
+  class _IntListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  IntListFilter = Union[
+      _IntListFilterHasInput,
+      _IntListFilterEqualsInput,
+      _IntListFilterHasSomeInput,
+      _IntListFilterIsEmptyInput,
+      _IntListFilterHasEveryInput,
+  ]
+  
+  
+  class _IntListUpdateSet(TypedDict):
+      set: List[int]
+  
+  
+  class _IntListUpdatePush(TypedDict):
+      push: List[int]
+  
+  
+  IntListUpdate = Union[
+      List[int],
+      _IntListUpdateSet,
+      _IntListUpdatePush,
+  ]
+  
+  class _BigIntListFilterEqualsInput(TypedDict):
+      equals: Optional[List[int]]
+  
+  
+  class _BigIntListFilterHasInput(TypedDict):
+      has: int
+  
+  
+  class _BigIntListFilterHasEveryInput(TypedDict):
+      has_every: List[int]
+  
+  
+  class _BigIntListFilterHasSomeInput(TypedDict):
+      has_some: List[int]
+  
+  
+  class _BigIntListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  BigIntListFilter = Union[
+      _BigIntListFilterHasInput,
+      _BigIntListFilterEqualsInput,
+      _BigIntListFilterHasSomeInput,
+      _BigIntListFilterIsEmptyInput,
+      _BigIntListFilterHasEveryInput,
+  ]
+  
+  
+  class _BigIntListUpdateSet(TypedDict):
+      set: List[int]
+  
+  
+  class _BigIntListUpdatePush(TypedDict):
+      push: List[int]
+  
+  
+  BigIntListUpdate = Union[
+      List[int],
+      _BigIntListUpdateSet,
+      _BigIntListUpdatePush,
+  ]
+  
+  class _FloatListFilterEqualsInput(TypedDict):
+      equals: Optional[List[float]]
+  
+  
+  class _FloatListFilterHasInput(TypedDict):
+      has: float
+  
+  
+  class _FloatListFilterHasEveryInput(TypedDict):
+      has_every: List[float]
+  
+  
+  class _FloatListFilterHasSomeInput(TypedDict):
+      has_some: List[float]
+  
+  
+  class _FloatListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  FloatListFilter = Union[
+      _FloatListFilterHasInput,
+      _FloatListFilterEqualsInput,
+      _FloatListFilterHasSomeInput,
+      _FloatListFilterIsEmptyInput,
+      _FloatListFilterHasEveryInput,
+  ]
+  
+  
+  class _FloatListUpdateSet(TypedDict):
+      set: List[float]
+  
+  
+  class _FloatListUpdatePush(TypedDict):
+      push: List[float]
+  
+  
+  FloatListUpdate = Union[
+      List[float],
+      _FloatListUpdateSet,
+      _FloatListUpdatePush,
+  ]
+  
+  class _JsonListFilterEqualsInput(TypedDict):
+      equals: Optional[List['fields.Json']]
+  
+  
+  class _JsonListFilterHasInput(TypedDict):
+      has: 'fields.Json'
+  
+  
+  class _JsonListFilterHasEveryInput(TypedDict):
+      has_every: List['fields.Json']
+  
+  
+  class _JsonListFilterHasSomeInput(TypedDict):
+      has_some: List['fields.Json']
+  
+  
+  class _JsonListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  JsonListFilter = Union[
+      _JsonListFilterHasInput,
+      _JsonListFilterEqualsInput,
+      _JsonListFilterHasSomeInput,
+      _JsonListFilterIsEmptyInput,
+      _JsonListFilterHasEveryInput,
+  ]
+  
+  
+  class _JsonListUpdateSet(TypedDict):
+      set: List['fields.Json']
+  
+  
+  class _JsonListUpdatePush(TypedDict):
+      push: List['fields.Json']
+  
+  
+  JsonListUpdate = Union[
+      List['fields.Json'],
+      _JsonListUpdateSet,
+      _JsonListUpdatePush,
+  ]
+  
+  class _ABeautifulEnumListFilterEqualsInput(TypedDict):
+      equals: Optional[List['enums.ABeautifulEnum']]
+  
+  
+  class _ABeautifulEnumListFilterHasInput(TypedDict):
+      has: 'enums.ABeautifulEnum'
+  
+  
+  class _ABeautifulEnumListFilterHasEveryInput(TypedDict):
+      has_every: List['enums.ABeautifulEnum']
+  
+  
+  class _ABeautifulEnumListFilterHasSomeInput(TypedDict):
+      has_some: List['enums.ABeautifulEnum']
+  
+  
+  class _ABeautifulEnumListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  ABeautifulEnumListFilter = Union[
+      _ABeautifulEnumListFilterHasInput,
+      _ABeautifulEnumListFilterEqualsInput,
+      _ABeautifulEnumListFilterHasSomeInput,
+      _ABeautifulEnumListFilterIsEmptyInput,
+      _ABeautifulEnumListFilterHasEveryInput,
+  ]
+  
+  
+  class _ABeautifulEnumListUpdateSet(TypedDict):
+      set: List['enums.ABeautifulEnum']
+  
+  
+  class _ABeautifulEnumListUpdatePush(TypedDict):
+      push: List['enums.ABeautifulEnum']
+  
+  
+  ABeautifulEnumListUpdate = Union[
+      List['enums.ABeautifulEnum'],
+      _ABeautifulEnumListUpdateSet,
+      _ABeautifulEnumListUpdatePush,
+  ]
   
   
   # Post types
@@ -9064,6 +10041,64 @@
       order_by: Union['PostOrderByInput', List['PostOrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromPost(TypedDict, total=False):
+      """Relational arguments for Post"""
+  
+  
+  class ListsIncludeFromPostRecursive1(TypedDict, total=False):
+      """Relational arguments for Post"""
+  
+  
+  class ListsIncludeFromPostRecursive2(TypedDict, total=False):
+      """Relational arguments for Post"""
+  
+      
+  
+  class ListsArgsFromPost(TypedDict, total=False):
+      """Arguments for Post"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromPostRecursive1(TypedDict, total=False):
+      """Arguments for Post"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromPostRecursive2(TypedDict, total=False):
+      """Arguments for Post"""
+      
+      
+  
+  class FindManyListsArgsFromPost(TypedDict, total=False):
+      """Arguments for Post"""
+      take: int
+      skip: int
+      order_by: Union['PostOrderByInput', List['PostOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromPostRecursive1(TypedDict, total=False):
+      """Arguments for Post"""
+      take: int
+      skip: int
+      order_by: Union['PostOrderByInput', List['PostOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromPostRecursive2(TypedDict, total=False):
+      """Arguments for Post"""
+      take: int
+      skip: int
+      order_by: Union['PostOrderByInput', List['PostOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
@@ -9981,6 +11016,64 @@
       order_by: Union['UserOrderByInput', List['UserOrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromUser(TypedDict, total=False):
+      """Relational arguments for User"""
+  
+  
+  class ListsIncludeFromUserRecursive1(TypedDict, total=False):
+      """Relational arguments for User"""
+  
+  
+  class ListsIncludeFromUserRecursive2(TypedDict, total=False):
+      """Relational arguments for User"""
+  
+      
+  
+  class ListsArgsFromUser(TypedDict, total=False):
+      """Arguments for User"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromUserRecursive1(TypedDict, total=False):
+      """Arguments for User"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromUserRecursive2(TypedDict, total=False):
+      """Arguments for User"""
+      
+      
+  
+  class FindManyListsArgsFromUser(TypedDict, total=False):
+      """Arguments for User"""
+      take: int
+      skip: int
+      order_by: Union['UserOrderByInput', List['UserOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromUserRecursive1(TypedDict, total=False):
+      """Arguments for User"""
+      take: int
+      skip: int
+      order_by: Union['UserOrderByInput', List['UserOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromUserRecursive2(TypedDict, total=False):
+      """Arguments for User"""
+      take: int
+      skip: int
+      order_by: Union['UserOrderByInput', List['UserOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
@@ -10929,6 +12022,64 @@
       order_by: Union['MOrderByInput', List['MOrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromM(TypedDict, total=False):
+      """Relational arguments for M"""
+  
+  
+  class ListsIncludeFromMRecursive1(TypedDict, total=False):
+      """Relational arguments for M"""
+  
+  
+  class ListsIncludeFromMRecursive2(TypedDict, total=False):
+      """Relational arguments for M"""
+  
+      
+  
+  class ListsArgsFromM(TypedDict, total=False):
+      """Arguments for M"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromMRecursive1(TypedDict, total=False):
+      """Arguments for M"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromMRecursive2(TypedDict, total=False):
+      """Arguments for M"""
+      
+      
+  
+  class FindManyListsArgsFromM(TypedDict, total=False):
+      """Arguments for M"""
+      take: int
+      skip: int
+      order_by: Union['MOrderByInput', List['MOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromMRecursive1(TypedDict, total=False):
+      """Arguments for M"""
+      take: int
+      skip: int
+      order_by: Union['MOrderByInput', List['MOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromMRecursive2(TypedDict, total=False):
+      """Arguments for M"""
+      take: int
+      skip: int
+      order_by: Union['MOrderByInput', List['MOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
@@ -11881,6 +13032,64 @@
       order_by: Union['NOrderByInput', List['NOrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromN(TypedDict, total=False):
+      """Relational arguments for N"""
+  
+  
+  class ListsIncludeFromNRecursive1(TypedDict, total=False):
+      """Relational arguments for N"""
+  
+  
+  class ListsIncludeFromNRecursive2(TypedDict, total=False):
+      """Relational arguments for N"""
+  
+      
+  
+  class ListsArgsFromN(TypedDict, total=False):
+      """Arguments for N"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromNRecursive1(TypedDict, total=False):
+      """Arguments for N"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromNRecursive2(TypedDict, total=False):
+      """Arguments for N"""
+      
+      
+  
+  class FindManyListsArgsFromN(TypedDict, total=False):
+      """Arguments for N"""
+      take: int
+      skip: int
+      order_by: Union['NOrderByInput', List['NOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromNRecursive1(TypedDict, total=False):
+      """Arguments for N"""
+      take: int
+      skip: int
+      order_by: Union['NOrderByInput', List['NOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromNRecursive2(TypedDict, total=False):
+      """Arguments for N"""
+      take: int
+      skip: int
+      order_by: Union['NOrderByInput', List['NOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
@@ -12838,6 +14047,64 @@
       
       
   
+  class ListsIncludeFromOneOptional(TypedDict, total=False):
+      """Relational arguments for OneOptional"""
+  
+  
+  class ListsIncludeFromOneOptionalRecursive1(TypedDict, total=False):
+      """Relational arguments for OneOptional"""
+  
+  
+  class ListsIncludeFromOneOptionalRecursive2(TypedDict, total=False):
+      """Relational arguments for OneOptional"""
+  
+      
+  
+  class ListsArgsFromOneOptional(TypedDict, total=False):
+      """Arguments for OneOptional"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromOneOptionalRecursive1(TypedDict, total=False):
+      """Arguments for OneOptional"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromOneOptionalRecursive2(TypedDict, total=False):
+      """Arguments for OneOptional"""
+      
+      
+  
+  class FindManyListsArgsFromOneOptional(TypedDict, total=False):
+      """Arguments for OneOptional"""
+      take: int
+      skip: int
+      order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromOneOptionalRecursive1(TypedDict, total=False):
+      """Arguments for OneOptional"""
+      take: int
+      skip: int
+      order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromOneOptionalRecursive2(TypedDict, total=False):
+      """Arguments for OneOptional"""
+      take: int
+      skip: int
+      order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      
+      
+  
   class AIncludeFromOneOptional(TypedDict, total=False):
       """Relational arguments for OneOptional"""
   
@@ -13781,6 +15048,64 @@
       
       
   
+  class ListsIncludeFromManyRequired(TypedDict, total=False):
+      """Relational arguments for ManyRequired"""
+  
+  
+  class ListsIncludeFromManyRequiredRecursive1(TypedDict, total=False):
+      """Relational arguments for ManyRequired"""
+  
+  
+  class ListsIncludeFromManyRequiredRecursive2(TypedDict, total=False):
+      """Relational arguments for ManyRequired"""
+  
+      
+  
+  class ListsArgsFromManyRequired(TypedDict, total=False):
+      """Arguments for ManyRequired"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromManyRequiredRecursive1(TypedDict, total=False):
+      """Arguments for ManyRequired"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromManyRequiredRecursive2(TypedDict, total=False):
+      """Arguments for ManyRequired"""
+      
+      
+  
+  class FindManyListsArgsFromManyRequired(TypedDict, total=False):
+      """Arguments for ManyRequired"""
+      take: int
+      skip: int
+      order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromManyRequiredRecursive1(TypedDict, total=False):
+      """Arguments for ManyRequired"""
+      take: int
+      skip: int
+      order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromManyRequiredRecursive2(TypedDict, total=False):
+      """Arguments for ManyRequired"""
+      take: int
+      skip: int
+      order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      
+      
+  
   class AIncludeFromManyRequired(TypedDict, total=False):
       """Relational arguments for ManyRequired"""
   
@@ -14201,6 +15526,974 @@
   ManyRequiredRelationalFieldKeys = Literal[
           'one',
       ]
+  
+  # Lists types
+  
+  class ListsOptionalCreateInput(TypedDict, total=False):
+      """Optional arguments to the Lists create method"""
+      id: str
+      strings: List[str]
+      bytes: List['fields.Base64']
+      dates: List[datetime.datetime]
+      bools: List[bool]
+      ints: List[int]
+      floats: List[float]
+      bigints: List[int]
+      json_objects: List['fields.Json']
+  
+  
+  class ListsCreateInput(ListsOptionalCreateInput):
+      """Required arguments to the Lists create method"""
+  
+  
+  # TODO: remove this in favour of without explicit relations
+  # e.g. PostCreateWithoutAuthorInput
+  
+  class ListsOptionalCreateWithoutRelationsInput(TypedDict, total=False):
+      """Optional arguments to the Lists create method, without relations"""
+      id: str
+      strings: List[str]
+      bytes: List['fields.Base64']
+      dates: List[datetime.datetime]
+      bools: List[bool]
+      ints: List[int]
+      floats: List[float]
+      bigints: List[int]
+      json_objects: List['fields.Json']
+  
+  
+  class ListsCreateWithoutRelationsInput(ListsOptionalCreateWithoutRelationsInput):
+      """Required arguments to the Lists create method, without relations"""
+  
+  
+  class ListsCreateNestedWithoutRelationsInput(TypedDict, total=False):
+      create: 'ListsCreateWithoutRelationsInput'
+      connect: 'ListsWhereUniqueInput'
+  
+  
+  class ListsCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
+      create: Union['ListsCreateWithoutRelationsInput', List['ListsCreateWithoutRelationsInput']]
+      connect: Union['ListsWhereUniqueInput', List['ListsWhereUniqueInput']]
+  
+  
+  class ListsWhereUniqueInput(TypedDict, total=False):
+      """Unique Lists arguments for searching"""
+      id: str
+  
+  
+  class ListsUpdateInput(TypedDict, total=False):
+      """Optional arguments for updating a record"""
+      strings: 'types.StringListUpdate'
+      bytes: 'types.BytesListUpdate'
+      dates: 'types.DateTimeListUpdate'
+      bools: 'types.BooleanListUpdate'
+      ints: 'types.IntListUpdate'
+      floats: 'types.FloatListUpdate'
+      bigints: 'types.BigIntListUpdate'
+      json_objects: 'types.JsonListUpdate'
+  
+  
+  class ListsUpdateManyMutationInput(TypedDict, total=False):
+      """Arguments for updating many records"""
+      id: str
+      strings: 'types.StringListUpdate'
+      bytes: 'types.BytesListUpdate'
+      dates: 'types.DateTimeListUpdate'
+      bools: 'types.BooleanListUpdate'
+      ints: 'types.IntListUpdate'
+      floats: 'types.FloatListUpdate'
+      bigints: 'types.BigIntListUpdate'
+      json_objects: 'types.JsonListUpdate'
+  
+  
+  class ListsUpdateManyWithoutRelationsInput(TypedDict, total=False):
+      create: List['ListsCreateWithoutRelationsInput']
+      connect: List['ListsWhereUniqueInput']
+      set: List['ListsWhereUniqueInput']
+      disconnect: List['ListsWhereUniqueInput']
+      delete: List['ListsWhereUniqueInput']
+  
+      # TODO
+      # update: List['ListsUpdateWithWhereUniqueWithoutRelationsInput']
+      # updateMany: List['ListsUpdateManyWithWhereUniqueWithoutRelationsInput']
+      # deleteMany: List['ListsScalarWhereInput']
+      # upsert: List['ListsUpserteWithWhereUniqueWithoutRelationsInput']
+      # connectOrCreate: List['ListsCreateOrConnectWithoutRelationsInput']
+  
+  
+  class ListsUpdateOneWithoutRelationsInput(TypedDict, total=False):
+      create: 'ListsCreateWithoutRelationsInput'
+      connect: 'ListsWhereUniqueInput'
+      disconnect: bool
+      delete: bool
+  
+      # TODO
+      # update: 'ListsUpdateInput'
+      # upsert: 'ListsUpsertWithoutRelationsInput'
+      # connectOrCreate: 'ListsCreateOrConnectWithoutRelationsInput'
+  
+  
+  class ListsUpsertInput(TypedDict):
+      create: 'ListsCreateInput'
+      update: 'ListsUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+  
+  
+  class ListsOrderByInput(TypedDict, total=False):
+      id: 'SortOrder'
+      strings: 'SortOrder'
+      bytes: 'SortOrder'
+      dates: 'SortOrder'
+      bools: 'SortOrder'
+      ints: 'SortOrder'
+      floats: 'SortOrder'
+      bigints: 'SortOrder'
+      json_objects: 'SortOrder'
+  
+  
+  # recursive Lists types
+  # TODO: cleanup these types
+  
+  
+  # Dict[str, Any] is a mypy limitation
+  # see https://github.com/RobertCraigie/prisma-client-py/issues/45
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
+  
+  ListsRelationFilter = TypedDict(
+      'ListsRelationFilter',
+      {
+          'is': 'Dict[str, Any]',
+          'is_not': 'Dict[str, Any]',
+      },
+      total=False,
+  )
+  
+  
+  class ListsListRelationFilter(TypedDict, total=False):
+      some: 'Dict[str, Any]'
+      none: 'Dict[str, Any]'
+      every: 'Dict[str, Any]'
+  
+  
+  class ListsInclude(TypedDict, total=False):
+      """Lists relational arguments"""
+  
+  
+      
+  
+  class PostIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      author: Union[bool, 'UserArgsFromListsRecursive1']
+  
+  
+  class PostIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      author: Union[bool, 'UserArgsFromListsRecursive2']
+  
+  
+  class PostIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class PostArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'PostIncludeFromPostRecursive1'
+  
+  
+  class PostArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'PostIncludeFromPostRecursive2'
+  
+  
+  class PostArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyPostArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'PostWhereInput'
+      cursor: 'PostWhereUniqueInput'
+      include: 'PostIncludeFromPostRecursive1'
+  
+  
+  class FindManyPostArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'PostWhereInput'
+      cursor: 'PostWhereUniqueInput'
+      include: 'PostIncludeFromPostRecursive2'
+  
+  
+  class FindManyPostArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'PostWhereInput'
+      cursor: 'PostWhereUniqueInput'
+      
+      
+  
+  class UserIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      posts: Union[bool, 'FindManyPostArgsFromListsRecursive1']
+  
+  
+  class UserIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      posts: Union[bool, 'FindManyPostArgsFromListsRecursive2']
+  
+  
+  class UserIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class UserArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'UserIncludeFromUserRecursive1'
+  
+  
+  class UserArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'UserIncludeFromUserRecursive2'
+  
+  
+  class UserArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyUserArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'UserWhereInput'
+      cursor: 'UserWhereUniqueInput'
+      include: 'UserIncludeFromUserRecursive1'
+  
+  
+  class FindManyUserArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'UserWhereInput'
+      cursor: 'UserWhereUniqueInput'
+      include: 'UserIncludeFromUserRecursive2'
+  
+  
+  class FindManyUserArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'UserWhereInput'
+      cursor: 'UserWhereUniqueInput'
+      
+      
+  
+  class MIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      n: Union[bool, 'FindManyNArgsFromListsRecursive1']
+  
+  
+  class MIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      n: Union[bool, 'FindManyNArgsFromListsRecursive2']
+  
+  
+  class MIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class MArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'MIncludeFromMRecursive1'
+  
+  
+  class MArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'MIncludeFromMRecursive2'
+  
+  
+  class MArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyMArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'MWhereInput'
+      cursor: 'MWhereUniqueInput'
+      include: 'MIncludeFromMRecursive1'
+  
+  
+  class FindManyMArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'MWhereInput'
+      cursor: 'MWhereUniqueInput'
+      include: 'MIncludeFromMRecursive2'
+  
+  
+  class FindManyMArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'MWhereInput'
+      cursor: 'MWhereUniqueInput'
+      
+      
+  
+  class NIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      m: Union[bool, 'FindManyMArgsFromListsRecursive1']
+  
+  
+  class NIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      m: Union[bool, 'FindManyMArgsFromListsRecursive2']
+  
+  
+  class NIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class NArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'NIncludeFromNRecursive1'
+  
+  
+  class NArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'NIncludeFromNRecursive2'
+  
+  
+  class NArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyNArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'NWhereInput'
+      cursor: 'NWhereUniqueInput'
+      include: 'NIncludeFromNRecursive1'
+  
+  
+  class FindManyNArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'NWhereInput'
+      cursor: 'NWhereUniqueInput'
+      include: 'NIncludeFromNRecursive2'
+  
+  
+  class FindManyNArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'NWhereInput'
+      cursor: 'NWhereUniqueInput'
+      
+      
+  
+  class OneOptionalIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      many: Union[bool, 'FindManyManyRequiredArgsFromListsRecursive1']
+  
+  
+  class OneOptionalIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      many: Union[bool, 'FindManyManyRequiredArgsFromListsRecursive2']
+  
+  
+  class OneOptionalIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class OneOptionalArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'OneOptionalIncludeFromOneOptionalRecursive1'
+  
+  
+  class OneOptionalArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'OneOptionalIncludeFromOneOptionalRecursive2'
+  
+  
+  class OneOptionalArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyOneOptionalArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'OneOptionalWhereInput'
+      cursor: 'OneOptionalWhereUniqueInput'
+      include: 'OneOptionalIncludeFromOneOptionalRecursive1'
+  
+  
+  class FindManyOneOptionalArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'OneOptionalWhereInput'
+      cursor: 'OneOptionalWhereUniqueInput'
+      include: 'OneOptionalIncludeFromOneOptionalRecursive2'
+  
+  
+  class FindManyOneOptionalArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'OneOptionalWhereInput'
+      cursor: 'OneOptionalWhereUniqueInput'
+      
+      
+  
+  class ManyRequiredIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      one: Union[bool, 'OneOptionalArgsFromListsRecursive1']
+  
+  
+  class ManyRequiredIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      one: Union[bool, 'OneOptionalArgsFromListsRecursive2']
+  
+  
+  class ManyRequiredIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class ManyRequiredArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
+  
+  
+  class ManyRequiredArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
+  
+  
+  class ManyRequiredArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyManyRequiredArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'ManyRequiredWhereInput'
+      cursor: 'ManyRequiredWhereUniqueInput'
+      include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
+  
+  
+  class FindManyManyRequiredArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'ManyRequiredWhereInput'
+      cursor: 'ManyRequiredWhereUniqueInput'
+      include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
+  
+  
+  class FindManyManyRequiredArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'ManyRequiredWhereInput'
+      cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class ListsIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class ListsIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class ListsArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyListsArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      
+      
+  
+  class AIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class AIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class AIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class AArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'AIncludeFromARecursive1'
+  
+  
+  class AArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'AIncludeFromARecursive2'
+  
+  
+  class AArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyAArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'AWhereInput'
+      cursor: 'AWhereUniqueInput'
+      include: 'AIncludeFromARecursive1'
+  
+  
+  class FindManyAArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'AWhereInput'
+      cursor: 'AWhereUniqueInput'
+      include: 'AIncludeFromARecursive2'
+  
+  
+  class FindManyAArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'AWhereInput'
+      cursor: 'AWhereUniqueInput'
+      
+      
+  
+  class BIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class BIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class BIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class BArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'BIncludeFromBRecursive1'
+  
+  
+  class BArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'BIncludeFromBRecursive2'
+  
+  
+  class BArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyBArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'BWhereInput'
+      cursor: 'BWhereUniqueInput'
+      include: 'BIncludeFromBRecursive1'
+  
+  
+  class FindManyBArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'BWhereInput'
+      cursor: 'BWhereUniqueInput'
+      include: 'BIncludeFromBRecursive2'
+  
+  
+  class FindManyBArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'BWhereInput'
+      cursor: 'BWhereUniqueInput'
+      
+      
+  
+  class CIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class CIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class CIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class CArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'CIncludeFromCRecursive1'
+  
+  
+  class CArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'CIncludeFromCRecursive2'
+  
+  
+  class CArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyCArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'CWhereInput'
+      cursor: 'CWhereUniqueInput'
+      include: 'CIncludeFromCRecursive1'
+  
+  
+  class FindManyCArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'CWhereInput'
+      cursor: 'CWhereUniqueInput'
+      include: 'CIncludeFromCRecursive2'
+  
+  
+  class FindManyCArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'CWhereInput'
+      cursor: 'CWhereUniqueInput'
+      
+      
+  
+  class DIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class DIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class DIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class DArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'DIncludeFromDRecursive1'
+  
+  
+  class DArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'DIncludeFromDRecursive2'
+  
+  
+  class DArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyDArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'DWhereInput'
+      cursor: 'DWhereUniqueInput'
+      include: 'DIncludeFromDRecursive1'
+  
+  
+  class FindManyDArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'DWhereInput'
+      cursor: 'DWhereUniqueInput'
+      include: 'DIncludeFromDRecursive2'
+  
+  
+  class FindManyDArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'DWhereInput'
+      cursor: 'DWhereUniqueInput'
+      
+      
+  
+  class EIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class EIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class EIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class EArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'EIncludeFromERecursive1'
+  
+  
+  class EArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'EIncludeFromERecursive2'
+  
+  
+  class EArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyEArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'EWhereInput'
+      cursor: 'EWhereUniqueInput'
+      include: 'EIncludeFromERecursive1'
+  
+  
+  class FindManyEArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'EWhereInput'
+      cursor: 'EWhereUniqueInput'
+      include: 'EIncludeFromERecursive2'
+  
+  
+  class FindManyEArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'EWhereInput'
+      cursor: 'EWhereUniqueInput'
+      
+  
+  
+  FindManyListsArgs = FindManyListsArgsFromLists
+  FindFirstListsArgs = FindManyListsArgsFromLists
+  
+  
+      
+  
+  class ListsWhereInput(TypedDict, total=False):
+      """Lists arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      strings: 'types.StringListFilter'
+      bytes: 'types.BytesListFilter'
+      dates: 'types.DateTimeListFilter'
+      bools: 'types.BooleanListFilter'
+      ints: 'types.IntListFilter'
+      floats: 'types.FloatListFilter'
+      bigints: 'types.BigIntListFilter'
+      json_objects: 'types.JsonListFilter'
+  
+      # should be noted that AND and NOT should be Union['ListsWhereInputRecursive1', List['ListsWhereInputRecursive1']]
+      # but this causes mypy to hang :/
+      AND: List['ListsWhereInputRecursive1']
+      OR: List['ListsWhereInputRecursive1']
+      NOT: List['ListsWhereInputRecursive1']
+  
+  
+  class ListsWhereInputRecursive1(TypedDict, total=False):
+      """Lists arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      strings: 'types.StringListFilter'
+      bytes: 'types.BytesListFilter'
+      dates: 'types.DateTimeListFilter'
+      bools: 'types.BooleanListFilter'
+      ints: 'types.IntListFilter'
+      floats: 'types.FloatListFilter'
+      bigints: 'types.BigIntListFilter'
+      json_objects: 'types.JsonListFilter'
+  
+      # should be noted that AND and NOT should be Union['ListsWhereInputRecursive2', List['ListsWhereInputRecursive2']]
+      # but this causes mypy to hang :/
+      AND: List['ListsWhereInputRecursive2']
+      OR: List['ListsWhereInputRecursive2']
+      NOT: List['ListsWhereInputRecursive2']
+  
+  
+  class ListsWhereInputRecursive2(TypedDict, total=False):
+      """Lists arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      strings: 'types.StringListFilter'
+      bytes: 'types.BytesListFilter'
+      dates: 'types.DateTimeListFilter'
+      bools: 'types.BooleanListFilter'
+      ints: 'types.IntListFilter'
+      floats: 'types.FloatListFilter'
+      bigints: 'types.BigIntListFilter'
+      json_objects: 'types.JsonListFilter'
+  
+  
+  
+  ListsCountAggregateInput = TypedDict(
+      'ListsCountAggregateInput',
+      {
+          'id': bool,
+          'strings': bool,
+          'bytes': bool,
+          'dates': bool,
+          'bools': bool,
+          'ints': bool,
+          'floats': bool,
+          'bigints': bool,
+          'json_objects': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  ListsCountAggregateOutput = TypedDict(
+      'ListsCountAggregateOutput',
+      {
+          'id': int,
+          'strings': int,
+          'bytes': int,
+          'dates': int,
+          'bools': int,
+          'ints': int,
+          'floats': int,
+          'bigints': int,
+          'json_objects': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
+  ListsKeys = Literal[
+      'id',
+      'strings',
+      'bytes',
+      'dates',
+      'bools',
+      'ints',
+      'floats',
+      'bigints',
+      'json_objects',
+  ]
+  
+  ListsRelationalFieldKeys = _NoneType
   
   # A types
   
@@ -14712,6 +17005,64 @@
       order_by: Union['AOrderByInput', List['AOrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromA(TypedDict, total=False):
+      """Relational arguments for A"""
+  
+  
+  class ListsIncludeFromARecursive1(TypedDict, total=False):
+      """Relational arguments for A"""
+  
+  
+  class ListsIncludeFromARecursive2(TypedDict, total=False):
+      """Relational arguments for A"""
+  
+      
+  
+  class ListsArgsFromA(TypedDict, total=False):
+      """Arguments for A"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromARecursive1(TypedDict, total=False):
+      """Arguments for A"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromARecursive2(TypedDict, total=False):
+      """Arguments for A"""
+      
+      
+  
+  class FindManyListsArgsFromA(TypedDict, total=False):
+      """Arguments for A"""
+      take: int
+      skip: int
+      order_by: Union['AOrderByInput', List['AOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromARecursive1(TypedDict, total=False):
+      """Arguments for A"""
+      take: int
+      skip: int
+      order_by: Union['AOrderByInput', List['AOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromARecursive2(TypedDict, total=False):
+      """Arguments for A"""
+      take: int
+      skip: int
+      order_by: Union['AOrderByInput', List['AOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
@@ -15595,6 +17946,64 @@
       
       
   
+  class ListsIncludeFromB(TypedDict, total=False):
+      """Relational arguments for B"""
+  
+  
+  class ListsIncludeFromBRecursive1(TypedDict, total=False):
+      """Relational arguments for B"""
+  
+  
+  class ListsIncludeFromBRecursive2(TypedDict, total=False):
+      """Relational arguments for B"""
+  
+      
+  
+  class ListsArgsFromB(TypedDict, total=False):
+      """Arguments for B"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromBRecursive1(TypedDict, total=False):
+      """Arguments for B"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromBRecursive2(TypedDict, total=False):
+      """Arguments for B"""
+      
+      
+  
+  class FindManyListsArgsFromB(TypedDict, total=False):
+      """Arguments for B"""
+      take: int
+      skip: int
+      order_by: Union['BOrderByInput', List['BOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromBRecursive1(TypedDict, total=False):
+      """Arguments for B"""
+      take: int
+      skip: int
+      order_by: Union['BOrderByInput', List['BOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromBRecursive2(TypedDict, total=False):
+      """Arguments for B"""
+      take: int
+      skip: int
+      order_by: Union['BOrderByInput', List['BOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      
+      
+  
   class AIncludeFromB(TypedDict, total=False):
       """Relational arguments for B"""
   
@@ -16456,6 +18865,64 @@
       order_by: Union['COrderByInput', List['COrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromC(TypedDict, total=False):
+      """Relational arguments for C"""
+  
+  
+  class ListsIncludeFromCRecursive1(TypedDict, total=False):
+      """Relational arguments for C"""
+  
+  
+  class ListsIncludeFromCRecursive2(TypedDict, total=False):
+      """Relational arguments for C"""
+  
+      
+  
+  class ListsArgsFromC(TypedDict, total=False):
+      """Arguments for C"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromCRecursive1(TypedDict, total=False):
+      """Arguments for C"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromCRecursive2(TypedDict, total=False):
+      """Arguments for C"""
+      
+      
+  
+  class FindManyListsArgsFromC(TypedDict, total=False):
+      """Arguments for C"""
+      take: int
+      skip: int
+      order_by: Union['COrderByInput', List['COrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromCRecursive1(TypedDict, total=False):
+      """Arguments for C"""
+      take: int
+      skip: int
+      order_by: Union['COrderByInput', List['COrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromCRecursive2(TypedDict, total=False):
+      """Arguments for C"""
+      take: int
+      skip: int
+      order_by: Union['COrderByInput', List['COrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
@@ -17342,6 +19809,64 @@
       
       
   
+  class ListsIncludeFromD(TypedDict, total=False):
+      """Relational arguments for D"""
+  
+  
+  class ListsIncludeFromDRecursive1(TypedDict, total=False):
+      """Relational arguments for D"""
+  
+  
+  class ListsIncludeFromDRecursive2(TypedDict, total=False):
+      """Relational arguments for D"""
+  
+      
+  
+  class ListsArgsFromD(TypedDict, total=False):
+      """Arguments for D"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromDRecursive1(TypedDict, total=False):
+      """Arguments for D"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromDRecursive2(TypedDict, total=False):
+      """Arguments for D"""
+      
+      
+  
+  class FindManyListsArgsFromD(TypedDict, total=False):
+      """Arguments for D"""
+      take: int
+      skip: int
+      order_by: Union['DOrderByInput', List['DOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromDRecursive1(TypedDict, total=False):
+      """Arguments for D"""
+      take: int
+      skip: int
+      order_by: Union['DOrderByInput', List['DOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromDRecursive2(TypedDict, total=False):
+      """Arguments for D"""
+      take: int
+      skip: int
+      order_by: Union['DOrderByInput', List['DOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      
+      
+  
   class AIncludeFromD(TypedDict, total=False):
       """Relational arguments for D"""
   
@@ -18206,6 +20731,64 @@
       order_by: Union['EOrderByInput', List['EOrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromE(TypedDict, total=False):
+      """Relational arguments for E"""
+  
+  
+  class ListsIncludeFromERecursive1(TypedDict, total=False):
+      """Relational arguments for E"""
+  
+  
+  class ListsIncludeFromERecursive2(TypedDict, total=False):
+      """Relational arguments for E"""
+  
+      
+  
+  class ListsArgsFromE(TypedDict, total=False):
+      """Arguments for E"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromERecursive1(TypedDict, total=False):
+      """Arguments for E"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromERecursive2(TypedDict, total=False):
+      """Arguments for E"""
+      
+      
+  
+  class FindManyListsArgsFromE(TypedDict, total=False):
+      """Arguments for E"""
+      take: int
+      skip: int
+      order_by: Union['EOrderByInput', List['EOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromERecursive1(TypedDict, total=False):
+      """Arguments for E"""
+      take: int
+      skip: int
+      order_by: Union['EOrderByInput', List['EOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromERecursive2(TypedDict, total=False):
+      """Arguments for E"""
+      take: int
+      skip: int
+      order_by: Union['EOrderByInput', List['EOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
@@ -20290,6 +22873,284 @@
           return int(resp['data']['result']['count'])
   
   
+  class ListsActions:
+      def __init__(self, client: 'Client', model: Type['models.Lists']) -> None:
+          self._client = client
+          self._model = model
+  
+      def query_raw(
+          self,
+          query: str,
+          *args: Any,
+      ) -> List['models.Lists']:
+          return self._client.query_raw(query, *args, model=self._model)
+  
+      def query_first(
+          self,
+          query: str,
+          *args: Any,
+      ) -> Optional['models.Lists']:
+          return self._client.query_first(query, *args, model=self._model)
+  
+      def create(
+          self,
+          data: types.ListsCreateInput,
+          include: Optional[types.ListsInclude] = None
+      ) -> 'models.Lists':
+          resp = self._client._execute(
+              operation='mutation',
+              method='createOne',
+              model='Lists',
+              arguments={
+                  'data': data,
+                  'include': include,
+              },
+          )
+          return self._model.parse_obj(resp['data']['result'])
+  
+      def create_many(
+          self,
+          data: List[types.ListsCreateWithoutRelationsInput],
+          *,
+          skip_duplicates: Optional[bool] = None,
+      ) -> int:
+          if self._client._active_provider == 'sqlite':
+              raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+  
+          resp = self._client._execute(
+              operation='mutation',
+              method='createMany',
+              model='Lists',
+              arguments={
+                  'data': data,
+                  'skipDuplicates': skip_duplicates,
+              },
+              root_selection=['count'],
+          )
+          return int(resp['data']['result']['count'])
+  
+      def delete(
+          self,
+          where: types.ListsWhereUniqueInput,
+          include: Optional[types.ListsInclude] = None
+      ) -> Optional['models.Lists']:
+          try:
+              resp = self._client._execute(
+                  operation='mutation',
+                  method='deleteOne',
+                  model='Lists',
+                  arguments={
+                      'where': where,
+                      'include': include,
+                  },
+              )
+          except errors.RecordNotFoundError:
+              return None
+  
+          return self._model.parse_obj(resp['data']['result'])
+  
+      def find_unique(
+          self,
+          where: types.ListsWhereUniqueInput,
+          include: Optional[types.ListsInclude] = None
+      ) -> Optional['models.Lists']:
+          resp = self._client._execute(
+              operation='query',
+              method='findUnique',
+              model='Lists',
+              arguments={
+                  'where': where,
+                  'include': include,
+              },
+          )
+          result = resp['data']['result']
+          if result is None:
+              return None
+          return self._model.parse_obj(result)
+  
+      def find_many(
+          self,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.ListsWhereInput] = None,
+          cursor: Optional[types.ListsWhereUniqueInput] = None,
+          include: Optional[types.ListsInclude] = None,
+          order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
+      ) -> List['models.Lists']:
+          resp = self._client._execute(
+              operation='query',
+              method='findMany',
+              model='Lists',
+              arguments={
+                  'take': take,
+                  'skip': skip,
+                  'where': where,
+                  'order_by': order,
+                  'cursor': cursor,
+                  'include': include,
+              },
+          )
+          return [self._model.parse_obj(r) for r in resp['data']['result']]
+  
+      def find_first(
+          self,
+          skip: Optional[int] = None,
+          where: Optional[types.ListsWhereInput] = None,
+          cursor: Optional[types.ListsWhereUniqueInput] = None,
+          include: Optional[types.ListsInclude] = None,
+          order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
+      ) -> Optional['models.Lists']:
+          resp = self._client._execute(
+              operation='query',
+              method='findFirst',
+              model='Lists',
+              arguments={
+                  'skip': skip,
+                  'where': where,
+                  'order_by': order,
+                  'cursor': cursor,
+                  'include': include
+              },
+          )
+          result = resp['data']['result']
+          if result is None:
+              return None
+          return self._model.parse_obj(result)
+  
+      def update(
+          self,
+          data: types.ListsUpdateInput,
+          where: types.ListsWhereUniqueInput,
+          include: Optional[types.ListsInclude] = None
+      ) -> Optional['models.Lists']:
+          try:
+              resp = self._client._execute(
+                  operation='mutation',
+                  method='updateOne',
+                  model='Lists',
+                  arguments={
+                      'data': data,
+                      'where': where,
+                      'include': include,
+                  },
+              )
+          except errors.RecordNotFoundError:
+              return None
+  
+          return self._model.parse_obj(resp['data']['result'])
+  
+      def upsert(
+          self,
+          where: types.ListsWhereUniqueInput,
+          data: types.ListsUpsertInput,
+          include: Optional[types.ListsInclude] = None,
+      ) -> 'models.Lists':
+          resp = self._client._execute(
+              operation='mutation',
+              method='upsertOne',
+              model='Lists',
+              arguments={
+                  'where': where,
+                  'include': include,
+                  'create': data.get('create'),
+                  'update': data.get('update'),
+              },
+          )
+          return self._model.parse_obj(resp['data']['result'])
+  
+      def update_many(
+          self,
+          data: types.ListsUpdateManyMutationInput,
+          where: types.ListsWhereInput,
+      ) -> int:
+          resp = self._client._execute(
+              operation='mutation',
+              method='updateMany',
+              model='Lists',
+              arguments={'data': data, 'where': where,},
+              root_selection=['count'],
+          )
+          return int(resp['data']['result']['count'])
+  
+      @overload
+      def count(
+          self,
+          select: None = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.ListsWhereInput] = None,
+          cursor: Optional[types.ListsWhereUniqueInput] = None,
+          order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
+      ) -> int:
+          ...
+  
+      @overload
+      def count(
+          self,
+          select: types.ListsCountAggregateInput,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.ListsWhereInput] = None,
+          cursor: Optional[types.ListsWhereUniqueInput] = None,
+          order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
+      ) -> types.ListsCountAggregateOutput:
+          ...
+  
+      def count(
+          self,
+          select: Optional[types.ListsCountAggregateInput] = None,
+          take: Optional[int] = None,
+          skip: Optional[int] = None,
+          where: Optional[types.ListsWhereInput] = None,
+          cursor: Optional[types.ListsWhereUniqueInput] = None,
+          order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
+      ) -> Union[int, types.ListsCountAggregateOutput]:
+          # TODO: this selection building should be moved to the QueryBuilder
+          #
+          # note the distinction between checking for `not select` here `select is None`
+          # later is to handle the case that the given select dictionary is empty, this
+          # is a limitation of our types.
+          if not select:
+              root_selection = ['_count { _all }']
+          else:
+  
+              root_selection = [
+                  '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+              ]
+  
+          resp = self._client._execute(
+              operation='query',
+              method='aggregate',
+              model='Lists',
+              arguments={
+                  'take': take,
+                  'skip': skip,
+                  'where': where,
+                  'order_by': order,
+                  'cursor': cursor,
+              },
+              root_selection=root_selection,
+          )
+  
+          if select is None:
+              return cast(int, resp['data']['result']['_count']['_all'])
+          else:
+              return cast(types.ListsCountAggregateOutput, resp['data']['result']['_count'])
+  
+      def delete_many(
+          self,
+          where: Optional[types.ListsWhereInput] = None
+      ) -> int:
+          resp = self._client._execute(
+              operation='mutation',
+              method='deleteMany',
+              model='Lists',
+              arguments={'where': where},
+              root_selection=['count'],
+          )
+          return int(resp['data']['result']['count'])
+  
+  
   class AActions:
       def __init__(self, client: 'Client', model: Type['models.A']) -> None:
           self._client = client
@@ -21824,6 +24685,17 @@
           'boolean',
           'optional_boolean',
       ],
+      'Lists': [
+          'id',
+          'strings',
+          'bytes',
+          'dates',
+          'bools',
+          'ints',
+          'floats',
+          'bigints',
+          'json_objects',
+      ],
       'A': [
           'id',
           'email',
@@ -21883,6 +24755,8 @@
       },
       'ManyRequired': {
           'one': 'OneOptional',
+      },
+      'Lists': {
       },
       'A': {
       },
@@ -22679,6 +25553,20 @@
     optional_boolean Boolean?
   }
   
+  model Lists {
+    id           String     @id @default(cuid())
+    strings      String[]
+    bytes        Bytes[]
+    dates        DateTime[]
+    bools        Boolean[]
+    ints         Int[]
+    floats       Float[]
+    bigints      BigInt[]
+    json_objects Json[]
+    // TODO
+    // decimals     Decimal[]
+  }
+  
   enum ABeautifulEnum {
     A
     B
@@ -22801,6 +25689,7 @@
       n: 'actions.NActions'
       oneoptional: 'actions.OneOptionalActions'
       manyrequired: 'actions.ManyRequiredActions'
+      lists: 'actions.ListsActions'
       a: 'actions.AActions'
       b: 'actions.BActions'
       c: 'actions.CActions'
@@ -22821,6 +25710,7 @@
           self.n = actions.NActions(self, models.N)
           self.oneoptional = actions.OneOptionalActions(self, models.OneOptional)
           self.manyrequired = actions.ManyRequiredActions(self, models.ManyRequired)
+          self.lists = actions.ListsActions(self, models.Lists)
           self.a = actions.AActions(self, models.A)
           self.b = actions.BActions(self, models.B)
           self.c = actions.CActions(self, models.C)
@@ -22964,6 +25854,7 @@
       n: 'NBatchActions'
       oneoptional: 'OneOptionalBatchActions'
       manyrequired: 'ManyRequiredBatchActions'
+      lists: 'ListsBatchActions'
       a: 'ABatchActions'
       b: 'BBatchActions'
       c: 'CBatchActions'
@@ -22980,6 +25871,7 @@
           self.n = NBatchActions(self)
           self.oneoptional = OneOptionalBatchActions(self)
           self.manyrequired = ManyRequiredBatchActions(self)
+          self.lists = ListsBatchActions(self)
           self.a = ABatchActions(self)
           self.b = BBatchActions(self)
           self.c = CBatchActions(self)
@@ -23725,6 +26617,124 @@
               operation='mutation',
               method='deleteMany',
               model='ManyRequired',
+              arguments={'where': where},
+              root_selection=['count'],
+          )
+  
+  
+  
+  # NOTE: some arguments are meaningless in this context but are included
+  # for completeness sake
+  class ListsBatchActions:
+      def __init__(self, batcher: Batch) -> None:
+          self._batcher = batcher
+  
+      def create(
+          self,
+          data: types.ListsCreateInput,
+          include: Optional[types.ListsInclude] = None
+      ) -> None:
+          self._batcher._add(
+              operation='mutation',
+              method='createOne',
+              model='Lists',
+              arguments={
+                  'data': data,
+                  'include': include,
+              },
+          )
+  
+      def create_many(
+          self,
+          data: List[types.ListsCreateWithoutRelationsInput],
+          *,
+          skip_duplicates: Optional[bool] = None,
+      ) -> None:
+          if self._batcher._active_provider == 'sqlite':
+              raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+  
+          self._batcher._add(
+              operation='mutation',
+              method='createMany',
+              model='Lists',
+              arguments={
+                  'data': data,
+                  'skipDuplicates': skip_duplicates,
+              },
+              root_selection=['count'],
+          )
+  
+      def delete(
+          self,
+          where: types.ListsWhereUniqueInput,
+          include: Optional[types.ListsInclude] = None,
+      ) -> None:
+          self._batcher._add(
+              operation='mutation',
+              method='deleteOne',
+              model='Lists',
+              arguments={
+                  'where': where,
+                  'include': include,
+              },
+          )
+  
+      def update(
+          self,
+          data: types.ListsUpdateInput,
+          where: types.ListsWhereUniqueInput,
+          include: Optional[types.ListsInclude] = None
+      ) -> None:
+          self._batcher._add(
+              operation='mutation',
+              method='updateOne',
+              model='Lists',
+              arguments={
+                  'data': data,
+                  'where': where,
+                  'include': include,
+              },
+          )
+  
+      def upsert(
+          self,
+          where: types.ListsWhereUniqueInput,
+          data: types.ListsUpsertInput,
+          include: Optional[types.ListsInclude] = None,
+      ) -> None:
+          self._batcher._add(
+              operation='mutation',
+              method='upsertOne',
+              model='Lists',
+              arguments={
+                  'where': where,
+                  'include': include,
+                  'create': data.get('create'),
+                  'update': data.get('update'),
+              },
+          )
+  
+      def update_many(
+          self,
+          data: types.ListsUpdateManyMutationInput,
+          where: types.ListsWhereInput,
+      ) -> None:
+          self._batcher._add(
+              operation='mutation',
+              method='updateMany',
+              model='Lists',
+              arguments={'data': data, 'where': where,},
+              root_selection=['count'],
+          )
+  
+      def delete_many(
+          self,
+          where: Optional[types.ListsWhereInput] = None,
+      ) -> None:
+          self._batcher._add(
+              operation='mutation',
+              method='deleteMany',
+              model='Lists',
               arguments={'where': where},
               root_selection=['count'],
           )
@@ -24736,7 +27746,10 @@
           return False
   
       @classmethod
-      def _internal_from_prisma(cls, value: str) -> 'Base64':
+      def _internal_from_prisma(cls, value: Union[str, List[str]]) -> Union['Base64', List['Base64']]:
+          if isinstance(value, list):
+              return [cls(bytes(item, BASE64_ENCODING)) for item in value]
+  
           return cls(bytes(value, BASE64_ENCODING))
   
   
@@ -25543,6 +28556,107 @@
           _created_partial_types.add(name)
   
   
+  class Lists(BaseModel):
+      id: str
+      strings: List[str]
+      bytes: List['fields.Base64']
+      dates: List[datetime.datetime]
+      bools: List[bool]
+      ints: List[int]
+      floats: List[float]
+      bigints: List[int]
+      json_objects: List['fields.Json']
+  
+      Config = Config
+  
+      @classmethod
+      def prisma(cls) -> 'actions.ListsActions':
+          from .client import get_client
+  
+          return actions.ListsActions(get_client(), cls)
+  
+      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
+          raise RuntimeError(
+              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
+              'This is because mypy does not work well with this pattern;\n'
+              'See the documentation for how to generate fully recursive types: \n'
+              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
+          )
+  
+      @staticmethod
+      def create_partial(
+          name: str,
+          include: Optional[Iterable['types.ListsKeys']] = None,
+          exclude: Optional[Iterable['types.ListsKeys']] = None,
+          required: Optional[Iterable['types.ListsKeys']] = None,
+          optional: Optional[Iterable['types.ListsKeys']] = None,
+          relations: Optional[Mapping['types.ListsRelationalFieldKeys', str]] = None,
+      ) -> None:
+          if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
+              raise RuntimeError(
+                  'Attempted to create a partial type outside of client generation.'
+              )
+  
+          if name in _created_partial_types:
+              raise ValueError(f'Partial type "{name}" has already been created.')
+  
+          if include is not None and exclude is not None:
+              raise TypeError(f'Exclude and include are mutually exclusive.')
+  
+          if required and optional:
+              shared = set(required) & set(optional)
+              if shared:
+                  raise ValueError(f'Cannot make the same field(s) required and optional {shared}')
+  
+          fields: Dict['types.ListsKeys', PartialModelField] = {}
+  
+          try:
+              if include:
+                  for field in include:
+                      fields[field] = _Lists_fields[field]
+              elif exclude:
+                  for field in exclude:
+                      if field not in _Lists_fields:
+                          raise KeyError(field)
+  
+                  fields = {
+                      key: data
+                      for key, data in _Lists_fields.items()
+                      if key not in exclude
+                  }
+              else:
+                  fields = _Lists_fields.copy()
+  
+              if required:
+                  for field in required:
+                      fields[field] = fields[field].copy()
+                      fields[field]['optional'] = False
+  
+              if optional:
+                  for field in optional:
+                      fields[field] = fields[field].copy()
+                      fields[field]['optional'] = True
+  
+              if relations:
+                  raise ValueError('Model: "Lists" has no relational fields.')
+          except KeyError as exc:
+              raise ValueError(
+                  f'{exc.args[0]} is not a valid Lists / {name} field.'
+              ) from None
+  
+          models = partial_models_ctx.get()
+  
+          # mypy does not like this as we are assigning a
+          # Dict[Literal[str]] to a Dict[str] but this is fine
+          models[name] = fields  # type: ignore[assignment]
+          partial_models_ctx.set(models)
+          _created_partial_types.add(name)
+  
+      @validator('bytes', pre=True, allow_reuse=True)
+      @classmethod
+      def _prisma_bytes_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
+          return fields.Base64._internal_from_prisma(value)
+  
   class A(BaseModel):
       id: str
       email: str
@@ -25921,7 +29035,7 @@
   
       @validator('binary', pre=True, allow_reuse=True)
       @classmethod
-      def _prisma_binary_bytes_validator(cls, value: Any) -> fields.Base64:
+      def _prisma_binary_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
           return fields.Base64._internal_from_prisma(value)
   
   class E(BaseModel):
@@ -26479,6 +29593,64 @@
       },
   }
   
+  _Lists_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
+  _Lists_fields: Dict['types.ListsKeys', PartialModelField] = {
+      'id': {
+          'name': 'id',
+          'is_list': False,
+          'optional': False,
+          'type': 'str',
+      },
+      'strings': {
+          'name': 'strings',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[str]',
+      },
+      'bytes': {
+          'name': 'bytes',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[\'fields.Base64\']',
+      },
+      'dates': {
+          'name': 'dates',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[datetime.datetime]',
+      },
+      'bools': {
+          'name': 'bools',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[bool]',
+      },
+      'ints': {
+          'name': 'ints',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[int]',
+      },
+      'floats': {
+          'name': 'floats',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[float]',
+      },
+      'bigints': {
+          'name': 'bigints',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[int]',
+      },
+      'json_objects': {
+          'name': 'json_objects',
+          'is_list': True,
+          'optional': False,
+          'type': 'List[\'fields.Json\']',
+      },
+  }
+  
   _A_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _A_fields: Dict['types.AKeys', PartialModelField] = {
       'id': {
@@ -26686,6 +29858,7 @@
   N.update_forward_refs()
   OneOptional.update_forward_refs()
   ManyRequired.update_forward_refs()
+  Lists.update_forward_refs()
   A.update_forward_refs()
   B.update_forward_refs()
   C.update_forward_refs()
@@ -27144,6 +30317,393 @@
       _IntDecrementInput,
   ]
   AtomicBigIntInput = AtomicIntInput
+  
+  class _StringListFilterEqualsInput(TypedDict):
+      equals: Optional[List[str]]
+  
+  
+  class _StringListFilterHasInput(TypedDict):
+      has: str
+  
+  
+  class _StringListFilterHasEveryInput(TypedDict):
+      has_every: List[str]
+  
+  
+  class _StringListFilterHasSomeInput(TypedDict):
+      has_some: List[str]
+  
+  
+  class _StringListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  StringListFilter = Union[
+      _StringListFilterHasInput,
+      _StringListFilterEqualsInput,
+      _StringListFilterHasSomeInput,
+      _StringListFilterIsEmptyInput,
+      _StringListFilterHasEveryInput,
+  ]
+  
+  
+  class _StringListUpdateSet(TypedDict):
+      set: List[str]
+  
+  
+  class _StringListUpdatePush(TypedDict):
+      push: List[str]
+  
+  
+  StringListUpdate = Union[
+      List[str],
+      _StringListUpdateSet,
+      _StringListUpdatePush,
+  ]
+  
+  class _BytesListFilterEqualsInput(TypedDict):
+      equals: Optional[List['fields.Base64']]
+  
+  
+  class _BytesListFilterHasInput(TypedDict):
+      has: 'fields.Base64'
+  
+  
+  class _BytesListFilterHasEveryInput(TypedDict):
+      has_every: List['fields.Base64']
+  
+  
+  class _BytesListFilterHasSomeInput(TypedDict):
+      has_some: List['fields.Base64']
+  
+  
+  class _BytesListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  BytesListFilter = Union[
+      _BytesListFilterHasInput,
+      _BytesListFilterEqualsInput,
+      _BytesListFilterHasSomeInput,
+      _BytesListFilterIsEmptyInput,
+      _BytesListFilterHasEveryInput,
+  ]
+  
+  
+  class _BytesListUpdateSet(TypedDict):
+      set: List['fields.Base64']
+  
+  
+  class _BytesListUpdatePush(TypedDict):
+      push: List['fields.Base64']
+  
+  
+  BytesListUpdate = Union[
+      List['fields.Base64'],
+      _BytesListUpdateSet,
+      _BytesListUpdatePush,
+  ]
+  
+  class _DateTimeListFilterEqualsInput(TypedDict):
+      equals: Optional[List[datetime.datetime]]
+  
+  
+  class _DateTimeListFilterHasInput(TypedDict):
+      has: datetime.datetime
+  
+  
+  class _DateTimeListFilterHasEveryInput(TypedDict):
+      has_every: List[datetime.datetime]
+  
+  
+  class _DateTimeListFilterHasSomeInput(TypedDict):
+      has_some: List[datetime.datetime]
+  
+  
+  class _DateTimeListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  DateTimeListFilter = Union[
+      _DateTimeListFilterHasInput,
+      _DateTimeListFilterEqualsInput,
+      _DateTimeListFilterHasSomeInput,
+      _DateTimeListFilterIsEmptyInput,
+      _DateTimeListFilterHasEveryInput,
+  ]
+  
+  
+  class _DateTimeListUpdateSet(TypedDict):
+      set: List[datetime.datetime]
+  
+  
+  class _DateTimeListUpdatePush(TypedDict):
+      push: List[datetime.datetime]
+  
+  
+  DateTimeListUpdate = Union[
+      List[datetime.datetime],
+      _DateTimeListUpdateSet,
+      _DateTimeListUpdatePush,
+  ]
+  
+  class _BooleanListFilterEqualsInput(TypedDict):
+      equals: Optional[List[bool]]
+  
+  
+  class _BooleanListFilterHasInput(TypedDict):
+      has: bool
+  
+  
+  class _BooleanListFilterHasEveryInput(TypedDict):
+      has_every: List[bool]
+  
+  
+  class _BooleanListFilterHasSomeInput(TypedDict):
+      has_some: List[bool]
+  
+  
+  class _BooleanListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  BooleanListFilter = Union[
+      _BooleanListFilterHasInput,
+      _BooleanListFilterEqualsInput,
+      _BooleanListFilterHasSomeInput,
+      _BooleanListFilterIsEmptyInput,
+      _BooleanListFilterHasEveryInput,
+  ]
+  
+  
+  class _BooleanListUpdateSet(TypedDict):
+      set: List[bool]
+  
+  
+  class _BooleanListUpdatePush(TypedDict):
+      push: List[bool]
+  
+  
+  BooleanListUpdate = Union[
+      List[bool],
+      _BooleanListUpdateSet,
+      _BooleanListUpdatePush,
+  ]
+  
+  class _IntListFilterEqualsInput(TypedDict):
+      equals: Optional[List[int]]
+  
+  
+  class _IntListFilterHasInput(TypedDict):
+      has: int
+  
+  
+  class _IntListFilterHasEveryInput(TypedDict):
+      has_every: List[int]
+  
+  
+  class _IntListFilterHasSomeInput(TypedDict):
+      has_some: List[int]
+  
+  
+  class _IntListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  IntListFilter = Union[
+      _IntListFilterHasInput,
+      _IntListFilterEqualsInput,
+      _IntListFilterHasSomeInput,
+      _IntListFilterIsEmptyInput,
+      _IntListFilterHasEveryInput,
+  ]
+  
+  
+  class _IntListUpdateSet(TypedDict):
+      set: List[int]
+  
+  
+  class _IntListUpdatePush(TypedDict):
+      push: List[int]
+  
+  
+  IntListUpdate = Union[
+      List[int],
+      _IntListUpdateSet,
+      _IntListUpdatePush,
+  ]
+  
+  class _BigIntListFilterEqualsInput(TypedDict):
+      equals: Optional[List[int]]
+  
+  
+  class _BigIntListFilterHasInput(TypedDict):
+      has: int
+  
+  
+  class _BigIntListFilterHasEveryInput(TypedDict):
+      has_every: List[int]
+  
+  
+  class _BigIntListFilterHasSomeInput(TypedDict):
+      has_some: List[int]
+  
+  
+  class _BigIntListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  BigIntListFilter = Union[
+      _BigIntListFilterHasInput,
+      _BigIntListFilterEqualsInput,
+      _BigIntListFilterHasSomeInput,
+      _BigIntListFilterIsEmptyInput,
+      _BigIntListFilterHasEveryInput,
+  ]
+  
+  
+  class _BigIntListUpdateSet(TypedDict):
+      set: List[int]
+  
+  
+  class _BigIntListUpdatePush(TypedDict):
+      push: List[int]
+  
+  
+  BigIntListUpdate = Union[
+      List[int],
+      _BigIntListUpdateSet,
+      _BigIntListUpdatePush,
+  ]
+  
+  class _FloatListFilterEqualsInput(TypedDict):
+      equals: Optional[List[float]]
+  
+  
+  class _FloatListFilterHasInput(TypedDict):
+      has: float
+  
+  
+  class _FloatListFilterHasEveryInput(TypedDict):
+      has_every: List[float]
+  
+  
+  class _FloatListFilterHasSomeInput(TypedDict):
+      has_some: List[float]
+  
+  
+  class _FloatListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  FloatListFilter = Union[
+      _FloatListFilterHasInput,
+      _FloatListFilterEqualsInput,
+      _FloatListFilterHasSomeInput,
+      _FloatListFilterIsEmptyInput,
+      _FloatListFilterHasEveryInput,
+  ]
+  
+  
+  class _FloatListUpdateSet(TypedDict):
+      set: List[float]
+  
+  
+  class _FloatListUpdatePush(TypedDict):
+      push: List[float]
+  
+  
+  FloatListUpdate = Union[
+      List[float],
+      _FloatListUpdateSet,
+      _FloatListUpdatePush,
+  ]
+  
+  class _JsonListFilterEqualsInput(TypedDict):
+      equals: Optional[List['fields.Json']]
+  
+  
+  class _JsonListFilterHasInput(TypedDict):
+      has: 'fields.Json'
+  
+  
+  class _JsonListFilterHasEveryInput(TypedDict):
+      has_every: List['fields.Json']
+  
+  
+  class _JsonListFilterHasSomeInput(TypedDict):
+      has_some: List['fields.Json']
+  
+  
+  class _JsonListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  JsonListFilter = Union[
+      _JsonListFilterHasInput,
+      _JsonListFilterEqualsInput,
+      _JsonListFilterHasSomeInput,
+      _JsonListFilterIsEmptyInput,
+      _JsonListFilterHasEveryInput,
+  ]
+  
+  
+  class _JsonListUpdateSet(TypedDict):
+      set: List['fields.Json']
+  
+  
+  class _JsonListUpdatePush(TypedDict):
+      push: List['fields.Json']
+  
+  
+  JsonListUpdate = Union[
+      List['fields.Json'],
+      _JsonListUpdateSet,
+      _JsonListUpdatePush,
+  ]
+  
+  class _ABeautifulEnumListFilterEqualsInput(TypedDict):
+      equals: Optional[List['enums.ABeautifulEnum']]
+  
+  
+  class _ABeautifulEnumListFilterHasInput(TypedDict):
+      has: 'enums.ABeautifulEnum'
+  
+  
+  class _ABeautifulEnumListFilterHasEveryInput(TypedDict):
+      has_every: List['enums.ABeautifulEnum']
+  
+  
+  class _ABeautifulEnumListFilterHasSomeInput(TypedDict):
+      has_some: List['enums.ABeautifulEnum']
+  
+  
+  class _ABeautifulEnumListFilterIsEmptyInput(TypedDict):
+      is_empty: bool
+  
+  
+  ABeautifulEnumListFilter = Union[
+      _ABeautifulEnumListFilterHasInput,
+      _ABeautifulEnumListFilterEqualsInput,
+      _ABeautifulEnumListFilterHasSomeInput,
+      _ABeautifulEnumListFilterIsEmptyInput,
+      _ABeautifulEnumListFilterHasEveryInput,
+  ]
+  
+  
+  class _ABeautifulEnumListUpdateSet(TypedDict):
+      set: List['enums.ABeautifulEnum']
+  
+  
+  class _ABeautifulEnumListUpdatePush(TypedDict):
+      push: List['enums.ABeautifulEnum']
+  
+  
+  ABeautifulEnumListUpdate = Union[
+      List['enums.ABeautifulEnum'],
+      _ABeautifulEnumListUpdateSet,
+      _ABeautifulEnumListUpdatePush,
+  ]
   
   
   # Post types
@@ -27641,6 +31201,64 @@
       order_by: Union['PostOrderByInput', List['PostOrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromPost(TypedDict, total=False):
+      """Relational arguments for Post"""
+  
+  
+  class ListsIncludeFromPostRecursive1(TypedDict, total=False):
+      """Relational arguments for Post"""
+  
+  
+  class ListsIncludeFromPostRecursive2(TypedDict, total=False):
+      """Relational arguments for Post"""
+  
+      
+  
+  class ListsArgsFromPost(TypedDict, total=False):
+      """Arguments for Post"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromPostRecursive1(TypedDict, total=False):
+      """Arguments for Post"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromPostRecursive2(TypedDict, total=False):
+      """Arguments for Post"""
+      
+      
+  
+  class FindManyListsArgsFromPost(TypedDict, total=False):
+      """Arguments for Post"""
+      take: int
+      skip: int
+      order_by: Union['PostOrderByInput', List['PostOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromPostRecursive1(TypedDict, total=False):
+      """Arguments for Post"""
+      take: int
+      skip: int
+      order_by: Union['PostOrderByInput', List['PostOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromPostRecursive2(TypedDict, total=False):
+      """Arguments for Post"""
+      take: int
+      skip: int
+      order_by: Union['PostOrderByInput', List['PostOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
@@ -28558,6 +32176,64 @@
       order_by: Union['UserOrderByInput', List['UserOrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromUser(TypedDict, total=False):
+      """Relational arguments for User"""
+  
+  
+  class ListsIncludeFromUserRecursive1(TypedDict, total=False):
+      """Relational arguments for User"""
+  
+  
+  class ListsIncludeFromUserRecursive2(TypedDict, total=False):
+      """Relational arguments for User"""
+  
+      
+  
+  class ListsArgsFromUser(TypedDict, total=False):
+      """Arguments for User"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromUserRecursive1(TypedDict, total=False):
+      """Arguments for User"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromUserRecursive2(TypedDict, total=False):
+      """Arguments for User"""
+      
+      
+  
+  class FindManyListsArgsFromUser(TypedDict, total=False):
+      """Arguments for User"""
+      take: int
+      skip: int
+      order_by: Union['UserOrderByInput', List['UserOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromUserRecursive1(TypedDict, total=False):
+      """Arguments for User"""
+      take: int
+      skip: int
+      order_by: Union['UserOrderByInput', List['UserOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromUserRecursive2(TypedDict, total=False):
+      """Arguments for User"""
+      take: int
+      skip: int
+      order_by: Union['UserOrderByInput', List['UserOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
@@ -29506,6 +33182,64 @@
       order_by: Union['MOrderByInput', List['MOrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromM(TypedDict, total=False):
+      """Relational arguments for M"""
+  
+  
+  class ListsIncludeFromMRecursive1(TypedDict, total=False):
+      """Relational arguments for M"""
+  
+  
+  class ListsIncludeFromMRecursive2(TypedDict, total=False):
+      """Relational arguments for M"""
+  
+      
+  
+  class ListsArgsFromM(TypedDict, total=False):
+      """Arguments for M"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromMRecursive1(TypedDict, total=False):
+      """Arguments for M"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromMRecursive2(TypedDict, total=False):
+      """Arguments for M"""
+      
+      
+  
+  class FindManyListsArgsFromM(TypedDict, total=False):
+      """Arguments for M"""
+      take: int
+      skip: int
+      order_by: Union['MOrderByInput', List['MOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromMRecursive1(TypedDict, total=False):
+      """Arguments for M"""
+      take: int
+      skip: int
+      order_by: Union['MOrderByInput', List['MOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromMRecursive2(TypedDict, total=False):
+      """Arguments for M"""
+      take: int
+      skip: int
+      order_by: Union['MOrderByInput', List['MOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
@@ -30458,6 +34192,64 @@
       order_by: Union['NOrderByInput', List['NOrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromN(TypedDict, total=False):
+      """Relational arguments for N"""
+  
+  
+  class ListsIncludeFromNRecursive1(TypedDict, total=False):
+      """Relational arguments for N"""
+  
+  
+  class ListsIncludeFromNRecursive2(TypedDict, total=False):
+      """Relational arguments for N"""
+  
+      
+  
+  class ListsArgsFromN(TypedDict, total=False):
+      """Arguments for N"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromNRecursive1(TypedDict, total=False):
+      """Arguments for N"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromNRecursive2(TypedDict, total=False):
+      """Arguments for N"""
+      
+      
+  
+  class FindManyListsArgsFromN(TypedDict, total=False):
+      """Arguments for N"""
+      take: int
+      skip: int
+      order_by: Union['NOrderByInput', List['NOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromNRecursive1(TypedDict, total=False):
+      """Arguments for N"""
+      take: int
+      skip: int
+      order_by: Union['NOrderByInput', List['NOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromNRecursive2(TypedDict, total=False):
+      """Arguments for N"""
+      take: int
+      skip: int
+      order_by: Union['NOrderByInput', List['NOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
@@ -31415,6 +35207,64 @@
       
       
   
+  class ListsIncludeFromOneOptional(TypedDict, total=False):
+      """Relational arguments for OneOptional"""
+  
+  
+  class ListsIncludeFromOneOptionalRecursive1(TypedDict, total=False):
+      """Relational arguments for OneOptional"""
+  
+  
+  class ListsIncludeFromOneOptionalRecursive2(TypedDict, total=False):
+      """Relational arguments for OneOptional"""
+  
+      
+  
+  class ListsArgsFromOneOptional(TypedDict, total=False):
+      """Arguments for OneOptional"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromOneOptionalRecursive1(TypedDict, total=False):
+      """Arguments for OneOptional"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromOneOptionalRecursive2(TypedDict, total=False):
+      """Arguments for OneOptional"""
+      
+      
+  
+  class FindManyListsArgsFromOneOptional(TypedDict, total=False):
+      """Arguments for OneOptional"""
+      take: int
+      skip: int
+      order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromOneOptionalRecursive1(TypedDict, total=False):
+      """Arguments for OneOptional"""
+      take: int
+      skip: int
+      order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromOneOptionalRecursive2(TypedDict, total=False):
+      """Arguments for OneOptional"""
+      take: int
+      skip: int
+      order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      
+      
+  
   class AIncludeFromOneOptional(TypedDict, total=False):
       """Relational arguments for OneOptional"""
   
@@ -32358,6 +36208,64 @@
       
       
   
+  class ListsIncludeFromManyRequired(TypedDict, total=False):
+      """Relational arguments for ManyRequired"""
+  
+  
+  class ListsIncludeFromManyRequiredRecursive1(TypedDict, total=False):
+      """Relational arguments for ManyRequired"""
+  
+  
+  class ListsIncludeFromManyRequiredRecursive2(TypedDict, total=False):
+      """Relational arguments for ManyRequired"""
+  
+      
+  
+  class ListsArgsFromManyRequired(TypedDict, total=False):
+      """Arguments for ManyRequired"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromManyRequiredRecursive1(TypedDict, total=False):
+      """Arguments for ManyRequired"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromManyRequiredRecursive2(TypedDict, total=False):
+      """Arguments for ManyRequired"""
+      
+      
+  
+  class FindManyListsArgsFromManyRequired(TypedDict, total=False):
+      """Arguments for ManyRequired"""
+      take: int
+      skip: int
+      order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromManyRequiredRecursive1(TypedDict, total=False):
+      """Arguments for ManyRequired"""
+      take: int
+      skip: int
+      order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromManyRequiredRecursive2(TypedDict, total=False):
+      """Arguments for ManyRequired"""
+      take: int
+      skip: int
+      order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      
+      
+  
   class AIncludeFromManyRequired(TypedDict, total=False):
       """Relational arguments for ManyRequired"""
   
@@ -32778,6 +36686,974 @@
   ManyRequiredRelationalFieldKeys = Literal[
           'one',
       ]
+  
+  # Lists types
+  
+  class ListsOptionalCreateInput(TypedDict, total=False):
+      """Optional arguments to the Lists create method"""
+      id: str
+      strings: List[str]
+      bytes: List['fields.Base64']
+      dates: List[datetime.datetime]
+      bools: List[bool]
+      ints: List[int]
+      floats: List[float]
+      bigints: List[int]
+      json_objects: List['fields.Json']
+  
+  
+  class ListsCreateInput(ListsOptionalCreateInput):
+      """Required arguments to the Lists create method"""
+  
+  
+  # TODO: remove this in favour of without explicit relations
+  # e.g. PostCreateWithoutAuthorInput
+  
+  class ListsOptionalCreateWithoutRelationsInput(TypedDict, total=False):
+      """Optional arguments to the Lists create method, without relations"""
+      id: str
+      strings: List[str]
+      bytes: List['fields.Base64']
+      dates: List[datetime.datetime]
+      bools: List[bool]
+      ints: List[int]
+      floats: List[float]
+      bigints: List[int]
+      json_objects: List['fields.Json']
+  
+  
+  class ListsCreateWithoutRelationsInput(ListsOptionalCreateWithoutRelationsInput):
+      """Required arguments to the Lists create method, without relations"""
+  
+  
+  class ListsCreateNestedWithoutRelationsInput(TypedDict, total=False):
+      create: 'ListsCreateWithoutRelationsInput'
+      connect: 'ListsWhereUniqueInput'
+  
+  
+  class ListsCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
+      create: Union['ListsCreateWithoutRelationsInput', List['ListsCreateWithoutRelationsInput']]
+      connect: Union['ListsWhereUniqueInput', List['ListsWhereUniqueInput']]
+  
+  
+  class ListsWhereUniqueInput(TypedDict, total=False):
+      """Unique Lists arguments for searching"""
+      id: str
+  
+  
+  class ListsUpdateInput(TypedDict, total=False):
+      """Optional arguments for updating a record"""
+      strings: 'types.StringListUpdate'
+      bytes: 'types.BytesListUpdate'
+      dates: 'types.DateTimeListUpdate'
+      bools: 'types.BooleanListUpdate'
+      ints: 'types.IntListUpdate'
+      floats: 'types.FloatListUpdate'
+      bigints: 'types.BigIntListUpdate'
+      json_objects: 'types.JsonListUpdate'
+  
+  
+  class ListsUpdateManyMutationInput(TypedDict, total=False):
+      """Arguments for updating many records"""
+      id: str
+      strings: 'types.StringListUpdate'
+      bytes: 'types.BytesListUpdate'
+      dates: 'types.DateTimeListUpdate'
+      bools: 'types.BooleanListUpdate'
+      ints: 'types.IntListUpdate'
+      floats: 'types.FloatListUpdate'
+      bigints: 'types.BigIntListUpdate'
+      json_objects: 'types.JsonListUpdate'
+  
+  
+  class ListsUpdateManyWithoutRelationsInput(TypedDict, total=False):
+      create: List['ListsCreateWithoutRelationsInput']
+      connect: List['ListsWhereUniqueInput']
+      set: List['ListsWhereUniqueInput']
+      disconnect: List['ListsWhereUniqueInput']
+      delete: List['ListsWhereUniqueInput']
+  
+      # TODO
+      # update: List['ListsUpdateWithWhereUniqueWithoutRelationsInput']
+      # updateMany: List['ListsUpdateManyWithWhereUniqueWithoutRelationsInput']
+      # deleteMany: List['ListsScalarWhereInput']
+      # upsert: List['ListsUpserteWithWhereUniqueWithoutRelationsInput']
+      # connectOrCreate: List['ListsCreateOrConnectWithoutRelationsInput']
+  
+  
+  class ListsUpdateOneWithoutRelationsInput(TypedDict, total=False):
+      create: 'ListsCreateWithoutRelationsInput'
+      connect: 'ListsWhereUniqueInput'
+      disconnect: bool
+      delete: bool
+  
+      # TODO
+      # update: 'ListsUpdateInput'
+      # upsert: 'ListsUpsertWithoutRelationsInput'
+      # connectOrCreate: 'ListsCreateOrConnectWithoutRelationsInput'
+  
+  
+  class ListsUpsertInput(TypedDict):
+      create: 'ListsCreateInput'
+      update: 'ListsUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+  
+  
+  class ListsOrderByInput(TypedDict, total=False):
+      id: 'SortOrder'
+      strings: 'SortOrder'
+      bytes: 'SortOrder'
+      dates: 'SortOrder'
+      bools: 'SortOrder'
+      ints: 'SortOrder'
+      floats: 'SortOrder'
+      bigints: 'SortOrder'
+      json_objects: 'SortOrder'
+  
+  
+  # recursive Lists types
+  # TODO: cleanup these types
+  
+  
+  # Dict[str, Any] is a mypy limitation
+  # see https://github.com/RobertCraigie/prisma-client-py/issues/45
+  # switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
+  
+  ListsRelationFilter = TypedDict(
+      'ListsRelationFilter',
+      {
+          'is': 'Dict[str, Any]',
+          'is_not': 'Dict[str, Any]',
+      },
+      total=False,
+  )
+  
+  
+  class ListsListRelationFilter(TypedDict, total=False):
+      some: 'Dict[str, Any]'
+      none: 'Dict[str, Any]'
+      every: 'Dict[str, Any]'
+  
+  
+  class ListsInclude(TypedDict, total=False):
+      """Lists relational arguments"""
+  
+  
+      
+  
+  class PostIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      author: Union[bool, 'UserArgsFromListsRecursive1']
+  
+  
+  class PostIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      author: Union[bool, 'UserArgsFromListsRecursive2']
+  
+  
+  class PostIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class PostArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'PostIncludeFromPostRecursive1'
+  
+  
+  class PostArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'PostIncludeFromPostRecursive2'
+  
+  
+  class PostArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyPostArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'PostWhereInput'
+      cursor: 'PostWhereUniqueInput'
+      include: 'PostIncludeFromPostRecursive1'
+  
+  
+  class FindManyPostArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'PostWhereInput'
+      cursor: 'PostWhereUniqueInput'
+      include: 'PostIncludeFromPostRecursive2'
+  
+  
+  class FindManyPostArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'PostWhereInput'
+      cursor: 'PostWhereUniqueInput'
+      
+      
+  
+  class UserIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      posts: Union[bool, 'FindManyPostArgsFromListsRecursive1']
+  
+  
+  class UserIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      posts: Union[bool, 'FindManyPostArgsFromListsRecursive2']
+  
+  
+  class UserIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class UserArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'UserIncludeFromUserRecursive1'
+  
+  
+  class UserArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'UserIncludeFromUserRecursive2'
+  
+  
+  class UserArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyUserArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'UserWhereInput'
+      cursor: 'UserWhereUniqueInput'
+      include: 'UserIncludeFromUserRecursive1'
+  
+  
+  class FindManyUserArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'UserWhereInput'
+      cursor: 'UserWhereUniqueInput'
+      include: 'UserIncludeFromUserRecursive2'
+  
+  
+  class FindManyUserArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'UserWhereInput'
+      cursor: 'UserWhereUniqueInput'
+      
+      
+  
+  class MIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      n: Union[bool, 'FindManyNArgsFromListsRecursive1']
+  
+  
+  class MIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      n: Union[bool, 'FindManyNArgsFromListsRecursive2']
+  
+  
+  class MIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class MArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'MIncludeFromMRecursive1'
+  
+  
+  class MArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'MIncludeFromMRecursive2'
+  
+  
+  class MArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyMArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'MWhereInput'
+      cursor: 'MWhereUniqueInput'
+      include: 'MIncludeFromMRecursive1'
+  
+  
+  class FindManyMArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'MWhereInput'
+      cursor: 'MWhereUniqueInput'
+      include: 'MIncludeFromMRecursive2'
+  
+  
+  class FindManyMArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'MWhereInput'
+      cursor: 'MWhereUniqueInput'
+      
+      
+  
+  class NIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      m: Union[bool, 'FindManyMArgsFromListsRecursive1']
+  
+  
+  class NIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      m: Union[bool, 'FindManyMArgsFromListsRecursive2']
+  
+  
+  class NIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class NArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'NIncludeFromNRecursive1'
+  
+  
+  class NArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'NIncludeFromNRecursive2'
+  
+  
+  class NArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyNArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'NWhereInput'
+      cursor: 'NWhereUniqueInput'
+      include: 'NIncludeFromNRecursive1'
+  
+  
+  class FindManyNArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'NWhereInput'
+      cursor: 'NWhereUniqueInput'
+      include: 'NIncludeFromNRecursive2'
+  
+  
+  class FindManyNArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'NWhereInput'
+      cursor: 'NWhereUniqueInput'
+      
+      
+  
+  class OneOptionalIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      many: Union[bool, 'FindManyManyRequiredArgsFromListsRecursive1']
+  
+  
+  class OneOptionalIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      many: Union[bool, 'FindManyManyRequiredArgsFromListsRecursive2']
+  
+  
+  class OneOptionalIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class OneOptionalArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'OneOptionalIncludeFromOneOptionalRecursive1'
+  
+  
+  class OneOptionalArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'OneOptionalIncludeFromOneOptionalRecursive2'
+  
+  
+  class OneOptionalArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyOneOptionalArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'OneOptionalWhereInput'
+      cursor: 'OneOptionalWhereUniqueInput'
+      include: 'OneOptionalIncludeFromOneOptionalRecursive1'
+  
+  
+  class FindManyOneOptionalArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'OneOptionalWhereInput'
+      cursor: 'OneOptionalWhereUniqueInput'
+      include: 'OneOptionalIncludeFromOneOptionalRecursive2'
+  
+  
+  class FindManyOneOptionalArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'OneOptionalWhereInput'
+      cursor: 'OneOptionalWhereUniqueInput'
+      
+      
+  
+  class ManyRequiredIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      one: Union[bool, 'OneOptionalArgsFromListsRecursive1']
+  
+  
+  class ManyRequiredIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+      one: Union[bool, 'OneOptionalArgsFromListsRecursive2']
+  
+  
+  class ManyRequiredIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class ManyRequiredArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
+  
+  
+  class ManyRequiredArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
+  
+  
+  class ManyRequiredArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyManyRequiredArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'ManyRequiredWhereInput'
+      cursor: 'ManyRequiredWhereUniqueInput'
+      include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
+  
+  
+  class FindManyManyRequiredArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'ManyRequiredWhereInput'
+      cursor: 'ManyRequiredWhereUniqueInput'
+      include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
+  
+  
+  class FindManyManyRequiredArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'ManyRequiredWhereInput'
+      cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class ListsIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class ListsIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class ListsArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyListsArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      
+      
+  
+  class AIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class AIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class AIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class AArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'AIncludeFromARecursive1'
+  
+  
+  class AArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'AIncludeFromARecursive2'
+  
+  
+  class AArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyAArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'AWhereInput'
+      cursor: 'AWhereUniqueInput'
+      include: 'AIncludeFromARecursive1'
+  
+  
+  class FindManyAArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'AWhereInput'
+      cursor: 'AWhereUniqueInput'
+      include: 'AIncludeFromARecursive2'
+  
+  
+  class FindManyAArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'AWhereInput'
+      cursor: 'AWhereUniqueInput'
+      
+      
+  
+  class BIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class BIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class BIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class BArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'BIncludeFromBRecursive1'
+  
+  
+  class BArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'BIncludeFromBRecursive2'
+  
+  
+  class BArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyBArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'BWhereInput'
+      cursor: 'BWhereUniqueInput'
+      include: 'BIncludeFromBRecursive1'
+  
+  
+  class FindManyBArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'BWhereInput'
+      cursor: 'BWhereUniqueInput'
+      include: 'BIncludeFromBRecursive2'
+  
+  
+  class FindManyBArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'BWhereInput'
+      cursor: 'BWhereUniqueInput'
+      
+      
+  
+  class CIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class CIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class CIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class CArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'CIncludeFromCRecursive1'
+  
+  
+  class CArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'CIncludeFromCRecursive2'
+  
+  
+  class CArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyCArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'CWhereInput'
+      cursor: 'CWhereUniqueInput'
+      include: 'CIncludeFromCRecursive1'
+  
+  
+  class FindManyCArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'CWhereInput'
+      cursor: 'CWhereUniqueInput'
+      include: 'CIncludeFromCRecursive2'
+  
+  
+  class FindManyCArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'CWhereInput'
+      cursor: 'CWhereUniqueInput'
+      
+      
+  
+  class DIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class DIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class DIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class DArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'DIncludeFromDRecursive1'
+  
+  
+  class DArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'DIncludeFromDRecursive2'
+  
+  
+  class DArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyDArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'DWhereInput'
+      cursor: 'DWhereUniqueInput'
+      include: 'DIncludeFromDRecursive1'
+  
+  
+  class FindManyDArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'DWhereInput'
+      cursor: 'DWhereUniqueInput'
+      include: 'DIncludeFromDRecursive2'
+  
+  
+  class FindManyDArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'DWhereInput'
+      cursor: 'DWhereUniqueInput'
+      
+      
+  
+  class EIncludeFromLists(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class EIncludeFromListsRecursive1(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+  
+  class EIncludeFromListsRecursive2(TypedDict, total=False):
+      """Relational arguments for Lists"""
+  
+      
+  
+  class EArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'EIncludeFromERecursive1'
+  
+  
+  class EArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      include: 'EIncludeFromERecursive2'
+  
+  
+  class EArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      
+      
+  
+  class FindManyEArgsFromLists(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'EWhereInput'
+      cursor: 'EWhereUniqueInput'
+      include: 'EIncludeFromERecursive1'
+  
+  
+  class FindManyEArgsFromListsRecursive1(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'EWhereInput'
+      cursor: 'EWhereUniqueInput'
+      include: 'EIncludeFromERecursive2'
+  
+  
+  class FindManyEArgsFromListsRecursive2(TypedDict, total=False):
+      """Arguments for Lists"""
+      take: int
+      skip: int
+      order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
+      where: 'EWhereInput'
+      cursor: 'EWhereUniqueInput'
+      
+  
+  
+  FindManyListsArgs = FindManyListsArgsFromLists
+  FindFirstListsArgs = FindManyListsArgsFromLists
+  
+  
+      
+  
+  class ListsWhereInput(TypedDict, total=False):
+      """Lists arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      strings: 'types.StringListFilter'
+      bytes: 'types.BytesListFilter'
+      dates: 'types.DateTimeListFilter'
+      bools: 'types.BooleanListFilter'
+      ints: 'types.IntListFilter'
+      floats: 'types.FloatListFilter'
+      bigints: 'types.BigIntListFilter'
+      json_objects: 'types.JsonListFilter'
+  
+      # should be noted that AND and NOT should be Union['ListsWhereInputRecursive1', List['ListsWhereInputRecursive1']]
+      # but this causes mypy to hang :/
+      AND: List['ListsWhereInputRecursive1']
+      OR: List['ListsWhereInputRecursive1']
+      NOT: List['ListsWhereInputRecursive1']
+  
+  
+  class ListsWhereInputRecursive1(TypedDict, total=False):
+      """Lists arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      strings: 'types.StringListFilter'
+      bytes: 'types.BytesListFilter'
+      dates: 'types.DateTimeListFilter'
+      bools: 'types.BooleanListFilter'
+      ints: 'types.IntListFilter'
+      floats: 'types.FloatListFilter'
+      bigints: 'types.BigIntListFilter'
+      json_objects: 'types.JsonListFilter'
+  
+      # should be noted that AND and NOT should be Union['ListsWhereInputRecursive2', List['ListsWhereInputRecursive2']]
+      # but this causes mypy to hang :/
+      AND: List['ListsWhereInputRecursive2']
+      OR: List['ListsWhereInputRecursive2']
+      NOT: List['ListsWhereInputRecursive2']
+  
+  
+  class ListsWhereInputRecursive2(TypedDict, total=False):
+      """Lists arguments for searching"""
+      id: Union[str, 'types.StringFilter']
+      strings: 'types.StringListFilter'
+      bytes: 'types.BytesListFilter'
+      dates: 'types.DateTimeListFilter'
+      bools: 'types.BooleanListFilter'
+      ints: 'types.IntListFilter'
+      floats: 'types.FloatListFilter'
+      bigints: 'types.BigIntListFilter'
+      json_objects: 'types.JsonListFilter'
+  
+  
+  
+  ListsCountAggregateInput = TypedDict(
+      'ListsCountAggregateInput',
+      {
+          'id': bool,
+          'strings': bool,
+          'bytes': bool,
+          'dates': bool,
+          'bools': bool,
+          'ints': bool,
+          'floats': bool,
+          'bigints': bool,
+          'json_objects': bool,
+          '_all': bool,
+      },
+      total=False,
+  )
+  
+  ListsCountAggregateOutput = TypedDict(
+      'ListsCountAggregateOutput',
+      {
+          'id': int,
+          'strings': int,
+          'bytes': int,
+          'dates': int,
+          'bools': int,
+          'ints': int,
+          'floats': int,
+          'bigints': int,
+          'json_objects': int,
+          '_all': int,
+      },
+      total=False,
+  )
+  
+  
+  ListsKeys = Literal[
+      'id',
+      'strings',
+      'bytes',
+      'dates',
+      'bools',
+      'ints',
+      'floats',
+      'bigints',
+      'json_objects',
+  ]
+  
+  ListsRelationalFieldKeys = _NoneType
   
   # A types
   
@@ -33289,6 +38165,64 @@
       order_by: Union['AOrderByInput', List['AOrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromA(TypedDict, total=False):
+      """Relational arguments for A"""
+  
+  
+  class ListsIncludeFromARecursive1(TypedDict, total=False):
+      """Relational arguments for A"""
+  
+  
+  class ListsIncludeFromARecursive2(TypedDict, total=False):
+      """Relational arguments for A"""
+  
+      
+  
+  class ListsArgsFromA(TypedDict, total=False):
+      """Arguments for A"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromARecursive1(TypedDict, total=False):
+      """Arguments for A"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromARecursive2(TypedDict, total=False):
+      """Arguments for A"""
+      
+      
+  
+  class FindManyListsArgsFromA(TypedDict, total=False):
+      """Arguments for A"""
+      take: int
+      skip: int
+      order_by: Union['AOrderByInput', List['AOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromARecursive1(TypedDict, total=False):
+      """Arguments for A"""
+      take: int
+      skip: int
+      order_by: Union['AOrderByInput', List['AOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromARecursive2(TypedDict, total=False):
+      """Arguments for A"""
+      take: int
+      skip: int
+      order_by: Union['AOrderByInput', List['AOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
@@ -34172,6 +39106,64 @@
       
       
   
+  class ListsIncludeFromB(TypedDict, total=False):
+      """Relational arguments for B"""
+  
+  
+  class ListsIncludeFromBRecursive1(TypedDict, total=False):
+      """Relational arguments for B"""
+  
+  
+  class ListsIncludeFromBRecursive2(TypedDict, total=False):
+      """Relational arguments for B"""
+  
+      
+  
+  class ListsArgsFromB(TypedDict, total=False):
+      """Arguments for B"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromBRecursive1(TypedDict, total=False):
+      """Arguments for B"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromBRecursive2(TypedDict, total=False):
+      """Arguments for B"""
+      
+      
+  
+  class FindManyListsArgsFromB(TypedDict, total=False):
+      """Arguments for B"""
+      take: int
+      skip: int
+      order_by: Union['BOrderByInput', List['BOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromBRecursive1(TypedDict, total=False):
+      """Arguments for B"""
+      take: int
+      skip: int
+      order_by: Union['BOrderByInput', List['BOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromBRecursive2(TypedDict, total=False):
+      """Arguments for B"""
+      take: int
+      skip: int
+      order_by: Union['BOrderByInput', List['BOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      
+      
+  
   class AIncludeFromB(TypedDict, total=False):
       """Relational arguments for B"""
   
@@ -35033,6 +40025,64 @@
       order_by: Union['COrderByInput', List['COrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromC(TypedDict, total=False):
+      """Relational arguments for C"""
+  
+  
+  class ListsIncludeFromCRecursive1(TypedDict, total=False):
+      """Relational arguments for C"""
+  
+  
+  class ListsIncludeFromCRecursive2(TypedDict, total=False):
+      """Relational arguments for C"""
+  
+      
+  
+  class ListsArgsFromC(TypedDict, total=False):
+      """Arguments for C"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromCRecursive1(TypedDict, total=False):
+      """Arguments for C"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromCRecursive2(TypedDict, total=False):
+      """Arguments for C"""
+      
+      
+  
+  class FindManyListsArgsFromC(TypedDict, total=False):
+      """Arguments for C"""
+      take: int
+      skip: int
+      order_by: Union['COrderByInput', List['COrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromCRecursive1(TypedDict, total=False):
+      """Arguments for C"""
+      take: int
+      skip: int
+      order_by: Union['COrderByInput', List['COrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromCRecursive2(TypedDict, total=False):
+      """Arguments for C"""
+      take: int
+      skip: int
+      order_by: Union['COrderByInput', List['COrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
@@ -35919,6 +40969,64 @@
       
       
   
+  class ListsIncludeFromD(TypedDict, total=False):
+      """Relational arguments for D"""
+  
+  
+  class ListsIncludeFromDRecursive1(TypedDict, total=False):
+      """Relational arguments for D"""
+  
+  
+  class ListsIncludeFromDRecursive2(TypedDict, total=False):
+      """Relational arguments for D"""
+  
+      
+  
+  class ListsArgsFromD(TypedDict, total=False):
+      """Arguments for D"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromDRecursive1(TypedDict, total=False):
+      """Arguments for D"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromDRecursive2(TypedDict, total=False):
+      """Arguments for D"""
+      
+      
+  
+  class FindManyListsArgsFromD(TypedDict, total=False):
+      """Arguments for D"""
+      take: int
+      skip: int
+      order_by: Union['DOrderByInput', List['DOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromDRecursive1(TypedDict, total=False):
+      """Arguments for D"""
+      take: int
+      skip: int
+      order_by: Union['DOrderByInput', List['DOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromDRecursive2(TypedDict, total=False):
+      """Arguments for D"""
+      take: int
+      skip: int
+      order_by: Union['DOrderByInput', List['DOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      
+      
+  
   class AIncludeFromD(TypedDict, total=False):
       """Relational arguments for D"""
   
@@ -36783,6 +41891,64 @@
       order_by: Union['EOrderByInput', List['EOrderByInput']]
       where: 'ManyRequiredWhereInput'
       cursor: 'ManyRequiredWhereUniqueInput'
+      
+      
+  
+  class ListsIncludeFromE(TypedDict, total=False):
+      """Relational arguments for E"""
+  
+  
+  class ListsIncludeFromERecursive1(TypedDict, total=False):
+      """Relational arguments for E"""
+  
+  
+  class ListsIncludeFromERecursive2(TypedDict, total=False):
+      """Relational arguments for E"""
+  
+      
+  
+  class ListsArgsFromE(TypedDict, total=False):
+      """Arguments for E"""
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class ListsArgsFromERecursive1(TypedDict, total=False):
+      """Arguments for E"""
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class ListsArgsFromERecursive2(TypedDict, total=False):
+      """Arguments for E"""
+      
+      
+  
+  class FindManyListsArgsFromE(TypedDict, total=False):
+      """Arguments for E"""
+      take: int
+      skip: int
+      order_by: Union['EOrderByInput', List['EOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive1'
+  
+  
+  class FindManyListsArgsFromERecursive1(TypedDict, total=False):
+      """Arguments for E"""
+      take: int
+      skip: int
+      order_by: Union['EOrderByInput', List['EOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
+      include: 'ListsIncludeFromListsRecursive2'
+  
+  
+  class FindManyListsArgsFromERecursive2(TypedDict, total=False):
+      """Arguments for E"""
+      take: int
+      skip: int
+      order_by: Union['EOrderByInput', List['EOrderByInput']]
+      where: 'ListsWhereInput'
+      cursor: 'ListsWhereUniqueInput'
       
       
   
