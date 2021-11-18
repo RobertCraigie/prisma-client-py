@@ -249,7 +249,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
 
         User.create_partial(
             'UserModifiedPosts',
-            exclude={'bytes', 'bytes_list'},
+            exclude={'bytes', 'bytes_list'},  # type: ignore
             relations={'posts': 'PostOnlyId'},
         )
         User.create_partial('UserBytesList', include={'bytes', 'bytes_list'})
