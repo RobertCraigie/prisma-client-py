@@ -24,7 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       # TODO: test more python versions
-      max-parallel: 2
       matrix:
         include:
           - python-version: 3.6
@@ -88,7 +87,6 @@ jobs:
     name: typesafety
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 2
       matrix:
         include:
           - python-version: 3.9
@@ -121,7 +119,6 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 2
       matrix:
         python-version: [3.6]
 
