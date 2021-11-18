@@ -9,6 +9,7 @@ from importlib.abc import InspectLoader
 from contextvars import ContextVar
 from typing import (
     Any,
+    Iterable,
     Optional,
     List,
     Tuple,
@@ -77,7 +78,7 @@ def get_datamodel() -> 'Datamodel':
     return data_ctx.get().dmmf.datamodel
 
 
-def get_list_types() -> chain[Tuple[str, str]]:
+def get_list_types() -> Iterable[Tuple[str, str]]:
     # WARNING: do not edit this function without also editing Field.is_supported_scalar_list_type()
     return chain(
         ((t, TYPE_MAPPING[t]) for t in FILTER_TYPES),
