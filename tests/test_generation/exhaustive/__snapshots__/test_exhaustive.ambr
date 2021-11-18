@@ -6152,6 +6152,12 @@
       def __repr__(self) -> str:
           return f'{self.__class__.__name__}({self._raw})'  # type: ignore[str-bytes-safe]
   
+      def __eq__(self, other: Any) -> bool:
+          if isinstance(other, Base64):
+              return self._raw == other._raw
+  
+          return False
+  
       @classmethod
       def _internal_from_prisma(cls, value: str) -> 'Base64':
           return cls(bytes(value, BASE64_ENCODING))
@@ -24722,6 +24728,12 @@
   
       def __repr__(self) -> str:
           return f'{self.__class__.__name__}({self._raw})'  # type: ignore[str-bytes-safe]
+  
+      def __eq__(self, other: Any) -> bool:
+          if isinstance(other, Base64):
+              return self._raw == other._raw
+  
+          return False
   
       @classmethod
       def _internal_from_prisma(cls, value: str) -> 'Base64':
