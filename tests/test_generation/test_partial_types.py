@@ -252,7 +252,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             exclude={'bytes', 'bytes_list'},  # type: ignore
             relations={'posts': 'PostOnlyId'},
         )
-        User.create_partial('UserBytesList', include={'bytes', 'bytes_list'})
+        User.create_partial('UserBytesList', include={'bytes', 'bytes_list'})  # type: ignore
 
     testdir.make_from_function(generator, name=location)
     testdir.generate(SCHEMA, options)
