@@ -262,6 +262,51 @@ AtomicIntInput = Union[
 ]
 AtomicBigIntInput = AtomicIntInput
 
+{% for type, python_type in get_list_types() %}
+class _{{ type }}ListFilterEqualsInput(TypedDict):
+    equals: Optional[List[{{ python_type }}]]
+
+
+class _{{ type }}ListFilterHasInput(TypedDict):
+    has: {{ python_type }}
+
+
+class _{{ type }}ListFilterHasEveryInput(TypedDict):
+    has_every: List[{{ python_type }}]
+
+
+class _{{ type }}ListFilterHasSomeInput(TypedDict):
+    has_some: List[{{ python_type }}]
+
+
+class _{{ type }}ListFilterIsEmptyInput(TypedDict):
+    is_empty: bool
+
+
+{{ type }}ListFilter = Union[
+    _{{ type }}ListFilterHasInput,
+    _{{ type }}ListFilterEqualsInput,
+    _{{ type }}ListFilterHasSomeInput,
+    _{{ type }}ListFilterIsEmptyInput,
+    _{{ type }}ListFilterHasEveryInput,
+]
+
+
+class _{{ type }}ListUpdateSet(TypedDict):
+    set: List[{{ python_type }}]
+
+
+class _{{ type }}ListUpdatePush(TypedDict):
+    push: List[{{ python_type }}]
+
+
+{{ type }}ListUpdate = Union[
+    List[{{ python_type }}],
+    _{{ type }}ListUpdateSet,
+    _{{ type }}ListUpdatePush,
+]
+
+{% endfor %}
 
 {% for model in dmmf.datamodel.models %}
 # {{ model.name }} types

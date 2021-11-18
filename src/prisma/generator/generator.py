@@ -57,7 +57,7 @@ def run(params: Dict[str, Any]) -> None:
     if not is_same_path(BASE_PACKAGE_DIR, rootdir):
         copy_tree(BASE_PACKAGE_DIR, rootdir)
 
-    params = vars(data)
+    params = data.to_params()
 
     try:
         for name in DEFAULT_ENV.list_templates():

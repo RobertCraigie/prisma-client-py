@@ -34,7 +34,21 @@ model Types {
   json_obj Json?  @default("{}")
 }
 
+model Lists {
+  id           String     @id @default(cuid())
+  strings      String[]
+  bytes        Bytes[]
+  dates        DateTime[]
+  bools        Boolean[]
+  ints         Int[]
+  floats       Float[]
+  bigints      BigInt[]
+  json_objects Json[]
+  roles        Role[]
+}
+
 enum Role {
   USER
   ADMIN
+  EDITOR
 }

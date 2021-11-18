@@ -102,6 +102,20 @@ model ManyRequired {
   optional_boolean Boolean?
 }
 
+model Lists {
+  id           String     @id @default(cuid())
+  strings      String[]
+  bytes        Bytes[]
+  dates        DateTime[]
+  bools        Boolean[]
+  ints         Int[]
+  floats       Float[]
+  bigints      BigInt[]
+  json_objects Json[]
+  // TODO
+  // decimals     Decimal[]
+}
+
 enum ABeautifulEnum {
   A
   B
