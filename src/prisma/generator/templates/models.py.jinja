@@ -43,7 +43,7 @@ class {{ model.name }}(BaseModel):
         return actions.{{ model.name }}Actions[BaseModelT](get_client(), cls)
     {% else %}
     @classmethod
-    def prisma(cls) -> 'actions.{{ model.name }}Actions':
+    def prisma(cls) -> 'actions.{{ model.name }}Actions[{{ model.name }}]':
         from .client import get_client
 
         return actions.{{ model.name }}Actions(get_client(), cls)

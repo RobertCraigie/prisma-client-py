@@ -10,13 +10,8 @@ if TYPE_CHECKING:
 
 {% for model in dmmf.datamodel.models %}
 
-{% if recursive_types %}
 {% set ModelType = "BaseModelT" %}
 class {{ model.name }}Actions(Generic[BaseModelT]):
-{% else %}
-{% set ModelType = "'models.%s'" % model.name %}
-class {{ model.name }}Actions:
-{% endif %}
     def __init__(self, client: 'Client', model: Type[{{ ModelType }}]) -> None:
         self._client = client
         self._model = model
