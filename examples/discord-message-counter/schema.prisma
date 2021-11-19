@@ -9,7 +9,6 @@ generator db {
 }
 
 model Channel {
-  // id is a String as Prisma Client Python doesn't support BigInt yet
-  id    String @id
+  id    BigInt @id
   total Int    @default(0)
 }

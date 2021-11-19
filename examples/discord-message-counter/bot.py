@@ -31,11 +31,11 @@ class Bot(BotBase):
     async def on_message(self, message: discord.Message) -> None:
         await self.prisma.channel.upsert(
             where={
-                'id': str(message.channel.id),
+                'id': message.channel.id,
             },
             data={
                 'create': {
-                    'id': str(message.channel.id),
+                    'id': message.channel.id,
                     'total': 1,
                 },
                 'update': {
@@ -53,15 +53,16 @@ bot = Bot()
 
 @bot.command()
 async def total(ctx: Context, channel: Optional[discord.TextChannel] = None) -> None:
-    if channel is None and isinstance(ctx.channel, discord.TextChannel):
-        channel = ctx.channel
-    else:
-        await ctx.send('Could not resolve channel, this should never happen')
-        return
+    if channel is None:
+        if isinstance(ctx.channel, discord.TextChannel):
+            channel = ctx.channel
+        else:
+            await ctx.send('Could not resolve channel, this should never happen')
+            return
 
     record = await ctx.bot.prisma.channel.find_unique(
         where={
-            'id': str(channel.id),
+            'id': channel.id,
         },
     )
     if record is None:
