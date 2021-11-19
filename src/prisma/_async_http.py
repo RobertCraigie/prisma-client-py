@@ -21,6 +21,7 @@ class HTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
         async with self.session.stream(
             'GET', url, timeout=None
         ) as resp:  # pyright: reportGeneralTypeIssues=false
+            resp.raise_for_status()
             with open(dest, 'wb') as fd:
                 async for chunk in resp.aiter_bytes():
                     fd.write(chunk)
