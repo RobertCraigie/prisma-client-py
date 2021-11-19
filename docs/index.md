@@ -317,6 +317,8 @@ Breaking changes will be documented and released under a new **MINOR** version f
 
 `MAJOR`.`MINOR`.`PATCH`
 
+New releases are scheduled bi-weekly, however as this is a solo project, no guarantees are made that this schedule will be stuck to.
+
 ## Contributing
 
 We use [conventional commits](https://www.conventionalcommits.org) (also known as semantic commits) to ensure consistent and descriptive commit messages.
