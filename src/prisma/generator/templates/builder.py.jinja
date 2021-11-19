@@ -673,6 +673,19 @@ def serialize_base64(obj: fields.Base64) -> str:
     return str(obj)
 
 
+@serializer.register(fields.JsonPath)
+def serialize_json_path(obj: fields.JsonPath) -> Serializable:
+    """Serialize a JsonPath object to a string."""
+    path = obj.path
+    if isinstance(path, str):
+        return path
+
+    if isinstance(path, list):
+        return path
+
+    raise NotImplementedError(f'Cannot serialize JsonPath type: {type(path)} yet.')
+
+
 def dumps(obj: Any, **kwargs: Any) -> str:
     kwargs.setdefault('default', serializer)
     kwargs.setdefault('ensure_ascii', False)

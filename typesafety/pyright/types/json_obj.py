@@ -1,5 +1,5 @@
 from typing import Dict
-from prisma import Json, Client
+from prisma import Json, JsonPath, Client
 
 
 def raw() -> None:
@@ -103,9 +103,8 @@ async def narrowing_types(client: Client) -> None:
 
 async def client_api(client: Client) -> None:
     # case: cannot pass Json to string field
-    # TODO: this should error
     await client.types.create(
-        data={
+        data={  # E: Argument of type "dict[str, Json]" cannot be assigned to parameter "data" of type "TypesCreateInput" in function "create"
             'string': Json('wow'),
         },
     )
@@ -115,3 +114,36 @@ async def client_api(client: Client) -> None:
     assert isinstance(model.json_obj, int)
     number = model.json_obj + 1
     reveal_type(number)  # T: int
+
+
+async def preview_feature_filtering(client: Client) -> None:
+    # case: path required
+    await client.types.find_first(
+        where={  # E: Argument of type "dict[str, dict[str, str]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
+            'json_obj': {
+                'string_contains': 'foo',
+            },
+        },
+    )
+
+    # case: Json is distinct from str
+    await client.types.find_first(
+        where={
+            'json_obj': {  # E: Argument of type "dict[str, dict[str, Any]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
+                'path': JsonPath('foo'),
+                'string_contains': Json('wow'),
+            },
+        },
+    )
+
+    # case: valid
+    await client.types.find_first(
+        where={
+            'json_obj': {
+                'path': JsonPath('foo', 'bar'),
+                'string_contains': 'foo',
+            },
+        },
+    )
+
+    # TODO: all fields

@@ -1,5 +1,6 @@
 import pytest
 from prisma import Client, Json
+from prisma.fields import JsonPath
 
 
 @pytest.mark.asyncio
@@ -147,6 +148,103 @@ async def test_base_filtering(client: Client) -> None:
     assert found is not None
     assert found.id == model.id
     assert found.json_obj == {'country': 'Scotland'}
+
+
+"""
+TODO: test
+
+'lt': 'fields.Json',
+'lte': 'fields.Json',
+'gt': 'fields.Json',
+'gte': 'fields.Json',
+'path': 'fields.JsonPath',
+'string_contains': str,
+'string_starts_with': str,
+'string_ends_with': str,
+'array_contains': 'fields.Json',
+'array_starts_with': 'fields.Json',
+'array_ends_with': 'fields.Json',
+"""
+
+# TODO: rename
+@pytest.mark.asyncio
+async def test_preview_filtering(client: Client) -> None:
+    model = await client.types.create(
+        data={
+            'json_obj': Json(
+                {
+                    'favourites': {
+                        'catBreed': 'Turkish van',
+                        'dogBreed': 'Rottweiler',
+                        'sanctuaries': ['RSPCA', 'Alley Cat Allies'],
+                        'treats': [
+                            {'name': 'Dreamies', 'manufacturer': 'Mars Inc'},
+                            {'name': 'Treatos', 'manufacturer': 'The Dog People'},
+                        ],
+                    },
+                    'fostered': {
+                        'cats': ['Bob', 'Alice', 'Svetlana the Magnificent', 'Queenie']
+                    },
+                    'owned': {
+                        'cats': ['Elliott'],
+                    },
+                    'stats': {
+                        'owned': 1,
+                    },
+                },
+            )
+        }
+    )
+
+    found = await client.types.find_first(
+        where={
+            'json_obj': {
+                'path': JsonPath('stats', 'owned'),
+                'lt': Json(2),
+            },
+        },
+    )
+    assert found is not None
+    assert found.id == model.id
+
+    import datetime
+
+    for v in [None, True, 1, '1', datetime.datetime.utcnow(), [2, 3, 4]]:
+        found = await client.types.find_first(
+            where={
+                'json_obj': {
+                    'path': JsonPath('stats', 'owned'),
+                    'lt': Json(v),
+                },
+            },
+        )
+        print(found)
+        # assert found is not None
+        # assert found.id == model.id
+
+    found = await client.types.find_first(
+        where={
+            'json_obj': {
+                'path': JsonPath('favourites', 'dogBreed'),
+                'equals': Json('Rottweiler'),
+            }
+        }
+    )
+    assert found is not None
+    assert found.id == model.id
+
+    found = await client.types.find_first(
+        where={
+            'json_obj': {
+                'path': JsonPath('favourites', 'dogBreed'),
+                'string_contains': 'Rott',
+            },
+        },
+    )
+    assert found is not None
+    assert found.id == model.id
+
+    assert False
 
 
 @pytest.mark.asyncio

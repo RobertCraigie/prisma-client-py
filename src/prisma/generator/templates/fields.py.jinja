@@ -1,12 +1,15 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import recursive_types with context %}
+{% from '_utils.py.jinja' import recursive_types, active_provider with context %}
 # -- template fields.py.jinja --
 import base64
 from pydantic import Json as _PydanticJson
 
+from . import errors
+
 
 __all__ = (
     'Json',
+    'JsonPath',
     'Base64',
 )
 
@@ -24,20 +27,20 @@ _JsonKeys = Union[
 BASE64_ENCODING = 'ascii'
 
 
-# inherit from _PydanticJson so that pydantic will automatically
-# transform the json string into python objects.
-class Json(_PydanticJson):
-    data: 'Serializable'
+if TYPE_CHECKING:
+    # we inherit from _PydanticJson at runtime but do not when type checking
+    # so that a distinction can be made between Json and str types
+    # TODO: show example
+    class Json:
+        data: 'Serializable'
 
-    def __init__(self, data: 'Serializable') -> None:
-        self.data = data
-        super().__init__()
+        def __init__(self, data: 'Serializable') -> None:
+            ...
 
-    @classmethod
-    def keys(cls, **data: 'Serializable') -> 'Json':
-        return cls(data)
+        @classmethod
+        def keys(cls, **data: 'Serializable') -> 'Json':
+            ...
 
-    if TYPE_CHECKING:
         # Fields that are of the `Json` type are automatically
         # de-serialized from json to the corresponding python type
         # when the model is created, e.g.
@@ -58,7 +61,7 @@ class Json(_PydanticJson):
         #
         # isinstance(user.json_obj, dict)
         # cast(Dict[str, Any], user.json_obj)
-        # prisma.validate(ExpectedType, user.json_obj)  # NOTE: not implemented yet
+        # prisma.validate(ExpectedType, user.json_obj)
         @overload  # type: ignore
         def __getitem__(self, i: slice) -> List['Serializable']:
             ...
@@ -69,6 +72,42 @@ class Json(_PydanticJson):
 
         def __getitem__(self, i: Union['_JsonKeys', slice]) -> 'Serializable':
             ...
+else:
+    # inherit from _PydanticJson so that pydantic will automatically
+    # transform the json string into python objects.
+    class Json(_PydanticJson):
+        data: 'Serializable'
+
+        def __init__(self, data: 'Serializable') -> None:
+            self.data = data
+            super().__init__()
+
+        @classmethod
+        def keys(cls, **data: 'Serializable') -> 'Json':
+            return cls(data)
+
+
+class JsonPath:
+
+    path: Union[str, List[str]]
+
+    # TODO: static type error if not supported
+    def __init__(self, *args: str) -> None:
+        {% if active_provider == 'postgresql' %}
+        self.path = self._postgres_path(*args)
+        {% elif active_provider == 'mysql' %}
+        self.path = self._mysql_path(*args)
+        {% else %}
+        raise errors.UnsupportedDatabaseError('Json filtering', '{{ active_provider }}')
+        {% endif %}
+
+    @staticmethod
+    def _mysql_path(*args: str) -> str:
+        return '.'.join(['$', *args])
+
+    @staticmethod
+    def _postgres_path(*args: str) -> List[str]:
+        return [item for item in args]
 
 
 class Base64:

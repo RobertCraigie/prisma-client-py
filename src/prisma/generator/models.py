@@ -86,6 +86,10 @@ def get_list_types() -> Iterable[Tuple[str, str]]:
     )
 
 
+def preview_feature_enabled(feature: str) -> bool:
+    return feature in data_ctx.get().generator.preview_features
+
+
 def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
     assert spec.origin is not None, 'Cannot serialize module with no origin'
     return spec.origin
@@ -181,7 +185,7 @@ class Data(BaseModel):
         params = vars(self)
 
         # add utility functions
-        for func in [get_list_types]:
+        for func in [get_list_types, preview_feature_enabled]:
             params[func.__name__] = func
 
         return params

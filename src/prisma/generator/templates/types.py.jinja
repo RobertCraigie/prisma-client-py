@@ -65,6 +65,17 @@ Serializable = Union[
     Dict[int, 'Serializable'],
     Dict[str, 'Serializable'],
 ]
+JsonInput = Union[
+    str,
+    float,
+    int,
+    bool,
+    List['JsonInput'],
+    Dict[bool, 'JsonInput'],
+    Dict[float, 'JsonInput'],
+    Dict[int, 'JsonInput'],
+    Dict[str, 'JsonInput'],
+]
 {% else %}
 Serializable = Union[
     None,
@@ -75,6 +86,17 @@ Serializable = Union[
     datetime.datetime,
     List[Any],
     Dict[None, Any],
+    Dict[bool, Any],
+    Dict[float, Any],
+    Dict[int, Any],
+    Dict[str, Any],
+]
+JsonInput = Union[
+    string,
+    float,
+    int,
+    bool,
+    List[Any],
     Dict[bool, Any],
     Dict[float, Any],
     Dict[int, Any],
@@ -195,15 +217,44 @@ BigIntFilter = IntFilter
 )
 {% endcall %}
 
-# TODO: preview feature for improving JSON filtering
-JsonFilter = TypedDict(
-    'JsonFilter',
+_BaseJsonFilter = TypedDict(
+    '_BaseJsonFilter',
     {
         'equals': 'fields.Json',
         'not': 'fields.Json',
     },
     total=False,
 )
+
+
+{% if preview_feature_enabled('filterJson') %}
+class _OptionalPreviewJsonFilter(_BaseJsonFilter, total=False):
+    lt: JsonInput
+    lte: JsonInput
+    gt: JsonInput
+    gte: JsonInput
+    string_contains: str
+    string_starts_with: str
+    string_ends_with: str
+    array_contains: List[Serializable]
+    array_starts_with: JsonInput
+    array_ends_with: JsonInput
+
+
+class _JsonPreviewFilter(_OptionalPreviewJsonFilter):
+    path: 'fields.JsonPath'
+
+
+JsonFilter = Union[_BaseJsonFilter, _JsonPreviewFilter]
+{% else %}
+# NOTE: if you enable the "filterJson" preview feature in your schema, this filter becomes much more powerful!
+# e.g.
+# generator client {
+#   provider = "prisma-client-py"
+#   previewFeatures = ["filterJson"]
+# }
+JsonFilter = _BaseJsonFilter
+{% endif %}
 
 
 class _FloatSetInput(TypedDict):
