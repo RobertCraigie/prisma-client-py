@@ -112,9 +112,21 @@ class Base64:
         return False
 
     @classmethod
-    def _internal_from_prisma(cls, value: Union[str, List[str]]) -> Union['Base64', List['Base64']]:
+    def _internal_from_prisma(
+        cls,
+        value: Union[str, 'Base64', List[Union[str, 'Base64']]]
+    ) -> Union['Base64', List['Base64']]:
+        if isinstance(value, Base64):
+            return value
+
         if isinstance(value, list):
-            return [cls(bytes(item, BASE64_ENCODING)) for item in value]
+            return [
+                item
+                if isinstance(item, Base64)
+                else
+                cls(bytes(item, BASE64_ENCODING))
+                for item in value
+            ]
 
         return cls(bytes(value, BASE64_ENCODING))
 

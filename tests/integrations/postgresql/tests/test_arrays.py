@@ -4,6 +4,7 @@ from typing import Any, List
 import pytest
 from prisma import Client, Json, Base64
 from prisma.enums import Role
+from prisma.models import Lists
 
 
 def _utcnow() -> datetime:
@@ -1502,3 +1503,19 @@ async def test_filtering_enums(client: Client) -> None:
         },
     )
     assert count == 1
+
+
+@pytest.mark.asyncio
+async def test_bytes_constructing(client: Client) -> None:
+    """A list of Base64 fields can be passed to the model constructor"""
+    record = await client.lists.create({})
+    model = Lists.parse_obj(
+        {
+            **record.dict(),
+            'bytes': [
+                Base64.encode(b'foo'),
+                Base64.encode(b'bar'),
+            ],
+        }
+    )
+    assert model.bytes == [Base64.encode(b'foo'), Base64.encode(b'bar')]
