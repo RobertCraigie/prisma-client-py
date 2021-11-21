@@ -149,10 +149,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mypy
 
-      - name: Check linters
-        run: |
-          tox -e lint
-
       - name: Check mypy
         run: |
           tox -e mypy
