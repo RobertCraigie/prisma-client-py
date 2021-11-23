@@ -29,6 +29,7 @@ from pydantic import (
     validator,
     root_validator,
 )
+from pydantic.fields import PrivateAttr
 
 try:
     from pydantic.env_settings import SettingsSourceCallable
@@ -36,6 +37,7 @@ except ImportError:
     SettingsSourceCallable = Any  # type: ignore
 
 
+from .utils import Faker, Sampler, clean_multiline
 from ..utils import DEBUG_GENERATOR
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
@@ -67,6 +69,8 @@ FILTER_TYPES = [
     'Json',
 ]
 
+FAKER: Faker = Faker()
+
 data_ctx: ContextVar['Data'] = ContextVar('data_ctx')
 
 
@@ -86,6 +90,20 @@ def get_list_types() -> Iterable[Tuple[str, str]]:
     )
 
 
+def sql_param(num: int = 1) -> str:
+    # TODO: add case for sqlserver
+    active_provider = data_ctx.get().datasources[0].active_provider
+    if active_provider == 'postgresql':
+        return f'${num}'
+
+    # TODO: test
+    if active_provider == 'mongodb':  # pragma: no cover
+        raise RuntimeError('no-op')
+
+    # SQLite and MySQL use this style so just default to it
+    return '?'
+
+
 def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
     assert spec.origin is not None, 'Cannot serialize module with no origin'
     return spec.origin
@@ -93,6 +111,7 @@ def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
 
 class BaseModel(PydanticBaseModel):
     class Config:
+        arbitrary_types_allowed: bool = True
         json_encoders: Dict[Type[Any], Any] = {
             machinery.ModuleSpec: _module_spec_serializer,
         }
@@ -181,7 +200,7 @@ class Data(BaseModel):
         params = vars(self)
 
         # add utility functions
-        for func in [get_list_types]:
+        for func in [get_list_types, sql_param, clean_multiline]:
             params[func.__name__] = func
 
         return params
@@ -337,12 +356,18 @@ class Model(BaseModel):
     is_embedded: bool = FieldInfo(alias='isEmbedded')
     db_name: Optional[str] = FieldInfo(alias='dbName')
     is_generated: bool = FieldInfo(alias='isGenerated')
+    _sampler: Sampler = PrivateAttr()
 
     if TYPE_CHECKING:
         # pylint thinks all_fields is not an iterable
         all_fields: List['Field']
     else:
         all_fields: List['Field'] = FieldInfo(alias='fields')
+
+    # no idea why mypy throws this error
+    def __init__(self, **data: Any) -> None:  # type: ignore[no-redef]
+        super().__init__(**data)
+        self._sampler = Sampler(self)
 
     @property
     def related_models(self) -> Iterator['Model']:
@@ -370,6 +395,17 @@ class Model(BaseModel):
             if field.type in ATOMIC_FIELD_TYPES:
                 yield field
 
+    # TODO: support combined unique constraints
+    @property
+    def id_field(self) -> 'Field':
+        for field in self.scalar_fields:  # pragma: no branch
+            if field.is_id:
+                return field
+
+        raise RuntimeError(  # pragma: no cover
+            f'Could not resolve an ID field for model: {self.name}'
+        )
+
     @property
     def has_relational_fields(self) -> bool:
         try:
@@ -378,6 +414,16 @@ class Model(BaseModel):
             return False
         else:
             return True
+
+    @property
+    def plural_name(self) -> str:
+        name = self.name
+        if name.endswith('s'):
+            return name
+        return f'{name}s'
+
+    def sampler(self) -> Sampler:
+        return self._sampler
 
     def get_fields_of_type(self, typ: str) -> Iterator['Field']:
         for field in self.scalar_fields:
@@ -407,6 +453,8 @@ class Field(BaseModel):
     relation_on_delete: Optional[str] = FieldInfo(alias='relationOnDelete')
     relation_to_fields: Optional[List[str]] = FieldInfo(alias='relationToFields')
     relation_from_fields: Optional[List[str]] = FieldInfo(alias='relationFromFields')
+
+    _last_sampled: Optional[str] = PrivateAttr()
 
     @root_validator
     @classmethod
@@ -574,6 +622,57 @@ class Field(BaseModel):
             if model.name == name:
                 return model
         return None
+
+    def get_corresponding_enum(self) -> Optional['Enum']:
+        typ = self.type
+        for enum in get_datamodel().enums:
+            if enum.name == typ:
+                return enum
+        return None  # pragma: no cover
+
+    def get_sample_data(self, *, increment: bool = True) -> str:
+        # returning the same data that was last sampled is useful
+        # for documenting methods like upsert() where data is duplicated
+        if not increment and self._last_sampled is not None:
+            return self._last_sampled
+
+        sampled = self._get_sample_data()
+        if self.is_list:
+            sampled = f'[{sampled}]'
+
+        self._last_sampled = sampled
+        return sampled
+
+    def _get_sample_data(self) -> str:
+        # pylint: disable=no-else-return,too-many-return-statements
+        if self.is_relational:  # pragma: no cover
+            raise RuntimeError('Data sampling for relational fields not supported yet')
+
+        if self.kind == 'enum':
+            enum = self.get_corresponding_enum()
+            assert enum is not None
+            return f'enums.{enum.name}.{FAKER.from_list(enum.values).name}'
+
+        typ = self.type
+        if typ == 'Boolean':
+            return str(FAKER.boolean())
+        elif typ == 'Int':
+            return str(FAKER.integer())
+        elif typ == 'String':
+            return f'\'{FAKER.string()}\''
+        elif typ == 'Float':
+            return f'{FAKER.integer()}.{FAKER.integer() // 10000}'
+        elif typ == 'BigInt':  # pragma: no cover
+            return str(FAKER.integer() * 12)
+        elif typ == 'DateTime':
+            # TODO: random dates
+            return 'datetime.datetime.utcnow()'
+        elif typ == 'Json':
+            return f'Json({{\'{FAKER.string()}\': True}})'
+        elif typ == 'Bytes':
+            return f'Base64.encode(b\'{FAKER.string()}\')'
+        else:  # pragma: no cover
+            raise RuntimeError(f'Sample data not supported for {typ} yet')
 
 
 class DefaultValue(BaseModel):

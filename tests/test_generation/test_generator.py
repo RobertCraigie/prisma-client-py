@@ -8,7 +8,7 @@ from jinja2 import Environment, FileSystemLoader
 from prisma import __version__
 from prisma.generator import BASE_PACKAGE_DIR, render_template, cleanup_templates
 from prisma.generator.generator import OVERRIDING_TEMPLATES
-from prisma.generator.utils import resolve_template_path, copy_tree
+from prisma.generator.utils import Faker, resolve_template_path, copy_tree
 
 from ..utils import Testdir
 
@@ -129,3 +129,12 @@ def test_generation_version_number(testdir: Testdir) -> None:
     """Ensure the version number is shown when the client is generated"""
     stdout = testdir.generate().stdout.decode('utf-8')
     assert f'Generated Prisma Client Python (v{__version__})' in stdout
+
+
+def test_faker() -> None:
+    """Ensure Faker is re-playable"""
+    iter1 = iter(Faker())
+    iter2 = iter(Faker())
+    first = [next(iter1) for _ in range(10)]
+    second = [next(iter2) for _ in range(10)]
+    assert first == second

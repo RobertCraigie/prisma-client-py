@@ -15,7 +15,7 @@ coverage:
         target: auto
 
         # NOTE: flexible on this threshold
-        threshold: 5%
+        threshold: 6%
         branches:
           - main
 
