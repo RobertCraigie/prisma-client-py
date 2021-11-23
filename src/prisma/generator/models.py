@@ -398,11 +398,13 @@ class Model(BaseModel):
     # TODO: support combined unique constraints
     @property
     def id_field(self) -> 'Field':
-        for field in self.scalar_fields:
+        for field in self.scalar_fields:  # pragma: no branch
             if field.is_id:
                 return field
 
-        raise RuntimeError(f'Could not resolve an ID field for model: {self.name}')
+        raise RuntimeError(  # pragma: no cover
+            f'Could not resolve an ID field for model: {self.name}'
+        )
 
     @property
     def has_relational_fields(self) -> bool:
@@ -669,7 +671,7 @@ class Field(BaseModel):
             return f'Json({{\'{FAKER.string()}\': True}})'
         elif typ == 'Bytes':
             return f'Base64.encode(b\'{FAKER.string()}\')'
-        else:
+        else:  # pragma: no cover
             raise RuntimeError(f'Sample data not supported for {typ} yet')
 
 
