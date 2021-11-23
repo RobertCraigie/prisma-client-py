@@ -662,7 +662,7 @@ class Field(BaseModel):
             return f'\'{FAKER.string()}\''
         elif typ == 'Float':
             return f'{FAKER.integer()}.{FAKER.integer() // 10000}'
-        elif typ == 'BigInt':
+        elif typ == 'BigInt':  # pragma: no cover
             return str(FAKER.integer() * 12)
         elif typ == 'DateTime':
             # TODO: random dates
