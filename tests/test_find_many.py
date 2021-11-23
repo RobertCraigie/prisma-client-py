@@ -49,6 +49,34 @@ async def test_find_many(client: Client) -> None:
 
 
 @pytest.mark.asyncio
+async def test_cursor(client: Client) -> None:
+    """Cursor argument correctly paginates results"""
+    posts = [
+        await client.post.create({'title': 'Foo 1', 'published': False}),
+        await client.post.create({'title': 'Foo 2', 'published': False}),
+        await client.post.create({'title': 'Foo 3', 'published': False}),
+        await client.post.create({'title': 'Foo 4', 'published': False}),
+    ]
+    found = await client.post.find_many(
+        cursor={
+            'id': posts[1].id,
+        },
+    )
+    assert len(found) == 3
+    assert found[0].title == 'Foo 2'
+    assert found[1].title == 'Foo 3'
+    assert found[2].title == 'Foo 4'
+
+    found = await client.post.find_many(
+        cursor={
+            'id': posts[3].id,
+        },
+    )
+    assert len(found) == 1
+    assert found[0].title == 'Foo 4'
+
+
+@pytest.mark.asyncio
 async def test_filtering_one_to_one_relation(client: Client) -> None:
     """Filtering by a 1-1 relational field and negating the filter"""
     async with client.batch_() as batcher:
