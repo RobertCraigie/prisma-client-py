@@ -4,7 +4,7 @@ datasource db {
 }
 
 generator client {
-  provider  = "prisma-client-py"
+  provider  = "coverage run -m prisma"
   interface = "sync"
 }
 
