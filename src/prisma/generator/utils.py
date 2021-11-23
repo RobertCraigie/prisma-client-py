@@ -7,7 +7,7 @@ from pathlib import Path
 from ..utils import monkeypatch
 
 if TYPE_CHECKING:
-    from .models import Model, Field
+    from .models import Model, Field  # pylint: disable=cyclic-import
 
 
 T = TypeVar('T')
@@ -36,7 +36,8 @@ class Faker:
     def integer(self) -> int:
         return next(self)
 
-    def from_list(self, values: List[T]) -> T:
+    @classmethod
+    def from_list(cls, values: List[T]) -> T:
         # TODO: actual implementation
         assert values, 'Expected non-empty list'
         return values[0]

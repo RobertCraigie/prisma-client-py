@@ -640,6 +640,7 @@ class Field(BaseModel):
         return sampled
 
     def _get_sample_data(self) -> str:
+        # pylint: disable=no-else-return,too-many-return-statements
         if self.is_relational:
             raise RuntimeError('Data sampling for relational fields not supported yet')
 
