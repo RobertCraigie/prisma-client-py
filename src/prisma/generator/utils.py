@@ -23,6 +23,9 @@ class Faker:
     def __init__(self, seed: int = 1) -> None:
         self._state = seed
 
+    def __iter__(self) -> 'Faker':
+        return self
+
     def __next__(self) -> int:
         self._state = state = (self._state * 1103515245 + 12345) & 0x7FFFFFFF
         return state

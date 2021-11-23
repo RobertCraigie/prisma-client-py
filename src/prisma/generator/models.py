@@ -363,7 +363,8 @@ class Model(BaseModel):
     else:
         all_fields: List['Field'] = FieldInfo(alias='fields')
 
-    def __init__(self, **data: Any) -> None:
+    # no idea why mypy throws this error
+    def __init__(self, **data: Any) -> None:  # type: ignore[no-redef]
         super().__init__(**data)
         self._sampler = Sampler(self)
 
