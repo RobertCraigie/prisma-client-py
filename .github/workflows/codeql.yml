@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ["python"]
+        language: ["python3"]
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
         # Learn more about CodeQL language support at https://git.io/codeql-language-support
 
@@ -51,8 +51,8 @@ jobs:
       #    and modify them (or add more) to build your code if your project
       #    uses a compiled language
 
-      # - run: |
-      #     make bootstrap
+      - run: |
+          make bootstrap
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
