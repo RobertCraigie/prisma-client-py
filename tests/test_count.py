@@ -45,3 +45,10 @@ async def test_select(client: Client) -> None:
         },
     )
     assert count == {'_all': 2, 'desc': 1}
+
+
+@pytest.mark.asyncio
+async def test_order_arg_deprecated(client: Client) -> None:
+    """The order argument is deprecated"""
+    with pytest.deprecated_call():
+        await client.post.count(order={'desc': 'desc'})

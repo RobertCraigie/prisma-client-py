@@ -1,6 +1,8 @@
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types with context %}
 # -- template actions.py.jinja --
+import warnings
+
 from . import types, errors
 from ._types import BaseModelT
 
@@ -261,6 +263,13 @@ class {{ model.name }}Actions:
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
             {% endraw %}
+
+        if order is not None:
+            warnings.warn(
+                'The `order` argument is redundant and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.count }}',

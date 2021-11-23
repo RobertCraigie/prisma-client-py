@@ -30,6 +30,8 @@
   from typing_extensions import TypedDict, Literal
   
   # -- template actions.py.jinja --
+  import warnings
+  
   from . import types, errors
   from ._types import BaseModelT
   
@@ -282,6 +284,13 @@
               root_selection = [
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
+  
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
   
           resp = await self._client._execute(
               operation='query',
@@ -561,6 +570,13 @@
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
   
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -838,6 +854,13 @@
               root_selection = [
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
+  
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
   
           resp = await self._client._execute(
               operation='query',
@@ -1117,6 +1140,13 @@
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
   
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -1394,6 +1424,13 @@
               root_selection = [
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
+  
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
   
           resp = await self._client._execute(
               operation='query',
@@ -1673,6 +1710,13 @@
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
   
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -1950,6 +1994,13 @@
               root_selection = [
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
+  
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
   
           resp = await self._client._execute(
               operation='query',
@@ -2229,6 +2280,13 @@
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
   
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -2506,6 +2564,13 @@
               root_selection = [
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
+  
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
   
           resp = await self._client._execute(
               operation='query',
@@ -2785,6 +2850,13 @@
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
   
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -3063,6 +3135,13 @@
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
   
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
+  
           resp = await self._client._execute(
               operation='query',
               method='aggregate',
@@ -3340,6 +3419,13 @@
               root_selection = [
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
+  
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
   
           resp = await self._client._execute(
               operation='query',
@@ -21209,6 +21295,8 @@
   from typing_extensions import TypedDict, Literal
   
   # -- template actions.py.jinja --
+  import warnings
+  
   from . import types, errors
   from ._types import BaseModelT
   
@@ -21461,6 +21549,13 @@
               root_selection = [
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
+  
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
   
           resp = self._client._execute(
               operation='query',
@@ -21740,6 +21835,13 @@
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
   
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -22017,6 +22119,13 @@
               root_selection = [
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
+  
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
   
           resp = self._client._execute(
               operation='query',
@@ -22296,6 +22405,13 @@
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
   
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -22573,6 +22689,13 @@
               root_selection = [
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
+  
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
   
           resp = self._client._execute(
               operation='query',
@@ -22852,6 +22975,13 @@
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
   
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -23129,6 +23259,13 @@
               root_selection = [
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
+  
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
   
           resp = self._client._execute(
               operation='query',
@@ -23408,6 +23545,13 @@
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
   
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -23685,6 +23829,13 @@
               root_selection = [
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
+  
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
   
           resp = self._client._execute(
               operation='query',
@@ -23964,6 +24115,13 @@
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
   
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -24242,6 +24400,13 @@
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
   
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
+  
           resp = self._client._execute(
               operation='query',
               method='aggregate',
@@ -24519,6 +24684,13 @@
               root_selection = [
                   '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
               ]
+  
+          if order is not None:
+              warnings.warn(
+                  'The `order` argument is redundant and will be removed in the next release',
+                  DeprecationWarning,
+                  stacklevel=2,
+              )
   
           resp = self._client._execute(
               operation='query',
