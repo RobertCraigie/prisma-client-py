@@ -628,7 +628,7 @@ class Field(BaseModel):
         for enum in get_datamodel().enums:
             if enum.name == typ:
                 return enum
-        return None
+        return None  # pragma: no cover
 
     def get_sample_data(self, *, increment: bool = True) -> str:
         # returning the same data that was last sampled is useful
