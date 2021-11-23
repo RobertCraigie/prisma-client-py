@@ -96,7 +96,8 @@ def sql_param(num: int = 1) -> str:
     if active_provider == 'postgresql':
         return f'${num}'
 
-    if active_provider == 'mongodb':  # TODO: test
+    # TODO: test
+    if active_provider == 'mongodb':  # pragma: no cover
         raise RuntimeError('no-op')
 
     # SQLite and MySQL use this style so just default to it
@@ -642,7 +643,7 @@ class Field(BaseModel):
 
     def _get_sample_data(self) -> str:
         # pylint: disable=no-else-return,too-many-return-statements
-        if self.is_relational:
+        if self.is_relational:  # pragma: no cover
             raise RuntimeError('Data sampling for relational fields not supported yet')
 
         if self.kind == 'enum':
