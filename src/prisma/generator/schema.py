@@ -25,8 +25,8 @@ class PrismaType(BaseModel):
         """Return either a `PrismaUnion` or a `PrismaAlias` depending on the number of subtypes"""
         if len(subtypes) > 1:
             return PrismaUnion(subtypes=subtypes, **kwargs)
-        else:
-            return PrismaAlias(subtypes=subtypes, **kwargs)
+
+        return PrismaAlias(subtypes=subtypes, **kwargs)
 
 
 class PrismaDict(PrismaType):
@@ -109,7 +109,7 @@ class Model(BaseModel):
                             name=f'{name}Inner',
                             fields={
                                 field.name: field.python_type
-                                for field in map(info._resolve_field, key.fields)
+                                for field in map(info.resolve_field, key.fields)
                             },
                         )
                     ],

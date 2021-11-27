@@ -379,6 +379,7 @@ class Model(BaseModel):
         self._sampler = Sampler(self)
 
     @root_validator(allow_reuse=True)
+    @classmethod
     def validate_compound_constraints_are_unique(
         cls, values: Dict[str, Any]
     ) -> Dict[str, Any]:
@@ -431,6 +432,7 @@ class Model(BaseModel):
         for field in self.scalar_fields:  # pragma: no branch
             if field.is_id or field.is_unique:
                 return field
+        return None
 
     @property
     def has_relational_fields(self) -> bool:
@@ -448,7 +450,7 @@ class Model(BaseModel):
             return name
         return f'{name}s'
 
-    def _resolve_field(self, name: str) -> 'Field':
+    def resolve_field(self, name: str) -> 'Field':
         for field in self.all_fields:
             if field.name == name:
                 return field
