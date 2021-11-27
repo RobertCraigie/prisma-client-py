@@ -420,6 +420,27 @@ profile = await client.profile.find_first(
 )
 ```
 
+#### Lists fields
+
+!!! warning
+    Scalar list fields are only supported on PostgreSQL and MongoDB
+
+Every scalar type can also be defined as a list, for example:
+
+```py
+user = await client.user.find_first(
+    where={
+        'emails': {
+            # only one of the following fields is allowed at the same time
+            'has': 'robert@craigie.dev',
+            'has_every': ['email1', 'email2'],
+            'has_some': ['email3', 'email4'],
+            'is_empty': True,
+        },
+    },
+)
+```
+
 ### Combining arguments
 
 All of the above mentioned filters can be combined with other filters using `AND`, `NOT` and `OR`.
@@ -615,6 +636,26 @@ user = await client.user.update(
             'divide': 3.0,
         },
     },
+)
+```
+
+### Updating List Fields
+
+!!! warning
+    Scalar list fields are only supported on PostgreSQL and MongoDB
+
+```py
+user = await client.user.update(
+    where={
+        'id': 'cksc9lp7w0014f08zdkz0mdnn',
+    },
+    data={
+        'email': {
+            'set': ['robert@craigie.dev', 'robert@example.com'],
+            # or
+            'push': ['robert@example.com'],
+        },
+    }
 )
 ```
 

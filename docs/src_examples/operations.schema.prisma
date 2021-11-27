@@ -1,8 +1,14 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
 model User {
   id      String   @id @default(cuid())
   name    String
   points  Float    @default(0)
   meta    Json     @default("{}")
+  emails  String[]
   posts   Post[]
   profile Profile?
 }
