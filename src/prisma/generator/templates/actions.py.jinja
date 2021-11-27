@@ -13,10 +13,7 @@ if TYPE_CHECKING:
 {# TODO: support sampling combined unique constraints #}
 {% macro sample_where_unique(model) %}
 {% set id_field = model.id_field %}
-{% if id_field %}
-'{{ id_field.name }}': {{ id_field.get_sample_data() }},
-{% else %}
-# {{ model.name }} where unique filter
+{% if id_field %}'{{ id_field.name }}': {{ id_field.get_sample_data() }},{% else %}# {{ model.name }} where unique filter
 {% endif %}
 {% endmacro %}
 {% set base_error_doc = clean_multiline('''
