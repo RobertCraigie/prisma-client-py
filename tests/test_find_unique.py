@@ -67,8 +67,8 @@ async def test_find_unique_by_unique_field(client: Client) -> None:
 
     with pytest.raises(errors.MissingRequiredValueError):
         await client.user.find_unique(
-            where={  # type: ignore[typeddict-item]
-                'email': None,
+            where={
+                'email': None,  # type: ignore[typeddict-item]
             },
         )
 
@@ -78,7 +78,7 @@ async def test_multiple_fields_are_not_allowed(client: Client) -> None:
     """Multiple fields cannot be passed at once"""
     with pytest.raises(errors.DataError):
         await client.user.find_unique(
-            where={  # type: ignore[typeddict-item]
+            where={  # type: ignore[arg-type]
                 'id': 'foo',
                 'email': 'foo',
             },

@@ -74,7 +74,9 @@
     async def test_find_unique_dynamic_where(client: Client) -> None:
       client = Client()
 
-      data: PostWhereUniqueInput = {}
+      data: PostWhereUniqueInput = {
+        'id': 'foo',
+      },
 
       if True:
         data['id'] = '983293asdsad'
