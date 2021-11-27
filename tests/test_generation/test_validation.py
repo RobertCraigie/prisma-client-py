@@ -178,3 +178,57 @@ def test_old_http_option(testdir: Testdir, http: str, new: str) -> None:
         'your Prisma schema and replace it with:' in stdout
     )
     assert f'interface = "{new}"' in stdout
+
+
+def test_compound_id_implicit_field_shaddowing(testdir: Testdir) -> None:
+    """Compound IDs cannot implicitly have the same name as an already defined field
+
+    https://github.com/prisma/prisma/issues/10456
+    """
+    schema = (
+        testdir.SCHEMA_HEADER
+        + '''
+        model User {{
+            name         String
+            surname      String
+            name_surname String
+
+            @@id([name, surname])
+        }}
+    '''
+    )
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    assert (
+        'Compound constraint with name: name_surname is already used as a name for a field; '
+        'Please choose a different name. For example: \n'
+        '  @@id([name, surname], name: "my_custom_primary_key")'
+    ) in str(exc.value.output, 'utf-8')
+
+
+def test_compound_unique_constraint_implicit_field_shaddowing(testdir: Testdir) -> None:
+    """Compound unique constraints cannot implicitly have the same name as an already defined field
+
+    https://github.com/prisma/prisma/issues/10456
+    """
+    schema = (
+        testdir.SCHEMA_HEADER
+        + '''
+        model User {{
+            name         String
+            surname      String
+            name_surname String
+
+            @@unique([name, surname])
+        }}
+    '''
+    )
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    assert (
+        'Compound constraint with name: name_surname is already used as a name for a field; '
+        'Please choose a different name. For example: \n'
+        '  @@unique([name, surname], name: "my_custom_primary_key")'
+    ) in str(exc.value.output, 'utf-8')

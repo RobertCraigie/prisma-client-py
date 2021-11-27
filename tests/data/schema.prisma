@@ -26,6 +26,7 @@ model Post {
 model User {
   id      String   @id @default(cuid())
   name    String
+  email   String?  @unique
   posts   Post[]
   profile Profile?
 }
@@ -39,7 +40,7 @@ model Category {
 model Profile {
   id      Int    @id @default(autoincrement())
   user    User   @relation(fields: [user_id], references: [id])
-  user_id String
+  user_id String @unique
   bio     String
 }
 

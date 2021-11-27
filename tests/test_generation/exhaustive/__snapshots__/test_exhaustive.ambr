@@ -274,7 +274,7 @@
           ```py
           post = await Post.prisma().delete(
               where={
-                  'id': 486256185
+                  'id': 486256185,
               },
           )
           ```
@@ -327,7 +327,7 @@
           ```py
           post = await Post.prisma().find_unique(
               where={
-                  'id': 1062517886
+                  'id': 1062517886,
               },
           )
           ```
@@ -1093,7 +1093,7 @@
           ```py
           user = await User.prisma().delete(
               where={
-                  'id': 1860847622
+                  'id': 1860847622,
               },
           )
           ```
@@ -1146,7 +1146,7 @@
           ```py
           user = await User.prisma().find_unique(
               where={
-                  'id': 1448521415
+                  'id': 1448521415,
               },
           )
           ```
@@ -1917,7 +1917,7 @@
           ```py
           m = await M.prisma().delete(
               where={
-                  'id': 1266032265
+                  'id': 1266032265,
               },
           )
           ```
@@ -1970,7 +1970,7 @@
           ```py
           m = await M.prisma().find_unique(
               where={
-                  'id': 93253262
+                  'id': 93253262,
               },
           )
           ```
@@ -2742,7 +2742,7 @@
           ```py
           n = await N.prisma().delete(
               where={
-                  'id': 525761943
+                  'id': 525761943,
               },
           )
           ```
@@ -2795,7 +2795,7 @@
           ```py
           n = await N.prisma().find_unique(
               where={
-                  'id': 736209796
+                  'id': 736209796,
               },
           )
           ```
@@ -3566,7 +3566,7 @@
           ```py
           oneoptional = await OneOptional.prisma().delete(
               where={
-                  'id': 1611009182
+                  'id': 1611009182,
               },
           )
           ```
@@ -3619,7 +3619,7 @@
           ```py
           oneoptional = await OneOptional.prisma().find_unique(
               where={
-                  'id': 446673791
+                  'id': 446673791,
               },
           )
           ```
@@ -4388,7 +4388,7 @@
           ```py
           manyrequired = await ManyRequired.prisma().delete(
               where={
-                  'id': 1297607553
+                  'id': 1297607553,
               },
           )
           ```
@@ -4441,7 +4441,7 @@
           ```py
           manyrequired = await ManyRequired.prisma().find_unique(
               where={
-                  'id': 519488550
+                  'id': 519488550,
               },
           )
           ```
@@ -5195,7 +5195,7 @@
           ```py
           lists = await Lists.prisma().delete(
               where={
-                  'id': 'cacjdfhejh'
+                  'id': 'cacjdfhejh',
               },
           )
           ```
@@ -5248,7 +5248,7 @@
           ```py
           lists = await Lists.prisma().find_unique(
               where={
-                  'id': 'bdbifjhbbi'
+                  'id': 'bdbifjhbbi',
               },
           )
           ```
@@ -5800,7 +5800,7 @@
           -------
           ```py
           users = await A.prisma().query_raw(
-              'SELECT * FROM A WHERE id = $1',
+              'SELECT * FROM A WHERE email = $1',
               'bfjibceaec',
           )
           ```
@@ -5840,7 +5840,7 @@
           -------
           ```py
           user = await A.prisma().query_first(
-              'SELECT * FROM A WHERE email = $1',
+              'SELECT * FROM A WHERE name = $1',
               'ibhgcdbgd',
           )
           ```
@@ -6004,7 +6004,7 @@
           ```py
           a = await A.prisma().delete(
               where={
-                  'id': 'bbidjbbjaa'
+                  'email': 'bbidjbbjaa',
               },
           )
           ```
@@ -6057,7 +6057,7 @@
           ```py
           a = await A.prisma().find_unique(
               where={
-                  'id': 'bfijhaejdd'
+                  'email': 'bfijhaejdd',
               },
           )
           ```
@@ -6120,11 +6120,11 @@
           # find the first 10 A records
           as = await A.prisma().find_many(take=10)
   
-          # find the first 5 A records ordered by the name field
+          # find the first 5 A records ordered by the int field
           as = await A.prisma().find_many(
               take=5,
               order={
-                  'name': 'desc',
+                  'int': 'desc',
               },
           )
           ```
@@ -6182,11 +6182,11 @@
           Example
           -------
           ```py
-          # find the second A record ordered by the int field
+          # find the second A record ordered by the sInt field
           a = await A.prisma().find_first(
               skip=1,
               order={
-                  'int': 'desc',
+                  'sInt': 'desc',
               },
           )
           ```
@@ -6242,7 +6242,7 @@
           ```py
           a = await A.prisma().update(
               where={
-                  'id': 'bcedehfiji',
+                  'email': 'bcedehfiji',
               },
               data={
                   # data to update the A record to
@@ -6300,18 +6300,16 @@
           ```py
           a = await A.prisma().upsert(
               where={
-                  'id': 'bdgjicijhb',
+                  'email': 'bdgjicijhb',
               },
               data={
                   'create': {
-                      'id': 'bdgjicijhb',
-                      'email': 'jfiahhbae',
+                      'email': 'bdgjicijhb',
                       'int': 1513050921,
                       'sInt': 204674734,
                       'bInt': 24811819956,
                   },
                   'update': {
-                      'email': 'jfiahhbae',
                       'int': 1513050921,
                       'sInt': 204674734,
                       'bInt': 24811819956,
@@ -6363,7 +6361,7 @@
           # update all A records
           total = await A.prisma().update_many(
               data={
-                  'sInt': 1678593480
+                  'inc_int': 1678593480
               },
               where={}
           )
@@ -6429,7 +6427,7 @@
           results = await A.prisma().count(
               select={
                   '_all': True,
-                  'inc_int': True,
+                  'inc_sInt': True,
               },
           )
           ```
@@ -6498,7 +6496,7 @@
           results = await A.prisma().count(
               select={
                   '_all': True,
-                  'inc_sInt': True,
+                  'bInt': True,
               },
           )
           ```
@@ -6815,7 +6813,7 @@
           ```py
           b = await B.prisma().delete(
               where={
-                  'id': 'hghjaaai'
+                  'id': 'hghjaaai',
               },
           )
           ```
@@ -6868,7 +6866,7 @@
           ```py
           b = await B.prisma().find_unique(
               where={
-                  'id': 'cajicjjdef'
+                  'id': 'cajicjjdef',
               },
           )
           ```
@@ -7424,7 +7422,7 @@
           -------
           ```py
           users = await C.prisma().query_raw(
-              'SELECT * FROM C WHERE id = $1',
+              'SELECT * FROM C WHERE char = $1',
               'bbihggdcji',
           )
           ```
@@ -7464,7 +7462,7 @@
           -------
           ```py
           user = await C.prisma().query_first(
-              'SELECT * FROM C WHERE char = $1',
+              'SELECT * FROM C WHERE v_char = $1',
               'hgjgibdgd',
           )
           ```
@@ -7634,7 +7632,8 @@
           ```py
           c = await C.prisma().delete(
               where={
-                  'id': 'bhfaabbaha'
+                  # C where unique filter
+  
               },
           )
           ```
@@ -7687,7 +7686,8 @@
           ```py
           c = await C.prisma().find_unique(
               where={
-                  'id': 'ebajedhhf'
+                  # C where unique filter
+  
               },
           )
           ```
@@ -7750,11 +7750,11 @@
           # find the first 10 C records
           cs = await C.prisma().find_many(take=10)
   
-          # find the first 5 C records ordered by the v_char field
+          # find the first 5 C records ordered by the text field
           cs = await C.prisma().find_many(
               take=5,
               order={
-                  'v_char': 'desc',
+                  'text': 'desc',
               },
           )
           ```
@@ -7812,11 +7812,11 @@
           Example
           -------
           ```py
-          # find the second C record ordered by the text field
+          # find the second C record ordered by the bit field
           c = await C.prisma().find_first(
               skip=1,
               order={
-                  'text': 'desc',
+                  'bit': 'desc',
               },
           )
           ```
@@ -7872,7 +7872,8 @@
           ```py
           c = await C.prisma().update(
               where={
-                  'id': 'jajacedge',
+                  # C where unique filter
+  
               },
               data={
                   # data to update the C record to
@@ -7930,25 +7931,14 @@
           ```py
           c = await C.prisma().upsert(
               where={
-                  'id': 'hffgbabgf',
+                  # C where unique filter
               },
               data={
                   'create': {
-                      'id': 'hffgbabgf',
-                      'char': 'bbgaifhdaa',
-                      'v_char': 'dgbcdaegb',
-                      'text': 'beagfbbjig',
-                      'bit': 'beicihhijb',
-                      'v_bit': 'fgggcdcjg',
-                      'uuid': 'ccjbbjigf',
+                      # C data to be set if the record does not exist
                   },
                   'update': {
-                      'char': 'bbgaifhdaa',
-                      'v_char': 'dgbcdaegb',
-                      'text': 'beagfbbjig',
-                      'bit': 'beicihhijb',
-                      'v_bit': 'fgggcdcjg',
-                      'uuid': 'ccjbbjigf',
+                      # C data to be set if the record does exist
                   },
               },
           )
@@ -7997,7 +7987,7 @@
           # update all C records
           total = await C.prisma().update_many(
               data={
-                  'bit': 'biacbiieja'
+                  'v_bit': 'bhfaabbaha'
               },
               where={}
           )
@@ -8063,7 +8053,7 @@
           results = await C.prisma().count(
               select={
                   '_all': True,
-                  'v_bit': True,
+                  'uuid': True,
               },
           )
           ```
@@ -8132,7 +8122,7 @@
           results = await C.prisma().count(
               select={
                   '_all': True,
-                  'uuid': True,
+                  'char': True,
               },
           )
           ```
@@ -8252,7 +8242,7 @@
           ```py
           users = await D.prisma().query_raw(
               'SELECT * FROM D WHERE id = $1',
-              'cjejbgbff',
+              'ebajedhhf',
           )
           ```
           """
@@ -8332,10 +8322,10 @@
               data={
                   # data to create a D record
                   'bool': False,
-                  'xml': 'badagbgeha',
-                  'json_': Json({'ibgebbjch': True}),
-                  'jsonb': Json({'baieajjiee': True}),
-                  'binary': Base64.encode(b'bahjhaccfd'),
+                  'xml': 'biacbiieja',
+                  'json_': Json({'cjejbgbff': True}),
+                  'jsonb': Json({'fgeahddae': True}),
+                  'binary': Base64.encode(b'diageigcf'),
               },
           )
           ```
@@ -8392,18 +8382,18 @@
                   {
                       # data to create a D record
                       'bool': True,
-                      'xml': 'bbcigiadhb',
-                      'json_': Json({'cfjagbbae': True}),
-                      'jsonb': Json({'bbbfhdidef': True}),
-                      'binary': Base64.encode(b'bdadhibhec'),
+                      'xml': 'ibgebbjch',
+                      'json_': Json({'baieajjiee': True}),
+                      'jsonb': Json({'bahjhaccfd': True}),
+                      'binary': Base64.encode(b'hffhfabhi'),
                   },
                   {
                       # data to create a D record
                       'bool': False,
-                      'xml': 'bbjfijjadg',
-                      'json_': Json({'hdjacbehh': True}),
-                      'jsonb': Json({'bhcccbeaba': True}),
-                      'binary': Base64.encode(b'bcgjbdgjdj'),
+                      'xml': 'cfjagbbae',
+                      'json_': Json({'bbbfhdidef': True}),
+                      'jsonb': Json({'bdadhibhec': True}),
+                      'binary': Base64.encode(b'bfhdjaiejf'),
                   },
               ],
               skip_duplicates=True,
@@ -8458,7 +8448,7 @@
           ```py
           d = await D.prisma().delete(
               where={
-                  'id': 'fhdbhifae'
+                  'id': 'bbjfijjadg',
               },
           )
           ```
@@ -8511,7 +8501,7 @@
           ```py
           d = await D.prisma().find_unique(
               where={
-                  'id': 'beeacgfcej'
+                  'id': 'hdjacbehh',
               },
           )
           ```
@@ -8696,7 +8686,7 @@
           ```py
           d = await D.prisma().update(
               where={
-                  'id': 'bbifhdiicc',
+                  'id': 'bhcccbeaba',
               },
               data={
                   # data to update the D record to
@@ -8754,23 +8744,23 @@
           ```py
           d = await D.prisma().upsert(
               where={
-                  'id': 'bgjeccejad',
+                  'id': 'bcgjbdgjdj',
               },
               data={
                   'create': {
-                      'id': 'bgjeccejad',
+                      'id': 'bcgjbdgjdj',
                       'bool': False,
-                      'xml': 'bbjfijjadg',
-                      'json_': Json({'hdjacbehh': True}),
-                      'jsonb': Json({'bhcccbeaba': True}),
-                      'binary': Base64.encode(b'bcgjbdgjdj'),
+                      'xml': 'cfjagbbae',
+                      'json_': Json({'bbbfhdidef': True}),
+                      'jsonb': Json({'bdadhibhec': True}),
+                      'binary': Base64.encode(b'bfhdjaiejf'),
                   },
                   'update': {
                       'bool': False,
-                      'xml': 'bbjfijjadg',
-                      'json_': Json({'hdjacbehh': True}),
-                      'jsonb': Json({'bhcccbeaba': True}),
-                      'binary': Base64.encode(b'bcgjbdgjdj'),
+                      'xml': 'cfjagbbae',
+                      'json_': Json({'bbbfhdidef': True}),
+                      'jsonb': Json({'bdadhibhec': True}),
+                      'binary': Base64.encode(b'bfhdjaiejf'),
                   },
               },
           )
@@ -8819,7 +8809,7 @@
           # update all D records
           total = await D.prisma().update_many(
               data={
-                  'jsonb': Json({'bjagdgabbg': True})
+                  'jsonb': Json({'fhdbhifae': True})
               },
               where={}
           )
@@ -9074,7 +9064,7 @@
           ```py
           users = await E.prisma().query_raw(
               'SELECT * FROM E WHERE id = $1',
-              'bjbbcffdij',
+              'beeacgfcej',
           )
           ```
           """
@@ -9274,7 +9264,7 @@
           ```py
           e = await E.prisma().delete(
               where={
-                  'id': 'begcgchdi'
+                  'id': 'bbifhdiicc',
               },
           )
           ```
@@ -9327,7 +9317,7 @@
           ```py
           e = await E.prisma().find_unique(
               where={
-                  'id': 'bhbjceagbb'
+                  'id': 'bgjeccejad',
               },
           )
           ```
@@ -9512,7 +9502,7 @@
           ```py
           e = await E.prisma().update(
               where={
-                  'id': 'bjeifffjdg',
+                  'id': 'bjagdgabbg',
               },
               data={
                   # data to update the E record to
@@ -9570,11 +9560,11 @@
           ```py
           e = await E.prisma().upsert(
               where={
-                  'id': 'bdidcfdfjd',
+                  'id': 'bjbbcffdij',
               },
               data={
                   'create': {
-                      'id': 'bdidcfdfjd',
+                      'id': 'bjbbcffdij',
                       'date': datetime.datetime.utcnow(),
                       'time': datetime.datetime.utcnow(),
                       'ts': datetime.datetime.utcnow(),
@@ -9631,7 +9621,7 @@
           # update all E records
           total = await E.prisma().update_many(
               data={
-                  'id': 'dfeggejja'
+                  'id': 'begcgchdi'
               },
               where={}
           )
@@ -10005,7 +9995,6 @@
           'json_objects',
       ],
       'A': [
-          'id',
           'email',
           'name',
           'int',
@@ -10021,7 +10010,6 @@
           'd_float',
       ],
       'C': [
-          'id',
           'char',
           'v_char',
           'text',
@@ -10882,7 +10870,6 @@
   }
   
   model A {
-    id       String  @id @default(uuid())
     email    String  @unique
     name     String?
     int      Int     @db.Integer
@@ -10891,6 +10878,8 @@
     inc_sInt Int     @default(autoincrement()) @db.SmallInt
     bInt     BigInt  @db.BigInt
     inc_bInt BigInt  @default(autoincrement()) @db.BigInt
+  
+    @@unique([name, email])
   }
   
   model B {
@@ -10901,16 +10890,19 @@
     // TODO
     // decFloat Decimal @db.Decimal(2, 1)
     // numFloat Decimal @db.Decimal(10, 6)
+  
+    @@unique([float, d_float], name: "my_constraint")
   }
   
   model C {
-    id     String @id @default(cuid())
     char   String @db.Char(10)
     v_char String @db.VarChar(11)
     text   String @db.Text
     bit    String @db.Bit(4)
     v_bit  String @db.VarBit(5)
     uuid   String @db.Uuid
+  
+    @@id([char, text], name: "my_id")
   }
   
   model D {
@@ -13985,7 +13977,6 @@
           return fields.Base64._internal_from_prisma(value)
   
   class A(BaseModel):
-      id: str
       email: str
       name: Optional[str]
       int: int
@@ -14173,7 +14164,6 @@
   
   
   class C(BaseModel):
-      id: str
       char: str
       v_char: str
       text: str
@@ -14980,12 +14970,6 @@
   
   _A_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _A_fields: Dict['types.AKeys', PartialModelField] = {
-      'id': {
-          'name': 'id',
-          'is_list': False,
-          'optional': False,
-          'type': 'str',
-      },
       'email': {
           'name': 'email',
           'is_list': False,
@@ -15060,12 +15044,6 @@
   
   _C_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _C_fields: Dict['types.CKeys', PartialModelField] = {
-      'id': {
-          'name': 'id',
-          'is_list': False,
-          'optional': False,
-          'type': 'str',
-      },
       'char': {
           'name': 'char',
           'is_list': False,
@@ -16075,9 +16053,16 @@
       connect: Union['PostWhereUniqueInput', List['PostWhereUniqueInput']]
   
   
-  class PostWhereUniqueInput(TypedDict, total=False):
-      """Unique Post arguments for searching"""
-      id: int
+  
+  _PostWhereUnique_id_Input = TypedDict(
+      '_PostWhereUnique_id_Input',
+      {
+          'id': 'int',
+      },
+      total=True
+  )
+  
+  PostWhereUniqueInput = _PostWhereUnique_id_Input
   
   
   class PostUpdateInput(TypedDict, total=False):
@@ -17030,10 +17015,27 @@
       connect: Union['UserWhereUniqueInput', List['UserWhereUniqueInput']]
   
   
-  class UserWhereUniqueInput(TypedDict, total=False):
-      """Unique User arguments for searching"""
-      id: int
-      email: str
+  
+  _UserWhereUnique_id_Input = TypedDict(
+      '_UserWhereUnique_id_Input',
+      {
+          'id': 'int',
+      },
+      total=True
+  )
+  
+  _UserWhereUnique_email_Input = TypedDict(
+      '_UserWhereUnique_email_Input',
+      {
+          'email': 'str',
+      },
+      total=True
+  )
+  
+  UserWhereUniqueInput = Union[
+      '_UserWhereUnique_id_Input',
+      '_UserWhereUnique_email_Input',
+  ]
   
   
   class UserUpdateInput(TypedDict, total=False):
@@ -18039,9 +18041,16 @@
       connect: Union['MWhereUniqueInput', List['MWhereUniqueInput']]
   
   
-  class MWhereUniqueInput(TypedDict, total=False):
-      """Unique M arguments for searching"""
-      id: int
+  
+  _MWhereUnique_id_Input = TypedDict(
+      '_MWhereUnique_id_Input',
+      {
+          'id': 'int',
+      },
+      total=True
+  )
+  
+  MWhereUniqueInput = _MWhereUnique_id_Input
   
   
   class MUpdateInput(TypedDict, total=False):
@@ -19043,9 +19052,16 @@
       connect: Union['NWhereUniqueInput', List['NWhereUniqueInput']]
   
   
-  class NWhereUniqueInput(TypedDict, total=False):
-      """Unique N arguments for searching"""
-      id: int
+  
+  _NWhereUnique_id_Input = TypedDict(
+      '_NWhereUnique_id_Input',
+      {
+          'id': 'int',
+      },
+      total=True
+  )
+  
+  NWhereUniqueInput = _NWhereUnique_id_Input
   
   
   class NUpdateInput(TypedDict, total=False):
@@ -20061,9 +20077,16 @@
       connect: Union['OneOptionalWhereUniqueInput', List['OneOptionalWhereUniqueInput']]
   
   
-  class OneOptionalWhereUniqueInput(TypedDict, total=False):
-      """Unique OneOptional arguments for searching"""
-      id: int
+  
+  _OneOptionalWhereUnique_id_Input = TypedDict(
+      '_OneOptionalWhereUnique_id_Input',
+      {
+          'id': 'int',
+      },
+      total=True
+  )
+  
+  OneOptionalWhereUniqueInput = _OneOptionalWhereUnique_id_Input
   
   
   class OneOptionalUpdateInput(TypedDict, total=False):
@@ -21061,9 +21084,16 @@
       connect: Union['ManyRequiredWhereUniqueInput', List['ManyRequiredWhereUniqueInput']]
   
   
-  class ManyRequiredWhereUniqueInput(TypedDict, total=False):
-      """Unique ManyRequired arguments for searching"""
-      id: int
+  
+  _ManyRequiredWhereUnique_id_Input = TypedDict(
+      '_ManyRequiredWhereUnique_id_Input',
+      {
+          'id': 'int',
+      },
+      total=True
+  )
+  
+  ManyRequiredWhereUniqueInput = _ManyRequiredWhereUnique_id_Input
   
   
   class ManyRequiredUpdateInput(TypedDict, total=False):
@@ -22063,9 +22093,16 @@
       connect: Union['ListsWhereUniqueInput', List['ListsWhereUniqueInput']]
   
   
-  class ListsWhereUniqueInput(TypedDict, total=False):
-      """Unique Lists arguments for searching"""
-      id: str
+  
+  _ListsWhereUnique_id_Input = TypedDict(
+      '_ListsWhereUnique_id_Input',
+      {
+          'id': 'str',
+      },
+      total=True
+  )
+  
+  ListsWhereUniqueInput = _ListsWhereUnique_id_Input
   
   
   class ListsUpdateInput(TypedDict, total=False):
@@ -22986,7 +23023,6 @@
   
   class AOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the A create method"""
-      id: str
       name: Optional[str]
       inc_int: int
       inc_sInt: int
@@ -23006,7 +23042,6 @@
   
   class AOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the A create method, without relations"""
-      id: str
       name: Optional[str]
       inc_int: int
       inc_sInt: int
@@ -23031,10 +23066,36 @@
       connect: Union['AWhereUniqueInput', List['AWhereUniqueInput']]
   
   
-  class AWhereUniqueInput(TypedDict, total=False):
-      """Unique A arguments for searching"""
-      id: str
-      email: str
+  
+  _AWhereUnique_email_Input = TypedDict(
+      '_AWhereUnique_email_Input',
+      {
+          'email': 'str',
+      },
+      total=True
+  )
+  
+  _ACompoundname_emailKeyInner = TypedDict(
+      '_ACompoundname_emailKeyInner',
+      {
+          'name': 'str',
+          'email': 'str',
+      },
+      total=True
+  )
+  
+  _ACompoundname_emailKey = TypedDict(
+      '_ACompoundname_emailKey',
+      {
+          'name_email': '_ACompoundname_emailKeyInner',
+      },
+      total=True
+  )
+  
+  AWhereUniqueInput = Union[
+      '_AWhereUnique_email_Input',
+      '_ACompoundname_emailKey',
+  ]
   
   
   class AUpdateInput(TypedDict, total=False):
@@ -23050,7 +23111,6 @@
   
   class AUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: str
       email: str
       name: Optional[str]
       int: Union[AtomicIntInput, int]
@@ -23094,7 +23154,6 @@
   
   
   class AOrderByInput(TypedDict, total=False):
-      id: 'SortOrder'
       email: 'SortOrder'
       name: 'SortOrder'
       int: 'SortOrder'
@@ -23851,7 +23910,6 @@
   
   class AWhereInput(TypedDict, total=False):
       """A arguments for searching"""
-      id: Union[str, 'types.StringFilter']
       email: Union[str, 'types.StringFilter']
       name: Union[str, 'types.StringFilter']
       int: Union[int, 'types.IntFilter']
@@ -23870,7 +23928,6 @@
   
   class AWhereInputRecursive1(TypedDict, total=False):
       """A arguments for searching"""
-      id: Union[str, 'types.StringFilter']
       email: Union[str, 'types.StringFilter']
       name: Union[str, 'types.StringFilter']
       int: Union[int, 'types.IntFilter']
@@ -23889,7 +23946,6 @@
   
   class AWhereInputRecursive2(TypedDict, total=False):
       """A arguments for searching"""
-      id: Union[str, 'types.StringFilter']
       email: Union[str, 'types.StringFilter']
       name: Union[str, 'types.StringFilter']
       int: Union[int, 'types.IntFilter']
@@ -23904,7 +23960,6 @@
   ACountAggregateInput = TypedDict(
       'ACountAggregateInput',
       {
-          'id': bool,
           'email': bool,
           'name': bool,
           'int': bool,
@@ -23921,7 +23976,6 @@
   ACountAggregateOutput = TypedDict(
       'ACountAggregateOutput',
       {
-          'id': int,
           'email': int,
           'name': int,
           'int': int,
@@ -23937,7 +23991,6 @@
   
   
   AKeys = Literal[
-      'id',
       'email',
       'name',
       'int',
@@ -23987,9 +24040,36 @@
       connect: Union['BWhereUniqueInput', List['BWhereUniqueInput']]
   
   
-  class BWhereUniqueInput(TypedDict, total=False):
-      """Unique B arguments for searching"""
-      id: str
+  
+  _BWhereUnique_id_Input = TypedDict(
+      '_BWhereUnique_id_Input',
+      {
+          'id': 'str',
+      },
+      total=True
+  )
+  
+  _BCompoundmy_constraintKeyInner = TypedDict(
+      '_BCompoundmy_constraintKeyInner',
+      {
+          'float': 'float',
+          'd_float': 'float',
+      },
+      total=True
+  )
+  
+  _BCompoundmy_constraintKey = TypedDict(
+      '_BCompoundmy_constraintKey',
+      {
+          'my_constraint': '_BCompoundmy_constraintKeyInner',
+      },
+      total=True
+  )
+  
+  BWhereUniqueInput = Union[
+      '_BWhereUnique_id_Input',
+      '_BCompoundmy_constraintKey',
+  ]
   
   
   class BUpdateInput(TypedDict, total=False):
@@ -24856,7 +24936,6 @@
   
   class COptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the C create method"""
-      id: str
   
   
   class CCreateInput(COptionalCreateInput):
@@ -24874,7 +24953,6 @@
   
   class COptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the C create method, without relations"""
-      id: str
   
   
   class CCreateWithoutRelationsInput(COptionalCreateWithoutRelationsInput):
@@ -24897,9 +24975,25 @@
       connect: Union['CWhereUniqueInput', List['CWhereUniqueInput']]
   
   
-  class CWhereUniqueInput(TypedDict, total=False):
-      """Unique C arguments for searching"""
-      id: str
+  
+  _CCompoundPrimaryKeyInner = TypedDict(
+      '_CCompoundPrimaryKeyInner',
+      {
+          'char': 'str',
+          'text': 'str',
+      },
+      total=True
+  )
+  
+  _CCompoundPrimaryKey = TypedDict(
+      '_CCompoundPrimaryKey',
+      {
+          'my_id': '_CCompoundPrimaryKeyInner',
+      },
+      total=True
+  )
+  
+  CWhereUniqueInput = _CCompoundPrimaryKey
   
   
   class CUpdateInput(TypedDict, total=False):
@@ -24914,7 +25008,6 @@
   
   class CUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: str
       char: str
       v_char: str
       text: str
@@ -24956,7 +25049,6 @@
   
   
   class COrderByInput(TypedDict, total=False):
-      id: 'SortOrder'
       char: 'SortOrder'
       v_char: 'SortOrder'
       text: 'SortOrder'
@@ -25711,7 +25803,6 @@
   
   class CWhereInput(TypedDict, total=False):
       """C arguments for searching"""
-      id: Union[str, 'types.StringFilter']
       char: Union[str, 'types.StringFilter']
       v_char: Union[str, 'types.StringFilter']
       text: Union[str, 'types.StringFilter']
@@ -25728,7 +25819,6 @@
   
   class CWhereInputRecursive1(TypedDict, total=False):
       """C arguments for searching"""
-      id: Union[str, 'types.StringFilter']
       char: Union[str, 'types.StringFilter']
       v_char: Union[str, 'types.StringFilter']
       text: Union[str, 'types.StringFilter']
@@ -25745,7 +25835,6 @@
   
   class CWhereInputRecursive2(TypedDict, total=False):
       """C arguments for searching"""
-      id: Union[str, 'types.StringFilter']
       char: Union[str, 'types.StringFilter']
       v_char: Union[str, 'types.StringFilter']
       text: Union[str, 'types.StringFilter']
@@ -25758,7 +25847,6 @@
   CCountAggregateInput = TypedDict(
       'CCountAggregateInput',
       {
-          'id': bool,
           'char': bool,
           'v_char': bool,
           'text': bool,
@@ -25773,7 +25861,6 @@
   CCountAggregateOutput = TypedDict(
       'CCountAggregateOutput',
       {
-          'id': int,
           'char': int,
           'v_char': int,
           'text': int,
@@ -25787,7 +25874,6 @@
   
   
   CKeys = Literal[
-      'id',
       'char',
       'v_char',
       'text',
@@ -25841,9 +25927,16 @@
       connect: Union['DWhereUniqueInput', List['DWhereUniqueInput']]
   
   
-  class DWhereUniqueInput(TypedDict, total=False):
-      """Unique D arguments for searching"""
-      id: str
+  
+  _DWhereUnique_id_Input = TypedDict(
+      '_DWhereUnique_id_Input',
+      {
+          'id': 'str',
+      },
+      total=True
+  )
+  
+  DWhereUniqueInput = _DWhereUnique_id_Input
   
   
   class DUpdateInput(TypedDict, total=False):
@@ -26772,9 +26865,16 @@
       connect: Union['EWhereUniqueInput', List['EWhereUniqueInput']]
   
   
-  class EWhereUniqueInput(TypedDict, total=False):
-      """Unique E arguments for searching"""
-      id: str
+  
+  _EWhereUnique_id_Input = TypedDict(
+      '_EWhereUnique_id_Input',
+      {
+          'id': 'str',
+      },
+      total=True
+  )
+  
+  EWhereUniqueInput = _EWhereUnique_id_Input
   
   
   class EUpdateInput(TypedDict, total=False):
@@ -27928,7 +28028,7 @@
           ```py
           post = Post.prisma().delete(
               where={
-                  'id': 486256185
+                  'id': 486256185,
               },
           )
           ```
@@ -27981,7 +28081,7 @@
           ```py
           post = Post.prisma().find_unique(
               where={
-                  'id': 1062517886
+                  'id': 1062517886,
               },
           )
           ```
@@ -28747,7 +28847,7 @@
           ```py
           user = User.prisma().delete(
               where={
-                  'id': 1860847622
+                  'id': 1860847622,
               },
           )
           ```
@@ -28800,7 +28900,7 @@
           ```py
           user = User.prisma().find_unique(
               where={
-                  'id': 1448521415
+                  'id': 1448521415,
               },
           )
           ```
@@ -29571,7 +29671,7 @@
           ```py
           m = M.prisma().delete(
               where={
-                  'id': 1266032265
+                  'id': 1266032265,
               },
           )
           ```
@@ -29624,7 +29724,7 @@
           ```py
           m = M.prisma().find_unique(
               where={
-                  'id': 93253262
+                  'id': 93253262,
               },
           )
           ```
@@ -30396,7 +30496,7 @@
           ```py
           n = N.prisma().delete(
               where={
-                  'id': 525761943
+                  'id': 525761943,
               },
           )
           ```
@@ -30449,7 +30549,7 @@
           ```py
           n = N.prisma().find_unique(
               where={
-                  'id': 736209796
+                  'id': 736209796,
               },
           )
           ```
@@ -31220,7 +31320,7 @@
           ```py
           oneoptional = OneOptional.prisma().delete(
               where={
-                  'id': 1611009182
+                  'id': 1611009182,
               },
           )
           ```
@@ -31273,7 +31373,7 @@
           ```py
           oneoptional = OneOptional.prisma().find_unique(
               where={
-                  'id': 446673791
+                  'id': 446673791,
               },
           )
           ```
@@ -32042,7 +32142,7 @@
           ```py
           manyrequired = ManyRequired.prisma().delete(
               where={
-                  'id': 1297607553
+                  'id': 1297607553,
               },
           )
           ```
@@ -32095,7 +32195,7 @@
           ```py
           manyrequired = ManyRequired.prisma().find_unique(
               where={
-                  'id': 519488550
+                  'id': 519488550,
               },
           )
           ```
@@ -32849,7 +32949,7 @@
           ```py
           lists = Lists.prisma().delete(
               where={
-                  'id': 'cacjdfhejh'
+                  'id': 'cacjdfhejh',
               },
           )
           ```
@@ -32902,7 +33002,7 @@
           ```py
           lists = Lists.prisma().find_unique(
               where={
-                  'id': 'bdbifjhbbi'
+                  'id': 'bdbifjhbbi',
               },
           )
           ```
@@ -33454,7 +33554,7 @@
           -------
           ```py
           users = A.prisma().query_raw(
-              'SELECT * FROM A WHERE id = $1',
+              'SELECT * FROM A WHERE email = $1',
               'bfjibceaec',
           )
           ```
@@ -33494,7 +33594,7 @@
           -------
           ```py
           user = A.prisma().query_first(
-              'SELECT * FROM A WHERE email = $1',
+              'SELECT * FROM A WHERE name = $1',
               'ibhgcdbgd',
           )
           ```
@@ -33658,7 +33758,7 @@
           ```py
           a = A.prisma().delete(
               where={
-                  'id': 'bbidjbbjaa'
+                  'email': 'bbidjbbjaa',
               },
           )
           ```
@@ -33711,7 +33811,7 @@
           ```py
           a = A.prisma().find_unique(
               where={
-                  'id': 'bfijhaejdd'
+                  'email': 'bfijhaejdd',
               },
           )
           ```
@@ -33774,11 +33874,11 @@
           # find the first 10 A records
           as = A.prisma().find_many(take=10)
   
-          # find the first 5 A records ordered by the name field
+          # find the first 5 A records ordered by the int field
           as = A.prisma().find_many(
               take=5,
               order={
-                  'name': 'desc',
+                  'int': 'desc',
               },
           )
           ```
@@ -33836,11 +33936,11 @@
           Example
           -------
           ```py
-          # find the second A record ordered by the int field
+          # find the second A record ordered by the sInt field
           a = A.prisma().find_first(
               skip=1,
               order={
-                  'int': 'desc',
+                  'sInt': 'desc',
               },
           )
           ```
@@ -33896,7 +33996,7 @@
           ```py
           a = A.prisma().update(
               where={
-                  'id': 'bcedehfiji',
+                  'email': 'bcedehfiji',
               },
               data={
                   # data to update the A record to
@@ -33954,18 +34054,16 @@
           ```py
           a = A.prisma().upsert(
               where={
-                  'id': 'bdgjicijhb',
+                  'email': 'bdgjicijhb',
               },
               data={
                   'create': {
-                      'id': 'bdgjicijhb',
-                      'email': 'jfiahhbae',
+                      'email': 'bdgjicijhb',
                       'int': 1513050921,
                       'sInt': 204674734,
                       'bInt': 24811819956,
                   },
                   'update': {
-                      'email': 'jfiahhbae',
                       'int': 1513050921,
                       'sInt': 204674734,
                       'bInt': 24811819956,
@@ -34017,7 +34115,7 @@
           # update all A records
           total = A.prisma().update_many(
               data={
-                  'sInt': 1678593480
+                  'inc_int': 1678593480
               },
               where={}
           )
@@ -34083,7 +34181,7 @@
           results = A.prisma().count(
               select={
                   '_all': True,
-                  'inc_int': True,
+                  'inc_sInt': True,
               },
           )
           ```
@@ -34152,7 +34250,7 @@
           results = A.prisma().count(
               select={
                   '_all': True,
-                  'inc_sInt': True,
+                  'bInt': True,
               },
           )
           ```
@@ -34469,7 +34567,7 @@
           ```py
           b = B.prisma().delete(
               where={
-                  'id': 'hghjaaai'
+                  'id': 'hghjaaai',
               },
           )
           ```
@@ -34522,7 +34620,7 @@
           ```py
           b = B.prisma().find_unique(
               where={
-                  'id': 'cajicjjdef'
+                  'id': 'cajicjjdef',
               },
           )
           ```
@@ -35078,7 +35176,7 @@
           -------
           ```py
           users = C.prisma().query_raw(
-              'SELECT * FROM C WHERE id = $1',
+              'SELECT * FROM C WHERE char = $1',
               'bbihggdcji',
           )
           ```
@@ -35118,7 +35216,7 @@
           -------
           ```py
           user = C.prisma().query_first(
-              'SELECT * FROM C WHERE char = $1',
+              'SELECT * FROM C WHERE v_char = $1',
               'hgjgibdgd',
           )
           ```
@@ -35288,7 +35386,8 @@
           ```py
           c = C.prisma().delete(
               where={
-                  'id': 'bhfaabbaha'
+                  # C where unique filter
+  
               },
           )
           ```
@@ -35341,7 +35440,8 @@
           ```py
           c = C.prisma().find_unique(
               where={
-                  'id': 'ebajedhhf'
+                  # C where unique filter
+  
               },
           )
           ```
@@ -35404,11 +35504,11 @@
           # find the first 10 C records
           cs = C.prisma().find_many(take=10)
   
-          # find the first 5 C records ordered by the v_char field
+          # find the first 5 C records ordered by the text field
           cs = C.prisma().find_many(
               take=5,
               order={
-                  'v_char': 'desc',
+                  'text': 'desc',
               },
           )
           ```
@@ -35466,11 +35566,11 @@
           Example
           -------
           ```py
-          # find the second C record ordered by the text field
+          # find the second C record ordered by the bit field
           c = C.prisma().find_first(
               skip=1,
               order={
-                  'text': 'desc',
+                  'bit': 'desc',
               },
           )
           ```
@@ -35526,7 +35626,8 @@
           ```py
           c = C.prisma().update(
               where={
-                  'id': 'jajacedge',
+                  # C where unique filter
+  
               },
               data={
                   # data to update the C record to
@@ -35584,25 +35685,14 @@
           ```py
           c = C.prisma().upsert(
               where={
-                  'id': 'hffgbabgf',
+                  # C where unique filter
               },
               data={
                   'create': {
-                      'id': 'hffgbabgf',
-                      'char': 'bbgaifhdaa',
-                      'v_char': 'dgbcdaegb',
-                      'text': 'beagfbbjig',
-                      'bit': 'beicihhijb',
-                      'v_bit': 'fgggcdcjg',
-                      'uuid': 'ccjbbjigf',
+                      # C data to be set if the record does not exist
                   },
                   'update': {
-                      'char': 'bbgaifhdaa',
-                      'v_char': 'dgbcdaegb',
-                      'text': 'beagfbbjig',
-                      'bit': 'beicihhijb',
-                      'v_bit': 'fgggcdcjg',
-                      'uuid': 'ccjbbjigf',
+                      # C data to be set if the record does exist
                   },
               },
           )
@@ -35651,7 +35741,7 @@
           # update all C records
           total = C.prisma().update_many(
               data={
-                  'bit': 'biacbiieja'
+                  'v_bit': 'bhfaabbaha'
               },
               where={}
           )
@@ -35717,7 +35807,7 @@
           results = C.prisma().count(
               select={
                   '_all': True,
-                  'v_bit': True,
+                  'uuid': True,
               },
           )
           ```
@@ -35786,7 +35876,7 @@
           results = C.prisma().count(
               select={
                   '_all': True,
-                  'uuid': True,
+                  'char': True,
               },
           )
           ```
@@ -35906,7 +35996,7 @@
           ```py
           users = D.prisma().query_raw(
               'SELECT * FROM D WHERE id = $1',
-              'cjejbgbff',
+              'ebajedhhf',
           )
           ```
           """
@@ -35986,10 +36076,10 @@
               data={
                   # data to create a D record
                   'bool': False,
-                  'xml': 'badagbgeha',
-                  'json_': Json({'ibgebbjch': True}),
-                  'jsonb': Json({'baieajjiee': True}),
-                  'binary': Base64.encode(b'bahjhaccfd'),
+                  'xml': 'biacbiieja',
+                  'json_': Json({'cjejbgbff': True}),
+                  'jsonb': Json({'fgeahddae': True}),
+                  'binary': Base64.encode(b'diageigcf'),
               },
           )
           ```
@@ -36046,18 +36136,18 @@
                   {
                       # data to create a D record
                       'bool': True,
-                      'xml': 'bbcigiadhb',
-                      'json_': Json({'cfjagbbae': True}),
-                      'jsonb': Json({'bbbfhdidef': True}),
-                      'binary': Base64.encode(b'bdadhibhec'),
+                      'xml': 'ibgebbjch',
+                      'json_': Json({'baieajjiee': True}),
+                      'jsonb': Json({'bahjhaccfd': True}),
+                      'binary': Base64.encode(b'hffhfabhi'),
                   },
                   {
                       # data to create a D record
                       'bool': False,
-                      'xml': 'bbjfijjadg',
-                      'json_': Json({'hdjacbehh': True}),
-                      'jsonb': Json({'bhcccbeaba': True}),
-                      'binary': Base64.encode(b'bcgjbdgjdj'),
+                      'xml': 'cfjagbbae',
+                      'json_': Json({'bbbfhdidef': True}),
+                      'jsonb': Json({'bdadhibhec': True}),
+                      'binary': Base64.encode(b'bfhdjaiejf'),
                   },
               ],
               skip_duplicates=True,
@@ -36112,7 +36202,7 @@
           ```py
           d = D.prisma().delete(
               where={
-                  'id': 'fhdbhifae'
+                  'id': 'bbjfijjadg',
               },
           )
           ```
@@ -36165,7 +36255,7 @@
           ```py
           d = D.prisma().find_unique(
               where={
-                  'id': 'beeacgfcej'
+                  'id': 'hdjacbehh',
               },
           )
           ```
@@ -36350,7 +36440,7 @@
           ```py
           d = D.prisma().update(
               where={
-                  'id': 'bbifhdiicc',
+                  'id': 'bhcccbeaba',
               },
               data={
                   # data to update the D record to
@@ -36408,23 +36498,23 @@
           ```py
           d = D.prisma().upsert(
               where={
-                  'id': 'bgjeccejad',
+                  'id': 'bcgjbdgjdj',
               },
               data={
                   'create': {
-                      'id': 'bgjeccejad',
+                      'id': 'bcgjbdgjdj',
                       'bool': False,
-                      'xml': 'bbjfijjadg',
-                      'json_': Json({'hdjacbehh': True}),
-                      'jsonb': Json({'bhcccbeaba': True}),
-                      'binary': Base64.encode(b'bcgjbdgjdj'),
+                      'xml': 'cfjagbbae',
+                      'json_': Json({'bbbfhdidef': True}),
+                      'jsonb': Json({'bdadhibhec': True}),
+                      'binary': Base64.encode(b'bfhdjaiejf'),
                   },
                   'update': {
                       'bool': False,
-                      'xml': 'bbjfijjadg',
-                      'json_': Json({'hdjacbehh': True}),
-                      'jsonb': Json({'bhcccbeaba': True}),
-                      'binary': Base64.encode(b'bcgjbdgjdj'),
+                      'xml': 'cfjagbbae',
+                      'json_': Json({'bbbfhdidef': True}),
+                      'jsonb': Json({'bdadhibhec': True}),
+                      'binary': Base64.encode(b'bfhdjaiejf'),
                   },
               },
           )
@@ -36473,7 +36563,7 @@
           # update all D records
           total = D.prisma().update_many(
               data={
-                  'jsonb': Json({'bjagdgabbg': True})
+                  'jsonb': Json({'fhdbhifae': True})
               },
               where={}
           )
@@ -36728,7 +36818,7 @@
           ```py
           users = E.prisma().query_raw(
               'SELECT * FROM E WHERE id = $1',
-              'bjbbcffdij',
+              'beeacgfcej',
           )
           ```
           """
@@ -36928,7 +37018,7 @@
           ```py
           e = E.prisma().delete(
               where={
-                  'id': 'begcgchdi'
+                  'id': 'bbifhdiicc',
               },
           )
           ```
@@ -36981,7 +37071,7 @@
           ```py
           e = E.prisma().find_unique(
               where={
-                  'id': 'bhbjceagbb'
+                  'id': 'bgjeccejad',
               },
           )
           ```
@@ -37166,7 +37256,7 @@
           ```py
           e = E.prisma().update(
               where={
-                  'id': 'bjeifffjdg',
+                  'id': 'bjagdgabbg',
               },
               data={
                   # data to update the E record to
@@ -37224,11 +37314,11 @@
           ```py
           e = E.prisma().upsert(
               where={
-                  'id': 'bdidcfdfjd',
+                  'id': 'bjbbcffdij',
               },
               data={
                   'create': {
-                      'id': 'bdidcfdfjd',
+                      'id': 'bjbbcffdij',
                       'date': datetime.datetime.utcnow(),
                       'time': datetime.datetime.utcnow(),
                       'ts': datetime.datetime.utcnow(),
@@ -37285,7 +37375,7 @@
           # update all E records
           total = E.prisma().update_many(
               data={
-                  'id': 'dfeggejja'
+                  'id': 'begcgchdi'
               },
               where={}
           )
@@ -37659,7 +37749,6 @@
           'json_objects',
       ],
       'A': [
-          'id',
           'email',
           'name',
           'int',
@@ -37675,7 +37764,6 @@
           'd_float',
       ],
       'C': [
-          'id',
           'char',
           'v_char',
           'text',
@@ -38536,7 +38624,6 @@
   }
   
   model A {
-    id       String  @id @default(uuid())
     email    String  @unique
     name     String?
     int      Int     @db.Integer
@@ -38545,6 +38632,8 @@
     inc_sInt Int     @default(autoincrement()) @db.SmallInt
     bInt     BigInt  @db.BigInt
     inc_bInt BigInt  @default(autoincrement()) @db.BigInt
+  
+    @@unique([name, email])
   }
   
   model B {
@@ -38555,16 +38644,19 @@
     // TODO
     // decFloat Decimal @db.Decimal(2, 1)
     // numFloat Decimal @db.Decimal(10, 6)
+  
+    @@unique([float, d_float], name: "my_constraint")
   }
   
   model C {
-    id     String @id @default(cuid())
     char   String @db.Char(10)
     v_char String @db.VarChar(11)
     text   String @db.Text
     bit    String @db.Bit(4)
     v_bit  String @db.VarBit(5)
     uuid   String @db.Uuid
+  
+    @@id([char, text], name: "my_id")
   }
   
   model D {
@@ -41632,7 +41724,6 @@
           return fields.Base64._internal_from_prisma(value)
   
   class A(BaseModel):
-      id: str
       email: str
       name: Optional[str]
       int: int
@@ -41820,7 +41911,6 @@
   
   
   class C(BaseModel):
-      id: str
       char: str
       v_char: str
       text: str
@@ -42627,12 +42717,6 @@
   
   _A_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _A_fields: Dict['types.AKeys', PartialModelField] = {
-      'id': {
-          'name': 'id',
-          'is_list': False,
-          'optional': False,
-          'type': 'str',
-      },
       'email': {
           'name': 'email',
           'is_list': False,
@@ -42707,12 +42791,6 @@
   
   _C_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
   _C_fields: Dict['types.CKeys', PartialModelField] = {
-      'id': {
-          'name': 'id',
-          'is_list': False,
-          'optional': False,
-          'type': 'str',
-      },
       'char': {
           'name': 'char',
           'is_list': False,
@@ -43722,9 +43800,16 @@
       connect: Union['PostWhereUniqueInput', List['PostWhereUniqueInput']]
   
   
-  class PostWhereUniqueInput(TypedDict, total=False):
-      """Unique Post arguments for searching"""
-      id: int
+  
+  _PostWhereUnique_id_Input = TypedDict(
+      '_PostWhereUnique_id_Input',
+      {
+          'id': 'int',
+      },
+      total=True
+  )
+  
+  PostWhereUniqueInput = _PostWhereUnique_id_Input
   
   
   class PostUpdateInput(TypedDict, total=False):
@@ -44677,10 +44762,27 @@
       connect: Union['UserWhereUniqueInput', List['UserWhereUniqueInput']]
   
   
-  class UserWhereUniqueInput(TypedDict, total=False):
-      """Unique User arguments for searching"""
-      id: int
-      email: str
+  
+  _UserWhereUnique_id_Input = TypedDict(
+      '_UserWhereUnique_id_Input',
+      {
+          'id': 'int',
+      },
+      total=True
+  )
+  
+  _UserWhereUnique_email_Input = TypedDict(
+      '_UserWhereUnique_email_Input',
+      {
+          'email': 'str',
+      },
+      total=True
+  )
+  
+  UserWhereUniqueInput = Union[
+      '_UserWhereUnique_id_Input',
+      '_UserWhereUnique_email_Input',
+  ]
   
   
   class UserUpdateInput(TypedDict, total=False):
@@ -45686,9 +45788,16 @@
       connect: Union['MWhereUniqueInput', List['MWhereUniqueInput']]
   
   
-  class MWhereUniqueInput(TypedDict, total=False):
-      """Unique M arguments for searching"""
-      id: int
+  
+  _MWhereUnique_id_Input = TypedDict(
+      '_MWhereUnique_id_Input',
+      {
+          'id': 'int',
+      },
+      total=True
+  )
+  
+  MWhereUniqueInput = _MWhereUnique_id_Input
   
   
   class MUpdateInput(TypedDict, total=False):
@@ -46690,9 +46799,16 @@
       connect: Union['NWhereUniqueInput', List['NWhereUniqueInput']]
   
   
-  class NWhereUniqueInput(TypedDict, total=False):
-      """Unique N arguments for searching"""
-      id: int
+  
+  _NWhereUnique_id_Input = TypedDict(
+      '_NWhereUnique_id_Input',
+      {
+          'id': 'int',
+      },
+      total=True
+  )
+  
+  NWhereUniqueInput = _NWhereUnique_id_Input
   
   
   class NUpdateInput(TypedDict, total=False):
@@ -47708,9 +47824,16 @@
       connect: Union['OneOptionalWhereUniqueInput', List['OneOptionalWhereUniqueInput']]
   
   
-  class OneOptionalWhereUniqueInput(TypedDict, total=False):
-      """Unique OneOptional arguments for searching"""
-      id: int
+  
+  _OneOptionalWhereUnique_id_Input = TypedDict(
+      '_OneOptionalWhereUnique_id_Input',
+      {
+          'id': 'int',
+      },
+      total=True
+  )
+  
+  OneOptionalWhereUniqueInput = _OneOptionalWhereUnique_id_Input
   
   
   class OneOptionalUpdateInput(TypedDict, total=False):
@@ -48708,9 +48831,16 @@
       connect: Union['ManyRequiredWhereUniqueInput', List['ManyRequiredWhereUniqueInput']]
   
   
-  class ManyRequiredWhereUniqueInput(TypedDict, total=False):
-      """Unique ManyRequired arguments for searching"""
-      id: int
+  
+  _ManyRequiredWhereUnique_id_Input = TypedDict(
+      '_ManyRequiredWhereUnique_id_Input',
+      {
+          'id': 'int',
+      },
+      total=True
+  )
+  
+  ManyRequiredWhereUniqueInput = _ManyRequiredWhereUnique_id_Input
   
   
   class ManyRequiredUpdateInput(TypedDict, total=False):
@@ -49710,9 +49840,16 @@
       connect: Union['ListsWhereUniqueInput', List['ListsWhereUniqueInput']]
   
   
-  class ListsWhereUniqueInput(TypedDict, total=False):
-      """Unique Lists arguments for searching"""
-      id: str
+  
+  _ListsWhereUnique_id_Input = TypedDict(
+      '_ListsWhereUnique_id_Input',
+      {
+          'id': 'str',
+      },
+      total=True
+  )
+  
+  ListsWhereUniqueInput = _ListsWhereUnique_id_Input
   
   
   class ListsUpdateInput(TypedDict, total=False):
@@ -50633,7 +50770,6 @@
   
   class AOptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the A create method"""
-      id: str
       name: Optional[str]
       inc_int: int
       inc_sInt: int
@@ -50653,7 +50789,6 @@
   
   class AOptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the A create method, without relations"""
-      id: str
       name: Optional[str]
       inc_int: int
       inc_sInt: int
@@ -50678,10 +50813,36 @@
       connect: Union['AWhereUniqueInput', List['AWhereUniqueInput']]
   
   
-  class AWhereUniqueInput(TypedDict, total=False):
-      """Unique A arguments for searching"""
-      id: str
-      email: str
+  
+  _AWhereUnique_email_Input = TypedDict(
+      '_AWhereUnique_email_Input',
+      {
+          'email': 'str',
+      },
+      total=True
+  )
+  
+  _ACompoundname_emailKeyInner = TypedDict(
+      '_ACompoundname_emailKeyInner',
+      {
+          'name': 'str',
+          'email': 'str',
+      },
+      total=True
+  )
+  
+  _ACompoundname_emailKey = TypedDict(
+      '_ACompoundname_emailKey',
+      {
+          'name_email': '_ACompoundname_emailKeyInner',
+      },
+      total=True
+  )
+  
+  AWhereUniqueInput = Union[
+      '_AWhereUnique_email_Input',
+      '_ACompoundname_emailKey',
+  ]
   
   
   class AUpdateInput(TypedDict, total=False):
@@ -50697,7 +50858,6 @@
   
   class AUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: str
       email: str
       name: Optional[str]
       int: Union[AtomicIntInput, int]
@@ -50741,7 +50901,6 @@
   
   
   class AOrderByInput(TypedDict, total=False):
-      id: 'SortOrder'
       email: 'SortOrder'
       name: 'SortOrder'
       int: 'SortOrder'
@@ -51498,7 +51657,6 @@
   
   class AWhereInput(TypedDict, total=False):
       """A arguments for searching"""
-      id: Union[str, 'types.StringFilter']
       email: Union[str, 'types.StringFilter']
       name: Union[str, 'types.StringFilter']
       int: Union[int, 'types.IntFilter']
@@ -51517,7 +51675,6 @@
   
   class AWhereInputRecursive1(TypedDict, total=False):
       """A arguments for searching"""
-      id: Union[str, 'types.StringFilter']
       email: Union[str, 'types.StringFilter']
       name: Union[str, 'types.StringFilter']
       int: Union[int, 'types.IntFilter']
@@ -51536,7 +51693,6 @@
   
   class AWhereInputRecursive2(TypedDict, total=False):
       """A arguments for searching"""
-      id: Union[str, 'types.StringFilter']
       email: Union[str, 'types.StringFilter']
       name: Union[str, 'types.StringFilter']
       int: Union[int, 'types.IntFilter']
@@ -51551,7 +51707,6 @@
   ACountAggregateInput = TypedDict(
       'ACountAggregateInput',
       {
-          'id': bool,
           'email': bool,
           'name': bool,
           'int': bool,
@@ -51568,7 +51723,6 @@
   ACountAggregateOutput = TypedDict(
       'ACountAggregateOutput',
       {
-          'id': int,
           'email': int,
           'name': int,
           'int': int,
@@ -51584,7 +51738,6 @@
   
   
   AKeys = Literal[
-      'id',
       'email',
       'name',
       'int',
@@ -51634,9 +51787,36 @@
       connect: Union['BWhereUniqueInput', List['BWhereUniqueInput']]
   
   
-  class BWhereUniqueInput(TypedDict, total=False):
-      """Unique B arguments for searching"""
-      id: str
+  
+  _BWhereUnique_id_Input = TypedDict(
+      '_BWhereUnique_id_Input',
+      {
+          'id': 'str',
+      },
+      total=True
+  )
+  
+  _BCompoundmy_constraintKeyInner = TypedDict(
+      '_BCompoundmy_constraintKeyInner',
+      {
+          'float': 'float',
+          'd_float': 'float',
+      },
+      total=True
+  )
+  
+  _BCompoundmy_constraintKey = TypedDict(
+      '_BCompoundmy_constraintKey',
+      {
+          'my_constraint': '_BCompoundmy_constraintKeyInner',
+      },
+      total=True
+  )
+  
+  BWhereUniqueInput = Union[
+      '_BWhereUnique_id_Input',
+      '_BCompoundmy_constraintKey',
+  ]
   
   
   class BUpdateInput(TypedDict, total=False):
@@ -52503,7 +52683,6 @@
   
   class COptionalCreateInput(TypedDict, total=False):
       """Optional arguments to the C create method"""
-      id: str
   
   
   class CCreateInput(COptionalCreateInput):
@@ -52521,7 +52700,6 @@
   
   class COptionalCreateWithoutRelationsInput(TypedDict, total=False):
       """Optional arguments to the C create method, without relations"""
-      id: str
   
   
   class CCreateWithoutRelationsInput(COptionalCreateWithoutRelationsInput):
@@ -52544,9 +52722,25 @@
       connect: Union['CWhereUniqueInput', List['CWhereUniqueInput']]
   
   
-  class CWhereUniqueInput(TypedDict, total=False):
-      """Unique C arguments for searching"""
-      id: str
+  
+  _CCompoundPrimaryKeyInner = TypedDict(
+      '_CCompoundPrimaryKeyInner',
+      {
+          'char': 'str',
+          'text': 'str',
+      },
+      total=True
+  )
+  
+  _CCompoundPrimaryKey = TypedDict(
+      '_CCompoundPrimaryKey',
+      {
+          'my_id': '_CCompoundPrimaryKeyInner',
+      },
+      total=True
+  )
+  
+  CWhereUniqueInput = _CCompoundPrimaryKey
   
   
   class CUpdateInput(TypedDict, total=False):
@@ -52561,7 +52755,6 @@
   
   class CUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
-      id: str
       char: str
       v_char: str
       text: str
@@ -52603,7 +52796,6 @@
   
   
   class COrderByInput(TypedDict, total=False):
-      id: 'SortOrder'
       char: 'SortOrder'
       v_char: 'SortOrder'
       text: 'SortOrder'
@@ -53358,7 +53550,6 @@
   
   class CWhereInput(TypedDict, total=False):
       """C arguments for searching"""
-      id: Union[str, 'types.StringFilter']
       char: Union[str, 'types.StringFilter']
       v_char: Union[str, 'types.StringFilter']
       text: Union[str, 'types.StringFilter']
@@ -53375,7 +53566,6 @@
   
   class CWhereInputRecursive1(TypedDict, total=False):
       """C arguments for searching"""
-      id: Union[str, 'types.StringFilter']
       char: Union[str, 'types.StringFilter']
       v_char: Union[str, 'types.StringFilter']
       text: Union[str, 'types.StringFilter']
@@ -53392,7 +53582,6 @@
   
   class CWhereInputRecursive2(TypedDict, total=False):
       """C arguments for searching"""
-      id: Union[str, 'types.StringFilter']
       char: Union[str, 'types.StringFilter']
       v_char: Union[str, 'types.StringFilter']
       text: Union[str, 'types.StringFilter']
@@ -53405,7 +53594,6 @@
   CCountAggregateInput = TypedDict(
       'CCountAggregateInput',
       {
-          'id': bool,
           'char': bool,
           'v_char': bool,
           'text': bool,
@@ -53420,7 +53608,6 @@
   CCountAggregateOutput = TypedDict(
       'CCountAggregateOutput',
       {
-          'id': int,
           'char': int,
           'v_char': int,
           'text': int,
@@ -53434,7 +53621,6 @@
   
   
   CKeys = Literal[
-      'id',
       'char',
       'v_char',
       'text',
@@ -53488,9 +53674,16 @@
       connect: Union['DWhereUniqueInput', List['DWhereUniqueInput']]
   
   
-  class DWhereUniqueInput(TypedDict, total=False):
-      """Unique D arguments for searching"""
-      id: str
+  
+  _DWhereUnique_id_Input = TypedDict(
+      '_DWhereUnique_id_Input',
+      {
+          'id': 'str',
+      },
+      total=True
+  )
+  
+  DWhereUniqueInput = _DWhereUnique_id_Input
   
   
   class DUpdateInput(TypedDict, total=False):
@@ -54419,9 +54612,16 @@
       connect: Union['EWhereUniqueInput', List['EWhereUniqueInput']]
   
   
-  class EWhereUniqueInput(TypedDict, total=False):
-      """Unique E arguments for searching"""
-      id: str
+  
+  _EWhereUnique_id_Input = TypedDict(
+      '_EWhereUnique_id_Input',
+      {
+          'id': 'str',
+      },
+      total=True
+  )
+  
+  EWhereUniqueInput = _EWhereUnique_id_Input
   
   
   class EUpdateInput(TypedDict, total=False):

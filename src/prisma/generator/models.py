@@ -10,6 +10,7 @@ from contextvars import ContextVar
 from typing import (
     Any,
     Iterable,
+    NoReturn,
     Optional,
     List,
     Tuple,
@@ -18,6 +19,7 @@ from typing import (
     Dict,
     Type,
     TYPE_CHECKING,
+    cast,
 )
 
 import click
@@ -102,6 +104,10 @@ def sql_param(num: int = 1) -> str:
 
     # SQLite and MySQL use this style so just default to it
     return '?'
+
+
+def raise_err(msg: str) -> NoReturn:
+    raise TemplateError(msg)
 
 
 def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
@@ -198,9 +204,10 @@ class Data(BaseModel):
     def to_params(self) -> Dict[str, Any]:
         """Get the parameters that should be sent to Jinja templates"""
         params = vars(self)
+        params['type_schema'] = Schema.from_data(self)
 
         # add utility functions
-        for func in [get_list_types, sql_param, clean_multiline]:
+        for func in [get_list_types, sql_param, clean_multiline, raise_err]:
             params[func.__name__] = func
 
         return params
@@ -356,6 +363,8 @@ class Model(BaseModel):
     is_embedded: bool = FieldInfo(alias='isEmbedded')
     db_name: Optional[str] = FieldInfo(alias='dbName')
     is_generated: bool = FieldInfo(alias='isGenerated')
+    compound_primary_key: Optional['PrimaryKey'] = FieldInfo(alias='primaryKey')
+    unique_indexes: List['UniqueIndex'] = FieldInfo(alias='uniqueIndexes')
     _sampler: Sampler = PrivateAttr()
 
     if TYPE_CHECKING:
@@ -368,6 +377,26 @@ class Model(BaseModel):
     def __init__(self, **data: Any) -> None:  # type: ignore[no-redef]
         super().__init__(**data)
         self._sampler = Sampler(self)
+
+    @root_validator(allow_reuse=True)
+    def validate_compound_constraints_are_unique(
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        # protect against https://github.com/prisma/prisma/issues/10456
+        fields = cast(List['Field'], values.get('all_fields', []))
+        pkey = cast(Optional[PrimaryKey], values.get('compound_primary_key'))
+        if pkey is not None:
+            for field in fields:
+                if field.name == pkey.name:
+                    raise CompoundConstraintError(constraint=pkey)
+
+        indexes = cast(List[UniqueIndex], values.get('unique_indexes'))
+        for field in fields:
+            for constraint in indexes:
+                if field.name == constraint.name:
+                    raise CompoundConstraintError(constraint=constraint)
+
+        return values
 
     @property
     def related_models(self) -> Iterator['Model']:
@@ -397,14 +426,11 @@ class Model(BaseModel):
 
     # TODO: support combined unique constraints
     @property
-    def id_field(self) -> 'Field':
+    def id_field(self) -> Optional['Field']:
+        """Find a field that can be passed to the model's `WhereUnique` filter"""
         for field in self.scalar_fields:  # pragma: no branch
-            if field.is_id:
+            if field.is_id or field.is_unique:
                 return field
-
-        raise RuntimeError(  # pragma: no cover
-            f'Could not resolve an ID field for model: {self.name}'
-        )
 
     @property
     def has_relational_fields(self) -> bool:
@@ -422,6 +448,13 @@ class Model(BaseModel):
             return name
         return f'{name}s'
 
+    def _resolve_field(self, name: str) -> 'Field':
+        for field in self.all_fields:
+            if field.name == name:
+                return field
+
+        raise LookupError(f'Could not find a field with name: {name}')
+
     def sampler(self) -> Sampler:
         return self._sampler
 
@@ -429,6 +462,29 @@ class Model(BaseModel):
         for field in self.scalar_fields:
             if field.type == typ:
                 yield field
+
+
+class Constraint(BaseModel):
+    name: str
+    fields: List[str]
+
+    @root_validator(pre=True, allow_reuse=True)
+    @classmethod
+    def resolve_name(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        name = values.get('name')
+        if isinstance(name, str):
+            return values
+
+        values['name'] = '_'.join(values['fields'])
+        return values
+
+
+class PrimaryKey(Constraint):
+    pass
+
+
+class UniqueIndex(Constraint):
+    pass
 
 
 class Field(BaseModel):
@@ -650,7 +706,7 @@ class Field(BaseModel):
 
         if self.kind == 'enum':
             enum = self.get_corresponding_enum()
-            assert enum is not None
+            assert enum is not None, self.type
             return f'enums.{enum.name}.{FAKER.from_list(enum.values).name}'
 
         typ = self.type
@@ -688,3 +744,7 @@ Model.update_forward_refs()
 Datamodel.update_forward_refs()
 Generator.update_forward_refs()
 Datasource.update_forward_refs()
+
+
+from .schema import Schema
+from .errors import CompoundConstraintError, TemplateError

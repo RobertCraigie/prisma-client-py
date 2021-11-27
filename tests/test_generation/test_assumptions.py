@@ -111,3 +111,27 @@ def test_enum_same_name_as_model_disallowed(testdir: Testdir) -> None:
         'The enum "User" cannot be defined because a model with that name already exists.'
         in output
     )
+
+
+def test_multiple_compund_ids_disallowed(testdir: Testdir) -> None:
+    """Multiple @@id() annotations are not allowed on the same model"""
+    schema = (
+        testdir.SCHEMA_HEADER
+        + '''
+    model User {{
+        name    String
+        surname String
+        points  Int
+        email   String
+
+        @@id([name, surname])
+        @@id([points, email])
+    }}
+    '''
+    )
+
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    output = exc.value.output.decode('utf-8')
+    assert 'Attribute "@id" is defined twice.' in output
