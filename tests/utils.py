@@ -291,19 +291,6 @@ def assert_time_like_now(dt: datetime, threshold: int = 10) -> None:
     assert delta.total_seconds() < threshold
 
 
-def assert_query_equals(query: Union[str, QueryBuilder], expected: str) -> None:
-    if not isinstance(query, str):  # pragma: no branch
-        query = query.build_query()
-
-    # we have to dedent and remove leading and ending newlines
-    # to support in-place query definitions
-    expected = dedent(expected).lstrip('\n')
-    if expected.endswith('\n'):  # pragma: no branch
-        expected = expected[:-1]
-
-    assert query == expected
-
-
 def escape_path(path: Union[str, Path]) -> str:
     if isinstance(path, Path):  # pragma: no branch
         path = str(path.absolute())
