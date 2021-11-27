@@ -360,14 +360,38 @@ class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=Fal
     connect: Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]
 
 
-class {{ model.name }}WhereUniqueInput(TypedDict, total=False):
-    """Unique {{ model.name }} arguments for searching"""
-    {% for field in model.all_fields %}
-        {%- if field.is_unique or field.is_id -%}
-            {{'    '}}{{ field.name }}: {{ field.python_type }}
-        {% endif %}
+{% macro render_type(type) %}
+{# It is important that we render subtypes first so that references can be resolved correctly #}
+{% for subtype in type.subtypes %}
+{{ render_type(subtype) }}
+{% endfor %}
+{% if type.kind == 'alias' %}
+{{ type.name }} = {{ type.to }}
+{% elif type.kind == 'union' %}
+{{ type.name }} = Union[
+    {% for subtype in type.subtypes %}
+    '{{ subtype.name }}',
     {% endfor %}
+]
+{% elif type.kind == 'typeddict' %}
+{# We use the old syntax for defined TypedDicts so that fields that shadow keywords #}
+{# can be defined, e.g. 'not' #}
+{{ type.name }} = TypedDict(
+    '{{ type.name }}',
+    {
+        {% for field, subtype in type.fields.items() %}
+        '{{ field }}': '{{ subtype }}',
+        {% endfor %}
+    },
+    total={{ type.total }}
+)
+{% else %}
+{{ raise_err('Unhandled type kind: %s' % type.kind) }}
+{% endif %}
+{% endmacro %}
 
+{% set where_unique = type_schema.get_model(model.name).where_unique %}
+{{ render_type(where_unique) }}
 
 class {{ model.name }}UpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""

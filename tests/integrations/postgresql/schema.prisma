@@ -47,6 +47,76 @@ model Lists {
   roles        Role[]
 }
 
+// these models are here for testing different combinations of unique constraints
+// we test these models here as testing them in the root tests would increase mypy
+// type checking time
+
+model Unique1 {
+  name    String
+  surname String
+
+  @@unique([name, surname])
+}
+
+model Unique2 {
+  name    String
+  surname String @unique
+
+  @@unique([name, surname])
+}
+
+model Unique3 {
+  id      String @id @default(cuid())
+  name    String
+  surname String @unique
+
+  @@unique([name, surname])
+}
+
+model Unique4 {
+  name    String
+  surname String
+
+  @@unique([name, surname], name: "my_unique")
+}
+
+model Unique5 {
+  name       String
+  middlename String
+  surname    String
+
+  @@unique([name, middlename, surname])
+}
+
+model Id1 {
+  name    String
+  surname String
+
+  @@id([name, surname])
+}
+
+model Id2 {
+  name    String
+  surname String @unique
+
+  @@id([name, surname])
+}
+
+model Id3 {
+  name    String
+  surname String
+
+  @@id([name, surname], name: "my_id")
+}
+
+model Id4 {
+  name       String
+  middlename String
+  surname    String
+
+  @@id([name, middlename, surname])
+}
+
 enum Role {
   USER
   ADMIN

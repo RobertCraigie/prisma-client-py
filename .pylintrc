@@ -37,6 +37,9 @@ disable =
   # TODO: re-enable this at some point
   missing-docstring,
 
+  # TODO: remove these, required due to bad design
+  cyclic-import,
+  wrong-import-position,
 
 [MASTER]
 extension-pkg-whitelist =

@@ -10,6 +10,12 @@ from ._types import BaseModelT
 if TYPE_CHECKING:
     from .client import Client
 
+{# TODO: support sampling combined unique constraints #}
+{% macro sample_where_unique(model) %}
+{% set id_field = model.id_field %}
+{% if id_field %}'{{ id_field.name }}': {{ id_field.get_sample_data() }},{% else %}# {{ model.name }} where unique filter
+{% endif %}
+{% endmacro %}
 {% set base_error_doc = clean_multiline('''
         prisma.errors.PrismaError
             Catch all for every exception raised by Prisma Client Python
@@ -266,7 +272,7 @@ class {{ model.name }}Actions:
         ```py
         {{ model.name.lower() }} = {{ maybe_await }}{{ model.name }}.prisma().delete(
             where={
-                '{{ model.id_field.name }}': {{ model.id_field.get_sample_data() }}
+                {{ sample_where_unique(model) }}
             },
         )
         ```
@@ -317,7 +323,7 @@ class {{ model.name }}Actions:
         ```py
         {{ model.name.lower() }} = {{ maybe_await }}{{ model.name }}.prisma().find_unique(
             where={
-                '{{ model.id_field.name }}': {{ model.id_field.get_sample_data() }}
+                {{ sample_where_unique(model) }}
             },
         )
         ```
@@ -501,7 +507,7 @@ class {{ model.name }}Actions:
         ```py
         {{ model.name.lower() }} = {{ maybe_await }}{{ model.name }}.prisma().update(
             where={
-                '{{ model.id_field.name }}': {{ model.id_field.get_sample_data() }},
+                {{ sample_where_unique(model) }}
             },
             data={
                 # data to update the {{ model.name }} record to
@@ -555,6 +561,7 @@ class {{ model.name }}Actions:
         Example
         -------
         ```py
+        {% if model.id_field %}
         {% set id_sample = model.id_field.get_sample_data() %}
         {{ model.name.lower() }} = {{ maybe_await }}{{ model.name }}.prisma().upsert(
             where={
@@ -578,6 +585,21 @@ class {{ model.name }}Actions:
                 },
             },
         )
+        {% else %}
+        {{ model.name.lower() }} = {{ maybe_await }}{{ model.name }}.prisma().upsert(
+            where={
+                # {{ model.name }} where unique filter
+            },
+            data={
+                'create': {
+                    # {{ model.name }} data to be set if the record does not exist
+                },
+                'update': {
+                    # {{ model.name }} data to be set if the record does exist
+                },
+            },
+        )
+        {% endif %}
         ```
         """
         resp = {{ maybe_await }}self._client._execute(
