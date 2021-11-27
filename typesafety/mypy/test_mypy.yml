@@ -71,20 +71,6 @@
         reveal_type(post.title.lower())  # N: Revealed type is "builtins.str"
         oops = post.oops  # E: "Post" has no attribute "oops"  [attr-defined]
 
-    async def test_find_unique_dynamic_where(client: Client) -> None:
-      client = Client()
-
-      data: PostWhereUniqueInput = {
-        'id': 'foo',
-      },
-
-      if True:
-        data['id'] = '983293asdsad'
-        data['invalid'] = True  # E: TypedDict "_PostWhereUnique_id_Input" has no key "invalid"  [typeddict-item]
-
-      post = await client.post.find_unique(data)
-      reveal_type(post)  # N: Revealed type is "Union[prisma.models.Post, None]"
-
     async def test_include_removes_optional(client: Client) -> None:
       user = await client.user.find_unique({'id': '1'}, include={'posts': True})
       if user is not None:
