@@ -6,7 +6,6 @@ import textwrap
 import subprocess
 import contextlib
 from pathlib import Path
-from textwrap import dedent
 from datetime import datetime
 from typing import (
     Any,
@@ -23,7 +22,6 @@ from click.testing import CliRunner, Result
 
 from prisma.cli import main
 from prisma._types import FuncType
-from prisma.builder import QueryBuilder
 
 
 if TYPE_CHECKING:
