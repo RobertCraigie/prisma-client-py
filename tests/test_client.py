@@ -1,7 +1,8 @@
 from pathlib import Path
 
 import pytest
-from prisma import Client, errors, engine
+from prisma import Client, get_client, errors, engine
+from prisma.testing import reset_client
 from prisma.cli.prisma import run
 
 from .utils import Testdir
@@ -63,3 +64,13 @@ async def test_context_manager() -> None:
         async with client:
             assert client.is_connected()
             await client.connect()
+
+
+def test_auto_register() -> None:
+    """Client(auto_register=True) correctly registers the client instance"""
+    with reset_client():
+        with pytest.raises(errors.ClientNotRegisteredError):
+            get_client()
+
+        client = Client(auto_register=True)
+        assert get_client() == client
