@@ -34,6 +34,11 @@ theme:
 markdown_extensions:
   - pymdownx.highlight:
       use_pygments: false
+  - pymdownx.emoji:
+      # TODO: written as string due to pre-commit
+      emoji_index: "!!python/name:materialx.emoji.twemoji"
+      emoji_generator: "!!python/name:materialx.emoji.to_svg"
+  - tables
   - pymdownx.extra
   - pymdownx.tabbed
   - pymdownx.details
@@ -57,6 +62,7 @@ nav:
   - Reference:
       - Query Operations: reference/operations.md
       - Client: reference/client.md
+      - Fields: reference/fields.md
       - Model Based Access: reference/model-actions.md
       - Batching Queries: reference/batching.md
       - Partial Types: reference/partials.md
