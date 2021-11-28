@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from prisma import Client, errors
+from prisma import Client, errors, engine
 from prisma.cli.prisma import run
 
 from .utils import Testdir
@@ -45,3 +45,21 @@ async def test_datasource_overwriting(testdir: Testdir, client: Client) -> None:
     assert user.name == 'Robert'
 
     assert await client.user.count() == 0
+
+
+@pytest.mark.asyncio
+async def test_context_manager() -> None:
+    """Client can be used as a context manager to connect and disconnect from the database"""
+    client = Client()
+    assert not client.is_connected()
+
+    async with client:
+        assert client.is_connected()
+
+    assert not client.is_connected()
+
+    # ensure exceptions are propagated
+    with pytest.raises(engine.errors.AlreadyConnectedError):
+        async with client:
+            assert client.is_connected()
+            await client.connect()

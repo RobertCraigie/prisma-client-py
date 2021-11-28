@@ -11029,6 +11029,19 @@
               self.__engine.stop()
               self.__engine = None
   
+      async def __aenter__(self) -> 'Client':
+          await self.connect()
+          return self
+  
+      async def __aexit__(
+          self,
+          exc_type: Optional[Type[BaseException]],
+          exc: Optional[BaseException],
+          exc_tb: Optional[TracebackType],
+      ) -> None:
+          if self.is_connected():
+              await self.disconnect()
+  
       def is_connected(self) -> bool:
           """Returns True if the client is connected to the query engine, False otherwise."""
           return self.__engine is not None
@@ -38782,6 +38795,19 @@
           if self.__engine is not None:
               self.__engine.stop()
               self.__engine = None
+  
+      def __enter__(self) -> 'Client':
+          self.connect()
+          return self
+  
+      def __exit__(
+          self,
+          exc_type: Optional[Type[BaseException]],
+          exc: Optional[BaseException],
+          exc_tb: Optional[TracebackType],
+      ) -> None:
+          if self.is_connected():
+              self.disconnect()
   
       def is_connected(self) -> bool:
           """Returns True if the client is connected to the query engine, False otherwise."""
