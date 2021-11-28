@@ -8,8 +8,6 @@ from prisma.utils import _NoneType
 from prisma.errors import HTTPClientClosedError
 
 
-# TODO: test every HTTP library
-
 State = Literal['initial', 'open', 'closed']
 
 

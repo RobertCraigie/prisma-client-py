@@ -6,7 +6,7 @@ from typing import List, Optional, Dict
 
 import click
 
-from .. import generator, jsonrpc, binaries
+from .. import generator, jsonrpc, binaries, __version__
 
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -82,7 +82,7 @@ def invoke() -> None:
                 result=dict(
                     manifest=jsonrpc.Manifest(
                         defaultOutput=str(generator.BASE_PACKAGE_DIR.absolute()),
-                        prettyName='Prisma Client Python',
+                        prettyName=f'Prisma Client Python (v{__version__})',
                     )
                 ),
             )

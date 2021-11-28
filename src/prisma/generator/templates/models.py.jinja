@@ -1,15 +1,22 @@
 {% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import recursive_types with context %}
 # -- template models.py.jinja --
 import os
-from pydantic import BaseConfig, BaseModel, Field
+from pydantic import BaseConfig, BaseModel, Field, validator
 
 from . import types, enums, errors, fields
+from ._types import BaseModelT
+from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
 
 
 class Config(BaseConfig):
     use_enum_values: bool = True
+    arbitrary_types_allowed: bool = True
     allow_population_by_field_name: bool = True
+    json_encoders: Dict[Type[Any], Any] = {
+        fields.Base64: serialize_base64,
+    }
 
 
 _created_partial_types: Set[str] = set()
@@ -27,6 +34,28 @@ class {{ model.name }}(BaseModel):
     {% endfor %}
 
     Config = Config
+
+    {% if recursive_types %}
+    @classmethod
+    def prisma(cls: Type[BaseModelT]) -> 'actions.{{ model.name }}Actions[BaseModelT]':
+        from .client import get_client
+
+        return actions.{{ model.name }}Actions[BaseModelT](get_client(), cls)
+    {% else %}
+    @classmethod
+    def prisma(cls) -> 'actions.{{ model.name }}Actions':
+        from .client import get_client
+
+        return actions.{{ model.name }}Actions(get_client(), cls)
+
+    def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
+        raise RuntimeError(
+            'Prisma models cannot be subclassed with pseudo-recursive types;\n'
+            'This is because mypy does not work well with this pattern;\n'
+            'See the documentation for how to generate fully recursive types: \n'
+            'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
+        )
+    {% endif %}
 
     @staticmethod
     def create_partial(
@@ -119,6 +148,13 @@ class {{ model.name }}(BaseModel):
         partial_models_ctx.set(models)
         _created_partial_types.add(name)
 
+    {# TODO: this should be one validator for all bytes types #}
+    {% for field in model.get_fields_of_type('Bytes') %}
+    @validator('{{ field.name }}', pre=True, allow_reuse=True)
+    @classmethod
+    def _prisma_{{ field.name }}_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
+        return fields.Base64._internal_from_prisma(value)
+    {% endfor %}
 
 {% endfor %}
 
@@ -148,7 +184,7 @@ _{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] 
 
 # we have to import ourselves as relation types are namespaced to models
 # e.g. models.Post
-from . import models
+from . import models, actions
 
 # required to support relationships between models
 {% for model in dmmf.datamodel.models %}

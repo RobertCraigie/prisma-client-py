@@ -4,10 +4,10 @@ As Prisma Client Python supports generating both async and non-async clients, th
 
 ## Installing
 
-Prisma Client Python can be installed from [PyPi](https://pypi.org/project/prisma-client/) with [pip](https://pip.pypa.io/en/stable/)
+Prisma Client Python can be installed from [PyPi](https://pypi.org/project/prisma/) with [pip](https://pip.pypa.io/en/stable/)
 
 ```sh
-pip install prisma-client
+pip install prisma
 ```
 
 ## Asyncio

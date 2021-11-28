@@ -1,12 +1,22 @@
 import inspect
 
 import pytest
-from prisma import Client
+import prisma
+from prisma import Client, register, get_client
+
+
+def pytest_sessionstart(session: pytest.Session) -> None:
+    # we need to register the client here as this conftest is imported
+    # by pytest multiple times
+    try:
+        register(Client())
+    except prisma.errors.ClientAlreadyRegisteredError:  # pragma: no cover
+        pass
 
 
 @pytest.fixture(name='client', scope='session')
 def client_fixture() -> Client:
-    client = Client()
+    client = get_client()
     client.connect()
     return client
 

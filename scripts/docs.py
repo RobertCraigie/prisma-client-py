@@ -11,6 +11,7 @@ def main() -> None:
     # and remove docs/index.md from version control
     content = ROOTDIR.joinpath('README.md').read_text()
     content = re.sub(r'\(docs(\/.*)\.md(#.*)?\)', r'(\1/\2)', content)
+    content = content.replace('./docs/showcase.gif', './showcase.gif')
     ROOTDIR.joinpath('docs/index.md').write_text(content)
 
 

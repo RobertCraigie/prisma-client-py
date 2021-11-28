@@ -33,7 +33,7 @@ extras = {
 
 
 setup(
-    name='prisma-client',
+    name='prisma',
     version=version,
     author='Robert Craigie',
     author_email='robert@craigie.dev',
@@ -86,5 +86,6 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ],
 )

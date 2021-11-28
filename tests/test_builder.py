@@ -9,8 +9,6 @@ from prisma.utils import _NoneType
 from prisma.builder import QueryBuilder, serializer
 from prisma.errors import UnknownRelationalFieldError, UnknownModelError
 
-from .utils import assert_query_equals
-
 
 # TODO: more tests
 # TODO: cleanup registered serializers
@@ -35,41 +33,22 @@ def build_query(
     ).build_query()
 
 
-def test_basic_building() -> None:
+def test_basic_building(snapshot: SnapshotAssertion) -> None:
     """Standard builder usage with and without a model"""
-    assert_query_equals(QueryBuilder(
+    query = QueryBuilder(
         operation='query',
         method='findUnique',
         model='User',
         arguments={'where': {'id': '1'}}
-    ), '''
-    query {
-      result: findUniqueUser
-      (
-        where: {
-          id: "1"
-        }
-      )
-      {
-        id
-        name
-      }
-    }
-    ''')
-    assert_query_equals(QueryBuilder(
+    ).build_query()
+    assert query == snapshot
+
+    query = QueryBuilder(
         operation='mutation',
         method='queryRaw',
         arguments={'where': {'id': '1'}}
-    ), '''
-    mutation {
-      result: queryRaw
-      (
-        where: {
-          id: "1"
-        }
-      )
-    }
-    ''')
+    ).build_query()
+    assert query == snapshot
 
 
 def test_invalid_include() -> None:
@@ -103,9 +82,9 @@ def test_include_no_model() -> None:
     assert exc.match('Cannot include fields when model is None.')
 
 
-def test_include_with_arguments() -> None:
+def test_include_with_arguments(snapshot: SnapshotAssertion) -> None:
     """Including a field with filters"""
-    assert_query_equals(QueryBuilder(
+    query = QueryBuilder(
         operation='query',
         method='findUnique',
         model='User',
@@ -113,55 +92,21 @@ def test_include_with_arguments() -> None:
             'where': {'id': 1},
             'include': {'posts': {'where': {'id': 1}}}
         }
-    ), '''
-    query {
-      result: findUniqueUser
-      (
-        where: {
-          id: 1
-        }
-      )
-      {
-        id
-        name
-        posts(
-          where: {
-            id: 1
-          }
-        )
-        {
-          id
-          created_at
-          updated_at
-          title
-          published
-          views
-          desc
-          author_id
-        }
-      }
-    }
-    ''')
+    ).build_query()
+    assert query == snapshot
 
 
-def test_raw_queries() -> None:
+def test_raw_queries(snapshot: SnapshotAssertion) -> None:
     """Raw queries serialise paramaters to JSON"""
-    assert_query_equals(QueryBuilder(
+    query = QueryBuilder(
         operation='mutation',
         method='queryRaw',
         arguments={
             'query': 'SELECT * FROM User where id = $1',
             'parameters': ["1263526"],
         }
-    ), '''
-    mutation {
-      result: queryRaw
-      (
-        query: "SELECT * FROM User where id = $1"
-        parameters: "[\\"1263526\\"]"
-      )
-    }
-    ''')
+    ).build_query()
+    assert query == snapshot
 
 
 def test_datetime_serialization_tz_aware(snapshot: SnapshotAssertion) -> None:

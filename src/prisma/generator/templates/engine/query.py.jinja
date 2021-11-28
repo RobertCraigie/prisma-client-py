@@ -17,6 +17,9 @@ from ..utils import DEBUG
 from .._types import Method
 from ..binaries import platform
 from ..utils import time_since, _env_bool
+from ..types import DatasourceOverride
+from ..builder import dumps
+from .._compat import get_running_loop
 
 
 __all__ = ('QueryEngine',)
@@ -46,7 +49,7 @@ class QueryEngine:
         self.disconnect()
         {% if is_async %}
         try:
-            loop = asyncio.get_event_loop()
+            loop = get_running_loop()
         except RuntimeError:
             # no event loop in the current thread, we cannot cleanup
             return
@@ -75,7 +78,11 @@ class QueryEngine:
         if self.session and not self.session.closed:
             {{ maybe_await }}self.session.close()
 
-    {{ maybe_async_def }}connect(self, timeout: int = 10) -> None:
+    {{ maybe_async_def }}connect(
+        self,
+        timeout: int = 10,
+        datasources: Optional[List[DatasourceOverride]] = None,
+    ) -> None:
         log.debug('Connecting to query engine')
         if self.process is not None:
             raise errors.AlreadyConnectedError('Already connected to the query engine')
@@ -84,14 +91,19 @@ class QueryEngine:
         self.file = file = utils.ensure()
 
         try:
-            {{ maybe_await }}self.spawn(file, timeout=timeout)
+            {{ maybe_await }}self.spawn(file, timeout=timeout, datasources=datasources)
         except Exception:
             self.disconnect()
             raise
 
         log.debug('Connecting to query engine took %s', time_since(start))
 
-    {{ maybe_async_def }}spawn(self, file: Path, timeout: int = 10) -> None:
+    {{ maybe_async_def }}spawn(
+        self,
+        file: Path,
+        timeout: int = 10,
+        datasources: Optional[List[DatasourceOverride]] = None,
+    ) -> None:
         port = utils.get_open_port()
         log.debug('Running query engine on port %i', port)
 
@@ -107,6 +119,9 @@ class QueryEngine:
 
         if DEBUG:
             env.update(RUST_LOG='info')
+
+        if datasources is not None:
+            env.update(OVERWRITE_DATASOURCES=dumps(datasources))
 
         # TODO: remove the noise from these query logs
         if self._log_queries:

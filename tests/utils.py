@@ -2,15 +2,12 @@ import os
 import sys
 import uuid
 import inspect
-import asyncio
 import textwrap
 import subprocess
 import contextlib
 from pathlib import Path
-from textwrap import dedent
 from datetime import datetime
 from typing import (
-    Coroutine,
     Any,
     Optional,
     List,
@@ -25,7 +22,6 @@ from click.testing import CliRunner, Result
 
 from prisma.cli import main
 from prisma._types import FuncType
-from prisma.builder import QueryBuilder
 
 
 if TYPE_CHECKING:
@@ -200,7 +196,11 @@ class Testdir:
 
         path = self.path.joinpath('schema.prisma')
         path.write_text(
-            schema.format(output=self.path.joinpath(output), options=options, **extra)
+            schema.format(
+                output=escape_path(self.path.joinpath(output)),
+                options=options,
+                **extra,
+            )
         )
         return path
 
@@ -259,10 +259,6 @@ def get_source_from_function(function: FuncType, **env: Any) -> str:
     return IMPORT_RELOADER + '\n'.join(lines)
 
 
-def async_run(coro: Coroutine[Any, Any, Any]) -> Any:
-    return asyncio.get_event_loop().run_until_complete(coro)
-
-
 def assert_similar_time(dt1: datetime, dt2: datetime, threshold: float = 0.5) -> None:
     """Assert the delta between the two datetimes is less than the given threshold (in seconds).
 
@@ -293,14 +289,8 @@ def assert_time_like_now(dt: datetime, threshold: int = 10) -> None:
     assert delta.total_seconds() < threshold
 
 
-def assert_query_equals(query: Union[str, QueryBuilder], expected: str) -> None:
-    if not isinstance(query, str):  # pragma: no branch
-        query = query.build_query()
+def escape_path(path: Union[str, Path]) -> str:
+    if isinstance(path, Path):  # pragma: no branch
+        path = str(path.absolute())
 
-    # we have to dedent and remove leading and ending newlines
-    # to support in-place query definitions
-    expected = dedent(expected).lstrip('\n')
-    if expected.endswith('\n'):  # pragma: no branch
-        expected = expected[:-1]
-
-    assert query == expected
+    return path.replace('\\', '\\\\')

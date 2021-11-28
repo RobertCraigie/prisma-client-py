@@ -12,12 +12,15 @@ database:
 
 . PHONY: package
 package:
+	python scripts/cleanup.py
 	rm -rf dist/*
 	python setup.py sdist
 	python setup.py sdist bdist_wheel
+	sh scripts/check_pkg.sh
 
 . PHONE: release
 release:
+	sh scripts/check_pkg.sh
 	twine upload dist/*
 
 .PHONY: test
@@ -27,13 +30,17 @@ test:
 .PHONY: format
 format:
 	black .
-	for schema in `find docs/src_examples -name '*.schema.prisma'` ; do \
+	for schema in `find . -name '*.schema.prisma'` ; do \
         prisma format --schema=$$schema ; \
     done
 
 .PHONY: lint
 lint:
 	tox -e lint
+
+.PHONY: mypy
+mypy:
+	tox -e mypy
 
 .PHONY: pyright
 pyright:

@@ -102,6 +102,20 @@ model ManyRequired {
   optional_boolean Boolean?
 }
 
+model Lists {
+  id           String     @id @default(cuid())
+  strings      String[]
+  bytes        Bytes[]
+  dates        DateTime[]
+  bools        Boolean[]
+  ints         Int[]
+  floats       Float[]
+  bigints      BigInt[]
+  json_objects Json[]
+  // TODO
+  // decimals     Decimal[]
+}
+
 enum ABeautifulEnum {
   A
   B
@@ -109,7 +123,6 @@ enum ABeautifulEnum {
 }
 
 model A {
-  id       String  @id @default(uuid())
   email    String  @unique
   name     String?
   int      Int     @db.Integer
@@ -118,6 +131,8 @@ model A {
   inc_sInt Int     @default(autoincrement()) @db.SmallInt
   bInt     BigInt  @db.BigInt
   inc_bInt BigInt  @default(autoincrement()) @db.BigInt
+
+  @@unique([name, email])
 }
 
 model B {
@@ -128,27 +143,28 @@ model B {
   // TODO
   // decFloat Decimal @db.Decimal(2, 1)
   // numFloat Decimal @db.Decimal(10, 6)
+
+  @@unique([float, d_float], name: "my_constraint")
 }
 
 model C {
-  id     String @id @default(cuid())
   char   String @db.Char(10)
   v_char String @db.VarChar(11)
   text   String @db.Text
   bit    String @db.Bit(4)
   v_bit  String @db.VarBit(5)
   uuid   String @db.Uuid
+
+  @@id([char, text], name: "my_id")
 }
 
 model D {
-  id    String  @id @default(cuid())
-  bool  Boolean @db.Boolean
-  xml   String  @db.Xml
-  json_ Json    @db.Json
-  jsonb Json    @db.JsonB
-
-  // TODO
-  // byteA Bytes   @db.ByteA
+  id     String  @id @default(cuid())
+  bool   Boolean @db.Boolean
+  xml    String  @db.Xml
+  json_  Json    @db.Json
+  jsonb  Json    @db.JsonB
+  binary Bytes   @db.ByteA
 }
 
 model E {

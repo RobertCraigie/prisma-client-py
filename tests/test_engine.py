@@ -1,7 +1,7 @@
 import asyncio
 import contextlib
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, Optional
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
@@ -13,6 +13,7 @@ from prisma.binaries import platform
 from prisma.binaries import BINARIES, ENGINE_VERSION
 from prisma.engine import errors, utils
 from prisma.engine.query import QueryEngine
+from prisma._compat import get_running_loop
 
 from .utils import Testdir
 
@@ -24,7 +25,10 @@ QUERY_ENGINE = next(  # pragma: no branch
 
 @contextlib.contextmanager
 def no_event_loop() -> Iterator[None]:
-    current = asyncio.get_event_loop()
+    try:
+        current: Optional[asyncio.AbstractEventLoop] = get_running_loop()
+    except RuntimeError:
+        current = None
 
     try:
         asyncio.set_event_loop(None)
@@ -85,7 +89,9 @@ def test_mismatched_version_error(fake_process: FakeProcess) -> None:
 
 def test_ensure_local_path(testdir: Testdir, fake_process: FakeProcess) -> None:
     """Query engine in current directory required to be the expected version"""
-    fake_engine = testdir.path / f'prisma-query-engine-{platform.binary_platform()}'
+    fake_engine = testdir.path / platform.check_for_extension(
+        f'prisma-query-engine-{platform.binary_platform()}'
+    )
     fake_engine.touch()
 
     fake_process.register_subprocess(

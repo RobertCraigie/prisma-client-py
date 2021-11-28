@@ -11,8 +11,6 @@ __all__ = (
     'RecordNotFoundError',
     'HTTPClientClosedError',
     'ClientNotConnectedError',
-    'PluginError',
-    'PluginMissingRequiredHookError',
 )
 
 
@@ -20,11 +18,23 @@ class PrismaError(Exception):
     pass
 
 
+class ClientNotRegisteredError(PrismaError):
+    def __init__(self) -> None:
+        super().__init__(
+            'No client instance registered; You must call prisma.register(prisma.Client())'
+        )
+
+
+class ClientAlreadyRegisteredError(PrismaError):
+    def __init__(self) -> None:
+        super().__init__('A client has already been registered.')
+
+
 class ClientNotConnectedError(PrismaError):
     def __init__(self) -> None:
         super().__init__(
             'Client is not connected to the query engine, '
-            'you must `await client.connect()` before attempting to query data.'
+            'you must call `connect()` before attempting to query data.'
         )
 
 
@@ -85,14 +95,6 @@ class RecordNotFoundError(DataError):
     pass
 
 
-class PluginError(PrismaError):
-    pass
-
-
-class PluginMissingRequiredHookError(PluginError):
-    pass
-
-
 class BuilderError(PrismaError):
     pass
 
@@ -107,3 +109,18 @@ class UnknownRelationalFieldError(BuilderError):
         super().__init__(
             f'Field: "{field}" either does not exist or is not a relational field on the {model} model'
         )
+
+
+class GeneratorError(PrismaError):
+    pass
+
+
+class UnsupportedListTypeError(GeneratorError):
+    type: str
+
+    def __init__(self, typ: str) -> None:
+        super().__init__(
+            f'Cannot use {typ} as a list yet; Please create a '
+            'feature request at https://github.com/RobertCraigie/prisma-client-py/issues/new'
+        )
+        self.type = typ

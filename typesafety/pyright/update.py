@@ -10,7 +10,9 @@ async def main(client: Client) -> None:
 
     # case: minimum required args
     await client.post.update(
-        where={},
+        where={
+            'id': 'foo',
+        },
         data={},
     )
 

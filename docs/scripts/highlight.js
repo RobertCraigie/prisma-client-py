@@ -89,5 +89,7 @@ document.body.addEventListener('click', (event) => {
 });
 
 document$.subscribe(() => {
-  highlightAll(isDarkTheme());
+  // we wait 200ms before applying highlighting as highlighting for the dark theme
+  // could occasionally break on initial load
+  setTimeout(() => highlightAll(isDarkTheme()), 200);
 });
