@@ -11001,6 +11001,7 @@
           *,
           use_dotenv: bool = True,
           log_queries: bool = False,
+          auto_register: bool = False,
           # no idea why this type ignore is required, pyright works correctly, mypy does not
           datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
       ) -> None:
@@ -11023,6 +11024,9 @@
   
           if use_dotenv:
               load_env()
+  
+          if auto_register:
+              register(self)
   
       def __del__(self) -> None:
           if self.__engine is not None:
@@ -38768,6 +38772,7 @@
           *,
           use_dotenv: bool = True,
           log_queries: bool = False,
+          auto_register: bool = False,
           # no idea why this type ignore is required, pyright works correctly, mypy does not
           datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
       ) -> None:
@@ -38790,6 +38795,9 @@
   
           if use_dotenv:
               load_env()
+  
+          if auto_register:
+              register(self)
   
       def __del__(self) -> None:
           if self.__engine is not None:
