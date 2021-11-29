@@ -5,7 +5,7 @@ from types import TracebackType
 
 from . import types, models, errors, actions
 from ._types import BaseModelT
-from .engine import QueryEngine
+from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
 
 
@@ -104,7 +104,7 @@ class Client:
         self.{{ model.name.lower() }} = actions.{{ model.name }}Actions(self, models.{{ model.name }})
         {% endif %}
         {% endfor %}
-        self.__engine: Optional[QueryEngine] = None
+        self.__engine: Optional[AbstractEngine] = None
         self._active_provider = '{{ datasources[0].active_provider }}'
         self._log_queries = log_queries
         self._datasource = datasource
@@ -158,7 +158,7 @@ class Client:
         It is required to call this before accessing data.
         """
         if self.__engine is None:
-            self.__engine = QueryEngine(dml=SCHEMA, log_queries=self._log_queries)
+            self.__engine = self._engine_class(dml=SCHEMA, log_queries=self._log_queries)
 
         datasources: Optional[List[types.DatasourceOverride]] = None
         if self._datasource is not None:
@@ -174,8 +174,7 @@ class Client:
     {{ maybe_async_def }}disconnect(self) -> None:
         """Disconnect the Prisma query engine."""
         if self.__engine is not None:
-            self.__engine.disconnect()
-            {{ maybe_await }}self.__engine.close_session()
+            {{ maybe_await }}self.__engine.disconnect()
             self.__engine = None
 
     {{ maybe_async_def }}execute_raw(self, query: str, *args: Any) -> int:
@@ -254,14 +253,18 @@ class Client:
             arguments=arguments,
             root_selection=root_selection,
         )
-        return {{ maybe_await }}self._engine.request('POST', '/', content=builder.build())
+        return {{ maybe_await }}self._engine.query(builder.build())
 
     @property
-    def _engine(self) -> QueryEngine:
+    def _engine(self) -> AbstractEngine:
         engine = self.__engine
         if engine is None:
             raise errors.ClientNotConnectedError()
         return engine
+
+    @property
+    def _engine_class(self) -> Type[AbstractEngine]:
+        return QueryEngine
 
 
 # TODO: this should return the results as well
@@ -301,7 +304,7 @@ class Batch:
             ],
             'transaction': True,
         }
-        {{ maybe_await }}self.__client._engine.request('POST', '/', content=dumps(payload))
+        {{ maybe_await }}self.__client._engine.query(dumps(payload))
 
     {% if is_async %}
     async def __aenter__(self) -> 'Batch':

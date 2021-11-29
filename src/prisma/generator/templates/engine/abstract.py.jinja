@@ -1,0 +1,50 @@
+{% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import maybe_async_def with context %}
+# -- template engine/abstract.py.jinja --
+from abc import ABC, abstractmethod
+from ..types import DatasourceOverride
+
+
+__all__ = (
+    'AbstractEngine',
+)
+
+class AbstractEngine(ABC):
+    dml: str
+
+    @abstractmethod
+    def __init__(self, *, dml: str, log_queries: bool = False) -> None:
+        ...
+
+    @abstractmethod
+    def stop(self) -> None:
+        """Stop the engine, useful if the underlying engine uses a process"""
+        ...
+
+    @abstractmethod
+    {{ maybe_async_def}}disconnect(self) -> None:
+        """Disconnect from the engine"""
+        ...
+
+    @abstractmethod
+    {{ maybe_async_def }}connect(
+        self,
+        timeout: int = 10,
+        datasources: Optional[List[DatasourceOverride]] = None,
+    ) -> None:
+        """Connect to the engine"""
+        ...
+
+    @abstractmethod
+    {{ maybe_async_def }}query(self, content: str) -> Any:
+        """Execute a GraphQL query.
+
+        This method expects a JSON object matching this structure:
+
+        {
+            'variables': {},
+            'operation_name': str,
+            'query': str,
+        }
+        """
+        ...
