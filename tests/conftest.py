@@ -77,19 +77,20 @@ def pytest_collection_modifyitems(
     items.sort(key=lambda item: item.__class__.__name__ == 'IntegrationTestItem')
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(name='patch_prisma', autouse=True)
 def patch_prisma_fixture(request: 'FixtureRequest') -> Iterator[None]:
     if request_has_client(request):
-        return
-
-    def _disable_access() -> None:
-        raise RuntimeError(
-            'Tests that access the prisma client must be decorated with: '
-            '@pytest.mark.prisma '
-        )
-
-    with reset_client(_disable_access):  # type: ignore
         yield
+    else:
+
+        def _disable_access() -> None:
+            raise RuntimeError(
+                'Tests that access the prisma client must be decorated with: '
+                '@pytest.mark.prisma '
+            )
+
+        with reset_client(_disable_access):  # type: ignore
+            yield
 
 
 @pytest.fixture(name='setup_client', autouse=True)
