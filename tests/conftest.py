@@ -86,7 +86,7 @@ def patch_prisma_fixture(request: 'FixtureRequest') -> Iterator[None]:
         def _disable_access() -> None:
             raise RuntimeError(
                 'Tests that access the prisma client must be decorated with: '
-                '@pytest.mark.prisma '
+                '@pytest.mark.prisma'
             )
 
         with reset_client(_disable_access):  # type: ignore
