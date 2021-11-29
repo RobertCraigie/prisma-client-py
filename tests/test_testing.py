@@ -4,6 +4,7 @@ from prisma import Client, register, get_client
 from prisma.testing import reset_client
 
 
+@pytest.mark.prisma
 def test_reset_client() -> None:
     """Resetting and re-registering the registered client works as expected"""
     original = get_client()
