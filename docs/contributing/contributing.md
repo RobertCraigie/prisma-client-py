@@ -143,6 +143,19 @@ async def test_example(client: Client) -> None:
     ...
 ```
 
+If the test you are writing makes use of model-based access then you must mark the test like so:
+
+```py
+import pytest
+
+@pytest.mark.prisma
+@pytest.mark.asyncio
+async def test_example() -> None:
+    """Test docstring"""
+    ...
+```
+
+
 The tests can then be ran with tox, e.g.
 
 ```sh

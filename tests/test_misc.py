@@ -43,3 +43,12 @@ async def test_logs_sql_queries(testdir: Testdir) -> None:
         await client.disconnect()
 
     assert 'SELECT `main`.`User`.`id' in file.read_text()
+
+
+@pytest.mark.asyncio
+async def test_unmarked_test_disallowed_client() -> None:
+    """Test case that isn't marked with @pytest.mark.prisma cannot access the client"""
+    with pytest.raises(RuntimeError) as exc:
+        await User.prisma().create({'name': 'Robert'})
+
+    assert '@pytest.mark.prisma' in exc.value.args[0]
