@@ -2,15 +2,12 @@ import os
 import sys
 import uuid
 import inspect
-import asyncio
 import textwrap
 import subprocess
 import contextlib
 from pathlib import Path
-from textwrap import dedent
 from datetime import datetime
 from typing import (
-    Coroutine,
     Any,
     Optional,
     List,
@@ -21,13 +18,10 @@ from typing import (
 
 import py
 import click
-import pkg_resources
 from click.testing import CliRunner, Result
-from pkg_resources import EntryPoint, Distribution
 
 from prisma.cli import main
 from prisma._types import FuncType
-from prisma.builder import QueryBuilder
 
 
 if TYPE_CHECKING:
@@ -119,13 +113,15 @@ class Runner:
 
         def _patched_subprocess_run(
             *args: Any, **kwargs: Any
-        ) -> 'subprocess.CompletedProcess[bytes]':
+        ) -> 'subprocess.CompletedProcess[str]':
             # pylint: disable=subprocess-run-check
             kwargs['stdout'] = subprocess.PIPE
             kwargs['stderr'] = subprocess.PIPE
             kwargs['encoding'] = sys.getdefaultencoding()
 
             process = old_subprocess_run(*args, **kwargs)
+
+            assert isinstance(process.stdout, str)
 
             print(process.stdout)
             print(process.stderr, file=sys.stderr)
@@ -143,7 +139,7 @@ class Testdir:
     def __init__(self, testdir: 'PytestTestdir') -> None:
         self.testdir = testdir
 
-    def _make_relative(self, path: Union[str, Path]) -> str:
+    def _make_relative(self, path: Union[str, Path]) -> str:  # pragma: no cover
         if not isinstance(path, Path):
             path = Path(path)
 
@@ -151,13 +147,6 @@ class Testdir:
             return str(path)
 
         return str(path.relative_to(self.path))
-
-    @staticmethod
-    def _resolve_name(func: FuncType, name: Optional[str] = None) -> str:
-        if name is None:
-            return func.__name__
-
-        return name
 
     def make_from_function(
         self,
@@ -207,7 +196,11 @@ class Testdir:
 
         path = self.path.joinpath('schema.prisma')
         path.write_text(
-            schema.format(output=self.path.joinpath(output), options=options, **extra)
+            schema.format(
+                output=escape_path(self.path.joinpath(output)),
+                options=options,
+                **extra,
+            )
         )
         return path
 
@@ -217,69 +210,8 @@ class Testdir:
     def runpytest(
         self, *args: Union[str, 'os.PathLike[str]'], **kwargs: Any
     ) -> 'RunResult':
-        return self.testdir.runpytest(*args, **kwargs)
-
-    def create_module(
-        self, func: FuncType, name: Optional[str] = None, mod: str = 'mod', **env: Any
-    ) -> None:
-        mod_path = self.path / mod
-        mod_path.mkdir(exist_ok=True)
-        mod_path.joinpath('__init__.py').touch()
-        name = self._resolve_name(func, name)
-        self.make_from_function(func, name=mod_path / name, **env)
-
-    @staticmethod
-    @contextlib.contextmanager
-    def install_module(
-        pkg: Optional[str] = None,
-        install_flags: Optional[List[str]] = None,
-        uninstall_flags: Optional[List[str]] = None,
-    ) -> Iterator[None]:
-        if install_flags is None:  # pragma: no branch
-            install_flags = ['-e', '.']
-
-        if uninstall_flags is None:
-            if pkg is None:  # pragma: no cover
-                raise TypeError('Missing required argument: pkg')
-
-            uninstall_flags = ['-y', pkg]
-
-        try:
-            subprocess.run(['pip', 'install', *install_flags], check=True)
-            yield
-        finally:
-            subprocess.run(['pip', 'uninstall', *uninstall_flags], check=True)
-
-    @contextlib.contextmanager
-    def create_entry_point(
-        self,
-        func: FuncType,
-        name: Optional[str] = None,
-        mod: str = 'mod',
-        clear: bool = True,
-    ) -> Iterator[None]:
-        name = self._resolve_name(func, name)
-        self.create_module(func, name=name, mod=mod)
-
-        entries = None
-
-        try:
-            dist = pkg_resources.get_distribution('prisma.io')
-            entries = dist.get_entry_map()['prisma']
-
-            if clear:  # pragma: no branch
-                # TODO: clear all entries, this curently only clears
-                # entry points defined in the prisma package, other
-                # packages prisma entry points are not cleared
-                entries.clear()
-
-            entries[name] = EntryPoint.parse(
-                f'{name} = {mod}.{name}', dist=Distribution(mod)
-            )
-            yield
-        finally:
-            if entries is not None:  # pragma: no branch
-                entries.pop(name, None)
+        # pytest-sugar breaks result parsing
+        return self.testdir.runpytest('-p', 'no:sugar', *args, **kwargs)
 
     @contextlib.contextmanager
     def redirect_stdout_to_file(
@@ -327,8 +259,23 @@ def get_source_from_function(function: FuncType, **env: Any) -> str:
     return IMPORT_RELOADER + '\n'.join(lines)
 
 
-def async_run(coro: Coroutine[Any, Any, Any]) -> Any:
-    return asyncio.get_event_loop().run_until_complete(coro)
+def assert_similar_time(dt1: datetime, dt2: datetime, threshold: float = 0.5) -> None:
+    """Assert the delta between the two datetimes is less than the given threshold (in seconds).
+
+    This is required as there seems to be small data loss when marshalling and unmarshalling
+    datetimes, for example:
+
+    2021-09-26T15:00:18.708000+00:00 -> 2021-09-26T15:00:18.708776+00:00
+
+    This issue does not appear to be solvable by us, please create an issue if you know of a solution.
+    """
+    if dt1 > dt2:
+        delta = dt1 - dt2
+    else:
+        delta = dt2 - dt1
+
+    assert delta.days == 0
+    assert delta.total_seconds() < threshold
 
 
 def assert_time_like_now(dt: datetime, threshold: int = 10) -> None:
@@ -342,14 +289,8 @@ def assert_time_like_now(dt: datetime, threshold: int = 10) -> None:
     assert delta.total_seconds() < threshold
 
 
-def assert_query_equals(query: Union[str, QueryBuilder], expected: str) -> None:
-    if not isinstance(query, str):  # pragma: no branch
-        query = query.build_query()
+def escape_path(path: Union[str, Path]) -> str:
+    if isinstance(path, Path):  # pragma: no branch
+        path = str(path.absolute())
 
-    # we have to dedent and remove leading and ending newlines
-    # to support in-place query definitions
-    expected = dedent(expected).lstrip('\n')
-    if expected.endswith('\n'):  # pragma: no branch
-        expected = expected[:-1]
-
-    assert query == expected
+    return path.replace('\\', '\\\\')

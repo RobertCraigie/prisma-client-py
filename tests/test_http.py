@@ -1,14 +1,12 @@
 from typing import cast
 
 import pytest
-import aiohttp
+import httpx
 from prisma.http import HTTP
 from prisma._types import Literal
 from prisma.utils import _NoneType
 from prisma.errors import HTTPClientClosedError
 
-
-# TODO: test every HTTP library
 
 State = Literal['initial', 'open', 'closed']
 
@@ -18,7 +16,7 @@ def assert_session_state(http: HTTP, state: State) -> None:
     if state == 'initial':
         assert http._session is _NoneType
     elif state == 'open':
-        assert isinstance(http._session, aiohttp.ClientSession)
+        assert isinstance(http._session, httpx.AsyncClient)
     elif state == 'closed':
         with pytest.raises(HTTPClientClosedError):
             assert http.session
@@ -30,6 +28,7 @@ def assert_session_state(http: HTTP, state: State) -> None:
 
 @pytest.mark.asyncio
 async def test_request_on_closed_sessions() -> None:
+    """Attempting to make a request on a closed session raises an error"""
     http = HTTP()
     assert http.closed is False
     await http.close()
@@ -45,6 +44,7 @@ async def test_request_on_closed_sessions() -> None:
 
 @pytest.mark.asyncio
 async def test_lazy_session_open() -> None:
+    """Accessing the session property opens the session"""
     http = HTTP()
     assert_session_state(http, 'initial')
 
@@ -55,7 +55,3 @@ async def test_lazy_session_open() -> None:
     assert_session_state(http, 'open')
     await http.close()
     assert_session_state(http, 'closed')
-
-
-def test_library_property() -> None:
-    assert HTTP().library == 'aiohttp'

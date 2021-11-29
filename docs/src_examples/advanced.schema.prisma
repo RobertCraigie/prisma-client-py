@@ -1,0 +1,27 @@
+datasource db {
+  // could be postgresql or mysql
+  provider = "sqlite"
+  url      = "file:dev.db"
+}
+
+generator db {
+  provider = "prisma-client-py"
+}
+
+model Post {
+  id         String    @id @default(cuid())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  title      String
+  published  Boolean
+  desc       String?
+  comments   Comment[]
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  created_at DateTime @default(now())
+  content    String
+  post       Post     @relation(fields: [post_id], references: [id])
+  post_id    String
+}

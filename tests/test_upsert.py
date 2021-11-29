@@ -4,6 +4,7 @@ from prisma import Client
 
 @pytest.mark.asyncio
 async def test_upsert(client: Client) -> None:
+    """Upserting a non-existent and existing model updates fields"""
     user_id = 'asjdhsajd'
     assert await client.user.find_unique(where={'id': user_id}) is None
 

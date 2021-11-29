@@ -29,6 +29,7 @@ def runner(runner: Runner, cli: PrismaCLI) -> Runner:
 
 
 def test_missing_cli_attr(runner: Runner) -> None:
+    """Loading command that does not have a cli attribute raises an error"""
     result = runner.invoke(['missing_cli_attr'])
     assert isinstance(result.exception, AssertionError)
     assert str(result.exception) == (
@@ -38,6 +39,7 @@ def test_missing_cli_attr(runner: Runner) -> None:
 
 
 def test_wrong_cli_type(runner: Runner) -> None:
+    """Loading command with a cli attribute that is not a click command raises an error"""
     result = runner.invoke(['wrong_cli_type'])
     assert isinstance(result.exception, AssertionError)
     assert str(result.exception) == (
@@ -48,12 +50,14 @@ def test_wrong_cli_type(runner: Runner) -> None:
 
 
 def test_example_command(runner: Runner) -> None:
+    """Basic correctly implemented command"""
     result = runner.invoke(['example'])
     assert result.output == 'Hello from example command!\n'
     assert result.exit_code == 0
 
 
 def test_list_commands(cli: PrismaCLI, ctx: click.Context) -> None:
+    """List commands ignores private modules"""
     commands = cli.list_commands(ctx)
     assert 'foo' in commands
     assert 'example' in commands

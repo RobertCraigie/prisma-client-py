@@ -1,7 +1,7 @@
 {% include '_header.py.jinja' %}
 # -- template partials.py.jinja --
-from pydantic import BaseModel, Field
-from . import types, models
+from pydantic import BaseModel, Field, validator
+from . import types, models, fields, enums
 
 
 {% for name, fields in partial_models.items() %}
@@ -16,6 +16,17 @@ class {{ name }}(BaseModel):
     {% endfor %}
 
     Config = models.Config
+
+    {# TODO: this should be one validator for all bytes types #}
+    {# TODO: this type check feels very hacky #}
+    {% for name, field in fields.items() %}
+    {% if field.type in ['fields.Base64', 'List[\'fields.Base64\']'] %}
+    @validator('{{ name }}', pre=True, allow_reuse=True)
+    @classmethod
+    def _prisma_{{ name }}_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
+        return fields.Base64._internal_from_prisma(value)
+    {% endif %}
+    {% endfor %}
 
 
 {% endfor %}

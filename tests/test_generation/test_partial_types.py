@@ -9,8 +9,8 @@ from ..utils import Testdir
 
 SCHEMA = '''
 datasource db {{
-  provider = "sqlite"
-  url      = "file:dev.db"
+  provider = "postgres"
+  url      = env("DB_URL")
 }}
 
 generator db {{
@@ -26,9 +26,11 @@ model Post {{
   title       String
   published   Boolean
   desc        String?
+  meta        Json?
   comments    Comment[]
   author_id   String
   author      User      @relation(fields: [author_id], references: [id])
+  thumbnail   Bytes?
 }}
 
 model Comment {{
@@ -45,12 +47,14 @@ model User {{
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
   name         String
+  bytes        Bytes
+  bytes_list   Bytes[]
   posts        Post[]
 }}
 
 model Foo {{
-    id   String @id @default(cuid())
-    text String
+  id   String @id @default(cuid())
+  text String
 }}
 '''
 
@@ -70,11 +74,14 @@ model Foo {{
     ],
 )
 def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
+    """Grouped tests for partial types to improve test speed"""
+
     def tests() -> None:  # pylint: disable=all  mark: filedef
         import sys
         import datetime
         from typing import Type, Dict, Iterator, Any, Tuple, Set, Optional
         from pydantic import BaseModel
+        from prisma import Base64
         from prisma.partials import (  # type: ignore[attr-defined]
             # pyright: reportGeneralTypeIssues = false
             PostWithoutDesc,
@@ -85,6 +92,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             PostRequiredAuthor,
             PostModifiedAuthor,
             UserModifiedPosts,
+            UserBytesList,
         )
 
         base_fields = {
@@ -94,9 +102,11 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             'title': True,
             'published': True,
             'desc': False,
+            'meta': False,
             'comments': False,
             'author': False,
             'author_id': True,
+            'thumbnail': False,
         }
 
         def common_entries(
@@ -118,9 +128,11 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             assert fields.keys() - model.__fields__.keys() == removed
 
         def test_without_desc() -> None:
+            """Removing one field"""
             assert_expected(PostWithoutDesc, base_fields, {'desc'})
 
         def test_optional_published() -> None:
+            """Making one field optional"""
             assert_expected(
                 PostOptionalPublished,
                 fields={**base_fields, 'published': False},
@@ -128,16 +140,19 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             )
 
         def test_required_desc() -> None:
+            """Making one field required"""
             assert_expected(
                 PostRequiredDesc, fields={**base_fields, 'desc': True}, removed=None
             )
 
         def test_required_relational_author() -> None:
+            """Making relational field required"""
             assert_expected(
                 PostRequiredAuthor, fields={**base_fields, 'author': True}, removed=None
             )
 
         def test_only_id() -> None:
+            """Removing all fields except from one"""
             assert_expected(
                 PostOnlyId,
                 fields=base_fields,
@@ -147,13 +162,16 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
                     'title',
                     'published',
                     'desc',
+                    'meta',
                     'comments',
                     'author',
                     'author_id',
+                    'thumbnail',
                 },
             )
 
         def test_optional_include() -> None:
+            """Both including and making optional on the same field"""
             assert_expected(
                 PostOptionalInclude,
                 fields={**base_fields, 'title': False},
@@ -163,13 +181,16 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
                     'updated_at',
                     'published',
                     'desc',
+                    'meta',
                     'comments',
                     'author',
                     'author_id',
+                    'thumbnail',
                 },
             )
 
         def test_modified_relational_type() -> None:
+            """Changing one-to-one relational field type"""
             assert_expected(PostModifiedAuthor, base_fields, None)
 
             field = PostModifiedAuthor.__fields__['author']
@@ -177,6 +198,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             assert field.type_.__module__ == 'prisma.partials'
 
         def test_modified_relational_list_type() -> None:
+            """Changing one-to-many relation field type"""
             UserModifiedPosts(
                 id='1',
                 name='Robert',
@@ -195,6 +217,21 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
 
             assert field.outer_type_.__module__ == 'typing'
 
+        def test_bytes() -> None:
+            """Ensure Base64 fields can be used"""
+            # mock prisma behaviour
+            model = UserBytesList.parse_obj(
+                {
+                    'bytes': str(Base64.encode(b'bar')),
+                    'bytes_list': [
+                        str(Base64.encode(b'foo')),
+                        str(Base64.encode(b'baz')),
+                    ],
+                }
+            )
+            assert model.bytes == Base64.encode(b'bar')
+            assert model.bytes_list == [Base64.encode(b'foo'), Base64.encode(b'baz')]
+
     def generator() -> None:  # mark: filedef
         from prisma.models import Post, User
 
@@ -210,18 +247,25 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
         Post.create_partial('PostRequiredAuthor', required=['author'])
         Post.create_partial('PostModifiedAuthor', relations={'author': 'UserOnlyName'})
 
-        User.create_partial('UserModifiedPosts', relations={'posts': 'PostOnlyId'})
+        User.create_partial(
+            'UserModifiedPosts',
+            exclude={'bytes', 'bytes_list'},  # type: ignore
+            relations={'posts': 'PostOnlyId'},
+        )
+        User.create_partial('UserBytesList', include={'bytes', 'bytes_list'})  # type: ignore
 
     testdir.make_from_function(generator, name=location)
     testdir.generate(SCHEMA, options)
     testdir.make_from_function(tests)
-    testdir.runpytest().assert_outcomes(passed=8)
+    testdir.runpytest().assert_outcomes(passed=9)
 
 
 @pytest.mark.parametrize('argument', ['exclude', 'include', 'required', 'optional'])
 def test_partial_types_incorrect_key(
     testdir: Testdir, argument: Literal['exclude', 'include', 'required', 'optional']
 ) -> None:
+    """Invalid field name raises error"""
+
     def generator() -> None:  # mark: filedef
         from prisma.models import Post
 
@@ -238,6 +282,8 @@ def test_partial_types_incorrect_key(
 
 
 def test_partial_types_same_required_and_optional(testdir: Testdir) -> None:
+    """Making the same field required and optional raises an error"""
+
     def generator() -> None:  # mark: filedef
         from prisma.models import Post
 
@@ -261,6 +307,8 @@ def test_partial_types_same_required_and_optional(testdir: Testdir) -> None:
 
 
 def test_partial_types_excluded_required(testdir: Testdir) -> None:
+    """Excluding and requiring the same field raises an error"""
+
     def generator() -> None:  # mark: filedef
         from prisma.models import Post
 
@@ -281,6 +329,7 @@ def test_partial_types_excluded_required(testdir: Testdir) -> None:
 
 
 def test_partial_type_generator_not_found(testdir: Testdir) -> None:
+    """Unknown partial type generator option value raises an error"""
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA, 'partial_type_generator = "foo.bar.baz"')
 
@@ -291,6 +340,8 @@ def test_partial_type_generator_not_found(testdir: Testdir) -> None:
 
 
 def test_partial_type_generator_error_while_running(testdir: Testdir) -> None:
+    """Exception ocurring while running partial type generator logs exception"""
+
     def generator() -> None:  # mark: filedef
         import foo  # type: ignore[import]
 
@@ -306,6 +357,8 @@ def test_partial_type_generator_error_while_running(testdir: Testdir) -> None:
 
 
 def test_partial_type_already_created(testdir: Testdir) -> None:
+    """Creating same partial type twice raises error"""
+
     def generator() -> None:  # mark: filedef
         from prisma.models import Post
 
@@ -327,6 +380,8 @@ def test_partial_type_already_created(testdir: Testdir) -> None:
 
 
 def test_unknown_partial_type(testdir: Testdir) -> None:
+    """Modifying relational field type to unknown partial type raises error"""
+
     def generator() -> None:  # mark: filedef
         from prisma.models import Post
 
@@ -348,6 +403,8 @@ def test_unknown_partial_type(testdir: Testdir) -> None:
 
 
 def test_passing_type_for_excluded_field(testdir: Testdir) -> None:
+    """Passing relational type for an excluded field raises error"""
+
     def generator() -> None:  # mark: filedef
         from prisma.models import Post, User
 
@@ -371,6 +428,8 @@ def test_passing_type_for_excluded_field(testdir: Testdir) -> None:
 
 
 def test_partial_type_types_non_relational(testdir: Testdir) -> None:
+    """Passing non-relational field to relations raises an error"""
+
     def generator() -> None:  # mark: filedef
         from prisma.models import Post
 
@@ -396,6 +455,8 @@ def test_partial_type_types_non_relational(testdir: Testdir) -> None:
 
 
 def test_partial_type_relations_no_relational_fields(testdir: Testdir) -> None:
+    """Passing relations option to model with no relational fields raises an error"""
+
     def generator() -> None:  # mark: filedef
         from prisma.models import Foo  # type: ignore[attr-defined]
 

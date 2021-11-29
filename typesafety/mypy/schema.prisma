@@ -1,0 +1,53 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("PRISMA_PY_POSTGRES_URL")
+}
+
+generator db {
+  provider               = "prisma-client-py"
+  interface              = "asyncio"
+  recursive_type_depth   = 5
+}
+
+model Post {
+  id         String     @id @default(cuid())
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  title      String
+  published  Boolean
+  views      Int        @default(0)
+  desc       String?
+  author     User?      @relation(fields: [author_id], references: [id])
+  author_id  String?
+  categories Category[] @relation(references: [id])
+}
+
+model User {
+  id      String   @id @default(cuid())
+  name    String
+  posts   Post[]
+  profile Profile?
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  posts Post[] @relation(references: [id])
+  name  String
+}
+
+model Profile {
+  id      Int    @id @default(autoincrement())
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String
+  bio     String
+}
+
+// model that just exists for testing different schema types
+model Types {
+  id       Int    @id @default(autoincrement())
+  string   String @default("")
+  bigint   BigInt @default(0)
+  integer  Int    @default(0)
+  float_   Float  @default(0)
+  json_obj Json   @default("{}")
+}

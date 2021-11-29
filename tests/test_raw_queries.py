@@ -7,6 +7,7 @@ from prisma.partials import PostOnlyPublished
 
 @pytest.mark.asyncio
 async def test_query_raw(client: Client) -> None:
+    """Standard usage, erroneous query and correct queries"""
     with pytest.raises(errors.RawQueryError):
         query = '''
             SELECT *
@@ -42,6 +43,7 @@ async def test_query_raw(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_query_raw_model(client: Client) -> None:
+    """Transforms resuls to a BaseModel when given"""
     post = await client.post.create(
         {
             'title': 'My post title!',
@@ -65,6 +67,7 @@ async def test_query_raw_model(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_query_raw_partial_model(client: Client) -> None:
+    """Transforms results to a partial model"""
     posts = [
         await client.post.create({'title': 'foo', 'published': False}),
         await client.post.create({'title': 'foo', 'published': True}),
@@ -88,6 +91,7 @@ async def test_query_raw_partial_model(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_query_raw_no_result(client: Client) -> None:
+    """No result returns empty list"""
     query = '''
         SELECT *
         FROM Post
@@ -102,6 +106,7 @@ async def test_query_raw_no_result(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_query_raw_incorrect_params(client: Client) -> None:
+    """Passings too many parameters raises an error"""
     query = '''
         SELECT COUNT(*) as total
         FROM Post
@@ -116,6 +121,7 @@ async def test_query_raw_incorrect_params(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_execute_raw(client: Client) -> None:
+    """Basic usage"""
     post = await client.post.create(
         {
             'title': 'My post title.',
@@ -140,6 +146,7 @@ async def test_execute_raw(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_execute_raw_no_result(client: Client) -> None:
+    """No result returns 0"""
     query = '''
         UPDATE Post
         SET title = 'updated title'
@@ -151,6 +158,7 @@ async def test_execute_raw_no_result(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_query_first(client: Client) -> None:
+    """Standard usage"""
     user = await client.user.create({'name': 'Robert'})
 
     query = '''
@@ -159,11 +167,12 @@ async def test_query_first(client: Client) -> None:
         WHERE User.id = ?
     '''
     found = await client.query_first(query, user.id)
-    assert found == {'id': user.id, 'name': 'Robert'}
+    assert found == {'id': user.id, 'name': 'Robert', 'email': None}
 
 
 @pytest.mark.asyncio
 async def test_query_first_model(client: Client) -> None:
+    """Transforms result to a BaseModel if given"""
     user = await client.user.create({'name': 'Robert'})
 
     query = '''

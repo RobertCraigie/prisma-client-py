@@ -6,12 +6,14 @@ from prisma.generator.models import Module, Config
 
 
 def test_module_serialization() -> None:
+    """Python module serialization to json"""
     path = Path(__file__).parent.parent.joinpath('scripts/partial_type_generator.py')
     module = Module(spec=str(path))
     assert Module.parse_raw(module.json()).spec.name == module.spec.name
 
 
 def test_recursive_type_depth() -> None:
+    """Recursive type depth option disallows values that are less than 2 and do not equal -1."""
     for value in [-2, -3, 0, 1]:
         with pytest.raises(ValidationError) as exc:
             Config(recursive_type_depth=value)

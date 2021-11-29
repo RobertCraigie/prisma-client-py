@@ -1,4 +1,5 @@
-{% set is_async = generator.config.http == 'aiohttp' %}
+{% set is_async = generator.config.interface == 'asyncio' %}
+{% set recursive_types = generator.config.recursive_type_depth == -1 %}
 
 {% if is_async %}
     {% set maybe_await = 'await ' %}
@@ -52,3 +53,5 @@ time.sleep({{ duration }})
     'find_unique': 'findUnique',
 }
 %}
+
+{% set active_provider = datasources[0].active_provider %}

@@ -8,7 +8,7 @@ from tests.utils import Runner
 
 HASH = re.compile(r'[a-f0-9]{40}')
 PLACEHOLDER = re.compile(r'.*')
-SEMANTIC_VERSION = re.compile(r'(\d?\d\.){2}\d?\d')
+SEMANTIC_VERSION = re.compile(r'(\d?\d\.){2}\d?\da?')
 PATTERN = re.compile(
     f'prisma               : (?P<prisma>{SEMANTIC_VERSION.pattern})\n'
     f'prisma client python : (?P<prisma_client_python>{SEMANTIC_VERSION.pattern})\n'
@@ -20,12 +20,14 @@ PATTERN = re.compile(
 
 
 def test_version(runner: Runner) -> None:
+    """Usage with no arguments"""
     result = runner.invoke(['py', 'version'])
     assert result.exit_code == 0
     assert PATTERN.match(result.output) is not None, result.output
 
 
 def test_version_json(runner: Runner) -> None:
+    """--json flag produces valid json"""
     result = runner.invoke(['py', 'version', '--json'])
     assert result.exit_code == 0
 
@@ -38,6 +40,7 @@ def test_version_json(runner: Runner) -> None:
 
 
 def test_same_output(runner: Runner) -> None:
+    """The same information is output with and without the --json flag"""
     result = runner.invoke(['py', 'version', '--json'])
     assert result.exit_code == 0
     data = json.loads(result.output)
@@ -56,6 +59,7 @@ def test_same_output(runner: Runner) -> None:
 
 
 def test_no_extras_installed(runner: Runner, monkeypatch: MonkeyPatch) -> None:
+    """Outputs empty list with no extras installed"""
     from prisma.cli.commands import version
 
     def patched_import_module(mod: str) -> None:
@@ -72,6 +76,7 @@ def test_no_extras_installed(runner: Runner, monkeypatch: MonkeyPatch) -> None:
 
 
 def test_no_extras_installed_json(runner: Runner, monkeypatch: MonkeyPatch) -> None:
+    """Outputs empty list with no extras installed and --json"""
     from prisma.cli.commands import version
 
     def patched_import_module(mod: str) -> None:

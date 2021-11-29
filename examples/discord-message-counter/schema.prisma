@@ -1,0 +1,14 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:database.db"
+}
+
+generator db {
+  provider  = "prisma-client-py"
+  interface = "asyncio"
+}
+
+model Channel {
+  id    BigInt @id
+  total Int    @default(0)
+}

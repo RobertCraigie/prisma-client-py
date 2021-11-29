@@ -3,6 +3,7 @@ import time
 import asyncio
 import inspect
 import logging
+import warnings
 import contextlib
 from importlib.util import find_spec
 from typing import Any, Union, Dict, Iterator, Coroutine
@@ -40,8 +41,10 @@ def maybe_async_run(func: Union[FuncType, CoroType], *args: Any, **kwargs: Any) 
     return func(*args, **kwargs)
 
 
+# TODO: TypeVar return
 def async_run(coro: Coroutine[Any, Any, Any]) -> Any:
-    return asyncio.get_event_loop().run_until_complete(coro)
+    """Execute the coroutine and return the result."""
+    return get_or_create_event_loop().run_until_complete(coro)
 
 
 def is_coroutine(obj: Any) -> bool:
@@ -64,3 +67,44 @@ def temp_env_update(env: Dict[str, str]) -> Iterator[None]:
             os.environ.pop(key, None)
 
         os.environ.update(old)
+
+
+@contextlib.contextmanager
+def monkeypatch(obj: Any, attr: str, new: Any) -> Any:
+    """Temporarily replace a method with a new funtion
+
+    The previously set method is passed as the first argument to the new function
+    """
+
+    def patched(*args: Any, **kwargs: Any) -> Any:
+        return new(old, *args, **kwargs)
+
+    old = getattr(obj, attr)
+
+    try:
+        setattr(obj, attr, patched)
+        yield
+    finally:
+        setattr(obj, attr, old)
+
+
+def get_or_create_event_loop() -> asyncio.AbstractEventLoop:
+    """Return the currently set event loop or create a new event loop if there
+    is no set event loop.
+
+    Starting from python3.10, asyncio.get_event_loop() raises a DeprecationWarning
+    when there is no event loop set, this deprecation will be enforced starting from
+    python3.12
+
+    This function serves as a future-proof wrapper over asyncio.get_event_loop()
+    that preserves the old behaviour.
+    """
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', category=DeprecationWarning)
+
+        try:
+            return asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            return loop

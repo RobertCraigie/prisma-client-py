@@ -7,6 +7,7 @@ from prisma import Client
 
 @pytest.mark.asyncio
 async def test_base_usage(client: Client) -> None:
+    """Basic non context manager usage"""
     batcher = client.batch_()
     batcher.user.create({'name': 'Robert'})
     batcher.user.create({'name': 'Tegan'})
@@ -23,6 +24,7 @@ async def test_base_usage(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_context_manager(client: Client) -> None:
+    """Basic usage with a context manager"""
     async with client.batch_() as batcher:
         batcher.user.create({'name': 'Robert'})
         batcher.user.create({'name': 'Tegan'})
@@ -38,6 +40,7 @@ async def test_context_manager(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_batch_error(client: Client) -> None:
+    """Error while committing does not commit any records"""
     with pytest.raises(prisma.errors.UniqueViolationError) as exc:
         batcher = client.batch_()
         batcher.user.create({'id': 'abc', 'name': 'Robert'})
@@ -50,6 +53,7 @@ async def test_batch_error(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_context_manager_error(client: Client) -> None:
+    """Error exiting context manager does not commit any records"""
     with pytest.raises(prisma.errors.UniqueViolationError) as exc:
         async with client.batch_() as batcher:
             batcher.user.create({'id': 'abc', 'name': 'Robert'})
@@ -61,6 +65,7 @@ async def test_context_manager_error(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_context_manager_throws_error(client: Client) -> None:
+    """Context manager respects errors"""
     with pytest.raises(RuntimeError) as exc:
         async with client.batch_() as batcher:
             batcher.user.create({'name': 'Robert'})
@@ -72,6 +77,7 @@ async def test_context_manager_throws_error(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_mixing_models(client: Client) -> None:
+    """Batching queries to multiple models works as intended"""
     async with client.batch_() as batcher:
         # NOTE: this is just to test functionality, the better method
         # for acheiving this is to use nested writes with user.create
@@ -95,6 +101,7 @@ async def test_mixing_models(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_mixing_actions(client: Client) -> None:
+    """Batching queries to different operations works as intended"""
     async with client.batch_() as batcher:
         batcher.user.create({'name': 'Robert'})
         batcher.user.delete_many(where={'name': 'Robert'})
@@ -104,6 +111,7 @@ async def test_mixing_actions(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_reusing_batcher(client: Client) -> None:
+    """Reusing the same batcher does not commit the same query multiple times"""
     batcher = client.batch_()
     batcher.user.create({'name': 'Robert'})
     await batcher.commit()
@@ -118,6 +126,7 @@ async def test_reusing_batcher(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_large_query(client: Client) -> None:
+    """Batching a lot of queries works"""
     async with client.batch_() as batcher:
         for i in range(1000):
             batcher.user.create({'name': f'User {i}'})
@@ -127,6 +136,7 @@ async def test_large_query(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_delete(client: Client) -> None:
+    """delete action works as suggested"""
     user = await client.user.create({'name': 'Robert'})
     assert await client.user.find_first(where={'id': user.id}) is not None
 
@@ -138,6 +148,7 @@ async def test_delete(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_update(client: Client) -> None:
+    """update action works as suggested"""
     user = await client.user.create({'name': 'Robert'})
     assert await client.user.find_first(where={'id': user.id}) is not None
 
@@ -152,6 +163,7 @@ async def test_update(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_upsert(client: Client) -> None:
+    """upsert action works as suggested"""
     user_id = 'abc123'
     assert await client.user.find_unique(where={'id': user_id}) is None
 
@@ -187,6 +199,7 @@ async def test_upsert(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_update_many(client: Client) -> None:
+    """update_many action works as suggested"""
     await client.user.create({'name': 'Robert'})
     await client.user.create({'name': 'Robert 2'})
 
@@ -203,6 +216,7 @@ async def test_update_many(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_delete_many(client: Client) -> None:
+    """delete_many action works as suggested"""
     await client.user.create({'name': 'Robert'})
     await client.user.create({'name': 'Robert 2'})
     assert await client.user.count() == 2
@@ -215,6 +229,7 @@ async def test_delete_many(client: Client) -> None:
 
 @pytest.mark.asyncio
 async def test_create_many_unsupported(client: Client) -> None:
+    """Cannot call create_many as SQLite does not support it"""
     with pytest.raises(prisma.errors.UnsupportedDatabaseError) as exc:
         async with client.batch_() as batcher:
             batcher.user.create_many([{'name': 'Robert'}])
@@ -223,8 +238,17 @@ async def test_create_many_unsupported(client: Client) -> None:
 
 
 def test_ensure_batch_and_action_signatures_are_equal(client: Client) -> None:
-    # ensure tests will fail if an action method is updated without
-    # updating the corresponding batch method
+    """Batch method signature is the same as it's corresponding client method
+
+    This is to ensure that if an client method is updated then it's corresponding
+    batch method must also be updated.
+
+    I acknowledge that the presence of this test would normally be considered the
+    result of an anti-pattern but I could not figure out any good method for
+    implementing batching and client methods together while maintaining static
+    type safety and without making the templates horrible to maintain. If you
+    have found a method that you think is good please make an issue/PR.
+    """
     actions = client.user
     for name, meth in inspect.getmembers(client.batch_().user, inspect.ismethod):
         if name.startswith('_'):

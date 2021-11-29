@@ -1,0 +1,1 @@
+discord.py-stubs==1.7.3

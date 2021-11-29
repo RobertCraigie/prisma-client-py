@@ -1,4 +1,5 @@
 {% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import recursive_types, active_provider with context %}
 # -- template types.py.jinja --
 from .utils import _NoneType
 
@@ -8,7 +9,7 @@ from .utils import _NoneType
 # TODO: cleanup whitespace control
 # TODO: add an argument to signify that the last iteration should be skipped
 {% macro recursive(base) %}
-    {% if depth == -1 %}
+    {% if recursive_types %}
 {{ caller(base, base, '') }}
     {% else %}
     {%+ for i in range(depth) -%}
@@ -35,79 +36,277 @@ from .utils import _NoneType
 {% endmacro %}
 
 
+SortMode = Literal['default', 'insensitive']
 SortOrder = Literal['asc', 'desc']
 
 
+class _DatasourceOverrideOptional(TypedDict, total=False):
+    env: str
+    name: str
+
+
+class DatasourceOverride(_DatasourceOverrideOptional):
+    url: str
+
+
+# types that can be serialized to json by our query builder
+{% if recursive_types %}
+Serializable = Union[
+    None,
+    bool,
+    float,
+    int,
+    str,
+    datetime.datetime,
+    List['Serializable'],
+    Dict[None, 'Serializable'],
+    Dict[bool, 'Serializable'],
+    Dict[float, 'Serializable'],
+    Dict[int, 'Serializable'],
+    Dict[str, 'Serializable'],
+]
+{% else %}
+Serializable = Union[
+    None,
+    bool,
+    float,
+    int,
+    str,
+    datetime.datetime,
+    List[Any],
+    Dict[None, Any],
+    Dict[bool, Any],
+    Dict[float, Any],
+    Dict[int, Any],
+    Dict[str, Any],
+]
+{% endif %}
+
+
 {% call(name, next, iteration) recursive('StringFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: str
-    not_in: List[str]
-    lt: str
-    lte: str
-    gt: str
-    gte: str
-    contains: str
-    startswith: str
-    endswith: str
-    IN: List[str]
-    {%+ if next != '' -%}
-        NOT: Union[str, '{{ next }}']
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': str,
+        'not_in': List[str],
+        'lt': str,
+        'lte': str,
+        'gt': str,
+        'gte': str,
+        'contains': str,
+        'startswith': str,
+        'endswith': str,
+        'in': List[str],
+        {%+ if next != '' -%}
+            'not': Union[str, '{{ next }}'],
+        {% endif %}
+        {%+ if active_provider in ['postgresql', 'mongodb'] -%}
+            'mode': SortMode,
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
 {% call(name, next, iteration) recursive('DateTimeFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: datetime.datetime
-    not_in: List[datetime.datetime]
-    lt: datetime.datetime
-    lte: datetime.datetime
-    gt: datetime.datetime
-    gte: datetime.datetime
-    IN: List[datetime.datetime]
-    {%+ if next != '' -%}
-        NOT: '{{ next }}'
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': datetime.datetime,
+        'not_in': List[datetime.datetime],
+        'lt': datetime.datetime,
+        'lte': datetime.datetime,
+        'gt': datetime.datetime,
+        'gte': datetime.datetime,
+        'in': List[datetime.datetime],
+        {%+ if next != '' -%}
+            'not': Union[datetime.datetime, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
 
 {% call(name, next, iteration) recursive('BooleanFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: bool
-    {%+ if next != '' -%}
-        NOT: Union[bool, '{{ next }}']
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': bool,
+        {%+ if next != '' -%}
+            'not': Union[bool, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
 
 {% call(name, next, iteration) recursive('IntFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: int
-    IN: List[int]
-    not_in: List[int]
-    lt: int
-    lte: int
-    gt: int
-    gte: int
-    {%+ if next != '' -%}
-        NOT: Union[int, '{{ next }}']
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': int,
+        'not_in': List[int],
+        'lt': int,
+        'lte': int,
+        'gt': int,
+        'gte': int,
+        'in': List[int],
+        {%+ if next != '' -%}
+            'not': Union[int, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
 
+BigIntFilter = IntFilter
 {% call(name, next, iteration) recursive('FloatFilter') %}
-class {{ name }}(TypedDict, total=False):
-    equals: float
-    IN: List[float]
-    not_in: List[float]
-    lt: float
-    lte: float
-    gt: float
-    gte: float
-    {%+ if next != '' -%}
-        NOT: Union[float, '{{ next }}']
-    {% endif %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': float,
+        'not_in': List[float],
+        'lt': float,
+        'lte': float,
+        'gt': float,
+        'gte': float,
+        'in': List[float],
+        {%+ if next != '' -%}
+            'not': Union[float, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
 {% endcall %}
 
+{% call(name, next, iteration) recursive('BytesFilter') %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': 'fields.Base64',
+        {%+ if next != '' -%}
+            'not': Union['fields.Base64', '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
+{% endcall %}
+
+# TODO: preview feature for improving JSON filtering
+JsonFilter = TypedDict(
+    'JsonFilter',
+    {
+        'equals': 'fields.Json',
+        'not': 'fields.Json',
+    },
+    total=False,
+)
+
+
+class _FloatSetInput(TypedDict):
+    set: float
+
+
+class _FloatDivideInput(TypedDict):
+    divide: float
+
+
+class _FloatMultiplyInput(TypedDict):
+    multiply: float
+
+
+class _FloatIncrementInput(TypedDict):
+    increment: float
+
+
+class _FloatDecrementInput(TypedDict):
+    decrement: float
+
+
+class _IntSetInput(TypedDict):
+    set: int
+
+
+class _IntDivideInput(TypedDict):
+    divide: int
+
+
+class _IntMultiplyInput(TypedDict):
+    multiply: int
+
+
+class _IntIncrementInput(TypedDict):
+    increment: int
+
+
+class _IntDecrementInput(TypedDict):
+    decrement: int
+
+
+AtomicFloatInput = Union[
+    _FloatSetInput,
+    _FloatDivideInput,
+    _FloatMultiplyInput,
+    _FloatIncrementInput,
+    _FloatDecrementInput,
+]
+AtomicIntInput = Union[
+    _IntSetInput,
+    _IntDivideInput,
+    _IntMultiplyInput,
+    _IntIncrementInput,
+    _IntDecrementInput,
+]
+AtomicBigIntInput = AtomicIntInput
+
+{% for type, python_type in get_list_types() %}
+class _{{ type }}ListFilterEqualsInput(TypedDict):
+    equals: Optional[List[{{ python_type }}]]
+
+
+class _{{ type }}ListFilterHasInput(TypedDict):
+    has: {{ python_type }}
+
+
+class _{{ type }}ListFilterHasEveryInput(TypedDict):
+    has_every: List[{{ python_type }}]
+
+
+class _{{ type }}ListFilterHasSomeInput(TypedDict):
+    has_some: List[{{ python_type }}]
+
+
+class _{{ type }}ListFilterIsEmptyInput(TypedDict):
+    is_empty: bool
+
+
+{{ type }}ListFilter = Union[
+    _{{ type }}ListFilterHasInput,
+    _{{ type }}ListFilterEqualsInput,
+    _{{ type }}ListFilterHasSomeInput,
+    _{{ type }}ListFilterIsEmptyInput,
+    _{{ type }}ListFilterHasEveryInput,
+]
+
+
+class _{{ type }}ListUpdateSet(TypedDict):
+    set: List[{{ python_type }}]
+
+
+class _{{ type }}ListUpdatePush(TypedDict):
+    push: List[{{ python_type }}]
+
+
+{{ type }}ListUpdate = Union[
+    List[{{ python_type }}],
+    _{{ type }}ListUpdateSet,
+    _{{ type }}ListUpdatePush,
+]
+
+{% endfor %}
 
 {% for model in dmmf.datamodel.models %}
 # {{ model.name }} types
@@ -116,7 +315,7 @@ class {{ model.name }}OptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the {{ model.name }} create method"""
     {% for field in model.all_fields %}
         {%- if not field.required_on_create and not field.is_read_only -%}
-            {{'    '}}{{ field.name }}: Optional[{{ field.create_input_type }}]
+            {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.create_input_type) }}
         {% endif %}
     {% endfor %}
 
@@ -137,7 +336,7 @@ class {{ model.name }}OptionalCreateWithoutRelationsInput(TypedDict, total=False
     """Optional arguments to the {{ model.name }} create method, without relations"""
     {% for field in model.all_fields %}
         {%- if not field.required_on_create and not field.is_read_only and not field.relation_name -%}
-            {{'    '}}{{ field.name }}: Optional[{{ field.python_type }}]
+            {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.create_input_type) }}
         {% endif %}
     {% endfor %}
 
@@ -152,30 +351,53 @@ class {{ model.name }}CreateWithoutRelationsInput({{ model.name }}OptionalCreate
 
 
 class {{ model.name }}CreateNestedWithoutRelationsInput(TypedDict, total=False):
-    create: Optional['{{ model.name }}CreateWithoutRelationsInput']
-    connect: Optional['{{ model.name }}WhereUniqueInput']
+    create: '{{ model.name }}CreateWithoutRelationsInput'
+    connect: '{{ model.name }}WhereUniqueInput'
 
 
 class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=False):
-    create: Optional[Union['{{ model.name }}CreateWithoutRelationsInput', List['{{ model.name }}CreateWithoutRelationsInput']]]
-    connect: Optional[Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]]
+    create: Union['{{ model.name }}CreateWithoutRelationsInput', List['{{ model.name }}CreateWithoutRelationsInput']]
+    connect: Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]
 
 
-# TODO: what if a relational field is unique?
-class {{ model.name }}WhereUniqueInput(TypedDict, total=False):
-    """Unique {{ model.name }} arguments for searching"""
-    {% for field in model.all_fields %}
-        {%- if field.is_unique or field.is_id -%}
-            {{'    '}}{{ field.name }}: {{ field.python_type }}
-        {% endif %}
+{% macro render_type(type) %}
+{# It is important that we render subtypes first so that references can be resolved correctly #}
+{% for subtype in type.subtypes %}
+{{ render_type(subtype) }}
+{% endfor %}
+{% if type.kind == 'alias' %}
+{{ type.name }} = {{ type.to }}
+{% elif type.kind == 'union' %}
+{{ type.name }} = Union[
+    {% for subtype in type.subtypes %}
+    '{{ subtype.name }}',
     {% endfor %}
+]
+{% elif type.kind == 'typeddict' %}
+{# We use the old syntax for defined TypedDicts so that fields that shadow keywords #}
+{# can be defined, e.g. 'not' #}
+{{ type.name }} = TypedDict(
+    '{{ type.name }}',
+    {
+        {% for field, subtype in type.fields.items() %}
+        '{{ field }}': '{{ subtype }}',
+        {% endfor %}
+    },
+    total={{ type.total }}
+)
+{% else %}
+{{ raise_err('Unhandled type kind: %s' % type.kind) }}
+{% endif %}
+{% endmacro %}
 
+{% set where_unique = type_schema.get_model(model.name).where_unique %}
+{{ render_type(where_unique) }}
 
 class {{ model.name }}UpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
     {% for field in model.all_fields %}
         {%- if not field.is_unique and not field.is_id and not field.is_read_only -%}
-            {{'    '}}{{ field.name }}: Optional[{{ field.get_update_input_type(model.name) }}]
+            {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.get_update_input_type()) }}
         {% endif %}
     {% endfor %}
 
@@ -184,21 +406,9 @@ class {{ model.name }}UpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
     {% for field in model.all_fields %}
         {%- if not field.is_read_only -%}
-            {{'    '}}{{ field.name }}: Optional[{{ field.get_update_input_type(model.name) }}]
+            {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.get_update_input_type()) }}
         {% endif %}
     {% endfor %}
-
-
-{% for field in model.atomic_fields %}
-class {{ model.name }}Update{{ field.name }}Input(TypedDict, total=False):
-    set: {{ field.atomic_type }}
-    {% if field.type != 'Boolean' %}
-    increment: {{ field.atomic_type }}
-    decrement: {{ field.atomic_type }}
-    multiply: {{ field.atomic_type }}
-    divide: {{ field.atomic_type }}
-    {% endif %}
-{% endfor %}
 
 
 class {{ model.name }}UpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -228,19 +438,44 @@ class {{ model.name }}UpdateOneWithoutRelationsInput(TypedDict, total=False):
     # connectOrCreate: '{{ model.name }}CreateOrConnectWithoutRelationsInput'
 
 
-class {{ model.name }}UpsertInput(TypedDict, total=False):
+class {{ model.name }}UpsertInput(TypedDict):
     create: '{{ model.name }}CreateInput'
     update: '{{ model.name }}UpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
 class {{ model.name }}OrderByInput(TypedDict, total=False):
     {% for field in model.scalar_fields %}
-    {{ field.name }}: Optional['SortOrder']
+    {{ field.name }}: 'SortOrder'
     {% endfor %}
 
 
 # recursive {{ model.name }} types
 # TODO: cleanup these types
+
+
+{% if recursive_types %}
+    {% set where_input_type = model.name + 'WhereInput' %}
+{% else %}
+# Dict[str, Any] is a mypy limitation
+# see https://github.com/RobertCraigie/prisma-client-py/issues/45
+# switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
+    {% set where_input_type = 'Dict[str, Any]' %}
+{% endif %}
+
+{{ model.name }}RelationFilter = TypedDict(
+    '{{ model.name }}RelationFilter',
+    {
+        'is': '{{ where_input_type }}',
+        'is_not': '{{ where_input_type }}',
+    },
+    total=False,
+)
+
+
+class {{ model.name }}ListRelationFilter(TypedDict, total=False):
+    some: '{{ where_input_type }}'
+    none: '{{ where_input_type }}'
+    every: '{{ where_input_type }}'
 
 
 class {{ model.name }}Include(TypedDict, total=False):
@@ -289,22 +524,45 @@ FindMany{{ model.name }}Args = FindMany{{ model.name }}ArgsFrom{{ model.name }}
 FindFirst{{ model.name }}Args = FindMany{{ model.name }}ArgsFrom{{ model.name}}
 
 
-# TODO: support relationships here
 {% call(current, next, iteration) recursive(model.name + 'WhereInput') %}
 class {{ current }}(TypedDict, total=False):
     """{{ model.name }} arguments for searching"""
-    {% for field in model.all_fields %}
-        {%- if not field.relation_name -%}
-            {{'    '}}{{ field.name }}: {{ field.where_input_type }}
-        {% endif %}
+    {% for field in model.all_fields -%}
+        {{'    '}}{{ field.name }}: {{ field.where_input_type }}
     {% endfor %}
 
     {% if next != '' %}
+    # should be noted that AND and NOT should be Union['{{ next }}', List['{{ next }}']]
+    # but this causes mypy to hang :/
     AND: List['{{ next }}']
     OR: List['{{ next }}']
     NOT: List['{{ next }}']
     {% endif %}
 {% endcall %}
+
+
+{{ model.name }}CountAggregateInput = TypedDict(
+    '{{ model.name }}CountAggregateInput',
+    {
+        {% for field in model.scalar_fields %}
+        '{{ field.name }}': bool,
+        {% endfor %}
+        '_all': bool,
+    },
+    total=False,
+)
+
+{{ model.name }}CountAggregateOutput = TypedDict(
+    '{{ model.name }}CountAggregateOutput',
+    {
+        {% for field in model.scalar_fields %}
+        '{{ field.name }}': int,
+        {% endfor %}
+        '_all': int,
+    },
+    total=False,
+)
+
 
 {{ model.name }}Keys = Literal[
     {% for field in model.all_fields %}
@@ -326,4 +584,4 @@ class {{ current }}(TypedDict, total=False):
 
 
 # we have to import ourselves as types can be namespaced to types
-from . import types, enums, models
+from . import types, enums, models, fields

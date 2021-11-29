@@ -4,12 +4,10 @@ import datetime
 from typing import Dict, Any
 
 import pytest
-from syrupy import SnapshotAssertion
+from syrupy.assertion import SnapshotAssertion
 from prisma.utils import _NoneType
 from prisma.builder import QueryBuilder, serializer
 from prisma.errors import UnknownRelationalFieldError, UnknownModelError
-
-from .utils import assert_query_equals
 
 
 # TODO: more tests
@@ -35,43 +33,26 @@ def build_query(
     ).build_query()
 
 
-def test_basic_building() -> None:
-    assert_query_equals(QueryBuilder(
+def test_basic_building(snapshot: SnapshotAssertion) -> None:
+    """Standard builder usage with and without a model"""
+    query = QueryBuilder(
         operation='query',
         method='findUnique',
         model='User',
         arguments={'where': {'id': '1'}}
-    ), '''
-    query {
-      result: findUniqueUser
-      (
-        where: {
-          id: "1"
-        }
-      )
-      {
-        id
-        name
-      }
-    }
-    ''')
-    assert_query_equals(QueryBuilder(
+    ).build_query()
+    assert query == snapshot
+
+    query = QueryBuilder(
         operation='mutation',
         method='queryRaw',
         arguments={'where': {'id': '1'}}
-    ), '''
-    mutation {
-      result: queryRaw
-      (
-        where: {
-          id: "1"
-        }
-      )
-    }
-    ''')
+    ).build_query()
+    assert query == snapshot
 
 
 def test_invalid_include() -> None:
+    """Invalid include field raises error"""
     with pytest.raises(UnknownRelationalFieldError) as exception:
         QueryBuilder(
             operation='query',
@@ -90,6 +71,7 @@ def test_invalid_include() -> None:
 
 
 def test_include_no_model() -> None:
+    """Trying to include a field without acess to a model raises an error"""
     with pytest.raises(ValueError) as exc:
         build_query(
             operation='mutation',
@@ -100,8 +82,9 @@ def test_include_no_model() -> None:
     assert exc.match('Cannot include fields when model is None.')
 
 
-def test_include_with_arguments() -> None:
-    assert_query_equals(QueryBuilder(
+def test_include_with_arguments(snapshot: SnapshotAssertion) -> None:
+    """Including a field with filters"""
+    query = QueryBuilder(
         operation='query',
         method='findUnique',
         model='User',
@@ -109,57 +92,25 @@ def test_include_with_arguments() -> None:
             'where': {'id': 1},
             'include': {'posts': {'where': {'id': 1}}}
         }
-    ), '''
-    query {
-      result: findUniqueUser
-      (
-        where: {
-          id: 1
-        }
-      )
-      {
-        id
-        name
-        posts(
-          where: {
-            id: 1
-          }
-        )
-        {
-          id
-          created_at
-          updated_at
-          title
-          published
-          views
-          desc
-          author_id
-        }
-      }
-    }
-    ''')
+    ).build_query()
+    assert query == snapshot
 
 
-def test_raw_queries() -> None:
-    assert_query_equals(QueryBuilder(
+def test_raw_queries(snapshot: SnapshotAssertion) -> None:
+    """Raw queries serialise paramaters to JSON"""
+    query = QueryBuilder(
         operation='mutation',
         method='queryRaw',
         arguments={
             'query': 'SELECT * FROM User where id = $1',
             'parameters': ["1263526"],
         }
-    ), '''
-    mutation {
-      result: queryRaw
-      (
-        query: "SELECT * FROM User where id = $1"
-        parameters: "[\\"1263526\\"]"
-      )
-    }
-    ''')
+    ).build_query()
+    assert query == snapshot
 
 
 def test_datetime_serialization_tz_aware(snapshot: SnapshotAssertion) -> None:
+    """Serializing a timezone aware datetime converts to UTC"""
     query = QueryBuilder(
         operation='query',
         method='findUnique',
@@ -174,6 +125,7 @@ def test_datetime_serialization_tz_aware(snapshot: SnapshotAssertion) -> None:
 
 
 def test_datetime_serialization_tz_unaware(snapshot: SnapshotAssertion) -> None:
+    """Serializing a timezone naive datetime converts to UTC"""
     query = QueryBuilder(
         operation='query',
         method='findUnique',
@@ -187,7 +139,23 @@ def test_datetime_serialization_tz_unaware(snapshot: SnapshotAssertion) -> None:
     assert query == snapshot
 
 
+def test_unicode(snapshot: SnapshotAssertion) -> None:
+    """Serializing unicode strings does not convert to ASCII"""
+    query = QueryBuilder(
+        operation='query',
+        method='findUnique',
+        model='User',
+        arguments={
+            'where': {
+                'name': '❤',
+            }
+        }
+    ).build_query()
+    assert query == snapshot
+
+
 def test_unknown_model() -> None:
+    """Passing unknown model raises an error"""
     with pytest.raises(UnknownModelError) as exc:
         QueryBuilder(
             operation='query',
@@ -200,6 +168,7 @@ def test_unknown_model() -> None:
 
 
 def test_unserializable_type() -> None:
+    """Passing an unserializable type raises an error"""
     with pytest.raises(TypeError) as exc:
         QueryBuilder(
             operation='query',
@@ -213,6 +182,7 @@ def test_unserializable_type() -> None:
 
 
 def test_unserializable_instance() -> None:
+    """Passing an unserializable instance raises an error"""
     with pytest.raises(TypeError) as exc:
         QueryBuilder(
             operation='query',
@@ -226,12 +196,13 @@ def test_unserializable_instance() -> None:
 
 
 def test_custom_serialization(snapshot: SnapshotAssertion) -> None:
+    """Registering a custom serializer serializes as expected"""
     class Foo:
         def __init__(self, arg: int) -> None:
             self.arg = arg
 
     @serializer.register(Foo)
-    def custom_serializer(inst: Foo) -> int:
+    def custom_serializer(inst: Foo) -> int:  # pyright: reportUnusedFunction=false
         return inst.arg
 
     query = QueryBuilder(

@@ -3,11 +3,14 @@ import enum
 import importlib
 from pathlib import Path
 from keyword import iskeyword
+from itertools import chain
 from importlib import machinery, util as importlib_util
 from importlib.abc import InspectLoader
 from contextvars import ContextVar
 from typing import (
     Any,
+    Iterable,
+    NoReturn,
     Optional,
     List,
     Tuple,
@@ -16,6 +19,7 @@ from typing import (
     Dict,
     Type,
     TYPE_CHECKING,
+    cast,
 )
 
 import click
@@ -27,6 +31,7 @@ from pydantic import (
     validator,
     root_validator,
 )
+from pydantic.fields import PrivateAttr
 
 try:
     from pydantic.env_settings import SettingsSourceCallable
@@ -34,18 +39,39 @@ except ImportError:
     SettingsSourceCallable = Any  # type: ignore
 
 
+from .utils import Faker, Sampler, clean_multiline
+from ..utils import DEBUG_GENERATOR
+from .._constants import QUERY_BUILDER_ALIASES
+from ..errors import UnsupportedListTypeError
+from ..binaries.constants import ENGINE_VERSION
+
+
 # NOTE: this does not represent all the data that is passed by prisma
 
-ATOMIC_FIELD_TYPES = ['Int', 'Float', 'Boolean']
+ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float']
 
 TYPE_MAPPING = {
     'String': 'str',
+    'Bytes': '\'fields.Base64\'',
     'DateTime': 'datetime.datetime',
     'Boolean': 'bool',
     'Int': 'int',
     'Float': 'float',
+    'BigInt': 'int',
+    'Json': '\'fields.Json\'',
 }
-FILTER_TYPES = ['String', 'DateTime', 'Boolean', 'Int', 'Float']
+FILTER_TYPES = [
+    'String',
+    'Bytes',
+    'DateTime',
+    'Boolean',
+    'Int',
+    'BigInt',
+    'Float',
+    'Json',
+]
+
+FAKER: Faker = Faker()
 
 data_ctx: ContextVar['Data'] = ContextVar('data_ctx')
 
@@ -58,6 +84,32 @@ def get_datamodel() -> 'Datamodel':
     return data_ctx.get().dmmf.datamodel
 
 
+def get_list_types() -> Iterable[Tuple[str, str]]:
+    # WARNING: do not edit this function without also editing Field.is_supported_scalar_list_type()
+    return chain(
+        ((t, TYPE_MAPPING[t]) for t in FILTER_TYPES),
+        ((enum.name, f'\'enums.{enum.name}\'') for enum in get_datamodel().enums),
+    )
+
+
+def sql_param(num: int = 1) -> str:
+    # TODO: add case for sqlserver
+    active_provider = data_ctx.get().datasources[0].active_provider
+    if active_provider == 'postgresql':
+        return f'${num}'
+
+    # TODO: test
+    if active_provider == 'mongodb':  # pragma: no cover
+        raise RuntimeError('no-op')
+
+    # SQLite and MySQL use this style so just default to it
+    return '?'
+
+
+def raise_err(msg: str) -> NoReturn:
+    raise TemplateError(msg)
+
+
 def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
     assert spec.origin is not None, 'Cannot serialize module with no origin'
     return spec.origin
@@ -65,14 +117,15 @@ def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
 
 class BaseModel(PydanticBaseModel):
     class Config:
+        arbitrary_types_allowed: bool = True
         json_encoders: Dict[Type[Any], Any] = {
             machinery.ModuleSpec: _module_spec_serializer,
         }
 
 
-class HttpChoices(str, enum.Enum):
-    aiohttp = 'aiohttp'
-    requests = 'requests'
+class InterfaceChoices(str, enum.Enum):
+    sync = 'sync'
+    asyncio = 'asyncio'
 
 
 class Module(BaseModel):
@@ -126,7 +179,11 @@ class Module(BaseModel):
 
 
 class Data(BaseModel):
-    """Root model for the data that prisma provides to the generator."""
+    """Root model for the data that prisma provides to the generator.
+
+    WARNING: only one instance of this class may exist at any given time and
+    instances should only be constructed using the Data.parse_obj() method
+    """
 
     datamodel: str
     version: str
@@ -144,6 +201,33 @@ class Data(BaseModel):
         data_ctx.set(data)
         return data
 
+    def to_params(self) -> Dict[str, Any]:
+        """Get the parameters that should be sent to Jinja templates"""
+        params = vars(self)
+        params['type_schema'] = Schema.from_data(self)
+
+        # add utility functions
+        for func in [get_list_types, sql_param, clean_multiline, raise_err]:
+            params[func.__name__] = func
+
+        return params
+
+    @root_validator(pre=True, allow_reuse=True)
+    @classmethod
+    def validate_version(cls, values: Dict[Any, Any]) -> Dict[Any, Any]:
+        # TODO: test this
+        version = values.get('version')
+        if not DEBUG_GENERATOR and version != ENGINE_VERSION:
+            raise ValueError(
+                f'Prisma Client Python expected Prisma version: {ENGINE_VERSION} '
+                f'but got: {version}\n'
+                '  If this is intentional, set the PRISMA_PY_DEBUG_GENERATOR environment '
+                'variable to 1 and try again.\n'
+                '  Are you sure you are generating the client using the python CLI?\n'
+                '  e.g. python3 -m prisma generate'
+            )
+        return values
+
 
 class Datasource(BaseModel):
     # TODO: provider enums
@@ -156,7 +240,7 @@ class Datasource(BaseModel):
 class Generator(BaseModel):
     name: str
     output: 'ValueFromEnvVar'
-    provider: 'ValueFromEnvVar'
+    provider: 'OptionalValueFromEnvVar'
     config: 'Config'
     binary_targets: List['ValueFromEnvVar'] = FieldInfo(alias='binaryTargets')
     preview_features: List[str] = FieldInfo(alias='previewFeatures')
@@ -192,9 +276,7 @@ class OptionalValueFromEnvVar(BaseModel):
 class Config(BaseSettings):
     """Custom generator config options."""
 
-    # TODO: add support for skipping individual plugins
-    skip_plugins: bool = FieldInfo(default=False)
-    http: HttpChoices = HttpChoices.aiohttp
+    interface: InterfaceChoices = InterfaceChoices.asyncio
     partial_type_generator: Optional[Module]
     recursive_type_depth: int = FieldInfo(default=5)
 
@@ -214,26 +296,25 @@ class Config(BaseSettings):
             # prioritise env settings over init settings
             return env_settings, init_settings, file_secret_settings
 
-    @validator('http', always=True, allow_reuse=True)
+    @root_validator(pre=True)
     @classmethod
-    def http_matches_installed_library(cls, value: HttpChoices) -> str:
-        # pyright: reportUnusedImport=false
-        try:
-            if value == 'aiohttp':
-                import aiohttp
-            elif value == 'requests':
-                import requests
+    def removed_http_option_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        http = values.get('http')
+        if http is not None:
+            if http in {'aiohttp', 'httpx-async'}:
+                option = 'asyncio'
+            elif http in {'requests', 'httpx-sync'}:
+                option = 'sync'
             else:  # pragma: no cover
-                raise RuntimeError(f'Unhandled validator check for {value}')
-        except ModuleNotFoundError as exc:
-            # pylint: disable=line-too-long
-            raise ValueError(
-                f'Missing library for "{value}"\n  '
-                'Did you specify the correct target library in your `schema.prisma` file?\n  '
-                'See https://github.com/RobertCraigie/prisma-client-py/blob/master/docs/config.md#http-libraries'
-            ) from exc
+                # invalid http option, let pydantic handle the error
+                return values
 
-        return value
+            raise ValueError(
+                'The http option has been removed in favour of the interface option.\n'
+                '  Please remove the http option from your Prisma schema and replace it with:\n'
+                f'  interface = "{option}"'
+            )
+        return values
 
     @validator('partial_type_generator', pre=True, always=True, allow_reuse=True)
     @classmethod
@@ -282,12 +363,41 @@ class Model(BaseModel):
     is_embedded: bool = FieldInfo(alias='isEmbedded')
     db_name: Optional[str] = FieldInfo(alias='dbName')
     is_generated: bool = FieldInfo(alias='isGenerated')
+    compound_primary_key: Optional['PrimaryKey'] = FieldInfo(alias='primaryKey')
+    unique_indexes: List['UniqueIndex'] = FieldInfo(alias='uniqueIndexes')
+    _sampler: Sampler = PrivateAttr()
 
     if TYPE_CHECKING:
         # pylint thinks all_fields is not an iterable
         all_fields: List['Field']
     else:
         all_fields: List['Field'] = FieldInfo(alias='fields')
+
+    # no idea why mypy throws this error
+    def __init__(self, **data: Any) -> None:  # type: ignore[no-redef]
+        super().__init__(**data)
+        self._sampler = Sampler(self)
+
+    @root_validator(allow_reuse=True)
+    @classmethod
+    def validate_compound_constraints_are_unique(
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        # protect against https://github.com/prisma/prisma/issues/10456
+        fields = cast(List['Field'], values.get('all_fields', []))
+        pkey = cast(Optional[PrimaryKey], values.get('compound_primary_key'))
+        if pkey is not None:
+            for field in fields:
+                if field.name == pkey.name:
+                    raise CompoundConstraintError(constraint=pkey)
+
+        indexes = cast(List[UniqueIndex], values.get('unique_indexes'))
+        for field in fields:
+            for constraint in indexes:
+                if field.name == constraint.name:
+                    raise CompoundConstraintError(constraint=constraint)
+
+        return values
 
     @property
     def related_models(self) -> Iterator['Model']:
@@ -315,6 +425,15 @@ class Model(BaseModel):
             if field.type in ATOMIC_FIELD_TYPES:
                 yield field
 
+    # TODO: support combined unique constraints
+    @property
+    def id_field(self) -> Optional['Field']:
+        """Find a field that can be passed to the model's `WhereUnique` filter"""
+        for field in self.scalar_fields:  # pragma: no branch
+            if field.is_id or field.is_unique:
+                return field
+        return None
+
     @property
     def has_relational_fields(self) -> bool:
         try:
@@ -323,6 +442,51 @@ class Model(BaseModel):
             return False
         else:
             return True
+
+    @property
+    def plural_name(self) -> str:
+        name = self.name
+        if name.endswith('s'):
+            return name
+        return f'{name}s'
+
+    def resolve_field(self, name: str) -> 'Field':
+        for field in self.all_fields:
+            if field.name == name:
+                return field
+
+        raise LookupError(f'Could not find a field with name: {name}')
+
+    def sampler(self) -> Sampler:
+        return self._sampler
+
+    def get_fields_of_type(self, typ: str) -> Iterator['Field']:
+        for field in self.scalar_fields:
+            if field.type == typ:
+                yield field
+
+
+class Constraint(BaseModel):
+    name: str
+    fields: List[str]
+
+    @root_validator(pre=True, allow_reuse=True)
+    @classmethod
+    def resolve_name(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        name = values.get('name')
+        if isinstance(name, str):
+            return values
+
+        values['name'] = '_'.join(values['fields'])
+        return values
+
+
+class PrimaryKey(Constraint):
+    pass
+
+
+class UniqueIndex(Constraint):
+    pass
 
 
 class Field(BaseModel):
@@ -348,6 +512,8 @@ class Field(BaseModel):
     relation_to_fields: Optional[List[str]] = FieldInfo(alias='relationToFields')
     relation_from_fields: Optional[List[str]] = FieldInfo(alias='relationFromFields')
 
+    _last_sampled: Optional[str] = PrivateAttr()
+
     @root_validator
     @classmethod
     def scalar_type_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
@@ -356,7 +522,7 @@ class Field(BaseModel):
 
         if kind == 'scalar':
             if type_ is not None and type_ not in TYPE_MAPPING:
-                raise ValueError(f'Unknown scalar type: {type_}')
+                raise ValueError(f'Unsupported scalar field type: {type_}')
 
         return values
 
@@ -373,6 +539,18 @@ class Field(BaseModel):
             raise ValueError(
                 f'Field name "{name}" shadows a Python keyword; '
                 f'use a different field name with \'@map("{name}")\'.'
+            )
+
+        if name == 'prisma':
+            raise ValueError(
+                'Field name "prisma" shadows a Prisma Client Python method; '
+                'use a different field name with \'@map("prisma")\'.'
+            )
+
+        if name in QUERY_BUILDER_ALIASES:
+            raise ValueError(
+                f'Field name "{name}" shadows an internal keyword; '
+                f'use a different field name with \'@map("{name}")\''
             )
 
         return name
@@ -426,8 +604,18 @@ class Field(BaseModel):
     @property
     def where_input_type(self) -> str:
         typ = self.type
+        if self.is_relational:
+            if self.is_list:
+                return f'\'{typ}ListRelationFilter\''
+            return f'\'{typ}RelationFilter\''
+
+        if self.is_list:
+            self.check_supported_scalar_list_type()
+            return f'\'types.{typ}ListFilter\''
+
         if typ in FILTER_TYPES:
             return f'Union[{self._actual_python_type}, \'types.{typ}Filter\']'
+
         return self.python_type
 
     @property
@@ -443,6 +631,7 @@ class Field(BaseModel):
             and not self.is_updated_at
             and not self.has_default_value
             and not self.relation_name
+            and not self.is_list
         )
 
     @property
@@ -457,26 +646,30 @@ class Field(BaseModel):
     def is_atomic(self) -> bool:
         return self.type in ATOMIC_FIELD_TYPES
 
-    @property
-    def atomic_type(self) -> str:
-        if not self.is_atomic:
-            raise TypeError('Field is not atomic')
+    def maybe_optional(self, typ: str) -> str:
+        """Wrap the given type string within `Optional` if applicable"""
+        if self.is_required or self.is_relational:
+            return typ
+        return f'Optional[{typ}]'
 
-        if self.is_list:
-            return f'List[{self.python_type}]'
-
-        return self.python_type
-
-    def get_update_input_type(self, model: str) -> str:
-        if self.is_atomic:
-            return f'Union[\'{model}Update{self.name}Input\', {self.atomic_type}]'
-
+    def get_update_input_type(self) -> str:
         if self.kind == 'object':
             if self.is_list:
                 return f'\'{self.type}UpdateManyWithoutRelationsInput\''
             return f'\'{self.type}UpdateOneWithoutRelationsInput\''
 
+        if self.is_list:
+            self.check_supported_scalar_list_type()
+            return f'\'types.{self.type}ListUpdate\''
+
+        if self.is_atomic:
+            return f'Union[Atomic{self.type}Input, {self.python_type}]'
+
         return self.python_type
+
+    def check_supported_scalar_list_type(self) -> None:
+        if not self.type in FILTER_TYPES and self.kind != 'enum':
+            raise UnsupportedListTypeError(self.type)
 
     def get_relational_model(self) -> Optional['Model']:
         if not self.is_relational:
@@ -487,6 +680,57 @@ class Field(BaseModel):
             if model.name == name:
                 return model
         return None
+
+    def get_corresponding_enum(self) -> Optional['Enum']:
+        typ = self.type
+        for enum in get_datamodel().enums:
+            if enum.name == typ:
+                return enum
+        return None  # pragma: no cover
+
+    def get_sample_data(self, *, increment: bool = True) -> str:
+        # returning the same data that was last sampled is useful
+        # for documenting methods like upsert() where data is duplicated
+        if not increment and self._last_sampled is not None:
+            return self._last_sampled
+
+        sampled = self._get_sample_data()
+        if self.is_list:
+            sampled = f'[{sampled}]'
+
+        self._last_sampled = sampled
+        return sampled
+
+    def _get_sample_data(self) -> str:
+        # pylint: disable=no-else-return,too-many-return-statements
+        if self.is_relational:  # pragma: no cover
+            raise RuntimeError('Data sampling for relational fields not supported yet')
+
+        if self.kind == 'enum':
+            enum = self.get_corresponding_enum()
+            assert enum is not None, self.type
+            return f'enums.{enum.name}.{FAKER.from_list(enum.values).name}'
+
+        typ = self.type
+        if typ == 'Boolean':
+            return str(FAKER.boolean())
+        elif typ == 'Int':
+            return str(FAKER.integer())
+        elif typ == 'String':
+            return f'\'{FAKER.string()}\''
+        elif typ == 'Float':
+            return f'{FAKER.integer()}.{FAKER.integer() // 10000}'
+        elif typ == 'BigInt':  # pragma: no cover
+            return str(FAKER.integer() * 12)
+        elif typ == 'DateTime':
+            # TODO: random dates
+            return 'datetime.datetime.utcnow()'
+        elif typ == 'Json':
+            return f'Json({{\'{FAKER.string()}\': True}})'
+        elif typ == 'Bytes':
+            return f'Base64.encode(b\'{FAKER.string()}\')'
+        else:  # pragma: no cover
+            raise RuntimeError(f'Sample data not supported for {typ} yet')
 
 
 class DefaultValue(BaseModel):
@@ -502,3 +746,7 @@ Model.update_forward_refs()
 Datamodel.update_forward_refs()
 Generator.update_forward_refs()
 Datasource.update_forward_refs()
+
+
+from .schema import Schema
+from .errors import CompoundConstraintError, TemplateError

@@ -1,5 +1,6 @@
 import json
 from enum import Enum
+from pathlib import Path
 from itertools import chain
 from typing import Optional, Iterator, Dict, Any, Callable, Generator, Tuple, Type
 
@@ -7,13 +8,13 @@ import pydantic
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from prisma.utils import temp_env_update
-from prisma.generator.models import HttpChoices
+from prisma.generator.models import InterfaceChoices
 
 from ..utils import Testdir, Runner
 
 
 # all these tests simply ensure the correct config is being parsed by generator.run,
-# as each config option is individually tested elsehwere we can be sure that each
+# as each config option is individually tested elsewwere we can be sure that each
 # config option results in the intended output
 
 # TODO: test watch option
@@ -59,6 +60,11 @@ def from_enum(
 
 
 def test_unsupported_pydantic_version(runner: Runner, monkeypatch: MonkeyPatch) -> None:
+    """Using an older version of pydantic outputs warning
+
+    We need to use pydantic>=1.8.2 as that added the customise_sources config option to
+    prioritise env variables over init kwargs.
+    """
     monkeypatch.setattr(pydantic, 'VERSION', '1.6.2', raising=True)
     result = runner.invoke(['py', 'generate'])
     assert result.output.startswith(
@@ -67,16 +73,18 @@ def test_unsupported_pydantic_version(runner: Runner, monkeypatch: MonkeyPatch) 
     )
 
 
-def test_bad_http_option(runner: Runner) -> None:
-    result = runner.invoke(['py', 'generate', '--http=foo'])
+def test_bad_interface_option(runner: Runner) -> None:
+    """Passing an unknown interface option raises an error"""
+    result = runner.invoke(['py', 'generate', '--interface=foo'])
     assert result.exit_code != 0
-    assert 'Error: Invalid value for \'--http\'' in result.output
+    assert 'Error: Invalid value for \'--interface\'' in result.output
     assert 'foo' in result.output
-    assert 'aiohttp' in result.output
-    assert 'requests' in result.output
+    assert 'sync' in result.output
+    assert 'asyncio' in result.output
 
 
 def test_prisma_error_non_zero_exit_code(testdir: Testdir, runner: Runner) -> None:
+    """Exits non-zero when the prisma process exits non-zero"""
     path = testdir.make_schema(schema=testdir.default_schema + 'foo')
     result = runner.invoke(['py', 'generate', f'--schema={path}'])
     assert result.exit_code != 0
@@ -84,6 +92,7 @@ def test_prisma_error_non_zero_exit_code(testdir: Testdir, runner: Runner) -> No
 
 
 def test_schema_not_found(runner: Runner) -> None:
+    """Passing non-existent schema raises an error"""
     result = runner.invoke(['py', 'generate', '--schema=foo'])
     assert result.exit_code != 0
     assert (
@@ -94,46 +103,25 @@ def test_schema_not_found(runner: Runner) -> None:
 
 @pytest.mark.parametrize(
     'target,argument,options',
-    [
-        (True, None, 'skip_plugins = true'),  # ensure uses schema property
-        (False, '--use-plugins', None),
-        (False, '--use-plugins', 'skip_plugins = true'),
-        (True, '--skip-plugins', 'skip_plugins = false'),
-        (False, None, None),  # default
-    ],
-)
-def test_skip_plugins_option(
-    runner: Runner,
-    testdir: Testdir,
-    target: bool,
-    argument: Optional[str],
-    options: Optional[str],
-) -> None:
-    def do_assert(data: Dict[str, Any]) -> None:
-        assert data['generator']['config']['skip_plugins'] is target
-
-    run_test(runner, testdir, argument, options, do_assert)
-
-
-@pytest.mark.parametrize(
-    'target,argument,options',
     chain(
-        from_enum(HttpChoices, '--http='),
+        from_enum(InterfaceChoices, '--interface='),
         [
-            ('requests', None, 'http = requests'),  # ensure uses schema property
-            ('aiohttp', '--http=aiohttp', 'http = requests'),  # ensure overrides
+            ('sync', None, 'interface = sync'),  # ensure uses schema property
+            ('asyncio', '--interface=asyncio', 'interface = sync'),  # ensure overrides
         ],
     ),
 )
-def test_http_option(
+def test_interface_option(
     testdir: Testdir,
     runner: Runner,
     target: str,
     argument: Optional[str],
     options: Optional[str],
 ) -> None:
+    """interface option is overrided correctly"""
+
     def do_assert(data: Dict[str, Any]) -> None:
-        assert data['generator']['config']['http'] == target
+        assert data['generator']['config']['interface'] == target
 
     run_test(runner, testdir, argument, options, do_assert)
 
@@ -158,15 +146,41 @@ def test_partials_option(
     argument: Optional[str],
     options: Optional[str],
 ) -> None:
+    """partial type generator option is overrided correctly"""
+
     def do_assert(data: Dict[str, Any]) -> None:
         partial_type_generator = data['generator']['config']['partial_type_generator']
         if target is None:
             assert partial_type_generator is None
         else:
-            assert partial_type_generator['spec'] == target
+            actual = Path(partial_type_generator['spec']).absolute()
+            assert actual == Path(target).absolute()
 
     def partials() -> None:  # mark: filedef
         pass
 
     testdir.make_from_function(partials, name='partials.py')
+    run_test(runner, testdir, argument, options, do_assert)
+
+
+@pytest.mark.parametrize(
+    'target,argument,options',
+    [
+        (5, None, None),  # default
+        (3, None, 'recursive_type_depth = 3'),  # ensure uses schema property
+        (-1, '-t -1', 'recursive_type_depth = 3'),  # ensure overrides
+    ],
+)
+def test_type_depth_option(
+    testdir: Testdir,
+    runner: Runner,
+    target: str,
+    argument: Optional[str],
+    options: Optional[str],
+) -> None:
+    """recursive_type_depth option is overrided correctly"""
+
+    def do_assert(data: Dict[str, Any]) -> None:
+        assert data['generator']['config']['recursive_type_depth'] == target
+
     run_test(runner, testdir, argument, options, do_assert)

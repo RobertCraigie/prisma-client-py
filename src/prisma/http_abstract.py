@@ -20,10 +20,6 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         self._session = _NoneType  # type: Optional[Union[Session, Type[_NoneType]]]
 
     @abstractmethod
-    def __del__(self) -> None:
-        ...
-
-    @abstractmethod
     def download(self, url: str, dest: str) -> MaybeCoroutine[None]:
         ...
 
@@ -44,11 +40,6 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
     @property
     def closed(self) -> bool:
         return self._session is None
-
-    @property
-    @abstractmethod
-    def library(self) -> str:
-        ...
 
     @property
     def session(self) -> Session:
@@ -72,7 +63,7 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         return str(self)
 
     def __str__(self) -> str:
-        return f'<HTTP library={self.library} closed={self.closed}>'
+        return f'<HTTP closed={self.closed}>'
 
 
 class AbstractResponse(ABC, Generic[Response]):

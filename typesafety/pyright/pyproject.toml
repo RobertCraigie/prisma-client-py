@@ -1,3 +1,6 @@
+[tool.black]
+skip-string-normalization = true
+
 [tool.pyright]
 pythonVersion = "3.9"
 

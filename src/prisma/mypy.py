@@ -38,7 +38,7 @@ from mypy.plugin import Plugin, MethodContext, CheckerPluginInterface
 
 # match any direct children of an actions class
 CLIENT_ACTION_CHILD = re.compile(
-    r'prisma\.client\.(.*)Actions\.(?P<name>(((?!\.).)*$))'
+    r'prisma\.actions\.(.*)Actions\.(?P<name>(((?!\.).)*$))'
 )
 ACTIONS = [
     'create',
