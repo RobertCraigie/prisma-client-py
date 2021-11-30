@@ -2,9 +2,9 @@ from enum import Enum
 from typing import Any, Dict, List, Union
 
 from pydantic import BaseModel
-from pydantic.class_validators import root_validator
 
 from .models import Data, Model as ModelInfo, PrimaryKey
+from .._compat import root_validator
 
 
 class Kind(str, Enum):
