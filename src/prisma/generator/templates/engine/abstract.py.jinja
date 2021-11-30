@@ -16,14 +16,28 @@ class AbstractEngine(ABC):
     def __init__(self, *, dml: str, log_queries: bool = False) -> None:
         ...
 
-    @abstractmethod
     def stop(self) -> None:
-        """Stop the engine, useful if the underlying engine uses a process"""
+        """Wrapper for synchronously calling close() and aclose()"""
+        self.close()
+        try:
+            loop = get_running_loop()
+        except RuntimeError:
+            # no event loop in the current thread, we cannot cleanup asynchronously
+            return
+        else:
+            if not loop.is_closed():
+                loop.create_task(self.aclose())
+
+    @abstractmethod
+    def close(self) -> None:
+        """Synchronous method for closing the engine, useful if the underlying engine uses a subprocess"""
         ...
 
     @abstractmethod
-    {{ maybe_async_def}}disconnect(self) -> None:
-        """Disconnect from the engine"""
+    async def aclose(self) -> None:
+        """Asynchronous method for closing the engine, only used if an
+        asynchronous client is generated.
+        """
         ...
 
     @abstractmethod

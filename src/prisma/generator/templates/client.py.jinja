@@ -174,7 +174,12 @@ class Client:
     {{ maybe_async_def }}disconnect(self) -> None:
         """Disconnect the Prisma query engine."""
         if self.__engine is not None:
-            {{ maybe_await }}self.__engine.disconnect()
+            {% if is_async %}
+            self.__engine.close()
+            {{ maybe_await }}self.__engine.aclose()
+            {% else %}
+            self.__engine.stop()
+            {% endif %}
             self.__engine = None
 
     {{ maybe_async_def }}execute_raw(self, query: str, *args: Any) -> int:

@@ -46,21 +46,7 @@ class QueryEngine(AbstractEngine):
     def __del__(self) -> None:
         self.stop()
 
-    def stop(self) -> None:
-        {% if is_async %}
-        try:
-            loop = get_running_loop()
-        except RuntimeError:
-            # no event loop in the current thread, we cannot cleanup
-            return
-        else:
-            if not loop.is_closed():
-                loop.create_task(self.disconnect())
-        {% else %}
-        self.close_session()
-        {% endif %}
-
-    {{ maybe_async_def }}disconnect(self) -> None:
+    def close(self) -> None:
         log.debug('Disconnecting query engine...')
 
         if self.process is not None:
@@ -72,10 +58,18 @@ class QueryEngine(AbstractEngine):
             self.process.wait()
             self.process = None
 
+        {% if not is_async %}
+        self._close_session()
+        {% endif %}
+        log.debug('Disconnected query engine')
+
+    async def aclose(self) -> None:
+        self.close()
+        {{ maybe_await }}self._close_session()
+
+    {{ maybe_async_def }}_close_session(self) -> None:
         if self.session and not self.session.closed:
             {{ maybe_await }}self.session.close()
-
-        log.debug('Disconnected query engine')
 
     {{ maybe_async_def }}connect(
         self,
@@ -92,7 +86,7 @@ class QueryEngine(AbstractEngine):
         try:
             {{ maybe_await }}self.spawn(file, timeout=timeout, datasources=datasources)
         except Exception:
-            {{ maybe_await }}self.disconnect()
+            self.close()
             raise
 
         log.debug('Connecting to query engine took %s', time_since(start))

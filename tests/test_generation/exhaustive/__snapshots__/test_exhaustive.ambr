@@ -11072,7 +11072,8 @@
       async def disconnect(self) -> None:
           """Disconnect the Prisma query engine."""
           if self.__engine is not None:
-              await self.__engine.disconnect()
+              self.__engine.close()
+              await self.__engine.aclose()
               self.__engine = None
   
       async def execute_raw(self, query: str, *args: Any) -> int:
@@ -12700,14 +12701,28 @@
       def __init__(self, *, dml: str, log_queries: bool = False) -> None:
           ...
   
-      @abstractmethod
       def stop(self) -> None:
-          """Stop the engine, useful if the underlying engine uses a process"""
+          """Wrapper for synchronously calling close() and aclose()"""
+          self.close()
+          try:
+              loop = get_running_loop()
+          except RuntimeError:
+              # no event loop in the current thread, we cannot cleanup asynchronously
+              return
+          else:
+              if not loop.is_closed():
+                  loop.create_task(self.aclose())
+  
+      @abstractmethod
+      def close(self) -> None:
+          """Synchronous method for closing the engine, useful if the underlying engine uses a subprocess"""
           ...
   
       @abstractmethod
-      async def disconnect(self) -> None:
-          """Disconnect from the engine"""
+      async def aclose(self) -> None:
+          """Asynchronous method for closing the engine, only used if an
+          asynchronous client is generated.
+          """
           ...
   
       @abstractmethod
@@ -12811,17 +12826,7 @@
       def __del__(self) -> None:
           self.stop()
   
-      def stop(self) -> None:
-          try:
-              loop = get_running_loop()
-          except RuntimeError:
-              # no event loop in the current thread, we cannot cleanup
-              return
-          else:
-              if not loop.is_closed():
-                  loop.create_task(self.disconnect())
-  
-      async def disconnect(self) -> None:
+      def close(self) -> None:
           log.debug('Disconnecting query engine...')
   
           if self.process is not None:
@@ -12833,10 +12838,15 @@
               self.process.wait()
               self.process = None
   
+          log.debug('Disconnected query engine')
+  
+      async def aclose(self) -> None:
+          self.close()
+          await self._close_session()
+  
+      async def _close_session(self) -> None:
           if self.session and not self.session.closed:
               await self.session.close()
-  
-          log.debug('Disconnected query engine')
   
       async def connect(
           self,
@@ -12853,7 +12863,7 @@
           try:
               await self.spawn(file, timeout=timeout, datasources=datasources)
           except Exception:
-              await self.disconnect()
+              self.close()
               raise
   
           log.debug('Connecting to query engine took %s', time_since(start))
@@ -38929,7 +38939,7 @@
       def disconnect(self) -> None:
           """Disconnect the Prisma query engine."""
           if self.__engine is not None:
-              self.__engine.disconnect()
+              self.__engine.stop()
               self.__engine = None
   
       def execute_raw(self, query: str, *args: Any) -> int:
@@ -40557,14 +40567,28 @@
       def __init__(self, *, dml: str, log_queries: bool = False) -> None:
           ...
   
-      @abstractmethod
       def stop(self) -> None:
-          """Stop the engine, useful if the underlying engine uses a process"""
+          """Wrapper for synchronously calling close() and aclose()"""
+          self.close()
+          try:
+              loop = get_running_loop()
+          except RuntimeError:
+              # no event loop in the current thread, we cannot cleanup asynchronously
+              return
+          else:
+              if not loop.is_closed():
+                  loop.create_task(self.aclose())
+  
+      @abstractmethod
+      def close(self) -> None:
+          """Synchronous method for closing the engine, useful if the underlying engine uses a subprocess"""
           ...
   
       @abstractmethod
-      def disconnect(self) -> None:
-          """Disconnect from the engine"""
+      async def aclose(self) -> None:
+          """Asynchronous method for closing the engine, only used if an
+          asynchronous client is generated.
+          """
           ...
   
       @abstractmethod
@@ -40668,10 +40692,7 @@
       def __del__(self) -> None:
           self.stop()
   
-      def stop(self) -> None:
-          self.close_session()
-  
-      def disconnect(self) -> None:
+      def close(self) -> None:
           log.debug('Disconnecting query engine...')
   
           if self.process is not None:
@@ -40683,10 +40704,16 @@
               self.process.wait()
               self.process = None
   
+          self._close_session()
+          log.debug('Disconnected query engine')
+  
+      async def aclose(self) -> None:
+          self.close()
+          self._close_session()
+  
+      def _close_session(self) -> None:
           if self.session and not self.session.closed:
               self.session.close()
-  
-          log.debug('Disconnected query engine')
   
       def connect(
           self,
@@ -40703,7 +40730,7 @@
           try:
               self.spawn(file, timeout=timeout, datasources=datasources)
           except Exception:
-              self.disconnect()
+              self.close()
               raise
   
           log.debug('Connecting to query engine took %s', time_since(start))
