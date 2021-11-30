@@ -28,8 +28,6 @@ from pydantic import (
     BaseSettings,
     Extra,
     Field as FieldInfo,
-    validator,
-    root_validator,
 )
 from pydantic.fields import PrivateAttr
 
@@ -41,6 +39,7 @@ except ImportError:
 
 from .utils import Faker, Sampler, clean_multiline
 from ..utils import DEBUG_GENERATOR
+from .._compat import validator, root_validator
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
 from ..binaries.constants import ENGINE_VERSION
@@ -514,7 +513,7 @@ class Field(BaseModel):
 
     _last_sampled: Optional[str] = PrivateAttr()
 
-    @root_validator
+    @root_validator()
     @classmethod
     def scalar_type_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         kind = values.get('kind')
