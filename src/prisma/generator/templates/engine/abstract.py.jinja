@@ -3,7 +3,7 @@
 # -- template engine/abstract.py.jinja --
 from abc import ABC, abstractmethod
 from ..types import DatasourceOverride
-
+from .._compat import get_running_loop
 
 __all__ = (
     'AbstractEngine',

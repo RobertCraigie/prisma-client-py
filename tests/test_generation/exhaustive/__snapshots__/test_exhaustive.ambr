@@ -12688,7 +12688,7 @@
   # -- template engine/abstract.py.jinja --
   from abc import ABC, abstractmethod
   from ..types import DatasourceOverride
-  
+  from .._compat import get_running_loop
   
   __all__ = (
       'AbstractEngine',
@@ -12800,7 +12800,6 @@
   from ..utils import time_since, _env_bool
   from ..types import DatasourceOverride
   from ..builder import dumps
-  from .._compat import get_running_loop
   
   
   __all__ = ('QueryEngine',)
@@ -40554,7 +40553,7 @@
   # -- template engine/abstract.py.jinja --
   from abc import ABC, abstractmethod
   from ..types import DatasourceOverride
-  
+  from .._compat import get_running_loop
   
   __all__ = (
       'AbstractEngine',
@@ -40666,7 +40665,6 @@
   from ..utils import time_since, _env_bool
   from ..types import DatasourceOverride
   from ..builder import dumps
-  from .._compat import get_running_loop
   
   
   __all__ = ('QueryEngine',)
