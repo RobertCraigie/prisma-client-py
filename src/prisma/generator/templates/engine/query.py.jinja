@@ -12,6 +12,7 @@ import subprocess
 from pathlib import Path
 
 from . import utils, errors
+from .abstract import AbstractEngine
 from ..http import HTTP
 from ..utils import DEBUG
 from .._types import Method
@@ -19,7 +20,6 @@ from ..binaries import platform
 from ..utils import time_since, _env_bool
 from ..types import DatasourceOverride
 from ..builder import dumps
-from .._compat import get_running_loop
 
 
 __all__ = ('QueryEngine',)
@@ -27,7 +27,7 @@ __all__ = ('QueryEngine',)
 log: logging.Logger = logging.getLogger(__name__)
 
 
-class QueryEngine:
+class QueryEngine(AbstractEngine):
     dml: str
     session: HTTP
 
@@ -45,22 +45,7 @@ class QueryEngine:
     def __del__(self) -> None:
         self.stop()
 
-    def stop(self) -> None:
-        self.disconnect()
-        {% if is_async %}
-        try:
-            loop = get_running_loop()
-        except RuntimeError:
-            # no event loop in the current thread, we cannot cleanup
-            return
-        else:
-            if not loop.is_closed():
-                loop.create_task(self.close_session())
-        {% else %}
-        self.close_session()
-        {% endif %}
-
-    def disconnect(self) -> None:
+    def close(self) -> None:
         log.debug('Disconnecting query engine...')
 
         if self.process is not None:
@@ -72,9 +57,16 @@ class QueryEngine:
             self.process.wait()
             self.process = None
 
+        {% if not is_async %}
+        self._close_session()
+        {% endif %}
         log.debug('Disconnected query engine')
 
-    {{ maybe_async_def }}close_session(self) -> None:
+    async def aclose(self) -> None:
+        self.close()
+        {{ maybe_await }}self._close_session()
+
+    {{ maybe_async_def }}_close_session(self) -> None:
         if self.session and not self.session.closed:
             {{ maybe_await }}self.session.close()
 
@@ -93,7 +85,7 @@ class QueryEngine:
         try:
             {{ maybe_await }}self.spawn(file, timeout=timeout, datasources=datasources)
         except Exception:
-            self.disconnect()
+            self.close()
             raise
 
         log.debug('Connecting to query engine took %s', time_since(start))
@@ -163,6 +155,9 @@ class QueryEngine:
             raise errors.EngineConnectionError(
                 'Could not connect to the query engine'
             ) from last_exc
+
+    {{ maybe_async_def }}query(self, content: str) -> Any:
+        return {{ maybe_await }}self.request('POST', '/', content=content)
 
     {{ maybe_async_def }}request(self, method: Method, path: str, *, content: Any = None) -> Any:
         if self.url is None:
