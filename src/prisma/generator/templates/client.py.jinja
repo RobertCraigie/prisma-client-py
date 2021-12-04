@@ -7,9 +7,11 @@ from . import types, models, errors, actions
 from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
+from .generator.models import EngineType
 
 
 __all__ = (
+    'ENGINE_TYPE',
     'Client',
     'load_env',
     'register',
@@ -19,6 +21,8 @@ __all__ = (
 SCHEMA = '''
 {{ datamodel }}
 '''
+
+ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
 
 RegisteredClient = Union['Client', Callable[[], 'Client']]
 _registered_client: Optional[RegisteredClient] = None

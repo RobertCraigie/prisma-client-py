@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from prisma import Client, get_client, errors, engine
+from prisma import ENGINE_TYPE, Client, get_client, errors, engine
 from prisma.testing import reset_client
 from prisma.cli.prisma import run
 
@@ -74,3 +74,8 @@ def test_auto_register() -> None:
 
         client = Client(auto_register=True)
         assert get_client() == client
+
+
+def test_engine_type() -> None:
+    """The exported ENGINE_TYPE enum matches the actual engine type"""
+    assert ENGINE_TYPE.value == 'binary'

@@ -1,3 +1,4 @@
+import os
 import sys
 import enum
 import importlib
@@ -38,7 +39,7 @@ except ImportError:
 
 
 from .utils import Faker, Sampler, clean_multiline
-from ..utils import DEBUG_GENERATOR
+from ..utils import DEBUG_GENERATOR, assert_never
 from .._compat import validator, root_validator
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
@@ -125,6 +126,12 @@ class BaseModel(PydanticBaseModel):
 class InterfaceChoices(str, enum.Enum):
     sync = 'sync'
     asyncio = 'asyncio'
+
+
+class EngineType(str, enum.Enum):
+    binary = 'binary'
+    library = 'library'
+    dataproxy = 'dataproxy'
 
 
 class Module(BaseModel):
@@ -278,6 +285,7 @@ class Config(BaseSettings):
     interface: InterfaceChoices = InterfaceChoices.asyncio
     partial_type_generator: Optional[Module]
     recursive_type_depth: int = FieldInfo(default=5)
+    engine_type: EngineType = FieldInfo(default=EngineType.binary)
 
     class Config(BaseSettings.Config):
         extra: Extra = Extra.forbid
@@ -294,6 +302,21 @@ class Config(BaseSettings):
         ) -> Tuple[SettingsSourceCallable, ...]:
             # prioritise env settings over init settings
             return env_settings, init_settings, file_secret_settings
+
+    @root_validator(pre=True)
+    @classmethod
+    def transform_engine_type(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        # prioritise env variable over schema option
+        engine_type = os.environ.get('PRISMA_CLIENT_ENGINE_TYPE')
+        if engine_type is None:
+            engine_type = values.get('engineType')
+
+        # only add engine_type if it is present
+        if engine_type is not None:
+            values['engine_type'] = engine_type
+            values.pop('engineType', None)
+
+        return values
 
     @root_validator(pre=True)
     @classmethod
@@ -332,6 +355,25 @@ class Config(BaseSettings):
         if value < -1 or value in {0, 1}:
             raise ValueError('Value must equal -1 or be greater than 1.')
         return value
+
+    @validator('engine_type', always=True, allow_reuse=True)
+    @classmethod
+    def engine_type_validator(  # pylint: disable=no-else-raise,inconsistent-return-statements,no-else-return
+        cls, value: EngineType
+    ) -> EngineType:
+        if value == EngineType.binary:
+            return value
+        elif value == EngineType.dataproxy:  # pragma: no cover
+            raise ValueError(
+                'Prisma Client Python does not support the Prisma Data Proxy yet.'
+            )
+        elif value == EngineType.library:  # pragma: no cover
+            raise ValueError(
+                'Prisma Client Python does not support native engine bindings yet.'
+            )
+        else:  # pragma: no cover
+            # NOTE: the exhaustiveness check is broken for mypy
+            assert_never(value)  # type: ignore
 
 
 class DMMF(BaseModel):
