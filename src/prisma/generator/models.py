@@ -358,11 +358,12 @@ class Config(BaseSettings):
 
     @validator('engine_type', always=True, allow_reuse=True)
     @classmethod
-    def engine_type_validator(cls, value: EngineType) -> EngineType:
+    def engine_type_validator(  # pylint: disable=no-else-raise,inconsistent-return-statements,no-else-return
+        cls, value: EngineType
+    ) -> EngineType:
         if value == EngineType.binary:
             return value
-
-        if value == EngineType.dataproxy:  # pragma: no cover
+        elif value == EngineType.dataproxy:  # pragma: no cover
             raise ValueError(
                 'Prisma Client Python does not support the Prisma Data Proxy yet.'
             )
