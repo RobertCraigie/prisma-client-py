@@ -10665,6 +10665,9 @@
       elif dt.tzinfo != timezone.utc:
           dt = dt.astimezone(timezone.utc)
   
+      # truncate microseconds to 3 decimal places
+      # https://github.com/RobertCraigie/prisma-client-py/issues/129
+      dt = dt.replace(microsecond=int(dt.microsecond / 1000) * 1000)
       return dt.isoformat()
   
   
@@ -38535,6 +38538,9 @@
       elif dt.tzinfo != timezone.utc:
           dt = dt.astimezone(timezone.utc)
   
+      # truncate microseconds to 3 decimal places
+      # https://github.com/RobertCraigie/prisma-client-py/issues/129
+      dt = dt.replace(microsecond=int(dt.microsecond / 1000) * 1000)
       return dt.isoformat()
   
   
