@@ -115,4 +115,4 @@ def assert_never(value: NoReturn) -> NoReturn:
 
     https://github.com/microsoft/pyright/issues/767
     """
-    assert False, "Unhandled type: {}".format(type(value).__name__)
+    assert False, "Unhandled type: {}".format(type(value).__name__)  # pragma: no cover
