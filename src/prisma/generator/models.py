@@ -372,7 +372,8 @@ class Config(BaseSettings):
                 'Prisma Client Python does not support native engine bindings yet.'
             )
         else:  # pragma: no cover
-            assert_never(value)
+            # NOTE: the exhaustiveness check is broken for mypy
+            assert_never(value)  # type: ignore
 
 
 class DMMF(BaseModel):
