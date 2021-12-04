@@ -8,7 +8,6 @@ generator db {
   interface              = "asyncio"
   recursive_type_depth   = 5
   partial_type_generator = "tests/scripts/partial_type_generator.py"
-  engineType             = "binary"
 }
 
 model Post {
