@@ -43,7 +43,7 @@ from ..utils import DEBUG_GENERATOR, assert_never
 from .._compat import validator, root_validator
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
-from ..binaries.constants import ENGINE_VERSION
+from ..binaries.constants import ENGINE_VERSION, PRISMA_VERSION
 
 
 # NOTE: this does not represent all the data that is passed by prisma
@@ -229,8 +229,9 @@ class Data(BaseModel):
                 f'but got: {version}\n'
                 '  If this is intentional, set the PRISMA_PY_DEBUG_GENERATOR environment '
                 'variable to 1 and try again.\n'
-                '  Are you sure you are generating the client using the python CLI?\n'
-                '  e.g. python3 -m prisma generate'
+                f'  If you are using the Node CLI then you must switch to v{PRISMA_VERSION}, e.g. '
+                f'npx prisma@{PRISMA_VERSION} generate\n'
+                '  or generate the client using the Python CLI, e.g. python3 -m prisma generate'
             )
         return values
 
