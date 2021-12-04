@@ -6,7 +6,7 @@ import logging
 import warnings
 import contextlib
 from importlib.util import find_spec
-from typing import Any, Union, Dict, Iterator, Coroutine
+from typing import Any, Union, Dict, Iterator, Coroutine, NoReturn
 
 from ._types import FuncType, CoroType
 
@@ -108,3 +108,11 @@ def get_or_create_event_loop() -> asyncio.AbstractEventLoop:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             return loop
+
+
+def assert_never(value: NoReturn) -> NoReturn:
+    """Used by type checkers for exhaustive match cases.
+
+    https://github.com/microsoft/pyright/issues/767
+    """
+    assert False, "Unhandled type: {}".format(type(value).__name__)
