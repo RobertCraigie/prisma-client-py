@@ -362,15 +362,19 @@ class Config(BaseSettings):
     def engine_type_validator(  # pylint: disable=no-else-raise,inconsistent-return-statements,no-else-return
         cls, value: EngineType
     ) -> EngineType:
+        # import here due to circular reference
+        # TODO: fix
+        from ..engine.utils import is_library_available
+
         if value == EngineType.binary:
             return value
         elif value == EngineType.dataproxy:  # pragma: no cover
             raise ValueError(
                 'Prisma Client Python does not support the Prisma Data Proxy yet.'
             )
-        elif value == EngineType.library:  # pragma: no cover
+        elif value == EngineType.library and not is_library_available():
             raise ValueError(
-                'Prisma Client Python does not support native engine bindings yet.'
+                'The _prisma_query_engine package must be installed to use the library engine.'
             )
         else:  # pragma: no cover
             # NOTE: the exhaustiveness check is broken for mypy

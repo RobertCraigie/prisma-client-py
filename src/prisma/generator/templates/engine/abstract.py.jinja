@@ -4,6 +4,7 @@
 from abc import ABC, abstractmethod
 from ..types import DatasourceOverride
 from .._compat import get_running_loop
+from ..generator.models import EngineType
 
 __all__ = (
     'AbstractEngine',
@@ -11,6 +12,7 @@ __all__ = (
 
 class AbstractEngine(ABC):
     dml: str
+    kind: EngineType
 
     @abstractmethod
     def __init__(self, *, dml: str, log_queries: bool = False) -> None:

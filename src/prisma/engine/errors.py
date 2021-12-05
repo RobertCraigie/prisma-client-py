@@ -1,3 +1,4 @@
+from typing import Optional
 from ..http import Response
 from ..errors import PrismaError
 
@@ -45,20 +46,22 @@ class EngineConnectionError(EngineError):
 
 
 class EngineRequestError(EngineError):
-    response: Response
+    response: Optional[Response]
 
-    def __init__(self, response: Response, body: str):
+    def __init__(self, body: str, response: Optional[Response] = None) -> None:
         self.response = response
 
-        # TODO: better error message
-        super().__init__(f'{response.status}: {body}')
+        if response is None:
+            super().__init__(body)
+        else:
+            super().__init__(f'{response.status}: {body}')
 
 
 class UnprocessableEntityError(EngineRequestError):
     def __init__(self, response: Response):
         super().__init__(
-            response,
-            (
+            response=response,
+            body=(
                 'Error occurred, '
                 'it is likely that the internal GraphQL query '
                 'builder generated a malformed request.\n'

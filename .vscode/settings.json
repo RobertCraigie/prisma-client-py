@@ -1,3 +1,6 @@
 {
-  "python.formatting.provider": "black"
+  "python.formatting.provider": "black",
+  "rust-analyzer.linkedProjects": [
+    "src/query-engine/Cargo.toml"
+  ]
 }

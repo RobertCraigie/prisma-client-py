@@ -9,6 +9,7 @@ from typing import List
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
+from prisma import ENGINE_TYPE
 from prisma.http import client
 from prisma.utils import temp_env_update
 from prisma.cli.commands import dev
@@ -32,7 +33,12 @@ def test_playground_skip_generate_no_client(
     assert result.output == 'Prisma Client Python has not been generated yet.\n'
 
 
+# TODO: support using this command with the native engine
 @pytest.mark.asyncio
+@pytest.mark.skipif(
+    ENGINE_TYPE != 'binary',
+    reason='GraphQL playground is only supported with a binary client type',
+)
 async def test_playground(testdir: Testdir) -> None:
     """Starts local HTTP server"""
 

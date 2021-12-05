@@ -2,3 +2,4 @@ tox==3.24.0
 wheel==0.37.0
 black==21.11b1
 pre-commit==2.15.0
+maturin==0.12.3
