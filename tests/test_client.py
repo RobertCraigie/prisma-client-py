@@ -1,7 +1,7 @@
 from pathlib import Path
-from unittest.mock import AsyncMock
 
 import pytest
+from mock import AsyncMock
 from pytest_mock import MockerFixture
 from prisma import ENGINE_TYPE, Client, get_client, errors, engine
 from prisma.testing import reset_client
