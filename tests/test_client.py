@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from pytest_mock import MockerFixture
 from prisma import ENGINE_TYPE, Client, get_client, errors, engine
 from prisma.testing import reset_client
 from prisma.cli.prisma import run
@@ -79,3 +80,17 @@ def test_auto_register() -> None:
 def test_engine_type() -> None:
     """The exported ENGINE_TYPE enum matches the actual engine type"""
     assert ENGINE_TYPE.value == 'binary'
+
+
+@pytest.mark.asyncio
+async def test_connect_timeout(mocker: MockerFixture) -> None:
+    """Setting the timeout on a client and a per-call basis works"""
+    client = Client(connect_timeout=7)
+    mocked = mocker.patch.object(client._engine_class, 'connect')
+
+    await client.connect()
+    mocked.assert_called_once_with(timeout=7, datasources=None)
+    mocked.reset_mock()
+
+    await client.connect(timeout=5)
+    mocked.assert_called_once_with(timeout=5, datasources=None)
