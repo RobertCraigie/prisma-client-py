@@ -10934,6 +10934,28 @@
   _registered_client: Optional[RegisteredClient] = None
   
   
+  class UseClientDefault:
+      """For certain parameters such as `timeout=...` we can make our intent more clear
+      by typing the parameter with this class rather than using None, for example:
+  
+      ```py
+      def connect(timeout: Union[int, UseClientDefault] = UseClientDefault()) -> None: ...
+      ```
+  
+      relays the intention more clearly than:
+  
+      ```py
+      def connect(timeout: Optional[int] = None) -> None: ...
+      ```
+  
+      This solution also allows us to indicate an "unset" state that is uniquely distinct
+      from `None` which may be useful in the future.
+      """
+  
+  
+  _USE_CLIENT_DEFAULT = UseClientDefault()
+  
+  
   def load_env(*, override: bool = True, **kwargs: Any) -> None:
       """Load environemntal variables from dotenv files
   
@@ -11011,6 +11033,7 @@
           auto_register: bool = False,
           # no idea why this type ignore is required, pyright works correctly, mypy does not
           datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
+          connect_timeout: int = 10,
       ) -> None:
           self.post = actions.PostActions(self, models.Post)
           self.user = actions.UserActions(self, models.User)
@@ -11028,6 +11051,7 @@
           self._active_provider = 'postgresql'
           self._log_queries = log_queries
           self._datasource = datasource
+          self._connect_timeout = connect_timeout
   
           if use_dotenv:
               load_env()
@@ -11057,11 +11081,17 @@
           """Returns True if the client is connected to the query engine, False otherwise."""
           return self.__engine is not None
   
-      async def connect(self, timeout: int = 10) -> None:
+      async def connect(
+          self,
+          timeout: Union[int, UseClientDefault] = _USE_CLIENT_DEFAULT,
+      ) -> None:
           """Connect to the Prisma query engine.
   
           It is required to call this before accessing data.
           """
+          if isinstance(timeout, UseClientDefault):
+              timeout = self._connect_timeout
+  
           if self.__engine is None:
               self.__engine = self._engine_class(dml=SCHEMA, log_queries=self._log_queries)
   
@@ -38807,6 +38837,28 @@
   _registered_client: Optional[RegisteredClient] = None
   
   
+  class UseClientDefault:
+      """For certain parameters such as `timeout=...` we can make our intent more clear
+      by typing the parameter with this class rather than using None, for example:
+  
+      ```py
+      def connect(timeout: Union[int, UseClientDefault] = UseClientDefault()) -> None: ...
+      ```
+  
+      relays the intention more clearly than:
+  
+      ```py
+      def connect(timeout: Optional[int] = None) -> None: ...
+      ```
+  
+      This solution also allows us to indicate an "unset" state that is uniquely distinct
+      from `None` which may be useful in the future.
+      """
+  
+  
+  _USE_CLIENT_DEFAULT = UseClientDefault()
+  
+  
   def load_env(*, override: bool = True, **kwargs: Any) -> None:
       """Load environemntal variables from dotenv files
   
@@ -38884,6 +38936,7 @@
           auto_register: bool = False,
           # no idea why this type ignore is required, pyright works correctly, mypy does not
           datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
+          connect_timeout: int = 10,
       ) -> None:
           self.post = actions.PostActions(self, models.Post)
           self.user = actions.UserActions(self, models.User)
@@ -38901,6 +38954,7 @@
           self._active_provider = 'postgresql'
           self._log_queries = log_queries
           self._datasource = datasource
+          self._connect_timeout = connect_timeout
   
           if use_dotenv:
               load_env()
@@ -38930,11 +38984,17 @@
           """Returns True if the client is connected to the query engine, False otherwise."""
           return self.__engine is not None
   
-      def connect(self, timeout: int = 10) -> None:
+      def connect(
+          self,
+          timeout: Union[int, UseClientDefault] = _USE_CLIENT_DEFAULT,
+      ) -> None:
           """Connect to the Prisma query engine.
   
           It is required to call this before accessing data.
           """
+          if isinstance(timeout, UseClientDefault):
+              timeout = self._connect_timeout
+  
           if self.__engine is None:
               self.__engine = self._engine_class(dml=SCHEMA, log_queries=self._log_queries)
   
