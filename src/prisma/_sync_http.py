@@ -49,5 +49,5 @@ class Response(AbstractResponse[httpx.Response]):
     def json(self, **kwargs: Any) -> Any:
         return self.original.json(**kwargs)
 
-    def text(self, **kwargs: Any) -> Any:
+    def text(self, **kwargs: Any) -> str:
         return self.original.content.decode(**kwargs)
