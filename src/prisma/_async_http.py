@@ -57,4 +57,4 @@ class Response(AbstractResponse[httpx.Response]):
         return json.loads(await self.original.aread(), **kwargs)
 
     async def text(self, **kwargs: Any) -> str:
-        return ''.join([part async for part in self.original.aiter_text()])
+        return ''.join([part async for part in self.original.aiter_text(**kwargs)])
