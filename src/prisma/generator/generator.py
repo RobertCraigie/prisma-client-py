@@ -8,10 +8,11 @@ from contextvars import ContextVar
 from typing import Generic, Dict, Type, Any, Optional, cast
 
 from jinja2 import Environment, FileSystemLoader
+from pydantic import BaseModel
 
 from . import jsonrpc
 from .jsonrpc import Manifest
-from .models import BaseModel, Data
+from .models import Data
 from .types import PartialModelFields
 from .utils import (
     copy_tree,
