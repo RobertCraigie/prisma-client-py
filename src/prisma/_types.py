@@ -3,7 +3,7 @@ from typing import Callable, Coroutine, TypeVar, Type, Tuple, Any
 from pydantic import BaseModel
 
 
-if sys.version_info[:2] >= (3, 6):
+if sys.version_info[:2] > (3, 6):
     from typing_extensions import (
         TypedDict as TypedDict,
         Protocol as Protocol,
