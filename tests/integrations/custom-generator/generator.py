@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from pydantic import BaseModel
 from prisma.generator import GenericGenerator, Manifest, models
@@ -32,6 +33,13 @@ class MyGenerator(GenericGenerator[Data]):
 
         output = Path(data.generator.output.value)
         output.write_text('\n'.join(lines))
+
+    if sys.version_info[:2] == (3, 6):
+        # only explicitly specify the Data class at runtime on Python 3.6
+        # so that our generic type resolver can be easily tested
+        @property
+        def data_class(self) -> Type[Data]:
+            return Data
 
 
 Data.update_forward_refs()
