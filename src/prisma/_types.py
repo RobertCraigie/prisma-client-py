@@ -36,4 +36,8 @@ CoroType = Callable[..., Coroutine[Any, Any, Any]]
 
 @runtime_checkable
 class InheritsGeneric(Protocol):
-    __orig_bases__: Tuple[Type[Any]]
+    __orig_bases__: Tuple['_GenericAlias']
+
+
+class _GenericAlias(Protocol):
+    __origin__: Type[Any]
