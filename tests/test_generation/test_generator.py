@@ -21,6 +21,9 @@ from prisma.generator.utils import Faker, resolve_template_path, copy_tree
 from ..utils import Testdir
 
 
+# pylint: disable=useless-super-delegation,expression-not-assigned
+
+
 def iter_templates_dir(path: Path) -> Iterator[Path]:
     templates = path / 'generator' / 'templates'
     assert templates.exists()
