@@ -40,4 +40,4 @@ class InheritsGeneric(Protocol):
 
 
 class _GenericAlias(Protocol):
-    __origin__: Type[Any]
+    __origin__: Type[object]
