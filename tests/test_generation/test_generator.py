@@ -217,7 +217,7 @@ def test_generator_subclass_mismatch() -> None:
     """Attempting to subclass Generator instead of BaseGenerator raises an error"""
     with pytest.raises(TypeError) as exc:
 
-        class MyGenerator(Generator):  # type: ignore
+        class MyGenerator(Generator):  # pyright: reportUnusedClass=false
             ...
 
     message = exc.value.args[0]
