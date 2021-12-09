@@ -46,6 +46,8 @@ from ..errors import UnsupportedListTypeError
 from ..binaries.constants import ENGINE_VERSION, PRISMA_VERSION
 
 
+__all__ = ('Data',)
+
 # NOTE: this does not represent all the data that is passed by prisma
 
 ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float']
@@ -115,10 +117,15 @@ def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
     return spec.origin
 
 
+def _pathlib_serializer(path: Path) -> str:
+    return str(path.absolute())
+
+
 class BaseModel(PydanticBaseModel):
     class Config:
         arbitrary_types_allowed: bool = True
         json_encoders: Dict[Type[Any], Any] = {
+            Path: _pathlib_serializer,
             machinery.ModuleSpec: _module_spec_serializer,
         }
 

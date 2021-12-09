@@ -6,7 +6,7 @@ from typing import List, Optional, Dict
 
 import click
 
-from .. import generator, jsonrpc, binaries, __version__
+from .. import binaries
 
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -59,41 +59,3 @@ def run(
         )
 
     return process.returncode
-
-
-def invoke() -> None:
-    while True:
-        line = jsonrpc.readline()
-        if line is None:
-            log.debug('Prisma invocation ending')
-            break
-
-        request = jsonrpc.parse(line)
-        log.debug(
-            'Received request method: %s',
-            request.method,
-        )
-
-        # TODO: this can hang the prisma process if an error occurs
-        response = None
-        if request.method == 'getManifest':
-            response = jsonrpc.Response(
-                id=request.id,
-                result=dict(
-                    manifest=jsonrpc.Manifest(
-                        defaultOutput=str(generator.BASE_PACKAGE_DIR.absolute()),
-                        prettyName=f'Prisma Client Python (v{__version__})',
-                    )
-                ),
-            )
-        elif request.method == 'generate':
-            if request.params is None:  # pragma: no cover
-                raise RuntimeError('Prisma JSONRPC did not send data to generate.')
-
-            generator.run(request.params)
-            response = jsonrpc.Response(id=request.id, result=None)
-        else:  # pragma: no cover
-            raise RuntimeError(f'JSON RPC received unexpected method: {request.method}')
-
-        if response is not None:
-            jsonrpc.reply(response)

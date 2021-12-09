@@ -12,6 +12,7 @@ from .custom import cli
 
 from .. import http
 from ..utils import maybe_async_run, DEBUG
+from ..generator import Generator
 
 
 __all__ = ('main', 'setup_logging')
@@ -47,7 +48,7 @@ def main(
                 click.echo('e.g.')
                 click.echo('prisma generate')
                 sys.exit(1)
-            prisma.invoke()
+            Generator.invoke()
 
     # mypy does not recognise sys.exit as a NoReturn for some reason
     raise SystemExit(0)
