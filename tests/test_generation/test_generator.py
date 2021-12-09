@@ -171,10 +171,10 @@ def test_data_class_required_py36() -> None:
     """
 
     class MyGenerator(GenericGenerator[Data]):
-        def get_manifest(self) -> Manifest:
+        def get_manifest(self) -> Manifest:  # pragma: no cover
             return super().get_manifest()
 
-        def generate(self, data: Data) -> None:
+        def generate(self, data: Data) -> None:  # pragma: no cover
             return super().generate(data)
 
     with pytest.raises(RuntimeError) as exc:
@@ -190,10 +190,10 @@ def test_invalid_type_argument() -> None:
     """Non-BaseModel argument to GenericGenerator raises an error"""
 
     class MyGenerator(GenericGenerator[Path]):  # type: ignore
-        def get_manifest(self) -> Manifest:
+        def get_manifest(self) -> Manifest:  # pragma: no cover
             return super().get_manifest()
 
-        def generate(self, data: Path) -> None:
+        def generate(self, data: Path) -> None:  # pragma: no cover
             return super().generate(data)
 
     with pytest.raises(TypeError) as exc:
@@ -203,10 +203,10 @@ def test_invalid_type_argument() -> None:
     assert 'pydantic.main.BaseModel' in exc.value.args[0]
 
     class MyGenerator2(GenericGenerator[Manifest]):
-        def get_manifest(self) -> Manifest:
+        def get_manifest(self) -> Manifest:  # pragma: no cover
             return super().get_manifest()
 
-        def generate(self, data: Manifest) -> None:
+        def generate(self, data: Manifest) -> None:  # pragma: no cover
             return super().generate(data)
 
     data_class = MyGenerator2().data_class
