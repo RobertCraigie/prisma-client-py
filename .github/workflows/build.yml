@@ -38,7 +38,7 @@ jobs:
       - if: runner.os != 'Linux'
         name: Setup env when not using docker
         run: |
-          python -m pip install --upgrade wheel setuptools setuptools-rust
+          python -m pip install --upgrade wheel setuptools maturin
 
       - if: runner.os == 'Linux'
         name: Set up QEMU
