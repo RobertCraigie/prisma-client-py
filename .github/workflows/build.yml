@@ -48,16 +48,10 @@ jobs:
           image: tonistiigi/binfmt:latest
           platforms: arm64
 
-      # TODO: switch back to using action
-      - name: Install cibuildwheel
-        run: |
-          # Install cibuildwheel from git for CIBW_ARCHS_LINUX support
-          python -m pip install git+https://github.com/joerick/cibuildwheel@6f28d7851fa3380e8188a12d710bcae4ff233314
-
       - name: Build wheels
         working-directory: src/query-engine
         run: |
-          python -m cibuildwheel --output-dir wheelhouse
+          maturin build --release --out wheelhouse
 
       - uses: actions/upload-artifact@v2
         with:
