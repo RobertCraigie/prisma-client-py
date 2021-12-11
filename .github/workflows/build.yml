@@ -50,7 +50,7 @@ jobs:
       - name: Build wheels
         working-directory: src/query-engine
         run: |
-          python -m maturin build --release --out wheelhouse
+          maturin build --release --out wheelhouse
 
       - uses: actions/upload-artifact@v2
         with:
