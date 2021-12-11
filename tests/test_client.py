@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 
 import pytest
+from mock import AsyncMock
+from pytest_mock import MockerFixture
 from prisma import ENGINE_TYPE, Client, get_client, errors, engine
 from prisma.testing import reset_client
 from prisma.cli.prisma import run
@@ -89,3 +91,21 @@ def test_engine_type(client: Client) -> None:
         assert engine_name == 'LibraryEngine'
     else:  # pragma: no cover
         raise RuntimeError(f'Unhandled env value: {env_value}')
+
+
+@pytest.mark.asyncio
+async def test_connect_timeout(mocker: MockerFixture) -> None:
+    """Setting the timeout on a client and a per-call basis works"""
+    client = Client(connect_timeout=7)
+    mocked = mocker.patch.object(
+        client._engine_class,  # pylint: disable=protected-access
+        'connect',
+        new=AsyncMock(),
+    )
+
+    await client.connect()
+    mocked.assert_called_once_with(timeout=7, datasources=None)
+    mocked.reset_mock()
+
+    await client.connect(timeout=5)
+    mocked.assert_called_once_with(timeout=5, datasources=None)

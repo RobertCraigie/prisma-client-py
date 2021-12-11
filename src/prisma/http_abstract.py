@@ -82,7 +82,7 @@ class AbstractResponse(ABC, Generic[Response]):
         ...
 
     @abstractmethod
-    def text(self) -> MaybeCoroutine[Any]:
+    def text(self) -> MaybeCoroutine[str]:
         ...
 
     def __repr__(self) -> str:

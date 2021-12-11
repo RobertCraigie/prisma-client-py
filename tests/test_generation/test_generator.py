@@ -6,11 +6,22 @@ from typing import Iterator
 import pytest
 from jinja2 import Environment, FileSystemLoader
 from prisma import __version__
-from prisma.generator import BASE_PACKAGE_DIR, render_template, cleanup_templates
+from prisma.generator import (
+    BASE_PACKAGE_DIR,
+    Data,
+    Manifest,
+    Generator,
+    GenericGenerator,
+    render_template,
+    cleanup_templates,
+)
 from prisma.generator.generator import OVERRIDING_TEMPLATES
 from prisma.generator.utils import Faker, resolve_template_path, copy_tree
 
 from ..utils import Testdir
+
+
+# pylint: disable=useless-super-delegation,expression-not-assigned
 
 
 def iter_templates_dir(path: Path) -> Iterator[Path]:
@@ -138,3 +149,77 @@ def test_faker() -> None:
     first = [next(iter1) for _ in range(10)]
     second = [next(iter2) for _ in range(10)]
     assert first == second
+
+
+def test_invoke_outside_generation() -> None:
+    """Attempting to invoke a generator outside of Prisma generation errors"""
+    with pytest.raises(RuntimeError) as exc:
+        Generator.invoke()
+
+    assert (
+        exc.value.args[0]
+        == 'Attempted to invoke a generator outside of Prisma generation'
+    )
+
+
+@pytest.mark.skipif(
+    sys.version_info[:2] != (3, 6), reason='Test is only valid on python 3.6'
+)
+def test_data_class_required_py36() -> None:
+    """Due to internal Generic workings, we cannot resolve generic arguments
+    on python 3.6, our solution is that a `data_class` property must be required.
+    """
+
+    class MyGenerator(GenericGenerator[Data]):
+        def get_manifest(self) -> Manifest:  # pragma: no cover
+            return super().get_manifest()
+
+        def generate(self, data: Data) -> None:  # pragma: no cover
+            return super().generate(data)
+
+    with pytest.raises(RuntimeError) as exc:
+        MyGenerator().data_class
+
+    assert 'data_class' in exc.value.args[0]
+
+
+@pytest.mark.skipif(
+    sys.version_info[:2] == (3, 6), reason='Test is not valid on python 3.6'
+)
+def test_invalid_type_argument() -> None:
+    """Non-BaseModel argument to GenericGenerator raises an error"""
+
+    class MyGenerator(GenericGenerator[Path]):  # type: ignore
+        def get_manifest(self) -> Manifest:  # pragma: no cover
+            return super().get_manifest()
+
+        def generate(self, data: Path) -> None:  # pragma: no cover
+            return super().generate(data)
+
+    with pytest.raises(TypeError) as exc:
+        MyGenerator().data_class
+
+    assert 'pathlib.Path' in exc.value.args[0]
+    assert 'pydantic.main.BaseModel' in exc.value.args[0]
+
+    class MyGenerator2(GenericGenerator[Manifest]):
+        def get_manifest(self) -> Manifest:  # pragma: no cover
+            return super().get_manifest()
+
+        def generate(self, data: Manifest) -> None:  # pragma: no cover
+            return super().generate(data)
+
+    data_class = MyGenerator2().data_class
+    assert data_class == Manifest
+
+
+def test_generator_subclass_mismatch() -> None:
+    """Attempting to subclass Generator instead of BaseGenerator raises an error"""
+    with pytest.raises(TypeError) as exc:
+
+        class MyGenerator(Generator):  # pyright: reportUnusedClass=false
+            ...
+
+    message = exc.value.args[0]
+    assert 'cannot be subclassed, maybe you meant' in message
+    assert 'BaseGenerator' in message

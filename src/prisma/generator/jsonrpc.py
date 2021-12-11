@@ -1,11 +1,17 @@
 import sys
 import json
 import logging
-from typing import Dict, List, Optional, Type, Any
-from pydantic import BaseModel
+from pathlib import Path
+from typing import Dict, List, Optional, Union, Type, Any
+from pydantic import Field
+
+from .models import BaseModel
 
 
 log: logging.Logger = logging.getLogger(__name__)
+
+
+__all__ = ('Manifest',)
 
 
 class Request(BaseModel):
@@ -29,11 +35,13 @@ class Response(BaseModel):
 
 
 class Manifest(BaseModel):
-    prettyName: str
-    defaultOutput: str
+    """Generator metadata"""
+
+    prettyName: str = Field(alias='name')
+    defaultOutput: Union[str, Path] = Field(alias='default_output')
     denylist: Optional[List[str]]
-    requiresEngines: Optional[List[str]]
-    requiresGenerators: Optional[List[str]]
+    requiresEngines: Optional[List[str]] = Field(alias='requires_engines')
+    requiresGenerators: Optional[List[str]] = Field(alias='requires_generators')
 
 
 # TODO: proper types
@@ -69,6 +77,6 @@ def parse(line: str) -> Request:
 
 
 def reply(response: Response) -> None:
-    dumped = json.dumps(response.dict()) + '\n'
+    dumped = response.json() + '\n'
     print(dumped, file=sys.stderr, flush=True)
     log.debug('Replied with %s', dumped)
