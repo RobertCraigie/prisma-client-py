@@ -47,10 +47,11 @@ jobs:
           image: tonistiigi/binfmt:latest
           platforms: arm64
 
+      # TODO: include sdist
       - name: Build wheels
         working-directory: src/query-engine
         run: |
-          maturin build --release --out wheelhouse
+          maturin build --release --no-sdist --out wheelhouse
 
       - uses: actions/upload-artifact@v2
         with:
