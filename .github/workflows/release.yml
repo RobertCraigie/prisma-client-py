@@ -1,4 +1,4 @@
-name: Release Query Engine
+name: Release
 # TODO: on: workflow_dispatch
 on:
   push:
@@ -65,4 +65,4 @@ jobs:
 
       - name: Test
         run: |
-          ls -a .
+          ls -a -R .
