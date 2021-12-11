@@ -7,17 +7,46 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04, windows-2019, macos-10.15]
+    env:
+      CIBW_BUILD_VERBOSITY: 1
+      CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
+      CIBW_BEFORE_BUILD_LINUX: "pip3 install --upgrade keyrings.alt"
+      CIBW_ARCHS_LINUX: "auto aarch64"
+      CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
+      # TODO: verify this
+      CIBW_SKIP: "cp27-* cp34-* cp35-* pp* *-win32"
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.3.0
+      - uses: actions-rs/toolchain@v1
         with:
-          working-directory: src/query-engine
-        # to supply options, put them in 'env', like:
-        # env:
-        #   CIBW_SOME_OPTION: value
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - if: runner.os != 'Linux'
+        name: Setup env when not using docker
+        run: |
+          python -m pip install --upgrade wheel setuptools setuptools-rust
+
+      - if: runner.os == 'Linux'
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: arm64
+
+      # TODO: switch back to using action
+      - name: Install cibuildwheel
+        run: |
+          # Install cibuildwheel from git for CIBW_ARCHS_LINUX support
+          python -m pip install git+https://github.com/joerick/cibuildwheel@6f28d7851fa3380e8188a12d710bcae4ff233314
+
+      - name: Build wheels
+        run: |
+          python -m cibuildwheel --output-dir wheelhouse
 
       - uses: actions/upload-artifact@v2
         with:
