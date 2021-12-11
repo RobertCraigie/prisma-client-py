@@ -4,6 +4,7 @@ on:
     branches:
       - main
   pull_request:
+    # TODO: this should run for every pr
     branches:
       - main
       - feat/rust-bindings
@@ -13,6 +14,7 @@ jobs:
     name: Build Query Engine wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-20.04, windows-2019, macos-10.15]
     env:
