@@ -11,7 +11,6 @@ on:
       - ci/rust-wheels
 jobs:
   query-engine:
-    needs: build
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
