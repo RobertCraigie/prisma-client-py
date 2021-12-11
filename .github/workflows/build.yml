@@ -1,5 +1,11 @@
 name: Build
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 jobs:
   build_query_engine_wheels:
     name: Build Query Engine wheels on ${{ matrix.os }}
