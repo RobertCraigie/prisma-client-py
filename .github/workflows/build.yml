@@ -6,6 +6,7 @@ on:
   pull_request:
     branches:
       - main
+      - feat/rust-bindings
 jobs:
   build_query_engine_wheels:
     name: Build Query Engine wheels on ${{ matrix.os }}
