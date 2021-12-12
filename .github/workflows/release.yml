@@ -20,11 +20,13 @@ jobs:
         python-version: ["6", "7", "8", "9", "10"]
         os: [ubuntu-20.04, windows-2019, macos-10.15]
     env:
+      # TODO: run tests on the built wheels
       CIBW_BUILD: "cp3${{ matrix.python-version }}-*"
       CIBW_BUILD_VERBOSITY: 1
       CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
       CIBW_BEFORE_BUILD_LINUX: "pip3 install --upgrade keyrings.alt"
       CIBW_ARCHS_LINUX: "auto aarch64"
+      CIBW_ARCHS_MACOS: "x86_64 arm64"
       CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
       # TODO: verify this
       CIBW_SKIP: "cp27-* cp34-* cp35-* pp* *-win32"
