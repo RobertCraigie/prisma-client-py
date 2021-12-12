@@ -26,7 +26,7 @@ jobs:
       CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
       CIBW_BEFORE_BUILD_LINUX: "pip3 install --upgrade keyrings.alt"
       # TODO: CIBW_ARCHS_LINUX: "auto aarch64"
-      CIBW_ARCHS_LINUX: "auto"
+      CIBW_ARCHS_LINUX: "auto aarch64"
       # TODO: support m1 mac
       # CIBW_ARCHS_MACOS: "x86_64 arm64"
       CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
@@ -64,8 +64,7 @@ jobs:
         id: qemu
         uses: docker/setup-qemu-action@v1
         with:
-          image: tonistiigi/binfmt:latest
-          platforms: arm64
+          platforms: all
 
       # TODO: switch back to using action and verify the comment
       - name: Install cibuildwheel
