@@ -85,7 +85,17 @@ jobs:
           pip install twine
 
       - uses: actions/download-artifact@v2
+        with:
+          path: wheelhouse
 
-      - name: Test
+      - uses: actions/download-artifact@v2
+        with:
+          path: wheelhouse
+
+      - name: Test 1
+        run: |
+          ls -a -R wheelhouse
+
+      - name: Test 2
         run: |
           ls -a -R .
