@@ -38,6 +38,10 @@ jobs:
           toolchain: stable
           override: true
 
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
       # TODO: this previously had: if: runner.os != 'Linux'
       - name: Setup env
         run: |
