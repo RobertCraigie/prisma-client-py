@@ -42,6 +42,8 @@ jobs:
         with:
           python-version: "3.10"
 
+      # TODO: maturin verbosity? there seems to be a lot of time spent in prepare_metadata_for_build_wheel
+
       # TODO: this previously had: if: runner.os != 'Linux'
       - name: Setup env
         run: |
@@ -104,3 +106,10 @@ jobs:
       - name: Test 2
         run: |
           ls -a -R .
+
+      - name: Upload Wheels
+        env:
+          TWINE_USERNAME: ${{ secrets.TESTPYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TESTPYPI_PASSWORD }}
+        run: |
+          twine upload -r testpypi wheelhouse/*
