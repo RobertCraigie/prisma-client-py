@@ -25,12 +25,16 @@ jobs:
       CIBW_BUILD_VERBOSITY: 1
       CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
       CIBW_BEFORE_BUILD_LINUX: "pip3 install --upgrade keyrings.alt"
-      CIBW_ARCHS_LINUX: "auto aarch64"
+      # TODO: CIBW_ARCHS_LINUX: "auto aarch64"
+      CIBW_ARCHS_LINUX: "aarch64"
       # TODO: support m1 mac
       # CIBW_ARCHS_MACOS: "x86_64 arm64"
       CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
       # TODO: verify this
       CIBW_SKIP: "cp27-* cp34-* cp35-* pp* *-win32"
+
+    # TODO: run rust lints and tests
+    # TODO: rename this file to query-engine.yml
 
     steps:
       - uses: actions/checkout@v2
