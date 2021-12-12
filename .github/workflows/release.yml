@@ -85,8 +85,6 @@ jobs:
           pip install twine
 
       - uses: actions/download-artifact@v2
-        with:
-          name: my-artifact
 
       - name: Test
         run: |
