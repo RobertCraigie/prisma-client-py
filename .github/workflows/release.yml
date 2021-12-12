@@ -58,7 +58,8 @@ jobs:
       - name: Install cibuildwheel
         run: |
           # Install cibuildwheel from git for CIBW_ARCHS_LINUX support
-          python -m pip install git+https://github.com/joerick/cibuildwheel@6f28d7851fa3380e8188a12d710bcae4ff233314
+          # python -m pip install git+https://github.com/joerick/cibuildwheel@6f28d7851fa3380e8188a12d710bcae4ff233314
+          python -m pip install -U cibuildwheel==2.3.0
 
       - name: Build wheels
         working-directory: src/query-engine
