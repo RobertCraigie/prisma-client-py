@@ -26,7 +26,7 @@ jobs:
       CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
       CIBW_BEFORE_BUILD_LINUX: "pip3 install --upgrade keyrings.alt"
       # TODO: CIBW_ARCHS_LINUX: "auto aarch64"
-      CIBW_ARCHS_LINUX: "auto aarch64"
+      CIBW_ARCHS_LINUX: "aarch64"
       # TODO: support m1 mac
       # CIBW_ARCHS_MACOS: "x86_64 arm64"
       CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
