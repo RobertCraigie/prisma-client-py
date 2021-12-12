@@ -24,7 +24,7 @@ jobs:
       CIBW_BUILD: "cp3${{ matrix.python-version }}-*"
       CIBW_BUILD_VERBOSITY: 1
       CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
-      CIBW_BEFORE_BUILD_LINUX: "pip3 install --upgrade keyrings.alt"
+      CIBW_BEFORE_BUILD_LINUX: "cargo build"
       # TODO: CIBW_ARCHS_LINUX: "auto aarch64"
       CIBW_ARCHS_LINUX: "auto"
       # TODO: support m1 mac
