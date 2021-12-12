@@ -1,9 +1,31 @@
 [tool.black]
 skip-string-normalization = true
 
-# TODO: metadata
-# https://maturin.rs/metadata.html
-
 [build-system]
 requires = ["maturin>=0.12,<0.13"]
 build-backend = "maturin"
+
+[project]
+name = "_prisma_query_engine"
+description = "Rust bindings for the Prisma Query Engine"
+readme = "README.md"
+authors = [
+  {name = "Robert Craigie", email = "robert@craigie.dev"},
+]
+maintainers = [
+  {name = "Robert Craigie", email = "robert@craigie.dev"}
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Rust",
+  "Programming Language :: Python",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Topic :: Database :: Database Engines/Servers",
+  "Typing :: Typed"
+]
+
+[project.urls]
+homepage = "https://prisma-client-py.readthedocs.io/"
+documentation = "https://prisma-client-py.readthedocs.io/"
+repository = "https://github.com/RobertCraigie/prisma-client-py"
