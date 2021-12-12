@@ -12,33 +12,58 @@ on:
       - ci/rust-wheels
 jobs:
   build-query-engine:
+    name: Build Query Engine py3${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["6", "7", "8", "9", "10"]
+        os: [ubuntu-20.04, windows-2019, macos-10.15]
+    env:
+      CIBW_BUILD: "cp3${{ matrix.python-version }}-*"
+      CIBW_BUILD_VERBOSITY: 1
+      CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
+      CIBW_BEFORE_BUILD_LINUX: "pip3 install --upgrade keyrings.alt"
+      CIBW_ARCHS_LINUX: "auto aarch64"
+      CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
+      # TODO: verify this
+      CIBW_SKIP: "cp27-* cp34-* cp35-* pp* *-win32"
+
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v2
+      - uses: actions-rs/toolchain@v1
         with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install latest nightly
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
+          profile: minimal
+          toolchain: stable
           override: true
 
-      - name: Install dependencies
+      # TODO: this previously had: if: runner.os != 'Linux'
+      - name: Setup env
         run: |
-          python -m pip install --upgrade pip
-          pip install maturin
+          python -m pip install --upgrade wheel setuptools maturin
 
-      - name: Build Query Engine Wheels
+      # TODO: switch back to using cibuildwheel, try and see if rust dependencies
+      # can be cached as that would significantly reduce compile time
+
+      - if: runner.os == 'Linux'
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: arm64
+
+      # TODO: switch back to using action and verify the comment
+      - name: Install cibuildwheel
+        run: |
+          # Install cibuildwheel from git for CIBW_ARCHS_LINUX support
+          python -m pip install git+https://github.com/joerick/cibuildwheel@6f28d7851fa3380e8188a12d710bcae4ff233314
+
+      - name: Build wheels
         working-directory: src/query-engine
-        run: maturin build --release --no-sdist --out wheelhouse --strip --interpreter python${{matrix.python_version}}
+        run: |
+          python -m cibuildwheel --output-dir wheelhouse
 
       - uses: actions/upload-artifact@v2
         with:
