@@ -32,6 +32,8 @@ jobs:
       CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
       # TODO: verify this
       CIBW_SKIP: "cp27-* cp34-* cp35-* pp* *-win32"
+      # TODO: remove
+      RUST_BACKTRACE: 1
 
     # TODO: run rust lints and tests
     # TODO: rename this file to query-engine.yml
