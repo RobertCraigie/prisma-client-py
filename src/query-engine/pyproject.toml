@@ -35,4 +35,4 @@ before-all = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stab
 
 [[tool.cibuildwheel.overrides]]
 select = "*-musllinux*"
-before-all = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && apk add openssl-dev protobuf protoc && which protobuf"
+before-all = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && apk add openssl-dev protobuf protoc"
