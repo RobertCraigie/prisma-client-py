@@ -20,6 +20,7 @@ jobs:
         python-version: ["6", "7", "8", "9", "10"]
         os: [ubuntu-20.04, windows-2019, macos-10.15]
     env:
+      # NOTE: cibuildwheel options are also present in src/query-engine/pyproject.toml
       # TODO: run tests on the built wheels
       CIBW_BUILD: "cp3${{ matrix.python-version }}-*"
       CIBW_BUILD_VERBOSITY: 1
