@@ -36,3 +36,4 @@ before-all = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stab
 [[tool.cibuildwheel.overrides]]
 select = "*-musllinux*"
 before-all = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && apk add openssl-dev protobuf protoc"
+before-build = "RUST_BACKTRACE=1 cargo build --release --verbose"
