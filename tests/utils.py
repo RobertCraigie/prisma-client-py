@@ -9,6 +9,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import (
     Any,
+    Type,
     Optional,
     List,
     Union,
@@ -22,6 +23,9 @@ from click.testing import CliRunner, Result
 
 from prisma.cli import main
 from prisma._types import FuncType
+from prisma.client import ENGINE_TYPE
+from prisma.engine import AbstractEngine, QueryEngine, DataProxyEngine
+from prisma.generator.models import EngineType
 
 
 if TYPE_CHECKING:
@@ -294,3 +298,12 @@ def escape_path(path: Union[str, Path]) -> str:
         path = str(path.absolute())
 
     return path.replace('\\', '\\\\')
+
+
+def engine_type_to_class(engine_type: EngineType = ENGINE_TYPE) -> Type[AbstractEngine]:
+    if engine_type == EngineType.binary:
+        return QueryEngine
+    elif engine_type == EngineType.dataproxy:
+        return DataProxyEngine
+    else:  # pragma: no cover
+        raise RuntimeError(f'Unhandled engine type: {engine_type}')

@@ -1,0 +1,111 @@
+{% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import sleep, is_async, maybe_async_def, maybe_await with context %}
+# -- template engine/proxy.py.jinja --
+
+import asyncio
+import logging
+from hashlib import sha256
+from base64 import b64encode
+from functools import partial
+from urllib.parse import urlparse, parse_qs
+from typing import TypeVar, Coroutine
+
+import httpx
+
+from . import errors
+from .http import HTTPEngine
+from ..types import DatasourceOverride
+from ..binaries.constants import PRISMA_VERSION
+
+
+__all__ = (
+    'DataProxyEngine',
+)
+
+T = TypeVar('T')
+
+log: logging.Logger = logging.getLogger(__name__)
+
+
+class DataProxyEngine(HTTPEngine):
+    def __init__(self, url: str, dml: str, api_key: str) -> None:
+        super().__init__(
+            url=url,
+            headers={
+                'Authorization': f'Bearer {api_key}',
+            },
+            timeout=httpx.Timeout(30.0, connect=60.0)
+        )
+        self.url = url
+        self.dml = dml
+        self.api_key = api_key
+
+    @classmethod
+    def from_url(cls, conn_url: str, dml: str) -> 'DataProxyEngine':
+        parsed = urlparse(conn_url)
+        params = parse_qs(parsed.query)
+
+        if not params.get('api_key'):
+            raise ValueError(
+                'URL must contain an api_key parameter\n'
+                'e.g. prisma://aws-eu-central-1.prisma-data.com/?api_key=...qs'
+            )
+
+        return cls(
+            dml=dml,
+            api_key=params['api_key'][0],
+            url=f'https://{parsed.netloc}/{PRISMA_VERSION}/{hash_schema(dml)}',
+        )
+
+    {{ maybe_async_def }}query(self, content: str) -> Any:
+        fetcher = partial(self.request, 'POST', '/graphql', content=content)
+        return await self._request_with_retries(fetcher, 5)
+
+    {{ maybe_async_def }}_request_with_retries(
+        self,
+        {% if is_async %}
+        fetcher: Callable[[], Coroutine[Any, Any, T]],
+        {% else %}
+        fetcher: Callable[[], T],
+        {% endif %}
+        retries: int,
+    ) -> T:
+        try:
+            return {{ maybe_await }}fetcher()
+        except errors.EngineRequestError as exc:
+            # TODO: better error handling
+            if not exc.response.status in [400, 404]:
+                raise
+
+            retries = retries - 1
+            if retries <= 0:
+                raise
+
+            {{ sleep('(6 - retries) * 2') }}
+            {{ maybe_await }}self.upload_schema()
+            return {{ maybe_await }}self._request_with_retries(fetcher, retries)
+
+    # TODO: respect timeout
+    # TODO: does datasource overriding work?
+    {{ maybe_async_def }}connect(
+        self,
+        timeout: int = 10,
+        datasources: Optional[List[DatasourceOverride]] = None,
+    ) -> None:
+        await self.upload_schema()
+
+    def disconnect(self) -> None:
+        log.debug('DataProxyEngine.disconnect() called, nothing to do')
+
+    {{ maybe_async_def }}upload_schema(self) -> None:
+        schema = encode_schema(self.dml)
+        {{ maybe_await }}self.request('PUT', '/schema', content=schema)
+        log.debug('Uploaded schema')
+
+
+def hash_schema(schema: str) -> str:
+    return sha256(encode_schema(schema)).hexdigest()
+
+
+def encode_schema(schema: str) -> bytes:
+    return b64encode(schema.encode('utf-8') + b'\n')

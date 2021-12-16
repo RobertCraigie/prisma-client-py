@@ -31,7 +31,7 @@ class HTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
         return Response(await self.session.request(method, url, **kwargs))
 
     def open(self) -> None:
-        self.session = httpx.AsyncClient()
+        self.session = httpx.AsyncClient(**self.session_kwargs)
 
     async def close(self) -> None:
         if not self.closed:

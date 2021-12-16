@@ -129,8 +129,10 @@ src/prisma/fields.py
 src/prisma/actions.py
 src/prisma/builder.py
 src/prisma/partials.py
+src/prisma/engine/http.py
 src/prisma/engine/query.py
 src/prisma/engine/abstract.py
+src/prisma/engine/proxy.py
 src/prisma/http.py.original
 
 # debug files

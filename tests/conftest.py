@@ -9,6 +9,7 @@ import pytest
 
 import prisma
 from prisma import Client
+from prisma.client import load_env
 from prisma.cli import setup_logging
 from prisma.testing import reset_client
 from prisma.utils import get_or_create_event_loop
@@ -27,7 +28,15 @@ pytest_plugins = ['pytester']
 LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
 
 
-prisma.register(Client())
+load_env()
+prisma.register(
+    Client(
+        # only used if the actual engine is a dataproxy
+        proxy={
+            'url': os.environ.get('PRISMA_DATAPROXY_URL', ''),
+        },
+    ),
+)
 
 
 @pytest.fixture(name='client', scope='session')

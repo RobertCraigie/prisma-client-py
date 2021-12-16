@@ -5,7 +5,7 @@ from types import TracebackType
 
 from . import types, models, errors, actions
 from ._types import BaseModelT
-from .engine import AbstractEngine, QueryEngine
+from .engine import AbstractEngine, QueryEngine, DataProxyEngine
 from .builder import QueryBuilder
 from .generator.models import EngineType
 
@@ -123,6 +123,7 @@ class Client:
         # no idea why this type ignore is required, pyright works correctly, mypy does not
         datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
         connect_timeout: int = 10,
+        proxy: Optional[types.DataProxyConfig] = None,
     ) -> None:
         {% for model in dmmf.datamodel.models %}
         {% if recursive_types %}
@@ -136,6 +137,7 @@ class Client:
         self._log_queries = log_queries
         self._datasource = datasource
         self._connect_timeout = connect_timeout
+        self._proxy = proxy
 
         if use_dotenv:
             load_env()
@@ -192,7 +194,7 @@ class Client:
             timeout = self._connect_timeout
 
         if self.__engine is None:
-            self.__engine = self._engine_class(dml=SCHEMA, log_queries=self._log_queries)
+            self.__engine = self._create_engine(dml=SCHEMA)
 
         datasources: Optional[List[types.DatasourceOverride]] = None
         if self._datasource is not None:
@@ -294,16 +296,23 @@ class Client:
         )
         return {{ maybe_await }}self._engine.query(builder.build())
 
+    def _create_engine(self, dml: str) -> Type[AbstractEngine]:
+        if ENGINE_TYPE == EngineType.binary:
+            return QueryEngine(dml=dml, log_queries=self._log_queries)
+
+        if ENGINE_TYPE == EngineType.dataproxy:
+            # TODO: resolve URL from datasource provider
+            return DataProxyEngine.from_url(self._proxy['url'], dml=dml)
+
+        raise NotImplementedError(f'Unsupported engine type: {ENGINE_TYPE}')
+
+
     @property
     def _engine(self) -> AbstractEngine:
         engine = self.__engine
         if engine is None:
             raise errors.ClientNotConnectedError()
         return engine
-
-    @property
-    def _engine_class(self) -> Type[AbstractEngine]:
-        return QueryEngine
 
 
 # TODO: this should return the results as well

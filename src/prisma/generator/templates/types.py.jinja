@@ -49,6 +49,10 @@ class DatasourceOverride(_DatasourceOverrideOptional):
     url: str
 
 
+class DataProxyConfig(TypedDict):
+    url: str
+
+
 # types that can be serialized to json by our query builder
 {% if recursive_types %}
 Serializable = Union[

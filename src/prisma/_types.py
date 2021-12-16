@@ -24,7 +24,7 @@ else:
         raise RuntimeError('Generic arguments cannot be resolved on python 3.6')
 
 
-Method = Literal['GET', 'POST']
+Method = Literal['GET', 'POST', 'PUT']
 
 CallableT = TypeVar('CallableT', bound='FuncType')
 BaseModelT = TypeVar('BaseModelT', bound=BaseModel)
