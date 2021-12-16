@@ -4,7 +4,6 @@ import click
 
 from .. import options
 from ..utils import generate_client, error
-from ...engine import QueryEngine
 from ...utils import maybe_async_run, temp_env_update, module_exists
 
 
@@ -23,7 +22,9 @@ def playground(schema: Optional[str], skip_generate: bool) -> None:
     else:
         generate_client(schema=schema, reload=True)
 
-    from prisma import Client
+    # TODO: this assumes we are generating to the same location that we are being invoked from
+    from ... import Client
+    from ...engine import QueryEngine
 
     client = Client()
     engine_class = client._engine_class  # pylint: disable=protected-access
