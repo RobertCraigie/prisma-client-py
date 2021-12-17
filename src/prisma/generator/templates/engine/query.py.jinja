@@ -27,6 +27,7 @@ log: logging.Logger = logging.getLogger(__name__)
 
 class QueryEngine(HTTPEngine):
     dml: str
+    url: Optional[str]
 
     def __init__(self, *, dml: str, log_queries: bool = False) -> None:
         super().__init__(url=None)
