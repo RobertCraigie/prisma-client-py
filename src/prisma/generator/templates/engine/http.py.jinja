@@ -1,0 +1,96 @@
+{% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import sleep, is_async, maybe_async_def, maybe_await with context %}
+# -- template engine/http.py.jinja --
+
+import logging
+
+from . import utils, errors
+from .abstract import AbstractEngine
+from ..http import HTTP
+from .._types import Method
+
+
+__all__ = (
+    'HTTPEngine',
+)
+
+log: logging.Logger = logging.getLogger(__name__)
+
+
+class HTTPEngine(AbstractEngine):
+    """Engine wrapper that communicates to the underlying engine over HTTP"""
+    url: Optional[str]
+    session: HTTP
+    headers: Dict[str, str]
+
+    def __init__(
+        self,
+        url: Optional[str],
+        headers: Optional[Dict[str, str]] = None,
+        **kwargs: Any,
+    ) -> None:
+        self.url = url
+        self.session = HTTP(**kwargs)
+        self.headers = headers if headers is not None else {}
+
+    def __del__(self) -> None:
+        self.stop()
+
+    {% if is_async %}
+    def close(self) -> None:
+        pass
+
+    async def aclose(self) -> None:
+        await self._close_session()
+    {% else %}
+    def close(self) -> None:
+        self._close_session()
+
+    async def aclose(self) -> None:
+        pass
+    {% endif %}
+
+    {{ maybe_async_def }}_close_session(self) -> None:
+        if self.session and not self.session.closed:
+            {{ maybe_await }}self.session.close()
+
+    {{ maybe_async_def }}request(self, method: Method, path: str, *, content: Any = None) -> Any:
+        if self.url is None:
+            raise errors.NotConnectedError('Not connected to the query engine')
+
+        kwargs = {
+            'headers': {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                **self.headers,
+            }
+        }
+
+        if content is not None:
+            kwargs['content'] = content
+
+        url = self.url + path
+        log.debug('Sending %s request to %s with content: %s', method, url, content)
+
+        resp = {{ maybe_await }}self.session.request(method, url, **kwargs)
+
+        if 300 > resp.status >= 200:
+            response = {{ maybe_await }}resp.json()
+            log.debug('%s %s returned %s', method, url, response)
+
+            errors_data = response.get('errors')
+            if errors_data:
+                return utils.handle_response_errors(resp, errors_data)
+
+            return response
+
+        if resp.status == 422:
+            raise errors.UnprocessableEntityError(resp)
+
+        # TODO: handle errors better
+        raise errors.EngineRequestError(resp, {{ maybe_await }}resp.text())
+
+
+# black does not respect the fmt: off comment without this
+# fmt: on
+

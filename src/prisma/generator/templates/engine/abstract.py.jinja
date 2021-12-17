@@ -12,10 +12,6 @@ __all__ = (
 class AbstractEngine(ABC):
     dml: str
 
-    @abstractmethod
-    def __init__(self, *, dml: str, log_queries: bool = False) -> None:
-        ...
-
     def stop(self) -> None:
         """Wrapper for synchronously calling close() and aclose()"""
         self.close()
