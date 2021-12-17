@@ -25,7 +25,7 @@ class HTTP(AbstractHTTP[httpx.Client, httpx.Response]):
         return Response(self.session.request(method, url, **kwargs))
 
     def open(self) -> None:
-        self.session = httpx.Client()
+        self.session = httpx.Client(**self.session_kwargs)
 
     def close(self) -> None:
         if not self.closed:
