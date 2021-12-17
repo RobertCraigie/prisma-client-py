@@ -11197,6 +11197,12 @@
   
           raise NotImplementedError(f'Unsupported engine type: {ENGINE_TYPE}')
   
+      @property
+      def _engine_class(self) -> Type[AbstractEngine]:
+          if ENGINE_TYPE == EngineType.binary:
+              return QueryEngine
+          else:  # pragma: no cover
+              raise RuntimeError(f'Unhandled engine type: {ENGINE_TYPE}')
   
       @property
       def _engine(self) -> AbstractEngine:
@@ -39179,6 +39185,12 @@
   
           raise NotImplementedError(f'Unsupported engine type: {ENGINE_TYPE}')
   
+      @property
+      def _engine_class(self) -> Type[AbstractEngine]:
+          if ENGINE_TYPE == EngineType.binary:
+              return QueryEngine
+          else:  # pragma: no cover
+              raise RuntimeError(f'Unhandled engine type: {ENGINE_TYPE}')
   
       @property
       def _engine(self) -> AbstractEngine:

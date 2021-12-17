@@ -7,7 +7,7 @@ from prisma import ENGINE_TYPE, Client, get_client, errors, engine
 from prisma.testing import reset_client
 from prisma.cli.prisma import run
 
-from .utils import Testdir, engine_type_to_class
+from .utils import Testdir
 
 
 @pytest.mark.asyncio
@@ -88,7 +88,7 @@ async def test_connect_timeout(mocker: MockerFixture) -> None:
     """Setting the timeout on a client and a per-call basis works"""
     client = Client(connect_timeout=7)
     mocked = mocker.patch.object(
-        engine_type_to_class(),  # pylint: disable=protected-access
+        client._engine_class,  # pylint: disable=protected-access
         'connect',
         new=AsyncMock(),
     )
