@@ -1,3 +1,4 @@
+import os
 import sys
 import enum
 import importlib
@@ -28,8 +29,6 @@ from pydantic import (
     BaseSettings,
     Extra,
     Field as FieldInfo,
-    validator,
-    root_validator,
 )
 from pydantic.fields import PrivateAttr
 
@@ -40,11 +39,14 @@ except ImportError:
 
 
 from .utils import Faker, Sampler, clean_multiline
-from ..utils import DEBUG_GENERATOR
+from ..utils import DEBUG_GENERATOR, assert_never
+from .._compat import validator, root_validator
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
-from ..binaries.constants import ENGINE_VERSION
+from ..binaries.constants import ENGINE_VERSION, PRISMA_VERSION
 
+
+__all__ = ('Data',)
 
 # NOTE: this does not represent all the data that is passed by prisma
 
@@ -115,10 +117,15 @@ def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
     return spec.origin
 
 
+def _pathlib_serializer(path: Path) -> str:
+    return str(path.absolute())
+
+
 class BaseModel(PydanticBaseModel):
     class Config:
         arbitrary_types_allowed: bool = True
         json_encoders: Dict[Type[Any], Any] = {
+            Path: _pathlib_serializer,
             machinery.ModuleSpec: _module_spec_serializer,
         }
 
@@ -126,6 +133,12 @@ class BaseModel(PydanticBaseModel):
 class InterfaceChoices(str, enum.Enum):
     sync = 'sync'
     asyncio = 'asyncio'
+
+
+class EngineType(str, enum.Enum):
+    binary = 'binary'
+    library = 'library'
+    dataproxy = 'dataproxy'
 
 
 class Module(BaseModel):
@@ -223,8 +236,9 @@ class Data(BaseModel):
                 f'but got: {version}\n'
                 '  If this is intentional, set the PRISMA_PY_DEBUG_GENERATOR environment '
                 'variable to 1 and try again.\n'
-                '  Are you sure you are generating the client using the python CLI?\n'
-                '  e.g. python3 -m prisma generate'
+                f'  If you are using the Node CLI then you must switch to v{PRISMA_VERSION}, e.g. '
+                f'npx prisma@{PRISMA_VERSION} generate\n'
+                '  or generate the client using the Python CLI, e.g. python3 -m prisma generate'
             )
         return values
 
@@ -279,6 +293,7 @@ class Config(BaseSettings):
     interface: InterfaceChoices = InterfaceChoices.asyncio
     partial_type_generator: Optional[Module]
     recursive_type_depth: int = FieldInfo(default=5)
+    engine_type: EngineType = FieldInfo(default=EngineType.binary)
 
     class Config(BaseSettings.Config):
         extra: Extra = Extra.forbid
@@ -295,6 +310,21 @@ class Config(BaseSettings):
         ) -> Tuple[SettingsSourceCallable, ...]:
             # prioritise env settings over init settings
             return env_settings, init_settings, file_secret_settings
+
+    @root_validator(pre=True)
+    @classmethod
+    def transform_engine_type(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        # prioritise env variable over schema option
+        engine_type = os.environ.get('PRISMA_CLIENT_ENGINE_TYPE')
+        if engine_type is None:
+            engine_type = values.get('engineType')
+
+        # only add engine_type if it is present
+        if engine_type is not None:
+            values['engine_type'] = engine_type
+            values.pop('engineType', None)
+
+        return values
 
     @root_validator(pre=True)
     @classmethod
@@ -333,6 +363,25 @@ class Config(BaseSettings):
         if value < -1 or value in {0, 1}:
             raise ValueError('Value must equal -1 or be greater than 1.')
         return value
+
+    @validator('engine_type', always=True, allow_reuse=True)
+    @classmethod
+    def engine_type_validator(  # pylint: disable=no-else-raise,inconsistent-return-statements,no-else-return
+        cls, value: EngineType
+    ) -> EngineType:
+        if value == EngineType.binary:
+            return value
+        elif value == EngineType.dataproxy:  # pragma: no cover
+            raise ValueError(
+                'Prisma Client Python does not support the Prisma Data Proxy yet.'
+            )
+        elif value == EngineType.library:  # pragma: no cover
+            raise ValueError(
+                'Prisma Client Python does not support native engine bindings yet.'
+            )
+        else:  # pragma: no cover
+            # NOTE: the exhaustiveness check is broken for mypy
+            assert_never(value)  # type: ignore
 
 
 class DMMF(BaseModel):
@@ -514,7 +563,7 @@ class Field(BaseModel):
 
     _last_sampled: Optional[str] = PrivateAttr()
 
-    @root_validator
+    @root_validator()
     @classmethod
     def scalar_type_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         kind = values.get('kind')

@@ -27,6 +27,9 @@ disable =
   # useless
   missing-kwoa,
 
+  # false positives and pyright catches these anyway
+  no-member,
+
   # this should only trigger for tests and I don't care about duplicating code for tests
   duplicate-code,
 

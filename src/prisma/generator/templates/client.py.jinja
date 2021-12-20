@@ -6,11 +6,13 @@ from types import TracebackType
 
 from . import types, models, errors, actions
 from ._types import BaseModelT
-from .engine import QueryEngine
+from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder, dumps
+from .generator.models import EngineType
 
 
 __all__ = (
+    'ENGINE_TYPE',
     'Client',
     'load_env',
     'register',
@@ -21,8 +23,32 @@ SCHEMA = '''
 {{ datamodel }}
 '''
 
+ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
+
 RegisteredClient = Union['Client', Callable[[], 'Client']]
 _registered_client: Optional[RegisteredClient] = None
+
+
+class UseClientDefault:
+    """For certain parameters such as `timeout=...` we can make our intent more clear
+    by typing the parameter with this class rather than using None, for example:
+
+    ```py
+    def connect(timeout: Union[int, UseClientDefault] = UseClientDefault()) -> None: ...
+    ```
+
+    relays the intention more clearly than:
+
+    ```py
+    def connect(timeout: Optional[int] = None) -> None: ...
+    ```
+
+    This solution also allows us to indicate an "unset" state that is uniquely distinct
+    from `None` which may be useful in the future.
+    """
+
+
+_USE_CLIENT_DEFAULT = UseClientDefault()
 
 
 def load_env(*, override: bool = True, **kwargs: Any) -> None:
@@ -97,6 +123,7 @@ class Client:
         auto_register: bool = False,
         # no idea why this type ignore is required, pyright works correctly, mypy does not
         datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
+        connect_timeout: int = 10,
     ) -> None:
         {% for model in dmmf.datamodel.models %}
         {% if recursive_types %}
@@ -105,10 +132,11 @@ class Client:
         self.{{ model.name.lower() }} = actions.{{ model.name }}Actions(self, models.{{ model.name }})
         {% endif %}
         {% endfor %}
-        self.__engine: Optional[QueryEngine] = None
+        self.__engine: Optional[AbstractEngine] = None
         self._active_provider = '{{ datasources[0].active_provider }}'
         self._log_queries = log_queries
         self._datasource = datasource
+        self._connect_timeout = connect_timeout
         self._tx_id: Optional[str] = None
 
         if use_dotenv:
@@ -157,13 +185,19 @@ class Client:
         """Returns True if the client is connected to the query engine, False otherwise."""
         return self.__engine is not None
 
-    {{ maybe_async_def }}connect(self, timeout: int = 10) -> None:
+    {{ maybe_async_def }}connect(
+        self,
+        timeout: Union[int, UseClientDefault] = _USE_CLIENT_DEFAULT,
+    ) -> None:
         """Connect to the Prisma query engine.
 
         It is required to call this before accessing data.
         """
+        if isinstance(timeout, UseClientDefault):
+            timeout = self._connect_timeout
+
         if self.__engine is None:
-            self.__engine = QueryEngine(dml=SCHEMA, log_queries=self._log_queries)
+            self.__engine = self._create_engine(dml=SCHEMA)
 
         datasources: Optional[List[types.DatasourceOverride]] = None
         if self._datasource is not None:
@@ -179,8 +213,12 @@ class Client:
     {{ maybe_async_def }}disconnect(self) -> None:
         """Disconnect the Prisma query engine."""
         if self.__engine is not None:
-            self.__engine.disconnect()
-            {{ maybe_await }}self.__engine.close_session()
+            {% if is_async %}
+            self.__engine.close()
+            {{ maybe_await }}self.__engine.aclose()
+            {% else %}
+            self.__engine.stop()
+            {% endif %}
             self.__engine = None
 
     {{ maybe_async_def }}execute_raw(self, query: str, *args: Any) -> int:
@@ -248,7 +286,7 @@ class Client:
         """Returns a context manager for executing queries within a transaction.
 
         Entering the context manager returns a new Client() instance wrapping all
-        actions within a transaction, queries will be isolcated to the Client and
+        actions within a transaction, queries will be isolated to the Client and
         will not be commited to the database until the context manager exits.
         """
         return TransactionManager(client=self, max_wait=max_wait, timeout=timeout)
@@ -274,7 +312,7 @@ class Client:
             arguments=arguments,
             root_selection=root_selection,
         )
-        return {{ maybe_await }}self._engine.request('POST', '/', content=builder.build(), tx_id=self._tx_id)
+        return {{ maybe_await }}self._engine.query(builder.build(), tx_id=self._tx_id)
 
     def _copy(self) -> 'Client':
         """Return a new instance of the Client, if the client is connected then
@@ -287,8 +325,21 @@ class Client:
 
         return new
 
+    def _create_engine(self, dml: str) -> AbstractEngine:
+        if ENGINE_TYPE == EngineType.binary:
+            return QueryEngine(dml=dml, log_queries=self._log_queries)
+
+        raise NotImplementedError(f'Unsupported engine type: {ENGINE_TYPE}')
+
     @property
-    def _engine(self) -> QueryEngine:
+    def _engine_class(self) -> Type[AbstractEngine]:
+        if ENGINE_TYPE == EngineType.binary:
+            return QueryEngine
+        else:  # pragma: no cover
+            raise RuntimeError(f'Unhandled engine type: {ENGINE_TYPE}')
+
+    @property
+    def _engine(self) -> AbstractEngine:
         engine = self.__engine
         if engine is None:
             raise errors.ClientNotConnectedError()
@@ -312,6 +363,8 @@ class TransactionManager:
         self._timeout = timeout
         self._tx_id: Optional[str] = None
 
+    # TODO: these endpoints should be abstract methods in the engine class
+
     {{ maybe_async_def }}start(self, *, _from_context: bool = False) -> Client:
         """Start the transaction and return the wrapped Client"""
         if self.__client.is_transaction():
@@ -326,7 +379,7 @@ class TransactionManager:
         result = {{ maybe_await }}self.__client._engine.request(
             'POST',
             '/transaction/start',
-            data=dumps(
+            content=dumps(
                 {
                     'timeout': self._timeout,
                     'max_wait': self._max_wait,
@@ -418,11 +471,9 @@ class Batch:
             ],
             'transaction': True,
         }
-        {{ maybe_await }}self.__client._engine.request(
-            'POST',
-            '/',
-            content=dumps(payload),
-            tx_id=self.__client._tx_id
+        {{ maybe_await }}self.__client._engine.query(
+            dumps(payload),
+            tx_id=self.__client._tx_id,
         )
 
     {% if is_async %}

@@ -13,11 +13,15 @@ coverage:
         paths:
           - "!tests/"
         target: auto
-
-        # NOTE: flexible on this threshold
-        threshold: 6%
+        threshold: 10%
         branches:
           - main
+
+    patch:
+      default:
+        target: auto
+        threshold: 10%
+        base: auto
 
 ignore:
   - "src/prisma/generator/templates/**/*"

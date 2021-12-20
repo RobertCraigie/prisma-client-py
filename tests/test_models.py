@@ -12,6 +12,7 @@ async def create_user() -> User:
     return user
 
 
+@pytest.mark.prisma
 @pytest.mark.asyncio
 async def test_create() -> None:
     """Creating a record using model-based access"""
@@ -39,6 +40,7 @@ async def test_create() -> None:
     assert user.posts[0].title == 'My first post!'
 
 
+@pytest.mark.prisma
 @pytest.mark.asyncio
 async def test_delete() -> None:
     """Deleting a record using model-based access"""
@@ -61,6 +63,7 @@ async def test_delete() -> None:
     assert deleted2.name == 'Robert'
 
 
+@pytest.mark.prisma
 @pytest.mark.asyncio
 async def test_find_unique() -> None:
     """Finding a unique record using model-based access"""
@@ -81,6 +84,7 @@ async def test_find_unique() -> None:
     assert found.name == 'Robert'
 
 
+@pytest.mark.prisma
 @pytest.mark.asyncio
 async def test_find_many() -> None:
     """Finding many records using model-based access"""
@@ -105,6 +109,7 @@ async def test_find_many() -> None:
     assert found[1].id == users[1].id
 
 
+@pytest.mark.prisma
 @pytest.mark.asyncio
 async def test_find_first() -> None:
     """Finding a record using model-based access"""
@@ -118,6 +123,7 @@ async def test_find_first() -> None:
     assert found.name == 'Robert'
 
 
+@pytest.mark.prisma
 @pytest.mark.asyncio
 async def test_update() -> None:
     """Updating a record using model-based access"""
@@ -137,6 +143,7 @@ async def test_update() -> None:
     assert updated.name == 'Tegan'
 
 
+@pytest.mark.prisma
 @pytest.mark.asyncio
 async def test_upsert() -> None:
     """Upserting a record using model-based access"""
@@ -157,6 +164,7 @@ async def test_upsert() -> None:
     assert new.name == 'Robert 2'
 
 
+@pytest.mark.prisma
 @pytest.mark.asyncio
 async def test_update_many() -> None:
     """Updating many records using model-based access"""
@@ -195,6 +203,7 @@ async def test_update_many() -> None:
     assert user.name == 'Tegan'
 
 
+@pytest.mark.prisma
 @pytest.mark.asyncio
 async def test_count() -> None:
     """Counting records using model-based access"""
@@ -206,6 +215,7 @@ async def test_count() -> None:
     assert total == 0
 
 
+@pytest.mark.prisma
 @pytest.mark.asyncio
 async def test_delete_many() -> None:
     """Deleting many records using model-based access"""
@@ -223,6 +233,7 @@ async def test_delete_many() -> None:
     assert await User.prisma().count() == 2
 
 
+@pytest.mark.prisma
 @pytest.mark.asyncio
 async def test_query_raw() -> None:
     """Ensure results are transformed to the expected BaseModel"""
@@ -237,6 +248,7 @@ async def test_query_raw() -> None:
     assert results[0].name == 'Tegan'
 
 
+@pytest.mark.prisma
 @pytest.mark.asyncio
 async def test_query_first() -> None:
     """Ensure results are transformed to the expected BaseModel"""

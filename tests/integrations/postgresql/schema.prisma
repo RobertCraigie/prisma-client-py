@@ -7,6 +7,7 @@ generator db {
   provider             = "coverage run -m prisma"
   interface            = "asyncio"
   recursive_type_depth = -1
+  engineType           = "binary"
 }
 
 model User {

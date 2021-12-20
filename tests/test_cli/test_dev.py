@@ -15,7 +15,7 @@ from prisma.cli.commands import dev
 from ..utils import Testdir, Runner
 
 
-PRISMA_MODULE = [sys.executable, '-m', 'prisma']
+PRISMA_MODULE = ['coverage', 'run', '-m', 'prisma']
 
 
 def test_playground_skip_generate_no_client(
