@@ -89,6 +89,13 @@ model Unique5 {
   @@unique([name, middlename, surname])
 }
 
+model Unique6 {
+  name String
+  role Role
+
+  @@unique([name, role])
+}
+
 model Id1 {
   name    String
   surname String
@@ -116,6 +123,13 @@ model Id4 {
   surname    String
 
   @@id([name, middlename, surname])
+}
+
+model Id5 {
+  name String
+  role Role
+
+  @@unique([name, role])
 }
 
 enum Role {

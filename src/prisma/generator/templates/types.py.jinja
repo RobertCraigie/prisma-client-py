@@ -380,7 +380,7 @@ class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=Fal
     '{{ type.name }}',
     {
         {% for field, subtype in type.fields.items() %}
-        '{{ field }}': '{{ subtype }}',
+        '{{ field }}': {{ type_as_string(subtype) }},
         {% endfor %}
     },
     total={{ type.total }}

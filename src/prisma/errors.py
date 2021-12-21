@@ -11,6 +11,8 @@ __all__ = (
     'RecordNotFoundError',
     'HTTPClientClosedError',
     'ClientNotConnectedError',
+    'PrismaWarning',
+    'UnsupportedSubclassWarning',
 )
 
 
@@ -141,3 +143,11 @@ class UnsupportedListTypeError(GeneratorError):
             'feature request at https://github.com/RobertCraigie/prisma-client-py/issues/new'
         )
         self.type = typ
+
+
+class PrismaWarning(Warning):
+    pass
+
+
+class UnsupportedSubclassWarning(PrismaWarning):
+    pass
