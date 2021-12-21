@@ -112,6 +112,17 @@ def raise_err(msg: str) -> NoReturn:
     raise TemplateError(msg)
 
 
+def type_as_string(typ: str) -> str:
+    """Ensure a type string is wrapped with a string, e.g.
+
+    enums.Role -> 'enums.Role'
+    """
+    # TODO: use this function internally in this module
+    if not typ.startswith('\'') and not typ.startswith('"'):
+        return f'\'{typ}\''
+    return typ
+
+
 def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
     assert spec.origin is not None, 'Cannot serialize module with no origin'
     return spec.origin
@@ -220,7 +231,13 @@ class Data(BaseModel):
         params['type_schema'] = Schema.from_data(self)
 
         # add utility functions
-        for func in [get_list_types, sql_param, clean_multiline, raise_err]:
+        for func in [
+            get_list_types,
+            sql_param,
+            clean_multiline,
+            raise_err,
+            type_as_string,
+        ]:
             params[func.__name__] = func
 
         return params

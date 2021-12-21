@@ -10003,6 +10003,7 @@
           'inc_sInt',
           'bInt',
           'inc_bInt',
+          'enum',
       ],
       'B': [
           'id',
@@ -10876,16 +10877,17 @@
   }
   
   model A {
-    email    String  @unique
+    email    String         @unique
     name     String?
-    int      Int     @db.Integer
-    sInt     Int     @db.SmallInt
-    inc_int  Int     @default(autoincrement()) @db.Integer
-    inc_sInt Int     @default(autoincrement()) @db.SmallInt
-    bInt     BigInt  @db.BigInt
-    inc_bInt BigInt  @default(autoincrement()) @db.BigInt
+    int      Int            @db.Integer
+    sInt     Int            @db.SmallInt
+    inc_int  Int            @default(autoincrement()) @db.Integer
+    inc_sInt Int            @default(autoincrement()) @db.SmallInt
+    bInt     BigInt         @db.BigInt
+    inc_bInt BigInt         @default(autoincrement()) @db.BigInt
+    enum     ABeautifulEnum @default(A)
   
-    @@unique([name, email])
+    @@unique([name, email, enum])
   }
   
   model B {
@@ -14254,6 +14256,7 @@
       inc_sInt: int
       bInt: int
       inc_bInt: int
+      enum: 'enums.ABeautifulEnum'
   
       Config = Config
   
@@ -15301,6 +15304,12 @@
           'is_list': False,
           'optional': False,
           'type': 'int',
+      },
+      'enum': {
+          'name': 'enum',
+          'is_list': False,
+          'optional': False,
+          'type': 'enums.ABeautifulEnum',
       },
   }
   
@@ -23311,6 +23320,7 @@
       inc_int: int
       inc_sInt: int
       inc_bInt: int
+      enum: 'enums.ABeautifulEnum'
   
   
   class ACreateInput(AOptionalCreateInput):
@@ -23330,6 +23340,7 @@
       inc_int: int
       inc_sInt: int
       inc_bInt: int
+      enum: 'enums.ABeautifulEnum'
   
   
   class ACreateWithoutRelationsInput(AOptionalCreateWithoutRelationsInput):
@@ -23359,26 +23370,27 @@
       total=True
   )
   
-  _ACompoundname_emailKeyInner = TypedDict(
-      '_ACompoundname_emailKeyInner',
+  _ACompoundname_email_enumKeyInner = TypedDict(
+      '_ACompoundname_email_enumKeyInner',
       {
           'name': 'str',
           'email': 'str',
+          'enum': 'enums.ABeautifulEnum',
       },
       total=True
   )
   
-  _ACompoundname_emailKey = TypedDict(
-      '_ACompoundname_emailKey',
+  _ACompoundname_email_enumKey = TypedDict(
+      '_ACompoundname_email_enumKey',
       {
-          'name_email': '_ACompoundname_emailKeyInner',
+          'name_email_enum': '_ACompoundname_email_enumKeyInner',
       },
       total=True
   )
   
   AWhereUniqueInput = Union[
       '_AWhereUnique_email_Input',
-      '_ACompoundname_emailKey',
+      '_ACompoundname_email_enumKey',
   ]
   
   
@@ -23391,6 +23403,7 @@
       inc_sInt: Union[AtomicIntInput, int]
       bInt: Union[AtomicBigIntInput, int]
       inc_bInt: Union[AtomicBigIntInput, int]
+      enum: 'enums.ABeautifulEnum'
   
   
   class AUpdateManyMutationInput(TypedDict, total=False):
@@ -23403,6 +23416,7 @@
       inc_sInt: Union[AtomicIntInput, int]
       bInt: Union[AtomicBigIntInput, int]
       inc_bInt: Union[AtomicBigIntInput, int]
+      enum: 'enums.ABeautifulEnum'
   
   
   class AUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -23446,6 +23460,7 @@
       inc_sInt: 'SortOrder'
       bInt: 'SortOrder'
       inc_bInt: 'SortOrder'
+      enum: 'SortOrder'
   
   
   # recursive A types
@@ -24202,6 +24217,7 @@
       inc_sInt: Union[int, 'types.IntFilter']
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
+      enum: 'enums.ABeautifulEnum'
   
       # should be noted that AND and NOT should be Union['AWhereInputRecursive1', List['AWhereInputRecursive1']]
       # but this causes mypy to hang :/
@@ -24220,6 +24236,7 @@
       inc_sInt: Union[int, 'types.IntFilter']
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
+      enum: 'enums.ABeautifulEnum'
   
       # should be noted that AND and NOT should be Union['AWhereInputRecursive2', List['AWhereInputRecursive2']]
       # but this causes mypy to hang :/
@@ -24238,6 +24255,7 @@
       inc_sInt: Union[int, 'types.IntFilter']
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
+      enum: 'enums.ABeautifulEnum'
   
   
   
@@ -24252,6 +24270,7 @@
           'inc_sInt': bool,
           'bInt': bool,
           'inc_bInt': bool,
+          'enum': bool,
           '_all': bool,
       },
       total=False,
@@ -24268,6 +24287,7 @@
           'inc_sInt': int,
           'bInt': int,
           'inc_bInt': int,
+          'enum': int,
           '_all': int,
       },
       total=False,
@@ -24283,6 +24303,7 @@
       'inc_sInt',
       'bInt',
       'inc_bInt',
+      'enum',
   ]
   
   ARelationalFieldKeys = _NoneType
@@ -38041,6 +38062,7 @@
           'inc_sInt',
           'bInt',
           'inc_bInt',
+          'enum',
       ],
       'B': [
           'id',
@@ -38914,16 +38936,17 @@
   }
   
   model A {
-    email    String  @unique
+    email    String         @unique
     name     String?
-    int      Int     @db.Integer
-    sInt     Int     @db.SmallInt
-    inc_int  Int     @default(autoincrement()) @db.Integer
-    inc_sInt Int     @default(autoincrement()) @db.SmallInt
-    bInt     BigInt  @db.BigInt
-    inc_bInt BigInt  @default(autoincrement()) @db.BigInt
+    int      Int            @db.Integer
+    sInt     Int            @db.SmallInt
+    inc_int  Int            @default(autoincrement()) @db.Integer
+    inc_sInt Int            @default(autoincrement()) @db.SmallInt
+    bInt     BigInt         @db.BigInt
+    inc_bInt BigInt         @default(autoincrement()) @db.BigInt
+    enum     ABeautifulEnum @default(A)
   
-    @@unique([name, email])
+    @@unique([name, email, enum])
   }
   
   model B {
@@ -42292,6 +42315,7 @@
       inc_sInt: int
       bInt: int
       inc_bInt: int
+      enum: 'enums.ABeautifulEnum'
   
       Config = Config
   
@@ -43339,6 +43363,12 @@
           'is_list': False,
           'optional': False,
           'type': 'int',
+      },
+      'enum': {
+          'name': 'enum',
+          'is_list': False,
+          'optional': False,
+          'type': 'enums.ABeautifulEnum',
       },
   }
   
@@ -51349,6 +51379,7 @@
       inc_int: int
       inc_sInt: int
       inc_bInt: int
+      enum: 'enums.ABeautifulEnum'
   
   
   class ACreateInput(AOptionalCreateInput):
@@ -51368,6 +51399,7 @@
       inc_int: int
       inc_sInt: int
       inc_bInt: int
+      enum: 'enums.ABeautifulEnum'
   
   
   class ACreateWithoutRelationsInput(AOptionalCreateWithoutRelationsInput):
@@ -51397,26 +51429,27 @@
       total=True
   )
   
-  _ACompoundname_emailKeyInner = TypedDict(
-      '_ACompoundname_emailKeyInner',
+  _ACompoundname_email_enumKeyInner = TypedDict(
+      '_ACompoundname_email_enumKeyInner',
       {
           'name': 'str',
           'email': 'str',
+          'enum': 'enums.ABeautifulEnum',
       },
       total=True
   )
   
-  _ACompoundname_emailKey = TypedDict(
-      '_ACompoundname_emailKey',
+  _ACompoundname_email_enumKey = TypedDict(
+      '_ACompoundname_email_enumKey',
       {
-          'name_email': '_ACompoundname_emailKeyInner',
+          'name_email_enum': '_ACompoundname_email_enumKeyInner',
       },
       total=True
   )
   
   AWhereUniqueInput = Union[
       '_AWhereUnique_email_Input',
-      '_ACompoundname_emailKey',
+      '_ACompoundname_email_enumKey',
   ]
   
   
@@ -51429,6 +51462,7 @@
       inc_sInt: Union[AtomicIntInput, int]
       bInt: Union[AtomicBigIntInput, int]
       inc_bInt: Union[AtomicBigIntInput, int]
+      enum: 'enums.ABeautifulEnum'
   
   
   class AUpdateManyMutationInput(TypedDict, total=False):
@@ -51441,6 +51475,7 @@
       inc_sInt: Union[AtomicIntInput, int]
       bInt: Union[AtomicBigIntInput, int]
       inc_bInt: Union[AtomicBigIntInput, int]
+      enum: 'enums.ABeautifulEnum'
   
   
   class AUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -51484,6 +51519,7 @@
       inc_sInt: 'SortOrder'
       bInt: 'SortOrder'
       inc_bInt: 'SortOrder'
+      enum: 'SortOrder'
   
   
   # recursive A types
@@ -52240,6 +52276,7 @@
       inc_sInt: Union[int, 'types.IntFilter']
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
+      enum: 'enums.ABeautifulEnum'
   
       # should be noted that AND and NOT should be Union['AWhereInputRecursive1', List['AWhereInputRecursive1']]
       # but this causes mypy to hang :/
@@ -52258,6 +52295,7 @@
       inc_sInt: Union[int, 'types.IntFilter']
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
+      enum: 'enums.ABeautifulEnum'
   
       # should be noted that AND and NOT should be Union['AWhereInputRecursive2', List['AWhereInputRecursive2']]
       # but this causes mypy to hang :/
@@ -52276,6 +52314,7 @@
       inc_sInt: Union[int, 'types.IntFilter']
       bInt: Union[int, 'types.BigIntFilter']
       inc_bInt: Union[int, 'types.BigIntFilter']
+      enum: 'enums.ABeautifulEnum'
   
   
   
@@ -52290,6 +52329,7 @@
           'inc_sInt': bool,
           'bInt': bool,
           'inc_bInt': bool,
+          'enum': bool,
           '_all': bool,
       },
       total=False,
@@ -52306,6 +52346,7 @@
           'inc_sInt': int,
           'bInt': int,
           'inc_bInt': int,
+          'enum': int,
           '_all': int,
       },
       total=False,
@@ -52321,6 +52362,7 @@
       'inc_sInt',
       'bInt',
       'inc_bInt',
+      'enum',
   ]
   
   ARelationalFieldKeys = _NoneType
