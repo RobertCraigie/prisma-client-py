@@ -13433,12 +13433,14 @@
   
           return actions.PostActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'Post')
   
@@ -13553,12 +13555,14 @@
   
           return actions.UserActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'User')
   
@@ -13672,12 +13676,14 @@
   
           return actions.MActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'M')
   
@@ -13793,12 +13799,14 @@
   
           return actions.NActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'N')
   
@@ -13912,12 +13920,14 @@
   
           return actions.OneOptionalActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'OneOptional')
   
@@ -14032,12 +14042,14 @@
   
           return actions.ManyRequiredActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'ManyRequired')
   
@@ -14148,12 +14160,14 @@
   
           return actions.ListsActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'Lists')
   
@@ -14249,12 +14263,14 @@
   
           return actions.AActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'A')
   
@@ -14341,12 +14357,14 @@
   
           return actions.BActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'B')
   
@@ -14436,12 +14454,14 @@
   
           return actions.CActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'C')
   
@@ -14531,12 +14551,14 @@
   
           return actions.DActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'D')
   
@@ -14628,12 +14650,14 @@
   
           return actions.EActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'E')
   
@@ -41447,12 +41471,14 @@
   
           return actions.PostActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'Post')
   
@@ -41567,12 +41593,14 @@
   
           return actions.UserActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'User')
   
@@ -41686,12 +41714,14 @@
   
           return actions.MActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'M')
   
@@ -41807,12 +41837,14 @@
   
           return actions.NActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'N')
   
@@ -41926,12 +41958,14 @@
   
           return actions.OneOptionalActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'OneOptional')
   
@@ -42046,12 +42080,14 @@
   
           return actions.ManyRequiredActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'ManyRequired')
   
@@ -42162,12 +42198,14 @@
   
           return actions.ListsActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'Lists')
   
@@ -42263,12 +42301,14 @@
   
           return actions.AActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'A')
   
@@ -42355,12 +42395,14 @@
   
           return actions.BActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'B')
   
@@ -42450,12 +42492,14 @@
   
           return actions.CActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'C')
   
@@ -42545,12 +42589,14 @@
   
           return actions.DActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'D')
   
@@ -42642,12 +42688,14 @@
   
           return actions.EActions(get_client(), cls)
   
+      # take *args and **kwargs so that other metaclasses can define arguments
       def __init_subclass__(
           cls,
+          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(**kwargs)
+          super().__init_subclass__()
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'E')
   
