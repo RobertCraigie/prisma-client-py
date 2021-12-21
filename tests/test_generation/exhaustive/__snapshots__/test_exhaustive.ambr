@@ -13435,11 +13435,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'Post')
   
@@ -13556,11 +13555,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'User')
   
@@ -13676,11 +13674,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'M')
   
@@ -13798,11 +13795,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'N')
   
@@ -13918,11 +13914,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'OneOptional')
   
@@ -14039,11 +14034,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'ManyRequired')
   
@@ -14156,11 +14150,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'Lists')
   
@@ -14258,11 +14251,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'A')
   
@@ -14351,11 +14343,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'B')
   
@@ -14447,11 +14438,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'C')
   
@@ -14543,11 +14533,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'D')
   
@@ -14641,11 +14630,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'E')
   
@@ -41461,11 +41449,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'Post')
   
@@ -41582,11 +41569,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'User')
   
@@ -41702,11 +41688,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'M')
   
@@ -41824,11 +41809,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'N')
   
@@ -41944,11 +41928,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'OneOptional')
   
@@ -42065,11 +42048,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'ManyRequired')
   
@@ -42182,11 +42164,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'Lists')
   
@@ -42284,11 +42265,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'A')
   
@@ -42377,11 +42357,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'B')
   
@@ -42473,11 +42452,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'C')
   
@@ -42569,11 +42547,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'D')
   
@@ -42667,11 +42644,10 @@
   
       def __init_subclass__(
           cls,
-          *args: Any,
           warn_subclass: bool = True,
           **kwargs: Any,
       ) -> None:
-          super().__init_subclass__(*args, **kwargs)
+          super().__init_subclass__(**kwargs)
           if warn_subclass:
               _warn_subclassing(cls.__name__, 'E')
   
