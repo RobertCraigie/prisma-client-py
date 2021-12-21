@@ -2,6 +2,7 @@
 {% from '_utils.py.jinja' import recursive_types with context %}
 # -- template models.py.jinja --
 import os
+import warnings
 from pydantic import BaseConfig, BaseModel, Field, validator
 
 from . import types, enums, errors, fields
@@ -20,6 +21,18 @@ class Config(BaseConfig):
 
 
 _created_partial_types: Set[str] = set()
+
+
+def _warn_subclassing(new_model: str, base_model: str) -> None:
+    message = (
+        'Subclassing models while using pseudo-recursive types may cause unexpected '
+        'errors when static type checking;\n'
+        'You can disable this warning by generating fully recursive types: \n'
+        'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive\n'
+        'or if that is not possible you can pass warn_subclass=False e.g.\n'
+        f'  class {new_model}(prisma.models.{base_model}, warn_subclass=False):'
+    )
+    warnings.warn(message, errors.UnsupportedSubclassWarning, stacklevel=4)
 
 
 {% for model in dmmf.datamodel.models %}
@@ -48,13 +61,16 @@ class {{ model.name }}(BaseModel):
 
         return actions.{{ model.name }}Actions(get_client(), cls)
 
-    def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-        raise RuntimeError(
-            'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-            'This is because mypy does not work well with this pattern;\n'
-            'See the documentation for how to generate fully recursive types: \n'
-            'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-        )
+    # take *args and **kwargs so that other metaclasses can define arguments
+    def __init_subclass__(
+        cls,
+        *args: Any,
+        warn_subclass: bool = True,
+        **kwargs: Any,
+    ) -> None:
+        super().__init_subclass__()
+        if warn_subclass:
+            _warn_subclassing(cls.__name__, '{{ model.name }}')
     {% endif %}
 
     @staticmethod

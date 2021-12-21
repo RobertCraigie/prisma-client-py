@@ -4,6 +4,7 @@
 from types import TracebackType
 
 from . import types, models, errors, actions
+from .types import DatasourceOverride
 from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
@@ -120,8 +121,7 @@ class Client:
         use_dotenv: bool = True,
         log_queries: bool = False,
         auto_register: bool = False,
-        # no idea why this type ignore is required, pyright works correctly, mypy does not
-        datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
+        datasource: Optional[DatasourceOverride] = None,
         connect_timeout: int = 10,
     ) -> None:
         {% for model in dmmf.datamodel.models %}
