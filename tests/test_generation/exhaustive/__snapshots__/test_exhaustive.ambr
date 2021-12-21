@@ -13383,6 +13383,7 @@
   
   # -- template models.py.jinja --
   import os
+  import warnings
   from pydantic import BaseConfig, BaseModel, Field, validator
   
   from . import types, enums, errors, fields
@@ -13403,6 +13404,18 @@
   _created_partial_types: Set[str] = set()
   
   
+  def _warn_subclassing(new_model: str, base_model: str) -> None:
+      message = (
+          'Subclassing models while using pseudo-recursive types may cause unexpected '
+          'errors when static type checking;\n'
+          'You can disable this warning by generating fully recursive types: \n'
+          'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive\n'
+          'or if that is not possible you can pass warn_subclass=False e.g.\n'
+          f'  class {new_model}(prisma.models.{base_model}, warn_subclass=False):'
+      )
+      warnings.warn(message, errors.UnsupportedSubclassWarning, stacklevel=4)
+  
+  
   class Post(BaseModel):
       id: int
       created_at: datetime.datetime
@@ -13420,13 +13433,15 @@
   
           return actions.PostActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'Post')
   
       @staticmethod
       def create_partial(
@@ -13539,13 +13554,15 @@
   
           return actions.UserActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'User')
   
       @staticmethod
       def create_partial(
@@ -13657,13 +13674,15 @@
   
           return actions.MActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'M')
   
       @staticmethod
       def create_partial(
@@ -13777,13 +13796,15 @@
   
           return actions.NActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'N')
   
       @staticmethod
       def create_partial(
@@ -13895,13 +13916,15 @@
   
           return actions.OneOptionalActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'OneOptional')
   
       @staticmethod
       def create_partial(
@@ -14014,13 +14037,15 @@
   
           return actions.ManyRequiredActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'ManyRequired')
   
       @staticmethod
       def create_partial(
@@ -14129,13 +14154,15 @@
   
           return actions.ListsActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'Lists')
   
       @staticmethod
       def create_partial(
@@ -14229,13 +14256,15 @@
   
           return actions.AActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'A')
   
       @staticmethod
       def create_partial(
@@ -14320,13 +14349,15 @@
   
           return actions.BActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'B')
   
       @staticmethod
       def create_partial(
@@ -14414,13 +14445,15 @@
   
           return actions.CActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'C')
   
       @staticmethod
       def create_partial(
@@ -14508,13 +14541,15 @@
   
           return actions.DActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'D')
   
       @staticmethod
       def create_partial(
@@ -14604,13 +14639,15 @@
   
           return actions.EActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'E')
   
       @staticmethod
       def create_partial(
@@ -41372,6 +41409,7 @@
   
   # -- template models.py.jinja --
   import os
+  import warnings
   from pydantic import BaseConfig, BaseModel, Field, validator
   
   from . import types, enums, errors, fields
@@ -41392,6 +41430,18 @@
   _created_partial_types: Set[str] = set()
   
   
+  def _warn_subclassing(new_model: str, base_model: str) -> None:
+      message = (
+          'Subclassing models while using pseudo-recursive types may cause unexpected '
+          'errors when static type checking;\n'
+          'You can disable this warning by generating fully recursive types: \n'
+          'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive\n'
+          'or if that is not possible you can pass warn_subclass=False e.g.\n'
+          f'  class {new_model}(prisma.models.{base_model}, warn_subclass=False):'
+      )
+      warnings.warn(message, errors.UnsupportedSubclassWarning, stacklevel=4)
+  
+  
   class Post(BaseModel):
       id: int
       created_at: datetime.datetime
@@ -41409,13 +41459,15 @@
   
           return actions.PostActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'Post')
   
       @staticmethod
       def create_partial(
@@ -41528,13 +41580,15 @@
   
           return actions.UserActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'User')
   
       @staticmethod
       def create_partial(
@@ -41646,13 +41700,15 @@
   
           return actions.MActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'M')
   
       @staticmethod
       def create_partial(
@@ -41766,13 +41822,15 @@
   
           return actions.NActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'N')
   
       @staticmethod
       def create_partial(
@@ -41884,13 +41942,15 @@
   
           return actions.OneOptionalActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'OneOptional')
   
       @staticmethod
       def create_partial(
@@ -42003,13 +42063,15 @@
   
           return actions.ManyRequiredActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'ManyRequired')
   
       @staticmethod
       def create_partial(
@@ -42118,13 +42180,15 @@
   
           return actions.ListsActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'Lists')
   
       @staticmethod
       def create_partial(
@@ -42218,13 +42282,15 @@
   
           return actions.AActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'A')
   
       @staticmethod
       def create_partial(
@@ -42309,13 +42375,15 @@
   
           return actions.BActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'B')
   
       @staticmethod
       def create_partial(
@@ -42403,13 +42471,15 @@
   
           return actions.CActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'C')
   
       @staticmethod
       def create_partial(
@@ -42497,13 +42567,15 @@
   
           return actions.DActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'D')
   
       @staticmethod
       def create_partial(
@@ -42593,13 +42665,15 @@
   
           return actions.EActions(get_client(), cls)
   
-      def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-          raise RuntimeError(
-              'Prisma models cannot be subclassed with pseudo-recursive types;\n'
-              'This is because mypy does not work well with this pattern;\n'
-              'See the documentation for how to generate fully recursive types: \n'
-              'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive'
-          )
+      def __init_subclass__(
+          cls,
+          *args: Any,
+          warn_subclass: bool = True,
+          **kwargs: Any,
+      ) -> None:
+          super().__init_subclass__(*args, **kwargs)
+          if warn_subclass:
+              _warn_subclassing(cls.__name__, 'E')
   
       @staticmethod
       def create_partial(

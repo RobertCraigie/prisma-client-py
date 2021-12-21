@@ -1,5 +1,6 @@
 import pytest
 from prisma.models import User
+from prisma.errors import UnsupportedSubclassWarning
 
 
 async def create_user() -> User:
@@ -263,13 +264,15 @@ async def test_query_first() -> None:
     assert user.name == 'Tegan'
 
 
-def test_subclassing_disallowed() -> None:
-    """Subclassing a prisma model without using recursive types is not allowed,
-    this is because generic classes create a massive performance hit on mypy.
+def test_subclassing_warns() -> None:
+    """Subclassing a prisma model without using recursive types should raise a
+    warning as it will cause unexpected behaviour when static type checking as
+    action methods will be typed to return the base class, not the sub class.
     """
-    with pytest.raises(RuntimeError) as exc:
+    with pytest.warns(UnsupportedSubclassWarning):
 
         class MyUser(User):  # pyright: reportUnusedClass=false
             pass
 
-    assert 'pseudo-recursive types' in exc.value.args[0]
+    class MyUser2(User, warn_subclass=False):  # pyright: reportUnusedClass=false
+        pass
