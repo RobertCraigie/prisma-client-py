@@ -25,7 +25,7 @@ class HTTP(AbstractHTTP[httpx.Client, httpx.Response]):
         return Response(self.session.request(method, url, **kwargs))
 
     def open(self) -> None:
-        self.session = httpx.Client()
+        self.session = httpx.Client(**self.session_kwargs)
 
     def close(self) -> None:
         if not self.closed:
@@ -49,5 +49,5 @@ class Response(AbstractResponse[httpx.Response]):
     def json(self, **kwargs: Any) -> Any:
         return self.original.json(**kwargs)
 
-    def text(self, **kwargs: Any) -> Any:
+    def text(self, **kwargs: Any) -> str:
         return self.original.content.decode(**kwargs)

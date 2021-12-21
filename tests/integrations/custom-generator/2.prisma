@@ -1,0 +1,24 @@
+datasource db {
+  provider = "postgres"
+  url      = env("PG_URL")
+}
+
+generator client {
+  provider = "python generator.py"
+  output   = "2.md"
+  header   = "# Hello, World!"
+}
+
+model User {
+  id String @id @default(cuid())
+}
+
+model Post {
+  id    String @id @default(cuid())
+  title String
+}
+
+model Profile {
+  id  Int    @id @default(autoincrement())
+  bio String
+}

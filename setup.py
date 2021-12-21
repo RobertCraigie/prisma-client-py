@@ -76,11 +76,12 @@ setup(
         'postgresql',
     ],
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Typing :: Typed',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Database :: Database Engines/Servers',
+        'Topic :: Database :: Front-Ends',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',

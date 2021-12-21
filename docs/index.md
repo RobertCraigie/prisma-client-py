@@ -50,6 +50,14 @@ Supported database providers:
 - MongoDB (experimental)
 - SQL Server (experimental)
 
+## Support
+
+Have any questions or need help using Prisma? Feel free to:
+
+- Create a new [discussion](https://github.com/RobertCraigie/prisma-client-py/discussions/new)
+- Ping me on the [Prisma Slack](https://slack.prisma.io/) `@Robert Craigie`
+- Ping me on the [Python discord](https://discord.com/invite/python) `@Robert#5570`
+
 ## How does Prisma work?
 
 This section provides a high-level overview of how Prisma works and its most important technical components. For a more thorough introduction, visit the [documentation](https://prisma-client-py.readthedocs.io).

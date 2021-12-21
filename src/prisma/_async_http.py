@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 import httpx
@@ -30,7 +31,7 @@ class HTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
         return Response(await self.session.request(method, url, **kwargs))
 
     def open(self) -> None:
-        self.session = httpx.AsyncClient()
+        self.session = httpx.AsyncClient(**self.session_kwargs)
 
     async def close(self) -> None:
         if not self.closed:
@@ -53,7 +54,7 @@ class Response(AbstractResponse[httpx.Response]):
         return self.original.status_code
 
     async def json(self, **kwargs: Any) -> Any:
-        return self.original.json(**kwargs)
+        return json.loads(await self.original.aread(), **kwargs)
 
-    async def text(self, **kwargs: Any) -> Any:
-        return self.original.content.decode(**kwargs)
+    async def text(self, **kwargs: Any) -> str:
+        return ''.join([part async for part in self.original.aiter_text(**kwargs)])

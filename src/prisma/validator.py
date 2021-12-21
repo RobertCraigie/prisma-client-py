@@ -38,9 +38,7 @@ def patch_pydantic() -> None:
 
     create_model = annotated_types.create_model_from_typeddict
 
-    def patched_create_model(
-        typeddict_cls: Type[Any], **kwargs: Any
-    ) -> Type[BaseModel]:
+    def patched_create_model(typeddict_cls: Any, **kwargs: Any) -> Type[BaseModel]:
         kwargs.setdefault('__module__', typeddict_cls.__module__)
         return create_model(typeddict_cls, **kwargs)
 
