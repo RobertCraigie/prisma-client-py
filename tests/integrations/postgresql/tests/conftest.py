@@ -26,7 +26,7 @@ def event_loop() -> asyncio.AbstractEventLoop:
 
 
 @pytest.fixture(autouse=True, scope='session')
-def _register_client() -> None:
+def register_client_fixture() -> None:
     register(client_ctx.get())
 
 
