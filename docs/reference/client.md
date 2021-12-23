@@ -73,3 +73,34 @@ finally:
     if client.is_connected():
         await client.disconnect()
 ```
+
+## HTTP Options
+
+Some of the methods that Prisma Client Python uses to communicate with the underlying Prisma binaries make use of [HTTPX](https://github.com/encode/httpx/) to communicate over HTTP. As such, some [HTTPX Client options](https://www.python-httpx.org/api/#client) are configurable on a per-client basis, this can be especially useful in certain situations where the default timeout of 5 seconds is too little.
+
+The HTTPX options can be passed to client using the `http` parameter, for example:
+
+```py
+client = Client(
+    http={
+        'timeout': 10,
+    },
+)
+```
+
+Will then use a 10 second timeout for all http operations.
+
+Not all options that HTTPX support are supported by Prisma Client Python, a full list can be found below:
+
+```py
+class HttpConfig(TypedDict, total=False):
+    app: Callable[[Mapping[str, Any], Any], Any]
+    http1: bool
+    http2: bool
+    limits: httpx.Limits
+    timeout: Union[float, httpx.Timeout]
+    trust_env: bool
+    max_redirects: int
+```
+
+The documentation behind these options can be found [here](https://www.python-httpx.org/api/#client)

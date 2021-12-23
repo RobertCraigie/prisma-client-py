@@ -29,8 +29,8 @@ class QueryEngine(HTTPEngine):
     dml: str
     url: Optional[str]
 
-    def __init__(self, *, dml: str, log_queries: bool = False) -> None:
-        super().__init__(url=None)
+    def __init__(self, *, dml: str, log_queries: bool = False, **kwargs: object) -> None:
+        super().__init__(url=None, **kwargs)
         self.dml = dml
         self._log_queries = log_queries
         self.process = None  # type: Optional[subprocess.Popen[bytes]]

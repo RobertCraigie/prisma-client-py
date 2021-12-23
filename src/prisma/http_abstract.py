@@ -13,11 +13,11 @@ MaybeCoroutine = Union[Coroutine[Any, Any, ReturnType], ReturnType]
 
 
 class AbstractHTTP(ABC, Generic[Session, Response]):
-    session_kwargs: Dict[str, Any]
+    session_kwargs: Dict[str, object]
 
     # NOTE: ParamSpec wouldn't be valid here:
     # https://github.com/microsoft/pyright/issues/2667
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self, **kwargs: object) -> None:
         # NoneType = not used yet
         # None = closed
         # Session = open
