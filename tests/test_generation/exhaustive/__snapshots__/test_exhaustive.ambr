@@ -12853,7 +12853,7 @@
           self,
           url: Optional[str],
           headers: Optional[Dict[str, str]] = None,
-          **kwargs: object,
+          **kwargs: Any,
       ) -> None:
           self.url = url
           self.session = HTTP(**kwargs)
@@ -12974,7 +12974,7 @@
       dml: str
       url: Optional[str]
   
-      def __init__(self, *, dml: str, log_queries: bool = False, **kwargs: object) -> None:
+      def __init__(self, *, dml: str, log_queries: bool = False, **kwargs: Any) -> None:
           super().__init__(url=None, **kwargs)
           self.dml = dml
           self._log_queries = log_queries
@@ -40926,7 +40926,7 @@
           self,
           url: Optional[str],
           headers: Optional[Dict[str, str]] = None,
-          **kwargs: object,
+          **kwargs: Any,
       ) -> None:
           self.url = url
           self.session = HTTP(**kwargs)
@@ -41047,7 +41047,7 @@
       dml: str
       url: Optional[str]
   
-      def __init__(self, *, dml: str, log_queries: bool = False, **kwargs: object) -> None:
+      def __init__(self, *, dml: str, log_queries: bool = False, **kwargs: Any) -> None:
           super().__init__(url=None, **kwargs)
           self.dml = dml
           self._log_queries = log_queries

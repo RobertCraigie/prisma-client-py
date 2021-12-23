@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import TYPE_CHECKING, Mapping, Optional, Tuple, cast
+from typing import TYPE_CHECKING, Any, Mapping, Optional, Tuple, cast
 
 import httpx
 import pytest
@@ -119,7 +119,7 @@ async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
 
     # TODO: extract this
     # can't use mocker as init methods must return None and mocker requires returning a value
-    def mock___init__(self: httpx.AsyncClient, *args: object, **kwargs: object) -> None:
+    def mock___init__(self: httpx.AsyncClient, *args: Any, **kwargs: Any) -> None:
         nonlocal captured
         captured = (args, kwargs)
 

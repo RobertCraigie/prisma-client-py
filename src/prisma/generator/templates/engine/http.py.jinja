@@ -27,7 +27,7 @@ class HTTPEngine(AbstractEngine):
         self,
         url: Optional[str],
         headers: Optional[Dict[str, str]] = None,
-        **kwargs: object,
+        **kwargs: Any,
     ) -> None:
         self.url = url
         self.session = HTTP(**kwargs)
