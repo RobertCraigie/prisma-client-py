@@ -586,9 +586,8 @@ class Field(BaseModel):
         kind = values.get('kind')
         type_ = values.get('type')
 
-        if kind == 'scalar':
-            if type_ is not None and type_ not in TYPE_MAPPING:
-                raise ValueError(f'Unsupported scalar field type: {type_}')
+        if kind == 'scalar' and type_ is not None and type_ not in TYPE_MAPPING:
+            raise ValueError(f'Unsupported scalar field type: {type_}')
 
         return values
 
@@ -734,7 +733,7 @@ class Field(BaseModel):
         return self.python_type
 
     def check_supported_scalar_list_type(self) -> None:
-        if not self.type in FILTER_TYPES and self.kind != 'enum':
+        if self.type not in FILTER_TYPES and self.kind != 'enum':
             raise UnsupportedListTypeError(self.type)
 
     def get_relational_model(self) -> Optional['Model']:
