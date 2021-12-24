@@ -6,7 +6,7 @@ async def main(client: Client) -> None:
     reveal_type(user)  # T: User | None
     assert user is not None
 
-    for post in user.posts:  # E: Object of type "None" cannot be used as iterable value
+    for _ in user.posts:  # E: Object of type "None" cannot be used as iterable value
         ...
 
     assert user.posts is not None

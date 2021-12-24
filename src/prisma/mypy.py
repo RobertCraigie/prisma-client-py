@@ -155,7 +155,9 @@ class PrismaPlugin(Plugin):
             if self.config.warn_parsing_errors:
                 # TODO: add more details
                 # e.g. "include" to "find_unique" of "UserActions"
-                err_ctx = exc.context if isinstance(exc, UnparsedExpression) else include_expr # pylint: disable=no-member
+                err_ctx = (
+                    exc.context if isinstance(exc, UnparsedExpression) else include_expr
+                )  # pylint: disable=no-member
                 error_unable_to_parse(
                     ctx.api,
                     err_ctx,
