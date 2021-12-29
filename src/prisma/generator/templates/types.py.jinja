@@ -1,6 +1,7 @@
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import recursive_types, active_provider with context %}
 # -- template types.py.jinja --
+import httpx
 from .utils import _NoneType
 
 
@@ -47,6 +48,18 @@ class _DatasourceOverrideOptional(TypedDict, total=False):
 
 class DatasourceOverride(_DatasourceOverrideOptional):
     url: str
+
+
+# NOTE: we don't support some options as their type hints are not publicly exposed
+# https://github.com/encode/httpx/discussions/1977
+class HttpConfig(TypedDict, total=False):
+    app: Callable[[Mapping[str, Any], Any], Any]
+    http1: bool
+    http2: bool
+    limits: httpx.Limits
+    timeout: Union[float, httpx.Timeout]
+    trust_env: bool
+    max_redirects: int
 
 
 # types that can be serialized to json by our query builder

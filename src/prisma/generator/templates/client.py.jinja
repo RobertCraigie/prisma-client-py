@@ -5,7 +5,7 @@ import warnings
 from types import TracebackType
 
 from . import types, models, errors, actions
-from .types import DatasourceOverride
+from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder, dumps
@@ -124,6 +124,7 @@ class Client:
         auto_register: bool = False,
         datasource: Optional[DatasourceOverride] = None,
         connect_timeout: int = 10,
+        http: Optional[HttpConfig] = None,
     ) -> None:
         {% for model in dmmf.datamodel.models %}
         {% if recursive_types %}
@@ -137,6 +138,7 @@ class Client:
         self._log_queries = log_queries
         self._datasource = datasource
         self._connect_timeout = connect_timeout
+        self._http_config: HttpConfig = http or {}
         self._tx_id: Optional[str] = None
 
         if use_dotenv:
@@ -325,9 +327,9 @@ class Client:
 
         return new
 
-    def _create_engine(self, dml: str) -> AbstractEngine:
+    def _create_engine(self, dml: str = SCHEMA) -> AbstractEngine:
         if ENGINE_TYPE == EngineType.binary:
-            return QueryEngine(dml=dml, log_queries=self._log_queries)
+            return QueryEngine(dml=dml, log_queries=self._log_queries, **self._http_config)
 
         raise NotImplementedError(f'Unsupported engine type: {ENGINE_TYPE}')
 
