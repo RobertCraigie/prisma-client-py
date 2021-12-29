@@ -426,7 +426,6 @@ class EnumValue(BaseModel):
 
 class Model(BaseModel):
     name: str
-    is_embedded: bool = FieldInfo(alias='isEmbedded')
     db_name: Optional[str] = FieldInfo(alias='dbName')
     is_generated: bool = FieldInfo(alias='isGenerated')
     compound_primary_key: Optional['PrimaryKey'] = FieldInfo(alias='primaryKey')
