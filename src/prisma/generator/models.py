@@ -586,8 +586,9 @@ class Field(BaseModel):
         kind = values.get('kind')
         type_ = values.get('type')
 
-        if kind == 'scalar' and type_ is not None and type_ not in TYPE_MAPPING:
-            raise ValueError(f'Unsupported scalar field type: {type_}')
+        if kind == 'scalar':
+            if type_ is not None and type_ not in TYPE_MAPPING:
+                raise ValueError(f'Unsupported scalar field type: {type_}')
 
         return values
 

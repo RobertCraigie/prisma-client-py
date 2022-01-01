@@ -9,7 +9,11 @@ class TemplateError(PrismaError):
 
 class CompoundConstraintError(ValueError):
     def __init__(self, constraint: Union['PrimaryKey', 'UniqueIndex']) -> None:
-        annotation = '@@id' if isinstance(constraint, PrimaryKey) else '@@unique'
+        if isinstance(constraint, PrimaryKey):
+            annotation = '@@id'
+        else:
+            annotation = '@@unique'
+
         super().__init__(
             f'Compound constraint with name: {constraint.name} is already used as a name for a field; '
             'Please choose a different name. For example: \n'
