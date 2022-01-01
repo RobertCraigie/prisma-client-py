@@ -1,5 +1,6 @@
 import json
 from enum import Enum
+from pathlib import Path
 from itertools import chain
 from typing import Optional, Iterator, Dict, Any, Callable, Generator, Tuple, Type
 
@@ -13,7 +14,7 @@ from ..utils import Testdir, Runner
 
 
 # all these tests simply ensure the correct config is being parsed by generator.run,
-# as each config option is individually tested elsehwere we can be sure that each
+# as each config option is individually tested elsewwere we can be sure that each
 # config option results in the intended output
 
 # TODO: test watch option
@@ -152,10 +153,34 @@ def test_partials_option(
         if target is None:
             assert partial_type_generator is None
         else:
-            assert partial_type_generator['spec'] == target
+            actual = Path(partial_type_generator['spec']).absolute()
+            assert actual == Path(target).absolute()
 
     def partials() -> None:  # mark: filedef
         pass
 
     testdir.make_from_function(partials, name='partials.py')
+    run_test(runner, testdir, argument, options, do_assert)
+
+
+@pytest.mark.parametrize(
+    'target,argument,options',
+    [
+        (5, None, None),  # default
+        (3, None, 'recursive_type_depth = 3'),  # ensure uses schema property
+        (-1, '-t -1', 'recursive_type_depth = 3'),  # ensure overrides
+    ],
+)
+def test_type_depth_option(
+    testdir: Testdir,
+    runner: Runner,
+    target: str,
+    argument: Optional[str],
+    options: Optional[str],
+) -> None:
+    """recursive_type_depth option is overrided correctly"""
+
+    def do_assert(data: Dict[str, Any]) -> None:
+        assert data['generator']['config']['recursive_type_depth'] == target
+
     run_test(runner, testdir, argument, options, do_assert)

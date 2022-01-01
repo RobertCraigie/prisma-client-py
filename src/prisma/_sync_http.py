@@ -16,6 +16,7 @@ class HTTP(AbstractHTTP[httpx.Client, httpx.Response]):
 
     def download(self, url: str, dest: str) -> None:
         with self.session.stream('GET', url, timeout=None) as resp:
+            resp.raise_for_status()
             with open(dest, 'wb') as fd:
                 for chunk in resp.iter_bytes():
                     fd.write(chunk)
@@ -24,7 +25,7 @@ class HTTP(AbstractHTTP[httpx.Client, httpx.Response]):
         return Response(self.session.request(method, url, **kwargs))
 
     def open(self) -> None:
-        self.session = httpx.Client()
+        self.session = httpx.Client(**self.session_kwargs)
 
     def close(self) -> None:
         if not self.closed:
@@ -48,5 +49,5 @@ class Response(AbstractResponse[httpx.Response]):
     def json(self, **kwargs: Any) -> Any:
         return self.original.json(**kwargs)
 
-    def text(self, **kwargs: Any) -> Any:
+    def text(self, **kwargs: Any) -> str:
         return self.original.content.decode(**kwargs)

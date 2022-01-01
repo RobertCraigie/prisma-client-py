@@ -35,7 +35,7 @@ Note that you will have to run the activation command on every new shell instanc
 <!-- TODO: show how to setup a synchronous as well and explain the difference -->
 
 ```sh
-pip install prisma-client
+pip install prisma
 ```
 
 4) Prepare your database schema in a `schema.prisma` file.

@@ -254,6 +254,9 @@ post = await client.post.find_first(
 
 #### String Fields
 
+!!! warning
+    Case insensitive filtering is only available on PostgreSQL and MongoDB
+
 ```py
 post = await client.post.find_first(
     where={
@@ -270,9 +273,11 @@ post = await client.post.find_first(
             'startswith': 'must start with string',
             'endswith': 'must end with string',
             'in': ['find_string_1', 'find_string_2'],
+            'mode': 'insensitive',
             'not': {
                 # recursive type
                 'contains': 'string must not be present',
+                'mode': 'default',
                 ...
             },
         },
@@ -392,6 +397,47 @@ user = await client.user.find_first(
             'not': Json(['foo']),
         }
     }
+)
+```
+
+#### Bytes Fields
+
+!!! note
+    Bytes fields are encoded to and from [Base64](https://en.wikipedia.org/wiki/Base64)
+
+```py
+from prisma import Base64
+
+profile = await client.profile.find_first(
+    where={
+        'image': Base64.encode(b'my binary data'),
+        # or
+        'image': {
+            'equals': Base64.encode(b'my binary data'),
+            'not': Base64(b'WW91IGZvdW5kIGFuIGVhc3RlciBlZ2chIExldCBAUm9iZXJ0Q3JhaWdpZSBrbm93IDop'),
+        },
+    },
+)
+```
+
+#### Lists fields
+
+!!! warning
+    Scalar list fields are only supported on PostgreSQL and MongoDB
+
+Every scalar type can also be defined as a list, for example:
+
+```py
+user = await client.user.find_first(
+    where={
+        'emails': {
+            # only one of the following fields is allowed at the same time
+            'has': 'robert@craigie.dev',
+            'has_every': ['email1', 'email2'],
+            'has_some': ['email3', 'email4'],
+            'is_empty': True,
+        },
+    },
 )
 ```
 
@@ -590,6 +636,26 @@ user = await client.user.update(
             'divide': 3.0,
         },
     },
+)
+```
+
+### Updating List Fields
+
+!!! warning
+    Scalar list fields are only supported on PostgreSQL and MongoDB
+
+```py
+user = await client.user.update(
+    where={
+        'id': 'cksc9lp7w0014f08zdkz0mdnn',
+    },
+    data={
+        'email': {
+            'set': ['robert@craigie.dev', 'robert@example.com'],
+            # or
+            'push': ['robert@example.com'],
+        },
+    }
 )
 ```
 

@@ -8,7 +8,7 @@ from tests.utils import Runner
 
 HASH = re.compile(r'[a-f0-9]{40}')
 PLACEHOLDER = re.compile(r'.*')
-SEMANTIC_VERSION = re.compile(r'(\d?\d\.){2}\d?\d')
+SEMANTIC_VERSION = re.compile(r'(\d?\d\.){2}\d?\da?')
 PATTERN = re.compile(
     f'prisma               : (?P<prisma>{SEMANTIC_VERSION.pattern})\n'
     f'prisma client python : (?P<prisma_client_python>{SEMANTIC_VERSION.pattern})\n'

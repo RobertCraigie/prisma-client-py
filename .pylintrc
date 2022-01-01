@@ -27,6 +27,9 @@ disable =
   # useless
   missing-kwoa,
 
+  # false positives and pyright catches these anyway
+  no-member,
+
   # this should only trigger for tests and I don't care about duplicating code for tests
   duplicate-code,
 
@@ -37,6 +40,9 @@ disable =
   # TODO: re-enable this at some point
   missing-docstring,
 
+  # TODO: remove these, required due to bad design
+  cyclic-import,
+  wrong-import-position,
 
 [MASTER]
 extension-pkg-whitelist =
@@ -69,6 +75,7 @@ callbacks =
   plugin,
   _hook,
   mock_,
+  _patched_,
 
 
 [SIMILARITIES]

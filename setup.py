@@ -33,7 +33,7 @@ extras = {
 
 
 setup(
-    name='prisma-client',
+    name='prisma',
     version=version,
     author='Robert Craigie',
     author_email='robert@craigie.dev',
@@ -76,15 +76,17 @@ setup(
         'postgresql',
     ],
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Typing :: Typed',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Database :: Database Engines/Servers',
+        'Topic :: Database :: Front-Ends',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ],
 )

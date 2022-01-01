@@ -5,8 +5,8 @@ from contextvars import ContextVar
 
 import pytest
 
-from prisma import Client
-from prisma.utils import async_run
+from prisma import Client, register
+from prisma.utils import async_run, get_or_create_event_loop
 
 
 client_ctx: ContextVar['Client'] = ContextVar('client_ctx', default=Client())
@@ -22,7 +22,12 @@ def client_fixture() -> Client:
 
 @pytest.fixture(scope='session')
 def event_loop() -> asyncio.AbstractEventLoop:
-    return asyncio.get_event_loop()
+    return get_or_create_event_loop()
+
+
+@pytest.fixture(autouse=True, scope='session')
+def register_client_fixture() -> None:
+    register(client_ctx.get())
 
 
 def pytest_runtest_setup(item: pytest.Function) -> None:

@@ -13,6 +13,7 @@ from ...generator.models import InterfaceChoices
 
 ARG_TO_CONFIG_KEY = {
     'partials': 'partial_type_generator',
+    'type_depth': 'recursive_type_depth',
 }
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -30,6 +31,12 @@ log: logging.Logger = logging.getLogger(__name__)
     '--partials',
     type=PathlibPath(exists=True, readable=True),
     help='Partial type generator location',
+)
+@click.option(
+    '-t',
+    '--type-depth',
+    type=int,
+    help='Depth to generate pseudo-recursive types to; -1 signifies fully recursive types',
 )
 def cli(schema: Optional[Path], watch: bool, **kwargs: Any) -> None:
     """Generate prisma artifacts with modified config options"""

@@ -1,6 +1,7 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import recursive_types with context %}
+{% from '_utils.py.jinja' import recursive_types, active_provider with context %}
 # -- template types.py.jinja --
+import httpx
 from .utils import _NoneType
 
 
@@ -36,7 +37,30 @@ from .utils import _NoneType
 {% endmacro %}
 
 
+SortMode = Literal['default', 'insensitive']
 SortOrder = Literal['asc', 'desc']
+
+
+class _DatasourceOverrideOptional(TypedDict, total=False):
+    env: str
+    name: str
+
+
+class DatasourceOverride(_DatasourceOverrideOptional):
+    url: str
+
+
+# NOTE: we don't support some options as their type hints are not publicly exposed
+# https://github.com/encode/httpx/discussions/1977
+class HttpConfig(TypedDict, total=False):
+    app: Callable[[Mapping[str, Any], Any], Any]
+    http1: bool
+    http2: bool
+    limits: httpx.Limits
+    timeout: Union[float, httpx.Timeout]
+    trust_env: bool
+    max_redirects: int
+
 
 # types that can be serialized to json by our query builder
 {% if recursive_types %}
@@ -88,6 +112,9 @@ Serializable = Union[
         'in': List[str],
         {%+ if next != '' -%}
             'not': Union[str, '{{ next }}'],
+        {% endif %}
+        {%+ if active_provider in ['postgresql', 'mongodb'] -%}
+            'mode': SortMode,
         {% endif %}
     },
     total=False,
@@ -168,6 +195,19 @@ BigIntFilter = IntFilter
 )
 {% endcall %}
 
+{% call(name, next, iteration) recursive('BytesFilter') %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': 'fields.Base64',
+        {%+ if next != '' -%}
+            'not': Union['fields.Base64', '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
+{% endcall %}
+
 # TODO: preview feature for improving JSON filtering
 JsonFilter = TypedDict(
     'JsonFilter',
@@ -235,6 +275,51 @@ AtomicIntInput = Union[
 ]
 AtomicBigIntInput = AtomicIntInput
 
+{% for type, python_type in get_list_types() %}
+class _{{ type }}ListFilterEqualsInput(TypedDict):
+    equals: Optional[List[{{ python_type }}]]
+
+
+class _{{ type }}ListFilterHasInput(TypedDict):
+    has: {{ python_type }}
+
+
+class _{{ type }}ListFilterHasEveryInput(TypedDict):
+    has_every: List[{{ python_type }}]
+
+
+class _{{ type }}ListFilterHasSomeInput(TypedDict):
+    has_some: List[{{ python_type }}]
+
+
+class _{{ type }}ListFilterIsEmptyInput(TypedDict):
+    is_empty: bool
+
+
+{{ type }}ListFilter = Union[
+    _{{ type }}ListFilterHasInput,
+    _{{ type }}ListFilterEqualsInput,
+    _{{ type }}ListFilterHasSomeInput,
+    _{{ type }}ListFilterIsEmptyInput,
+    _{{ type }}ListFilterHasEveryInput,
+]
+
+
+class _{{ type }}ListUpdateSet(TypedDict):
+    set: List[{{ python_type }}]
+
+
+class _{{ type }}ListUpdatePush(TypedDict):
+    push: List[{{ python_type }}]
+
+
+{{ type }}ListUpdate = Union[
+    List[{{ python_type }}],
+    _{{ type }}ListUpdateSet,
+    _{{ type }}ListUpdatePush,
+]
+
+{% endfor %}
 
 {% for model in dmmf.datamodel.models %}
 # {{ model.name }} types
@@ -288,14 +373,38 @@ class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=Fal
     connect: Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]
 
 
-class {{ model.name }}WhereUniqueInput(TypedDict, total=False):
-    """Unique {{ model.name }} arguments for searching"""
-    {% for field in model.all_fields %}
-        {%- if field.is_unique or field.is_id -%}
-            {{'    '}}{{ field.name }}: {{ field.python_type }}
-        {% endif %}
+{% macro render_type(type) %}
+{# It is important that we render subtypes first so that references can be resolved correctly #}
+{% for subtype in type.subtypes %}
+{{ render_type(subtype) }}
+{% endfor %}
+{% if type.kind == 'alias' %}
+{{ type.name }} = {{ type.to }}
+{% elif type.kind == 'union' %}
+{{ type.name }} = Union[
+    {% for subtype in type.subtypes %}
+    '{{ subtype.name }}',
     {% endfor %}
+]
+{% elif type.kind == 'typeddict' %}
+{# We use the old syntax for defined TypedDicts so that fields that shadow keywords #}
+{# can be defined, e.g. 'not' #}
+{{ type.name }} = TypedDict(
+    '{{ type.name }}',
+    {
+        {% for field, subtype in type.fields.items() %}
+        '{{ field }}': {{ type_as_string(subtype) }},
+        {% endfor %}
+    },
+    total={{ type.total }}
+)
+{% else %}
+{{ raise_err('Unhandled type kind: %s' % type.kind) }}
+{% endif %}
+{% endmacro %}
 
+{% set where_unique = type_schema.get_model(model.name).where_unique %}
+{{ render_type(where_unique) }}
 
 class {{ model.name }}UpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
@@ -362,7 +471,7 @@ class {{ model.name }}OrderByInput(TypedDict, total=False):
 {% else %}
 # Dict[str, Any] is a mypy limitation
 # see https://github.com/RobertCraigie/prisma-client-py/issues/45
-# switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/latest/limitations/
+# switch to pyright for improved types, see https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/
     {% set where_input_type = 'Dict[str, Any]' %}
 {% endif %}
 
@@ -443,6 +552,29 @@ class {{ current }}(TypedDict, total=False):
     NOT: List['{{ next }}']
     {% endif %}
 {% endcall %}
+
+
+{{ model.name }}CountAggregateInput = TypedDict(
+    '{{ model.name }}CountAggregateInput',
+    {
+        {% for field in model.scalar_fields %}
+        '{{ field.name }}': bool,
+        {% endfor %}
+        '_all': bool,
+    },
+    total=False,
+)
+
+{{ model.name }}CountAggregateOutput = TypedDict(
+    '{{ model.name }}CountAggregateOutput',
+    {
+        {% for field in model.scalar_fields %}
+        '{{ field.name }}': int,
+        {% endfor %}
+        '_all': int,
+    },
+    total=False,
+)
 
 
 {{ model.name }}Keys = Literal[

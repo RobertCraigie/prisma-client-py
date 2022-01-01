@@ -10,7 +10,7 @@ from pydantic.decorator import validate_arguments
 from pydantic.typing import is_typeddict
 from jinja2.debug import tb_set_next
 
-from ._types import Protocol, AnyCallableT, runtime_checkable
+from ._types import Protocol, CallableT, runtime_checkable
 
 
 __all__ = (
@@ -111,7 +111,7 @@ def disable_validation() -> Iterator[None]:
         _validation_enabled.set(enabled)
 
 
-def lazy_validate_arguments(func: AnyCallableT) -> AnyCallableT:
+def lazy_validate_arguments(func: CallableT) -> CallableT:
     """Wrapper over pydantic's `@validate_arguments` decorator with some modifications.
 
     - internal BaseModel is only built when needed
@@ -140,7 +140,7 @@ def lazy_validate_arguments(func: AnyCallableT) -> AnyCallableT:
 
         return func(*args, **kwargs)
 
-    return cast(AnyCallableT, wrapper)
+    return cast(CallableT, wrapper)
 
 
 def _maybe_rewrite_tb() -> None:

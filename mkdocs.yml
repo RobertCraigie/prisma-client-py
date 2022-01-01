@@ -25,8 +25,8 @@ theme:
   features:
     - navigation.tabs
     - navigation.tabs.sticky
-  logo: 'logo.svg'
-  favicon: 'favicon.png'
+  logo: "logo.svg"
+  favicon: "favicon.png"
   font:
     text: Roboto
     code: Roboto Mono
@@ -48,22 +48,25 @@ extra_javascript:
 nav:
   - Home: index.md
   - Getting Started:
-    - Setup: getting_started/setup.md
-    - Type Safety: getting_started/type-safety.md
-    - Quick Start: getting_started/quickstart.md
-    - Advanced Usage: getting_started/advanced.md
+      - Setup: getting_started/setup.md
+      - Type Safety: getting_started/type-safety.md
+      - Quick Start: getting_started/quickstart.md
+      - Advanced Usage: getting_started/advanced.md
   - Reference:
-    - Query Operations: reference/operations.md
-    - Batching Queries: reference/batching.md
-    - Partial Types: reference/partials.md
-    - Type Checkers:
-      - Pyright: reference/type_checkers/pyright.md
-      - Mypy: reference/type_checkers/mypy.md
-    - Limitations: reference/limitations.md
-    - Configuration: reference/config.md
-    - Command Line: reference/command-line.md
-    - Logging: reference/logging.md
-    - Partial Types: reference/partial-types.md
+      - Query Operations: reference/operations.md
+      - Client: reference/client.md
+      - Model Based Access: reference/model-actions.md
+      - Batching Queries: reference/batching.md
+      - Partial Types: reference/partials.md
+      - Type Checkers:
+          - Pyright: reference/type_checkers/pyright.md
+          - Mypy: reference/type_checkers/mypy.md
+      - Limitations: reference/limitations.md
+      - Configuration: reference/config.md
+      - Command Line: reference/command-line.md
+      - Custom Generators: reference/custom-generators.md
+      - Logging: reference/logging.md
+      - Partial Types: reference/partial-types.md
   - Contributing:
-    - How to Contribute: contributing/contributing.md
-    - Architecture: contributing/architecture.md
+      - How to Contribute: contributing/contributing.md
+      - Architecture: contributing/architecture.md

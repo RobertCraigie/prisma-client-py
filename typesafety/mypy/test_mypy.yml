@@ -55,8 +55,8 @@
     async def test_find_unique_where_incorrect_inputs(client: Client) -> None:
       await client.post.find_unique()  # E: Missing positional argument "where" in call to "find_unique" of "PostActions"  [call-arg]
 
-      await client.post.find_unique({'published': False})  # E: Extra key "published" for TypedDict "PostWhereUniqueInput"  [typeddict-item]
-      await client.post.find_unique({'title': 'Hello, world'})  # E: Extra key "title" for TypedDict "PostWhereUniqueInput"  [typeddict-item]
+      await client.post.find_unique({'published': False})  # E: Extra key "published" for TypedDict "_PostWhereUnique_id_Input"  [typeddict-item]
+      await client.post.find_unique({'title': 'Hello, world'})  # E: Extra key "title" for TypedDict "_PostWhereUnique_id_Input"  [typeddict-item]
 
       await client.post.find_unique({'id': 2})  # E: Incompatible types (expression has type "int", TypedDict item "id" has type "str")  [typeddict-item]
 
@@ -70,18 +70,6 @@
         reveal_type(post.published)  # N: Revealed type is "builtins.bool"
         reveal_type(post.title.lower())  # N: Revealed type is "builtins.str"
         oops = post.oops  # E: "Post" has no attribute "oops"  [attr-defined]
-
-    async def test_find_unique_dynamic_where(client: Client) -> None:
-      client = Client()
-
-      data: PostWhereUniqueInput = {}
-
-      if True:
-        data['id'] = '983293asdsad'
-        data['invalid'] = True  # E: TypedDict "PostWhereUniqueInput" has no key "invalid"  [typeddict-item]
-
-      post = await client.post.find_unique(data)
-      reveal_type(post)  # N: Revealed type is "Union[prisma.models.Post, None]"
 
     async def test_include_removes_optional(client: Client) -> None:
       user = await client.user.find_unique({'id': '1'}, include={'posts': True})
@@ -227,3 +215,14 @@
 
     def test_validator() -> None:
       reveal_type(validate(PostCreateInput, {}))  # N: Revealed type is "prisma.types.PostCreateInput*"
+
+    async def test_count_select(client: Client) -> None:
+      count = await client.post.count()
+      reveal_type(count)  # N: Revealed type is "builtins.int*"
+
+      # NOTE: we can't just reveal_type(results) as mypy prints an overly verbose type, e.g.
+      # TypedDict('prisma.types.PostCountAggregateOutput', {'id'?: builtins.int})
+      results = await client.post.count(select={'desc': True})
+      desc_count = results.get('desc')
+      if desc_count is not None:
+        reveal_type(desc_count)  # N: Revealed type is "builtins.int"

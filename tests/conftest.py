@@ -3,40 +3,44 @@ import os
 import sys
 import asyncio
 import inspect
-from typing import Any, List, Iterator, TYPE_CHECKING
-from contextvars import ContextVar
+from typing import List, Iterator, TYPE_CHECKING
 
 import pytest
 
 import prisma
 from prisma import Client
 from prisma.cli import setup_logging
+from prisma.testing import reset_client
+from prisma.utils import get_or_create_event_loop
 
-from .utils import async_run, Runner, Testdir
+from .utils import Runner, Testdir
 
 
 if TYPE_CHECKING:
     from _pytest.config import Config
+    from _pytest.fixtures import FixtureRequest
     from _pytest.monkeypatch import MonkeyPatch
     from _pytest.pytester import Testdir as PytestTestdir
 
 
 pytest_plugins = ['pytester']
-client_ctx: ContextVar['Client'] = ContextVar('client_ctx', default=Client())
 LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
 
 
+prisma.register(Client())
+
+
 @pytest.fixture(name='client', scope='session')
-def client_fixture() -> prisma.Client:
-    client = client_ctx.get()
-    async_run(client.connect())
-    async_run(cleanup_client(client))
+async def client_fixture() -> Client:
+    client = prisma.get_client()
+    await client.connect()
+    await cleanup_client(client)
     return client
 
 
 @pytest.fixture(scope='session')
 def event_loop() -> asyncio.AbstractEventLoop:
-    return asyncio.get_event_loop()
+    return get_or_create_event_loop()
 
 
 @pytest.fixture()
@@ -73,25 +77,44 @@ def pytest_collection_modifyitems(
     items.sort(key=lambda item: item.__class__.__name__ == 'IntegrationTestItem')
 
 
-def pytest_runtest_setup(item: pytest.Function) -> None:
-    if not has_client_fixture(item) or marked_persist_data(item):
+@pytest.fixture(name='patch_prisma', autouse=True)
+def patch_prisma_fixture(request: 'FixtureRequest') -> Iterator[None]:
+    if request_has_client(request):
+        yield
+    else:
+
+        def _disable_access() -> None:
+            raise RuntimeError(
+                'Tests that access the prisma client must be decorated with: '
+                '@pytest.mark.prisma'
+            )
+
+        with reset_client(_disable_access):  # type: ignore
+            yield
+
+
+@pytest.fixture(name='setup_client', autouse=True)
+async def setup_client_fixture(request: 'FixtureRequest') -> None:
+    if not request_has_client(request):
         return
 
-    client = client_ctx.get()
-    if client.is_connected():
-        async_run(cleanup_client(client))
+    item = request.node
+    if item.get_closest_marker('persist_data') is not None:
+        return
+
+    client = prisma.get_client()
+    if not client.is_connected():  # pragma: no cover
+        await client.connect()
+
+    await cleanup_client(client)
 
 
-def has_client_fixture(item: Any) -> bool:
-    # TODO: more strict check
-    return hasattr(item, 'fixturenames') and 'client' in item.fixturenames
-
-
-def marked_persist_data(item: pytest.Function) -> bool:
-    for marker in item.iter_markers():
-        if marker.name == 'persist_data':
-            return True
-    return False
+def request_has_client(request: 'FixtureRequest') -> bool:
+    """Return whether or not the current request uses the prisma client"""
+    return (
+        request.node.get_closest_marker('prisma') is not None
+        or 'client' in request.fixturenames
+    )
 
 
 async def cleanup_client(client: Client) -> None:

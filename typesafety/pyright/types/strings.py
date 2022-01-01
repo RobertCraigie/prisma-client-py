@@ -43,6 +43,7 @@ async def filtering(client: Client) -> None:
                 'contains': 'foo',
                 'startswith': 'bar',
                 'endswith': 'baz',
+                'mode': 'insensitive',
                 'not': {
                     'equals': 'foo',
                     'in': ['one', 'two'],
@@ -54,6 +55,7 @@ async def filtering(client: Client) -> None:
                     'contains': 'foo',
                     'startswith': 'bar',
                     'endswith': 'baz',
+                    'mode': 'default',
                     'not': {
                         'equals': 'ten',
                     },
@@ -135,6 +137,13 @@ async def filtering(client: Client) -> None:
         where={  # E: Argument of type "dict[str, dict[str, int]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
             'string': {
                 'endswith': 1,
+            },
+        },
+    )
+    await client.types.find_first(
+        where={  # E: Argument of type "dict[str, dict[str, str]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
+            'string': {
+                'mode': 'foo',
             },
         },
     )

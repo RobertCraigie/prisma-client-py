@@ -1,18 +1,38 @@
 {% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import recursive_types with context %}
 # -- template models.py.jinja --
 import os
-from pydantic import BaseConfig, BaseModel, Field
+import warnings
+from pydantic import BaseConfig, BaseModel, Field, validator
 
 from . import types, enums, errors, fields
+from ._types import BaseModelT
+from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
 
 
 class Config(BaseConfig):
     use_enum_values: bool = True
+    arbitrary_types_allowed: bool = True
     allow_population_by_field_name: bool = True
+    json_encoders: Dict[Type[Any], Any] = {
+        fields.Base64: serialize_base64,
+    }
 
 
 _created_partial_types: Set[str] = set()
+
+
+def _warn_subclassing(new_model: str, base_model: str) -> None:
+    message = (
+        'Subclassing models while using pseudo-recursive types may cause unexpected '
+        'errors when static type checking;\n'
+        'You can disable this warning by generating fully recursive types: \n'
+        'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive\n'
+        'or if that is not possible you can pass warn_subclass=False e.g.\n'
+        f'  class {new_model}(prisma.models.{base_model}, warn_subclass=False):'
+    )
+    warnings.warn(message, errors.UnsupportedSubclassWarning, stacklevel=4)
 
 
 {% for model in dmmf.datamodel.models %}
@@ -27,6 +47,31 @@ class {{ model.name }}(BaseModel):
     {% endfor %}
 
     Config = Config
+
+    {% if recursive_types %}
+    @classmethod
+    def prisma(cls: Type[BaseModelT]) -> 'actions.{{ model.name }}Actions[BaseModelT]':
+        from .client import get_client
+
+        return actions.{{ model.name }}Actions[BaseModelT](get_client(), cls)
+    {% else %}
+    @classmethod
+    def prisma(cls) -> 'actions.{{ model.name }}Actions':
+        from .client import get_client
+
+        return actions.{{ model.name }}Actions(get_client(), cls)
+
+    # take *args and **kwargs so that other metaclasses can define arguments
+    def __init_subclass__(
+        cls,
+        *args: Any,
+        warn_subclass: bool = True,
+        **kwargs: Any,
+    ) -> None:
+        super().__init_subclass__()
+        if warn_subclass:
+            _warn_subclassing(cls.__name__, '{{ model.name }}')
+    {% endif %}
 
     @staticmethod
     def create_partial(
@@ -119,6 +164,13 @@ class {{ model.name }}(BaseModel):
         partial_models_ctx.set(models)
         _created_partial_types.add(name)
 
+    {# TODO: this should be one validator for all bytes types #}
+    {% for field in model.get_fields_of_type('Bytes') %}
+    @validator('{{ field.name }}', pre=True, allow_reuse=True)
+    @classmethod
+    def _prisma_{{ field.name }}_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
+        return fields.Base64._internal_from_prisma(value)
+    {% endfor %}
 
 {% endfor %}
 
@@ -148,7 +200,7 @@ _{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] 
 
 # we have to import ourselves as relation types are namespaced to models
 # e.g. models.Post
-from . import models
+from . import models, actions
 
 # required to support relationships between models
 {% for model in dmmf.datamodel.models %}

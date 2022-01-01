@@ -24,17 +24,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       # TODO: test more python versions
-      max-parallel: 2
       matrix:
         include:
-        - python-version: 3.6
-          tox-env: py36
-        - python-version: 3.7
-          tox-env: py37
-        - python-version: 3.8
-          tox-env: py38
-        - python-version: 3.9
-          tox-env: py39
+          - python-version: 3.6
+            tox-env: py36
+          - python-version: 3.7
+            tox-env: py37
+          - python-version: 3.8
+            tox-env: py38
+          - python-version: 3.9
+            tox-env: py39
+          - python-version: "3.10"
+            tox-env: py310
 
     steps:
       - uses: actions/checkout@v1
@@ -86,10 +87,9 @@ jobs:
     name: typesafety
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 2
       matrix:
         include:
-        - python-version: 3.9
+          - python-version: 3.9
 
     steps:
       - uses: actions/checkout@v1
@@ -119,9 +119,8 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 2
       matrix:
-        python-version: [3.6]
+        python-version: [3.7]
 
     steps:
       - uses: actions/checkout@v1
@@ -152,7 +151,15 @@ jobs:
 
       - name: Check linters
         run: |
-          tox -e lint,report
+          tox -e lint
+
+      - name: Check mypy
+        run: |
+          tox -e mypy
+
+      - name: Create coverage report
+        run: |
+          tox -e report
 
       - name: Upload coverage
         run: |
@@ -166,8 +173,8 @@ jobs:
     strategy:
       matrix:
         include:
-        - python-version: 3.9
-          tox-env: py39
+          - python-version: 3.9
+            tox-env: py39
 
     services:
       postgres:
