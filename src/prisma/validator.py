@@ -130,7 +130,7 @@ def lazy_validate_arguments(func: CallableT) -> CallableT:
         if validator is None:
             validator = cast(FunctionValidator, validate_arguments(func))
 
-        # valide the arguments using pydantic and call the function ourselves so that
+        # validate the arguments using pydantic and call the function ourselves so that
         # we can remove some noise from the error traceback if a validation error ocurrs
         try:
             validator.validate(*args, **kwargs)
