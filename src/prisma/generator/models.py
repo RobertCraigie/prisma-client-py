@@ -308,7 +308,7 @@ class Config(BaseSettings):
     """Custom generator config options."""
 
     interface: InterfaceChoices = InterfaceChoices.asyncio
-    partial_type_generator: Optional[Module]
+    partial_type_generator: Optional[Module] = None
     recursive_type_depth: int = FieldInfo(default=5)
     engine_type: EngineType = FieldInfo(default=EngineType.binary)
 
@@ -367,7 +367,7 @@ class Config(BaseSettings):
     @classmethod
     def partial_type_generator_converter(cls, value: Optional[str]) -> Optional[Module]:
         try:
-            return Module(spec=value)
+            return Module(spec=value)  # type: ignore
         except ValueError:
             if value is None:
                 # no config value passed and the default location was not found
