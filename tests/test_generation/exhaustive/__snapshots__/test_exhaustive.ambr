@@ -13391,7 +13391,7 @@
   from pydantic import BaseConfig, BaseModel, Field, validator
   
   from . import types, enums, errors, fields
-  from ._types import BaseModelT
+  from ._types import BaseModelT, FuncType
   from .builder import serialize_base64
   from .generator import partial_models_ctx, PartialModelField
   
@@ -13400,7 +13400,7 @@
       use_enum_values: bool = True
       arbitrary_types_allowed: bool = True
       allow_population_by_field_name: bool = True
-      json_encoders: Dict[Type[Any], Any] = {
+      json_encoders: Dict[Union[Type[Any], str], FuncType] = {
           fields.Base64: serialize_base64,
       }
   
@@ -41465,7 +41465,7 @@
   from pydantic import BaseConfig, BaseModel, Field, validator
   
   from . import types, enums, errors, fields
-  from ._types import BaseModelT
+  from ._types import BaseModelT, FuncType
   from .builder import serialize_base64
   from .generator import partial_models_ctx, PartialModelField
   
@@ -41474,7 +41474,7 @@
       use_enum_values: bool = True
       arbitrary_types_allowed: bool = True
       allow_population_by_field_name: bool = True
-      json_encoders: Dict[Type[Any], Any] = {
+      json_encoders: Dict[Union[Type[Any], str], FuncType] = {
           fields.Base64: serialize_base64,
       }
   
