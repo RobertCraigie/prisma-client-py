@@ -367,7 +367,7 @@ class Config(BaseSettings):
     @classmethod
     def partial_type_generator_converter(cls, value: Optional[str]) -> Optional[Module]:
         try:
-            return Module(spec=value)  # type: ignore
+            return Module(spec=value)  # pyright: reportGeneralTypeIssues=false
         except ValueError:
             if value is None:
                 # no config value passed and the default location was not found

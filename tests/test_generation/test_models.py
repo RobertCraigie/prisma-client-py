@@ -21,7 +21,7 @@ def test_recursive_type_depth() -> None:
         assert exc.match('Value must equal -1 or be greater than 1.')
 
     with pytest.raises(ValidationError) as exc:
-        Config(recursive_type_depth='a')  # type: ignore
+        Config(recursive_type_depth='a')  # pyright: reportGeneralTypeIssues=false
 
     assert exc.match('value is not a valid integer')
 
