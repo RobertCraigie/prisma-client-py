@@ -35,7 +35,7 @@ user = client.user.find_unique(where={'id': 'user_id'})
 
 ## Partial Type Generator
 
-Custom partial models can be generated along with the prisma client, see [partial types](partial-types.md) for what this means and how to make use of them.
+Custom partial models can be generated along with the prisma client, see [partial types](../getting_started/partial-types.md) for how to make use of partial types.
 
 The script that generates the partial types can be configured using the `partial_type_generator` option which defaults to `prisma/partial_types.py`
 

@@ -5,7 +5,7 @@ This is useful in situations where only certain fields of a model are available 
 
 Partial models are generated to `prisma.partials`.
 
-See [config](config.md#partial-type-generator) for configuration details and the [reference](partials.md) for API documentation.
+See [config](../reference/config.md#partial-type-generator) for configuration details and the [reference](../reference/partials.md) for API documentation.
 
 ## Example
 
@@ -39,6 +39,9 @@ User.create_partial('UserWithProfile', required={'profile'})
 
 # user with an optional name
 User.create_partial('UserWithOptionalName', optional={'name'})
+
+# user without any relational fields (in this case without the profile and posts fields)
+User.create_partial('UserWithoutRelations', exclude_relational_fields=True)
 ```
 Would generate the following partial types
 ```py
@@ -72,6 +75,11 @@ class UserWithOptionalName(BaseModel):
     email: Optional[str]
     posts: Optional[List[models.Post]]
     profile: Optional[models.Profile]
+
+class UserWithoutRelations(BaseModel):
+    id: str
+    name: str
+    email: Optional[str]
 ```
 
 ### Example Usage
