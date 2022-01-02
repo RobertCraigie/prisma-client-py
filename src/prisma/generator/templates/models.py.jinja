@@ -81,6 +81,7 @@ class {{ model.name }}(BaseModel):
         required: Optional[Iterable['types.{{ model.name }}Keys']] = None,
         optional: Optional[Iterable['types.{{ model.name }}Keys']] = None,
         relations: Optional[Mapping['types.{{ model.name }}RelationalFieldKeys', str]] = None,
+        exclude_relational_fields: bool = False,
     ) -> None:
         if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
             raise RuntimeError(
@@ -97,6 +98,11 @@ class {{ model.name }}(BaseModel):
             shared = set(required) & set(optional)
             if shared:
                 raise ValueError(f'Cannot make the same field(s) required and optional {shared}')
+
+        if exclude_relational_fields and relations:
+            raise ValueError(
+                'exclude_relational_fields and relations are mutually exclusive'
+            )
 
         fields: Dict['types.{{ model.name }}Keys', PartialModelField] = {}
 
@@ -126,6 +132,15 @@ class {{ model.name }}(BaseModel):
                 for field in optional:
                     fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
+
+            {% if model.has_relational_fields %}
+            if exclude_relational_fields:
+                fields = {
+                    key: data
+                    for key, data in _{{ model.name }}_fields.items()
+                    if key not in _{{ model.name }}_relational_fields
+                }
+            {% endif %}
 
             if relations:
                 {% if model.has_relational_fields %}
