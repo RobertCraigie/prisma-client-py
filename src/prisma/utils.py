@@ -63,7 +63,7 @@ def temp_env_update(env: Dict[str, str]) -> Iterator[None]:
         os.environ.update(env)
         yield
     finally:
-        for key in env.keys():
+        for key in env:
             os.environ.pop(key, None)
 
         os.environ.update(old)

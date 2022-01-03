@@ -1,13 +1,22 @@
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Mapping, Optional, Tuple, cast
 
+import httpx
 import pytest
 from mock import AsyncMock
 from pytest_mock import MockerFixture
-from prisma import ENGINE_TYPE, Client, get_client, errors, engine
+from prisma import ENGINE_TYPE, Client, get_client, errors
+from prisma.engine.http import HTTPEngine
+from prisma.engine.errors import AlreadyConnectedError
 from prisma.testing import reset_client
 from prisma.cli.prisma import run
+from prisma.types import HttpConfig
 
 from .utils import Testdir, engine_type_to_class
+
+
+if TYPE_CHECKING:
+    from _pytest.monkeypatch import MonkeyPatch
 
 
 @pytest.mark.asyncio
@@ -62,7 +71,7 @@ async def test_context_manager() -> None:
     assert not client.is_connected()
 
     # ensure exceptions are propagated
-    with pytest.raises(engine.errors.AlreadyConnectedError):
+    with pytest.raises(AlreadyConnectedError):
         async with client:
             assert client.is_connected()
             await client.connect()
@@ -99,3 +108,55 @@ async def test_connect_timeout(mocker: MockerFixture) -> None:
 
     await client.connect(timeout=5)
     mocked.assert_called_once_with(timeout=5, datasources=None)
+
+
+@pytest.mark.asyncio
+async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
+    """Custom http options are passed to the HTTPX Client"""
+
+    # work around for a bug in pyright: https://github.com/microsoft/pyright/issues/2757
+    captured = cast(Optional[Tuple[Tuple[object, ...], Mapping[str, object]]], None)
+
+    # TODO: extract this
+    # can't use mocker as init methods must return None and mocker requires returning a value
+    def mock___init__(self: httpx.AsyncClient, *args: Any, **kwargs: Any) -> None:
+        nonlocal captured
+        captured = (args, kwargs)
+
+        # pass to real __init__ method to ensure types passed will actually work at runtime
+        # TODO: ensure passed types match type hints
+        real___init__(self, *args, **kwargs)
+
+    real___init__ = httpx.AsyncClient.__init__
+    monkeypatch.setattr(httpx.AsyncClient, '__init__', mock___init__, raising=True)
+
+    def mock_app(args: Mapping[str, object], data: object) -> object:
+        ...
+
+    async def _test(config: HttpConfig) -> None:
+        client = Client(
+            http=config,
+        )
+        engine = client._create_engine()  # pylint: disable=protected-access
+        assert isinstance(engine, HTTPEngine)
+        engine.session.open()
+        await engine.session.close()
+
+        assert captured is not None
+        assert captured == ((), config)
+
+    await _test({'timeout': 1})
+    await _test({'timeout': httpx.Timeout(5, connect=10, read=30)})
+    await _test({'max_redirects': 1, 'trust_env': True})
+    await _test({'http1': True, 'http2': False})
+    await _test(
+        config={
+            'app': mock_app,
+            'timeout': 200,
+            'http1': True,
+            'http2': False,
+            'limits': httpx.Limits(max_connections=10),
+            'max_redirects': 2,
+            'trust_env': False,
+        },
+    )

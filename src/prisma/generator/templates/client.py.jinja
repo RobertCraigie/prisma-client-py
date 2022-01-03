@@ -4,6 +4,7 @@
 from types import TracebackType
 
 from . import types, models, errors, actions
+from .types import DatasourceOverride, HttpConfig, DataProxyConfig
 from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine, DataProxyEngine
 from .builder import QueryBuilder
@@ -120,10 +121,10 @@ class Client:
         use_dotenv: bool = True,
         log_queries: bool = False,
         auto_register: bool = False,
-        # no idea why this type ignore is required, pyright works correctly, mypy does not
-        datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
+        datasource: Optional[DatasourceOverride] = None,
         connect_timeout: int = 10,
-        proxy: Optional[types.DataProxyConfig] = None,
+        http: Optional[HttpConfig] = None,
+        proxy: Optional[DataProxyConfig] = None,
     ) -> None:
         {% for model in dmmf.datamodel.models %}
         {% if recursive_types %}
@@ -137,6 +138,7 @@ class Client:
         self._log_queries = log_queries
         self._datasource = datasource
         self._connect_timeout = connect_timeout
+        self._http_config: HttpConfig = http or {}
         self._proxy = proxy
 
         if use_dotenv:
@@ -306,6 +308,14 @@ class Client:
 
         raise NotImplementedError(f'Unsupported engine type: {ENGINE_TYPE}')
 
+    @property
+    def _engine_class(self) -> Type[AbstractEngine]:
+        if ENGINE_TYPE == EngineType.binary:
+            return QueryEngine
+        elif ENGINE_TYPE == EngineType.dataproxy:
+            return DataProxyEngine
+        else:  # pragma: no cover
+            raise RuntimeError(f'Unhandled engine type: {ENGINE_TYPE}')
 
     @property
     def _engine(self) -> AbstractEngine:

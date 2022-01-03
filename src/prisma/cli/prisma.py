@@ -32,11 +32,7 @@ def run(
         'PRISMA_HIDE_UPDATE_MESSAGE': 'true',
         'PRISMA_CLI_QUERY_ENGINE_TYPE': 'binary',
     }
-    if env is not None:
-        env = {**default_env, **env}
-    else:
-        env = default_env
-
+    env = {**default_env, **env} if env is not None else default_env
     # ensure the client uses our engine binaries
     for engine in binaries.ENGINES:
         env[engine.env] = str(engine.path.absolute())

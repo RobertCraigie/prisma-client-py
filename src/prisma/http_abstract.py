@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from typing import Any, Dict, Union, Coroutine, Type, TypeVar, Generic, Optional, cast
+from typing import Any, Union, Coroutine, Type, Dict, TypeVar, Generic, Optional, cast
 
 from ._types import Method
 from .utils import _NoneType
@@ -13,9 +13,10 @@ MaybeCoroutine = Union[Coroutine[Any, Any, ReturnType], ReturnType]
 
 
 class AbstractHTTP(ABC, Generic[Session, Response]):
-    # TODO: ParamSpec
     session_kwargs: Dict[str, Any]
 
+    # NOTE: ParamSpec wouldn't be valid here:
+    # https://github.com/microsoft/pyright/issues/2667
     def __init__(self, **kwargs: Any) -> None:
         # NoneType = not used yet
         # None = closed

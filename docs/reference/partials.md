@@ -1,6 +1,6 @@
 # Partial Types
 
-Prisma Client Python exposes an interface for creating partial models at generation time based off of schema-defined models, see [partial-types](partial-types.md) for more information.
+Prisma Client Python exposes an interface for creating partial models at generation time based off of schema-defined models, see [Getting started with partial types](../getting_started/partial-types.md) for more information.
 
 Each model defined in the schema can have partial types generated based off of it. The API looks like this:
 ```py
@@ -12,10 +12,12 @@ class Model:
       exclude: Optional[Iterable['{{ model }}Keys']] = None,
       required: Optional[Iterable['{{ model }}Keys']] = None,
       optional: Optional[Iterable['{{ model }}Keys']] = None,
+      relations: Optional[Mapping['{{ model }}RelationalKeys', str]] = None,
+      exclude_relational_fields: bool = False,
   ) -> None:
       ...
 ```
-where `{{ model }}Keys` is [Literal](https://docs.python.org/3/library/typing.html#typing.Literal) type containing all the fields of the model.
+where `{{ model }}Keys` and `{{ model }}RelationalKeys` are [Literal](https://docs.python.org/3/library/typing.html#typing.Literal) types containing all the fields of the model and all the relational fields of the model respectively.
 
 For example:
 
@@ -30,6 +32,7 @@ model User {
 
 ```py
 UserKeys = Literal['id', 'name', 'posts', 'email']
+UserRelationalKeys = Literal['posts']
 ```
 
 ## Reference
@@ -51,6 +54,12 @@ UserKeys = Literal['id', 'name', 'posts', 'email']
 
 `optional`
 : An iterable of field names that will be marked as optional in the generated model.
+
+`relations`
+: A mapping of relational field names to a custom partial model. (Cannot be used at the same time as `exclude_relational_fields`)
+
+`exclude_relational_fields`
+: A boolean indicating whether or not relational fields should be included in the generated model.
 
 ## Examples
 
@@ -147,4 +156,34 @@ class UserRequiredEmail:
   name: str
   profile: Optional['Profile']
   email: str
+```
+
+### Relations
+
+```py
+from prisma.models import User, Profile
+Profile.create_partial('ProfileWithoutUser', exclude={'user'})
+User.create_partial('UserCustomProfile', relations={'profile': 'ProfileWithoutUser'})
+```
+
+```py
+class UserCustomProfile:
+  id: str
+  name: str
+  profile: Optional['partials.ProfileWithoutUser']
+  email: Optionalstr]
+```
+
+### Excluding Relational Fields
+
+```py
+from prisma.models import User
+User.create_partial('UserWithoutRelations', exclude_relational_fields=True)
+```
+
+```py
+class UserWithoutRelations:
+  id: str
+  name: str
+  email: Optionalstr]
 ```

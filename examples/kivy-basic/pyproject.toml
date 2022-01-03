@@ -1,0 +1,9 @@
+[tool.black]
+skip-string-normalization = true
+
+[tool.pyright]
+include = [
+    "app.py",
+]
+
+typeCheckingMode = "strict"

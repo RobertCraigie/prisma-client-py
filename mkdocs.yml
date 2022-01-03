@@ -52,6 +52,7 @@ nav:
       - Type Safety: getting_started/type-safety.md
       - Quick Start: getting_started/quickstart.md
       - Advanced Usage: getting_started/advanced.md
+      - Partial Types: getting_started/partial-types.md
   - Reference:
       - Query Operations: reference/operations.md
       - Client: reference/client.md
@@ -66,7 +67,6 @@ nav:
       - Command Line: reference/command-line.md
       - Custom Generators: reference/custom-generators.md
       - Logging: reference/logging.md
-      - Partial Types: reference/partial-types.md
   - Contributing:
       - How to Contribute: contributing/contributing.md
       - Architecture: contributing/architecture.md

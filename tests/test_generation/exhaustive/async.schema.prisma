@@ -123,16 +123,17 @@ enum ABeautifulEnum {
 }
 
 model A {
-  email    String  @unique
+  email    String         @unique
   name     String?
-  int      Int     @db.Integer
-  sInt     Int     @db.SmallInt
-  inc_int  Int     @default(autoincrement()) @db.Integer
-  inc_sInt Int     @default(autoincrement()) @db.SmallInt
-  bInt     BigInt  @db.BigInt
-  inc_bInt BigInt  @default(autoincrement()) @db.BigInt
+  int      Int            @db.Integer
+  sInt     Int            @db.SmallInt
+  inc_int  Int            @default(autoincrement()) @db.Integer
+  inc_sInt Int            @default(autoincrement()) @db.SmallInt
+  bInt     BigInt         @db.BigInt
+  inc_bInt BigInt         @default(autoincrement()) @db.BigInt
+  enum     ABeautifulEnum @default(A)
 
-  @@unique([name, email])
+  @@unique([name, email, enum])
 }
 
 model B {

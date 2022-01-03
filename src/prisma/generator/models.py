@@ -112,6 +112,17 @@ def raise_err(msg: str) -> NoReturn:
     raise TemplateError(msg)
 
 
+def type_as_string(typ: str) -> str:
+    """Ensure a type string is wrapped with a string, e.g.
+
+    enums.Role -> 'enums.Role'
+    """
+    # TODO: use this function internally in this module
+    if not typ.startswith('\'') and not typ.startswith('"'):
+        return f'\'{typ}\''
+    return typ
+
+
 def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
     assert spec.origin is not None, 'Cannot serialize module with no origin'
     return spec.origin
@@ -220,7 +231,13 @@ class Data(BaseModel):
         params['type_schema'] = Schema.from_data(self)
 
         # add utility functions
-        for func in [get_list_types, sql_param, clean_multiline, raise_err]:
+        for func in [
+            get_list_types,
+            sql_param,
+            clean_multiline,
+            raise_err,
+            type_as_string,
+        ]:
             params[func.__name__] = func
 
         return params
@@ -291,7 +308,7 @@ class Config(BaseSettings):
     """Custom generator config options."""
 
     interface: InterfaceChoices = InterfaceChoices.asyncio
-    partial_type_generator: Optional[Module]
+    partial_type_generator: Optional[Module] = None
     recursive_type_depth: int = FieldInfo(default=5)
     engine_type: EngineType = FieldInfo(default=EngineType.binary)
 
@@ -350,7 +367,7 @@ class Config(BaseSettings):
     @classmethod
     def partial_type_generator_converter(cls, value: Optional[str]) -> Optional[Module]:
         try:
-            return Module(spec=value)
+            return Module(spec=value)  # pyright: reportGeneralTypeIssues=false
         except ValueError:
             if value is None:
                 # no config value passed and the default location was not found
@@ -407,7 +424,6 @@ class EnumValue(BaseModel):
 
 class Model(BaseModel):
     name: str
-    is_embedded: bool = FieldInfo(alias='isEmbedded')
     db_name: Optional[str] = FieldInfo(alias='dbName')
     is_generated: bool = FieldInfo(alias='isGenerated')
     compound_primary_key: Optional['PrimaryKey'] = FieldInfo(alias='primaryKey')
@@ -715,7 +731,7 @@ class Field(BaseModel):
         return self.python_type
 
     def check_supported_scalar_list_type(self) -> None:
-        if not self.type in FILTER_TYPES and self.kind != 'enum':
+        if self.type not in FILTER_TYPES and self.kind != 'enum':  # pragma: no branch
             raise UnsupportedListTypeError(self.type)
 
     def get_relational_model(self) -> Optional['Model']:
