@@ -13,7 +13,7 @@ Response = TypeVar('Response')
 ReturnType = TypeVar('ReturnType')
 MaybeCoroutine = Union[Coroutine[Any, Any, ReturnType], ReturnType]
 
-DEFAULT_CONFIG = {
+DEFAULT_CONFIG: Dict[str, Any] = {
     'limits': Limits(max_connections=1000),
     'timeout': Timeout(30),
 }
