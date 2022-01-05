@@ -185,5 +185,5 @@ User.create_partial('UserWithoutRelations', exclude_relational_fields=True)
 class UserWithoutRelations:
   id: str
   name: str
-  email: Optionalstr]
+  email: Optional[str]
 ```
