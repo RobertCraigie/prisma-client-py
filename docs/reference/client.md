@@ -76,7 +76,7 @@ finally:
 
 ## HTTP Options
 
-Some of the methods that Prisma Client Python uses to communicate with the underlying Prisma binaries make use of [HTTPX](https://github.com/encode/httpx/) to communicate over HTTP. As such, some [HTTPX Client options](https://www.python-httpx.org/api/#client) are configurable on a per-client basis, this can be especially useful in certain situations where the default timeout of 5 seconds is too little.
+Some of the methods that Prisma Client Python uses to communicate with the underlying Prisma binaries make use of [HTTPX](https://github.com/encode/httpx/) to communicate over HTTP. As such, some [HTTPX Client options](https://www.python-httpx.org/api/#client) are configurable on a per-client basis.
 
 The HTTPX options can be passed to client using the `http` parameter, for example:
 
