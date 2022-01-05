@@ -9,11 +9,15 @@ from pathlib import Path
 from datetime import datetime
 from typing import (
     Any,
+    Callable,
+    Mapping,
     Optional,
     List,
+    Tuple,
     Union,
     Iterator,
     TYPE_CHECKING,
+    cast,
 )
 
 import py
@@ -27,6 +31,9 @@ from prisma._types import FuncType
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
     from _pytest.pytester import RunResult, Testdir as PytestTestdir
+
+
+CapturedArgs = Tuple[Tuple[object, ...], Mapping[str, object]]
 
 
 # as we are generating new modules we need to clear them from
@@ -294,3 +301,28 @@ def escape_path(path: Union[str, Path]) -> str:
         path = str(path.absolute())
 
     return path.replace('\\', '\\\\')
+
+
+def patch_method(
+    patcher: 'MonkeyPatch',
+    obj: object,
+    attr: str,
+    callback: Optional[Callable[..., Any]] = None,
+) -> Callable[[], Optional[CapturedArgs]]:
+    """Helper for patching functions that are incompatible with MonkeyPatch.setattr
+
+    e.g. __init__ methods
+    """
+    # work around for pyright: https://github.com/microsoft/pyright/issues/2757
+    captured = cast(Optional[CapturedArgs], None)
+
+    def wrapper(*args: Any, **kwargs: Any) -> None:
+        nonlocal captured
+        captured = (args[1:], kwargs)
+
+        if callback is not None:
+            callback(real_meth, *args, **kwargs)
+
+    real_meth = getattr(obj, attr)
+    patcher.setattr(obj, attr, wrapper, raising=True)
+    return lambda: captured
