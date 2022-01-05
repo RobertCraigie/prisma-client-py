@@ -1,6 +1,8 @@
 from abc import abstractmethod, ABC
 from typing import Any, Union, Coroutine, Type, Dict, TypeVar, Generic, Optional, cast
 
+from httpx import Limits, Timeout
+
 from ._types import Method
 from .utils import _NoneType
 from .errors import HTTPClientClosedError
@@ -10,6 +12,11 @@ Session = TypeVar('Session')
 Response = TypeVar('Response')
 ReturnType = TypeVar('ReturnType')
 MaybeCoroutine = Union[Coroutine[Any, Any, ReturnType], ReturnType]
+
+DEFAULT_CONFIG: Dict[str, Any] = {
+    'limits': Limits(max_connections=1000),
+    'timeout': Timeout(30),
+}
 
 
 class AbstractHTTP(ABC, Generic[Session, Response]):
@@ -22,7 +29,10 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         # None = closed
         # Session = open
         self._session = _NoneType  # type: Optional[Union[Session, Type[_NoneType]]]
-        self.session_kwargs = kwargs
+        self.session_kwargs = {
+            **DEFAULT_CONFIG,
+            **kwargs,
+        }
 
     @abstractmethod
     def download(self, url: str, dest: str) -> MaybeCoroutine[None]:

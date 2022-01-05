@@ -1,11 +1,18 @@
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import pytest
 import httpx
+
 from prisma.http import HTTP
 from prisma._types import Literal
 from prisma.utils import _NoneType
 from prisma.errors import HTTPClientClosedError
+
+from .utils import patch_method
+
+
+if TYPE_CHECKING:
+    from _pytest.monkeypatch import MonkeyPatch
 
 
 State = Literal['initial', 'open', 'closed']
@@ -55,3 +62,25 @@ async def test_lazy_session_open() -> None:
     assert_session_state(http, 'open')
     await http.close()
     assert_session_state(http, 'closed')
+
+
+@pytest.mark.asyncio
+async def test_httpx_default_config(monkeypatch: 'MonkeyPatch') -> None:
+    """The default timeout is passed to HTTPX"""
+    http = HTTP()
+    assert_session_state(http, 'initial')
+
+    getter = patch_method(monkeypatch, httpx.AsyncClient, '__init__')
+
+    http.open()
+    assert_session_state(http, 'open')
+
+    # hardcode the default config to ensure there are no unintended changes
+    captured = getter()
+    assert captured == (
+        (),
+        {
+            'limits': httpx.Limits(max_connections=1000),
+            'timeout': httpx.Timeout(30),
+        },
+    )
