@@ -22,16 +22,16 @@ model Profile {
 }
 
 model Post {
-  id         String     @id @default(cuid())
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
-  title      String
-  published  Boolean
-  views      Int        @default(0)
-  desc       String?
-  author     User?      @relation(fields: [author_id], references: [id])
-  author_id  String?
-  categories Category[] @relation(references: [id])
+  id          String     @id @default(cuid())
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  title       String
+  published   Boolean
+  views       Int        @default(0)
+  description String?
+  author      User?      @relation(fields: [author_id], references: [id])
+  author_id   String?
+  categories  Category[] @relation(references: [id])
 }
 
 model Category {

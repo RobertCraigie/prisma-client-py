@@ -260,9 +260,9 @@ post = await client.post.find_first(
 ```py
 post = await client.post.find_first(
     where={
-        'desc': 'Must be exact match',
+        'description': 'Must be exact match',
         # or
-        'desc': {
+        'description': {
             'equals': 'example_string',
             'not_in': ['ignore_string_1', 'ignore_string_2'],
             'lt': 'z',
