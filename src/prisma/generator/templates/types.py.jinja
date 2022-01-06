@@ -417,7 +417,7 @@ class {{ model.name }}UpdateInput(TypedDict, total=False):
 
 class {{ model.name }}UpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
-    {% for field in model.all_fields %}
+    {% for field in model.scalar_fields %}
         {%- if not field.is_read_only -%}
             {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.get_update_input_type()) }}
         {% endif %}

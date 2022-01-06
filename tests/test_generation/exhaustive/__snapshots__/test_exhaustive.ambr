@@ -16509,7 +16509,6 @@
       title: str
       content: Optional[str]
       published: bool
-      author: 'UserUpdateOneWithoutRelationsInput'
   
   
   class PostUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -17495,7 +17494,6 @@
       optional_enum: Optional['enums.ABeautifulEnum']
       boolean: bool
       optional_boolean: Optional[bool]
-      posts: 'PostUpdateManyWithoutRelationsInput'
   
   
   class UserUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -18499,7 +18497,6 @@
   class MUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
       id: Union[AtomicIntInput, int]
-      n: 'NUpdateManyWithoutRelationsInput'
       int: Union[AtomicIntInput, int]
       optional_int: Optional[Union[AtomicIntInput, int]]
       float: Union[AtomicFloatInput, float]
@@ -19512,7 +19509,6 @@
   class NUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
       id: Union[AtomicIntInput, int]
-      m: 'MUpdateManyWithoutRelationsInput'
       int: Union[AtomicIntInput, int]
       optional_int: Optional[Union[AtomicIntInput, int]]
       float: Union[AtomicFloatInput, float]
@@ -20535,7 +20531,6 @@
   class OneOptionalUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
       id: Union[AtomicIntInput, int]
-      many: 'ManyRequiredUpdateManyWithoutRelationsInput'
       int: Union[AtomicIntInput, int]
       optional_int: Optional[Union[AtomicIntInput, int]]
       float: Union[AtomicFloatInput, float]
@@ -21542,7 +21537,6 @@
   class ManyRequiredUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
       id: Union[AtomicIntInput, int]
-      one: 'OneOptionalUpdateOneWithoutRelationsInput'
       int: Union[AtomicIntInput, int]
       optional_int: Optional[Union[AtomicIntInput, int]]
       float: Union[AtomicFloatInput, float]
@@ -44703,7 +44697,6 @@
       title: str
       content: Optional[str]
       published: bool
-      author: 'UserUpdateOneWithoutRelationsInput'
   
   
   class PostUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -45689,7 +45682,6 @@
       optional_enum: Optional['enums.ABeautifulEnum']
       boolean: bool
       optional_boolean: Optional[bool]
-      posts: 'PostUpdateManyWithoutRelationsInput'
   
   
   class UserUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -46693,7 +46685,6 @@
   class MUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
       id: Union[AtomicIntInput, int]
-      n: 'NUpdateManyWithoutRelationsInput'
       int: Union[AtomicIntInput, int]
       optional_int: Optional[Union[AtomicIntInput, int]]
       float: Union[AtomicFloatInput, float]
@@ -47706,7 +47697,6 @@
   class NUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
       id: Union[AtomicIntInput, int]
-      m: 'MUpdateManyWithoutRelationsInput'
       int: Union[AtomicIntInput, int]
       optional_int: Optional[Union[AtomicIntInput, int]]
       float: Union[AtomicFloatInput, float]
@@ -48729,7 +48719,6 @@
   class OneOptionalUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
       id: Union[AtomicIntInput, int]
-      many: 'ManyRequiredUpdateManyWithoutRelationsInput'
       int: Union[AtomicIntInput, int]
       optional_int: Optional[Union[AtomicIntInput, int]]
       float: Union[AtomicFloatInput, float]
@@ -49736,7 +49725,6 @@
   class ManyRequiredUpdateManyMutationInput(TypedDict, total=False):
       """Arguments for updating many records"""
       id: Union[AtomicIntInput, int]
-      one: 'OneOptionalUpdateOneWithoutRelationsInput'
       int: Union[AtomicIntInput, int]
       optional_int: Optional[Union[AtomicIntInput, int]]
       float: Union[AtomicFloatInput, float]
