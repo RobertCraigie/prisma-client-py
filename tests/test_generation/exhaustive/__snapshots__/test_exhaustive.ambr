@@ -13260,7 +13260,7 @@
           """Encode bytes into valid Base64"""
           return cls(base64.b64encode(value))
   
-      def decode(self, encoding: str = BASE64_ENCODING) -> bytes:
+      def decode(self) -> bytes:
           """Decode from Base64 to the original bytes object"""
           return base64.b64decode(self._raw)
   
@@ -41448,7 +41448,7 @@
           """Encode bytes into valid Base64"""
           return cls(base64.b64encode(value))
   
-      def decode(self, encoding: str = BASE64_ENCODING) -> bytes:
+      def decode(self) -> bytes:
           """Decode from Base64 to the original bytes object"""
           return base64.b64decode(self._raw)
   
