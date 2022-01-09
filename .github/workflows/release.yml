@@ -129,13 +129,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+
       - name: Install dependencies
         run: |
           sudo -H python3 -m pip install --upgrade pip wheel
           python3 -m pip install -U maturin
 
+      # TODO: probably need to run this for every python version
       - name: Build wheel
         working-directory: ${{ env.working-directory }}
+        env:
+          PYO3_CROSS_LIB_DIR: /opt/python/cp39-cp39/lib
         run: |
           # manylinux
           maturin build --release -o dist --no-sdist \
