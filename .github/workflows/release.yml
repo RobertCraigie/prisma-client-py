@@ -126,6 +126,7 @@ jobs:
         CARGO_HOME: /root/.cargo
     env:
       working-directory: ./src/query-engine
+      LD_LIBRARY_PATH: /opt/python/cp38-cp38/lib
 
     steps:
       - uses: actions/checkout@v2
@@ -151,6 +152,12 @@ jobs:
             --target ${{ matrix.platform.target }} \
             --compatibility musllinux_1_1 \
              --cargo-extra-args="--features vendored-openssl" \
+
+      - name: Upload crash reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: reports
+          path: /tmp/report*.toml
 
       - name: Upload wheel artifacts
         uses: actions/upload-artifact@v2
