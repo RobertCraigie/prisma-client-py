@@ -58,6 +58,10 @@ jobs:
           python -m pip install --upgrade pip wheel
           pip install -U maturin
 
+      - name: Debug
+        run: |
+          openssl --version
+
       - name: Install musl tools
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install -y musl-tools
