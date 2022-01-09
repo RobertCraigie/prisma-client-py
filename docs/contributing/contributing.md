@@ -172,6 +172,14 @@ For writing good test docstrings see [this article](https://jml.io/pages/test-do
 
 For a more specififc test case look through the tests and find one that is similar to what you need, don't be afraid to copy and paste test code.
 
+### Snapshot Tests
+
+We use [syrupy](https://github.com/tophat/syrupy) to manage our test snapshots. You can update the generated snapshots by running tests with `--snapshot-update`, for example:
+
+```
+tox -e py39 -- --snapshot-update tests/test_generation/exhaustive
+```
+
 ### Type Tests
 
 In order to ensure types have been implemented correctly we use [pytest-pyright](https://pytest-pyright.readthedocs.io/) and [pytest-mypy-plugins](https://github.com/TypedDjango/pytest-mypy-plugins).
