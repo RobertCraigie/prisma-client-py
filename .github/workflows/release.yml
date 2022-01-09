@@ -62,6 +62,10 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install -y musl-tools
 
+      - name: Install OpenSSL
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install -y libssl-dev
+
       # Install gnu-tar because BSD tar is buggy
       # https://github.com/actions/cache/issues/403
       - name: Install GNU tar (macOS)
@@ -128,10 +132,20 @@ jobs:
       working-directory: ./src/query-engine
     steps:
       - uses: actions/checkout@v2
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install -U maturin
+
       - name: Build wheel
         working-directory: ${{ env.working-directory }}
         run: |
-          sudo python3 -m pip install maturin
           # manylinux
           maturin build --release -o dist --no-sdist \
             --target ${{ matrix.platform.target }} \
