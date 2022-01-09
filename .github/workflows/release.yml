@@ -154,6 +154,7 @@ jobs:
              --cargo-extra-args="--features vendored-openssl" \
 
       - name: Upload crash reports
+        if: "!success()"
         uses: actions/upload-artifact@v2
         with:
           name: reports
