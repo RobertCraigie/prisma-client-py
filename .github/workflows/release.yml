@@ -48,6 +48,16 @@ jobs:
           override: true
           target: ${{ matrix.target }}
 
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install -U maturin
+
       - name: Install musl tools
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install -y musl-tools
@@ -60,26 +70,25 @@ jobs:
           brew install gnu-tar
           echo "/usr/local/opt/gnu-tar/libexec/gnubin" >> $GITHUB_PATH
 
-      # Those two will also create target/${{ matrix.target }}/maturin
       - name: Build wheel (with sdist)
         if: matrix.target == 'x86_64-unknown-linux-musl'
         working-directory: ${{ env.working-directory }}
         run: |
           # manylinux
-          cargo run -- build --release -o dist --target ${{ matrix.target }}
+          maturin build --release -o dist --target ${{ matrix.target }}
           # musllinux
-          cargo run -- build --release -o dist --target ${{ matrix.target }} --no-sdist --compatibility musllinux_1_1
+          maturin build --release -o dist --target ${{ matrix.target }} --no-sdist --compatibility musllinux_1_1
 
       # ring doesn't support aarch64 windows yet
       - name: Build wheel (windows aarch64)
         if: matrix.target == 'aarch64-pc-windows-msvc'
         working-directory: ${{ env.working-directory }}
-        run: cargo run -- build --release -o dist --target ${{ matrix.target }} --no-sdist
+        run: maturin build --release -o dist --target ${{ matrix.target }} --no-sdist
 
       - name: Build wheel (without sdist)
         if: ${{ matrix.target != 'x86_64-unknown-linux-musl' && matrix.target != 'aarch64-pc-windows-msvc' }}
         working-directory: ${{ env.working-directory }}
-        run: cargo run -- build --release -o dist --target ${{ matrix.target }} --no-sdist
+        run: maturin build --release -o dist --target ${{ matrix.target }} --no-sdist
 
       - name: Build wheel (macOS universal2)
         if: matrix.target == 'x86_64-apple-darwin'
@@ -91,7 +100,7 @@ jobs:
           # set SDKROOT for C dependencies like ring and bzip2
           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
           rustup target add aarch64-apple-darwin
-          cargo run -- build --release -o dist --no-sdist --universal2
+          maturin build --release -o dist --no-sdist --universal2
 
       - name: Upload wheel artifacts
         uses: actions/upload-artifact@v2
