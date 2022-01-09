@@ -58,18 +58,9 @@ jobs:
           python -m pip install --upgrade pip wheel
           pip install -U maturin
 
-      - name: Debug
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          echo "OPENSSL_DIR=$(which openssl)" >> $GITHUB_ENV
-
       - name: Install musl tools
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install -y musl-tools
-
-      - name: Install OpenSSL
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get install -y libssl-dev
 
       # Install gnu-tar because BSD tar is buggy
       # https://github.com/actions/cache/issues/403
@@ -84,20 +75,20 @@ jobs:
         working-directory: ${{ env.working-directory }}
         run: |
           # manylinux
-          maturin build --release -o dist --target ${{ matrix.target }}
+          maturin build --release -o dist --target ${{ matrix.target }} --cargo-extra-args="--features vendored-openssl"
           # musllinux
-          maturin build --release -o dist --target ${{ matrix.target }} --no-sdist --compatibility musllinux_1_1
+          maturin build --release -o dist --target ${{ matrix.target }} --cargo-extra-args="--features vendored-openssl" --no-sdist --compatibility musllinux_1_1
 
       # ring doesn't support aarch64 windows yet
       - name: Build wheel (windows aarch64)
         if: matrix.target == 'aarch64-pc-windows-msvc'
         working-directory: ${{ env.working-directory }}
-        run: maturin build --release -o dist --target ${{ matrix.target }} --no-sdist
+        run: maturin build --release -o dist --target ${{ matrix.target }} --no-sdist --cargo-extra-args="--features vendored-openssl"
 
       - name: Build wheel (without sdist)
         if: ${{ matrix.target != 'x86_64-unknown-linux-musl' && matrix.target != 'aarch64-pc-windows-msvc' }}
         working-directory: ${{ env.working-directory }}
-        run: maturin build --release -o dist --target ${{ matrix.target }} --no-sdist
+        run: maturin build --release -o dist --target ${{ matrix.target }} --no-sdist --cargo-extra-args="--features vendored-openssl"
 
       - name: Build wheel (macOS universal2)
         if: matrix.target == 'x86_64-apple-darwin'
@@ -109,7 +100,7 @@ jobs:
           # set SDKROOT for C dependencies like ring and bzip2
           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
           rustup target add aarch64-apple-darwin
-          maturin build --release -o dist --no-sdist --universal2
+          maturin build --release -o dist --no-sdist --universal2 --cargo-extra-args="--features vendored-openssl"
 
       - name: Upload wheel artifacts
         uses: actions/upload-artifact@v2
@@ -155,10 +146,12 @@ jobs:
           maturin build --release -o dist --no-sdist \
             --target ${{ matrix.platform.target }} \
             --manylinux ${{ matrix.platform.manylinux }} \
+            --cargo-extra-args="--features vendored-openssl" \
           # musllinux
           maturin build --release -o dist --no-sdist \
             --target ${{ matrix.platform.target }} \
             --compatibility musllinux_1_1 \
+             --cargo-extra-args="--features vendored-openssl" \
 
       - name: Upload wheel artifacts
         uses: actions/upload-artifact@v2
