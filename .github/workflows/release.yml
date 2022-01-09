@@ -126,6 +126,8 @@ jobs:
         CARGO_HOME: /root/.cargo
     env:
       working-directory: ./src/query-engine
+      LD_LIBRARY_PATH: /opt/python/cp39-cp39/lib
+
     steps:
       - uses: actions/checkout@v2
 
