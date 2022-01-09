@@ -124,6 +124,8 @@ jobs:
       env:
         RUSTUP_HOME: /root/.rustup
         CARGO_HOME: /root/.cargo
+    env:
+      working-directory: ./src/query-engine
     steps:
       - uses: actions/checkout@v2
       - name: Build wheel
