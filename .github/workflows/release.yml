@@ -126,14 +126,9 @@ jobs:
         CARGO_HOME: /root/.cargo
     env:
       working-directory: ./src/query-engine
-      LD_LIBRARY_PATH: /opt/python/cp39-cp39/lib
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Debug python
-        run: |
-          python3 -V
 
       - name: Install dependencies
         run: |
@@ -144,7 +139,7 @@ jobs:
       - name: Build wheel
         working-directory: ${{ env.working-directory }}
         env:
-          PYO3_CROSS_LIB_DIR: /opt/python/cp39-cp39/lib
+          PYO3_CROSS_LIB_DIR: /opt/python/cp38-cp38/lib
         run: |
           # manylinux
           maturin build --release -o dist --no-sdist \
