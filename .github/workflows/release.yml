@@ -26,19 +26,14 @@ jobs:
         include:
           - target: x86_64-unknown-linux-musl
             os: ubuntu-latest
-            name: maturin-x86_64-unknown-linux-musl.tar.gz
           - target: x86_64-apple-darwin
             os: macos-latest
-            name: maturin-x86_64-apple-darwin.tar.gz
           - target: x86_64-pc-windows-msvc
             os: windows-latest
-            name: maturin-x86_64-pc-windows-msvc.zip
           - target: i686-pc-windows-msvc
             os: windows-latest
-            name: maturin-i686-pc-windows-msvc.zip
           - target: aarch64-pc-windows-msvc
             os: windows-latest
-            name: maturin-aarch64-pc-windows-msvc.zip
     env:
       working-directory: ./src/query-engine
 
@@ -71,20 +66,20 @@ jobs:
         working-directory: ${{ env.working-directory }}
         run: |
           # manylinux
-          cargo run -- build --release -b bin -o dist --target ${{ matrix.target }}
+          cargo run -- build --release -o dist --target ${{ matrix.target }}
           # musllinux
-          cargo run -- build --release -b bin -o dist --target ${{ matrix.target }} --no-sdist --compatibility musllinux_1_1
+          cargo run -- build --release -o dist --target ${{ matrix.target }} --no-sdist --compatibility musllinux_1_1
 
       # ring doesn't support aarch64 windows yet
       - name: Build wheel (windows aarch64)
         if: matrix.target == 'aarch64-pc-windows-msvc'
         working-directory: ${{ env.working-directory }}
-        run: cargo run -- build --release -b bin -o dist --target ${{ matrix.target }} --no-sdist
+        run: cargo run -- build --release -o dist --target ${{ matrix.target }} --no-sdist
 
       - name: Build wheel (without sdist)
         if: ${{ matrix.target != 'x86_64-unknown-linux-musl' && matrix.target != 'aarch64-pc-windows-msvc' }}
         working-directory: ${{ env.working-directory }}
-        run: cargo run -- build --release -b bin -o dist --target ${{ matrix.target }} --no-sdist
+        run: cargo run -- build --release -o dist --target ${{ matrix.target }} --no-sdist
 
       - name: Build wheel (macOS universal2)
         if: matrix.target == 'x86_64-apple-darwin'
@@ -96,46 +91,13 @@ jobs:
           # set SDKROOT for C dependencies like ring and bzip2
           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
           rustup target add aarch64-apple-darwin
-          cargo run -- build --release -b bin -o dist --no-sdist --universal2
-
-      - name: Archive binary (windows)
-        working-directory: ${{ env.working-directory }}
-        if: matrix.os == 'windows-latest'
-        run: |
-          cd target/${{ matrix.target }}/release
-          7z a ../../../${{ matrix.name }} ${{ github.event.repository.name }}.exe
-          cd -
-
-      - name: Archive binary (linux and macOS)
-        working-directory: ${{ env.working-directory }}
-        if: matrix.os != 'windows-latest'
-        run: |
-          cd target/${{ matrix.target }}/release
-          tar czvf ../../../${{ matrix.name }} ${{ github.event.repository.name }}
-          cd -
-
-      - name: Archive binary (macOS aarch64)
-        working-directory: ${{ env.working-directory }}
-        if: matrix.os == 'macos-latest'
-        run: |
-          cd target/aarch64-apple-darwin/release
-          tar czvf ../../../maturin-aarch64-apple-darwin.tar.gz ${{ github.event.repository.name }}
-          cd -
+          cargo run -- build --release -o dist --no-sdist --universal2
 
       - name: Upload wheel artifacts
         uses: actions/upload-artifact@v2
         with:
           name: wheels
           path: ${{ env.working-directory }}/dist
-
-      - name: Upload binary artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: binaries
-          path: |
-            ${{ env.working-directory }}/*.tar.gz
-            ${{ env.working-directory }}/*.zip
-            ${{ env.working-directory }}/*.deb
 
   release-musl:
     name: Release musl build
@@ -160,26 +122,16 @@ jobs:
         run: |
           sudo python3 -m pip install maturin
           # manylinux
-          maturin build --release -b bin -o dist --no-sdist \
+          maturin build --release -o dist --no-sdist \
             --target ${{ matrix.platform.target }} \
             --manylinux ${{ matrix.platform.manylinux }} \
           # musllinux
-          maturin build --release -b bin -o dist --no-sdist \
+          maturin build --release -o dist --no-sdist \
             --target ${{ matrix.platform.target }} \
             --compatibility musllinux_1_1 \
-
-      - name: Archive binary
-        working-directory: ${{ env.working-directory }}
-        run: tar czvf target/release/maturin-${{ matrix.platform.target }}.tar.gz -C target/${{ matrix.platform.target }}/release maturin
 
       - name: Upload wheel artifacts
         uses: actions/upload-artifact@v2
         with:
           name: wheels
           path: ${{ env.working-directory }}/dist
-
-      - name: Upload binary artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: binaries
-          path: ${{ env.working-directory }}/target/release/maturin-${{ matrix.platform.target }}.tar.gz
