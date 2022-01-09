@@ -136,7 +136,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo -H python3 -m pip install --upgrade pip wheel
+          python3 -m pip install --upgrade pip wheel
           python3 -m pip install -U maturin
 
       # TODO: probably need to run this for every python version
