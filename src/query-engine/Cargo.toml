@@ -24,6 +24,7 @@ prisma-models = { git = "https://github.com/prisma/prisma-engines", rev = "33838
 datamodel-connector = { git = "https://github.com/prisma/prisma-engines", rev = "33838b0" }
 url = "2"
 serde = "1"
+quaint = "0.2.0-alpha.13"
 connection-string = "0.1"
 tokio = { version = "1", features = ["sync"] }
 serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
