@@ -59,8 +59,9 @@ jobs:
           pip install -U maturin
 
       - name: Debug
+        if: matrix.os == 'ubuntu-latest'
         run: |
-          openssl --version
+          echo "OPENSSL_DIR=$(which openssl)" >> $GITHUB_ENV
 
       - name: Install musl tools
         if: matrix.os == 'ubuntu-latest'
