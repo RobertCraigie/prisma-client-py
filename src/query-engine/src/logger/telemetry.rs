@@ -19,7 +19,9 @@ pub struct WithTelemetry {
 
 impl WithTelemetry {
     pub fn new(inner: TelemetryLayer) -> Self {
-        Self { inner: Arc::new(inner) }
+        Self {
+            inner: Arc::new(inner),
+        }
     }
 }
 

@@ -34,6 +34,7 @@ impl<'a> Visit for JsonVisitor<'a> {
     }
 
     fn record_str(&mut self, field: &Field, value: &str) {
-        self.object.insert(field.name().to_string(), value.to_string().into());
+        self.object
+            .insert(field.name().to_string(), value.to_string().into());
     }
 }
