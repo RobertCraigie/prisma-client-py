@@ -60,7 +60,11 @@ jobs:
 
       - name: Install linux dependencies
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get install -y musl-tools gcc-multilib libgcc
+        run: sudo apt-get install -y musl-tools gcc-multilib
+
+      - name: Debug
+        if: matrix.os == 'ubuntu-latest'
+        run: find / -name libgcc*
 
       # Install gnu-tar because BSD tar is buggy
       # https://github.com/actions/cache/issues/403
