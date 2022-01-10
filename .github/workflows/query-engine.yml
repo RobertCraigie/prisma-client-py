@@ -10,13 +10,18 @@ on:
       - main
       - feat/rust-bindings
       - ci/cibuildwheel
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Whether or not to publish to PyPi'
+        required: true
 
 env:
   SRC_DIR: ./src/query-engine
 
 jobs:
   lint:
-    name: Check Rust code with rustfmt and clippy
+    name: Check linters
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -38,7 +43,7 @@ jobs:
         run: |
           cargo clippy --all -- --check
 
-  build-query-engine:
+  build:
     name: Build wheels on ${{ matrix.os }}/${{ matrix.vers }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -90,3 +95,28 @@ jobs:
       with:
         path: wheelhouse/*.whl
         name: wheels
+
+  pypi:
+    if: ${{ github.event.inputs.release == '1' }}
+    name: Publish PyPi wheels
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download wheels
+        id: download
+        uses: actions/download-artifact@v2
+        with:
+          name: wheels
+          path: wheelhouse
+
+      # TODO: build a source tarball?
+
+      - name: Publish distribution 📦 to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
+          packages_dir: ${{ steps.download.outputs.download-path }}
