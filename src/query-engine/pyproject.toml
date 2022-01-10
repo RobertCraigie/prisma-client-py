@@ -1,0 +1,39 @@
+[tool.black]
+skip-string-normalization = true
+
+[build-system]
+requires = ["maturin>=0.12,<0.13"]
+build-backend = "maturin"
+
+[project]
+name = "prisma_query_engine"
+description = "Rust bindings for the Prisma Query Engine"
+readme = "README.md"
+authors = [
+  {name = "Robert Craigie", email = "robert@craigie.dev"},
+]
+maintainers = [
+  {name = "Robert Craigie", email = "robert@craigie.dev"}
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Rust",
+  "Programming Language :: Python",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Topic :: Database :: Database Engines/Servers",
+  "Typing :: Typed"
+]
+
+[project.urls]
+homepage = "https://prisma-client-py.readthedocs.io/"
+documentation = "https://prisma-client-py.readthedocs.io/"
+repository = "https://github.com/RobertCraigie/prisma-client-py"
+
+# [tool.cibuildwheel.linux]
+# before-all = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
+
+# [[tool.cibuildwheel.overrides]]
+# select = "*-musllinux*"
+# before-all = "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && apk add openssl-dev protobuf protoc"
+# before-build = "RUST_BACKTRACE=1 RUSTFLAGS='-C target-feature=-crt-static' cargo build --release --verbose"
