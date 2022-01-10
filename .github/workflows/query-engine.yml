@@ -38,7 +38,7 @@ jobs:
       CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y"
       CIBW_BEFORE_ALL_MACOS: "rustup target add aarch64-apple-darwin x86_64-apple-darwin"
       CIBW_BEFORE_ALL_WINDOWS: "rustup target add x86_64-pc-windows-msvc i686-pc-windows-msvc"
-      CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
+      CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin" RUSTFLAGS="--features vendored-openssl"'
       # TODO: verify this
       CIBW_SKIP: "cp27-* cp34-* cp35-* pp* *-win32 *-win_arm64 *-musllinux_*"
       CIBW_ARCHS: ${{ matrix.vers }}
