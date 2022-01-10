@@ -10,6 +10,8 @@ path = "src/lib.rs"
 crate-type = ["cdylib"]
 
 [features]
+# I don't like having to set this as default
+default = ["vendored-openssl"]
 vendored-openssl = ["sql-connector/vendored-openssl"]
 
 [dependencies]
