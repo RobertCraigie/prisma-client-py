@@ -145,11 +145,12 @@ jobs:
         run: |
           echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{ steps.lib.outputs.lib_path }}" >> $GITHUB_ENV
 
+      # patchelf must be installed ourselves
+      # https://github.com/PyO3/maturin/issues/766
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip wheel
-          python3 -m pip install -U maturin
-          sudo apt install patchelf
+          python3 -m pip install -U maturin patchelf
 
       # TODO: probably need to run this for every python version
       - name: Build wheel
