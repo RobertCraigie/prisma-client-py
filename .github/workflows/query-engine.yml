@@ -11,7 +11,33 @@ on:
       - feat/rust-bindings
       - ci/cibuildwheel
 
+env:
+  SRC_DIR: ./src/query-engine
+
 jobs:
+  lint:
+    name: Check Rust code with rustfmt and clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions-rs/toolchain@v1
+        with:
+            profile: minimal
+            toolchain: stable
+            components: rustfmt
+            override: true
+
+      - name: Check rustfmt
+        working-directory: ${{ env.SRC_DIR }}
+        run: |
+          cargo fmt --all -- --check
+
+      - name: Check clippy
+        working-directory: ${{ env.SRC_DIR }}
+        run: |
+          cargo clippy --all -- --check
+
   build-query-engine:
     name: Build wheels on ${{ matrix.os }}/${{ matrix.vers }}
     runs-on: ${{ matrix.os }}
@@ -43,7 +69,6 @@ jobs:
       CIBW_SKIP: "cp27-* cp34-* cp35-* *-win32 *-win_arm64 *-musllinux_*"
       CIBW_ARCHS: ${{ matrix.vers }}
       CIBW_BUILD_VERBOSITY: 1
-      working-directory: ./src/query-engine
 
     steps:
     - uses: actions/checkout@v1
@@ -58,7 +83,7 @@ jobs:
     - name: Build wheels
       uses: pypa/cibuildwheel@v2.3.1
       with:
-        package-dir: ${{ env.working-directory }}
+        package-dir: ${{ env.SRC_DIR }}
 
     - name: Upload wheels
       uses: actions/upload-artifact@v2
