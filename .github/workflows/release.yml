@@ -149,6 +149,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip wheel
           python3 -m pip install -U maturin
+          sudo apt install patchelf
 
       # TODO: probably need to run this for every python version
       - name: Build wheel
