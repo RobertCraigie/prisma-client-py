@@ -13,7 +13,7 @@ on:
 
 jobs:
   build-query-engine:
-    name: Build Query Engine wheels on ${{ matrix.os }}/${{ matrix.vers }}
+    name: Build wheels on ${{ matrix.os }}/${{ matrix.vers }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
