@@ -60,7 +60,7 @@ jobs:
 
       - name: Install linux dependencies
         if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get install -y musl-tools gcc-multilib
+        run: sudo apt-get install -y musl-tools gcc-multilib libgcc
 
       # Install gnu-tar because BSD tar is buggy
       # https://github.com/actions/cache/issues/403
@@ -115,9 +115,8 @@ jobs:
       fail-fast: false
       matrix:
         platform: [
+          # TODO: manylinux: 2010?
           { target: "aarch64-unknown-linux-musl", architecture: "x64", image_tag: "aarch64-musl", manylinux: "2014" },
-          { target: "armv7-unknown-linux-musleabihf", architecture: "x86", image_tag: "armv7-musleabihf", manylinux: "2014"},
-          { target: "i686-unknown-linux-musl", architecture: "x86", image_tag: "i686-musl", manylinux: "2010"},
         ]
     container:
       image: docker://messense/rust-musl-cross:${{ matrix.platform.image_tag }}
