@@ -20,29 +20,6 @@ env:
   SRC_DIR: ./src/query-engine
 
 jobs:
-  lint:
-    name: Check linters
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions-rs/toolchain@v1
-        with:
-            profile: minimal
-            toolchain: stable
-            components: rustfmt
-            override: true
-
-      - name: Check rustfmt
-        working-directory: ${{ env.SRC_DIR }}
-        run: |
-          cargo fmt --all -- --check
-
-      - name: Check clippy
-        working-directory: ${{ env.SRC_DIR }}
-        run: |
-          cargo clippy --all -- --check
-
   build:
     name: Build wheels on ${{ matrix.os }}/${{ matrix.vers }}
     runs-on: ${{ matrix.os }}
@@ -71,7 +48,7 @@ jobs:
       CIBW_BEFORE_ALL_WINDOWS: "rustup target add x86_64-pc-windows-msvc i686-pc-windows-msvc"
       CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
       # TODO: verify this
-      CIBW_SKIP: "cp27-* cp34-* cp35-* *-win32 *-win_arm64 *-musllinux_*"
+      CIBW_SKIP: "cp27-* cp34-* cp35-* pp*-win* *-win32 *-win_arm64 *-musllinux_*"
       CIBW_ARCHS: ${{ matrix.vers }}
       CIBW_BUILD_VERBOSITY: 1
 
@@ -97,7 +74,7 @@ jobs:
         name: wheels
 
   pypi:
-    if: ${{ github.event.inputs.release == '1' }}
+    if: ${{ github.event.inputs.release == '1' && github.actor == 'RobertCraigie' }}
     name: Publish PyPi wheels
     runs-on: ubuntu-latest
     needs: build
