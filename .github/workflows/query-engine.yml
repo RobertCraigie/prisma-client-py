@@ -48,7 +48,7 @@ jobs:
       CIBW_BEFORE_ALL_WINDOWS: "rustup target add x86_64-pc-windows-msvc i686-pc-windows-msvc"
       CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
       # TODO: verify this
-      CIBW_SKIP: "cp27-* cp34-* cp35-* pp*-win* *-win32 *-win_arm64 *-musllinux_*"
+      CIBW_SKIP: "cp27-* cp34-* cp35-* pp*-win* *-win32 *-win_arm64"
       CIBW_ARCHS: ${{ matrix.vers }}
       CIBW_BUILD_VERBOSITY: 1
 
