@@ -115,9 +115,9 @@ jobs:
       fail-fast: false
       matrix:
         platform: [
-          { target: "aarch64-unknown-linux-musl", image_tag: "aarch64-musl", manylinux: "2014" },
-          { target: "armv7-unknown-linux-musleabihf", image_tag: "armv7-musleabihf", manylinux: "2014"},
-          { target: "i686-unknown-linux-musl", image_tag: "i686-musl", manylinux: "2010"},
+          { target: "aarch64-unknown-linux-musl", architecture: "x64", image_tag: "aarch64-musl", manylinux: "2014" },
+          { target: "armv7-unknown-linux-musleabihf", architecture: "x86", image_tag: "armv7-musleabihf", manylinux: "2014"},
+          { target: "i686-unknown-linux-musl", architecture: "x86", image_tag: "i686-musl", manylinux: "2010"},
         ]
     container:
       image: docker://messense/rust-musl-cross:${{ matrix.platform.image_tag }}
@@ -130,15 +130,25 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+          architecture: ${{ matrix.architecture }}
+
+      - name: Resolve Python library directory
+        id: lib
+        run: |
+          echo ::set-output name=lib_path::$(python3 -c 'import sys; import pathlib; print(pathlib.Path(sys.executable).parent.parent / "lib")')
+
+      - name: Setup Python env
+        run: |
+          echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${{ steps.lib.outputs.lib_path }}" >> $GITHUB_ENV
+
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip wheel
           python3 -m pip install -U maturin
-
-      - name: Resolve lib
-        id: lib
-        run: |
-          echo ::set-output name=lib_path::$(python3 -c 'import sys; import pathlib; print(pathlib.Path(sys.executable).parent.parent / "lib")')
 
       # TODO: probably need to run this for every python version
       - name: Build wheel
