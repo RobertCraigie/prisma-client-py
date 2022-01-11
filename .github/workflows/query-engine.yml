@@ -24,8 +24,9 @@ jobs:
         include:
           - vers: i686
             os: ubuntu-20.04
-          - vers: aarch64
-            os: ubuntu-20.04
+          # TODO
+          # - vers: aarch64
+          #   os: ubuntu-20.04
           - vers: auto64
             os: ubuntu-20.04
           - vers: arm64
@@ -84,10 +85,10 @@ jobs:
 
       # TODO: build a source tarball?
 
-      - name: Publish distribution 📦 to Test PyPI
+      - name: Publish distribution to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
-          password: ${{ secrets.TEST_PYPI_TOKEN }}
+          password: ${{ secrets.TESTPYPI_TOKEN }}
           repository_url: https://test.pypi.org/legacy/
           packages_dir: ${{ steps.download.outputs.download-path }}
