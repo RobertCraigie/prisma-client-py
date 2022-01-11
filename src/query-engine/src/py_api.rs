@@ -39,15 +39,15 @@ impl PythonEngine {
         })
     }
 
-    fn connect_sync<'p>(&self, _py: Python<'p>, timeout: u64) -> PyResult<()> {
+    fn connect_sync(&self, _py: Python, timeout: u64) -> PyResult<()> {
         Ok(self.sync_engine.connect(timeout)?)
     }
 
-    fn disconnect_sync<'p>(&self, _py: Python<'p>) -> PyResult<()> {
+    fn disconnect_sync(&self, _py: Python) -> PyResult<()> {
         Ok(self.sync_engine.disconnect()?)
     }
 
-    fn query_sync<'p>(&self, _py: Python<'p>, query: String) -> PyResult<String> {
+    fn query_sync(&self, _py: Python, query: String) -> PyResult<String> {
         Ok(self.sync_engine.query_str(query, HashMap::new(), None)?)
     }
 
@@ -78,8 +78,7 @@ impl PythonEngine {
             Ok(Python::with_gil(|py| {
                 let x = PyString::new(py, &result);
                 let any: &PyAny = x.as_ref();
-                let any = any.to_object(py);
-                any.clone()
+                any.to_object(py)
             }))
         })
     }

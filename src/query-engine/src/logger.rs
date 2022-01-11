@@ -9,9 +9,8 @@ use opentelemetry::{
     sdk::{propagation::TraceContextPropagator, trace::Config, Resource},
     KeyValue,
 };
-use opentelemetry_otlp::Uninstall;
 use registry::EventRegistry;
-use std::{future::Future, sync::Arc};
+use std::future::Future;
 use telemetry::WithTelemetry;
 use tracing_futures::WithSubscriber;
 use tracing_subscriber::{
@@ -31,7 +30,6 @@ enum Subscriber {
 #[derive(Clone)]
 pub struct ChannelLogger {
     subscriber: Subscriber,
-    guard: Option<Arc<Uninstall>>,
 }
 
 impl ChannelLogger {
@@ -48,10 +46,7 @@ impl ChannelLogger {
 
         let subscriber = Subscriber::Normal(subscriber);
 
-        Self {
-            subscriber,
-            guard: None,
-        }
+        Self { subscriber }
     }
 
     /// Creates a new instance of a logger with the `trace` minimum level.
@@ -71,7 +66,7 @@ impl ChannelLogger {
             builder = builder.with_endpoint(endpoint);
         }
 
-        let (tracer, guard) = builder.install().unwrap();
+        let (tracer, _) = builder.install().unwrap();
 
         let telemetry_layer = tracing_opentelemetry::layer().with_tracer(tracer);
         let registry = EventRegistry::new()
@@ -81,10 +76,7 @@ impl ChannelLogger {
 
         let subscriber = Subscriber::WithTelemetry(with_telemetry);
 
-        Self {
-            subscriber,
-            guard: Some(Arc::new(guard)),
-        }
+        Self { subscriber }
     }
 
     /// Wraps a future to a logger, storing all events in the pipeline to

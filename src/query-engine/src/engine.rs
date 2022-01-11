@@ -1,5 +1,4 @@
 /// This file has been modified from https://github.com/prisma/prisma-engines/blob/master/query-engine/query-engine-node-api/src/engine.rs
-use crossbeam_channel;
 use datamodel::{diagnostics::ValidatedConfiguration, Datamodel};
 use opentelemetry::global;
 use prisma_models::DatamodelConverter;
@@ -42,7 +41,6 @@ pub enum Inner {
 /// Holding the information to reconnect the engine if needed.
 #[derive(Debug, Clone)]
 struct EngineDatamodel {
-    datasource_overrides: Vec<(String, String)>,
     ast: Datamodel,
     raw: String,
 }
@@ -186,7 +184,6 @@ impl QueryEngine {
         let datamodel = EngineDatamodel {
             ast,
             raw: datamodel,
-            datasource_overrides: overrides,
         };
 
         let logger = if telemetry.enabled {
