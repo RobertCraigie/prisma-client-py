@@ -34,4 +34,4 @@ jobs:
       - name: Check clippy
         working-directory: ${{ env.SRC_DIR }}
         run: |
-          cargo clippy --all -- --check
+          cargo clippy --all
