@@ -24,10 +24,8 @@ jobs:
         include:
           - vers: i686
             os: ubuntu-20.04
-          # TODO: test this
-          # aarch64 seems to be stuck
-          # - vers: aarch64
-          #   os: ubuntu-20.04
+          - vers: aarch64
+            os: ubuntu-20.04
           - vers: auto64
             os: ubuntu-20.04
           - vers: arm64
@@ -69,6 +67,7 @@ jobs:
         name: wheels
 
   pypi:
+    # TODO: only run this based on commit to main and commit
     if: ${{ github.actor == 'RobertCraigie' }}
     name: Publish PyPi wheels
     runs-on: ubuntu-latest
