@@ -89,8 +89,8 @@ jobs:
         name: wheels
 
   pypi:
-    # TODO: only run this based on commit to main and commit
-    if: ${{ github.actor == 'RobertCraigie' }}
+    # NOTE: expression is split between two `contains` checks due to parsing bug
+    if: ${{ github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'query-engine') && contains(github.event.head_commit.message, 'bump version') }}
     name: Publish PyPi wheels
     runs-on: ubuntu-latest
     needs: build
