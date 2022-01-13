@@ -122,6 +122,12 @@ You can run the integration tests only with the following command:
 tox -e py39 -- tests/integrations/
 ```
 
+Or a specific test:
+
+```sh
+tox -e py39 -- --confcutdir . tests/integrations/postgresql
+```
+
 !!! warning
     You may also need to update the root `pytest.ini` file to include your integration test in the `norecursedirs` option if you run pytest within the integration test
 
