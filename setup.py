@@ -83,7 +83,6 @@ setup(
         'Topic :: Database :: Database Engines/Servers',
         'Topic :: Database :: Front-Ends',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
