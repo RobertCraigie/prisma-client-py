@@ -1,6 +1,3 @@
-import sys
-from typing import Type
-
 from pathlib import Path
 from pydantic import BaseModel
 from prisma.generator import GenericGenerator, Manifest, models
