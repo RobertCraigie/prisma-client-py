@@ -1,14 +1,37 @@
 import sys
 import subprocess
 from pathlib import Path
-from typing import List
+from typing import Any, List, Optional
 
 import pytest
 from syrupy.assertion import SnapshotAssertion
+from syrupy.extensions.amber.serializer import DataSerializer
+from syrupy.extensions.single_file import SingleFileSnapshotExtension
 
 from prisma.generator import BASE_PACKAGE_DIR
 from prisma.generator.utils import remove_suffix
 from .utils import ROOTDIR
+
+
+class OSAgnosticSingleFileExtension(SingleFileSnapshotExtension):
+
+    # syrupy's types are only written to target mypy, as such
+    # pyright does not understand them and reports them as unknown.
+    # As this method is only called internally it is safe to type as Any
+    def serialize(
+        self,
+        data: Any,
+        *,
+        exclude: Optional[Any] = None,
+        matcher: Optional[Any] = None,
+    ) -> bytes:
+        serialized = DataSerializer.serialize(data, exclude=exclude, matcher=matcher)
+        return bytes(serialized, 'utf-8')
+
+
+@pytest.fixture
+def snapshot(snapshot: SnapshotAssertion) -> SnapshotAssertion:
+    return snapshot.use_extension(OSAgnosticSingleFileExtension)
 
 
 def _clean_line(proc: 'subprocess.CompletedProcess[bytes]') -> str:
