@@ -13,7 +13,7 @@ from prisma.cli import setup_logging
 from prisma.testing import reset_client
 from prisma.utils import get_or_create_event_loop
 
-from .utils import Runner, Testdir
+from .utils import Runner, Testdir, async_fixture
 
 
 if TYPE_CHECKING:
@@ -30,7 +30,7 @@ LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
 prisma.register(Client())
 
 
-@pytest.fixture(name='client', scope='session')
+@async_fixture(name='client', scope='session')
 async def client_fixture() -> Client:
     client = prisma.get_client()
     await client.connect()
@@ -93,7 +93,7 @@ def patch_prisma_fixture(request: 'FixtureRequest') -> Iterator[None]:
             yield
 
 
-@pytest.fixture(name='setup_client', autouse=True)
+@async_fixture(name='setup_client', autouse=True)
 async def setup_client_fixture(request: 'FixtureRequest') -> None:
     if not request_has_client(request):
         return

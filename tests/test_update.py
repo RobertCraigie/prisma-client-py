@@ -2,11 +2,13 @@ import pytest
 import prisma
 from prisma import Client
 
+from .utils import async_fixture
+
 
 # TODO: update persist_data stuff, some tests shouldn't have it
 
 
-@pytest.fixture(scope='module', name='user_id')
+@async_fixture(scope='module', name='user_id')
 async def user_id_fixture(client: Client) -> str:
     user = await client.user.create({'name': 'Robert'})
     return user.id

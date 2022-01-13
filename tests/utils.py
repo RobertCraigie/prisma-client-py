@@ -10,6 +10,7 @@ from datetime import datetime
 from typing import (
     Any,
     Callable,
+    Iterable,
     Mapping,
     Optional,
     List,
@@ -22,6 +23,7 @@ from typing import (
 
 import py
 import click
+import pytest_asyncio  # type: ignore
 from click.testing import CliRunner, Result
 
 from prisma.cli import main
@@ -29,6 +31,8 @@ from prisma._types import FuncType
 
 
 if TYPE_CHECKING:
+    from _pytest.config import Config
+    from _pytest.fixtures import FixtureFunctionMarker, _Scope
     from _pytest.monkeypatch import MonkeyPatch
     from _pytest.pytester import RunResult, Testdir as PytestTestdir
 
@@ -326,3 +330,29 @@ def patch_method(
     real_meth = getattr(obj, attr)
     patcher.setattr(obj, attr, wrapper, raising=True)
     return lambda: captured
+
+
+def async_fixture(
+    scope: "Union[_Scope, Callable[[str, Config], _Scope]]" = "function",
+    params: Optional[Iterable[object]] = None,
+    autouse: bool = False,
+    ids: Optional[
+        Union[
+            Iterable[Union[None, str, float, int, bool]],
+            Callable[[Any], Optional[object]],
+        ]
+    ] = None,
+    name: Optional[str] = None,
+) -> 'FixtureFunctionMarker':
+    """Wrapper over pytest_asyncio.fixture providing type hints"""
+    return cast(
+        'FixtureFunctionMarker',
+        pytest_asyncio.fixture(
+            None,
+            scope=scope,
+            params=params,
+            autouse=autouse,
+            ids=ids,
+            name=name,
+        ),
+    )
