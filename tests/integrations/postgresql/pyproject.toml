@@ -7,6 +7,3 @@ typeCheckingMode = "strict"
 
 [tool.black]
 skip-string-normalization = true
-
-[tool.pytest.ini_options]
-asyncio_mode = 'auto'
