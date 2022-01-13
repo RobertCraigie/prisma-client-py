@@ -23,11 +23,8 @@ jobs:
     name: test
     runs-on: ubuntu-latest
     strategy:
-      # TODO: test more python versions
       matrix:
         include:
-          - python-version: 3.6
-            tox-env: py36
           - python-version: 3.7
             tox-env: py37
           - python-version: 3.8
@@ -220,7 +217,7 @@ jobs:
 
       - name: Run tests
         run: |
-          tox -e setup,${{ matrix.tox-env }},report -- tests/integrations/postgresql
+          tox -e setup,${{ matrix.tox-env }},report -- --confcutdir . tests/integrations/postgresql
         env:
           PRISMA_PY_POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/postgres
 

@@ -6,7 +6,7 @@ This document intends to make contribution more accessible by codifying tribal k
 
 ## General Prerequisites
 
-You must have Python >= 3.6 installed on your system.
+You must have Python >= 3.7 installed on your system.
 
 ### Environment Variables
 
@@ -120,6 +120,12 @@ You can run the integration tests only with the following command:
 
 ```sh
 tox -e py39 -- tests/integrations/
+```
+
+Or a specific test:
+
+```sh
+tox -e py39 -- --confcutdir . tests/integrations/postgresql
 ```
 
 !!! warning

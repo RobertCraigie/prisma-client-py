@@ -8,7 +8,6 @@ from jinja2 import Environment, FileSystemLoader
 from prisma import __version__
 from prisma.generator import (
     BASE_PACKAGE_DIR,
-    Data,
     Manifest,
     Generator,
     GenericGenerator,
@@ -162,30 +161,6 @@ def test_invoke_outside_generation() -> None:
     )
 
 
-@pytest.mark.skipif(
-    sys.version_info[:2] != (3, 6), reason='Test is only valid on python 3.6'
-)
-def test_data_class_required_py36() -> None:
-    """Due to internal Generic workings, we cannot resolve generic arguments
-    on python 3.6, our solution is that a `data_class` property must be required.
-    """
-
-    class MyGenerator(GenericGenerator[Data]):
-        def get_manifest(self) -> Manifest:  # pragma: no cover
-            return super().get_manifest()
-
-        def generate(self, data: Data) -> None:  # pragma: no cover
-            return super().generate(data)
-
-    with pytest.raises(RuntimeError) as exc:
-        MyGenerator().data_class
-
-    assert 'data_class' in exc.value.args[0]
-
-
-@pytest.mark.skipif(
-    sys.version_info[:2] == (3, 6), reason='Test is not valid on python 3.6'
-)
 def test_invalid_type_argument() -> None:
     """Non-BaseModel argument to GenericGenerator raises an error"""
 
