@@ -133,17 +133,7 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
 
     @property
     def data_class(self) -> Type[BaseModelT]:
-        """Return the BaseModel used to parse the Prisma DMMF
-
-        This must be implemented by subclasses to support python3.6 so
-        that generic type arguments cannot be resolved.
-        """
-        if sys.version_info[:2] == (3, 6):
-            raise RuntimeError(
-                'Generic arguments cannot be resolved on Python 3.6;\n'
-                'This can be resolved by overriding the `data_class` property '
-                'on the generator.'
-            )
+        """Return the BaseModel used to parse the Prisma DMMF"""
 
         # we need to cast to object as otherwise pyright correctly marks the code as unreachable,
         # this is because __orig_bases__ is not present in the typeshed stubs as it is
@@ -233,13 +223,6 @@ class Generator(BaseGenerator):
             raise
 
         log.debug('Finished generating the prisma python client')
-
-    if sys.version_info[:2] == (3, 6):
-        # only explicitly specify the Data class at runtime on Python 3.6
-        # so that our generic type resolver can be easily tested
-        @property
-        def data_class(self) -> Type[Data]:
-            return Data
 
 
 def cleanup_templates(rootdir: Path, *, env: Optional[Environment] = None) -> None:

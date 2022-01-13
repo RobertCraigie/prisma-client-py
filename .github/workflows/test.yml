@@ -23,11 +23,8 @@ jobs:
     name: test
     runs-on: ubuntu-latest
     strategy:
-      # TODO: test more python versions
       matrix:
         include:
-          - python-version: 3.6
-            tox-env: py36
           - python-version: 3.7
             tox-env: py37
           - python-version: 3.8

@@ -6,7 +6,7 @@ This document intends to make contribution more accessible by codifying tribal k
 
 ## General Prerequisites
 
-You must have Python >= 3.6 installed on your system.
+You must have Python >= 3.7 installed on your system.
 
 ### Environment Variables
 
