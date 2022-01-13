@@ -217,7 +217,7 @@ jobs:
 
       - name: Run tests
         run: |
-          tox -e setup,${{ matrix.tox-env }},report -- tests/integrations/postgresql
+          tox -e setup,${{ matrix.tox-env }},report -- --collect-only tests/integrations/postgresql
         env:
           PRISMA_PY_POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/postgres
 
