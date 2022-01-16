@@ -172,7 +172,7 @@ def test_invalid_type_argument() -> None:
             return super().generate(data)
 
     with pytest.raises(TypeError) as exc:
-        MyGenerator().data_class
+        MyGenerator().data_class  # type: ignore
 
     assert 'pathlib.Path' in exc.value.args[0]
     assert 'pydantic.main.BaseModel' in exc.value.args[0]
