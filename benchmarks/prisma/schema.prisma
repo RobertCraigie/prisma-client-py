@@ -1,0 +1,23 @@
+datasource db {
+    provider = "sqlite"
+    url      = "file:dev.db"
+}
+
+generator client {
+    provider  = "prisma-client-py"
+    interface = "sync"
+}
+
+model Book {
+    id        String  @id @default(cuid())
+    title     String
+    rating    Int
+    author    Author? @relation(fields: [author_id], references: [id])
+    author_id String?
+}
+
+model Author {
+    id   String @id @default(cuid())
+    name String
+    Book Book[]
+}

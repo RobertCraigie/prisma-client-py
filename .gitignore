@@ -144,3 +144,6 @@ src/prisma/generator/debug-params.json
 
 # OS files
 .DS_Store
+
+# benchmarks
+benchmarks/*/benchmark.json
