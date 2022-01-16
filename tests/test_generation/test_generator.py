@@ -171,8 +171,9 @@ def test_invalid_type_argument() -> None:
         def generate(self, data: Path) -> None:  # pragma: no cover
             return super().generate(data)
 
+    # TODO: pyright regression?
     with pytest.raises(TypeError) as exc:
-        MyGenerator().data_class  # type: ignore
+        MyGenerator().data_class  # pyright: reportGeneralTypeIssues=false
 
     assert 'pathlib.Path' in exc.value.args[0]
     assert 'pydantic.main.BaseModel' in exc.value.args[0]
