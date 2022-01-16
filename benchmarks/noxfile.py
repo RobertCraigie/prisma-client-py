@@ -24,3 +24,5 @@ def prisma(session: Session) -> None:
             '--benchmark-max-time=10',
             *session.posargs
         )
+
+        # TODO: check pyright
