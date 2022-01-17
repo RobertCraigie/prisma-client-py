@@ -1,5 +1,3 @@
-# Github Pages
+# ORM Benchmarks
 
-This branch is used to host benchmark results on Github Pages.
-
-[View benchmarks](/dev/bench)
+[View benchmark results](https://robertcraigie.github.io/prisma-client-py/dev/bench/)
