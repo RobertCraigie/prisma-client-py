@@ -1,0 +1,56 @@
+name: Benchmark
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "*.md"
+      - ".vscode/**"
+      - "docs/**"
+      - "LICENSE"
+      - "mkdocs.yml"
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - "*.md"
+      - ".vscode/**"
+      - "docs/**"
+      - "LICENSE"
+      - "mkdocs.yml"
+jobs:
+  benchmark:
+    name: Benchmark prisma
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        working-directory: benchmarks
+        run: |
+          pip install -U -r requirements.txt
+
+      - name: Run benchmark
+        working-directory: benchmarks
+        run: |
+          nox -r -s prisma -- --benchmark-json benchmark.json
+
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: prisma benchmark
+          tool: 'pytest'
+          output-file-path: benchmarks/prisma/benchmark.json
+          auto-push: true
+          alert-threshold: '200%'
+          comment-always: true
+          comment-on-alert: true
+          # use a significantly higher value for failing as we do not want to block PRs unless
+          # something is really wrong
+          fail-threshold: '500%'
+          alert-comment-cc-users: '@RobertCraigie'
+          github-token: ${{ secrets.GITHUB_TOKEN }}

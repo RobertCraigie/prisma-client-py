@@ -9,6 +9,7 @@ exclude = '''
   | \.tox
   | \.venv
   | \.tests_cache
+  | \.nox
   | _build
   | buck-out
   | build
