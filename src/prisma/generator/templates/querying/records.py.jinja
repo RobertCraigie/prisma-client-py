@@ -1,0 +1,43 @@
+{% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import maybe_async_def, maybe_await, recursive_types with context %}
+# -- template record.py.jinja --
+
+if TYPE_CHECKING:
+    from .. import models
+    from ..client import Client
+    from .._types import BaseModelT
+
+
+{# TODO: abstract ModelType logic #}
+{% for model in dmmf.datamodel.models %}
+{% if recursive_types %}
+{% set ModelType = 'BaseModelT' %}
+class {{ model.name }}ActiveRecord(Generic[BaseModelT]):
+{% else %}
+{% set ModelType = "'models.%s'" % model.name %}
+class {{ model.name }}ActiveRecord:
+{% endif %}
+    def __init__(self, client: 'Client', model: {{ ModelType }}) -> None:
+        self._actions = client.{{ model.name.lower() }}
+        self._model = model
+
+    # TODO: it doesn't make sense to type this as Optional
+    # like in standard actions, however we cannot raise
+    # errors.RecordNotFoundError as it is a DataError
+    # which must be raised directly by the query engine
+    {{ maybe_async_def }}update(self) -> {{ ModelType }}:
+        # TODO: handle relational fields
+        # TODO: support combined unique constraints
+        # TODO: this will probably break for subclasses that add fields
+        data: Any = self._model.dict(exclude_unset=True)
+        model = {{ maybe_await }}self._actions.update(
+            where={
+                '{{ model.id_field.name }}': data['{{ model.id_field.name }}'],
+            },
+            data=data,
+        )
+        if model is None:
+            raise RuntimeError('TODO: Handle record not found properly')
+        return model
+
+{% endfor %}

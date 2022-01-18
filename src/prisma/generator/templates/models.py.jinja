@@ -9,6 +9,11 @@ from . import types, enums, errors, fields
 from ._types import BaseModelT, FuncType
 from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
+from .querying import records
+
+
+if TYPE_CHECKING:
+    from .client import Client
 
 
 class Config(BaseConfig):
@@ -35,6 +40,13 @@ def _warn_subclassing(new_model: str, base_model: str) -> None:
     warnings.warn(message, errors.UnsupportedSubclassWarning, stacklevel=4)
 
 
+def _get_client() -> 'Client':
+    """Lazy import wrapper for get_client()"""
+    from .client import get_client
+
+    return get_client()
+
+
 {% for model in dmmf.datamodel.models %}
 class {{ model.name }}(BaseModel):
     {% for field in model.all_fields %}
@@ -51,15 +63,17 @@ class {{ model.name }}(BaseModel):
     {% if recursive_types %}
     @classmethod
     def prisma(cls: Type[BaseModelT]) -> 'actions.{{ model.name }}Actions[BaseModelT]':
-        from .client import get_client
+        return actions.{{ model.name }}Actions[BaseModelT](_get_client(), cls)
 
-        return actions.{{ model.name }}Actions[BaseModelT](get_client(), cls)
+    def record(self: BaseModelT) -> 'records.{{ model.name }}ActiveRecord[BaseModelT]':
+        return records.{{ model.name }}ActiveRecord[BaseModelT](_get_client(), self)
     {% else %}
     @classmethod
     def prisma(cls) -> 'actions.{{ model.name }}Actions':
-        from .client import get_client
+        return actions.{{ model.name }}Actions(_get_client(), cls)
 
-        return actions.{{ model.name }}Actions(get_client(), cls)
+    def record(self) -> 'records.{{ model.name }}ActiveRecord':
+        return records.{{ model.name }}ActiveRecord(_get_client(), self)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(

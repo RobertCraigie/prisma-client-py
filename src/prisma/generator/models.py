@@ -616,10 +616,10 @@ class Field(BaseModel):
                 f'use a different field name with \'@map("{name}")\'.'
             )
 
-        if name == 'prisma':
+        if name in {'prisma', 'record'}:
             raise ValueError(
-                'Field name "prisma" shadows a Prisma Client Python method; '
-                'use a different field name with \'@map("prisma")\'.'
+                f'Field name "{name}" shadows a Prisma Client Python method; '
+                f'use a different field name with \'@map("{name}")\'.'
             )
 
         if name in QUERY_BUILDER_ALIASES:

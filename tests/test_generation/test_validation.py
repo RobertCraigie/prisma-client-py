@@ -80,6 +80,26 @@ def test_field_name_prisma_not_allowed(testdir: Testdir) -> None:
     ) in str(exc.value.output, 'utf-8')
 
 
+def test_field_name_record_not_allowed(testdir: Testdir) -> None:
+    """Field name "record" is not allowed as it overrides the active record query method"""
+    schema = (
+        testdir.SCHEMA_HEADER
+        + '''
+        model User {{
+            id     String @id
+            record String
+        }}
+    '''
+    )
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    assert (
+        'Field name "record" shadows a Prisma Client Python method; '
+        'use a different field name with \'@map("record")\''
+    ) in str(exc.value.output, 'utf-8')
+
+
 def test_field_name_matching_query_builder_alias_not_allowed(testdir: Testdir) -> None:
     """A field name that is the same as an alias used by our internal query builder
     is not allowed as it will lead to confusing error messages
