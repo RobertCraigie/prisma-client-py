@@ -85,11 +85,7 @@ FAKER: Faker = Faker()
 
 ConfigT = TypeVar('ConfigT', bound=PydanticBaseModel)
 
-data_ctx: ContextVar['PythonData'] = ContextVar('data_ctx')
-
-
-def get_config() -> 'Config':
-    return data_ctx.get().generator.config
+data_ctx: ContextVar['AnyData'] = ContextVar('data_ctx')
 
 
 def get_datamodel() -> 'Datamodel':
@@ -832,7 +828,7 @@ class DefaultData(GenericData[_EmptyModel]):
 
 # this has to be defined as a type alias instead of a class
 # as its purpose is to signify that the data is config agnostic
-AnyData = GenericData[object]
+AnyData = GenericData[Any]
 
 Enum.update_forward_refs()
 DMMF.update_forward_refs()
