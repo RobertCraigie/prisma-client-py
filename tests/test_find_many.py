@@ -81,13 +81,23 @@ async def test_filtering_one_to_one_relation(client: Client) -> None:
     """Filtering by a 1-1 relational field and negating the filter"""
     async with client.batch_() as batcher:
         batcher.user.create(
-            {'name': 'Robert', 'profile': {'create': {'bio': 'My very cool bio.'}}}
+            {
+                'name': 'Robert',
+                'profile': {
+                    'create': {'bio': 'My very cool bio.', 'country': 'Scotland'}
+                },
+            },
         )
         batcher.user.create(
             {
                 'name': 'Tegan',
-                'profile': {'create': {'bio': 'Hello world, this is my bio.'}},
-            }
+                'profile': {
+                    'create': {
+                        'bio': 'Hello world, this is my bio.',
+                        'country': 'Scotland',
+                    },
+                },
+            },
         )
         batcher.user.create({'name': 'Callum'})
 

@@ -823,7 +823,81 @@ class {{ model.name }}Actions:
         )
         return int(resp['data']['result']['count'])
 
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: statically type that the order argument is required when take or skip are present
+    {{ maybe_async_def }}group_by(
+        self,
+        by: List['types.{{ model.name }}ScalarFieldKeys'],
+        *,
+        where: Optional['types.{{ model.name }}WhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.{{ model.name }}AvgAggregateInput'] = None,
+        sum: Optional['types.{{ model.name }}SumAggregateInput'] = None,
+        min: Optional['types.{{ model.name }}MinAggregateInput'] = None,
+        max: Optional['types.{{ model.name }}MaxAggregateInput'] = None,
+        having: Optional['types.{{ model.name }}ScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.{{ model.name }}CountAggregateInput']] = None,
+        order: Optional[Union['types.{{ model.name }}OrderByInput', List['types.{{ model.name }}OrderByInput']]] = None,
+    ) -> List['types.{{ model.name }}GroupByOutput']:
+        # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        # TODO: cleanup
+
+        root_selection = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.group_by }}',
+            method='{{ methods.group_by }}',
+            model='{{ model.name }}',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']
+
 {% endfor %}
+
+
+def _select_fields(root: str, select: Mapping[str, bool]) -> str:
+    """Helper to build a GraphQL selection string
+
+    This is a work around until field selection is added to the query builder.
+    """
+    {% raw %}
+    return root + ' {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+    {% endraw %}
+
 
 from . import models
 
