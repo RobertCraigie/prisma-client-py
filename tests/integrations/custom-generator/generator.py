@@ -1,18 +1,13 @@
 from pathlib import Path
 from pydantic import BaseModel
-from prisma.generator import GenericGenerator, Manifest, models
-
-
-class Data(models.Data):
-    generator: 'GeneratorData'
-
-
-class GeneratorData(models.Generator):
-    config: 'Config'  # type: ignore
+from prisma.generator import GenericGenerator, GenericData, Manifest
 
 
 class Config(BaseModel):
     header: str = '# My Prisma Models'
+
+
+Data = GenericData[Config]
 
 
 class MyGenerator(GenericGenerator[Data]):
@@ -33,9 +28,6 @@ class MyGenerator(GenericGenerator[Data]):
         output = Path(data.generator.output.value)
         output.write_text('\n'.join(lines))
 
-
-Data.update_forward_refs()
-GeneratorData.update_forward_refs()
 
 if __name__ == '__main__':
     MyGenerator.invoke()

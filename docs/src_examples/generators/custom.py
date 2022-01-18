@@ -1,5 +1,5 @@
 from pathlib import Path
-from prisma.generator import BaseGenerator, Manifest, Data
+from prisma.generator import BaseGenerator, Manifest, DefaultData
 
 TEMPLATE = '''
 # My Prisma Schema
@@ -19,11 +19,13 @@ class MyGenerator(BaseGenerator):
             default_output='schema.md',
         )
 
-    def generate(self, data: Data) -> None:
+    def generate(self, data: DefaultData) -> None:
         content = TEMPLATE
         for model in data.dmmf.datamodel.models:
             content += MODEL_TEMPLATE.format(model)
 
+        # make sure you use the output value given in the Prisma DMMF
+        # as the output location can be customised!
         file = Path(data.generator.output.value)
         file.write_text(content)
 

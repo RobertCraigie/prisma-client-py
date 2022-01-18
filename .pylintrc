@@ -30,6 +30,9 @@ disable =
   # false positives and pyright catches these anyway
   no-member,
 
+  # I don't think this is valuable
+  too-many-ancestors,
+
   # this should only trigger for tests and I don't care about duplicating code for tests
   duplicate-code,
 
