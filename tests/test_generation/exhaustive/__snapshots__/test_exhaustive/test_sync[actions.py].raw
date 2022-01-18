@@ -720,7 +720,6 @@ class PostActions:
         skip: Optional[int] = None,
         where: Optional[types.PostWhereInput] = None,
         cursor: Optional[types.PostWhereUniqueInput] = None,
-        order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
     ) -> Union[int, types.PostCountAggregateOutput]:
         """Count the number of Post records present in the database
 
@@ -781,13 +780,6 @@ class PostActions:
             root_selection = [
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
-
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         resp = self._client._execute(
             operation='query',
@@ -1547,7 +1539,6 @@ class UserActions:
         skip: Optional[int] = None,
         where: Optional[types.UserWhereInput] = None,
         cursor: Optional[types.UserWhereUniqueInput] = None,
-        order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
     ) -> Union[int, types.UserCountAggregateOutput]:
         """Count the number of User records present in the database
 
@@ -1608,13 +1599,6 @@ class UserActions:
             root_selection = [
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
-
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         resp = self._client._execute(
             operation='query',
@@ -2369,7 +2353,6 @@ class MActions:
         skip: Optional[int] = None,
         where: Optional[types.MWhereInput] = None,
         cursor: Optional[types.MWhereUniqueInput] = None,
-        order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
     ) -> Union[int, types.MCountAggregateOutput]:
         """Count the number of M records present in the database
 
@@ -2430,13 +2413,6 @@ class MActions:
             root_selection = [
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
-
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         resp = self._client._execute(
             operation='query',
@@ -3196,7 +3172,6 @@ class NActions:
         skip: Optional[int] = None,
         where: Optional[types.NWhereInput] = None,
         cursor: Optional[types.NWhereUniqueInput] = None,
-        order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
     ) -> Union[int, types.NCountAggregateOutput]:
         """Count the number of N records present in the database
 
@@ -3257,13 +3232,6 @@ class NActions:
             root_selection = [
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
-
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         resp = self._client._execute(
             operation='query',
@@ -4018,7 +3986,6 @@ class OneOptionalActions:
         skip: Optional[int] = None,
         where: Optional[types.OneOptionalWhereInput] = None,
         cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
-        order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
     ) -> Union[int, types.OneOptionalCountAggregateOutput]:
         """Count the number of OneOptional records present in the database
 
@@ -4079,13 +4046,6 @@ class OneOptionalActions:
             root_selection = [
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
-
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         resp = self._client._execute(
             operation='query',
@@ -4840,7 +4800,6 @@ class ManyRequiredActions:
         skip: Optional[int] = None,
         where: Optional[types.ManyRequiredWhereInput] = None,
         cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
-        order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
     ) -> Union[int, types.ManyRequiredCountAggregateOutput]:
         """Count the number of ManyRequired records present in the database
 
@@ -4901,13 +4860,6 @@ class ManyRequiredActions:
             root_selection = [
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
-
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         resp = self._client._execute(
             operation='query',
@@ -5637,7 +5589,6 @@ class ListsActions:
         skip: Optional[int] = None,
         where: Optional[types.ListsWhereInput] = None,
         cursor: Optional[types.ListsWhereUniqueInput] = None,
-        order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
     ) -> Union[int, types.ListsCountAggregateOutput]:
         """Count the number of Lists records present in the database
 
@@ -5698,13 +5649,6 @@ class ListsActions:
             root_selection = [
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
-
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         resp = self._client._execute(
             operation='query',
@@ -6452,7 +6396,6 @@ class AActions:
         skip: Optional[int] = None,
         where: Optional[types.AWhereInput] = None,
         cursor: Optional[types.AWhereUniqueInput] = None,
-        order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
     ) -> Union[int, types.ACountAggregateOutput]:
         """Count the number of A records present in the database
 
@@ -6513,13 +6456,6 @@ class AActions:
             root_selection = [
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
-
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         resp = self._client._execute(
             operation='query',
@@ -7259,7 +7195,6 @@ class BActions:
         skip: Optional[int] = None,
         where: Optional[types.BWhereInput] = None,
         cursor: Optional[types.BWhereUniqueInput] = None,
-        order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
     ) -> Union[int, types.BCountAggregateOutput]:
         """Count the number of B records present in the database
 
@@ -7320,13 +7255,6 @@ class BActions:
             root_selection = [
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
-
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         resp = self._client._execute(
             operation='query',
@@ -8078,7 +8006,6 @@ class CActions:
         skip: Optional[int] = None,
         where: Optional[types.CWhereInput] = None,
         cursor: Optional[types.CWhereUniqueInput] = None,
-        order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
     ) -> Union[int, types.CCountAggregateOutput]:
         """Count the number of C records present in the database
 
@@ -8139,13 +8066,6 @@ class CActions:
             root_selection = [
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
-
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         resp = self._client._execute(
             operation='query',
@@ -8900,7 +8820,6 @@ class DActions:
         skip: Optional[int] = None,
         where: Optional[types.DWhereInput] = None,
         cursor: Optional[types.DWhereUniqueInput] = None,
-        order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
     ) -> Union[int, types.DCountAggregateOutput]:
         """Count the number of D records present in the database
 
@@ -8961,13 +8880,6 @@ class DActions:
             root_selection = [
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
-
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         resp = self._client._execute(
             operation='query',
@@ -9712,7 +9624,6 @@ class EActions:
         skip: Optional[int] = None,
         where: Optional[types.EWhereInput] = None,
         cursor: Optional[types.EWhereUniqueInput] = None,
-        order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
     ) -> Union[int, types.ECountAggregateOutput]:
         """Count the number of E records present in the database
 
@@ -9773,13 +9684,6 @@ class EActions:
             root_selection = [
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
-
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         resp = self._client._execute(
             operation='query',

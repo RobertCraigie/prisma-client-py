@@ -744,7 +744,6 @@ class {{ model.name }}Actions:
         skip: Optional[int] = None,
         where: Optional[types.{{ model.name }}WhereInput] = None,
         cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
-        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> Union[int, types.{{ model.name }}CountAggregateOutput]:
         {{ count_doc() }}
         # TODO: this selection building should be moved to the QueryBuilder
@@ -760,13 +759,6 @@ class {{ model.name }}Actions:
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
             {% endraw %}
-
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.count }}',
