@@ -1,22 +1,5 @@
 [tool.black]
 skip-string-normalization = true
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | \.tests_cache
-  | _build
-  | buck-out
-  | build
-  | dist
-  | client.py
-  | types.py
-)/
-'''
 
 [tool.pyright]
 include = [
