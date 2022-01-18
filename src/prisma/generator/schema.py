@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Union
 
 from pydantic import BaseModel
 
-from .models import Data, Model as ModelInfo, PrimaryKey
+from .models import AnyData, Model as ModelInfo, PrimaryKey
 from .._compat import root_validator
 
 
@@ -56,7 +56,7 @@ class Schema(BaseModel):
     models: List['Model']
 
     @classmethod
-    def from_data(cls, data: Data) -> 'Schema':
+    def from_data(cls, data: AnyData) -> 'Schema':
         models = [Model(info=model) for model in data.dmmf.datamodel.models]
         return cls(models=models)
 

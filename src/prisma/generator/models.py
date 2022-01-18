@@ -10,11 +10,13 @@ from importlib.abc import InspectLoader
 from contextvars import ContextVar
 from typing import (
     Any,
+    Generic,
     Iterable,
     NoReturn,
     Optional,
     List,
     Tuple,
+    TypeVar,
     Union,
     Iterator,
     Dict,
@@ -31,6 +33,7 @@ from pydantic import (
     Field as FieldInfo,
 )
 from pydantic.fields import PrivateAttr
+from pydantic.generics import GenericModel as PydanticGenericModel
 
 try:
     from pydantic.env_settings import SettingsSourceCallable
@@ -46,7 +49,12 @@ from ..errors import UnsupportedListTypeError
 from ..binaries.constants import ENGINE_VERSION, PRISMA_VERSION
 
 
-__all__ = ('Data',)
+__all__ = (
+    'AnyData',
+    'PythonData',
+    'DefaultData',
+    'GenericData',
+)
 
 # NOTE: this does not represent all the data that is passed by prisma
 
@@ -75,7 +83,9 @@ FILTER_TYPES = [
 
 FAKER: Faker = Faker()
 
-data_ctx: ContextVar['Data'] = ContextVar('data_ctx')
+ConfigT = TypeVar('ConfigT', bound=PydanticBaseModel)
+
+data_ctx: ContextVar['PythonData'] = ContextVar('data_ctx')
 
 
 def get_config() -> 'Config':
@@ -141,6 +151,10 @@ class BaseModel(PydanticBaseModel):
         }
 
 
+class GenericModel(PydanticGenericModel, BaseModel):
+    pass
+
+
 class InterfaceChoices(str, enum.Enum):
     sync = 'sync'
     asyncio = 'asyncio'
@@ -202,7 +216,7 @@ class Module(BaseModel):
             raise
 
 
-class Data(BaseModel):
+class GenericData(GenericModel, Generic[ConfigT]):
     """Root model for the data that prisma provides to the generator.
 
     WARNING: only one instance of this class may exist at any given time and
@@ -211,7 +225,7 @@ class Data(BaseModel):
 
     datamodel: str
     version: str
-    generator: 'Generator'
+    generator: 'Generator[ConfigT]'
     dmmf: 'DMMF' = FieldInfo(alias='dmmf')
     schema_path: str = FieldInfo(alias='schemaPath')
     datasources: List['Datasource'] = FieldInfo(alias='datasources')
@@ -220,7 +234,7 @@ class Data(BaseModel):
     other_generators: List[Any] = FieldInfo(alias='otherGenerators')
 
     @classmethod
-    def parse_obj(cls, obj: Any) -> 'Data':
+    def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
         data = super().parse_obj(obj)
         data_ctx.set(data)
         return data
@@ -268,11 +282,11 @@ class Datasource(BaseModel):
     url: 'OptionalValueFromEnvVar'
 
 
-class Generator(BaseModel):
+class Generator(GenericModel, Generic[ConfigT]):
     name: str
     output: 'ValueFromEnvVar'
     provider: 'OptionalValueFromEnvVar'
-    config: 'Config'
+    config: ConfigT
     binary_targets: List['ValueFromEnvVar'] = FieldInfo(alias='binaryTargets')
     preview_features: List[str] = FieldInfo(alias='previewFeatures')
 
@@ -803,9 +817,26 @@ class DefaultValue(BaseModel):
     name: str
 
 
+class _EmptyModel(BaseModel):
+    class Config(BaseModel.Config):
+        extra: Extra = Extra.forbid
+
+
+class PythonData(GenericData[Config]):
+    """Data class including the default Prisma Client Python config"""
+
+
+class DefaultData(GenericData[_EmptyModel]):
+    """Data class without any config options"""
+
+
+# this has to be defined as a type alias instead of a class
+# as its purpose is to signify that the data is config agnostic
+AnyData = GenericData[object]
+
 Enum.update_forward_refs()
 DMMF.update_forward_refs()
-Data.update_forward_refs()
+GenericData.update_forward_refs()
 Field.update_forward_refs()
 Model.update_forward_refs()
 Datamodel.update_forward_refs()

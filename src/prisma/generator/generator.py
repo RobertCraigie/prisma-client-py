@@ -12,7 +12,7 @@ from pydantic import BaseModel
 
 from . import jsonrpc
 from .jsonrpc import Manifest
-from .models import Data
+from .models import DefaultData, PythonData
 from .types import PartialModelFields
 from .utils import (
     copy_tree,
@@ -173,11 +173,11 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
         return cast(Type[BaseModelT], model)
 
 
-class BaseGenerator(GenericGenerator[Data]):
+class BaseGenerator(GenericGenerator[DefaultData]):
     pass
 
 
-class Generator(BaseGenerator):
+class Generator(GenericGenerator[PythonData]):
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
         raise TypeError(
             f'{Generator} cannot be subclassed, maybe you meant {BaseGenerator}?'
@@ -189,7 +189,7 @@ class Generator(BaseGenerator):
             default_output=BASE_PACKAGE_DIR,
         )
 
-    def generate(self, data: Data) -> None:  # pylint: disable=no-self-use
+    def generate(self, data: PythonData) -> None:  # pylint: disable=no-self-use
         config = data.generator.config
         rootdir = Path(data.generator.output.value)
         if not rootdir.exists():
