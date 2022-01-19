@@ -67,6 +67,7 @@ good-names =
   dt,
   fd,
   to,
+  cached_property,
 
 
 [VARIABLES]
