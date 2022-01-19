@@ -43,7 +43,7 @@ except ImportError:
 
 from .utils import Faker, Sampler, clean_multiline
 from ..utils import DEBUG_GENERATOR, assert_never
-from .._compat import validator, root_validator
+from .._compat import validator, root_validator, cached_property
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
 from ..binaries.constants import ENGINE_VERSION, PRISMA_VERSION
@@ -145,6 +145,7 @@ class BaseModel(PydanticBaseModel):
             Path: _pathlib_serializer,
             machinery.ModuleSpec: _module_spec_serializer,
         }
+        keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
 
 
 class GenericModel(PydanticGenericModel, BaseModel):
@@ -501,7 +502,7 @@ class Model(BaseModel):
                 yield field
 
     # TODO: support combined unique constraints
-    @property
+    @cached_property
     def id_field(self) -> Optional['Field']:
         """Find a field that can be passed to the model's `WhereUnique` filter"""
         for field in self.scalar_fields:  # pragma: no branch
