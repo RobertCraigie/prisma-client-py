@@ -6,7 +6,6 @@ import operator
 from configparser import ConfigParser
 from typing import Optional, Callable, Dict, Any, Union, Type as TypingType, cast
 
-# pylint: disable=no-name-in-module
 from mypy.options import Options
 from mypy.errorcodes import ErrorCode
 from mypy.types import (
@@ -32,8 +31,6 @@ from mypy.nodes import (
     SymbolTableNode,
 )
 from mypy.plugin import Plugin, MethodContext, CheckerPluginInterface
-
-# pylint: enable=no-name-in-module
 
 
 # match any direct children of an actions class

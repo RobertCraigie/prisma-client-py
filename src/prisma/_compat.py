@@ -1,8 +1,6 @@
 import sys
 from typing import TYPE_CHECKING, Callable
-from asyncio import (  # pylint: disable=no-name-in-module
-    get_running_loop as get_running_loop,
-)
+from asyncio import get_running_loop as get_running_loop
 
 from ._types import CallableT
 
