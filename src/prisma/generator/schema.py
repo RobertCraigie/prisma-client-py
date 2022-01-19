@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Union
 from pydantic import BaseModel
 
 from .models import AnyData, Model as ModelInfo, PrimaryKey
-from .._compat import root_validator
+from .._compat import root_validator, cached_property
 
 
 class Kind(str, Enum):
@@ -71,7 +71,10 @@ class Schema(BaseModel):
 class Model(BaseModel):
     info: ModelInfo
 
-    @property
+    class Config:
+        keep_untouched = (cached_property,)
+
+    @cached_property
     def where_unique(self) -> PrismaType:
         info = self.info
         model = info.name
