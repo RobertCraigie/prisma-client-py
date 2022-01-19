@@ -145,7 +145,7 @@ class BaseModel(PydanticBaseModel):
             Path: _pathlib_serializer,
             machinery.ModuleSpec: _module_spec_serializer,
         }
-        keep_untouched = (cached_property,)
+        keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
 
 
 class GenericModel(PydanticGenericModel, BaseModel):

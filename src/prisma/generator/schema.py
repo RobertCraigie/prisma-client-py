@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Tuple, Type, Union
 
 from pydantic import BaseModel
 
@@ -72,7 +72,7 @@ class Model(BaseModel):
     info: ModelInfo
 
     class Config:
-        keep_untouched = (cached_property,)
+        keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
 
     @cached_property
     def where_unique(self) -> PrismaType:
