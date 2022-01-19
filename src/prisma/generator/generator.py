@@ -1,4 +1,3 @@
-from functools import cached_property
 import os
 import sys
 import json
@@ -23,6 +22,7 @@ from .utils import (
 )
 from .. import __version__
 from ..utils import DEBUG_GENERATOR
+from .._compat import cached_property
 from .._types import BaseModelT, InheritsGeneric, get_args
 
 
