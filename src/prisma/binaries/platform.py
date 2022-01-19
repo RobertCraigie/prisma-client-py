@@ -88,7 +88,7 @@ def resolve_platform(os: OsSettings) -> str:
         return "openbsd"
     elif system == "netbsd":
         return "netbsd"
-    elif system == "linux" and machine == "aarch64"
+    elif system == "linux" and machine == "aarch64":
         return f"linux-arm64-openssl-{libssl}"
     elif system == "linux" and machine == "arm":
         return f"linux-arm-openssl-{libssl}"
@@ -98,7 +98,7 @@ def resolve_platform(os: OsSettings) -> str:
         return "linux-nixos"
     elif distro:
         return f"{distro}-openssl-{libssl}"
-    return "debian-openssl-1.1.x" # default fallback
+    return "debian-openssl-1.1.x"  # default fallback
 
 
 def get_platform() -> str:
