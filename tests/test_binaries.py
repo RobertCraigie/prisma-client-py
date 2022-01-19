@@ -3,8 +3,9 @@ from pathlib import Path
 import pytest
 from _pytest.logging import LogCaptureFixture
 
-from prisma.binaries import BINARIES, ENGINES, Engine
 from prisma.utils import temp_env_update
+from prisma.binaries import BINARIES, ENGINES, Engine
+from prisma.binaries.constants import PRISMA_CLI_NAME
 
 
 def test_skips_cached_binary(caplog: LogCaptureFixture) -> None:
@@ -18,6 +19,13 @@ def test_skips_cached_binary(caplog: LogCaptureFixture) -> None:
 @pytest.mark.parametrize('engine', ENGINES)
 def test_engine_resolves_env_override(engine: Engine) -> None:
     """Env variables override the default path for an engine binary"""
-    # TODO: should be able to override binary resolving as well
     with temp_env_update({engine.env: 'foo'}):
         assert engine.path == Path('foo')
+
+
+def test_cli_binary_resolves_env_override() -> None:
+    """Env variable overrides the default path for the CLI binary"""
+    binary = BINARIES[-1]
+    assert binary.name == PRISMA_CLI_NAME
+    with temp_env_update({binary.env: 'foo'}):
+        assert binary.path == Path('foo')

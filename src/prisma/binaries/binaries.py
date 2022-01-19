@@ -29,7 +29,7 @@ ENGINES = [
 
 BINARIES: List[Binary] = [
     *ENGINES,
-    Binary(name=PRISMA_CLI_NAME),
+    Binary(name=PRISMA_CLI_NAME, env='PRISMA_CLI_BINARY'),
 ]
 
 

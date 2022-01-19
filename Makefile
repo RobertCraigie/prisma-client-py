@@ -13,6 +13,7 @@ database:
 
 . PHONY: package
 package:
+	python scripts/docs.py
 	python scripts/cleanup.py
 	rm -rf dist/*
 	python setup.py sdist
