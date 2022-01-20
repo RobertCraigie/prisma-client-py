@@ -294,7 +294,16 @@ class Client:
             arguments=arguments,
             root_selection=root_selection,
         )
-        return {{ maybe_await }}self._engine.query(builder.build())
+        # TODO: better method for debugging
+        query = builder.build()
+        try:
+            return {{ maybe_await }}self._engine.query(query)
+        except errors.DataError as exc:
+            if 'Failed to validate the query' in exc.message:
+                print(arguments)
+                print(builder.build_query())
+
+            raise
 
     def _create_engine(self, dml: str = SCHEMA) -> AbstractEngine:
         if ENGINE_TYPE == EngineType.binary:

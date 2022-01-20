@@ -59,6 +59,7 @@ class DataError(PrismaError):
     data: Any
     code: Any
     meta: Any
+    message: str
 
     def __init__(self, data: Any, *, message: Optional[str] = None):
         self.data = data
@@ -68,7 +69,11 @@ class DataError(PrismaError):
         self.meta = user_facing_error.get('meta')
 
         message = message or user_facing_error.get('message')
-        super().__init__(message or 'An error occurred while processing data.')
+        if message is None:
+            message = 'An error occurred while processing data.'
+
+        self.message = message
+        super().__init__(message)
 
 
 class UniqueViolationError(DataError):

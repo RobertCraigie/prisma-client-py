@@ -1,0 +1,5 @@
+# GRAPHQL_MAX_INT = (2 ** 63) - 1
+# GRAPHQL_MIN_INT = -(2 ** 63)
+
+GRAPHQL_MAX_INT = (2 ** 31) - 1
+GRAPHQL_MIN_INT = -(2 ** 31)
