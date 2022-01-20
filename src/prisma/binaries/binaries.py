@@ -51,7 +51,7 @@ ENGINE_VERSION = os.environ.get(
 GLOBAL_TEMP_DIR = (
     Path(tempfile.gettempdir()) / 'prisma' / 'binaries' / 'engines' / ENGINE_VERSION
 )
-PLATFORM_EXE_EXTENSION = ".exe" if PLATFORM == "windows" else ""
+PLATFORM_EXE_EXTENSION = ".exe" if OS_SETTINGS.is_windows() else ""
 
 
 def default_in_temp(name: str):
@@ -75,6 +75,7 @@ class PrismaSettings(BaseSettings):
 
 
 settings = PrismaSettings()
+
 
 PRISMA_CLI_NAME = f"prisma-cli-{PRISMA_VERSION}-{CLI_PLATFORM}{PLATFORM_EXE_EXTENSION}"
 PRISMA_CLI_PATH = GLOBAL_TEMP_DIR / PRISMA_CLI_NAME

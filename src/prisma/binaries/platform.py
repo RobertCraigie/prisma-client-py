@@ -21,6 +21,9 @@ class OsSettings:
         self.libssl = libssl
         self.distro = distro
 
+    def is_windows(self) -> bool:
+        return self.system.lower() == 'windows'
+
 
 @lru_cache()
 def get_openssl() -> str:
