@@ -14,7 +14,7 @@ from pathlib import Path
 from . import utils, errors
 from .http import HTTPEngine
 from ..utils import DEBUG
-from ..binaries import settings as binaries_settings, ensure_cached
+from ..binaries import settings as binaries_settings, OS_SETTINGS, ensure_cached
 from ..utils import time_since, _env_bool
 from ..types import DatasourceOverride
 from ..builder import dumps
@@ -44,9 +44,8 @@ class QueryEngine(HTTPEngine):
 
     def close(self) -> None:
         log.debug('Disconnecting query engine...')
-
         if self.process is not None:
-            if platform.name() == 'windows':
+            if OS_SETTINGS.is_windows():
                 self.process.kill()
             else:
                 self.process.send_signal(signal.SIGINT)
