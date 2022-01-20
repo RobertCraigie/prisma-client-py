@@ -14,7 +14,7 @@ from pathlib import Path
 from . import utils, errors
 from .http import HTTPEngine
 from ..utils import DEBUG
-from ..binaries import platform
+from ..binaries import settings as binaries_settings, ensure_cached
 from ..utils import time_since, _env_bool
 from ..types import DatasourceOverride
 from ..builder import dumps
@@ -77,10 +77,12 @@ class QueryEngine(HTTPEngine):
             raise errors.AlreadyConnectedError('Already connected to the query engine')
 
         start = time.monotonic()
-        self.file = file = utils.ensure()
+
+        ensure_cached()
+        self.file = binaries_settings.PRISMA_QUERY_ENGINE_BINARY 
 
         try:
-            {{ maybe_await }}self.spawn(file, timeout=timeout, datasources=datasources)
+            {{ maybe_await }}self.spawn(self.file, timeout=timeout, datasources=datasources)
         except Exception:
             self.close()
             raise
