@@ -46,7 +46,7 @@ from ..utils import DEBUG_GENERATOR, assert_never
 from .._compat import validator, root_validator, cached_property
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
-from ..binaries.constants import ENGINE_VERSION, PRISMA_VERSION
+from ..binaries import ENGINE_VERSION, PRISMA_VERSION
 
 
 __all__ = (

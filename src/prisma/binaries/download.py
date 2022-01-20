@@ -7,11 +7,11 @@ from ..http import client
 from ..utils import maybe_async_run
 
 
-def download(url: str, to: str) -> None:
+def download(url: str, to: Path) -> None:
     Path(to).parent.mkdir(parents=True, exist_ok=True)
 
-    tmp = to + '.tmp'
-    tar = to + '.gz.tmp'
+    tmp = to.with_suffix(".tmp")
+    tar = to.with_suffix(".gz.tmp")
     maybe_async_run(client.download, url, tar)
 
     # decompress to a tmp file before replacing the original

@@ -34,8 +34,12 @@ def run(
     }
     env = {**default_env, **env} if env is not None else default_env
     # ensure the client uses our engine binaries
+    # TODO: this is a hack, probably there's a better way to do this
+    engine_env_dict = binaries.settings.dict()
     for engine in binaries.ENGINES:
-        env[engine.env] = str(engine.path.absolute())
+        for engine_env, engine_path in engine_env_dict.items():
+            if engine_path == engine.path:
+                env[engine_env] = str(engine_path.absolute())
 
     process = subprocess.run(
         [str(path.absolute()), *args],
