@@ -8,7 +8,7 @@ from ..utils import maybe_async_run
 
 
 def download(url: str, to: Path) -> None:
-    Path(to).parent.mkdir(parents=True, exist_ok=True)
+    to.parent.mkdir(parents=True, exist_ok=True)
 
     tmp = to.with_suffix('.tmp')
     tar = to.with_suffix('.gz.tmp')
