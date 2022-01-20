@@ -79,7 +79,7 @@ class QueryEngine(HTTPEngine):
         start = time.monotonic()
 
         ensure_cached()
-        self.file = binaries_settings.PRISMA_QUERY_ENGINE_BINARY 
+        self.file = binaries_settings.PRISMA_QUERY_ENGINE_BINARY
 
         try:
             {{ maybe_await }}self.spawn(self.file, timeout=timeout, datasources=datasources)
