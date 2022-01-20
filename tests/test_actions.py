@@ -39,7 +39,7 @@ async def test_include_many_order_by() -> None:
     assert user.posts[0].title == 'Post 1'
     assert user.posts[1].title == 'Post 2'
 
-    user = await User.prisma().find_unique(
+    user2 = await User.prisma().find_unique(
         where={
             'id': user.id,
         },
@@ -51,8 +51,8 @@ async def test_include_many_order_by() -> None:
             },
         },
     )
-    assert user is not None
-    assert user.posts is not None
-    assert len(user.posts) == 2
-    assert user.posts[0].title == 'Post 2'
-    assert user.posts[1].title == 'Post 1'
+    assert user2 is not None
+    assert user2.posts is not None
+    assert len(user2.posts) == 2
+    assert user2.posts[0].title == 'Post 2'
+    assert user2.posts[1].title == 'Post 1'
