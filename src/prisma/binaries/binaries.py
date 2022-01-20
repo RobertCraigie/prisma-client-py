@@ -3,7 +3,6 @@
 import os
 import logging
 import tempfile
-from platform import system
 from pathlib import Path
 from typing import Optional, List
 
@@ -35,8 +34,10 @@ from .download import download
 #     'arm',
 # ]
 
-PLATFORM = platform.get_platform()
-
+# Get system information
+OS_SETTINGS = platform.get_os_settings()
+PLATFORM = platform.resolve_platform(OS_SETTINGS)
+CLI_PLATFORM = OS_SETTINGS.system
 
 # TODO: if this version changes but the engine version
 #       doesn't change then the CLI is incorrectly cached
@@ -51,7 +52,6 @@ GLOBAL_TEMP_DIR = (
     Path(tempfile.gettempdir()) / 'prisma' / 'binaries' / 'engines' / ENGINE_VERSION
 )
 PLATFORM_EXE_EXTENSION = ".exe" if PLATFORM == "windows" else ""
-CLI_PLATFORM = system().lower()
 
 
 def default_in_temp(name: str):

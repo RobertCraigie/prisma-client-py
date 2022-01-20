@@ -6,14 +6,20 @@ import distro
 from functools import lru_cache
 from typing import Optional
 
-from .._types import TypedDict
 
-
-class OsSettings(TypedDict):
+class OsSettings:
     system: str
     machine: str
     libssl: str
     distro: Optional[str]
+
+    def __init__(
+        self, system: str, machine: str, libssl: str, distro: Optional[str]
+    ) -> None:
+        self.system = system
+        self.machine = machine
+        self.libssl = libssl
+        self.distro = distro
 
 
 @lru_cache()
@@ -72,10 +78,10 @@ def get_os_settings() -> OsSettings:
 
 def resolve_platform(os: OsSettings) -> str:
     system, machine, libssl, distro = (
-        os['system'],
-        os['machine'],
-        os['libssl'],
-        os['distro'],
+        os.system,
+        os.machine,
+        os.libssl,
+        os.distro,
     )
 
     if system == "darwin" and machine == "aarch64":
@@ -101,7 +107,3 @@ def resolve_platform(os: OsSettings) -> str:
     elif distro:
         return f"{distro}-openssl-{libssl}"
     return "debian-openssl-1.1.x"  # default fallback
-
-
-def get_platform() -> str:
-    return resolve_platform(get_os_settings())
