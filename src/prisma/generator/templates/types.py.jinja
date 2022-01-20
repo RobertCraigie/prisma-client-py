@@ -458,7 +458,7 @@ class {{ model.name }}UpsertInput(TypedDict):
 
 class {{ model.name }}OrderByInput(TypedDict, total=False):
     {% for field in model.scalar_fields %}
-    {{ field.name }}: 'SortOrder'
+    {{ field.name }}: SortOrder
     {% endfor %}
 
 
@@ -522,7 +522,7 @@ class {{ name }}(TypedDict, total=False):
     """Arguments for {{model.name }}"""
     take: int
     skip: int
-    order_by: Union['{{ model.name }}OrderByInput', List['{{ model.name }}OrderByInput']]
+    order_by: Union['{{ related.name }}OrderByInput', List['{{ related.name }}OrderByInput']]
     where: '{{ related.name }}WhereInput'
     cursor: '{{ related.name }}WhereUniqueInput'
     {%+ if next != '' -%}
