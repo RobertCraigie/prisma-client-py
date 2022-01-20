@@ -4,7 +4,9 @@ import platform
 import sys
 import distro
 from functools import lru_cache
-from typing import Optional, TypedDict
+from typing import Optional
+
+from .._types import TypedDict
 
 
 class OsSettings(TypedDict):
