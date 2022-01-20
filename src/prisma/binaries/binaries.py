@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import os
 import logging
+import tempfile
+from platform import system
 from pathlib import Path
 from typing import Optional, List
 
 import click
-
-
-import os
-import tempfile
-from pathlib import Path
-from typing import List
-
-from prisma.binaries.download import download
+from pydantic import BaseSettings, Field
 
 from . import platform
+from .download import download
 
 
 # PLATFORMS: List[str] = [
@@ -40,8 +37,6 @@ from . import platform
 
 PLATFORM = platform.get_platform()
 
-from pydantic import BaseSettings, Field
-
 
 # TODO: if this version changes but the engine version
 #       doesn't change then the CLI is incorrectly cached
@@ -56,6 +51,7 @@ GLOBAL_TEMP_DIR = (
     Path(tempfile.gettempdir()) / 'prisma' / 'binaries' / 'engines' / ENGINE_VERSION
 )
 PLATFORM_EXE_EXTENSION = ".exe" if PLATFORM == "windows" else ""
+CLI_PLATFORM = system().lower()
 
 
 def default_in_temp(name: str):
@@ -80,8 +76,7 @@ class PrismaSettings(BaseSettings):
 
 settings = PrismaSettings()
 
-# CLI binaries are stored here
-PRISMA_CLI_NAME = f"prisma-cli-{PRISMA_VERSION}-{PLATFORM}{PLATFORM_EXE_EXTENSION}"
+PRISMA_CLI_NAME = f"prisma-cli-{PRISMA_VERSION}-{CLI_PLATFORM}{PLATFORM_EXE_EXTENSION}"
 PRISMA_CLI_PATH = GLOBAL_TEMP_DIR / PRISMA_CLI_NAME
 PRISMA_CLI_URL = f"{settings.PRISMA_CLI_MIRROR}/{PRISMA_CLI_NAME}.gz"
 
