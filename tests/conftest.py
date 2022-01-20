@@ -33,7 +33,9 @@ prisma.register(Client())
 @async_fixture(name='client', scope='session')
 async def client_fixture() -> Client:
     client = prisma.get_client()
-    await client.connect()
+    if not client.is_connected():
+        await client.connect()
+
     await cleanup_client(client)
     return client
 
