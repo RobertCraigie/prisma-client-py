@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from prisma.binaries.constants import PRISMA_VERSION
+from prisma.binaries import PRISMA_VERSION
 
 
 ROOTDIR = Path(__file__).parent.parent
