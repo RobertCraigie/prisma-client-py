@@ -87,26 +87,26 @@ def test_mismatched_version_error(fake_process: FakeProcess) -> None:
     )
 
 
-def test_ensure_local_path(testdir: Testdir, fake_process: FakeProcess) -> None:
-    """Query engine in current directory required to be the expected version"""
-    fake_engine = testdir.path / platform.check_for_extension(
-        f'prisma-query-engine-{platform.binary_platform()}'
-    )
-    fake_engine.touch()
+# def test_ensure_local_path(testdir: Testdir, fake_process: FakeProcess) -> None:
+#     """Query engine in current directory required to be the expected version"""
+#     fake_engine = testdir.path / platform.check_for_extension(
+#         f'prisma-query-engine-{platform.binary_platform()}'
+#     )
+#     fake_engine.touch()
 
-    fake_process.register_subprocess(
-        [fake_engine, '--version'],  # type: ignore[list-item]
-        stdout='query-engine a-different-hash',
-    )
-    with pytest.raises(errors.MismatchedVersionsError):
-        path = utils.ensure()
+#     fake_process.register_subprocess(
+#         [fake_engine, '--version'],  # type: ignore[list-item]
+#         stdout='query-engine a-different-hash',
+#     )
+#     with pytest.raises(errors.MismatchedVersionsError):
+#         path = utils.ensure()
 
-    fake_process.register_subprocess(
-        [fake_engine, '--version'],  # type: ignore[list-item]
-        stdout=f'query-engine {ENGINE_VERSION}',
-    )
-    path = utils.ensure()
-    assert path == fake_engine
+#     fake_process.register_subprocess(
+#         [fake_engine, '--version'],  # type: ignore[list-item]
+#         stdout=f'query-engine {ENGINE_VERSION}',
+#     )
+#     path = utils.ensure()
+#     assert path == fake_engine
 
 
 def test_ensure_env_override(testdir: Testdir, fake_process: FakeProcess) -> None:
