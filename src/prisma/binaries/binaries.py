@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import os
 import logging
+import os
 import tempfile
 from pathlib import Path
-from typing import Callable, Optional, List
+from typing import Callable, List, Optional
 
 import click
 from pydantic import BaseSettings, Field
 
 from . import platform
 from .download import download
-
 
 # PLATFORMS: List[str] = [
 #     'darwin',

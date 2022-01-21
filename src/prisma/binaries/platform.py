@@ -1,10 +1,11 @@
+import platform
 import re
 import subprocess
-import platform
 import sys
-import distro
 from functools import lru_cache
 from typing import Optional
+
+import distro
 
 
 class OsSettings:
