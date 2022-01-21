@@ -98,6 +98,9 @@ class Binary:
         self.path = path
         self.url = engine_url_for(name) if url is None else url
 
+    def download(self) -> None:
+        download(self.url, self.path)
+
 
 ENGINES: List[Binary] = [
     Binary(name='query-engine', path=settings.PRISMA_QUERY_ENGINE_BINARY),
@@ -138,7 +141,7 @@ def ensure_cached() -> Path:
     ) as iterator:
         for binary in iterator:
             log.debug("Downloading %s from %s" % (binary.name, binary.url))
-            download(binary.url, binary.path)
+            binary.download()
 
     return GLOBAL_TEMP_DIR
 
