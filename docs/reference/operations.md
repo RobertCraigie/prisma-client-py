@@ -680,9 +680,6 @@ total = await client.post.count(
     cursor={
         'id': 'cksca3xm80035f08zjonuubik',
     },
-    order={
-        'created_at': 'asc',
-    },
 )
 ```
 
