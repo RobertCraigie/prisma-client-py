@@ -46,6 +46,14 @@ async def create_test_data(client: Client) -> None:
             }
         )
 
+    types_create = client.types.create
+    for i in range(10):
+        await types_create(
+            {
+                'integer': i,
+            },
+        )
+
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
@@ -298,6 +306,10 @@ async def test_count(snapshot: SnapshotAssertion, client: Client) -> None:
 @pytest.mark.persist_data
 async def test_avg(snapshot: SnapshotAssertion, client: Client) -> None:
     assert await client.profile.group_by(['country'], avg={'views': True}) == snapshot
+    assert (
+        await client.types.group_by(['string'], avg={'integer': True, 'bigint': True})
+        == snapshot
+    )
 
 
 @pytest.mark.asyncio

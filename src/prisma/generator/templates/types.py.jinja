@@ -636,7 +636,7 @@ class {{ current }}(TypedDict, total=False):
 # TODO: is python_type correct
 class {{ model.name }}GroupByOutput(TypedDict, total=False):
     {% for field in model.scalar_fields -%}
-        {{ '    ' }}{{ field.name }}: Optional[{{ field.python_type }}]
+        {{ '    ' }}{{ field.name }}: {{ field.python_type }}
     {% endfor %}
     _sum: '{{ model.name }}SumAggregateOutput'
     _avg: '{{ model.name }}AvgAggregateOutput'
@@ -645,7 +645,6 @@ class {{ model.name }}GroupByOutput(TypedDict, total=False):
     _count: '{{ model.name }}CountAggregateOutput'
 
 
-# TODO: should this be maybe_optional?
 class {{ model.name }}AvgAggregateOutput(TypedDict, total=False):
     """{{ model.name }} output for aggregating averages"""
     {% for field in model.scalar_fields %}
@@ -655,7 +654,6 @@ class {{ model.name }}AvgAggregateOutput(TypedDict, total=False):
     {% endfor %}
 
 
-# TODO: is this correct?
 class {{ model.name }}SumAggregateOutput(TypedDict, total=False):
     """{{ model.name }} output for aggregating sums"""
     {% for field in model.scalar_fields %}

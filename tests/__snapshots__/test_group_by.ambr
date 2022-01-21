@@ -14,6 +14,17 @@
     },
   ]
 ---
+# name: test_avg.1
+  <class 'list'> [
+    <class 'dict'> {
+      '_avg': <class 'dict'> {
+        'bigint': 0.0,
+        'integer': 4.5,
+      },
+      'string': '',
+    },
+  ]
+---
 # name: test_count
   <class 'list'> [
     <class 'dict'> {
