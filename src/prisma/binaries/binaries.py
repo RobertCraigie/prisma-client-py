@@ -4,7 +4,7 @@ import os
 import logging
 import tempfile
 from pathlib import Path
-from typing import Optional, List
+from typing import Callable, Optional, List
 
 import click
 from pydantic import BaseSettings, Field
@@ -35,26 +35,26 @@ from .download import download
 # ]
 
 # Get system information
-OS_SETTINGS = platform.get_os_settings()
-PLATFORM = platform.resolve_platform(OS_SETTINGS)
-CLI_PLATFORM = OS_SETTINGS.system
+OS_SETTINGS: platform.OsSettings = platform.get_os_settings()
+PLATFORM: str = platform.resolve_platform(OS_SETTINGS)
+CLI_PLATFORM: str = OS_SETTINGS.system
 
 # TODO: if this version changes but the engine version
 #       doesn't change then the CLI is incorrectly cached
 # hardcoded CLI version version
-PRISMA_VERSION = '3.7.0'
+PRISMA_VERSION: str = '3.7.0'
 
 # versions can be found under https://github.com/prisma/prisma-engine/commits/main
 ENGINE_VERSION = os.environ.get(
     'PRISMA_ENGINE_VERSION', '8746e055198f517658c08a0c426c7eec87f5a85f'
 )
-GLOBAL_TEMP_DIR = (
+GLOBAL_TEMP_DIR: Path = (
     Path(tempfile.gettempdir()) / 'prisma' / 'binaries' / 'engines' / ENGINE_VERSION
 )
-PLATFORM_EXE_EXTENSION = ".exe" if OS_SETTINGS.is_windows() else ""
+PLATFORM_EXE_EXTENSION: str = ".exe" if OS_SETTINGS.is_windows() else ""
 
 
-def default_in_temp(name: str):
+def default_in_temp(name: str) -> Callable[[], Path]:
     return lambda: (GLOBAL_TEMP_DIR / name).with_suffix(PLATFORM_EXE_EXTENSION)
 
 
@@ -74,7 +74,7 @@ class PrismaSettings(BaseSettings):
     PRISMA_CLI_BINARY_TARGETS: List[str] = Field(default_factory=list)
 
 
-settings = PrismaSettings()
+settings: PrismaSettings = PrismaSettings()
 
 
 PRISMA_CLI_NAME = f"prisma-cli-{PRISMA_VERSION}-{CLI_PLATFORM}{PLATFORM_EXE_EXTENSION}"
