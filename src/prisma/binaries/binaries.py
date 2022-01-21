@@ -119,9 +119,9 @@ def ensure_cached() -> Path:
     to_download: List[Binary] = []
     for binary in BINARIES:
         if binary.path.exists():
-            log.debug(f"{binary.name} is cached, skipping download")
+            log.debug(f"%s is cached, skipping download" % binary.name)
             continue
-        log.debug(f"{binary.name} is not cached, will download")
+        log.debug(f"%s is not cached, will download" % binary.name)
         to_download.append(binary)
 
     if len(to_download) == 0:
@@ -138,7 +138,7 @@ def ensure_cached() -> Path:
         item_show_func=show_item,
     ) as iterator:
         for binary in iterator:
-            print(f"Downloading {binary.url}")
+            log.debug("Downloading %s from %s" % (binary.name, binary.url))
             download(binary.url, binary.path)
 
     return GLOBAL_TEMP_DIR
