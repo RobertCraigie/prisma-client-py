@@ -42,11 +42,11 @@ CLI_PLATFORM: str = OS_SETTINGS.system
 # TODO: if this version changes but the engine version
 #       doesn't change then the CLI is incorrectly cached
 # hardcoded CLI version version
-PRISMA_VERSION: str = '3.7.0'
+PRISMA_VERSION: str = '3.8.1'
 
 # versions can be found under https://github.com/prisma/prisma-engine/commits/main
 ENGINE_VERSION = os.environ.get(
-    'PRISMA_ENGINE_VERSION', '8746e055198f517658c08a0c426c7eec87f5a85f'
+    'PRISMA_ENGINE_VERSION', '34df67547cf5598f5a6cd3eb45f14ee70c3fb86f'
 )
 GLOBAL_TEMP_DIR: Path = (
     Path(tempfile.gettempdir()) / 'prisma' / 'binaries' / 'engines' / ENGINE_VERSION
