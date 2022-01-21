@@ -7,8 +7,7 @@ import click
 
 from ..utils import pretty_info
 from ... import __version__
-from ...binaries import PRISMA_VERSION, ENGINE_VERSION
-from ...binaries.platform import binary_platform
+from ...binaries import PRISMA_VERSION, ENGINE_VERSION, PLATFORM
 
 
 @click.command(
@@ -38,7 +37,7 @@ def cli(output_json: bool) -> None:
     info = {
         'prisma': PRISMA_VERSION,
         'prisma client python': __version__,
-        'platform': binary_platform(),
+        'platform': PLATFORM,
         'engines': ENGINE_VERSION,
         'install path': str(Path(__file__).resolve().parent.parent.parent),
         'installed extras': installed,
