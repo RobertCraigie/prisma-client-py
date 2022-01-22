@@ -129,8 +129,8 @@ async def test_order_mismatched_arguments(client: Client) -> None:
         )
 
     assert exc.match(
-        r'Every field used for orderBy must be included in the by-arguments of the query\.'
-        + r'Missing fields: country'
+        r'Every field used for orderBy must be included in the by-arguments of the query\. '
+        r'Missing fields: country'
     )
 
 
