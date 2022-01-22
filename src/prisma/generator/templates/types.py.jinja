@@ -1,6 +1,8 @@
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import recursive_types, active_provider with context %}
 # -- template types.py.jinja --
+from typing import TypeVar
+
 import httpx
 from .utils import _NoneType
 
@@ -633,7 +635,6 @@ class {{ current }}(TypedDict, total=False):
 {% endcall %}
 
 
-# TODO: is python_type correct
 class {{ model.name }}GroupByOutput(TypedDict, total=False):
     {% for field in model.scalar_fields -%}
         {{ '    ' }}{{ field.name }}: {{ field.python_type }}
@@ -663,7 +664,6 @@ class {{ model.name }}SumAggregateOutput(TypedDict, total=False):
     {% endfor %}
 
 
-# TODO: is this correct?
 class {{ model.name }}ScalarAggregateOutput(TypedDict, total=False):
     """{{ model.name }} output including scalar fields"""
     {% for field in model.scalar_fields -%}
@@ -735,6 +735,7 @@ class {{ model.name }}NumberAggregateInput(TypedDict, total=False):
     '{{ field.name }}',
     {% endfor %}
 ]
+{{ model.name }}ScalarFieldKeysT = TypeVar('{{ model.name }}ScalarFieldKeysT', bound={{ model.name }}ScalarFieldKeys)
 
 {% if model.has_relational_fields -%}
     {{ model.name }}RelationalFieldKeys = Literal[

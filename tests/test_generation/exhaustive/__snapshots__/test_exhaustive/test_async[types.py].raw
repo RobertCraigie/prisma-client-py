@@ -29,11 +29,14 @@ from typing import (
 from typing_extensions import TypedDict, Literal
 
 # -- template types.py.jinja --
+from typing import TypeVar
+
 import httpx
 from .utils import _NoneType
 
 
 
+# TODO: filters with aggregates should have their own recursive fields
 # TODO: cleanup whitespace control
 # TODO: add an argument to signify that the last iteration should be skipped
 
@@ -140,6 +143,15 @@ StringFilterRecursive2 = TypedDict(
     total=False,
 )
 
+
+class StringWithAggregatesFilter(StringFilter, total=False):
+    _max: 'StringFilter'
+    _min: 'StringFilter'
+    _sum: 'StringFilter'
+    _avg: 'StringFilter'
+    _count: 'IntFilter'
+
+
     
 
 DateTimeFilter = TypedDict(
@@ -189,6 +201,14 @@ DateTimeFilterRecursive2 = TypedDict(
 )
 
 
+class DateTimeWithAggregatesFilter(DateTimeFilter, total=False):
+    _max: 'DateTimeFilter'
+    _min: 'DateTimeFilter'
+    _sum: 'DateTimeFilter'
+    _avg: 'DateTimeFilter'
+    _count: 'IntFilter'
+
+
     
 
 BooleanFilter = TypedDict(
@@ -218,6 +238,14 @@ BooleanFilterRecursive2 = TypedDict(
             },
     total=False,
 )
+
+
+class BooleanWithAggregatesFilter(BooleanFilter, total=False):
+    _max: 'BooleanFilter'
+    _min: 'BooleanFilter'
+    _sum: 'BooleanFilter'
+    _avg: 'BooleanFilter'
+    _count: 'IntFilter'
 
 
     
@@ -269,7 +297,16 @@ IntFilterRecursive2 = TypedDict(
 )
 
 
+class IntWithAggregatesFilter(IntFilter, total=False):
+    _max: 'IntFilter'
+    _min: 'IntFilter'
+    _sum: 'IntFilter'
+    _avg: 'IntFilter'
+    _count: 'IntFilter'
+
+
 BigIntFilter = IntFilter
+BigIntWithAggregatesFilter = IntWithAggregatesFilter
     
 
 FloatFilter = TypedDict(
@@ -318,6 +355,15 @@ FloatFilterRecursive2 = TypedDict(
     total=False,
 )
 
+
+class FloatWithAggregatesFilter(FloatFilter, total=False):
+    _max: 'FloatFilter'
+    _min: 'FloatFilter'
+    _sum: 'FloatFilter'
+    _avg: 'FloatFilter'
+    _count: 'IntFilter'
+
+
     
 
 BytesFilter = TypedDict(
@@ -348,6 +394,15 @@ BytesFilterRecursive2 = TypedDict(
     total=False,
 )
 
+
+class BytesWithAggregatesFilter(BytesFilter, total=False):
+    _max: 'BytesFilter'
+    _min: 'BytesFilter'
+    _sum: 'BytesFilter'
+    _avg: 'BytesFilter'
+    _count: 'IntFilter'
+
+
 # TODO: preview feature for improving JSON filtering
 JsonFilter = TypedDict(
     'JsonFilter',
@@ -357,6 +412,14 @@ JsonFilter = TypedDict(
     },
     total=False,
 )
+
+
+class JsonWithAggregatesFilter(JsonFilter, total=False):
+    _max: 'JsonFilter'
+    _min: 'JsonFilter'
+    _sum: 'JsonFilter'
+    _avg: 'JsonFilter'
+    _count: 'IntFilter'
 
 
 class _FloatSetInput(TypedDict):
@@ -1707,6 +1770,120 @@ class PostWhereInputRecursive2(TypedDict, total=False):
 
 
 
+# aggregate Post types
+
+
+    
+
+class PostScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """Post arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    created_at: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    title: Union[str, 'types.StringWithAggregatesFilter']
+    content: Union[str, 'types.StringWithAggregatesFilter']
+    published: Union[bool, 'types.BooleanWithAggregatesFilter']
+    author_id: Union[int, 'types.IntWithAggregatesFilter']
+
+    AND: List['PostScalarWhereWithAggregatesInputRecursive1']
+    OR: List['PostScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['PostScalarWhereWithAggregatesInputRecursive1']
+
+
+class PostScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """Post arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    created_at: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    title: Union[str, 'types.StringWithAggregatesFilter']
+    content: Union[str, 'types.StringWithAggregatesFilter']
+    published: Union[bool, 'types.BooleanWithAggregatesFilter']
+    author_id: Union[int, 'types.IntWithAggregatesFilter']
+
+    AND: List['PostScalarWhereWithAggregatesInputRecursive2']
+    OR: List['PostScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['PostScalarWhereWithAggregatesInputRecursive2']
+
+
+class PostScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """Post arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    created_at: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    title: Union[str, 'types.StringWithAggregatesFilter']
+    content: Union[str, 'types.StringWithAggregatesFilter']
+    published: Union[bool, 'types.BooleanWithAggregatesFilter']
+    author_id: Union[int, 'types.IntWithAggregatesFilter']
+
+
+
+class PostGroupByOutput(TypedDict, total=False):
+    id: int
+    created_at: datetime.datetime
+    title: str
+    content: str
+    published: bool
+    author_id: int
+    _sum: 'PostSumAggregateOutput'
+    _avg: 'PostAvgAggregateOutput'
+    _min: 'PostMinAggregateOutput'
+    _max: 'PostMaxAggregateOutput'
+    _count: 'PostCountAggregateOutput'
+
+
+class PostAvgAggregateOutput(TypedDict, total=False):
+    """Post output for aggregating averages"""
+    id: float
+    author_id: float
+
+
+class PostSumAggregateOutput(TypedDict, total=False):
+    """Post output for aggregating sums"""
+    id: int
+    author_id: int
+
+
+class PostScalarAggregateOutput(TypedDict, total=False):
+    """Post output including scalar fields"""
+    id: int
+    created_at: datetime.datetime
+    title: str
+    content: str
+    published: bool
+    author_id: int
+
+
+PostMinAggregateOutput = PostScalarAggregateOutput
+PostMaxAggregateOutput = PostScalarAggregateOutput
+
+
+class PostMaxAggregateInput(TypedDict, total=False):
+    """Post input for aggregating by max"""
+    id: bool
+    created_at: bool
+    title: bool
+    content: bool
+    published: bool
+    author_id: bool
+
+
+class PostMinAggregateInput(TypedDict, total=False):
+    """Post input for aggregating by min"""
+    id: bool
+    created_at: bool
+    title: bool
+    content: bool
+    published: bool
+    author_id: bool
+
+
+class PostNumberAggregateInput(TypedDict, total=False):
+    """Post input for aggregating numbers"""
+    id: bool
+    author_id: bool
+
+
+PostAvgAggregateInput = PostNumberAggregateInput
+PostSumAggregateInput = PostNumberAggregateInput
+
+
 PostCountAggregateInput = TypedDict(
     'PostCountAggregateInput',
     {
@@ -1745,6 +1922,15 @@ PostKeys = Literal[
     'author',
     'author_id',
 ]
+PostScalarFieldKeys = Literal[
+    'id',
+    'created_at',
+    'title',
+    'content',
+    'published',
+    'author_id',
+]
+PostScalarFieldKeysT = TypeVar('PostScalarFieldKeysT', bound=PostScalarFieldKeys)
 
 PostRelationalFieldKeys = Literal[
         'author',
@@ -2716,6 +2902,171 @@ class UserWhereInputRecursive2(TypedDict, total=False):
 
 
 
+# aggregate User types
+
+
+    
+
+class UserScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """User arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    email: Union[str, 'types.StringWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+    AND: List['UserScalarWhereWithAggregatesInputRecursive1']
+    OR: List['UserScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['UserScalarWhereWithAggregatesInputRecursive1']
+
+
+class UserScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """User arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    email: Union[str, 'types.StringWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+    AND: List['UserScalarWhereWithAggregatesInputRecursive2']
+    OR: List['UserScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['UserScalarWhereWithAggregatesInputRecursive2']
+
+
+class UserScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """User arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    email: Union[str, 'types.StringWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+
+
+class UserGroupByOutput(TypedDict, total=False):
+    id: int
+    email: str
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+    string: str
+    optional_string: str
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: bool
+    optional_boolean: bool
+    _sum: 'UserSumAggregateOutput'
+    _avg: 'UserAvgAggregateOutput'
+    _min: 'UserMinAggregateOutput'
+    _max: 'UserMaxAggregateOutput'
+    _count: 'UserCountAggregateOutput'
+
+
+class UserAvgAggregateOutput(TypedDict, total=False):
+    """User output for aggregating averages"""
+    id: float
+    int: float
+    optional_int: float
+    float: float
+    optional_float: float
+
+
+class UserSumAggregateOutput(TypedDict, total=False):
+    """User output for aggregating sums"""
+    id: int
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+
+
+class UserScalarAggregateOutput(TypedDict, total=False):
+    """User output including scalar fields"""
+    id: int
+    email: str
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+    string: str
+    optional_string: str
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: bool
+    optional_boolean: bool
+
+
+UserMinAggregateOutput = UserScalarAggregateOutput
+UserMaxAggregateOutput = UserScalarAggregateOutput
+
+
+class UserMaxAggregateInput(TypedDict, total=False):
+    """User input for aggregating by max"""
+    id: bool
+    email: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+    string: bool
+    optional_string: bool
+    enum: bool
+    optional_enum: bool
+    boolean: bool
+    optional_boolean: bool
+
+
+class UserMinAggregateInput(TypedDict, total=False):
+    """User input for aggregating by min"""
+    id: bool
+    email: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+    string: bool
+    optional_string: bool
+    enum: bool
+    optional_enum: bool
+    boolean: bool
+    optional_boolean: bool
+
+
+class UserNumberAggregateInput(TypedDict, total=False):
+    """User input for aggregating numbers"""
+    id: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+
+
+UserAvgAggregateInput = UserNumberAggregateInput
+UserSumAggregateInput = UserNumberAggregateInput
+
+
 UserCountAggregateInput = TypedDict(
     'UserCountAggregateInput',
     {
@@ -2772,6 +3123,21 @@ UserKeys = Literal[
     'optional_boolean',
     'posts',
 ]
+UserScalarFieldKeys = Literal[
+    'id',
+    'email',
+    'int',
+    'optional_int',
+    'float',
+    'optional_float',
+    'string',
+    'optional_string',
+    'enum',
+    'optional_enum',
+    'boolean',
+    'optional_boolean',
+]
+UserScalarFieldKeysT = TypeVar('UserScalarFieldKeysT', bound=UserScalarFieldKeys)
 
 UserRelationalFieldKeys = Literal[
         'posts',
@@ -3725,6 +4091,164 @@ class MWhereInputRecursive2(TypedDict, total=False):
 
 
 
+# aggregate M types
+
+
+    
+
+class MScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """M arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+    AND: List['MScalarWhereWithAggregatesInputRecursive1']
+    OR: List['MScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['MScalarWhereWithAggregatesInputRecursive1']
+
+
+class MScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """M arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+    AND: List['MScalarWhereWithAggregatesInputRecursive2']
+    OR: List['MScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['MScalarWhereWithAggregatesInputRecursive2']
+
+
+class MScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """M arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+
+
+class MGroupByOutput(TypedDict, total=False):
+    id: int
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+    string: str
+    optional_string: str
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: bool
+    optional_boolean: bool
+    _sum: 'MSumAggregateOutput'
+    _avg: 'MAvgAggregateOutput'
+    _min: 'MMinAggregateOutput'
+    _max: 'MMaxAggregateOutput'
+    _count: 'MCountAggregateOutput'
+
+
+class MAvgAggregateOutput(TypedDict, total=False):
+    """M output for aggregating averages"""
+    id: float
+    int: float
+    optional_int: float
+    float: float
+    optional_float: float
+
+
+class MSumAggregateOutput(TypedDict, total=False):
+    """M output for aggregating sums"""
+    id: int
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+
+
+class MScalarAggregateOutput(TypedDict, total=False):
+    """M output including scalar fields"""
+    id: int
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+    string: str
+    optional_string: str
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: bool
+    optional_boolean: bool
+
+
+MMinAggregateOutput = MScalarAggregateOutput
+MMaxAggregateOutput = MScalarAggregateOutput
+
+
+class MMaxAggregateInput(TypedDict, total=False):
+    """M input for aggregating by max"""
+    id: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+    string: bool
+    optional_string: bool
+    enum: bool
+    optional_enum: bool
+    boolean: bool
+    optional_boolean: bool
+
+
+class MMinAggregateInput(TypedDict, total=False):
+    """M input for aggregating by min"""
+    id: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+    string: bool
+    optional_string: bool
+    enum: bool
+    optional_enum: bool
+    boolean: bool
+    optional_boolean: bool
+
+
+class MNumberAggregateInput(TypedDict, total=False):
+    """M input for aggregating numbers"""
+    id: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+
+
+MAvgAggregateInput = MNumberAggregateInput
+MSumAggregateInput = MNumberAggregateInput
+
+
 MCountAggregateInput = TypedDict(
     'MCountAggregateInput',
     {
@@ -3778,6 +4302,20 @@ MKeys = Literal[
     'boolean',
     'optional_boolean',
 ]
+MScalarFieldKeys = Literal[
+    'id',
+    'int',
+    'optional_int',
+    'float',
+    'optional_float',
+    'string',
+    'optional_string',
+    'enum',
+    'optional_enum',
+    'boolean',
+    'optional_boolean',
+]
+MScalarFieldKeysT = TypeVar('MScalarFieldKeysT', bound=MScalarFieldKeys)
 
 MRelationalFieldKeys = Literal[
         'n',
@@ -4747,6 +5285,178 @@ class NWhereInputRecursive2(TypedDict, total=False):
 
 
 
+# aggregate N types
+
+
+    
+
+class NScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """N arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    json_: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    optional_json: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+    AND: List['NScalarWhereWithAggregatesInputRecursive1']
+    OR: List['NScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['NScalarWhereWithAggregatesInputRecursive1']
+
+
+class NScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """N arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    json_: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    optional_json: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+    AND: List['NScalarWhereWithAggregatesInputRecursive2']
+    OR: List['NScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['NScalarWhereWithAggregatesInputRecursive2']
+
+
+class NScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """N arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    json_: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    optional_json: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+
+
+class NGroupByOutput(TypedDict, total=False):
+    id: int
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+    string: str
+    optional_string: str
+    json_: 'fields.Json'
+    optional_json: 'fields.Json'
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: bool
+    optional_boolean: bool
+    _sum: 'NSumAggregateOutput'
+    _avg: 'NAvgAggregateOutput'
+    _min: 'NMinAggregateOutput'
+    _max: 'NMaxAggregateOutput'
+    _count: 'NCountAggregateOutput'
+
+
+class NAvgAggregateOutput(TypedDict, total=False):
+    """N output for aggregating averages"""
+    id: float
+    int: float
+    optional_int: float
+    float: float
+    optional_float: float
+
+
+class NSumAggregateOutput(TypedDict, total=False):
+    """N output for aggregating sums"""
+    id: int
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+
+
+class NScalarAggregateOutput(TypedDict, total=False):
+    """N output including scalar fields"""
+    id: int
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+    string: str
+    optional_string: str
+    json_: 'fields.Json'
+    optional_json: 'fields.Json'
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: bool
+    optional_boolean: bool
+
+
+NMinAggregateOutput = NScalarAggregateOutput
+NMaxAggregateOutput = NScalarAggregateOutput
+
+
+class NMaxAggregateInput(TypedDict, total=False):
+    """N input for aggregating by max"""
+    id: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+    string: bool
+    optional_string: bool
+    json_: bool
+    optional_json: bool
+    enum: bool
+    optional_enum: bool
+    boolean: bool
+    optional_boolean: bool
+
+
+class NMinAggregateInput(TypedDict, total=False):
+    """N input for aggregating by min"""
+    id: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+    string: bool
+    optional_string: bool
+    json_: bool
+    optional_json: bool
+    enum: bool
+    optional_enum: bool
+    boolean: bool
+    optional_boolean: bool
+
+
+class NNumberAggregateInput(TypedDict, total=False):
+    """N input for aggregating numbers"""
+    id: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+
+
+NAvgAggregateInput = NNumberAggregateInput
+NSumAggregateInput = NNumberAggregateInput
+
+
 NCountAggregateInput = TypedDict(
     'NCountAggregateInput',
     {
@@ -4806,6 +5516,22 @@ NKeys = Literal[
     'boolean',
     'optional_boolean',
 ]
+NScalarFieldKeys = Literal[
+    'id',
+    'int',
+    'optional_int',
+    'float',
+    'optional_float',
+    'string',
+    'optional_string',
+    'json_',
+    'optional_json',
+    'enum',
+    'optional_enum',
+    'boolean',
+    'optional_boolean',
+]
+NScalarFieldKeysT = TypeVar('NScalarFieldKeysT', bound=NScalarFieldKeys)
 
 NRelationalFieldKeys = Literal[
         'm',
@@ -5759,6 +6485,164 @@ class OneOptionalWhereInputRecursive2(TypedDict, total=False):
 
 
 
+# aggregate OneOptional types
+
+
+    
+
+class OneOptionalScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """OneOptional arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+    AND: List['OneOptionalScalarWhereWithAggregatesInputRecursive1']
+    OR: List['OneOptionalScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['OneOptionalScalarWhereWithAggregatesInputRecursive1']
+
+
+class OneOptionalScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """OneOptional arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+    AND: List['OneOptionalScalarWhereWithAggregatesInputRecursive2']
+    OR: List['OneOptionalScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['OneOptionalScalarWhereWithAggregatesInputRecursive2']
+
+
+class OneOptionalScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """OneOptional arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+
+
+class OneOptionalGroupByOutput(TypedDict, total=False):
+    id: int
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+    string: str
+    optional_string: str
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: bool
+    optional_boolean: bool
+    _sum: 'OneOptionalSumAggregateOutput'
+    _avg: 'OneOptionalAvgAggregateOutput'
+    _min: 'OneOptionalMinAggregateOutput'
+    _max: 'OneOptionalMaxAggregateOutput'
+    _count: 'OneOptionalCountAggregateOutput'
+
+
+class OneOptionalAvgAggregateOutput(TypedDict, total=False):
+    """OneOptional output for aggregating averages"""
+    id: float
+    int: float
+    optional_int: float
+    float: float
+    optional_float: float
+
+
+class OneOptionalSumAggregateOutput(TypedDict, total=False):
+    """OneOptional output for aggregating sums"""
+    id: int
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+
+
+class OneOptionalScalarAggregateOutput(TypedDict, total=False):
+    """OneOptional output including scalar fields"""
+    id: int
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+    string: str
+    optional_string: str
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: bool
+    optional_boolean: bool
+
+
+OneOptionalMinAggregateOutput = OneOptionalScalarAggregateOutput
+OneOptionalMaxAggregateOutput = OneOptionalScalarAggregateOutput
+
+
+class OneOptionalMaxAggregateInput(TypedDict, total=False):
+    """OneOptional input for aggregating by max"""
+    id: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+    string: bool
+    optional_string: bool
+    enum: bool
+    optional_enum: bool
+    boolean: bool
+    optional_boolean: bool
+
+
+class OneOptionalMinAggregateInput(TypedDict, total=False):
+    """OneOptional input for aggregating by min"""
+    id: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+    string: bool
+    optional_string: bool
+    enum: bool
+    optional_enum: bool
+    boolean: bool
+    optional_boolean: bool
+
+
+class OneOptionalNumberAggregateInput(TypedDict, total=False):
+    """OneOptional input for aggregating numbers"""
+    id: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+
+
+OneOptionalAvgAggregateInput = OneOptionalNumberAggregateInput
+OneOptionalSumAggregateInput = OneOptionalNumberAggregateInput
+
+
 OneOptionalCountAggregateInput = TypedDict(
     'OneOptionalCountAggregateInput',
     {
@@ -5812,6 +6696,20 @@ OneOptionalKeys = Literal[
     'boolean',
     'optional_boolean',
 ]
+OneOptionalScalarFieldKeys = Literal[
+    'id',
+    'int',
+    'optional_int',
+    'float',
+    'optional_float',
+    'string',
+    'optional_string',
+    'enum',
+    'optional_enum',
+    'boolean',
+    'optional_boolean',
+]
+OneOptionalScalarFieldKeysT = TypeVar('OneOptionalScalarFieldKeysT', bound=OneOptionalScalarFieldKeys)
 
 OneOptionalRelationalFieldKeys = Literal[
         'many',
@@ -6769,6 +7667,174 @@ class ManyRequiredWhereInputRecursive2(TypedDict, total=False):
 
 
 
+# aggregate ManyRequired types
+
+
+    
+
+class ManyRequiredScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """ManyRequired arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    one_optional_id: Union[int, 'types.IntWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+    AND: List['ManyRequiredScalarWhereWithAggregatesInputRecursive1']
+    OR: List['ManyRequiredScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['ManyRequiredScalarWhereWithAggregatesInputRecursive1']
+
+
+class ManyRequiredScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """ManyRequired arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    one_optional_id: Union[int, 'types.IntWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+    AND: List['ManyRequiredScalarWhereWithAggregatesInputRecursive2']
+    OR: List['ManyRequiredScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['ManyRequiredScalarWhereWithAggregatesInputRecursive2']
+
+
+class ManyRequiredScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """ManyRequired arguments for searching"""
+    id: Union[int, 'types.IntWithAggregatesFilter']
+    one_optional_id: Union[int, 'types.IntWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[int, 'types.IntWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
+    string: Union[str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+
+
+
+class ManyRequiredGroupByOutput(TypedDict, total=False):
+    id: int
+    one_optional_id: int
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+    string: str
+    optional_string: str
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: bool
+    optional_boolean: bool
+    _sum: 'ManyRequiredSumAggregateOutput'
+    _avg: 'ManyRequiredAvgAggregateOutput'
+    _min: 'ManyRequiredMinAggregateOutput'
+    _max: 'ManyRequiredMaxAggregateOutput'
+    _count: 'ManyRequiredCountAggregateOutput'
+
+
+class ManyRequiredAvgAggregateOutput(TypedDict, total=False):
+    """ManyRequired output for aggregating averages"""
+    id: float
+    one_optional_id: float
+    int: float
+    optional_int: float
+    float: float
+    optional_float: float
+
+
+class ManyRequiredSumAggregateOutput(TypedDict, total=False):
+    """ManyRequired output for aggregating sums"""
+    id: int
+    one_optional_id: int
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+
+
+class ManyRequiredScalarAggregateOutput(TypedDict, total=False):
+    """ManyRequired output including scalar fields"""
+    id: int
+    one_optional_id: int
+    int: int
+    optional_int: int
+    float: float
+    optional_float: float
+    string: str
+    optional_string: str
+    enum: 'enums.ABeautifulEnum'
+    optional_enum: 'enums.ABeautifulEnum'
+    boolean: bool
+    optional_boolean: bool
+
+
+ManyRequiredMinAggregateOutput = ManyRequiredScalarAggregateOutput
+ManyRequiredMaxAggregateOutput = ManyRequiredScalarAggregateOutput
+
+
+class ManyRequiredMaxAggregateInput(TypedDict, total=False):
+    """ManyRequired input for aggregating by max"""
+    id: bool
+    one_optional_id: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+    string: bool
+    optional_string: bool
+    enum: bool
+    optional_enum: bool
+    boolean: bool
+    optional_boolean: bool
+
+
+class ManyRequiredMinAggregateInput(TypedDict, total=False):
+    """ManyRequired input for aggregating by min"""
+    id: bool
+    one_optional_id: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+    string: bool
+    optional_string: bool
+    enum: bool
+    optional_enum: bool
+    boolean: bool
+    optional_boolean: bool
+
+
+class ManyRequiredNumberAggregateInput(TypedDict, total=False):
+    """ManyRequired input for aggregating numbers"""
+    id: bool
+    one_optional_id: bool
+    int: bool
+    optional_int: bool
+    float: bool
+    optional_float: bool
+
+
+ManyRequiredAvgAggregateInput = ManyRequiredNumberAggregateInput
+ManyRequiredSumAggregateInput = ManyRequiredNumberAggregateInput
+
+
 ManyRequiredCountAggregateInput = TypedDict(
     'ManyRequiredCountAggregateInput',
     {
@@ -6825,6 +7891,21 @@ ManyRequiredKeys = Literal[
     'boolean',
     'optional_boolean',
 ]
+ManyRequiredScalarFieldKeys = Literal[
+    'id',
+    'one_optional_id',
+    'int',
+    'optional_int',
+    'float',
+    'optional_float',
+    'string',
+    'optional_string',
+    'enum',
+    'optional_enum',
+    'boolean',
+    'optional_boolean',
+]
+ManyRequiredScalarFieldKeysT = TypeVar('ManyRequiredScalarFieldKeysT', bound=ManyRequiredScalarFieldKeys)
 
 ManyRequiredRelationalFieldKeys = Literal[
         'one',
@@ -7756,6 +8837,144 @@ class ListsWhereInputRecursive2(TypedDict, total=False):
 
 
 
+# aggregate Lists types
+
+
+    
+
+class ListsScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """Lists arguments for searching"""
+    id: Union[str, 'types.StringWithAggregatesFilter']
+    strings: Union[str, 'types.StringWithAggregatesFilter']
+    bytes: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
+    dates: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    bools: Union[bool, 'types.BooleanWithAggregatesFilter']
+    ints: Union[int, 'types.IntWithAggregatesFilter']
+    floats: Union[float, 'types.FloatWithAggregatesFilter']
+    bigints: Union[int, 'types.BigIntWithAggregatesFilter']
+    json_objects: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+
+    AND: List['ListsScalarWhereWithAggregatesInputRecursive1']
+    OR: List['ListsScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['ListsScalarWhereWithAggregatesInputRecursive1']
+
+
+class ListsScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """Lists arguments for searching"""
+    id: Union[str, 'types.StringWithAggregatesFilter']
+    strings: Union[str, 'types.StringWithAggregatesFilter']
+    bytes: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
+    dates: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    bools: Union[bool, 'types.BooleanWithAggregatesFilter']
+    ints: Union[int, 'types.IntWithAggregatesFilter']
+    floats: Union[float, 'types.FloatWithAggregatesFilter']
+    bigints: Union[int, 'types.BigIntWithAggregatesFilter']
+    json_objects: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+
+    AND: List['ListsScalarWhereWithAggregatesInputRecursive2']
+    OR: List['ListsScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['ListsScalarWhereWithAggregatesInputRecursive2']
+
+
+class ListsScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """Lists arguments for searching"""
+    id: Union[str, 'types.StringWithAggregatesFilter']
+    strings: Union[str, 'types.StringWithAggregatesFilter']
+    bytes: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
+    dates: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    bools: Union[bool, 'types.BooleanWithAggregatesFilter']
+    ints: Union[int, 'types.IntWithAggregatesFilter']
+    floats: Union[float, 'types.FloatWithAggregatesFilter']
+    bigints: Union[int, 'types.BigIntWithAggregatesFilter']
+    json_objects: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+
+
+
+class ListsGroupByOutput(TypedDict, total=False):
+    id: str
+    strings: List[str]
+    bytes: List['fields.Base64']
+    dates: List[datetime.datetime]
+    bools: List[bool]
+    ints: List[int]
+    floats: List[float]
+    bigints: List[int]
+    json_objects: List['fields.Json']
+    _sum: 'ListsSumAggregateOutput'
+    _avg: 'ListsAvgAggregateOutput'
+    _min: 'ListsMinAggregateOutput'
+    _max: 'ListsMaxAggregateOutput'
+    _count: 'ListsCountAggregateOutput'
+
+
+class ListsAvgAggregateOutput(TypedDict, total=False):
+    """Lists output for aggregating averages"""
+    ints: float
+    floats: float
+    bigints: float
+
+
+class ListsSumAggregateOutput(TypedDict, total=False):
+    """Lists output for aggregating sums"""
+    ints: List[int]
+    floats: List[float]
+    bigints: List[int]
+
+
+class ListsScalarAggregateOutput(TypedDict, total=False):
+    """Lists output including scalar fields"""
+    id: str
+    strings: List[str]
+    bytes: List['fields.Base64']
+    dates: List[datetime.datetime]
+    bools: List[bool]
+    ints: List[int]
+    floats: List[float]
+    bigints: List[int]
+    json_objects: List['fields.Json']
+
+
+ListsMinAggregateOutput = ListsScalarAggregateOutput
+ListsMaxAggregateOutput = ListsScalarAggregateOutput
+
+
+class ListsMaxAggregateInput(TypedDict, total=False):
+    """Lists input for aggregating by max"""
+    id: bool
+    strings: bool
+    bytes: bool
+    dates: bool
+    bools: bool
+    ints: bool
+    floats: bool
+    bigints: bool
+    json_objects: bool
+
+
+class ListsMinAggregateInput(TypedDict, total=False):
+    """Lists input for aggregating by min"""
+    id: bool
+    strings: bool
+    bytes: bool
+    dates: bool
+    bools: bool
+    ints: bool
+    floats: bool
+    bigints: bool
+    json_objects: bool
+
+
+class ListsNumberAggregateInput(TypedDict, total=False):
+    """Lists input for aggregating numbers"""
+    ints: bool
+    floats: bool
+    bigints: bool
+
+
+ListsAvgAggregateInput = ListsNumberAggregateInput
+ListsSumAggregateInput = ListsNumberAggregateInput
+
+
 ListsCountAggregateInput = TypedDict(
     'ListsCountAggregateInput',
     {
@@ -7802,6 +9021,18 @@ ListsKeys = Literal[
     'bigints',
     'json_objects',
 ]
+ListsScalarFieldKeys = Literal[
+    'id',
+    'strings',
+    'bytes',
+    'dates',
+    'bools',
+    'ints',
+    'floats',
+    'bigints',
+    'json_objects',
+]
+ListsScalarFieldKeysT = TypeVar('ListsScalarFieldKeysT', bound=ListsScalarFieldKeys)
 
 ListsRelationalFieldKeys = _NoneType
 
@@ -8752,6 +9983,153 @@ class AWhereInputRecursive2(TypedDict, total=False):
 
 
 
+# aggregate A types
+
+
+    
+
+class AScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """A arguments for searching"""
+    email: Union[str, 'types.StringWithAggregatesFilter']
+    name: Union[str, 'types.StringWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    sInt: Union[int, 'types.IntWithAggregatesFilter']
+    inc_int: Union[int, 'types.IntWithAggregatesFilter']
+    inc_sInt: Union[int, 'types.IntWithAggregatesFilter']
+    bInt: Union[int, 'types.BigIntWithAggregatesFilter']
+    inc_bInt: Union[int, 'types.BigIntWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+
+    AND: List['AScalarWhereWithAggregatesInputRecursive1']
+    OR: List['AScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['AScalarWhereWithAggregatesInputRecursive1']
+
+
+class AScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """A arguments for searching"""
+    email: Union[str, 'types.StringWithAggregatesFilter']
+    name: Union[str, 'types.StringWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    sInt: Union[int, 'types.IntWithAggregatesFilter']
+    inc_int: Union[int, 'types.IntWithAggregatesFilter']
+    inc_sInt: Union[int, 'types.IntWithAggregatesFilter']
+    bInt: Union[int, 'types.BigIntWithAggregatesFilter']
+    inc_bInt: Union[int, 'types.BigIntWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+
+    AND: List['AScalarWhereWithAggregatesInputRecursive2']
+    OR: List['AScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['AScalarWhereWithAggregatesInputRecursive2']
+
+
+class AScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """A arguments for searching"""
+    email: Union[str, 'types.StringWithAggregatesFilter']
+    name: Union[str, 'types.StringWithAggregatesFilter']
+    int: Union[int, 'types.IntWithAggregatesFilter']
+    sInt: Union[int, 'types.IntWithAggregatesFilter']
+    inc_int: Union[int, 'types.IntWithAggregatesFilter']
+    inc_sInt: Union[int, 'types.IntWithAggregatesFilter']
+    bInt: Union[int, 'types.BigIntWithAggregatesFilter']
+    inc_bInt: Union[int, 'types.BigIntWithAggregatesFilter']
+    enum: 'enums.ABeautifulEnum'
+
+
+
+class AGroupByOutput(TypedDict, total=False):
+    email: str
+    name: str
+    int: int
+    sInt: int
+    inc_int: int
+    inc_sInt: int
+    bInt: int
+    inc_bInt: int
+    enum: 'enums.ABeautifulEnum'
+    _sum: 'ASumAggregateOutput'
+    _avg: 'AAvgAggregateOutput'
+    _min: 'AMinAggregateOutput'
+    _max: 'AMaxAggregateOutput'
+    _count: 'ACountAggregateOutput'
+
+
+class AAvgAggregateOutput(TypedDict, total=False):
+    """A output for aggregating averages"""
+    int: float
+    sInt: float
+    inc_int: float
+    inc_sInt: float
+    bInt: float
+    inc_bInt: float
+
+
+class ASumAggregateOutput(TypedDict, total=False):
+    """A output for aggregating sums"""
+    int: int
+    sInt: int
+    inc_int: int
+    inc_sInt: int
+    bInt: int
+    inc_bInt: int
+
+
+class AScalarAggregateOutput(TypedDict, total=False):
+    """A output including scalar fields"""
+    email: str
+    name: str
+    int: int
+    sInt: int
+    inc_int: int
+    inc_sInt: int
+    bInt: int
+    inc_bInt: int
+    enum: 'enums.ABeautifulEnum'
+
+
+AMinAggregateOutput = AScalarAggregateOutput
+AMaxAggregateOutput = AScalarAggregateOutput
+
+
+class AMaxAggregateInput(TypedDict, total=False):
+    """A input for aggregating by max"""
+    email: bool
+    name: bool
+    int: bool
+    sInt: bool
+    inc_int: bool
+    inc_sInt: bool
+    bInt: bool
+    inc_bInt: bool
+    enum: bool
+
+
+class AMinAggregateInput(TypedDict, total=False):
+    """A input for aggregating by min"""
+    email: bool
+    name: bool
+    int: bool
+    sInt: bool
+    inc_int: bool
+    inc_sInt: bool
+    bInt: bool
+    inc_bInt: bool
+    enum: bool
+
+
+class ANumberAggregateInput(TypedDict, total=False):
+    """A input for aggregating numbers"""
+    int: bool
+    sInt: bool
+    inc_int: bool
+    inc_sInt: bool
+    bInt: bool
+    inc_bInt: bool
+
+
+AAvgAggregateInput = ANumberAggregateInput
+ASumAggregateInput = ANumberAggregateInput
+
+
 ACountAggregateInput = TypedDict(
     'ACountAggregateInput',
     {
@@ -8798,6 +10176,18 @@ AKeys = Literal[
     'inc_bInt',
     'enum',
 ]
+AScalarFieldKeys = Literal[
+    'email',
+    'name',
+    'int',
+    'sInt',
+    'inc_int',
+    'inc_sInt',
+    'bInt',
+    'inc_bInt',
+    'enum',
+]
+AScalarFieldKeysT = TypeVar('AScalarFieldKeysT', bound=AScalarFieldKeys)
 
 ARelationalFieldKeys = _NoneType
 
@@ -9699,6 +11089,99 @@ class BWhereInputRecursive2(TypedDict, total=False):
 
 
 
+# aggregate B types
+
+
+    
+
+class BScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """B arguments for searching"""
+    id: Union[str, 'types.StringWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    d_float: Union[float, 'types.FloatWithAggregatesFilter']
+
+    AND: List['BScalarWhereWithAggregatesInputRecursive1']
+    OR: List['BScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['BScalarWhereWithAggregatesInputRecursive1']
+
+
+class BScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """B arguments for searching"""
+    id: Union[str, 'types.StringWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    d_float: Union[float, 'types.FloatWithAggregatesFilter']
+
+    AND: List['BScalarWhereWithAggregatesInputRecursive2']
+    OR: List['BScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['BScalarWhereWithAggregatesInputRecursive2']
+
+
+class BScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """B arguments for searching"""
+    id: Union[str, 'types.StringWithAggregatesFilter']
+    float: Union[float, 'types.FloatWithAggregatesFilter']
+    d_float: Union[float, 'types.FloatWithAggregatesFilter']
+
+
+
+class BGroupByOutput(TypedDict, total=False):
+    id: str
+    float: float
+    d_float: float
+    _sum: 'BSumAggregateOutput'
+    _avg: 'BAvgAggregateOutput'
+    _min: 'BMinAggregateOutput'
+    _max: 'BMaxAggregateOutput'
+    _count: 'BCountAggregateOutput'
+
+
+class BAvgAggregateOutput(TypedDict, total=False):
+    """B output for aggregating averages"""
+    float: float
+    d_float: float
+
+
+class BSumAggregateOutput(TypedDict, total=False):
+    """B output for aggregating sums"""
+    float: float
+    d_float: float
+
+
+class BScalarAggregateOutput(TypedDict, total=False):
+    """B output including scalar fields"""
+    id: str
+    float: float
+    d_float: float
+
+
+BMinAggregateOutput = BScalarAggregateOutput
+BMaxAggregateOutput = BScalarAggregateOutput
+
+
+class BMaxAggregateInput(TypedDict, total=False):
+    """B input for aggregating by max"""
+    id: bool
+    float: bool
+    d_float: bool
+
+
+class BMinAggregateInput(TypedDict, total=False):
+    """B input for aggregating by min"""
+    id: bool
+    float: bool
+    d_float: bool
+
+
+class BNumberAggregateInput(TypedDict, total=False):
+    """B input for aggregating numbers"""
+    float: bool
+    d_float: bool
+
+
+BAvgAggregateInput = BNumberAggregateInput
+BSumAggregateInput = BNumberAggregateInput
+
+
 BCountAggregateInput = TypedDict(
     'BCountAggregateInput',
     {
@@ -9727,6 +11210,12 @@ BKeys = Literal[
     'float',
     'd_float',
 ]
+BScalarFieldKeys = Literal[
+    'id',
+    'float',
+    'd_float',
+]
+BScalarFieldKeysT = TypeVar('BScalarFieldKeysT', bound=BScalarFieldKeys)
 
 BRelationalFieldKeys = _NoneType
 
@@ -10642,6 +12131,114 @@ class CWhereInputRecursive2(TypedDict, total=False):
 
 
 
+# aggregate C types
+
+
+    
+
+class CScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """C arguments for searching"""
+    char: Union[str, 'types.StringWithAggregatesFilter']
+    v_char: Union[str, 'types.StringWithAggregatesFilter']
+    text: Union[str, 'types.StringWithAggregatesFilter']
+    bit: Union[str, 'types.StringWithAggregatesFilter']
+    v_bit: Union[str, 'types.StringWithAggregatesFilter']
+    uuid: Union[str, 'types.StringWithAggregatesFilter']
+
+    AND: List['CScalarWhereWithAggregatesInputRecursive1']
+    OR: List['CScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['CScalarWhereWithAggregatesInputRecursive1']
+
+
+class CScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """C arguments for searching"""
+    char: Union[str, 'types.StringWithAggregatesFilter']
+    v_char: Union[str, 'types.StringWithAggregatesFilter']
+    text: Union[str, 'types.StringWithAggregatesFilter']
+    bit: Union[str, 'types.StringWithAggregatesFilter']
+    v_bit: Union[str, 'types.StringWithAggregatesFilter']
+    uuid: Union[str, 'types.StringWithAggregatesFilter']
+
+    AND: List['CScalarWhereWithAggregatesInputRecursive2']
+    OR: List['CScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['CScalarWhereWithAggregatesInputRecursive2']
+
+
+class CScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """C arguments for searching"""
+    char: Union[str, 'types.StringWithAggregatesFilter']
+    v_char: Union[str, 'types.StringWithAggregatesFilter']
+    text: Union[str, 'types.StringWithAggregatesFilter']
+    bit: Union[str, 'types.StringWithAggregatesFilter']
+    v_bit: Union[str, 'types.StringWithAggregatesFilter']
+    uuid: Union[str, 'types.StringWithAggregatesFilter']
+
+
+
+class CGroupByOutput(TypedDict, total=False):
+    char: str
+    v_char: str
+    text: str
+    bit: str
+    v_bit: str
+    uuid: str
+    _sum: 'CSumAggregateOutput'
+    _avg: 'CAvgAggregateOutput'
+    _min: 'CMinAggregateOutput'
+    _max: 'CMaxAggregateOutput'
+    _count: 'CCountAggregateOutput'
+
+
+class CAvgAggregateOutput(TypedDict, total=False):
+    """C output for aggregating averages"""
+
+
+class CSumAggregateOutput(TypedDict, total=False):
+    """C output for aggregating sums"""
+
+
+class CScalarAggregateOutput(TypedDict, total=False):
+    """C output including scalar fields"""
+    char: str
+    v_char: str
+    text: str
+    bit: str
+    v_bit: str
+    uuid: str
+
+
+CMinAggregateOutput = CScalarAggregateOutput
+CMaxAggregateOutput = CScalarAggregateOutput
+
+
+class CMaxAggregateInput(TypedDict, total=False):
+    """C input for aggregating by max"""
+    char: bool
+    v_char: bool
+    text: bool
+    bit: bool
+    v_bit: bool
+    uuid: bool
+
+
+class CMinAggregateInput(TypedDict, total=False):
+    """C input for aggregating by min"""
+    char: bool
+    v_char: bool
+    text: bool
+    bit: bool
+    v_bit: bool
+    uuid: bool
+
+
+class CNumberAggregateInput(TypedDict, total=False):
+    """C input for aggregating numbers"""
+
+
+CAvgAggregateInput = CNumberAggregateInput
+CSumAggregateInput = CNumberAggregateInput
+
+
 CCountAggregateInput = TypedDict(
     'CCountAggregateInput',
     {
@@ -10679,6 +12276,15 @@ CKeys = Literal[
     'v_bit',
     'uuid',
 ]
+CScalarFieldKeys = Literal[
+    'char',
+    'v_char',
+    'text',
+    'bit',
+    'v_bit',
+    'uuid',
+]
+CScalarFieldKeysT = TypeVar('CScalarFieldKeysT', bound=CScalarFieldKeys)
 
 CRelationalFieldKeys = _NoneType
 
@@ -11584,6 +13190,114 @@ class DWhereInputRecursive2(TypedDict, total=False):
 
 
 
+# aggregate D types
+
+
+    
+
+class DScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """D arguments for searching"""
+    id: Union[str, 'types.StringWithAggregatesFilter']
+    bool: Union[bool, 'types.BooleanWithAggregatesFilter']
+    xml: Union[str, 'types.StringWithAggregatesFilter']
+    json_: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    jsonb: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    binary: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
+
+    AND: List['DScalarWhereWithAggregatesInputRecursive1']
+    OR: List['DScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['DScalarWhereWithAggregatesInputRecursive1']
+
+
+class DScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """D arguments for searching"""
+    id: Union[str, 'types.StringWithAggregatesFilter']
+    bool: Union[bool, 'types.BooleanWithAggregatesFilter']
+    xml: Union[str, 'types.StringWithAggregatesFilter']
+    json_: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    jsonb: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    binary: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
+
+    AND: List['DScalarWhereWithAggregatesInputRecursive2']
+    OR: List['DScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['DScalarWhereWithAggregatesInputRecursive2']
+
+
+class DScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """D arguments for searching"""
+    id: Union[str, 'types.StringWithAggregatesFilter']
+    bool: Union[bool, 'types.BooleanWithAggregatesFilter']
+    xml: Union[str, 'types.StringWithAggregatesFilter']
+    json_: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    jsonb: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    binary: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
+
+
+
+class DGroupByOutput(TypedDict, total=False):
+    id: str
+    bool: bool
+    xml: str
+    json_: 'fields.Json'
+    jsonb: 'fields.Json'
+    binary: 'fields.Base64'
+    _sum: 'DSumAggregateOutput'
+    _avg: 'DAvgAggregateOutput'
+    _min: 'DMinAggregateOutput'
+    _max: 'DMaxAggregateOutput'
+    _count: 'DCountAggregateOutput'
+
+
+class DAvgAggregateOutput(TypedDict, total=False):
+    """D output for aggregating averages"""
+
+
+class DSumAggregateOutput(TypedDict, total=False):
+    """D output for aggregating sums"""
+
+
+class DScalarAggregateOutput(TypedDict, total=False):
+    """D output including scalar fields"""
+    id: str
+    bool: bool
+    xml: str
+    json_: 'fields.Json'
+    jsonb: 'fields.Json'
+    binary: 'fields.Base64'
+
+
+DMinAggregateOutput = DScalarAggregateOutput
+DMaxAggregateOutput = DScalarAggregateOutput
+
+
+class DMaxAggregateInput(TypedDict, total=False):
+    """D input for aggregating by max"""
+    id: bool
+    bool: bool
+    xml: bool
+    json_: bool
+    jsonb: bool
+    binary: bool
+
+
+class DMinAggregateInput(TypedDict, total=False):
+    """D input for aggregating by min"""
+    id: bool
+    bool: bool
+    xml: bool
+    json_: bool
+    jsonb: bool
+    binary: bool
+
+
+class DNumberAggregateInput(TypedDict, total=False):
+    """D input for aggregating numbers"""
+
+
+DAvgAggregateInput = DNumberAggregateInput
+DSumAggregateInput = DNumberAggregateInput
+
+
 DCountAggregateInput = TypedDict(
     'DCountAggregateInput',
     {
@@ -11621,6 +13335,15 @@ DKeys = Literal[
     'jsonb',
     'binary',
 ]
+DScalarFieldKeys = Literal[
+    'id',
+    'bool',
+    'xml',
+    'json_',
+    'jsonb',
+    'binary',
+]
+DScalarFieldKeysT = TypeVar('DScalarFieldKeysT', bound=DScalarFieldKeys)
 
 DRelationalFieldKeys = _NoneType
 
@@ -12510,6 +14233,100 @@ class EWhereInputRecursive2(TypedDict, total=False):
 
 
 
+# aggregate E types
+
+
+    
+
+class EScalarWhereWithAggregatesInput(TypedDict, total=False):
+    """E arguments for searching"""
+    id: Union[str, 'types.StringWithAggregatesFilter']
+    date: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    time: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    ts: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+
+    AND: List['EScalarWhereWithAggregatesInputRecursive1']
+    OR: List['EScalarWhereWithAggregatesInputRecursive1']
+    NOT: List['EScalarWhereWithAggregatesInputRecursive1']
+
+
+class EScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
+    """E arguments for searching"""
+    id: Union[str, 'types.StringWithAggregatesFilter']
+    date: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    time: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    ts: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+
+    AND: List['EScalarWhereWithAggregatesInputRecursive2']
+    OR: List['EScalarWhereWithAggregatesInputRecursive2']
+    NOT: List['EScalarWhereWithAggregatesInputRecursive2']
+
+
+class EScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
+    """E arguments for searching"""
+    id: Union[str, 'types.StringWithAggregatesFilter']
+    date: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    time: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+    ts: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
+
+
+
+class EGroupByOutput(TypedDict, total=False):
+    id: str
+    date: datetime.datetime
+    time: datetime.datetime
+    ts: datetime.datetime
+    _sum: 'ESumAggregateOutput'
+    _avg: 'EAvgAggregateOutput'
+    _min: 'EMinAggregateOutput'
+    _max: 'EMaxAggregateOutput'
+    _count: 'ECountAggregateOutput'
+
+
+class EAvgAggregateOutput(TypedDict, total=False):
+    """E output for aggregating averages"""
+
+
+class ESumAggregateOutput(TypedDict, total=False):
+    """E output for aggregating sums"""
+
+
+class EScalarAggregateOutput(TypedDict, total=False):
+    """E output including scalar fields"""
+    id: str
+    date: datetime.datetime
+    time: datetime.datetime
+    ts: datetime.datetime
+
+
+EMinAggregateOutput = EScalarAggregateOutput
+EMaxAggregateOutput = EScalarAggregateOutput
+
+
+class EMaxAggregateInput(TypedDict, total=False):
+    """E input for aggregating by max"""
+    id: bool
+    date: bool
+    time: bool
+    ts: bool
+
+
+class EMinAggregateInput(TypedDict, total=False):
+    """E input for aggregating by min"""
+    id: bool
+    date: bool
+    time: bool
+    ts: bool
+
+
+class ENumberAggregateInput(TypedDict, total=False):
+    """E input for aggregating numbers"""
+
+
+EAvgAggregateInput = ENumberAggregateInput
+ESumAggregateInput = ENumberAggregateInput
+
+
 ECountAggregateInput = TypedDict(
     'ECountAggregateInput',
     {
@@ -12541,6 +14358,13 @@ EKeys = Literal[
     'time',
     'ts',
 ]
+EScalarFieldKeys = Literal[
+    'id',
+    'date',
+    'time',
+    'ts',
+]
+EScalarFieldKeysT = TypeVar('EScalarFieldKeysT', bound=EScalarFieldKeys)
 
 ERelationalFieldKeys = _NoneType
 

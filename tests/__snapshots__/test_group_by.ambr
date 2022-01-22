@@ -73,6 +73,24 @@
     },
   ]
 ---
+# name: test_count.3
+  <class 'list'> [
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        'city': 8,
+        'country': 20,
+      },
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        'city': 1,
+        'country': 1,
+      },
+      'country': 'Scotland',
+    },
+  ]
+---
 # name: test_docs_example
   <class 'list'> [
     <class 'dict'> {
