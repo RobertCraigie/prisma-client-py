@@ -106,9 +106,7 @@ async def test_order(
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_order_multiple_fields(
-    snapshot: SnapshotAssertion, client: Client
-) -> None:
+async def test_order_multiple_fields(client: Client) -> None:
     """Test ordering results by multiple fields is not support"""
     with pytest.raises(prisma.errors.DataError):
         await client.profile.group_by(

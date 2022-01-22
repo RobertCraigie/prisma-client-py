@@ -42,7 +42,7 @@ model Profile {
   user_id String  @unique
   bio     String
   city    String?
-  country String
+  country String?
   views   Int     @default(0)
 }
 
