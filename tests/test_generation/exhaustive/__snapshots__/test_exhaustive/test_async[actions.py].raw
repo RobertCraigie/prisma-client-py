@@ -902,10 +902,10 @@ class PostActions:
         Example
         -------
         ```py
-        # group Post records by  values
+        # group Post records by created_at values
         # and count how many records are in each group
         results = await Post.prisma().group_by(
-            [''],
+            ['created_at'],
             count=True,
         )
         ```
@@ -1836,10 +1836,10 @@ class UserActions:
         Example
         -------
         ```py
-        # group User records by  values
+        # group User records by optional_string values
         # and count how many records are in each group
         results = await User.prisma().group_by(
-            [''],
+            ['optional_string'],
             count=True,
         )
         ```
@@ -2765,10 +2765,10 @@ class MActions:
         Example
         -------
         ```py
-        # group M records by  values
+        # group M records by enum values
         # and count how many records are in each group
         results = await M.prisma().group_by(
-            [''],
+            ['enum'],
             count=True,
         )
         ```
@@ -3699,10 +3699,10 @@ class NActions:
         Example
         -------
         ```py
-        # group N records by  values
+        # group N records by json_ values
         # and count how many records are in each group
         results = await N.prisma().group_by(
-            [''],
+            ['json_'],
             count=True,
         )
         ```
@@ -4628,10 +4628,10 @@ class OneOptionalActions:
         Example
         -------
         ```py
-        # group OneOptional records by  values
+        # group OneOptional records by enum values
         # and count how many records are in each group
         results = await OneOptional.prisma().group_by(
-            [''],
+            ['enum'],
             count=True,
         )
         ```
@@ -5557,10 +5557,10 @@ class ManyRequiredActions:
         Example
         -------
         ```py
-        # group ManyRequired records by  values
+        # group ManyRequired records by optional_string values
         # and count how many records are in each group
         results = await ManyRequired.prisma().group_by(
-            [''],
+            ['optional_string'],
             count=True,
         )
         ```
@@ -6461,10 +6461,10 @@ class ListsActions:
         Example
         -------
         ```py
-        # group Lists records by  values
+        # group Lists records by bigints values
         # and count how many records are in each group
         results = await Lists.prisma().group_by(
-            [''],
+            ['bigints'],
             count=True,
         )
         ```
@@ -7383,10 +7383,10 @@ class AActions:
         Example
         -------
         ```py
-        # group A records by  values
+        # group A records by inc_bInt values
         # and count how many records are in each group
         results = await A.prisma().group_by(
-            [''],
+            ['inc_bInt'],
             count=True,
         )
         ```
@@ -8297,10 +8297,10 @@ class BActions:
         Example
         -------
         ```py
-        # group B records by  values
+        # group B records by float values
         # and count how many records are in each group
         results = await B.prisma().group_by(
-            [''],
+            ['float'],
             count=True,
         )
         ```
@@ -9223,10 +9223,10 @@ class CActions:
         Example
         -------
         ```py
-        # group C records by  values
+        # group C records by v_char values
         # and count how many records are in each group
         results = await C.prisma().group_by(
-            [''],
+            ['v_char'],
             count=True,
         )
         ```
@@ -10152,10 +10152,10 @@ class DActions:
         Example
         -------
         ```py
-        # group D records by  values
+        # group D records by bool values
         # and count how many records are in each group
         results = await D.prisma().group_by(
-            [''],
+            ['bool'],
             count=True,
         )
         ```
@@ -11071,10 +11071,10 @@ class EActions:
         Example
         -------
         ```py
-        # group E records by  values
+        # group E records by ts values
         # and count how many records are in each group
         results = await E.prisma().group_by(
-            [''],
+            ['ts'],
             count=True,
         )
         ```

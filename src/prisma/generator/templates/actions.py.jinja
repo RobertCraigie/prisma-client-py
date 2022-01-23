@@ -888,10 +888,10 @@ class {{ model.name }}Actions:
         -------
         ```py
         {% set field = model.sampler().get_field().name %}
-        # group {{ model.name }} records by {{ field.name }} values
+        # group {{ model.name }} records by {{ field }} values
         # and count how many records are in each group
         results = {{ maybe_await }}{{ model.name }}.prisma().group_by(
-            ['{{ field.name }}'],
+            ['{{ field }}'],
             count=True,
         )
         ```
