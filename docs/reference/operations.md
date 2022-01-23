@@ -683,6 +683,67 @@ total = await client.post.count(
 )
 ```
 
+### Grouping Records
+
+!!! warning
+    You can only order by one field at a time however this is [not possible
+    to represent with python types](./limitations.md#grouping-records)
+
+```py
+results = await client.profile.group_by(['country'])
+# [
+#   {'country': 'Denmark'},
+#   {'country': 'Scotland'},
+# ]
+
+results = await client.profile.group_by(['country'], count=True)
+# [
+#   {'country': 'Denmark', '_count': {'_all': 20}},
+#   {'country': 'Scotland', '_count': {'_all': 1}},
+# ]
+
+results = await client.profile.group_by(
+    by=['country', 'city'],
+    count={
+        '_all': True,
+        'city': True,
+    },
+    sum={
+        'views': True,
+    },
+    order={
+        'country': 'desc',
+    },
+    having={
+        'views': {
+            '_avg': {
+                'gt': 200,
+            },
+        },
+    },
+)
+# [
+#   {
+#       'country': 'Scotland',
+#       'city': 'Edinburgh',
+#       '_sum': {'views': 250},
+#       '_count': {'_all': 1, 'city': 1}
+#   },
+#   {
+#       'country': 'Denmark',
+#       'city': None,
+#       '_sum': {'views': 6000},
+#       '_count': {'_all': 12, 'city': 0}
+#   },
+#   {
+#       'country': 'Denmark',
+#       'city': 'Copenhagen',
+#       '_sum': {'views': 8000},
+#       '_count': {'_all': 8, 'city': 8}
+#   },
+# ]
+```
+
 ## Batching Write Queries
 
 ```py

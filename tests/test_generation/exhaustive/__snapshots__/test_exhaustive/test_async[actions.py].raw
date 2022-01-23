@@ -834,6 +834,124 @@ class PostActions:
         )
         return int(resp['data']['result']['count'])
 
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.PostScalarFieldKeys'],
+        *,
+        where: Optional['types.PostWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.PostAvgAggregateInput'] = None,
+        sum: Optional['types.PostSumAggregateInput'] = None,
+        min: Optional['types.PostMinAggregateInput'] = None,
+        max: Optional['types.PostMaxAggregateInput'] = None,
+        having: Optional['types.PostScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.PostCountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.PostScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.PostScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.PostGroupByOutput']:
+        """Group Post records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar Post fields to group records by
+        where
+            Post filter to select records
+        take
+            Limit the maximum number of Post records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.PostGroupByOutput]
+            A list of dictionaries representing the Post record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group Post records by created_at values
+        # and count how many records are in each group
+        results = await Post.prisma().group_by(
+            ['created_at'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            operation='query',
+            method='groupBy',
+            model='Post',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
+
 
 class UserActions:
     def __init__(self, client: 'Client', model: Type['models.User']) -> None:
@@ -1650,6 +1768,124 @@ class UserActions:
         )
         return int(resp['data']['result']['count'])
 
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.UserScalarFieldKeys'],
+        *,
+        where: Optional['types.UserWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.UserAvgAggregateInput'] = None,
+        sum: Optional['types.UserSumAggregateInput'] = None,
+        min: Optional['types.UserMinAggregateInput'] = None,
+        max: Optional['types.UserMaxAggregateInput'] = None,
+        having: Optional['types.UserScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.UserCountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.UserScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.UserScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.UserGroupByOutput']:
+        """Group User records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar User fields to group records by
+        where
+            User filter to select records
+        take
+            Limit the maximum number of User records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.UserGroupByOutput]
+            A list of dictionaries representing the User record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group User records by optional_string values
+        # and count how many records are in each group
+        results = await User.prisma().group_by(
+            ['optional_string'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            operation='query',
+            method='groupBy',
+            model='User',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
+
 
 class MActions:
     def __init__(self, client: 'Client', model: Type['models.M']) -> None:
@@ -2460,6 +2696,124 @@ class MActions:
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.MScalarFieldKeys'],
+        *,
+        where: Optional['types.MWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.MAvgAggregateInput'] = None,
+        sum: Optional['types.MSumAggregateInput'] = None,
+        min: Optional['types.MMinAggregateInput'] = None,
+        max: Optional['types.MMaxAggregateInput'] = None,
+        having: Optional['types.MScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.MCountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.MScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.MScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.MGroupByOutput']:
+        """Group M records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar M fields to group records by
+        where
+            M filter to select records
+        take
+            Limit the maximum number of M records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.MGroupByOutput]
+            A list of dictionaries representing the M record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group M records by enum values
+        # and count how many records are in each group
+        results = await M.prisma().group_by(
+            ['enum'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            operation='query',
+            method='groupBy',
+            model='M',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class NActions:
@@ -3277,6 +3631,124 @@ class NActions:
         )
         return int(resp['data']['result']['count'])
 
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.NScalarFieldKeys'],
+        *,
+        where: Optional['types.NWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.NAvgAggregateInput'] = None,
+        sum: Optional['types.NSumAggregateInput'] = None,
+        min: Optional['types.NMinAggregateInput'] = None,
+        max: Optional['types.NMaxAggregateInput'] = None,
+        having: Optional['types.NScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.NCountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.NScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.NScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.NGroupByOutput']:
+        """Group N records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar N fields to group records by
+        where
+            N filter to select records
+        take
+            Limit the maximum number of N records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.NGroupByOutput]
+            A list of dictionaries representing the N record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group N records by json_ values
+        # and count how many records are in each group
+        results = await N.prisma().group_by(
+            ['json_'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            operation='query',
+            method='groupBy',
+            model='N',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
+
 
 class OneOptionalActions:
     def __init__(self, client: 'Client', model: Type['models.OneOptional']) -> None:
@@ -4087,6 +4559,124 @@ class OneOptionalActions:
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.OneOptionalScalarFieldKeys'],
+        *,
+        where: Optional['types.OneOptionalWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.OneOptionalAvgAggregateInput'] = None,
+        sum: Optional['types.OneOptionalSumAggregateInput'] = None,
+        min: Optional['types.OneOptionalMinAggregateInput'] = None,
+        max: Optional['types.OneOptionalMaxAggregateInput'] = None,
+        having: Optional['types.OneOptionalScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.OneOptionalCountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.OneOptionalScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.OneOptionalScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.OneOptionalGroupByOutput']:
+        """Group OneOptional records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar OneOptional fields to group records by
+        where
+            OneOptional filter to select records
+        take
+            Limit the maximum number of OneOptional records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.OneOptionalGroupByOutput]
+            A list of dictionaries representing the OneOptional record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group OneOptional records by enum values
+        # and count how many records are in each group
+        results = await OneOptional.prisma().group_by(
+            ['enum'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            operation='query',
+            method='groupBy',
+            model='OneOptional',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class ManyRequiredActions:
@@ -4899,6 +5489,124 @@ class ManyRequiredActions:
         )
         return int(resp['data']['result']['count'])
 
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.ManyRequiredScalarFieldKeys'],
+        *,
+        where: Optional['types.ManyRequiredWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.ManyRequiredAvgAggregateInput'] = None,
+        sum: Optional['types.ManyRequiredSumAggregateInput'] = None,
+        min: Optional['types.ManyRequiredMinAggregateInput'] = None,
+        max: Optional['types.ManyRequiredMaxAggregateInput'] = None,
+        having: Optional['types.ManyRequiredScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.ManyRequiredCountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.ManyRequiredScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.ManyRequiredScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.ManyRequiredGroupByOutput']:
+        """Group ManyRequired records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar ManyRequired fields to group records by
+        where
+            ManyRequired filter to select records
+        take
+            Limit the maximum number of ManyRequired records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.ManyRequiredGroupByOutput]
+            A list of dictionaries representing the ManyRequired record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group ManyRequired records by optional_string values
+        # and count how many records are in each group
+        results = await ManyRequired.prisma().group_by(
+            ['optional_string'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            operation='query',
+            method='groupBy',
+            model='ManyRequired',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
+
 
 class ListsActions:
     def __init__(self, client: 'Client', model: Type['models.Lists']) -> None:
@@ -5684,6 +6392,124 @@ class ListsActions:
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.ListsScalarFieldKeys'],
+        *,
+        where: Optional['types.ListsWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.ListsAvgAggregateInput'] = None,
+        sum: Optional['types.ListsSumAggregateInput'] = None,
+        min: Optional['types.ListsMinAggregateInput'] = None,
+        max: Optional['types.ListsMaxAggregateInput'] = None,
+        having: Optional['types.ListsScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.ListsCountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.ListsScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.ListsScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.ListsGroupByOutput']:
+        """Group Lists records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar Lists fields to group records by
+        where
+            Lists filter to select records
+        take
+            Limit the maximum number of Lists records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.ListsGroupByOutput]
+            A list of dictionaries representing the Lists record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group Lists records by bigints values
+        # and count how many records are in each group
+        results = await Lists.prisma().group_by(
+            ['bigints'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            operation='query',
+            method='groupBy',
+            model='Lists',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class AActions:
@@ -6489,6 +7315,124 @@ class AActions:
         )
         return int(resp['data']['result']['count'])
 
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.AScalarFieldKeys'],
+        *,
+        where: Optional['types.AWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.AAvgAggregateInput'] = None,
+        sum: Optional['types.ASumAggregateInput'] = None,
+        min: Optional['types.AMinAggregateInput'] = None,
+        max: Optional['types.AMaxAggregateInput'] = None,
+        having: Optional['types.AScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.ACountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.AScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.AScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.AGroupByOutput']:
+        """Group A records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar A fields to group records by
+        where
+            A filter to select records
+        take
+            Limit the maximum number of A records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.AGroupByOutput]
+            A list of dictionaries representing the A record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group A records by inc_bInt values
+        # and count how many records are in each group
+        results = await A.prisma().group_by(
+            ['inc_bInt'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            operation='query',
+            method='groupBy',
+            model='A',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
+
 
 class BActions:
     def __init__(self, client: 'Client', model: Type['models.B']) -> None:
@@ -7284,6 +8228,124 @@ class BActions:
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.BScalarFieldKeys'],
+        *,
+        where: Optional['types.BWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.BAvgAggregateInput'] = None,
+        sum: Optional['types.BSumAggregateInput'] = None,
+        min: Optional['types.BMinAggregateInput'] = None,
+        max: Optional['types.BMaxAggregateInput'] = None,
+        having: Optional['types.BScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.BCountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.BScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.BScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.BGroupByOutput']:
+        """Group B records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar B fields to group records by
+        where
+            B filter to select records
+        take
+            Limit the maximum number of B records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.BGroupByOutput]
+            A list of dictionaries representing the B record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group B records by float values
+        # and count how many records are in each group
+        results = await B.prisma().group_by(
+            ['float'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            operation='query',
+            method='groupBy',
+            model='B',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class CActions:
@@ -8092,6 +9154,124 @@ class CActions:
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.CScalarFieldKeys'],
+        *,
+        where: Optional['types.CWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.CAvgAggregateInput'] = None,
+        sum: Optional['types.CSumAggregateInput'] = None,
+        min: Optional['types.CMinAggregateInput'] = None,
+        max: Optional['types.CMaxAggregateInput'] = None,
+        having: Optional['types.CScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.CCountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.CScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.CScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.CGroupByOutput']:
+        """Group C records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar C fields to group records by
+        where
+            C filter to select records
+        take
+            Limit the maximum number of C records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.CGroupByOutput]
+            A list of dictionaries representing the C record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group C records by v_char values
+        # and count how many records are in each group
+        results = await C.prisma().group_by(
+            ['v_char'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            operation='query',
+            method='groupBy',
+            model='C',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class DActions:
@@ -8904,6 +10084,124 @@ class DActions:
         )
         return int(resp['data']['result']['count'])
 
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.DScalarFieldKeys'],
+        *,
+        where: Optional['types.DWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.DAvgAggregateInput'] = None,
+        sum: Optional['types.DSumAggregateInput'] = None,
+        min: Optional['types.DMinAggregateInput'] = None,
+        max: Optional['types.DMaxAggregateInput'] = None,
+        having: Optional['types.DScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.DCountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.DScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.DScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.DGroupByOutput']:
+        """Group D records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar D fields to group records by
+        where
+            D filter to select records
+        take
+            Limit the maximum number of D records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.DGroupByOutput]
+            A list of dictionaries representing the D record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group D records by bool values
+        # and count how many records are in each group
+        results = await D.prisma().group_by(
+            ['bool'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            operation='query',
+            method='groupBy',
+            model='D',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
+
 
 class EActions:
     def __init__(self, client: 'Client', model: Type['models.E']) -> None:
@@ -9704,6 +11002,134 @@ class EActions:
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    async def group_by(
+        self,
+        by: List['types.EScalarFieldKeys'],
+        *,
+        where: Optional['types.EWhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.EAvgAggregateInput'] = None,
+        sum: Optional['types.ESumAggregateInput'] = None,
+        min: Optional['types.EMinAggregateInput'] = None,
+        max: Optional['types.EMaxAggregateInput'] = None,
+        having: Optional['types.EScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.ECountAggregateInput']] = None,
+        order: Optional[Union[Mapping['types.EScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.EScalarFieldKeys', 'types.SortOrder']]]] = None,
+    ) -> List['types.EGroupByOutput']:
+        """Group E records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar E fields to group records by
+        where
+            E filter to select records
+        take
+            Limit the maximum number of E records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.EGroupByOutput]
+            A list of dictionaries representing the E record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # group E records by ts values
+        # and count how many records are in each group
+        results = await E.prisma().group_by(
+            ['ts'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = await self._client._execute(
+            operation='query',
+            method='groupBy',
+            model='E',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
+
+
+
+def _select_fields(root: str, select: Mapping[str, Any]) -> str:
+    """Helper to build a GraphQL selection string
+
+    This is a work around until field selection is added to the query builder.
+    """
+
+    return root + ' {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
 
 
 from . import models

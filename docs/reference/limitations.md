@@ -1,6 +1,8 @@
 # Limitations
 
-## Type Limitations
+There are two forms of limitations imposed on Prisma Client Python, the [first](#default-type-limitations) is due to missing features / performance issues with mypy and can be re-enabled by switching to use `pyright instead`. The [second](#python-limitations) is due to scenarios that cannot be accurately represented within Python's type system.
+
+## Default Type Limitations
 
 !!! note
     It is highly recommended to use [pyright](https://github.com/microsoft/pyright) as your type
@@ -18,8 +20,7 @@ and [configuring](config.md#recursive) prisma to use recursive types.
 
 ### Querying Using Model-based Access
 
-Prisma Client Python supports querying directly from model classes, however, internally typing this feature to support subclassing with generics
-causes mypy to be *incredibly* slow, it takes upwards of 35 minutes to type check the Prisma Client Python codebase on CI and upwards of 2 hours locally.
+Prisma Client Python supports querying directly from model classes, however, internally typing this feature to support subclassing with generics causes mypy to be *incredibly* slow, it takes upwards of 35 minutes to type check the Prisma Client Python codebase on CI and upwards of 2 hours locally.
 
 This kind of performance is not acceptable and as such, this typing has been disabled by default (switching to use recursive types will re-enable subclassing).
 
@@ -80,4 +81,112 @@ async def main(client: Client) -> None:
             },
         }
     )
+```
+
+### Complex Grouping Arguments
+
+Mypy does not support Literal TypeVars which means the following invalid code will not produce an error when type checking:
+
+```py
+results = await Profile.prisma().group_by(
+    by=['country'],
+    order={
+        # city has to be included in the `by` argument to be valid
+        'city': True,
+    }
+)
+```
+
+This error can be revealed by switching to [pyright](https://github.com/microsoft/pyright) and [configuring prisma](config.md#recursive)
+to use recursive types.
+
+## Python Limitations
+
+There are some limitations to type safety due to Python's inability to expressively work with input types. While it would be *possible* to work around this as Prisma Client Python code is auto-generated, we need to strike a balance between performance and correctness.
+
+These limitations only effect **2** arguments in one query method in the **entire** client API.
+
+### Grouping records
+
+#### Explanation
+
+Some filters can only be performed on fields that are being grouped (i.e. in the `by` argument), this is not possible to type in Python with any accuracy. It is possible to limit dictionary keys but it is not possible to match the dictionary keys to specific types like you can with a standard `TypedDict`.
+
+For example, the `order` argument can correctly limit the available keys as all the values have the same type
+
+```py
+results = await Profile.prisma().group_by(
+    by=['city'],
+    order={
+        'city': 'asc',
+        # this will error as 'country' is not present in the `by` argument
+        'country': 'desc',
+    },
+)
+```
+
+However this is not possible with the `having` argument as all the dictionary values have different types.
+
+```py
+# this error will NOT be caught by static type checkers!
+# but it will raise an error at runtime
+results = await Profile.prisma().group_by(
+    by=['city'],
+    having={
+        'views': {
+            'gt': 50,
+        },
+    },
+)
+```
+
+#### Limitations
+
+##### Order Argument
+
+The `order` argument can only take one field at a time.
+
+The following example will pass type checks but will raise an error at runtime.
+
+```py
+results = await Profile.prisma().group_by(
+    by=['city', 'country'],
+    order={
+        'city': 'asc',
+        'country': 'desc',
+    },
+)
+```
+
+##### Having Argument
+
+The `having` argument only takes fields that are present in the `by` argument **or** aggregation filters.
+
+For example:
+
+```py
+# this will pass type checks but will raise an error at runtime
+# as 'views' is not present in the `by` argument
+await Profile.prisma().group_by(
+    by=['country'],
+    count=True,
+    having={
+        'views': {
+            'gt': 50,
+        },
+    },
+)
+
+# however this will pass both type checks and at runtime!
+await Profile.prisma().group_by(
+    by=['country'],
+    count=True,
+    having={
+        'views': {
+            '_avg': {
+                'gt': 50,
+            },
+        },
+    },
+)
 ```

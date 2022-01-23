@@ -695,6 +695,16 @@ class Field(BaseModel):
         return self.python_type
 
     @property
+    def where_aggregates_input_type(self) -> str:
+        if self.is_relational:  # pragma: no cover
+            raise RuntimeError('This type is not valid for relational fields')
+
+        typ = self.type
+        if typ in FILTER_TYPES:
+            return f'Union[{self._actual_python_type}, \'types.{typ}WithAggregatesFilter\']'
+        return self.python_type
+
+    @property
     def relational_args_type(self) -> str:
         if self.is_list:
             return f'FindMany{self.type}Args'
@@ -721,6 +731,10 @@ class Field(BaseModel):
     @property
     def is_atomic(self) -> bool:
         return self.type in ATOMIC_FIELD_TYPES
+
+    @property
+    def is_number(self) -> bool:
+        return self.type in {'Int', 'BigInt', 'Float'}
 
     def maybe_optional(self, typ: str) -> str:
         """Wrap the given type string within `Optional` if applicable"""
