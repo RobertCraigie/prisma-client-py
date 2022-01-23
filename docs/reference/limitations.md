@@ -83,6 +83,23 @@ async def main(client: Client) -> None:
     )
 ```
 
+### Complex Grouping Arguments
+
+Mypy does not support Literal TypeVars which means the following invalid code will not produce an error when type checking:
+
+```py
+results = await Profile.prisma().group_by(
+    by=['country'],
+    order={
+        # city has to be included in the `by` argument to be valid
+        'city': True,
+    }
+)
+```
+
+This error can be revealed by switching to [pyright](https://github.com/microsoft/pyright) and [configuring prisma](config.md#recursive)
+to use recursive types.
+
 ## Python Limitations
 
 There are some limitations to type safety due to Python's inability to expressively work with input types. While it would be *possible* to work around this as Prisma Client Python code is auto-generated, we need to strike a balance between performance and correctness.

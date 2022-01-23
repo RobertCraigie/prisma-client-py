@@ -256,6 +256,22 @@
     },
   ]
 ---
+# name: test_order_list
+  <class 'list'> [
+    <class 'dict'> {
+      'city': 'Copenhagen',
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      'city': None,
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      'city': 'Edinburgh',
+      'country': 'Scotland',
+    },
+  ]
+---
 # name: test_skip[asc]
   <class 'list'> [
     <class 'dict'> {

@@ -818,7 +818,11 @@ class {{ model.name }}Actions:
     # TODO: statically type that the order argument is required when take or skip are present
     {{ maybe_async_def }}group_by(
         self,
+        {% if recursive_types %}
         by: List['types.{{ model.name }}ScalarFieldKeysT'],
+        {% else %}
+        by: List['types.{{ model.name }}ScalarFieldKeys'],
+        {% endif %}
         *,
         where: Optional['types.{{ model.name }}WhereInput'] = None,
         take: Optional[int] = None,
@@ -829,7 +833,11 @@ class {{ model.name }}Actions:
         max: Optional['types.{{ model.name }}MaxAggregateInput'] = None,
         having: Optional['types.{{ model.name }}ScalarWhereWithAggregatesInput'] = None,
         count: Optional[Union[bool, 'types.{{ model.name }}CountAggregateInput']] = None,
+        {% if recursive_types %}
         order: Optional[Union[Mapping['types.{{ model.name }}ScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.{{ model.name }}ScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        {% else %}
+        order: Optional[Union[Mapping['types.{{ model.name }}ScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.{{ model.name }}ScalarFieldKeys', 'types.SortOrder']]]] = None,
+        {% endif %}
     ) -> List['types.{{ model.name }}GroupByOutput']:
         """Group {{ model.name }} records by one or more field values and perform aggregations
         each group such as finding the average.
@@ -928,7 +936,7 @@ class {{ model.name }}Actions:
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 {% endfor %}
 

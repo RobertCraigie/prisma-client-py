@@ -106,6 +106,20 @@ async def test_order(
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
+async def test_order_list(snapshot: SnapshotAssertion, client: Client) -> None:
+    """Test ordering results by a list of grouped fields"""
+    results = await client.profile.group_by(
+        by=['country', 'city'],
+        order=[
+            {'country': 'asc'},
+            {'city': 'desc'},
+        ],
+    )
+    assert results == snapshot
+
+
+@pytest.mark.asyncio
+@pytest.mark.persist_data
 async def test_order_multiple_fields(client: Client) -> None:
     """Test ordering results by multiple fields is not support"""
     with pytest.raises(prisma.errors.DataError):

@@ -35,7 +35,7 @@ async def order() -> None:
     # case: can only order by grouped fields
     await Profile.prisma().group_by(
         ['city'],
-        order={  # E: Argument of type "dict[str, str]" cannot be assigned to parameter "order" of type "Mapping[ProfileScalarFieldKeysT@group_by, SortOrder] | List[Mapping[ProfileScalarFieldKeysT@group_by, SortOrder]] | None
+        order={  # E: Argument of type "dict[str, str]" cannot be assigned to parameter "order" of type "Mapping[ProfileScalarFieldKeysT@group_by, SortOrder] | List[Mapping[ProfileScalarFieldKeysT@group_by, SortOrder]] | None" in function "group_by"
             'country': 'desc',
         },
     )
@@ -43,7 +43,7 @@ async def order() -> None:
     # case: invalid sort order
     await Profile.prisma().group_by(
         ['country'],
-        order={  # E: Argument of type "dict[str, str]" cannot be assigned to parameter "order" of type "Mapping[ProfileScalarFieldKeysT@group_by, SortOrder] | List[Mapping[ProfileScalarFieldKeysT@group_by, SortOrder]] | None
+        order={  # E: Argument of type "dict[str, str]" cannot be assigned to parameter "order" of type "Mapping[ProfileScalarFieldKeysT@group_by, SortOrder] | List[Mapping[ProfileScalarFieldKeysT@group_by, SortOrder]] | None" in function "group_by"
             'country': 'foo',
         },
     )

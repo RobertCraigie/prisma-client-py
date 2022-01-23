@@ -840,7 +840,7 @@ class PostActions:
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.PostScalarFieldKeysT'],
+        by: List['types.PostScalarFieldKeys'],
         *,
         where: Optional['types.PostWhereInput'] = None,
         take: Optional[int] = None,
@@ -851,7 +851,7 @@ class PostActions:
         max: Optional['types.PostMaxAggregateInput'] = None,
         having: Optional['types.PostScalarWhereWithAggregatesInput'] = None,
         count: Optional[Union[bool, 'types.PostCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.PostScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.PostScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        order: Optional[Union[Mapping['types.PostScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.PostScalarFieldKeys', 'types.SortOrder']]]] = None,
     ) -> List['types.PostGroupByOutput']:
         """Group Post records by one or more field values and perform aggregations
         each group such as finding the average.
@@ -950,7 +950,7 @@ class PostActions:
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class UserActions:
@@ -1774,7 +1774,7 @@ class UserActions:
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.UserScalarFieldKeysT'],
+        by: List['types.UserScalarFieldKeys'],
         *,
         where: Optional['types.UserWhereInput'] = None,
         take: Optional[int] = None,
@@ -1785,7 +1785,7 @@ class UserActions:
         max: Optional['types.UserMaxAggregateInput'] = None,
         having: Optional['types.UserScalarWhereWithAggregatesInput'] = None,
         count: Optional[Union[bool, 'types.UserCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.UserScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.UserScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        order: Optional[Union[Mapping['types.UserScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.UserScalarFieldKeys', 'types.SortOrder']]]] = None,
     ) -> List['types.UserGroupByOutput']:
         """Group User records by one or more field values and perform aggregations
         each group such as finding the average.
@@ -1884,7 +1884,7 @@ class UserActions:
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class MActions:
@@ -2703,7 +2703,7 @@ class MActions:
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.MScalarFieldKeysT'],
+        by: List['types.MScalarFieldKeys'],
         *,
         where: Optional['types.MWhereInput'] = None,
         take: Optional[int] = None,
@@ -2714,7 +2714,7 @@ class MActions:
         max: Optional['types.MMaxAggregateInput'] = None,
         having: Optional['types.MScalarWhereWithAggregatesInput'] = None,
         count: Optional[Union[bool, 'types.MCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.MScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.MScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        order: Optional[Union[Mapping['types.MScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.MScalarFieldKeys', 'types.SortOrder']]]] = None,
     ) -> List['types.MGroupByOutput']:
         """Group M records by one or more field values and perform aggregations
         each group such as finding the average.
@@ -2813,7 +2813,7 @@ class MActions:
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class NActions:
@@ -3637,7 +3637,7 @@ class NActions:
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.NScalarFieldKeysT'],
+        by: List['types.NScalarFieldKeys'],
         *,
         where: Optional['types.NWhereInput'] = None,
         take: Optional[int] = None,
@@ -3648,7 +3648,7 @@ class NActions:
         max: Optional['types.NMaxAggregateInput'] = None,
         having: Optional['types.NScalarWhereWithAggregatesInput'] = None,
         count: Optional[Union[bool, 'types.NCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.NScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.NScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        order: Optional[Union[Mapping['types.NScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.NScalarFieldKeys', 'types.SortOrder']]]] = None,
     ) -> List['types.NGroupByOutput']:
         """Group N records by one or more field values and perform aggregations
         each group such as finding the average.
@@ -3747,7 +3747,7 @@ class NActions:
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class OneOptionalActions:
@@ -4566,7 +4566,7 @@ class OneOptionalActions:
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.OneOptionalScalarFieldKeysT'],
+        by: List['types.OneOptionalScalarFieldKeys'],
         *,
         where: Optional['types.OneOptionalWhereInput'] = None,
         take: Optional[int] = None,
@@ -4577,7 +4577,7 @@ class OneOptionalActions:
         max: Optional['types.OneOptionalMaxAggregateInput'] = None,
         having: Optional['types.OneOptionalScalarWhereWithAggregatesInput'] = None,
         count: Optional[Union[bool, 'types.OneOptionalCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.OneOptionalScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.OneOptionalScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        order: Optional[Union[Mapping['types.OneOptionalScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.OneOptionalScalarFieldKeys', 'types.SortOrder']]]] = None,
     ) -> List['types.OneOptionalGroupByOutput']:
         """Group OneOptional records by one or more field values and perform aggregations
         each group such as finding the average.
@@ -4676,7 +4676,7 @@ class OneOptionalActions:
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class ManyRequiredActions:
@@ -5495,7 +5495,7 @@ class ManyRequiredActions:
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.ManyRequiredScalarFieldKeysT'],
+        by: List['types.ManyRequiredScalarFieldKeys'],
         *,
         where: Optional['types.ManyRequiredWhereInput'] = None,
         take: Optional[int] = None,
@@ -5506,7 +5506,7 @@ class ManyRequiredActions:
         max: Optional['types.ManyRequiredMaxAggregateInput'] = None,
         having: Optional['types.ManyRequiredScalarWhereWithAggregatesInput'] = None,
         count: Optional[Union[bool, 'types.ManyRequiredCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.ManyRequiredScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.ManyRequiredScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        order: Optional[Union[Mapping['types.ManyRequiredScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.ManyRequiredScalarFieldKeys', 'types.SortOrder']]]] = None,
     ) -> List['types.ManyRequiredGroupByOutput']:
         """Group ManyRequired records by one or more field values and perform aggregations
         each group such as finding the average.
@@ -5605,7 +5605,7 @@ class ManyRequiredActions:
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class ListsActions:
@@ -6399,7 +6399,7 @@ class ListsActions:
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.ListsScalarFieldKeysT'],
+        by: List['types.ListsScalarFieldKeys'],
         *,
         where: Optional['types.ListsWhereInput'] = None,
         take: Optional[int] = None,
@@ -6410,7 +6410,7 @@ class ListsActions:
         max: Optional['types.ListsMaxAggregateInput'] = None,
         having: Optional['types.ListsScalarWhereWithAggregatesInput'] = None,
         count: Optional[Union[bool, 'types.ListsCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.ListsScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.ListsScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        order: Optional[Union[Mapping['types.ListsScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.ListsScalarFieldKeys', 'types.SortOrder']]]] = None,
     ) -> List['types.ListsGroupByOutput']:
         """Group Lists records by one or more field values and perform aggregations
         each group such as finding the average.
@@ -6509,7 +6509,7 @@ class ListsActions:
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class AActions:
@@ -7321,7 +7321,7 @@ class AActions:
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.AScalarFieldKeysT'],
+        by: List['types.AScalarFieldKeys'],
         *,
         where: Optional['types.AWhereInput'] = None,
         take: Optional[int] = None,
@@ -7332,7 +7332,7 @@ class AActions:
         max: Optional['types.AMaxAggregateInput'] = None,
         having: Optional['types.AScalarWhereWithAggregatesInput'] = None,
         count: Optional[Union[bool, 'types.ACountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.AScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.AScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        order: Optional[Union[Mapping['types.AScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.AScalarFieldKeys', 'types.SortOrder']]]] = None,
     ) -> List['types.AGroupByOutput']:
         """Group A records by one or more field values and perform aggregations
         each group such as finding the average.
@@ -7431,7 +7431,7 @@ class AActions:
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class BActions:
@@ -8235,7 +8235,7 @@ class BActions:
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.BScalarFieldKeysT'],
+        by: List['types.BScalarFieldKeys'],
         *,
         where: Optional['types.BWhereInput'] = None,
         take: Optional[int] = None,
@@ -8246,7 +8246,7 @@ class BActions:
         max: Optional['types.BMaxAggregateInput'] = None,
         having: Optional['types.BScalarWhereWithAggregatesInput'] = None,
         count: Optional[Union[bool, 'types.BCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.BScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.BScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        order: Optional[Union[Mapping['types.BScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.BScalarFieldKeys', 'types.SortOrder']]]] = None,
     ) -> List['types.BGroupByOutput']:
         """Group B records by one or more field values and perform aggregations
         each group such as finding the average.
@@ -8345,7 +8345,7 @@ class BActions:
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class CActions:
@@ -9161,7 +9161,7 @@ class CActions:
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.CScalarFieldKeysT'],
+        by: List['types.CScalarFieldKeys'],
         *,
         where: Optional['types.CWhereInput'] = None,
         take: Optional[int] = None,
@@ -9172,7 +9172,7 @@ class CActions:
         max: Optional['types.CMaxAggregateInput'] = None,
         having: Optional['types.CScalarWhereWithAggregatesInput'] = None,
         count: Optional[Union[bool, 'types.CCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.CScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.CScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        order: Optional[Union[Mapping['types.CScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.CScalarFieldKeys', 'types.SortOrder']]]] = None,
     ) -> List['types.CGroupByOutput']:
         """Group C records by one or more field values and perform aggregations
         each group such as finding the average.
@@ -9271,7 +9271,7 @@ class CActions:
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class DActions:
@@ -10090,7 +10090,7 @@ class DActions:
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.DScalarFieldKeysT'],
+        by: List['types.DScalarFieldKeys'],
         *,
         where: Optional['types.DWhereInput'] = None,
         take: Optional[int] = None,
@@ -10101,7 +10101,7 @@ class DActions:
         max: Optional['types.DMaxAggregateInput'] = None,
         having: Optional['types.DScalarWhereWithAggregatesInput'] = None,
         count: Optional[Union[bool, 'types.DCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.DScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.DScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        order: Optional[Union[Mapping['types.DScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.DScalarFieldKeys', 'types.SortOrder']]]] = None,
     ) -> List['types.DGroupByOutput']:
         """Group D records by one or more field values and perform aggregations
         each group such as finding the average.
@@ -10200,7 +10200,7 @@ class DActions:
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class EActions:
@@ -11009,7 +11009,7 @@ class EActions:
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.EScalarFieldKeysT'],
+        by: List['types.EScalarFieldKeys'],
         *,
         where: Optional['types.EWhereInput'] = None,
         take: Optional[int] = None,
@@ -11020,7 +11020,7 @@ class EActions:
         max: Optional['types.EMaxAggregateInput'] = None,
         having: Optional['types.EScalarWhereWithAggregatesInput'] = None,
         count: Optional[Union[bool, 'types.ECountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.EScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.EScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        order: Optional[Union[Mapping['types.EScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.EScalarFieldKeys', 'types.SortOrder']]]] = None,
     ) -> List['types.EGroupByOutput']:
         """Group E records by one or more field values and perform aggregations
         each group such as finding the average.
@@ -11119,7 +11119,7 @@ class EActions:
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']
+        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 
