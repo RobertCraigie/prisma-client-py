@@ -1,4 +1,5 @@
 import os
+import platform
 import sys
 import uuid
 import inspect
@@ -356,3 +357,8 @@ def async_fixture(
             name=name,
         ),
     )
+
+
+def is_windows() -> bool:
+    """Returns whether or not the current platform is Windows"""
+    return platform.system().lower() == 'windows'

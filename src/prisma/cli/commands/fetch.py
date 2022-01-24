@@ -1,4 +1,8 @@
 import click
+import platform
+
+
+from ..utils import error
 
 
 @click.command('fetch', short_help='Download all required binaries.')
@@ -12,6 +16,9 @@ def cli(force: bool) -> None:
     from ... import binaries
 
     if force:
+        if platform.system().lower() == 'windows':  # pragma: no cover
+            error('The --force flag is not supported on Windows')
+
         binaries.remove_all()
 
     directory = binaries.ensure_cached()
