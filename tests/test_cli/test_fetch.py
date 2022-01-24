@@ -1,11 +1,11 @@
 import random
 import shutil
 
+import pytest
 from click.testing import Result
-
 from prisma import binaries
+from prisma.binaries.binaries import OS_SETTINGS
 from tests.utils import Runner
-
 
 # TODO: this could probably mess up other tests if one of these
 # tests fails mid run, as the global binaries are deleted
@@ -26,6 +26,9 @@ def test_fetch(runner: Runner) -> None:
     assert_success(runner.invoke(['py', 'fetch']))
 
 
+@pytest.mark.skipif(
+    OS_SETTINGS.is_windows(), reason="Open file issue, can't remove files on windows"
+)
 def test_fetch_one_binary_missing(runner: Runner) -> None:
     """Downloads a binary if it is missing"""
     binary = random.choice(binaries.BINARIES)
@@ -36,6 +39,9 @@ def test_fetch_one_binary_missing(runner: Runner) -> None:
     assert_success(runner.invoke(['py', 'fetch']))
 
 
+@pytest.mark.skipif(
+    OS_SETTINGS.is_windows(), reason="Open file issue, can't remove files on windows"
+)
 def test_fetch_force(runner: Runner) -> None:
     """Passing --force re-downloads an already existing binary"""
     binary = random.choice(binaries.BINARIES)
@@ -51,13 +57,14 @@ def test_fetch_force(runner: Runner) -> None:
 
     # ensure downloaded the same as before
     assert old_stat.st_size == new_stat.st_size
+d
 
-
+@pytest.mark.skipif(
+    OS_SETTINGS.is_windows(), reason="Open file issue, can't remove files on windows"
+)
 def test_fetch_force_no_dir(runner: Runner) -> None:
     """Passing --force when the base directory does not exist"""
-    binaries.remove_all()
     shutil.rmtree(str(binaries.GLOBAL_TEMP_DIR))
-
     binary = binaries.BINARIES[0]
     assert not binary.path.exists()
 
