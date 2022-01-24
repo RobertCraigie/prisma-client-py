@@ -200,9 +200,12 @@ async def test_update_unique_field() -> None:
             'email': 'robert@craigie.dev',
         },
     )
+    email = user.email
+    assert email is not None
+
     updated = await User.prisma().update(
         where={
-            'email': user.email,
+            'email': email,
         },
         data={
             'email': 'foo@gmail.com',
