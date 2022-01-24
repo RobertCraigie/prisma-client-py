@@ -1,6 +1,6 @@
-import click
 import platform
 
+import click
 
 from ..utils import error
 
