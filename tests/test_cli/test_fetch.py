@@ -57,7 +57,10 @@ def test_fetch_force(runner: Runner) -> None:
 
     # ensure downloaded the same as before
     assert old_stat.st_size == new_stat.st_size
+
+
 d
+
 
 @pytest.mark.skipif(
     OS_SETTINGS.is_windows(), reason="Open file issue, can't remove files on windows"
