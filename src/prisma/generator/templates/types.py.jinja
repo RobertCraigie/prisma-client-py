@@ -472,7 +472,7 @@ class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=Fal
 class {{ model.name }}UpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
     {% for field in model.all_fields %}
-        {%- if not field.is_unique and not field.is_id and not field.is_read_only -%}
+        {%- if not field.is_read_only -%}
             {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.get_update_input_type()) }}
         {% endif %}
     {% endfor %}

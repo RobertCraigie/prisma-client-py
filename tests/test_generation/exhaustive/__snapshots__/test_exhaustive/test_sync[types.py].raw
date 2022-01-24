@@ -922,6 +922,7 @@ PostWhereUniqueInput = _PostWhereUnique_id_Input
 
 class PostUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
+    id: Union[AtomicIntInput, int]
     created_at: datetime.datetime
     title: str
     content: Optional[str]
@@ -2017,6 +2018,8 @@ UserWhereUniqueInput = Union[
 
 class UserUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
+    id: Union[AtomicIntInput, int]
+    email: str
     int: Union[AtomicIntInput, int]
     optional_int: Optional[Union[AtomicIntInput, int]]
     float: Union[AtomicFloatInput, float]
@@ -3211,6 +3214,7 @@ MWhereUniqueInput = _MWhereUnique_id_Input
 
 class MUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
+    id: Union[AtomicIntInput, int]
     n: 'NUpdateManyWithoutRelationsInput'
     int: Union[AtomicIntInput, int]
     optional_int: Optional[Union[AtomicIntInput, int]]
@@ -4393,6 +4397,7 @@ NWhereUniqueInput = _NWhereUnique_id_Input
 
 class NUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
+    id: Union[AtomicIntInput, int]
     m: 'MUpdateManyWithoutRelationsInput'
     int: Union[AtomicIntInput, int]
     optional_int: Optional[Union[AtomicIntInput, int]]
@@ -5605,6 +5610,7 @@ OneOptionalWhereUniqueInput = _OneOptionalWhereUnique_id_Input
 
 class OneOptionalUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
+    id: Union[AtomicIntInput, int]
     many: 'ManyRequiredUpdateManyWithoutRelationsInput'
     int: Union[AtomicIntInput, int]
     optional_int: Optional[Union[AtomicIntInput, int]]
@@ -6783,6 +6789,7 @@ ManyRequiredWhereUniqueInput = _ManyRequiredWhereUnique_id_Input
 
 class ManyRequiredUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
+    id: Union[AtomicIntInput, int]
     one: 'OneOptionalUpdateOneWithoutRelationsInput'
     int: Union[AtomicIntInput, int]
     optional_int: Optional[Union[AtomicIntInput, int]]
@@ -7974,6 +7981,7 @@ ListsWhereUniqueInput = _ListsWhereUnique_id_Input
 
 class ListsUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
+    id: str
     strings: 'types.StringListUpdate'
     bytes: 'types.BytesListUpdate'
     dates: 'types.DateTimeListUpdate'
@@ -9120,6 +9128,7 @@ AWhereUniqueInput = Union[
 
 class AUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
+    email: str
     name: Optional[str]
     int: Union[AtomicIntInput, int]
     sInt: Union[AtomicIntInput, int]
@@ -10262,6 +10271,7 @@ BWhereUniqueInput = Union[
 
 class BUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
+    id: str
     float: Union[AtomicFloatInput, float]
     d_float: Union[AtomicFloatInput, float]
 
@@ -12345,6 +12355,7 @@ DWhereUniqueInput = _DWhereUnique_id_Input
 
 class DUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
+    id: str
     bool: bool
     xml: str
     json_: 'fields.Json'
@@ -13400,6 +13411,7 @@ EWhereUniqueInput = _EWhereUnique_id_Input
 
 class EUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
+    id: str
     date: datetime.datetime
     time: datetime.datetime
     ts: datetime.datetime
