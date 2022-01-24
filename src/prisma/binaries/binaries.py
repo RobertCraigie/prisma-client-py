@@ -2,7 +2,6 @@
 
 import logging
 import os
-import tempfile
 from pathlib import Path
 from typing import Callable, List, Optional
 
@@ -101,6 +100,10 @@ class Binary:
     def download(self) -> None:
         download(self.url, self.path)
 
+    def remove(self) -> None:
+        # This might fail if file is still in use, which happens during tests (somehow)!
+        self.path.unlink(missing_ok=True)
+
 
 ENGINES: List[Binary] = [
     Binary(name='query-engine', path=settings.PRISMA_QUERY_ENGINE_BINARY),
@@ -149,5 +152,4 @@ def ensure_cached() -> Path:
 def remove_all() -> None:
     """Remove all downloaded binaries"""
     for binary in BINARIES:
-        if binary.path.exists():
-            binary.path.unlink()
+        binary.remove()
