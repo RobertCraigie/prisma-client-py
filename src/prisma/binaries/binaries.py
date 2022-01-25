@@ -103,7 +103,10 @@ class Binary:
 
     def remove(self) -> None:
         # This might fail if file is still in use, which happens during tests (somehow)!
-        self.path.unlink(missing_ok=True)
+        try:
+            self.path.unlink()
+        except FileNotFoundError:
+            pass
 
 
 ENGINES: List[Binary] = [
