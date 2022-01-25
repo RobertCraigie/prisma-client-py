@@ -82,7 +82,13 @@ PRISMA_CLI_URL = f"{settings.PRISMA_CLI_MIRROR}/{PRISMA_CLI_NAME}.gz"
 
 
 def engine_url_for(name: str) -> str:
-    return f"{settings.PRISMA_ENGINES_MIRROR}/all_commits/{ENGINE_VERSION}/{PLATFORM}/{name}{PLATFORM_EXE_EXTENSION}.gz"
+    return (
+        f"{settings.PRISMA_ENGINES_MIRROR}/"
+        "all_commits/"
+        f"{ENGINE_VERSION}/"
+        f"{PLATFORM}/"
+        f"{name}{PLATFORM_EXE_EXTENSION}.gz"
+    )
 
 
 log: logging.Logger = logging.getLogger(__name__)
