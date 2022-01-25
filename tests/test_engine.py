@@ -8,10 +8,11 @@ from _pytest.monkeypatch import MonkeyPatch
 from pytest_subprocess import FakeProcess
 
 from prisma import Client
-from prisma.utils import temp_env_update
-from prisma.binaries import platform
-from prisma.binaries import BINARIES, ENGINE_VERSION
-from prisma.engine import errors, utils
+
+# from prisma.utils import temp_env_update
+# from prisma.binaries import platform
+from prisma.binaries import BINARIES  # , ENGINE_VERSION
+from prisma.engine import errors  # , utils
 from prisma.engine.query import QueryEngine
 from prisma._compat import get_running_loop
 
