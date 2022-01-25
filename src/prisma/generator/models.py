@@ -43,7 +43,7 @@ except ImportError:
 
 from .utils import Faker, Sampler, clean_multiline
 from ..utils import DEBUG_GENERATOR, assert_never
-from .._compat import validator, root_validator
+from .._compat import validator, root_validator, cached_property
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
 from ..binaries.constants import ENGINE_VERSION, PRISMA_VERSION
@@ -145,6 +145,7 @@ class BaseModel(PydanticBaseModel):
             Path: _pathlib_serializer,
             machinery.ModuleSpec: _module_spec_serializer,
         }
+        keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
 
 
 class GenericModel(PydanticGenericModel, BaseModel):
@@ -501,7 +502,7 @@ class Model(BaseModel):
                 yield field
 
     # TODO: support combined unique constraints
-    @property
+    @cached_property
     def id_field(self) -> Optional['Field']:
         """Find a field that can be passed to the model's `WhereUnique` filter"""
         for field in self.scalar_fields:  # pragma: no branch
@@ -694,6 +695,16 @@ class Field(BaseModel):
         return self.python_type
 
     @property
+    def where_aggregates_input_type(self) -> str:
+        if self.is_relational:  # pragma: no cover
+            raise RuntimeError('This type is not valid for relational fields')
+
+        typ = self.type
+        if typ in FILTER_TYPES:
+            return f'Union[{self._actual_python_type}, \'types.{typ}WithAggregatesFilter\']'
+        return self.python_type
+
+    @property
     def relational_args_type(self) -> str:
         if self.is_list:
             return f'FindMany{self.type}Args'
@@ -720,6 +731,10 @@ class Field(BaseModel):
     @property
     def is_atomic(self) -> bool:
         return self.type in ATOMIC_FIELD_TYPES
+
+    @property
+    def is_number(self) -> bool:
+        return self.type in {'Int', 'BigInt', 'Float'}
 
     def maybe_optional(self, typ: str) -> str:
         """Wrap the given type string within `Optional` if applicable"""

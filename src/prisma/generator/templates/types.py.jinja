@@ -1,12 +1,15 @@
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import recursive_types, active_provider with context %}
 # -- template types.py.jinja --
+from typing import TypeVar
+
 import httpx
 from .utils import _NoneType
 
 
 {% set depth = generator.config.recursive_type_depth %}
 
+# TODO: filters with aggregates should have their own recursive fields
 # TODO: cleanup whitespace control
 # TODO: add an argument to signify that the last iteration should be skipped
 {% macro recursive(base) %}
@@ -121,6 +124,15 @@ Serializable = Union[
 )
 {% endcall %}
 
+
+class StringWithAggregatesFilter(StringFilter, total=False):
+    _max: 'StringFilter'
+    _min: 'StringFilter'
+    _sum: 'StringFilter'
+    _avg: 'StringFilter'
+    _count: 'IntFilter'
+
+
 {% call(name, next, iteration) recursive('DateTimeFilter') %}
 {{ name }} = TypedDict(
     '{{ name }}',
@@ -141,6 +153,14 @@ Serializable = Union[
 {% endcall %}
 
 
+class DateTimeWithAggregatesFilter(DateTimeFilter, total=False):
+    _max: 'DateTimeFilter'
+    _min: 'DateTimeFilter'
+    _sum: 'DateTimeFilter'
+    _avg: 'DateTimeFilter'
+    _count: 'IntFilter'
+
+
 {% call(name, next, iteration) recursive('BooleanFilter') %}
 {{ name }} = TypedDict(
     '{{ name }}',
@@ -153,6 +173,14 @@ Serializable = Union[
     total=False,
 )
 {% endcall %}
+
+
+class BooleanWithAggregatesFilter(BooleanFilter, total=False):
+    _max: 'BooleanFilter'
+    _min: 'BooleanFilter'
+    _sum: 'BooleanFilter'
+    _avg: 'BooleanFilter'
+    _count: 'IntFilter'
 
 
 {% call(name, next, iteration) recursive('IntFilter') %}
@@ -175,7 +203,16 @@ Serializable = Union[
 {% endcall %}
 
 
+class IntWithAggregatesFilter(IntFilter, total=False):
+    _max: 'IntFilter'
+    _min: 'IntFilter'
+    _sum: 'IntFilter'
+    _avg: 'IntFilter'
+    _count: 'IntFilter'
+
+
 BigIntFilter = IntFilter
+BigIntWithAggregatesFilter = IntWithAggregatesFilter
 {% call(name, next, iteration) recursive('FloatFilter') %}
 {{ name }} = TypedDict(
     '{{ name }}',
@@ -195,6 +232,15 @@ BigIntFilter = IntFilter
 )
 {% endcall %}
 
+
+class FloatWithAggregatesFilter(FloatFilter, total=False):
+    _max: 'FloatFilter'
+    _min: 'FloatFilter'
+    _sum: 'FloatFilter'
+    _avg: 'FloatFilter'
+    _count: 'IntFilter'
+
+
 {% call(name, next, iteration) recursive('BytesFilter') %}
 {{ name }} = TypedDict(
     '{{ name }}',
@@ -208,6 +254,15 @@ BigIntFilter = IntFilter
 )
 {% endcall %}
 
+
+class BytesWithAggregatesFilter(BytesFilter, total=False):
+    _max: 'BytesFilter'
+    _min: 'BytesFilter'
+    _sum: 'BytesFilter'
+    _avg: 'BytesFilter'
+    _count: 'IntFilter'
+
+
 # TODO: preview feature for improving JSON filtering
 JsonFilter = TypedDict(
     'JsonFilter',
@@ -217,6 +272,14 @@ JsonFilter = TypedDict(
     },
     total=False,
 )
+
+
+class JsonWithAggregatesFilter(JsonFilter, total=False):
+    _max: 'JsonFilter'
+    _min: 'JsonFilter'
+    _sum: 'JsonFilter'
+    _avg: 'JsonFilter'
+    _count: 'IntFilter'
 
 
 class _FloatSetInput(TypedDict):
@@ -409,7 +472,7 @@ class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=Fal
 class {{ model.name }}UpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
     {% for field in model.all_fields %}
-        {%- if not field.is_unique and not field.is_id and not field.is_read_only -%}
+        {%- if not field.is_read_only -%}
             {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.get_update_input_type()) }}
         {% endif %}
     {% endfor %}
@@ -458,7 +521,7 @@ class {{ model.name }}UpsertInput(TypedDict):
 
 class {{ model.name }}OrderByInput(TypedDict, total=False):
     {% for field in model.scalar_fields %}
-    {{ field.name }}: 'SortOrder'
+    {{ field.name }}: SortOrder
     {% endfor %}
 
 
@@ -522,7 +585,7 @@ class {{ name }}(TypedDict, total=False):
     """Arguments for {{model.name }}"""
     take: int
     skip: int
-    order_by: Union['{{ model.name }}OrderByInput', List['{{ model.name }}OrderByInput']]
+    order_by: Union['{{ related.name }}OrderByInput', List['{{ related.name }}OrderByInput']]
     where: '{{ related.name }}WhereInput'
     cursor: '{{ related.name }}WhereUniqueInput'
     {%+ if next != '' -%}
@@ -554,6 +617,91 @@ class {{ current }}(TypedDict, total=False):
 {% endcall %}
 
 
+# aggregate {{ model.name }} types
+
+
+{% call(current, next, iteration) recursive(model.name + 'ScalarWhereWithAggregatesInput') %}
+class {{ current }}(TypedDict, total=False):
+    """{{ model.name }} arguments for searching"""
+    {% for field in model.scalar_fields %}
+    {{ field.name }}: {{ field.where_aggregates_input_type }}
+    {% endfor %}
+
+    {% if next != '' %}
+    AND: List['{{ next }}']
+    OR: List['{{ next }}']
+    NOT: List['{{ next }}']
+    {% endif %}
+{% endcall %}
+
+
+class {{ model.name }}GroupByOutput(TypedDict, total=False):
+    {% for field in model.scalar_fields -%}
+        {{ '    ' }}{{ field.name }}: {{ field.python_type }}
+    {% endfor %}
+    _sum: '{{ model.name }}SumAggregateOutput'
+    _avg: '{{ model.name }}AvgAggregateOutput'
+    _min: '{{ model.name }}MinAggregateOutput'
+    _max: '{{ model.name }}MaxAggregateOutput'
+    _count: '{{ model.name }}CountAggregateOutput'
+
+
+class {{ model.name }}AvgAggregateOutput(TypedDict, total=False):
+    """{{ model.name }} output for aggregating averages"""
+    {% for field in model.scalar_fields %}
+        {% if field.is_number -%}
+            {{ '    ' }}{{ field.name }}: float
+        {% endif %}
+    {% endfor %}
+
+
+class {{ model.name }}SumAggregateOutput(TypedDict, total=False):
+    """{{ model.name }} output for aggregating sums"""
+    {% for field in model.scalar_fields %}
+        {% if field.is_number -%}
+            {{ '    ' }}{{ field.name }}: {{ field.python_type }}
+        {% endif %}
+    {% endfor %}
+
+
+class {{ model.name }}ScalarAggregateOutput(TypedDict, total=False):
+    """{{ model.name }} output including scalar fields"""
+    {% for field in model.scalar_fields -%}
+        {{ '    ' }}{{ field.name }}: {{ field.python_type }}
+    {% endfor %}
+
+
+{{ model.name }}MinAggregateOutput = {{ model.name }}ScalarAggregateOutput
+{{ model.name }}MaxAggregateOutput = {{ model.name }}ScalarAggregateOutput
+
+
+class {{ model.name }}MaxAggregateInput(TypedDict, total=False):
+    """{{ model.name }} input for aggregating by max"""
+    {% for field in model.scalar_fields -%}
+        {{ '    ' }}{{ field.name }}: bool
+    {% endfor %}
+
+
+class {{ model.name }}MinAggregateInput(TypedDict, total=False):
+    """{{ model.name }} input for aggregating by min"""
+    {% for field in model.scalar_fields -%}
+        {{ '    ' }}{{ field.name }}: bool
+    {% endfor %}
+
+
+class {{ model.name }}NumberAggregateInput(TypedDict, total=False):
+    """{{ model.name }} input for aggregating numbers"""
+    {% for field in model.scalar_fields %}
+        {% if field.is_number -%}
+            {{ '    ' }}{{ field.name }}: bool
+        {% endif %}
+    {% endfor %}
+
+
+{{ model.name }}AvgAggregateInput = {{ model.name }}NumberAggregateInput
+{{ model.name }}SumAggregateInput = {{ model.name }}NumberAggregateInput
+
+
 {{ model.name }}CountAggregateInput = TypedDict(
     '{{ model.name }}CountAggregateInput',
     {
@@ -582,6 +730,12 @@ class {{ current }}(TypedDict, total=False):
     '{{ field.name }}',
     {% endfor %}
 ]
+{{ model.name }}ScalarFieldKeys = Literal[
+    {% for field in model.scalar_fields %}
+    '{{ field.name }}',
+    {% endfor %}
+]
+{{ model.name }}ScalarFieldKeysT = TypeVar('{{ model.name }}ScalarFieldKeysT', bound={{ model.name }}ScalarFieldKeys)
 
 {% if model.has_relational_fields -%}
     {{ model.name }}RelationalFieldKeys = Literal[

@@ -97,6 +97,10 @@ class RecordNotFoundError(DataError):
     pass
 
 
+class InputError(DataError):
+    pass
+
+
 class BuilderError(PrismaError):
     pass
 

@@ -22,6 +22,7 @@ from .utils import (
 )
 from .. import __version__
 from ..utils import DEBUG_GENERATOR
+from .._compat import cached_property
 from .._types import BaseModelT, InheritsGeneric, get_args
 
 
@@ -131,7 +132,7 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
             if response is not None:
                 jsonrpc.reply(response)
 
-    @property
+    @cached_property
     def data_class(self) -> Type[BaseModelT]:
         """Return the BaseModel used to parse the Prisma DMMF"""
 
