@@ -5,7 +5,7 @@ import sys
 from functools import lru_cache
 from typing import Optional
 
-import distro  # pyright: reportMissingTypeStubs=false
+import distro  # type: ignore # pyright: reportMissingTypeStubs=false
 
 
 class OsSettings:
