@@ -1,0 +1,87 @@
+{% extends 'base.html.jinja' %}
+{# {% load static %} #}
+{% block title %}
+    Netflix Login
+{% endblock title %}
+
+
+{% block others %}
+<script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+{% endblock others %}
+
+
+{% block content %}
+
+    {% include "partials/navbar.html.jinja" %}
+    <header class="min-h-screen bg-black bg-opacity-75 showcase border-gray-600 border-b-8 flex justify-center items-center bg-no-repeat"  style="background-image: '/static/background_netflix.jpg';">
+        <div class="z-10 h-full py-32 md:py-0 text-gray-100 text-center flex items-center flex-col">
+            <div class="w-full flex justify-center">
+                <div class="flex justify-center items-center w-11/12 md:w-10/12">
+                    <input type="email" name="" id="" placeholder="Email address" class="md:py-5 py-4 px-2 placeholder-gray-500 rounded-tl-sm rounded-bl-sm outline-none  text-gray-900 bg-gray-50 block w-8/12 md:w-3/4">
+                    <a href='/auth/signup' class='md:w-1/4'>
+
+                        <button class="bg-primary_red font-medium md:font-normal flex justify-center items-center py-4 px-2 md:px-0 rounded-br-sm rounded-tr-sm md:text-2xl">
+                            <span>
+                                Get Started
+                            </span>
+                            <ion-icon name="chevron-forward-outline" class="text-2xl"></ion-icon>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class='flex flex-col md:flex-row items-center border-gray-900 border-b-8' style="min-height: 70vh;">
+        <div class="md:w-1/2 flex flex-col justify-center text-center md:text-left p-5 md:p-10 ">
+            <h2 class="md:text-5xl text-4xl font-semibold mb-4">
+                Enjoy on your TV.
+            </h2>
+            <h5 class="md:text-xl text-lg">
+                Watch on Smart TVs, Playstation, Xbox, Chromecast, Apple TV, Blu-ray players, and more.
+            </h5>
+        </div>
+        <div class='md:w-1/2 flex justify-center items-center'>
+            <img src="/static/tv.png" class="w-8/12" alt="">
+        </div>
+    </section>
+
+    <section class='flex flex-col md:flex-row items-center border-gray-900 border-b-8' style="min-height: 70vh;">
+        <div class='md:w-1/2 flex justify-center items-center '>
+            <img src="/static/mobile-0819.jpg" class="w-8/12" alt="">
+        </div>
+
+        <div class="md:w-1/2 flex flex-col justify-center text-center md:text-left p-5 md:p-10">
+            <h2 class="md:text-5xl text-4xl font-semibold mb-4">
+                Download your shows to watch offline.
+            </h2>
+            <h5 class="md:text-xl text-lg">
+                Save your favorites easily and always have something to watch.
+            </h5>
+        </div>
+
+    </section>
+
+    <section class='flex flex-col md:flex-row items-center border-gray-900 border-b-8' style="min-height: 70vh;">
+        <div class="md:w-1/2 flex flex-col justify-center text-center md:text-left p-5 md:p-10">
+            <h2 class="md:text-5xl text-4xl font-semibold mb-4">
+                Create profiles for kids.
+            </h2>
+            <h5 class="md:text-xl text-lg">
+                Send kids on adventures with their favorite characters in a space made just for them—free with your membership.
+            </h5>
+        </div>
+        <div class='md:w-1/2 flex justify-center items-center'>
+            <img src="/static/netflix_kid.png" class="w-8/12" alt="">
+        </div>
+    </section>
+    <footer class=" px-5 py-10 ">
+        <ul class="flex justify-between items-center">
+            <li>&copy; 2022</li>
+            <li> Made with Prisma Client Python, FastAPI and Tailwind</li>
+            <li>Frontend by OtchereDev - Backend by RobertCraigie</li>
+        </ul>
+    </footer>
+
+
+{% endblock content %}

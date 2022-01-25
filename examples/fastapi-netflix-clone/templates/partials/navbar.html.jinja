@@ -1,0 +1,31 @@
+{# {% load static %} #}
+<nav class="flex text-gray-100 justify-between items-center py-3 px-4 fixed w-full z-50">
+        <div class="w-6/12">
+            <a href='/'>
+
+            <img src="/static/netflix.png" alt="logo" class="w-5/12 md:w-2/12">
+            </a>
+        </div>
+
+        {% if AUTH != 'false'  %}
+            {% if user %}
+            <div>
+            <form action="/account_logout" method="post">
+                {# {% csrf_token %} #}
+                <button class='bg-primary_red py-1 px-3 text-white md:text-lg rounded-md'>
+                    Logout
+                </button>
+            </form>
+            </div>
+            {% else %}
+            <div>
+            <a href="/account_login">
+
+                <button class='bg-primary_red py-1 px-3 text-white md:text-lg rounded-md'>
+                    Sign In
+                </button>
+            </a>
+            </div>
+            {% endif %}
+        {% endif %}
+    </nav>

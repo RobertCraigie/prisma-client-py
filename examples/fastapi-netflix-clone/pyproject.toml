@@ -1,0 +1,19 @@
+[tool.black]
+skip-string-normalization = true
+
+
+[tool.pyright]
+typeCheckingMode = "strict"
+include = [
+    "seed.py",
+    "partials.py",
+    "app"
+]
+
+# some of our dependencies are not typed :(
+# TODO: create stubs for them
+reportMissingTypeStubs = false
+reportUnknownVariableType = false
+reportUnknownParameterType = false
+reportUnknownMemberType = false
+reportUnknownArgumentType = false

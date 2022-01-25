@@ -1,0 +1,5 @@
+{
+    "prisma": {
+        "seed": "python seed.py"
+    }
+}

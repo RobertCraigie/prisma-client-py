@@ -1,0 +1,45 @@
+{% extends 'base.html.jinja' %}
+{% block title %}
+Netflix - Profile
+{% endblock title %}
+
+{% block content %}
+    {% include 'partials/navbar.html.jinja' %}
+
+
+
+    <section class='bg-primary_black min-h-screen py-20 md:py-0 flex-col flex justify-center items-center'>
+        <h2 class="text-center font-medium text-5xl my-4 text-gray-100">
+            Who's watching ?
+        </h2>
+
+        <div class="flex flex-wrap justify-center items-center w-10/12  md:w-6/12">
+
+        {% for profile in profiles %}
+            <a href="/profile/watch/{{ profile.id }}">
+
+                <div class="w-32 h-32 m-4  bg-blue-500 flex justify-center items-center flex-col rounded-md cursor-pointer">
+                    <p class='text-6xl'>
+                        {{ profile.name|first() }}
+                    </p>
+                    <p class='text-lg'>
+                        {{ profile.name }}
+                    </p>
+                </div>
+            </a>
+        {% endfor %}
+
+        </div>
+        {% if profiles|length < 5 %}
+
+            <div class="flex justify-center items-center">
+                <a href="/profile/create">
+
+                    <button class="px-4 py-2 rounded-md outline-none bg-gray-400 text-gray-100">
+                        Add A New Profile
+                    </button>
+                </a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock content %}

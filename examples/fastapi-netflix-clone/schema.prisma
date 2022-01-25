@@ -1,0 +1,56 @@
+datasource db {
+    provider = "sqlite"
+    url      = "file:db.sqlite3"
+}
+
+generator client {
+    provider               = "prisma-client-py"
+    recursive_type_depth   = -1
+    partial_type_generator = "partials.py"
+}
+
+model User {
+    id              String    @id @default(cuid())
+    username        String    @unique
+    first_name      String
+    last_name       String
+    email           String
+    hashed_password String
+    is_staff        Boolean   @default(false)
+    is_active       Boolean   @default(true)
+    date_joined     DateTime  @default(now())
+    profiles        Profile[]
+}
+
+model Profile {
+    id        String  @id @default(cuid())
+    name      String
+    // NOTE: should be an Enum of `All`, `Kids` but SQLite does not support Enum
+    age_limit String
+    user      User?   @relation(fields: [user_id], references: [id])
+    user_id   String?
+
+    @@index([age_limit])
+}
+
+model Movie {
+    id          String   @id @default(cuid())
+    title       String
+    description String?
+    created     DateTime
+    // NOTE: should be an Enum of `Single`, `Seasonal`
+    type        String
+    thumbnail   String
+    // NOTE: should be an Enum of `All`, `Kids`
+    age_limit   String
+    videos      Video[]
+}
+
+model Video {
+    id String @id @default(cuid())
+
+    // TODO
+    file     String
+    movie    Movie?  @relation(fields: [movie_id], references: [id])
+    movie_id String?
+}
