@@ -54,18 +54,18 @@ def parse_openssl_version(string: str) -> str:
 def resolve_known_distro(distro_id: str, distro_like: str) -> Optional[str]:
     if distro_id == "alpine":
         return "musl"
-    elif distro_id == "raspbian":
+    if distro_id == "raspbian":
         return "arm"
-    elif distro_id == "nixos":
+    if distro_id == "nixos":
         return "nixos"
-    elif (
+    if (
         distro_id == "fedora"
         or "fedora" in distro_like
         or "rhel" in distro_like
         or "centros" in distro_like
     ):
         return "rhel"
-    elif (
+    if (
         distro_id == "ubuntu"
         or distro_id == "debian"
         or "ubuntu" in distro_like
@@ -87,34 +87,39 @@ def get_os_settings() -> OsSettings:
     )
 
 
-def resolve_platform(os: OsSettings) -> str:
-    system, machine, libssl, distro = (
-        os.system,
-        os.machine,
-        os.libssl,
-        os.distro,
-    )
-
-    if system == "darwin" and machine == "aarch64":
+def resolve_darwin(os_settings: OsSettings) -> Optional[str]:
+    if os_settings.system == "darwin" and os_settings.machine == "aarch64":
         return "darwin-arm64"
-    elif system == "darwin":
+    if os_settings.system == "darwin":
         return "darwin"
-    elif system == "windows":
-        return "windows"
-    elif system == "freebsd":
-        return "freebsd"
-    elif system == "openbsd":
-        return "openbsd"
-    elif system == "netbsd":
-        return "netbsd"
-    elif system == "linux" and machine == "aarch64":
-        return f"linux-arm64-openssl-{libssl}"
-    elif system == "linux" and machine == "arm":
-        return f"linux-arm-openssl-{libssl}"
-    elif system == "linux" and distro == "musl":
-        return "linux-musl"
-    elif system == "linux" and distro == "nixos":
-        return "linux-nixos"
-    elif distro:
-        return f"{distro}-openssl-{libssl}"
+    return None
+
+
+def resolve_linux(os_settings: OsSettings) -> Optional[str]:
+    if os_settings.system == "linux":
+        if os_settings.machine == "aarch64":
+            return f"linux-arm64-openssl-{os_settings.libssl}"
+        if os_settings.machine == "arm":
+            return f"linux-arm-openssl-{os_settings.libssl}"
+        if os_settings.distro == "musl":
+            return "linux-musl"
+        if os_settings.distro == "nixos":
+            return "linux-nixos"
+        if os_settings.distro:
+            return f"{os_settings.distro}-openssl-{os_settings.libssl}"
+    return None
+
+
+def resolve_other_platforms(os_settings: OsSettings) -> Optional[str]:
+    if os_settings.system in ("windows", "freebsd", "openbsd", "netbsd"):
+        return os_settings.system
+    return None
+
+
+def resolve_platform(os_settings: OsSettings) -> str:
+    resolvers = (resolve_darwin, resolve_linux, resolve_other_platforms)
+    for resolver in resolvers:
+        platform = resolver(os_settings)
+        if platform is not None:
+            return platform
     return "debian-openssl-1.1.x"  # default fallback
