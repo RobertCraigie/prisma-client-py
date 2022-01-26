@@ -52,11 +52,12 @@ Supported database providers:
 
 ## Support
 
-Have any questions or need help using Prisma? Feel free to:
+Have any questions or need help using Prisma? Join the [community discord](https://discord.gg/HpFaJbepBH)!
+
+If you don't want to join the discord you can also:
 
 - Create a new [discussion](https://github.com/RobertCraigie/prisma-client-py/discussions/new)
 - Ping me on the [Prisma Slack](https://slack.prisma.io/) `@Robert Craigie`
-- Ping me on the [Python discord](https://discord.com/invite/python) `@Robert#5570`
 
 ## How does Prisma work?
 
