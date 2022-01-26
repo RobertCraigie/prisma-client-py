@@ -58,3 +58,10 @@ model Types {
   float_   Float    @default(0)
   datetime DateTime @default(now())
 }
+
+model Record {
+  first String
+  last  String
+
+  @@unique([first, last])
+}

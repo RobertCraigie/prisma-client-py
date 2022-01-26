@@ -3,13 +3,14 @@
 # -- template record.py.jinja --
 
 if TYPE_CHECKING:
-    from .. import models
+    from .. import models, types
     from ..client import Client
     from .._types import BaseModelT
 
 
 {# TODO: abstract ModelType logic #}
 {% for model in dmmf.datamodel.models %}
+{% set where_unique = type_schema.get_model(model.name).where_unique %}
 {% if recursive_types %}
 {% set ModelType = 'BaseModelT' %}
 class {{ model.name }}ActiveRecord(Generic[BaseModelT]):
@@ -21,23 +22,51 @@ class {{ model.name }}ActiveRecord:
         self._actions = client.{{ model.name.lower() }}
         self._model = model
 
+    {# TODO: refactor this #}
+    {# NOTE: this function has been written with special knowledge of how the WhereUnique
+             type is constructed, if this changes in the future this function may break
+    #}
+    def _resolve_where_unique(self, data: Dict[str, Any]) -> 'types.{{ where_unique.name }}':
+        {% for type in where_unique.subtypes %}
+        {% if type.subtypes %}
+        {% set subtype = type.subtypes[0] %}
+        if all(key in data for key in ({% for f in subtype.fields %}'{{ f }}',{% endfor %})):
+            return {
+                '{{ type.fields.keys()|first() }}': {
+                    {% for field in subtype.fields %}
+                    '{{ field }}': data['{{ field }}'],
+                    {% endfor %}
+                }
+            }
+
+        {% else %}
+        if all(key in data for key in ({% for f in type.fields %}'{{ f }}',{% endfor %})):
+            return {
+                {% for field in type.fields %}
+                '{{ field }}': data['{{ field }}'],
+                {% endfor %}
+            }
+
+        {% endif %}
+        {% endfor %}
+
+        raise RuntimeError('Could not resolve a unique filter for {{ model.name }}')
+
     # TODO: it doesn't make sense to type this as Optional
     # like in standard actions, however we cannot raise
     # errors.RecordNotFoundError as it is a DataError
     # which must be raised directly by the query engine
     {{ maybe_async_def }}update(self) -> {{ ModelType }}:
         # TODO: handle relational fields
-        # TODO: support combined unique constraints
         # TODO: this will probably break for subclasses that add fields
         data: Any = self._model.dict(exclude_unset=True)
         model = {{ maybe_await }}self._actions.update(
-            where={
-                '{{ model.id_field.name }}': data['{{ model.id_field.name }}'],
-            },
+            where=self._resolve_where_unique(data),
             data=data,
         )
         if model is None:
             raise RuntimeError('TODO: Handle record not found properly')
         return model
+
 
 {% endfor %}
