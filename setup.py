@@ -46,7 +46,7 @@ setup(
     long_description_content_type='text/markdown',
     packages=find_packages(where='src', include=['prisma', 'prisma.*']),
     package_dir={'': 'src'},
-    python_requires='>=3',
+    python_requires='>=3.7.0',
     package_data={'': ['generator/templates/**/*.py.jinja', 'py.typed']},
     include_package_data=True,
     zip_safe=False,
