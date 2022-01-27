@@ -62,7 +62,7 @@ def resolve_known_distro(distro_id: str, distro_like: str) -> Optional[str]:
         distro_id == "fedora"
         or "fedora" in distro_like
         or "rhel" in distro_like
-        or "centros" in distro_like
+        or "centos" in distro_like
     ):
         return "rhel"
     if (
