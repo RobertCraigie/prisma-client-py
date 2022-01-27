@@ -10,7 +10,16 @@ def mock(obj: Any):
     return lambda: obj
 
 
-def test_mock_windows_os(monkeypatch: pytest.MonkeyPatch):  # pragma: no cover
+def test_mock_windows_os(monkeypatch: pytest.MonkeyPatch):
+    """
+    Mock the platform.system() to return "Windows" and platform.machine()
+    to return default "x86_64".
+
+    Tests resolve_other_platforms() and asserts that it returns the expected value.
+
+    Additionaly tests resolve_linux() and resolve_darwin()
+    and makes sure they return None
+    """
     monkeypatch.setattr(platform, "system", mock("Windows"))
     monkeypatch.setattr(platform, "machine", mock("x86_64"))
     monkeypatch.setattr(binaries_platform, "get_openssl", mock("1.1.x"))
@@ -30,9 +39,17 @@ MACHINES = ["aarch64", "x86_64"]
 
 
 @pytest.mark.parametrize(("machine,"), MACHINES)
-def test_mock_darwin_os(
-    monkeypatch: pytest.MonkeyPatch, machine: str
-):  # pragma: no cover
+def test_mock_darwin_os(monkeypatch: pytest.MonkeyPatch, machine: str):
+    """
+    Mock the platform.system() to return "Darwin" and platform.machine() to return
+    either "aarch64" or "x86_64".
+
+    Tests resolve_darwin() and makes sure it returns "darwin-arm64" for aarch64
+    and "darwin" for x86_64.
+
+    Additionaly tests resolve_linux() and resolve_other_platforms()
+    and makes sure they return None
+    """
     monkeypatch.setattr(platform, "system", mock("Darwin"))
     monkeypatch.setattr(platform, "machine", mock(machine))
     monkeypatch.setattr(binaries_platform, "get_openssl", mock("1.1.x"))
@@ -69,7 +86,14 @@ DISTRO_ID_LIKE: List[Tuple[str, str, str]] = [
 @pytest.mark.parametrize(("distro_id,distro_like,expected"), DISTRO_ID_LIKE)
 def test_resolve_known_distro(
     monkeypatch: pytest.MonkeyPatch, distro_id: str, distro_like: str, expected: str
-):  # pragma: no cover
+):
+    """
+    Mock the platform.system() to return "linux" and platform.machine()
+    to return default "x86_64".
+
+    Tests resolve_known_distro() and asserts that it
+    returns expected distro names.
+    """
     monkeypatch.setattr(platform, "system", mock("linux"))
     monkeypatch.setattr(platform, "machine", mock("x86_64"))
     monkeypatch.setattr(binaries_platform, "get_openssl", mock("1.1.x"))
@@ -107,8 +131,16 @@ def test_resolve_linux(
     machine: str,
     resolved_distro: str,
     expected_platform: str,
-):  # pragma: no cover
-    # pylint: disable=too-many-arguments
+):  # pylint: disable=too-many-arguments
+
+    """
+    Mocks the platform.system() to return "linux" and platform.machine()
+    to return either "aarch64" or "x86_64".
+
+    Tests resolve_platform() and asserts that it returns expected binary platform.
+
+    Additionaly tests resolve_known_distro()
+    """
     # TODO: arguments can be simplified to a namedtuple or something
     monkeypatch.setattr(platform, "system", mock("Linux"))
     monkeypatch.setattr(platform, "machine", mock(machine))
