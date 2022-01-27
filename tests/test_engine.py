@@ -88,12 +88,12 @@ def test_mismatched_version_error(fake_process: FakeProcess) -> None:
 
 # TODO: reimplement this test
 @pytest.mark.skip(
-    reason='Local binary paths are no longer supported, this test still exists as support will be added again in the future'
+    reason='Local binary paths are no longer supported, this test still exists as support will be added again in the future'  # pylint: disable=line-too-long
 )
 def test_ensure_local_path(testdir: Testdir, fake_process: FakeProcess) -> None:
     """Query engine in current directory required to be the expected version"""
 
-    fake_engine = testdir.path / ("prisma-query-engine" + PLATFORM_EXE_EXTENSION)
+    fake_engine = testdir.path / ('prisma-query-engine' + PLATFORM_EXE_EXTENSION)
     fake_engine.touch()
 
     fake_process.register_subprocess(

@@ -35,9 +35,9 @@ ENGINE_VERSION = os.environ.get(
 GLOBAL_TEMP_DIR: Path = (
     Path(tempfile.gettempdir()) / 'prisma' / 'binaries' / 'engines' / ENGINE_VERSION
 )
-PLATFORM_EXE_EXTENSION: str = ".exe" if OS_SETTINGS.is_windows() else ""
+PLATFORM_EXE_EXTENSION: str = '.exe' if OS_SETTINGS.is_windows() else ''
 
-PRISMA_CLI_NAME = f"prisma-cli-{PRISMA_VERSION}-{CLI_PLATFORM}{PLATFORM_EXE_EXTENSION}"
+PRISMA_CLI_NAME = f'prisma-cli-{PRISMA_VERSION}-{CLI_PLATFORM}{PLATFORM_EXE_EXTENSION}'
 
 
 def default_prisma_cli_path() -> Path:
@@ -49,33 +49,33 @@ def default_engine_path(name: str) -> Callable[[], Path]:
 
 
 class PrismaSettings(BaseSettings):
-    PRISMA_CLI_MIRROR: str = "https://prisma-photongo.s3-eu-west-1.amazonaws.com"
-    PRISMA_ENGINES_MIRROR: str = "https://binaries.prisma.sh"
+    PRISMA_CLI_MIRROR: str = 'https://prisma-photongo.s3-eu-west-1.amazonaws.com'
+    PRISMA_ENGINES_MIRROR: str = 'https://binaries.prisma.sh'
 
     PRISMA_QUERY_ENGINE_BINARY: Path = Field(
-        default_factory=default_engine_path("query-engine")
+        default_factory=default_engine_path('query-engine')
     )
     PRISMA_MIGRATION_ENGINE_BINARY: Path = Field(
-        default_factory=default_engine_path("migration-engine")
+        default_factory=default_engine_path('migration-engine')
     )
     PRISMA_INTROSPECTION_ENGINE_BINARY: Path = Field(
-        default_factory=default_engine_path("introspection-engine")
+        default_factory=default_engine_path('introspection-engine')
     )
     PRISMA_CLI_BINARY: Path = Field(default_factory=default_prisma_cli_path)
-    PRISMA_FMT_BINARY: Path = Field(default_factory=default_engine_path("prisma-fmt"))
+    PRISMA_FMT_BINARY: Path = Field(default_factory=default_engine_path('prisma-fmt'))
     PRISMA_CLI_BINARY_TARGETS: List[str] = Field(default_factory=list)
 
     def engine_url(self, name: str) -> str:
         return (
-            f"{self.PRISMA_ENGINES_MIRROR}/"
-            "all_commits/"
-            f"{ENGINE_VERSION}/"
-            f"{PLATFORM}/"
-            f"{name}{PLATFORM_EXE_EXTENSION}.gz"
+            f'{self.PRISMA_ENGINES_MIRROR}/'
+            'all_commits/'
+            f'{ENGINE_VERSION}/'
+            f'{PLATFORM}/'
+            f'{name}{PLATFORM_EXE_EXTENSION}.gz'
         )
 
     def prisma_cli_url(self) -> str:
-        return f"{self.PRISMA_CLI_MIRROR}/{PRISMA_CLI_NAME}.gz"
+        return f'{self.PRISMA_CLI_MIRROR}/{PRISMA_CLI_NAME}.gz'
 
 
 SETTINGS: PrismaSettings = PrismaSettings()
@@ -128,10 +128,10 @@ class Binary:
         """
         if not self.path.exists():
             raise FileNotFoundError(
-                f"{self.name} binary not found at {self.path}\nTry running `prisma fetch`"
+                f'{self.name} binary not found at {self.path}\nTry running `prisma fetch`'
             )
         if not self.path.is_file():
-            raise IsADirectoryError(f"{self.name} binary is a directory")
+            raise IsADirectoryError(f'{self.name} binary is a directory')
         # Run binary with --version to check if it's the right version and capture stdout
         start_version = time.monotonic()
         process = subprocess.run(
@@ -145,7 +145,7 @@ class Binary:
         version = process.stdout.decode().split(' ')[1]
         if version != ENGINE_VERSION:
             raise InvalidBinaryVersion(
-                f"{self.name} binary version {version} is not {ENGINE_VERSION}"
+                f'{self.name} binary version {version} is not {ENGINE_VERSION}'
             )
 
 
@@ -204,17 +204,17 @@ def ensure_cached() -> Path:
     to_download: List[Binary] = []
     for binary in BINARIES:
         if binary.path.exists():
-            log.debug("%s is cached, skipping download", binary.name)
+            log.debug('%s is cached, skipping download', binary.name)
             continue
-        log.debug("%s is not cached, will download", binary.name)
+        log.debug('%s is not cached, will download', binary.name)
         to_download.append(binary)
 
     if len(to_download) == 0:
-        log.debug("All binaries are cached, skipping download")
+        log.debug('All binaries are cached, skipping download')
         return GLOBAL_TEMP_DIR
 
     def show_item(item: Optional[Binary]) -> str:
-        return "" if item is None else item.name
+        return '' if item is None else item.name
 
     with click.progressbar(
         to_download,
@@ -223,7 +223,7 @@ def ensure_cached() -> Path:
         item_show_func=show_item,
     ) as iterator:
         for binary in iterator:
-            log.debug("Downloading %s from %s", binary.name, binary.url)
+            log.debug('Downloading %s from %s', binary.name, binary.url)
             binary.download()
 
     return GLOBAL_TEMP_DIR
