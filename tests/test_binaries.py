@@ -10,7 +10,7 @@ def mock(obj: Any):
     return lambda: obj
 
 
-def test_mock_windows_os(monkeypatch: pytest.MonkeyPatch):
+def test_mock_windows_os(monkeypatch: pytest.MonkeyPatch):  # pragma: no cover
     monkeypatch.setattr(platform, "system", mock("Windows"))
     monkeypatch.setattr(platform, "machine", mock("x86_64"))
     monkeypatch.setattr(binaries_platform, "get_openssl", mock("1.1.x"))
@@ -30,7 +30,9 @@ MACHINES = ["aarch64", "x86_64"]
 
 
 @pytest.mark.parametrize(("machine,"), MACHINES)
-def test_mock_darwin_os(monkeypatch: pytest.MonkeyPatch, machine: str):
+def test_mock_darwin_os(
+    monkeypatch: pytest.MonkeyPatch, machine: str
+):  # pragma: no cover
     monkeypatch.setattr(platform, "system", mock("Darwin"))
     monkeypatch.setattr(platform, "machine", mock(machine))
     monkeypatch.setattr(binaries_platform, "get_openssl", mock("1.1.x"))
@@ -67,7 +69,7 @@ DISTRO_ID_LIKE: List[Tuple[str, str, str]] = [
 @pytest.mark.parametrize(("distro_id,distro_like,expected"), DISTRO_ID_LIKE)
 def test_resolve_known_distro(
     monkeypatch: pytest.MonkeyPatch, distro_id: str, distro_like: str, expected: str
-):
+):  # pragma: no cover
     monkeypatch.setattr(platform, "system", mock("linux"))
     monkeypatch.setattr(platform, "machine", mock("x86_64"))
     monkeypatch.setattr(binaries_platform, "get_openssl", mock("1.1.x"))
@@ -105,7 +107,7 @@ def test_resolve_linux(
     machine: str,
     resolved_distro: str,
     expected_platform: str,
-):
+):  # pragma: no cover
     # pylint: disable=too-many-arguments
     # TODO: arguments can be simplified to a namedtuple or something
     monkeypatch.setattr(platform, "system", mock("Linux"))
