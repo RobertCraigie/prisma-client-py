@@ -17,8 +17,8 @@ def run(
     check: bool = False,
     env: Optional[Dict[str, str]] = None,
 ) -> int:
-    directory = binaries.ensure_cached()
-    path = directory.joinpath(binaries.PRISMA_CLI_NAME)
+    binaries.ensure_cached()
+    path = binaries.SETTINGS.PRISMA_CLI_BINARY
     if not path.exists():
         raise RuntimeError(
             f'The Prisma CLI is not downloaded, expected {path} to exist.'
@@ -35,7 +35,7 @@ def run(
     env = {**default_env, **env} if env is not None else default_env
     # ensure the client uses our engine binaries
     # TODO: this is a hack, probably there's a better way to do this
-    engine_env_dict = binaries.settings.dict()
+    engine_env_dict = binaries.SETTINGS.dict()
     for engine in binaries.ENGINES:
         for engine_env, engine_path in engine_env_dict.items():
             if engine_path == engine.path:

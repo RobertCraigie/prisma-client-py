@@ -14,7 +14,7 @@ from pathlib import Path
 from . import utils, errors
 from .http import HTTPEngine
 from ..utils import DEBUG
-from ..binaries import settings as binaries_settings, OS_SETTINGS, ensure_cached
+from ..binaries import SETTINGS, OS_SETTINGS, ensure_cached
 from ..utils import time_since, _env_bool
 from ..types import DatasourceOverride
 from ..builder import dumps
@@ -78,7 +78,7 @@ class QueryEngine(HTTPEngine):
         start = time.monotonic()
 
         ensure_cached()
-        self.file = binaries_settings.PRISMA_QUERY_ENGINE_BINARY
+        self.file = SETTINGS.PRISMA_QUERY_ENGINE_BINARY
 
         try:
             {{ maybe_await }}self.spawn(self.file, timeout=timeout, datasources=datasources)
