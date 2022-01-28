@@ -94,3 +94,19 @@ def test_str_enum_choice(runner: Runner) -> None:
     assert 'bob' in result.output
     assert 'alice' in result.output
     assert 'invalid' in result.output
+
+
+def test_prisma_studio_not_supported_error(runner: Runner) -> None:
+    """Running `prisma studio` from the Python CLI is not supported:
+
+    https://github.com/prisma/prisma/issues/10917
+
+    Ensure we provide an easy to understand error message detailing
+    potential solutions
+    """
+    result = runner.invoke(['prisma', 'studio'])
+    assert result.exit_code == 1
+    assert (
+        'ERROR: Prisma Studio does not work natively with Prisma Client Python'
+        in result.output
+    )
