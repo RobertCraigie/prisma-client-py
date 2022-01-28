@@ -33,6 +33,7 @@ disable =
 
   # I don't think this is valuable
   too-many-ancestors,
+  too-many-arguments,
 
   # this should only trigger for tests and I don't care about duplicating code for tests
   duplicate-code,
