@@ -14,6 +14,7 @@ ERROR_MAPPING: Dict[str, Type[Exception]] = {
     'P2002': prisma_errors.UniqueViolationError,
     'P2010': prisma_errors.RawQueryError,
     'P2012': prisma_errors.MissingRequiredValueError,
+    'P2019': prisma_errors.InputError,
     'P2021': prisma_errors.TableNotFoundError,
     'P2025': prisma_errors.RecordNotFoundError,
 }
