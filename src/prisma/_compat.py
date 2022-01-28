@@ -49,9 +49,8 @@ if sys.version_info[:2] < (3, 8):
     else:
         try:
             from cached_property import cached_property as cached_property
-        except ImportError:
+        except ImportError:  # pragma: no cover
             # If we can't import cached_property, fallback to the standard property
             cached_property = property
 else:
-
     from functools import cached_property as cached_property

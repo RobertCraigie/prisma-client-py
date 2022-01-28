@@ -1,16 +1,18 @@
 import platform
 from typing import Any, List, Optional, Tuple
-import pytest
 
-import distro  # type: ignore # pyright: reportMissingTypeStubs=false
-import prisma.binaries.platform as binaries_platform
+import pytest
+import distro  # type: ignore[import]
+
+from prisma.binaries import platform as binaries_platform
+from prisma.binaries.platform import OsSettings
 
 
 def mock(obj: Any):
     return lambda: obj
 
 
-def test_mock_windows_os(monkeypatch: pytest.MonkeyPatch):
+def test_mock_windows_os(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     Mock the platform.system() to return 'Windows' and platform.machine()
     to return default 'x86_64'.
@@ -27,7 +29,7 @@ def test_mock_windows_os(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(distro, 'like', mock(''))
 
     assert platform.system() == 'Windows'
-    os_settings = binaries_platform.get_os_settings()
+    os_settings = OsSettings.from_env()
     assert os_settings.is_windows()
 
     assert binaries_platform.resolve_darwin(os_settings) is None
@@ -35,11 +37,17 @@ def test_mock_windows_os(monkeypatch: pytest.MonkeyPatch):
     assert binaries_platform.resolve_other_platforms(os_settings) == 'windows'
 
 
-MACHINES = ['aarch64', 'x86_64']
+# MACHINE, EXPECTED
+DARWIN_PLATFORMS = [
+    ('x86_64', 'darwin'),
+    ('aarch64', 'darwin-arm64'),
+]
 
 
-@pytest.mark.parametrize(('machine,'), MACHINES)
-def test_mock_darwin_os(monkeypatch: pytest.MonkeyPatch, machine: str):
+@pytest.mark.parametrize(('machine,expected'), DARWIN_PLATFORMS)
+def test_mock_darwin_os(
+    monkeypatch: pytest.MonkeyPatch, machine: str, expected: str
+) -> None:
     """
     Mock the platform.system() to return 'Darwin' and platform.machine() to return
     either 'aarch64' or 'x86_64'.
@@ -58,13 +66,10 @@ def test_mock_darwin_os(monkeypatch: pytest.MonkeyPatch, machine: str):
 
     assert platform.system() == 'Darwin'
 
-    os_settings = binaries_platform.get_os_settings()
+    os_settings = OsSettings.from_env()
 
     assert not os_settings.is_windows()
-    if machine == 'aarch64':
-        assert binaries_platform.resolve_darwin(os_settings) == 'darwin-arm64'
-    else:
-        assert binaries_platform.resolve_darwin(os_settings) == 'darwin'
+    assert binaries_platform.resolve_darwin(os_settings) == expected
     assert binaries_platform.resolve_linux(os_settings) is None
     assert binaries_platform.resolve_other_platforms(os_settings) is None
 
@@ -86,7 +91,7 @@ DISTRO_ID_LIKE: List[Tuple[str, str, str]] = [
 @pytest.mark.parametrize(('distro_id,distro_like,expected'), DISTRO_ID_LIKE)
 def test_resolve_known_distro(
     monkeypatch: pytest.MonkeyPatch, distro_id: str, distro_like: str, expected: str
-):
+) -> None:
     """
     Mock the platform.system() to return 'linux' and platform.machine()
     to return default 'x86_64'.
@@ -100,7 +105,7 @@ def test_resolve_known_distro(
     monkeypatch.setattr(distro, 'id', mock(distro_id))
     monkeypatch.setattr(distro, 'like', mock(distro_like))
 
-    os_settings = binaries_platform.get_os_settings()
+    os_settings = OsSettings.from_env()
     assert os_settings.distro == expected
 
 
@@ -131,7 +136,7 @@ def test_resolve_linux(
     machine: str,
     resolved_distro: str,
     expected_platform: str,
-):  # pylint: disable=too-many-arguments
+) -> None:  # pylint: disable=too-many-arguments
 
     """
     Mocks the platform.system() to return 'linux' and platform.machine()
@@ -147,6 +152,9 @@ def test_resolve_linux(
     monkeypatch.setattr(binaries_platform, 'get_openssl', mock('1.1.x'))
     monkeypatch.setattr(distro, 'id', mock(distro_id))
     monkeypatch.setattr(distro, 'like', mock(distro_like))
-    os_settings = binaries_platform.get_os_settings()
+    os_settings = OsSettings.from_env()
     assert os_settings.distro == resolved_distro
     assert binaries_platform.resolve_platform(os_settings) == expected_platform
+
+
+# TODO: test engine URLs are valid

@@ -1,11 +1,11 @@
-import platform
 import re
-import subprocess
 import sys
-from functools import lru_cache
+import platform
+import subprocess
 from typing import Optional
+from functools import lru_cache
 
-import distro  # type: ignore # pyright: reportMissingTypeStubs=false
+import distro  # type: ignore[import]
 
 
 class OsSettings:
@@ -21,6 +21,16 @@ class OsSettings:
         self.machine = machine
         self.libssl = libssl
         self.distro = distro
+
+    @classmethod
+    def from_env(cls) -> 'OsSettings':
+        """Resolve settings from the current machine / environment"""
+        return cls(
+            libssl=get_openssl(),
+            system=platform.system().lower(),
+            machine=platform.machine().lower(),
+            distro=resolve_known_distro(distro.id(), distro.like()),
+        )
 
     def is_windows(self) -> bool:
         return self.system.lower() == 'windows'
@@ -73,18 +83,6 @@ def resolve_known_distro(distro_id: str, distro_like: str) -> Optional[str]:
     ):
         return 'debian'
     return None
-
-
-def get_os_settings() -> OsSettings:
-    system = platform.system().lower()
-    machine = platform.machine().lower()
-    openssl_version = get_openssl()
-    distro_id = distro.id()
-    distro_like = distro.like()
-    distr = resolve_known_distro(distro_id, distro_like)
-    return OsSettings(
-        system=system, machine=machine, libssl=openssl_version, distro=distr
-    )
 
 
 def resolve_darwin(os_settings: OsSettings) -> Optional[str]:

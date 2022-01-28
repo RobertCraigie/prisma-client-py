@@ -12,14 +12,15 @@ import click
 from pydantic import BaseSettings, Field
 from prisma.errors import PrismaError
 
-from prisma.utils import time_since
-
-
 from . import platform
 from .download import download
+from ..utils import time_since
 
-# Get system information
-OS_SETTINGS: platform.OsSettings = platform.get_os_settings()
+
+log: logging.Logger = logging.getLogger(__name__)
+
+# system information
+OS_SETTINGS: platform.OsSettings = platform.OsSettings.from_env()
 PLATFORM: str = platform.resolve_platform(OS_SETTINGS)
 CLI_PLATFORM: str = OS_SETTINGS.system
 
@@ -32,11 +33,12 @@ PRISMA_VERSION: str = '3.8.1'
 ENGINE_VERSION = os.environ.get(
     'PRISMA_ENGINE_VERSION', '34df67547cf5598f5a6cd3eb45f14ee70c3fb86f'
 )
+
+# path constants
 GLOBAL_TEMP_DIR: Path = (
     Path(tempfile.gettempdir()) / 'prisma' / 'binaries' / 'engines' / ENGINE_VERSION
 )
 PLATFORM_EXE_EXTENSION: str = '.exe' if OS_SETTINGS.is_windows() else ''
-
 PRISMA_CLI_NAME = f'prisma-cli-{PRISMA_VERSION}-{CLI_PLATFORM}{PLATFORM_EXE_EXTENSION}'
 
 
@@ -79,9 +81,6 @@ class PrismaSettings(BaseSettings):
 
 
 SETTINGS: PrismaSettings = PrismaSettings()
-
-
-log: logging.Logger = logging.getLogger(__name__)
 
 
 class InvalidBinaryVersion(PrismaError):
@@ -130,8 +129,10 @@ class Binary:
             raise FileNotFoundError(
                 f'{self.name} binary not found at {self.path}\nTry running `prisma fetch`'
             )
+
         if not self.path.is_file():
             raise IsADirectoryError(f'{self.name} binary is a directory')
+
         # Run binary with --version to check if it's the right version and capture stdout
         start_version = time.monotonic()
         process = subprocess.run(
@@ -185,6 +186,7 @@ def binaries_from_settings(
 ) -> BinariesType:
     if engines is None:
         engines = engines_from_settings(settings)
+
     return (
         *engines,
         Binary(
@@ -196,7 +198,6 @@ def binaries_from_settings(
 
 
 ENGINES: EnginesType = engines_from_settings(SETTINGS)
-
 BINARIES: BinariesType = binaries_from_settings(SETTINGS, engines=ENGINES)
 
 

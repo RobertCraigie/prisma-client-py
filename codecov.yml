@@ -7,6 +7,7 @@ coverage:
         target: 100%
         paths:
           - "tests/"
+          - "src/prisma/binaries/platform.py"
         branches:
           - main
       prisma:

@@ -2,6 +2,7 @@ import gzip
 import os
 import shutil
 from pathlib import Path
+from stat import S_IXUSR, S_IWUSR, S_IRUSR
 
 from ..http import client
 from ..utils import maybe_async_run
@@ -19,11 +20,7 @@ def download(url: str, to: Path) -> None:
             shutil.copyfileobj(f_in, f_out)
 
     # chmod +x
-    from stat import S_IXUSR, S_IWUSR, S_IRUSR
-
     os.chmod(to, S_IXUSR | S_IWUSR | S_IRUSR)
-
-    # override the original
 
     # remove temporary files
     os.remove(tar)
