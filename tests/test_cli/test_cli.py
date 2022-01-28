@@ -104,7 +104,7 @@ def test_prisma_studio_not_supported_error(runner: Runner) -> None:
     Ensure we provide an easy to understand error message detailing
     potential solutions
     """
-    result = runner.invoke(['prisma', 'studio'])
+    result = runner.invoke(['studio'])
     assert result.exit_code == 1
     assert (
         'ERROR: Prisma Studio does not work natively with Prisma Client Python'
