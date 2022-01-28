@@ -49,7 +49,7 @@ async def test_engine_connects() -> None:
     await db.disconnect()
 
 
-def test_stopping_engine_on_closed_loop():
+def test_stopping_engine_on_closed_loop() -> None:
     """Stopping the engine with no event loop available does not raise an error"""
     with no_event_loop():
         engine = QueryEngine(dml='')

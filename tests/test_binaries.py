@@ -8,7 +8,7 @@ from prisma.binaries import platform as binaries_platform
 from prisma.binaries.platform import OsSettings
 
 
-def mock(obj: Any):
+def mock(obj: Any) -> Any:
     return lambda: obj
 
 
