@@ -84,7 +84,14 @@ SETTINGS: PrismaSettings = PrismaSettings()
 
 
 class InvalidBinaryVersion(PrismaError):
-    pass
+    binary: 'Binary'
+    expected: str
+    actual: str
+
+    def __init__(self, binary: 'Binary', actual: str, expected: str = ENGINE_VERSION):
+        super().__init__(f'{binary.name}\'s binary version {actual} is not {expected}')
+        self.expected = expected
+        self.actual = actual
 
 
 class Binary:
@@ -145,9 +152,7 @@ class Binary:
         # or   query-engine 34df67547cf5598f5a6cd3eb45f14ee70c3fb86f
         version = process.stdout.decode().split(' ')[1]
         if version != ENGINE_VERSION:
-            raise InvalidBinaryVersion(
-                f'{self.name} binary version {version} is not {ENGINE_VERSION}'
-            )
+            raise InvalidBinaryVersion(self, version)
 
 
 EnginesType = Tuple[

@@ -82,7 +82,7 @@ def test_mismatched_version_error(fake_process: FakeProcess) -> None:
         query_engine.ensure_binary()
         # "{self.name} binary version {version} is not {ENGINE_VERSION}"
     assert exc.match(
-        f'{query_engine.name} binary version unexpected-hash is not {ENGINE_VERSION}'
+        f'{query_engine.name}\'s binary version unexpected-hash is not {ENGINE_VERSION}'
     )
 
 
@@ -128,7 +128,7 @@ def test_ensure_env_override(testdir: Testdir, fake_process: FakeProcess) -> Non
         with pytest.raises(InvalidBinaryVersion) as exc:
             query_engine.ensure_binary()
     assert exc.match(
-        f'{query_engine.name} binary version a-different-hash is not {ENGINE_VERSION}'
+        f'{query_engine.name}\'s binary version a-different-hash is not {ENGINE_VERSION}'
     )
     # query_engine.ensure_binary()
 
