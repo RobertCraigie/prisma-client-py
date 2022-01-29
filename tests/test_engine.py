@@ -30,11 +30,16 @@ def no_event_loop() -> Iterator[None]:
     except RuntimeError:
         current = None
 
-    try:
-        asyncio.set_event_loop(None)
+    # if there is no running loop then we don't touch the event loop
+    # as this can cause weird issues breaking other tests
+    if not current:  # pragma: no cover
         yield
-    finally:
-        asyncio.set_event_loop(current)
+    else:
+        try:
+            asyncio.set_event_loop(None)
+            yield
+        finally:
+            asyncio.set_event_loop(current)
 
 
 @pytest.mark.asyncio
