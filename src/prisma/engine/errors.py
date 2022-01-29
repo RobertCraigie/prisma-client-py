@@ -4,8 +4,6 @@ from ..errors import PrismaError
 
 __all__ = (
     'EngineError',
-    'BinaryNotFoundError',
-    'MismatchedVersionsError',
     'EngineConnectionError',
     'EngineRequestError',
     'AlreadyConnectedError',
@@ -18,26 +16,12 @@ class EngineError(PrismaError):
     pass
 
 
-class BinaryNotFoundError(EngineError):
-    pass
-
-
 class AlreadyConnectedError(EngineError):
     pass
 
 
 class NotConnectedError(EngineError):
     pass
-
-
-class MismatchedVersionsError(EngineError):
-    got: str
-    expected: str
-
-    def __init__(self, *, expected: str, got: str):
-        super().__init__(f'Expected query engine version `{expected}` but got `{got}`')
-        self.expected = expected
-        self.got = got
 
 
 class EngineConnectionError(EngineError):
