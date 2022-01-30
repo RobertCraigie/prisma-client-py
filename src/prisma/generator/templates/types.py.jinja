@@ -39,6 +39,35 @@ from .utils import _NoneType
     {% endif %}
 {% endmacro %}
 
+{% macro render_type(type) %}
+{# It is important that we render subtypes first so that references can be resolved correctly #}
+{% for subtype in type.subtypes %}
+{{ render_type(subtype) }}
+{% endfor %}
+{% if type.kind == 'alias' %}
+{{ type.name }} = {{ type.to }}
+{% elif type.kind == 'union' %}
+{{ type.name }} = Union[
+    {% for subtype in type.subtypes %}
+    '{{ subtype.name }}',
+    {% endfor %}
+]
+{% elif type.kind == 'typeddict' %}
+{# We use the old syntax for defined TypedDicts so that fields that shadow keywords #}
+{# can be defined, e.g. 'not' #}
+{{ type.name }} = TypedDict(
+    '{{ type.name }}',
+    {
+        {% for field, subtype in type.fields.items() %}
+        '{{ field }}': {{ type_as_string(subtype) }},
+        {% endfor %}
+    },
+    total={{ type.total }}
+)
+{% else %}
+{{ raise_err('Unhandled type kind: %s' % type.kind) }}
+{% endif %}
+{% endmacro %}
 
 SortMode = Literal['default', 'insensitive']
 SortOrder = Literal['asc', 'desc']
@@ -385,6 +414,7 @@ class _{{ type }}ListUpdatePush(TypedDict):
 {% endfor %}
 
 {% for model in dmmf.datamodel.models %}
+{% set model_schema = type_schema.get_model(model.name) %}
 # {{ model.name }} types
 
 class {{ model.name }}OptionalCreateInput(TypedDict, total=False):
@@ -436,38 +466,7 @@ class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=Fal
     connect: Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]
 
 
-{% macro render_type(type) %}
-{# It is important that we render subtypes first so that references can be resolved correctly #}
-{% for subtype in type.subtypes %}
-{{ render_type(subtype) }}
-{% endfor %}
-{% if type.kind == 'alias' %}
-{{ type.name }} = {{ type.to }}
-{% elif type.kind == 'union' %}
-{{ type.name }} = Union[
-    {% for subtype in type.subtypes %}
-    '{{ subtype.name }}',
-    {% endfor %}
-]
-{% elif type.kind == 'typeddict' %}
-{# We use the old syntax for defined TypedDicts so that fields that shadow keywords #}
-{# can be defined, e.g. 'not' #}
-{{ type.name }} = TypedDict(
-    '{{ type.name }}',
-    {
-        {% for field, subtype in type.fields.items() %}
-        '{{ field }}': {{ type_as_string(subtype) }},
-        {% endfor %}
-    },
-    total={{ type.total }}
-)
-{% else %}
-{{ raise_err('Unhandled type kind: %s' % type.kind) }}
-{% endif %}
-{% endmacro %}
-
-{% set where_unique = type_schema.get_model(model.name).where_unique %}
-{{ render_type(where_unique) }}
+{{ render_type(model_schema.where_unique) }}
 
 class {{ model.name }}UpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
@@ -519,10 +518,7 @@ class {{ model.name }}UpsertInput(TypedDict):
     update: '{{ model.name }}UpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
-class {{ model.name }}OrderByInput(TypedDict, total=False):
-    {% for field in model.scalar_fields %}
-    {{ field.name }}: SortOrder
-    {% endfor %}
+{{ render_type(model_schema.order_by) }}
 
 
 # recursive {{ model.name }} types

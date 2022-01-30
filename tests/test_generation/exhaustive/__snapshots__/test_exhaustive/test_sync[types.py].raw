@@ -908,7 +908,6 @@ class PostCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     connect: Union['PostWhereUniqueInput', List['PostWhereUniqueInput']]
 
 
-
 _PostWhereUnique_id_Input = TypedDict(
     '_PostWhereUnique_id_Input',
     {
@@ -971,13 +970,63 @@ class PostUpsertInput(TypedDict):
     update: 'PostUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
-class PostOrderByInput(TypedDict, total=False):
-    id: SortOrder
-    created_at: SortOrder
-    title: SortOrder
-    content: SortOrder
-    published: SortOrder
-    author_id: SortOrder
+_Post_id_OrderByInput = TypedDict(
+    '_Post_id_OrderByInput',
+    {
+        'id': 'SortOrder',
+    },
+    total=True
+)
+
+_Post_created_at_OrderByInput = TypedDict(
+    '_Post_created_at_OrderByInput',
+    {
+        'created_at': 'SortOrder',
+    },
+    total=True
+)
+
+_Post_title_OrderByInput = TypedDict(
+    '_Post_title_OrderByInput',
+    {
+        'title': 'SortOrder',
+    },
+    total=True
+)
+
+_Post_content_OrderByInput = TypedDict(
+    '_Post_content_OrderByInput',
+    {
+        'content': 'SortOrder',
+    },
+    total=True
+)
+
+_Post_published_OrderByInput = TypedDict(
+    '_Post_published_OrderByInput',
+    {
+        'published': 'SortOrder',
+    },
+    total=True
+)
+
+_Post_author_id_OrderByInput = TypedDict(
+    '_Post_author_id_OrderByInput',
+    {
+        'author_id': 'SortOrder',
+    },
+    total=True
+)
+
+PostOrderByInput = Union[
+    '_Post_id_OrderByInput',
+    '_Post_created_at_OrderByInput',
+    '_Post_title_OrderByInput',
+    '_Post_content_OrderByInput',
+    '_Post_published_OrderByInput',
+    '_Post_author_id_OrderByInput',
+]
+
 
 
 # recursive Post types
@@ -1993,7 +2042,6 @@ class UserCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     connect: Union['UserWhereUniqueInput', List['UserWhereUniqueInput']]
 
 
-
 _UserWhereUnique_id_Input = TypedDict(
     '_UserWhereUnique_id_Input',
     {
@@ -2081,19 +2129,117 @@ class UserUpsertInput(TypedDict):
     update: 'UserUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
-class UserOrderByInput(TypedDict, total=False):
-    id: SortOrder
-    email: SortOrder
-    int: SortOrder
-    optional_int: SortOrder
-    float: SortOrder
-    optional_float: SortOrder
-    string: SortOrder
-    optional_string: SortOrder
-    enum: SortOrder
-    optional_enum: SortOrder
-    boolean: SortOrder
-    optional_boolean: SortOrder
+_User_id_OrderByInput = TypedDict(
+    '_User_id_OrderByInput',
+    {
+        'id': 'SortOrder',
+    },
+    total=True
+)
+
+_User_email_OrderByInput = TypedDict(
+    '_User_email_OrderByInput',
+    {
+        'email': 'SortOrder',
+    },
+    total=True
+)
+
+_User_int_OrderByInput = TypedDict(
+    '_User_int_OrderByInput',
+    {
+        'int': 'SortOrder',
+    },
+    total=True
+)
+
+_User_optional_int_OrderByInput = TypedDict(
+    '_User_optional_int_OrderByInput',
+    {
+        'optional_int': 'SortOrder',
+    },
+    total=True
+)
+
+_User_float_OrderByInput = TypedDict(
+    '_User_float_OrderByInput',
+    {
+        'float': 'SortOrder',
+    },
+    total=True
+)
+
+_User_optional_float_OrderByInput = TypedDict(
+    '_User_optional_float_OrderByInput',
+    {
+        'optional_float': 'SortOrder',
+    },
+    total=True
+)
+
+_User_string_OrderByInput = TypedDict(
+    '_User_string_OrderByInput',
+    {
+        'string': 'SortOrder',
+    },
+    total=True
+)
+
+_User_optional_string_OrderByInput = TypedDict(
+    '_User_optional_string_OrderByInput',
+    {
+        'optional_string': 'SortOrder',
+    },
+    total=True
+)
+
+_User_enum_OrderByInput = TypedDict(
+    '_User_enum_OrderByInput',
+    {
+        'enum': 'SortOrder',
+    },
+    total=True
+)
+
+_User_optional_enum_OrderByInput = TypedDict(
+    '_User_optional_enum_OrderByInput',
+    {
+        'optional_enum': 'SortOrder',
+    },
+    total=True
+)
+
+_User_boolean_OrderByInput = TypedDict(
+    '_User_boolean_OrderByInput',
+    {
+        'boolean': 'SortOrder',
+    },
+    total=True
+)
+
+_User_optional_boolean_OrderByInput = TypedDict(
+    '_User_optional_boolean_OrderByInput',
+    {
+        'optional_boolean': 'SortOrder',
+    },
+    total=True
+)
+
+UserOrderByInput = Union[
+    '_User_id_OrderByInput',
+    '_User_email_OrderByInput',
+    '_User_int_OrderByInput',
+    '_User_optional_int_OrderByInput',
+    '_User_float_OrderByInput',
+    '_User_optional_float_OrderByInput',
+    '_User_string_OrderByInput',
+    '_User_optional_string_OrderByInput',
+    '_User_enum_OrderByInput',
+    '_User_optional_enum_OrderByInput',
+    '_User_boolean_OrderByInput',
+    '_User_optional_boolean_OrderByInput',
+]
+
 
 
 # recursive User types
@@ -3200,7 +3346,6 @@ class MCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     connect: Union['MWhereUniqueInput', List['MWhereUniqueInput']]
 
 
-
 _MWhereUnique_id_Input = TypedDict(
     '_MWhereUnique_id_Input',
     {
@@ -3275,18 +3420,108 @@ class MUpsertInput(TypedDict):
     update: 'MUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
-class MOrderByInput(TypedDict, total=False):
-    id: SortOrder
-    int: SortOrder
-    optional_int: SortOrder
-    float: SortOrder
-    optional_float: SortOrder
-    string: SortOrder
-    optional_string: SortOrder
-    enum: SortOrder
-    optional_enum: SortOrder
-    boolean: SortOrder
-    optional_boolean: SortOrder
+_M_id_OrderByInput = TypedDict(
+    '_M_id_OrderByInput',
+    {
+        'id': 'SortOrder',
+    },
+    total=True
+)
+
+_M_int_OrderByInput = TypedDict(
+    '_M_int_OrderByInput',
+    {
+        'int': 'SortOrder',
+    },
+    total=True
+)
+
+_M_optional_int_OrderByInput = TypedDict(
+    '_M_optional_int_OrderByInput',
+    {
+        'optional_int': 'SortOrder',
+    },
+    total=True
+)
+
+_M_float_OrderByInput = TypedDict(
+    '_M_float_OrderByInput',
+    {
+        'float': 'SortOrder',
+    },
+    total=True
+)
+
+_M_optional_float_OrderByInput = TypedDict(
+    '_M_optional_float_OrderByInput',
+    {
+        'optional_float': 'SortOrder',
+    },
+    total=True
+)
+
+_M_string_OrderByInput = TypedDict(
+    '_M_string_OrderByInput',
+    {
+        'string': 'SortOrder',
+    },
+    total=True
+)
+
+_M_optional_string_OrderByInput = TypedDict(
+    '_M_optional_string_OrderByInput',
+    {
+        'optional_string': 'SortOrder',
+    },
+    total=True
+)
+
+_M_enum_OrderByInput = TypedDict(
+    '_M_enum_OrderByInput',
+    {
+        'enum': 'SortOrder',
+    },
+    total=True
+)
+
+_M_optional_enum_OrderByInput = TypedDict(
+    '_M_optional_enum_OrderByInput',
+    {
+        'optional_enum': 'SortOrder',
+    },
+    total=True
+)
+
+_M_boolean_OrderByInput = TypedDict(
+    '_M_boolean_OrderByInput',
+    {
+        'boolean': 'SortOrder',
+    },
+    total=True
+)
+
+_M_optional_boolean_OrderByInput = TypedDict(
+    '_M_optional_boolean_OrderByInput',
+    {
+        'optional_boolean': 'SortOrder',
+    },
+    total=True
+)
+
+MOrderByInput = Union[
+    '_M_id_OrderByInput',
+    '_M_int_OrderByInput',
+    '_M_optional_int_OrderByInput',
+    '_M_float_OrderByInput',
+    '_M_optional_float_OrderByInput',
+    '_M_string_OrderByInput',
+    '_M_optional_string_OrderByInput',
+    '_M_enum_OrderByInput',
+    '_M_optional_enum_OrderByInput',
+    '_M_boolean_OrderByInput',
+    '_M_optional_boolean_OrderByInput',
+]
+
 
 
 # recursive M types
@@ -4383,7 +4618,6 @@ class NCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     connect: Union['NWhereUniqueInput', List['NWhereUniqueInput']]
 
 
-
 _NWhereUnique_id_Input = TypedDict(
     '_NWhereUnique_id_Input',
     {
@@ -4462,20 +4696,126 @@ class NUpsertInput(TypedDict):
     update: 'NUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
-class NOrderByInput(TypedDict, total=False):
-    id: SortOrder
-    int: SortOrder
-    optional_int: SortOrder
-    float: SortOrder
-    optional_float: SortOrder
-    string: SortOrder
-    optional_string: SortOrder
-    json_: SortOrder
-    optional_json: SortOrder
-    enum: SortOrder
-    optional_enum: SortOrder
-    boolean: SortOrder
-    optional_boolean: SortOrder
+_N_id_OrderByInput = TypedDict(
+    '_N_id_OrderByInput',
+    {
+        'id': 'SortOrder',
+    },
+    total=True
+)
+
+_N_int_OrderByInput = TypedDict(
+    '_N_int_OrderByInput',
+    {
+        'int': 'SortOrder',
+    },
+    total=True
+)
+
+_N_optional_int_OrderByInput = TypedDict(
+    '_N_optional_int_OrderByInput',
+    {
+        'optional_int': 'SortOrder',
+    },
+    total=True
+)
+
+_N_float_OrderByInput = TypedDict(
+    '_N_float_OrderByInput',
+    {
+        'float': 'SortOrder',
+    },
+    total=True
+)
+
+_N_optional_float_OrderByInput = TypedDict(
+    '_N_optional_float_OrderByInput',
+    {
+        'optional_float': 'SortOrder',
+    },
+    total=True
+)
+
+_N_string_OrderByInput = TypedDict(
+    '_N_string_OrderByInput',
+    {
+        'string': 'SortOrder',
+    },
+    total=True
+)
+
+_N_optional_string_OrderByInput = TypedDict(
+    '_N_optional_string_OrderByInput',
+    {
+        'optional_string': 'SortOrder',
+    },
+    total=True
+)
+
+_N_json__OrderByInput = TypedDict(
+    '_N_json__OrderByInput',
+    {
+        'json_': 'SortOrder',
+    },
+    total=True
+)
+
+_N_optional_json_OrderByInput = TypedDict(
+    '_N_optional_json_OrderByInput',
+    {
+        'optional_json': 'SortOrder',
+    },
+    total=True
+)
+
+_N_enum_OrderByInput = TypedDict(
+    '_N_enum_OrderByInput',
+    {
+        'enum': 'SortOrder',
+    },
+    total=True
+)
+
+_N_optional_enum_OrderByInput = TypedDict(
+    '_N_optional_enum_OrderByInput',
+    {
+        'optional_enum': 'SortOrder',
+    },
+    total=True
+)
+
+_N_boolean_OrderByInput = TypedDict(
+    '_N_boolean_OrderByInput',
+    {
+        'boolean': 'SortOrder',
+    },
+    total=True
+)
+
+_N_optional_boolean_OrderByInput = TypedDict(
+    '_N_optional_boolean_OrderByInput',
+    {
+        'optional_boolean': 'SortOrder',
+    },
+    total=True
+)
+
+NOrderByInput = Union[
+    '_N_id_OrderByInput',
+    '_N_int_OrderByInput',
+    '_N_optional_int_OrderByInput',
+    '_N_float_OrderByInput',
+    '_N_optional_float_OrderByInput',
+    '_N_string_OrderByInput',
+    '_N_optional_string_OrderByInput',
+    '_N_json__OrderByInput',
+    '_N_optional_json_OrderByInput',
+    '_N_enum_OrderByInput',
+    '_N_optional_enum_OrderByInput',
+    '_N_boolean_OrderByInput',
+    '_N_optional_boolean_OrderByInput',
+]
+
 
 
 # recursive N types
@@ -5596,7 +5936,6 @@ class OneOptionalCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     connect: Union['OneOptionalWhereUniqueInput', List['OneOptionalWhereUniqueInput']]
 
 
-
 _OneOptionalWhereUnique_id_Input = TypedDict(
     '_OneOptionalWhereUnique_id_Input',
     {
@@ -5671,18 +6010,108 @@ class OneOptionalUpsertInput(TypedDict):
     update: 'OneOptionalUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
-class OneOptionalOrderByInput(TypedDict, total=False):
-    id: SortOrder
-    int: SortOrder
-    optional_int: SortOrder
-    float: SortOrder
-    optional_float: SortOrder
-    string: SortOrder
-    optional_string: SortOrder
-    enum: SortOrder
-    optional_enum: SortOrder
-    boolean: SortOrder
-    optional_boolean: SortOrder
+_OneOptional_id_OrderByInput = TypedDict(
+    '_OneOptional_id_OrderByInput',
+    {
+        'id': 'SortOrder',
+    },
+    total=True
+)
+
+_OneOptional_int_OrderByInput = TypedDict(
+    '_OneOptional_int_OrderByInput',
+    {
+        'int': 'SortOrder',
+    },
+    total=True
+)
+
+_OneOptional_optional_int_OrderByInput = TypedDict(
+    '_OneOptional_optional_int_OrderByInput',
+    {
+        'optional_int': 'SortOrder',
+    },
+    total=True
+)
+
+_OneOptional_float_OrderByInput = TypedDict(
+    '_OneOptional_float_OrderByInput',
+    {
+        'float': 'SortOrder',
+    },
+    total=True
+)
+
+_OneOptional_optional_float_OrderByInput = TypedDict(
+    '_OneOptional_optional_float_OrderByInput',
+    {
+        'optional_float': 'SortOrder',
+    },
+    total=True
+)
+
+_OneOptional_string_OrderByInput = TypedDict(
+    '_OneOptional_string_OrderByInput',
+    {
+        'string': 'SortOrder',
+    },
+    total=True
+)
+
+_OneOptional_optional_string_OrderByInput = TypedDict(
+    '_OneOptional_optional_string_OrderByInput',
+    {
+        'optional_string': 'SortOrder',
+    },
+    total=True
+)
+
+_OneOptional_enum_OrderByInput = TypedDict(
+    '_OneOptional_enum_OrderByInput',
+    {
+        'enum': 'SortOrder',
+    },
+    total=True
+)
+
+_OneOptional_optional_enum_OrderByInput = TypedDict(
+    '_OneOptional_optional_enum_OrderByInput',
+    {
+        'optional_enum': 'SortOrder',
+    },
+    total=True
+)
+
+_OneOptional_boolean_OrderByInput = TypedDict(
+    '_OneOptional_boolean_OrderByInput',
+    {
+        'boolean': 'SortOrder',
+    },
+    total=True
+)
+
+_OneOptional_optional_boolean_OrderByInput = TypedDict(
+    '_OneOptional_optional_boolean_OrderByInput',
+    {
+        'optional_boolean': 'SortOrder',
+    },
+    total=True
+)
+
+OneOptionalOrderByInput = Union[
+    '_OneOptional_id_OrderByInput',
+    '_OneOptional_int_OrderByInput',
+    '_OneOptional_optional_int_OrderByInput',
+    '_OneOptional_float_OrderByInput',
+    '_OneOptional_optional_float_OrderByInput',
+    '_OneOptional_string_OrderByInput',
+    '_OneOptional_optional_string_OrderByInput',
+    '_OneOptional_enum_OrderByInput',
+    '_OneOptional_optional_enum_OrderByInput',
+    '_OneOptional_boolean_OrderByInput',
+    '_OneOptional_optional_boolean_OrderByInput',
+]
+
 
 
 # recursive OneOptional types
@@ -6775,7 +7204,6 @@ class ManyRequiredCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     connect: Union['ManyRequiredWhereUniqueInput', List['ManyRequiredWhereUniqueInput']]
 
 
-
 _ManyRequiredWhereUnique_id_Input = TypedDict(
     '_ManyRequiredWhereUnique_id_Input',
     {
@@ -6850,19 +7278,117 @@ class ManyRequiredUpsertInput(TypedDict):
     update: 'ManyRequiredUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
-class ManyRequiredOrderByInput(TypedDict, total=False):
-    id: SortOrder
-    one_optional_id: SortOrder
-    int: SortOrder
-    optional_int: SortOrder
-    float: SortOrder
-    optional_float: SortOrder
-    string: SortOrder
-    optional_string: SortOrder
-    enum: SortOrder
-    optional_enum: SortOrder
-    boolean: SortOrder
-    optional_boolean: SortOrder
+_ManyRequired_id_OrderByInput = TypedDict(
+    '_ManyRequired_id_OrderByInput',
+    {
+        'id': 'SortOrder',
+    },
+    total=True
+)
+
+_ManyRequired_one_optional_id_OrderByInput = TypedDict(
+    '_ManyRequired_one_optional_id_OrderByInput',
+    {
+        'one_optional_id': 'SortOrder',
+    },
+    total=True
+)
+
+_ManyRequired_int_OrderByInput = TypedDict(
+    '_ManyRequired_int_OrderByInput',
+    {
+        'int': 'SortOrder',
+    },
+    total=True
+)
+
+_ManyRequired_optional_int_OrderByInput = TypedDict(
+    '_ManyRequired_optional_int_OrderByInput',
+    {
+        'optional_int': 'SortOrder',
+    },
+    total=True
+)
+
+_ManyRequired_float_OrderByInput = TypedDict(
+    '_ManyRequired_float_OrderByInput',
+    {
+        'float': 'SortOrder',
+    },
+    total=True
+)
+
+_ManyRequired_optional_float_OrderByInput = TypedDict(
+    '_ManyRequired_optional_float_OrderByInput',
+    {
+        'optional_float': 'SortOrder',
+    },
+    total=True
+)
+
+_ManyRequired_string_OrderByInput = TypedDict(
+    '_ManyRequired_string_OrderByInput',
+    {
+        'string': 'SortOrder',
+    },
+    total=True
+)
+
+_ManyRequired_optional_string_OrderByInput = TypedDict(
+    '_ManyRequired_optional_string_OrderByInput',
+    {
+        'optional_string': 'SortOrder',
+    },
+    total=True
+)
+
+_ManyRequired_enum_OrderByInput = TypedDict(
+    '_ManyRequired_enum_OrderByInput',
+    {
+        'enum': 'SortOrder',
+    },
+    total=True
+)
+
+_ManyRequired_optional_enum_OrderByInput = TypedDict(
+    '_ManyRequired_optional_enum_OrderByInput',
+    {
+        'optional_enum': 'SortOrder',
+    },
+    total=True
+)
+
+_ManyRequired_boolean_OrderByInput = TypedDict(
+    '_ManyRequired_boolean_OrderByInput',
+    {
+        'boolean': 'SortOrder',
+    },
+    total=True
+)
+
+_ManyRequired_optional_boolean_OrderByInput = TypedDict(
+    '_ManyRequired_optional_boolean_OrderByInput',
+    {
+        'optional_boolean': 'SortOrder',
+    },
+    total=True
+)
+
+ManyRequiredOrderByInput = Union[
+    '_ManyRequired_id_OrderByInput',
+    '_ManyRequired_one_optional_id_OrderByInput',
+    '_ManyRequired_int_OrderByInput',
+    '_ManyRequired_optional_int_OrderByInput',
+    '_ManyRequired_float_OrderByInput',
+    '_ManyRequired_optional_float_OrderByInput',
+    '_ManyRequired_string_OrderByInput',
+    '_ManyRequired_optional_string_OrderByInput',
+    '_ManyRequired_enum_OrderByInput',
+    '_ManyRequired_optional_enum_OrderByInput',
+    '_ManyRequired_boolean_OrderByInput',
+    '_ManyRequired_optional_boolean_OrderByInput',
+]
+
 
 
 # recursive ManyRequired types
@@ -7967,7 +8493,6 @@ class ListsCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     connect: Union['ListsWhereUniqueInput', List['ListsWhereUniqueInput']]
 
 
-
 _ListsWhereUnique_id_Input = TypedDict(
     '_ListsWhereUnique_id_Input',
     {
@@ -8037,16 +8562,90 @@ class ListsUpsertInput(TypedDict):
     update: 'ListsUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
-class ListsOrderByInput(TypedDict, total=False):
-    id: SortOrder
-    strings: SortOrder
-    bytes: SortOrder
-    dates: SortOrder
-    bools: SortOrder
-    ints: SortOrder
-    floats: SortOrder
-    bigints: SortOrder
-    json_objects: SortOrder
+_Lists_id_OrderByInput = TypedDict(
+    '_Lists_id_OrderByInput',
+    {
+        'id': 'SortOrder',
+    },
+    total=True
+)
+
+_Lists_strings_OrderByInput = TypedDict(
+    '_Lists_strings_OrderByInput',
+    {
+        'strings': 'SortOrder',
+    },
+    total=True
+)
+
+_Lists_bytes_OrderByInput = TypedDict(
+    '_Lists_bytes_OrderByInput',
+    {
+        'bytes': 'SortOrder',
+    },
+    total=True
+)
+
+_Lists_dates_OrderByInput = TypedDict(
+    '_Lists_dates_OrderByInput',
+    {
+        'dates': 'SortOrder',
+    },
+    total=True
+)
+
+_Lists_bools_OrderByInput = TypedDict(
+    '_Lists_bools_OrderByInput',
+    {
+        'bools': 'SortOrder',
+    },
+    total=True
+)
+
+_Lists_ints_OrderByInput = TypedDict(
+    '_Lists_ints_OrderByInput',
+    {
+        'ints': 'SortOrder',
+    },
+    total=True
+)
+
+_Lists_floats_OrderByInput = TypedDict(
+    '_Lists_floats_OrderByInput',
+    {
+        'floats': 'SortOrder',
+    },
+    total=True
+)
+
+_Lists_bigints_OrderByInput = TypedDict(
+    '_Lists_bigints_OrderByInput',
+    {
+        'bigints': 'SortOrder',
+    },
+    total=True
+)
+
+_Lists_json_objects_OrderByInput = TypedDict(
+    '_Lists_json_objects_OrderByInput',
+    {
+        'json_objects': 'SortOrder',
+    },
+    total=True
+)
+
+ListsOrderByInput = Union[
+    '_Lists_id_OrderByInput',
+    '_Lists_strings_OrderByInput',
+    '_Lists_bytes_OrderByInput',
+    '_Lists_dates_OrderByInput',
+    '_Lists_bools_OrderByInput',
+    '_Lists_ints_OrderByInput',
+    '_Lists_floats_OrderByInput',
+    '_Lists_bigints_OrderByInput',
+    '_Lists_json_objects_OrderByInput',
+]
+
 
 
 # recursive Lists types
@@ -9093,7 +9692,6 @@ class ACreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     connect: Union['AWhereUniqueInput', List['AWhereUniqueInput']]
 
 
-
 _AWhereUnique_email_Input = TypedDict(
     '_AWhereUnique_email_Input',
     {
@@ -9184,16 +9782,90 @@ class AUpsertInput(TypedDict):
     update: 'AUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
-class AOrderByInput(TypedDict, total=False):
-    email: SortOrder
-    name: SortOrder
-    int: SortOrder
-    sInt: SortOrder
-    inc_int: SortOrder
-    inc_sInt: SortOrder
-    bInt: SortOrder
-    inc_bInt: SortOrder
-    enum: SortOrder
+_A_email_OrderByInput = TypedDict(
+    '_A_email_OrderByInput',
+    {
+        'email': 'SortOrder',
+    },
+    total=True
+)
+
+_A_name_OrderByInput = TypedDict(
+    '_A_name_OrderByInput',
+    {
+        'name': 'SortOrder',
+    },
+    total=True
+)
+
+_A_int_OrderByInput = TypedDict(
+    '_A_int_OrderByInput',
+    {
+        'int': 'SortOrder',
+    },
+    total=True
+)
+
+_A_sInt_OrderByInput = TypedDict(
+    '_A_sInt_OrderByInput',
+    {
+        'sInt': 'SortOrder',
+    },
+    total=True
+)
+
+_A_inc_int_OrderByInput = TypedDict(
+    '_A_inc_int_OrderByInput',
+    {
+        'inc_int': 'SortOrder',
+    },
+    total=True
+)
+
+_A_inc_sInt_OrderByInput = TypedDict(
+    '_A_inc_sInt_OrderByInput',
+    {
+        'inc_sInt': 'SortOrder',
+    },
+    total=True
+)
+
+_A_bInt_OrderByInput = TypedDict(
+    '_A_bInt_OrderByInput',
+    {
+        'bInt': 'SortOrder',
+    },
+    total=True
+)
+
+_A_inc_bInt_OrderByInput = TypedDict(
+    '_A_inc_bInt_OrderByInput',
+    {
+        'inc_bInt': 'SortOrder',
+    },
+    total=True
+)
+
+_A_enum_OrderByInput = TypedDict(
+    '_A_enum_OrderByInput',
+    {
+        'enum': 'SortOrder',
+    },
+    total=True
+)
+
+AOrderByInput = Union[
+    '_A_email_OrderByInput',
+    '_A_name_OrderByInput',
+    '_A_int_OrderByInput',
+    '_A_sInt_OrderByInput',
+    '_A_inc_int_OrderByInput',
+    '_A_inc_sInt_OrderByInput',
+    '_A_bInt_OrderByInput',
+    '_A_inc_bInt_OrderByInput',
+    '_A_enum_OrderByInput',
+]
+
 
 
 # recursive A types
@@ -10237,7 +10909,6 @@ class BCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     connect: Union['BWhereUniqueInput', List['BWhereUniqueInput']]
 
 
-
 _BWhereUnique_id_Input = TypedDict(
     '_BWhereUnique_id_Input',
     {
@@ -10315,10 +10986,36 @@ class BUpsertInput(TypedDict):
     update: 'BUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
-class BOrderByInput(TypedDict, total=False):
-    id: SortOrder
-    float: SortOrder
-    d_float: SortOrder
+_B_id_OrderByInput = TypedDict(
+    '_B_id_OrderByInput',
+    {
+        'id': 'SortOrder',
+    },
+    total=True
+)
+
+_B_float_OrderByInput = TypedDict(
+    '_B_float_OrderByInput',
+    {
+        'float': 'SortOrder',
+    },
+    total=True
+)
+
+_B_d_float_OrderByInput = TypedDict(
+    '_B_d_float_OrderByInput',
+    {
+        'd_float': 'SortOrder',
+    },
+    total=True
+)
+
+BOrderByInput = Union[
+    '_B_id_OrderByInput',
+    '_B_float_OrderByInput',
+    '_B_d_float_OrderByInput',
+]
+
 
 
 # recursive B types
@@ -11272,7 +11969,6 @@ class CCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     connect: Union['CWhereUniqueInput', List['CWhereUniqueInput']]
 
 
-
 _CCompoundPrimaryKeyInner = TypedDict(
     '_CCompoundPrimaryKeyInner',
     {
@@ -11345,13 +12041,63 @@ class CUpsertInput(TypedDict):
     update: 'CUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
-class COrderByInput(TypedDict, total=False):
-    char: SortOrder
-    v_char: SortOrder
-    text: SortOrder
-    bit: SortOrder
-    v_bit: SortOrder
-    uuid: SortOrder
+_C_char_OrderByInput = TypedDict(
+    '_C_char_OrderByInput',
+    {
+        'char': 'SortOrder',
+    },
+    total=True
+)
+
+_C_v_char_OrderByInput = TypedDict(
+    '_C_v_char_OrderByInput',
+    {
+        'v_char': 'SortOrder',
+    },
+    total=True
+)
+
+_C_text_OrderByInput = TypedDict(
+    '_C_text_OrderByInput',
+    {
+        'text': 'SortOrder',
+    },
+    total=True
+)
+
+_C_bit_OrderByInput = TypedDict(
+    '_C_bit_OrderByInput',
+    {
+        'bit': 'SortOrder',
+    },
+    total=True
+)
+
+_C_v_bit_OrderByInput = TypedDict(
+    '_C_v_bit_OrderByInput',
+    {
+        'v_bit': 'SortOrder',
+    },
+    total=True
+)
+
+_C_uuid_OrderByInput = TypedDict(
+    '_C_uuid_OrderByInput',
+    {
+        'uuid': 'SortOrder',
+    },
+    total=True
+)
+
+COrderByInput = Union[
+    '_C_char_OrderByInput',
+    '_C_v_char_OrderByInput',
+    '_C_text_OrderByInput',
+    '_C_bit_OrderByInput',
+    '_C_v_bit_OrderByInput',
+    '_C_uuid_OrderByInput',
+]
+
 
 
 # recursive C types
@@ -12341,7 +13087,6 @@ class DCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     connect: Union['DWhereUniqueInput', List['DWhereUniqueInput']]
 
 
-
 _DWhereUnique_id_Input = TypedDict(
     '_DWhereUnique_id_Input',
     {
@@ -12405,13 +13150,63 @@ class DUpsertInput(TypedDict):
     update: 'DUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
-class DOrderByInput(TypedDict, total=False):
-    id: SortOrder
-    bool: SortOrder
-    xml: SortOrder
-    json_: SortOrder
-    jsonb: SortOrder
-    binary: SortOrder
+_D_id_OrderByInput = TypedDict(
+    '_D_id_OrderByInput',
+    {
+        'id': 'SortOrder',
+    },
+    total=True
+)
+
+_D_bool_OrderByInput = TypedDict(
+    '_D_bool_OrderByInput',
+    {
+        'bool': 'SortOrder',
+    },
+    total=True
+)
+
+_D_xml_OrderByInput = TypedDict(
+    '_D_xml_OrderByInput',
+    {
+        'xml': 'SortOrder',
+    },
+    total=True
+)
+
+_D_json__OrderByInput = TypedDict(
+    '_D_json__OrderByInput',
+    {
+        'json_': 'SortOrder',
+    },
+    total=True
+)
+
+_D_jsonb_OrderByInput = TypedDict(
+    '_D_jsonb_OrderByInput',
+    {
+        'jsonb': 'SortOrder',
+    },
+    total=True
+)
+
+_D_binary_OrderByInput = TypedDict(
+    '_D_binary_OrderByInput',
+    {
+        'binary': 'SortOrder',
+    },
+    total=True
+)
+
+DOrderByInput = Union[
+    '_D_id_OrderByInput',
+    '_D_bool_OrderByInput',
+    '_D_xml_OrderByInput',
+    '_D_json__OrderByInput',
+    '_D_jsonb_OrderByInput',
+    '_D_binary_OrderByInput',
+]
+
 
 
 # recursive D types
@@ -13397,7 +14192,6 @@ class ECreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     connect: Union['EWhereUniqueInput', List['EWhereUniqueInput']]
 
 
-
 _EWhereUnique_id_Input = TypedDict(
     '_EWhereUnique_id_Input',
     {
@@ -13457,11 +14251,45 @@ class EUpsertInput(TypedDict):
     update: 'EUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
 
 
-class EOrderByInput(TypedDict, total=False):
-    id: SortOrder
-    date: SortOrder
-    time: SortOrder
-    ts: SortOrder
+_E_id_OrderByInput = TypedDict(
+    '_E_id_OrderByInput',
+    {
+        'id': 'SortOrder',
+    },
+    total=True
+)
+
+_E_date_OrderByInput = TypedDict(
+    '_E_date_OrderByInput',
+    {
+        'date': 'SortOrder',
+    },
+    total=True
+)
+
+_E_time_OrderByInput = TypedDict(
+    '_E_time_OrderByInput',
+    {
+        'time': 'SortOrder',
+    },
+    total=True
+)
+
+_E_ts_OrderByInput = TypedDict(
+    '_E_ts_OrderByInput',
+    {
+        'ts': 'SortOrder',
+    },
+    total=True
+)
+
+EOrderByInput = Union[
+    '_E_id_OrderByInput',
+    '_E_date_OrderByInput',
+    '_E_time_OrderByInput',
+    '_E_ts_OrderByInput',
+]
+
 
 
 # recursive E types
