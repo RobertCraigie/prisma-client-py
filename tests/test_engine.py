@@ -34,7 +34,7 @@ def no_event_loop() -> Iterator[None]:
     # as this can cause weird issues breaking other tests
     if not current:  # pragma: no cover
         yield
-    else:
+    else:  # pragma: no cover
         try:
             asyncio.set_event_loop(None)
             yield
