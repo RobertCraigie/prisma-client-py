@@ -57,4 +57,5 @@ model Types {
   integer  Int      @default(0)
   float_   Float    @default(0)
   datetime DateTime @default(now())
+  decimal  Decimal  @default(1)
 }

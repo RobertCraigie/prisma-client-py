@@ -69,6 +69,7 @@ TYPE_MAPPING = {
     'Float': 'float',
     'BigInt': 'int',
     'Json': '\'fields.Json\'',
+    'Decimal': 'decimal.Decimal',
 }
 FILTER_TYPES = [
     'String',
