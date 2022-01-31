@@ -18,11 +18,12 @@ class {{ name }}(BaseModel):
     Config = models.Config
 
     {# TODO: this should be one validator for all bytes types #}
+    {# TODO: this type check feels very hacky #}
     {% for name, field in fields.items() %}
-    {% if field.type == 'Bytes' %}
+    {% if field.type in ['fields.Base64', 'List[\'fields.Base64\']'] %}
     @validator('{{ name }}', pre=True, allow_reuse=True)
     @classmethod
-    def _prisma_{{ name }}_bytes_validator(cls, value: Any) -> fields.Base64:
+    def _prisma_{{ name }}_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
         return fields.Base64._internal_from_prisma(value)
     {% endif %}
     {% endfor %}

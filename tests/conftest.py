@@ -10,9 +10,10 @@ import pytest
 import prisma
 from prisma import Client
 from prisma.cli import setup_logging
+from prisma.testing import reset_client
 from prisma.utils import get_or_create_event_loop
 
-from .utils import Runner, Testdir
+from .utils import Runner, Testdir, async_fixture
 
 
 if TYPE_CHECKING:
@@ -29,10 +30,12 @@ LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
 prisma.register(Client())
 
 
-@pytest.fixture(name='client', scope='session')
+@async_fixture(name='client', scope='session')
 async def client_fixture() -> Client:
     client = prisma.get_client()
-    await client.connect()
+    if not client.is_connected():  # pragma: no cover
+        await client.connect()
+
     await cleanup_client(client)
     return client
 
@@ -76,23 +79,44 @@ def pytest_collection_modifyitems(
     items.sort(key=lambda item: item.__class__.__name__ == 'IntegrationTestItem')
 
 
-@pytest.fixture(name='cleanup_client', autouse=True)
-async def cleanup_client_fixture(request: 'FixtureRequest', client: Client) -> None:
-    if not client.is_connected():  # pragma: no cover
-        await client.connect()
+@pytest.fixture(name='patch_prisma', autouse=True)
+def patch_prisma_fixture(request: 'FixtureRequest') -> Iterator[None]:
+    if request_has_client(request):
+        yield
+    else:
+
+        def _disable_access() -> None:
+            raise RuntimeError(
+                'Tests that access the prisma client must be decorated with: '
+                '@pytest.mark.prisma'
+            )
+
+        with reset_client(_disable_access):  # type: ignore
+            yield
+
+
+@async_fixture(name='setup_client', autouse=True)
+async def setup_client_fixture(request: 'FixtureRequest') -> None:
+    if not request_has_client(request):
+        return
 
     item = request.node
-    if not isinstance(item, pytest.Item) or marked_persist_data(item):
+    if item.get_closest_marker('persist_data') is not None:
         return
+
+    client = prisma.get_client()
+    if not client.is_connected():  # pragma: no cover
+        await client.connect()
 
     await cleanup_client(client)
 
 
-def marked_persist_data(item: pytest.Item) -> bool:
-    for marker in item.iter_markers():
-        if marker.name == 'persist_data':
-            return True
-    return False
+def request_has_client(request: 'FixtureRequest') -> bool:
+    """Return whether or not the current request uses the prisma client"""
+    return (
+        request.node.get_closest_marker('prisma') is not None
+        or 'client' in request.fixturenames
+    )
 
 
 async def cleanup_client(client: Client) -> None:

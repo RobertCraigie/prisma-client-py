@@ -34,22 +34,28 @@ async def main(client: Client) -> None:
         },
     )
 
-    # case: one-one relations are non nullable
+    # case: one-one relations are not available
     await client.post.update_many(
         where={
             'id': 'abc',
         },
-        data={  # E: Argument of type "dict[str, None]" cannot be assigned to parameter "data" of type "PostUpdateManyMutationInput" in function "update_many"
-            'author': None
+        data={  # E: Argument of type "dict[str, dict[str, dict[str, str]]]" cannot be assigned to parameter "data" of type "PostUpdateManyMutationInput" in function "update_many"
+            'author': {
+                'connect': {
+                    'id': 'a',
+                },
+            },
         },
     )
 
-    # case: one-many relations are non nullable
+    # case: one-many relations are not available
     await client.post.update_many(
         where={
             'id': 'abc',
         },
-        data={  # E: Argument of type "dict[str, None]" cannot be assigned to parameter "data" of type "PostUpdateManyMutationInput" in function "update_many"
-            'categories': None
+        data={  # E: Argument of type "dict[str, dict[str, list[int]]]" cannot be assigned to parameter "data" of type "PostUpdateManyMutationInput" in function "update_many"
+            'categories': {
+                'connect': [1],
+            },
         },
     )

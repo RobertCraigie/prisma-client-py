@@ -1,5 +1,6 @@
 .PHONY: bootstrap
 bootstrap:
+	pip install -U wheel
 	pip install -U -e .[all]
 	prisma db push --schema=tests/data/schema.prisma
 	cp tests/data/dev.db dev.db
@@ -12,6 +13,7 @@ database:
 
 . PHONY: package
 package:
+	python scripts/docs.py
 	python scripts/cleanup.py
 	rm -rf dist/*
 	python setup.py sdist

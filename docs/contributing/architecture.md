@@ -43,7 +43,7 @@ generator client {
 
 #### How Does it Work?
 
-Prisma sends data to generators using [JSON-RPC](https://www.jsonrpc.org/specification), our implementation can be found at `src/prisma/jsonrpc.py` and the communication with Prisma is implemented in the `invoke()` function in `src/prisma/cli/prisma.py`
+Prisma sends data to generators using [JSON-RPC](https://www.jsonrpc.org/specification), our implementation can be found at `src/prisma/generator/jsonrpc.py` and the communication with Prisma is implemented in the `BaseGenerator.invoke()` function in `src/prisma/generator/generator.py`
 
 Control flow:
 

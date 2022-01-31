@@ -33,6 +33,14 @@ user = await User.prisma().create(
 In order to query using model based access you must first create and register a client instance, for example:
 
 ```py
+from prisma import Client
+
+client = Client(auto_register=True)
+```
+
+or like this:
+
+```py
 import prisma
 
 prisma.register(prisma.Client())

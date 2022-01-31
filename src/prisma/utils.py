@@ -6,7 +6,7 @@ import logging
 import warnings
 import contextlib
 from importlib.util import find_spec
-from typing import Any, Union, Dict, Iterator, Coroutine
+from typing import Any, Union, Dict, Iterator, Coroutine, NoReturn
 
 from ._types import FuncType, CoroType
 
@@ -63,7 +63,7 @@ def temp_env_update(env: Dict[str, str]) -> Iterator[None]:
         os.environ.update(env)
         yield
     finally:
-        for key in env.keys():
+        for key in env:
             os.environ.pop(key, None)
 
         os.environ.update(old)
@@ -108,3 +108,11 @@ def get_or_create_event_loop() -> asyncio.AbstractEventLoop:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             return loop
+
+
+def assert_never(value: NoReturn) -> NoReturn:
+    """Used by type checkers for exhaustive match cases.
+
+    https://github.com/microsoft/pyright/issues/767
+    """
+    assert False, "Unhandled type: {}".format(type(value).__name__)  # pragma: no cover

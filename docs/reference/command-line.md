@@ -2,6 +2,29 @@
 
 <!-- TODO: this page should be more expansive -->
 
+Prisma Client Python comes bundled with the [Prisma CLI](https://www.prisma.io/docs/reference/api-reference/command-reference), all commands and arguments are the same. You can invoke the CLI using the installed console script:
+
+```
+$ prisma db push
+```
+
+or by directly invoking the Prisma Client Python module:
+
+```
+$ python -m prisma db push
+```
+
+or if that fails for any reason, you can also use the standard Node Prisma CLI if you have `npx` installed:
+
+```
+$ npx prisma generate
+```
+
+!!! note
+    If you use the Node CLI then the custom python commands are not available.
+    However, you can still do everything else you would normally do with the Prisma CLI,
+    including generating the Python Client!
+
 ## Commands
 
 Prisma Client Python adds commands on top of the commands that [prisma provides](https://www.prisma.io/docs/reference/api-reference/command-reference).
@@ -21,6 +44,8 @@ Options:
   --interface [sync|asyncio]  Method that the client will use to interface
                               with Prisma
   --partials PATH             Partial type generator location
+  -t, --type-depth INTEGER    Depth to generate pseudo-recursive types to; -1
+                              signifies fully recursive types
   --help                      Show this message and exit.
 ```
 

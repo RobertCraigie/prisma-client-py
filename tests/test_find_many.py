@@ -49,17 +49,55 @@ async def test_find_many(client: Client) -> None:
 
 
 @pytest.mark.asyncio
+async def test_cursor(client: Client) -> None:
+    """Cursor argument correctly paginates results"""
+    posts = [
+        await client.post.create({'title': 'Foo 1', 'published': False}),
+        await client.post.create({'title': 'Foo 2', 'published': False}),
+        await client.post.create({'title': 'Foo 3', 'published': False}),
+        await client.post.create({'title': 'Foo 4', 'published': False}),
+    ]
+    found = await client.post.find_many(
+        cursor={
+            'id': posts[1].id,
+        },
+    )
+    assert len(found) == 3
+    assert found[0].title == 'Foo 2'
+    assert found[1].title == 'Foo 3'
+    assert found[2].title == 'Foo 4'
+
+    found = await client.post.find_many(
+        cursor={
+            'id': posts[3].id,
+        },
+    )
+    assert len(found) == 1
+    assert found[0].title == 'Foo 4'
+
+
+@pytest.mark.asyncio
 async def test_filtering_one_to_one_relation(client: Client) -> None:
     """Filtering by a 1-1 relational field and negating the filter"""
     async with client.batch_() as batcher:
         batcher.user.create(
-            {'name': 'Robert', 'profile': {'create': {'bio': 'My very cool bio.'}}}
+            {
+                'name': 'Robert',
+                'profile': {
+                    'create': {'bio': 'My very cool bio.', 'country': 'Scotland'}
+                },
+            },
         )
         batcher.user.create(
             {
                 'name': 'Tegan',
-                'profile': {'create': {'bio': 'Hello world, this is my bio.'}},
-            }
+                'profile': {
+                    'create': {
+                        'bio': 'Hello world, this is my bio.',
+                        'country': 'Scotland',
+                    },
+                },
+            },
         )
         batcher.user.create({'name': 'Callum'})
 
@@ -163,6 +201,23 @@ async def test_ordering(client: Client) -> None:
     assert found[0].published is True
     assert found[1].published is False
     assert found[2].published is False
+
+    with pytest.raises(prisma.errors.DataError) as exc:
+        await client.post.find_many(
+            where={
+                'title': {
+                    'contains': 'Test',
+                },
+            },
+            order={  # type: ignore
+                'published': 'desc',
+                'title': 'desc',
+            },
+        )
+
+    assert exc.match(
+        r'Expected a minimum of 0 and at most 1 fields to be present, got 2'
+    )
 
 
 @pytest.mark.asyncio

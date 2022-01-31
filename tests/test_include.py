@@ -12,8 +12,10 @@ import pytest
 from prisma import Client
 from prisma.models import Post
 
+from .utils import async_fixture
 
-@pytest.fixture(scope='module', name='user_id')
+
+@async_fixture(scope='module', name='user_id')
 async def user_id_fixture(client: Client) -> str:
     user = await client.user.create({'name': 'Robert'})
     posts = await create_or_get_posts(client, user.id)
@@ -26,7 +28,7 @@ async def user_id_fixture(client: Client) -> str:
     return user.id
 
 
-@pytest.fixture(scope='module', name='posts')
+@async_fixture(scope='module', name='posts')
 async def posts_fixture(client: Client, user_id: str) -> List[Post]:
     return await create_or_get_posts(client, user_id)
 

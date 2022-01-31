@@ -1,0 +1,60 @@
+{% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import maybe_async_def with context %}
+# -- template engine/abstract.py.jinja --
+from abc import ABC, abstractmethod
+from ..types import DatasourceOverride
+from .._compat import get_running_loop
+
+__all__ = (
+    'AbstractEngine',
+)
+
+class AbstractEngine(ABC):
+    dml: str
+
+    def stop(self) -> None:
+        """Wrapper for synchronously calling close() and aclose()"""
+        self.close()
+        try:
+            loop = get_running_loop()
+        except RuntimeError:
+            # no event loop in the current thread, we cannot cleanup asynchronously
+            return
+        else:
+            if not loop.is_closed():
+                loop.create_task(self.aclose())
+
+    @abstractmethod
+    def close(self) -> None:
+        """Synchronous method for closing the engine, useful if the underlying engine uses a subprocess"""
+        ...
+
+    @abstractmethod
+    async def aclose(self) -> None:
+        """Asynchronous method for closing the engine, only used if an
+        asynchronous client is generated.
+        """
+        ...
+
+    @abstractmethod
+    {{ maybe_async_def }}connect(
+        self,
+        timeout: int = 10,
+        datasources: Optional[List[DatasourceOverride]] = None,
+    ) -> None:
+        """Connect to the engine"""
+        ...
+
+    @abstractmethod
+    {{ maybe_async_def }}query(self, content: str) -> Any:
+        """Execute a GraphQL query.
+
+        This method expects a JSON object matching this structure:
+
+        {
+            'variables': {},
+            'operation_name': str,
+            'query': str,
+        }
+        """
+        ...

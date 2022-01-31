@@ -260,9 +260,9 @@ post = await client.post.find_first(
 ```py
 post = await client.post.find_first(
     where={
-        'desc': 'Must be exact match',
+        'description': 'Must be exact match',
         # or
-        'desc': {
+        'description': {
             'equals': 'example_string',
             'not_in': ['ignore_string_1', 'ignore_string_2'],
             'lt': 'z',
@@ -415,6 +415,27 @@ profile = await client.profile.find_first(
         'image': {
             'equals': Base64.encode(b'my binary data'),
             'not': Base64(b'WW91IGZvdW5kIGFuIGVhc3RlciBlZ2chIExldCBAUm9iZXJ0Q3JhaWdpZSBrbm93IDop'),
+        },
+    },
+)
+```
+
+#### Lists fields
+
+!!! warning
+    Scalar list fields are only supported on PostgreSQL and MongoDB
+
+Every scalar type can also be defined as a list, for example:
+
+```py
+user = await client.user.find_first(
+    where={
+        'emails': {
+            # only one of the following fields is allowed at the same time
+            'has': 'robert@craigie.dev',
+            'has_every': ['email1', 'email2'],
+            'has_some': ['email3', 'email4'],
+            'is_empty': True,
         },
     },
 )
@@ -618,6 +639,26 @@ user = await client.user.update(
 )
 ```
 
+### Updating List Fields
+
+!!! warning
+    Scalar list fields are only supported on PostgreSQL and MongoDB
+
+```py
+user = await client.user.update(
+    where={
+        'id': 'cksc9lp7w0014f08zdkz0mdnn',
+    },
+    data={
+        'email': {
+            'set': ['robert@craigie.dev', 'robert@example.com'],
+            # or
+            'push': ['robert@example.com'],
+        },
+    }
+)
+```
+
 ## Aggregrating
 
 ### Counting Records
@@ -639,10 +680,68 @@ total = await client.post.count(
     cursor={
         'id': 'cksca3xm80035f08zjonuubik',
     },
+)
+```
+
+### Grouping Records
+
+!!! warning
+    You can only order by one field at a time however this is [not possible
+    to represent with python types](./limitations.md#grouping-records)
+
+```py
+results = await client.profile.group_by(['country'])
+# [
+#   {'country': 'Denmark'},
+#   {'country': 'Scotland'},
+# ]
+
+results = await client.profile.group_by(['country'], count=True)
+# [
+#   {'country': 'Denmark', '_count': {'_all': 20}},
+#   {'country': 'Scotland', '_count': {'_all': 1}},
+# ]
+
+results = await client.profile.group_by(
+    by=['country', 'city'],
+    count={
+        '_all': True,
+        'city': True,
+    },
+    sum={
+        'views': True,
+    },
     order={
-        'created_at': 'asc',
+        'country': 'desc',
+    },
+    having={
+        'views': {
+            '_avg': {
+                'gt': 200,
+            },
+        },
     },
 )
+# [
+#   {
+#       'country': 'Scotland',
+#       'city': 'Edinburgh',
+#       '_sum': {'views': 250},
+#       '_count': {'_all': 1, 'city': 1}
+#   },
+#   {
+#       'country': 'Denmark',
+#       'city': None,
+#       '_sum': {'views': 6000},
+#       '_count': {'_all': 12, 'city': 0}
+#   },
+#   {
+#       'country': 'Denmark',
+#       'city': 'Copenhagen',
+#       '_sum': {'views': 8000},
+#       '_count': {'_all': 8, 'city': 8}
+#   },
+# ]
 ```
 
 ## Batching Write Queries

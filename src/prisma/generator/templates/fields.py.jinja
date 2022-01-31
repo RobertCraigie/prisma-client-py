@@ -80,7 +80,7 @@ class Base64:
         """Encode bytes into valid Base64"""
         return cls(base64.b64encode(value))
 
-    def decode(self, encoding: str = BASE64_ENCODING) -> bytes:
+    def decode(self) -> bytes:
         """Decode from Base64 to the original bytes object"""
         return base64.b64decode(self._raw)
 
@@ -105,8 +105,29 @@ class Base64:
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}({self._raw})'  # type: ignore[str-bytes-safe]
 
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, Base64):
+            return self._raw == other._raw
+
+        return False
+
     @classmethod
-    def _internal_from_prisma(cls, value: str) -> 'Base64':
+    def _internal_from_prisma(
+        cls,
+        value: Union[str, 'Base64', List[Union[str, 'Base64']]]
+    ) -> Union['Base64', List['Base64']]:
+        if isinstance(value, Base64):
+            return value
+
+        if isinstance(value, list):
+            return [
+                item
+                if isinstance(item, Base64)
+                else
+                cls(bytes(item, BASE64_ENCODING))
+                for item in value
+            ]
+
         return cls(bytes(value, BASE64_ENCODING))
 
 

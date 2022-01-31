@@ -81,9 +81,7 @@ async def test_query_raw_partial_model(client: Client) -> None:
     '''
     results = await client.query_raw(query, model=PostOnlyPublished)
     assert len(results) == 2
-    assert set(p.id for p in results) == set(
-        p.id for p in posts if p.published is False
-    )
+    assert {p.id for p in results} == {p.id for p in posts if p.published is False}
     assert not hasattr(results[0], 'title')
     assert results[0].published is False
     assert results[1].published is False
@@ -167,7 +165,7 @@ async def test_query_first(client: Client) -> None:
         WHERE User.id = ?
     '''
     found = await client.query_first(query, user.id)
-    assert found == {'id': user.id, 'name': 'Robert'}
+    assert found == {'id': user.id, 'name': 'Robert', 'email': None}
 
 
 @pytest.mark.asyncio

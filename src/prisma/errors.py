@@ -11,6 +11,8 @@ __all__ = (
     'RecordNotFoundError',
     'HTTPClientClosedError',
     'ClientNotConnectedError',
+    'PrismaWarning',
+    'UnsupportedSubclassWarning',
 )
 
 
@@ -95,6 +97,10 @@ class RecordNotFoundError(DataError):
     pass
 
 
+class InputError(DataError):
+    pass
+
+
 class BuilderError(PrismaError):
     pass
 
@@ -109,3 +115,26 @@ class UnknownRelationalFieldError(BuilderError):
         super().__init__(
             f'Field: "{field}" either does not exist or is not a relational field on the {model} model'
         )
+
+
+class GeneratorError(PrismaError):
+    pass
+
+
+class UnsupportedListTypeError(GeneratorError):
+    type: str
+
+    def __init__(self, typ: str) -> None:
+        super().__init__(
+            f'Cannot use {typ} as a list yet; Please create a '
+            'feature request at https://github.com/RobertCraigie/prisma-client-py/issues/new'
+        )
+        self.type = typ
+
+
+class PrismaWarning(Warning):
+    pass
+
+
+class UnsupportedSubclassWarning(PrismaWarning):
+    pass

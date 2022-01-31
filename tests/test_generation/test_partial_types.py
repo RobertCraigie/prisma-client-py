@@ -47,6 +47,8 @@ model User {{
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
   name         String
+  bytes        Bytes
+  bytes_list   Bytes[]
   posts        Post[]
 }}
 
@@ -79,16 +81,19 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
         import datetime
         from typing import Type, Dict, Iterator, Any, Tuple, Set, Optional
         from pydantic import BaseModel
+        from prisma import Base64
         from prisma.partials import (  # type: ignore[attr-defined]
             # pyright: reportGeneralTypeIssues = false
             PostWithoutDesc,
             PostOptionalPublished,
             PostRequiredDesc,
             PostOnlyId,
+            PostNoRelations,
             PostOptionalInclude,
             PostRequiredAuthor,
             PostModifiedAuthor,
             UserModifiedPosts,
+            UserBytesList,
         )
 
         base_fields = {
@@ -193,6 +198,17 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             assert field.type_.__name__ == 'UserOnlyName'
             assert field.type_.__module__ == 'prisma.partials'
 
+        def test_exclude_relations() -> None:
+            """Removing all relational fields using `exclude_relations`"""
+            assert_expected(
+                PostNoRelations,
+                base_fields,
+                removed={
+                    'author',
+                    'comments',
+                },
+            )
+
         def test_modified_relational_list_type() -> None:
             """Changing one-to-many relation field type"""
             UserModifiedPosts(
@@ -213,6 +229,21 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
 
             assert field.outer_type_.__module__ == 'typing'
 
+        def test_bytes() -> None:
+            """Ensure Base64 fields can be used"""
+            # mock prisma behaviour
+            model = UserBytesList.parse_obj(
+                {
+                    'bytes': str(Base64.encode(b'bar')),
+                    'bytes_list': [
+                        str(Base64.encode(b'foo')),
+                        str(Base64.encode(b'baz')),
+                    ],
+                }
+            )
+            assert model.bytes == Base64.encode(b'bar')
+            assert model.bytes_list == [Base64.encode(b'foo'), Base64.encode(b'baz')]
+
     def generator() -> None:  # mark: filedef
         from prisma.models import Post, User
 
@@ -227,13 +258,19 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
         )
         Post.create_partial('PostRequiredAuthor', required=['author'])
         Post.create_partial('PostModifiedAuthor', relations={'author': 'UserOnlyName'})
+        Post.create_partial('PostNoRelations', exclude_relational_fields=True)
 
-        User.create_partial('UserModifiedPosts', relations={'posts': 'PostOnlyId'})
+        User.create_partial(
+            'UserModifiedPosts',
+            exclude={'bytes', 'bytes_list'},  # type: ignore
+            relations={'posts': 'PostOnlyId'},
+        )
+        User.create_partial('UserBytesList', include={'bytes', 'bytes_list'})  # type: ignore
 
     testdir.make_from_function(generator, name=location)
     testdir.generate(SCHEMA, options)
     testdir.make_from_function(tests)
-    testdir.runpytest().assert_outcomes(passed=8)
+    testdir.runpytest().assert_outcomes(passed=10)
 
 
 @pytest.mark.parametrize('argument', ['exclude', 'include', 'required', 'optional'])
@@ -448,3 +485,27 @@ def test_partial_type_relations_no_relational_fields(testdir: Testdir) -> None:
     assert 'ValueError' in output
     assert 'An exception ocurred while running the partial type generator' in output
     assert 'Model: "Foo" has no relational fields.' in output
+
+
+def test_exclude_relational_fields_and_relations_exclusive(testdir: Testdir) -> None:
+    """exclude_relational_fields and relations cannot be passed at the same time"""
+
+    def generator() -> None:  # mark: filedef
+        from prisma.models import Post
+
+        Post.create_partial(
+            'Placeholder',
+            relations={'author': 'Placeholder'},
+            exclude_relational_fields=True,
+        )
+
+    testdir.make_from_function(generator, name='prisma/partial_types.py')
+
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(SCHEMA)
+
+    output = exc.value.output.decode('utf-8')
+    assert 'prisma/partial_types.py' in output
+    assert 'ValueError' in output
+    assert 'An exception ocurred while running the partial type generator' in output
+    assert 'exclude_relational_fields and relations are mutually exclusive' in output

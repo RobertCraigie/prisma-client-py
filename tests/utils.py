@@ -6,29 +6,38 @@ import textwrap
 import subprocess
 import contextlib
 from pathlib import Path
-from textwrap import dedent
 from datetime import datetime
 from typing import (
     Any,
+    Callable,
+    Iterable,
+    Mapping,
     Optional,
     List,
+    Tuple,
     Union,
     Iterator,
     TYPE_CHECKING,
+    cast,
 )
 
 import py
 import click
+import pytest_asyncio  # type: ignore
 from click.testing import CliRunner, Result
 
 from prisma.cli import main
 from prisma._types import FuncType
-from prisma.builder import QueryBuilder
 
 
 if TYPE_CHECKING:
+    from _pytest.config import Config
+    from _pytest.fixtures import FixtureFunctionMarker, _Scope
     from _pytest.monkeypatch import MonkeyPatch
     from _pytest.pytester import RunResult, Testdir as PytestTestdir
+
+
+CapturedArgs = Tuple[Tuple[object, ...], Mapping[str, object]]
 
 
 # as we are generating new modules we need to clear them from
@@ -291,21 +300,59 @@ def assert_time_like_now(dt: datetime, threshold: int = 10) -> None:
     assert delta.total_seconds() < threshold
 
 
-def assert_query_equals(query: Union[str, QueryBuilder], expected: str) -> None:
-    if not isinstance(query, str):  # pragma: no branch
-        query = query.build_query()
-
-    # we have to dedent and remove leading and ending newlines
-    # to support in-place query definitions
-    expected = dedent(expected).lstrip('\n')
-    if expected.endswith('\n'):  # pragma: no branch
-        expected = expected[:-1]
-
-    assert query == expected
-
-
 def escape_path(path: Union[str, Path]) -> str:
     if isinstance(path, Path):  # pragma: no branch
         path = str(path.absolute())
 
     return path.replace('\\', '\\\\')
+
+
+def patch_method(
+    patcher: 'MonkeyPatch',
+    obj: object,
+    attr: str,
+    callback: Optional[Callable[..., Any]] = None,
+) -> Callable[[], Optional[CapturedArgs]]:
+    """Helper for patching functions that are incompatible with MonkeyPatch.setattr
+
+    e.g. __init__ methods
+    """
+    # work around for pyright: https://github.com/microsoft/pyright/issues/2757
+    captured = cast(Optional[CapturedArgs], None)
+
+    def wrapper(*args: Any, **kwargs: Any) -> None:
+        nonlocal captured
+        captured = (args[1:], kwargs)
+
+        if callback is not None:
+            callback(real_meth, *args, **kwargs)
+
+    real_meth = getattr(obj, attr)
+    patcher.setattr(obj, attr, wrapper, raising=True)
+    return lambda: captured
+
+
+def async_fixture(
+    scope: "Union[_Scope, Callable[[str, Config], _Scope]]" = "function",
+    params: Optional[Iterable[object]] = None,
+    autouse: bool = False,
+    ids: Optional[
+        Union[
+            Iterable[Union[None, str, float, int, bool]],
+            Callable[[Any], Optional[object]],
+        ]
+    ] = None,
+    name: Optional[str] = None,
+) -> 'FixtureFunctionMarker':
+    """Wrapper over pytest_asyncio.fixture providing type hints"""
+    return cast(
+        'FixtureFunctionMarker',
+        pytest_asyncio.fixture(
+            None,
+            scope=scope,
+            params=params,
+            autouse=autouse,
+            ids=ids,
+            name=name,
+        ),
+    )

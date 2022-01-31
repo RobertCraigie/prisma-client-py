@@ -1,9 +1,66 @@
 import os
 import shutil
-from typing import Any, Union
+from textwrap import dedent
+from typing import Any, List, TypeVar, Union, TYPE_CHECKING
 from pathlib import Path
 
 from ..utils import monkeypatch
+
+if TYPE_CHECKING:
+    from .models import Model, Field  # pylint: disable=cyclic-import
+
+
+T = TypeVar('T')
+
+
+class Faker:
+    """Pseudo-random re-playable data.
+
+    Seeds are generated using a linear congruential generator, inspired by:
+    https://stackoverflow.com/a/9024521/13923613
+    """
+
+    def __init__(self, seed: int = 1) -> None:
+        self._state = seed
+
+    def __iter__(self) -> 'Faker':
+        return self
+
+    def __next__(self) -> int:
+        self._state = state = (self._state * 1103515245 + 12345) & 0x7FFFFFFF
+        return state
+
+    def string(self) -> str:
+        return ''.join([chr(97 + int(n)) for n in str(self.integer())])
+
+    def boolean(self) -> bool:
+        return next(self) % 2 == 0
+
+    def integer(self) -> int:
+        return next(self)
+
+    @classmethod
+    def from_list(cls, values: List[T]) -> T:
+        # TODO: actual implementation
+        assert values, 'Expected non-empty list'
+        return values[0]
+
+
+class Sampler:
+    model: 'Model'
+
+    def __init__(self, model: 'Model') -> None:
+        self.model = model
+        self._field_iter = model.scalar_fields
+
+    def get_field(self) -> 'Field':
+        try:
+            field = next(self._field_iter)
+        except StopIteration:
+            self._field_iter = self.model.scalar_fields
+            field = next(self._field_iter)
+
+        return field
 
 
 def is_same_path(path: Path, other: Path) -> bool:
@@ -44,3 +101,10 @@ def copy_tree(src: Path, dst: Path) -> None:
 
     with monkeypatch(os, 'makedirs', _patched_makedirs):
         shutil.copytree(str(src), str(dst))
+
+
+def clean_multiline(string: str) -> str:
+    string = string.lstrip('\n')
+    assert string, 'Expected non-empty string'
+    lines = string.splitlines()
+    return '\n'.join([dedent(lines[0]), *lines[1:]])

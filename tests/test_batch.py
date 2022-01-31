@@ -84,7 +84,11 @@ async def test_mixing_models(client: Client) -> None:
         # client.user.create({'name': 'Robert', 'profile': {'create': {'bio': 'Robert\'s profile'}}})
         batcher.user.create({'id': 'abc', 'name': 'Robert'})
         batcher.profile.create(
-            {'user': {'connect': {'id': 'abc'}}, 'bio': 'Robert\'s profile'}
+            {
+                'user': {'connect': {'id': 'abc'}},
+                'bio': 'Robert\'s profile',
+                'country': 'Scotland',
+            }
         )
 
     user = await client.user.find_first(

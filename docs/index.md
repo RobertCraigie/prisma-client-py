@@ -28,19 +28,19 @@ Prisma Client Python can be used in _any_ Python backend application. This can b
 
 ## Why should you use Prisma Client Python?
 
-Unlike other Python ORMs, Prisma Client Python is **fully type safe** and offers native support for usage **with and without** `async`. All you have to do is [specify the type of client](https://prisma-client-py.readthedocs.io/en/latest/getting_started/setup/) you would like to use for your project in the [Prisma schema file](#the-prisma-schema).
+Unlike other Python ORMs, Prisma Client Python is **fully type safe** and offers native support for usage **with and without** `async`. All you have to do is [specify the type of client](https://prisma-client-py.readthedocs.io/en/stable/getting_started/setup/) you would like to use for your project in the [Prisma schema file](#the-prisma-schema).
 
 However, the arguably best feature that Prisma Client Python provides is [autocompletion support](#auto-completion-for-query-arguments) (see the GIF above). This makes writing database queries easier than ever!
 
 Core features:
 
-- [Full type safety](https://prisma-client-py.readthedocs.io/en/latest/getting_started/type-safety/)
-- [With / without async](https://prisma-client-py.readthedocs.io/en/latest/getting_started/setup/)
-- [Recursive and pseudo-recursive types](https://prisma-client-py.readthedocs.io/en/latest/reference/config/#recursive-type-depth)
-- [Atomic updates](https://prisma-client-py.readthedocs.io/en/latest/reference/operations/#updating-atomic-fields)
-- [Complex cross-relational queries](https://prisma-client-py.readthedocs.io/en/latest/reference/operations/#filtering-by-relational-fields)
-- [Partial type generation](https://prisma-client-py.readthedocs.io/en/latest/reference/partial-types/)
-- [Batching write queries](https://prisma-client-py.readthedocs.io/en/latest/reference/batching/)
+- [Full type safety](https://prisma-client-py.readthedocs.io/en/stable/getting_started/type-safety/)
+- [With / without async](https://prisma-client-py.readthedocs.io/en/stable/getting_started/setup/)
+- [Recursive and pseudo-recursive types](https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive-type-depth)
+- [Atomic updates](https://prisma-client-py.readthedocs.io/en/stable/reference/operations/#updating-atomic-fields)
+- [Complex cross-relational queries](https://prisma-client-py.readthedocs.io/en/stable/reference/operations/#filtering-by-relational-fields)
+- [Partial type generation](https://prisma-client-py.readthedocs.io/en/stable/reference/partial-types/)
+- [Batching write queries](https://prisma-client-py.readthedocs.io/en/stable/reference/batching/)
 
 Supported database providers:
 
@@ -49,6 +49,15 @@ Supported database providers:
 - SQLite
 - MongoDB (experimental)
 - SQL Server (experimental)
+
+## Support
+
+Have any questions or need help using Prisma? Join the [community discord](https://discord.gg/HpFaJbepBH)!
+
+If you don't want to join the discord you can also:
+
+- Create a new [discussion](https://github.com/RobertCraigie/prisma-client-py/discussions/new)
+- Ping me on the [Prisma Slack](https://slack.prisma.io/) `@Robert Craigie`
 
 ## How does Prisma work?
 
@@ -107,7 +116,7 @@ A generator determines what assets are created when you run the `prisma generate
 
 You can also define where the client will be generated to with the `output` option. By default Prisma Client Python will be generated to the same location it was installed to, whether thats inside a virtual environment, the global python installation or anywhere else that python packages can be imported from.
 
-For more options see [configuring Prisma Client Python](https://prisma-client-py.readthedocs.io/en/latest/reference/config/).
+For more options see [configuring Prisma Client Python](https://prisma-client-py.readthedocs.io/en/stable/reference/config/).
 
 ---
 
@@ -119,7 +128,7 @@ Just want to play around with Prisma Client Python and not worry about any setup
 
 The first step with any python project should be to setup a virtual environment to isolate installed packages from your other python projects, however that is out of the scope for this page.
 
-In this example we'll use an asynchronous client, if you would like to use a synchronous client see [setting up a synchronous client](https://prisma-client-py.readthedocs.io/en/latest/getting_started/setup/#synchronous-client).
+In this example we'll use an asynchronous client, if you would like to use a synchronous client see [setting up a synchronous client](https://prisma-client-py.readthedocs.io/en/stable/getting_started/setup/#synchronous-client).
 
 ```sh
 pip install -U prisma
@@ -171,7 +180,7 @@ async def main() -> None:
     await client.disconnect()
 
 if __name__ == '__main__':
-    asyncio.get_event_loop().run_until_complete(main())
+    asyncio.run(main())
 ```
 
 or like this:
@@ -196,12 +205,12 @@ async def main() -> None:
     await client.disconnect()
 
 if __name__ == '__main__':
-    asyncio.get_event_loop().run_until_complete(main())
+    asyncio.run(main())
 ```
 
 #### Query examples
 
-For a more complete list of queries you can perform with Prisma Client Python see the [documentation](https://prisma-client-py.readthedocs.io/en/latest/reference/operations/).
+For a more complete list of queries you can perform with Prisma Client Python see the [documentation](https://prisma-client-py.readthedocs.io/en/stable/reference/operations/).
 
 All query methods return [pydantic models](https://pydantic-docs.helpmanual.io/usage/models/).
 
@@ -269,7 +278,7 @@ post = await client.post.update(
 
 All Prisma Client Python methods are fully statically typed, this means you can easily catch bugs in your code without having to run it!
 
-For more details see the [documentation](https://prisma-client-py.readthedocs.io/en/latest/getting_started/type-safety/).
+For more details see the [documentation](https://prisma-client-py.readthedocs.io/en/stable/getting_started/type-safety/).
 
 ## Room for improvement
 
@@ -317,11 +326,13 @@ Breaking changes will be documented and released under a new **MINOR** version f
 
 `MAJOR`.`MINOR`.`PATCH`
 
+New releases are scheduled bi-weekly, however as this is a solo project, no guarantees are made that this schedule will be stuck to.
+
 ## Contributing
 
 We use [conventional commits](https://www.conventionalcommits.org) (also known as semantic commits) to ensure consistent and descriptive commit messages.
 
-See the [contributing documentation](https://prisma-client-py.readthedocs.io/en/latest/contributing/contributing/) for more information.
+See the [contributing documentation](https://prisma-client-py.readthedocs.io/en/stable/contributing/contributing/) for more information.
 
 ## Attributions
 

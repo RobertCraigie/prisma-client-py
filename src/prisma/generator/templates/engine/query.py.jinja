@@ -12,14 +12,12 @@ import subprocess
 from pathlib import Path
 
 from . import utils, errors
-from ..http import HTTP
+from .http import HTTPEngine
 from ..utils import DEBUG
-from .._types import Method
 from ..binaries import platform
 from ..utils import time_since, _env_bool
 from ..types import DatasourceOverride
 from ..builder import dumps
-from .._compat import get_running_loop
 
 
 __all__ = ('QueryEngine',)
@@ -27,15 +25,14 @@ __all__ = ('QueryEngine',)
 log: logging.Logger = logging.getLogger(__name__)
 
 
-class QueryEngine:
+class QueryEngine(HTTPEngine):
     dml: str
-    session: HTTP
+    url: Optional[str]
 
-    def __init__(self, *, dml: str, log_queries: bool = False):
+    def __init__(self, *, dml: str, log_queries: bool = False, **kwargs: Any) -> None:
+        super().__init__(url=None, **kwargs)
         self.dml = dml
-        self.session = HTTP()
         self._log_queries = log_queries
-        self.url = None  # type: Optional[str]
         self.process = None  # type: Optional[subprocess.Popen[bytes]]
         self.file = None  # type: Optional[Path]
 
@@ -45,22 +42,7 @@ class QueryEngine:
     def __del__(self) -> None:
         self.stop()
 
-    def stop(self) -> None:
-        self.disconnect()
-        {% if is_async %}
-        try:
-            loop = get_running_loop()
-        except RuntimeError:
-            # no event loop in the current thread, we cannot cleanup
-            return
-        else:
-            if not loop.is_closed():
-                loop.create_task(self.close_session())
-        {% else %}
-        self.close_session()
-        {% endif %}
-
-    def disconnect(self) -> None:
+    def close(self) -> None:
         log.debug('Disconnecting query engine...')
 
         if self.process is not None:
@@ -72,9 +54,16 @@ class QueryEngine:
             self.process.wait()
             self.process = None
 
+        {% if not is_async %}
+        self._close_session()
+        {% endif %}
         log.debug('Disconnected query engine')
 
-    {{ maybe_async_def }}close_session(self) -> None:
+    async def aclose(self) -> None:
+        self.close()
+        {{ maybe_await }}self._close_session()
+
+    {{ maybe_async_def }}_close_session(self) -> None:
         if self.session and not self.session.closed:
             {{ maybe_await }}self.session.close()
 
@@ -93,7 +82,7 @@ class QueryEngine:
         try:
             {{ maybe_await }}self.spawn(file, timeout=timeout, datasources=datasources)
         except Exception:
-            self.disconnect()
+            self.close()
             raise
 
         log.debug('Connecting to query engine took %s', time_since(start))
@@ -164,40 +153,8 @@ class QueryEngine:
                 'Could not connect to the query engine'
             ) from last_exc
 
-    {{ maybe_async_def }}request(self, method: Method, path: str, *, content: Any = None) -> Any:
-        if self.url is None:
-            raise errors.NotConnectedError('Not connected to the query engine')
-
-        kwargs = {
-            'headers': {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            }
-        }
-
-        if content is not None:
-            kwargs['content'] = content
-
-        url = self.url + path
-        log.debug('Sending %s request to %s with content: %s', method, url, content)
-
-        resp = {{ maybe_await }}self.session.request(method, url, **kwargs)
-
-        if 300 > resp.status >= 200:
-            response = {{ maybe_await }}resp.json()
-            log.debug('%s %s returned %s', method, url, response)
-
-            errors_data = response.get('errors')
-            if errors_data:
-                return utils.handle_response_errors(resp, errors_data)
-
-            return response
-
-        if resp.status == 422:
-            raise errors.UnprocessableEntityError(resp)
-
-        # TODO: handle errors better
-        raise errors.EngineRequestError(resp, {{ maybe_await }}resp.text())
+    {{ maybe_async_def }}query(self, content: str) -> Any:
+        return {{ maybe_await }}self.request('POST', '/', content=content)
 
 
 # black does not respect the fmt: off comment without this

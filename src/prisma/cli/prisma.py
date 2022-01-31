@@ -2,11 +2,12 @@ import os
 import sys
 import logging
 import subprocess
+from textwrap import indent
 from typing import List, Optional, Dict
 
 import click
 
-from .. import generator, jsonrpc, binaries, __version__
+from .. import binaries
 
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -32,14 +33,39 @@ def run(
         'PRISMA_HIDE_UPDATE_MESSAGE': 'true',
         'PRISMA_CLI_QUERY_ENGINE_TYPE': 'binary',
     }
-    if env is not None:
-        env = {**default_env, **env}
-    else:
-        env = default_env
-
+    env = {**default_env, **env} if env is not None else default_env
     # ensure the client uses our engine binaries
     for engine in binaries.ENGINES:
         env[engine.env] = str(engine.path.absolute())
+
+    if args and args[0] == 'studio':
+        click.echo(
+            click.style(
+                'ERROR: Prisma Studio does not work natively with Prisma Client Python',
+                fg='red',
+            ),
+        )
+        click.echo('\nThere are two other possible ways to use Prisma Studio:\n')
+        click.echo(click.style('1. Download the Prisma Studio app\n', bold=True))
+        click.echo(
+            indent(
+                'Prisma Studio can be downloaded from: '
+                + click.style(
+                    'https://github.com/prisma/studio/releases', underline=True
+                ),
+                ' ' * 3,
+            )
+        )
+        click.echo(click.style('\n2. Use the Node based Prisma CLI:\n', bold=True))
+        click.echo(
+            indent(
+                'If you have Node / NPX installed you can launch Prisma Studio by running the command: ',
+                ' ' * 3,
+            ),
+            nl=False,
+        )
+        click.echo(click.style('npx prisma studio', bold=True))
+        return 1
 
     process = subprocess.run(
         [str(path.absolute()), *args],
@@ -59,41 +85,3 @@ def run(
         )
 
     return process.returncode
-
-
-def invoke() -> None:
-    while True:
-        line = jsonrpc.readline()
-        if line is None:
-            log.debug('Prisma invocation ending')
-            break
-
-        request = jsonrpc.parse(line)
-        log.debug(
-            'Received request method: %s',
-            request.method,
-        )
-
-        # TODO: this can hang the prisma process if an error occurs
-        response = None
-        if request.method == 'getManifest':
-            response = jsonrpc.Response(
-                id=request.id,
-                result=dict(
-                    manifest=jsonrpc.Manifest(
-                        defaultOutput=str(generator.BASE_PACKAGE_DIR.absolute()),
-                        prettyName=f'Prisma Client Python (v{__version__})',
-                    )
-                ),
-            )
-        elif request.method == 'generate':
-            if request.params is None:  # pragma: no cover
-                raise RuntimeError('Prisma JSONRPC did not send data to generate.')
-
-            generator.run(request.params)
-            response = jsonrpc.Response(id=request.id, result=None)
-        else:  # pragma: no cover
-            raise RuntimeError(f'JSON RPC received unexpected method: {request.method}')
-
-        if response is not None:
-            jsonrpc.reply(response)

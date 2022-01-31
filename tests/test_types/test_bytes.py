@@ -62,3 +62,16 @@ async def test_json(client: Client) -> None:
     model = Types.parse_raw(record.json())
     assert isinstance(model.bytes, Base64)
     assert model.bytes.decode() == b'foo'
+
+
+@pytest.mark.asyncio
+async def test_constructing(client: Client) -> None:
+    """Base64 fields can be passed to the model constructor"""
+    record = await client.types.create({})
+    model = Types.parse_obj(
+        {
+            **record.dict(),
+            'bytes': Base64.encode(b'foo'),
+        },
+    )
+    assert model.bytes == Base64.encode(b'foo')

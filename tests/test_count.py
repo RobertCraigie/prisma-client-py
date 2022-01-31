@@ -20,6 +20,30 @@ async def test_count_no_results(client: Client) -> None:
 
 
 @pytest.mark.asyncio
+async def test_take(client: Client) -> None:
+    """Take argument limits the maximum value"""
+    async with client.batch_() as batcher:
+        batcher.post.create({'title': 'Foo 1', 'published': False})
+        batcher.post.create({'title': 'Foo 2', 'published': False})
+        batcher.post.create({'title': 'Foo 3', 'published': False})
+
+    total = await client.post.count(take=1)
+    assert total == 1
+
+
+@pytest.mark.asyncio
+async def test_skip(client: Client) -> None:
+    """Skip argument ignores the first N records"""
+    async with client.batch_() as batcher:
+        batcher.post.create({'title': 'Foo 1', 'published': False})
+        batcher.post.create({'title': 'Foo 2', 'published': False})
+        batcher.post.create({'title': 'Foo 3', 'published': False})
+
+    total = await client.post.count(skip=1)
+    assert total == 2
+
+
+@pytest.mark.asyncio
 async def test_select(client: Client) -> None:
     """Selecting a field counts non-null values"""
     async with client.batch_() as batcher:

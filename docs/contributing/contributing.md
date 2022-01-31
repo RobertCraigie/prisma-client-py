@@ -6,7 +6,7 @@ This document intends to make contribution more accessible by codifying tribal k
 
 ## General Prerequisites
 
-You must have Python >= 3.6 installed on your system.
+You must have Python >= 3.7 installed on your system.
 
 ### Environment Variables
 
@@ -122,6 +122,12 @@ You can run the integration tests only with the following command:
 tox -e py39 -- tests/integrations/
 ```
 
+Or a specific test:
+
+```sh
+tox -e py39 -- --confcutdir . tests/integrations/postgresql
+```
+
 !!! warning
     You may also need to update the root `pytest.ini` file to include your integration test in the `norecursedirs` option if you run pytest within the integration test
 
@@ -143,6 +149,19 @@ async def test_example(client: Client) -> None:
     ...
 ```
 
+If the test you are writing makes use of model-based access then you must mark the test like so:
+
+```py
+import pytest
+
+@pytest.mark.prisma
+@pytest.mark.asyncio
+async def test_example() -> None:
+    """Test docstring"""
+    ...
+```
+
+
 The tests can then be ran with tox, e.g.
 
 ```sh
@@ -158,6 +177,14 @@ tox -e py39 -- -x --ignore=tests/integrations
 For writing good test docstrings see [this article](https://jml.io/pages/test-docstrings.html).
 
 For a more specififc test case look through the tests and find one that is similar to what you need, don't be afraid to copy and paste test code.
+
+### Snapshot Tests
+
+We use [syrupy](https://github.com/tophat/syrupy) to manage our test snapshots. You can update the generated snapshots by running tests with `--snapshot-update`, for example:
+
+```
+tox -e py39 -- --snapshot-update tests/test_generation/exhaustive
+```
 
 ### Type Tests
 

@@ -1,6 +1,7 @@
 from typing import Optional
 
-from prisma import Client
+from prisma import Client, register, get_client
+from prisma.models import Url
 from hashids import Hashids
 from flask import Flask, render_template, request, flash, redirect, url_for, g
 
@@ -15,12 +16,12 @@ def get_db() -> Client:
 
 
 def close_db(exc: Optional[Exception] = None) -> None:
-    print('close db called')
-    db = g.pop('db', None)
-    if isinstance(db, Client) and db.is_connected():
-        db.disconnect()
+    client = get_client()
+    if client.is_connected():
+        client.disconnect()
 
 
+register(get_db)
 app = Flask(__name__)
 app.teardown_appcontext(close_db)
 app.config['SECRET_KEY'] = 'this should be a secret random string'
@@ -35,14 +36,13 @@ def index():
 
 @app.route('/', methods=('POST',))
 def create_shortened():
-    client = get_db()
     original: str = request.form['url']
 
     if not original:
         flash('The URL is required!')
         return redirect(url_for('index'))
 
-    url = client.url.create(
+    url = Url.prisma().create(
         {
             'original': original,
         }
@@ -54,11 +54,10 @@ def create_shortened():
 
 @app.route('/<id>')
 def url_redirect(id: str):
-    client = get_db()
     decoded = hashids.decode(id)
     if decoded:
         original_id = decoded[0]
-        url = client.url.update(
+        url = Url.prisma().update(
             where={
                 'id': original_id,
             },
@@ -80,8 +79,7 @@ def url_redirect(id: str):
 
 @app.route('/stats')
 def stats():
-    client = get_db()
-    urls = client.url.find_many(
+    urls = Url.prisma().find_many(
         order={
             'clicks': 'desc',
         }
