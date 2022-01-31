@@ -820,6 +820,8 @@ class Field(BaseModel):
             return f'Json({{\'{FAKER.string()}\': True}})'
         elif typ == 'Bytes':
             return f'Base64.encode(b\'{FAKER.string()}\')'
+        elif typ == 'Decimal':
+            return f'Decimal(\'{FAKER.integer()}.{FAKER.integer() // 10000}\')'
         else:  # pragma: no cover
             raise RuntimeError(f'Sample data not supported for {typ} yet')
 
