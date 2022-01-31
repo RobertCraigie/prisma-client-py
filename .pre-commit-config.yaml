@@ -30,6 +30,6 @@ repos:
           - id: mixed-line-ending
             args: [--fix=lf]
     - repo: https://github.com/psf/black
-      rev: 21.11b1
+      rev: 22.1.0
       hooks:
           - id: black
