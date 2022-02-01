@@ -4,6 +4,9 @@
     <h1>Prisma Client Python</h1>
     <p><h3 align="center">Type-safe database access for Python</h3></p>
     <div align="center">
+    <a href="https://discord.gg/HpFaJbepBH">
+        <img src="https://img.shields.io/discord/933860922039099444?color=blue&label=chat&logo=discord" alt="Chat on Discord">
+    </a>
     <a href="https://github.com/psf/black">
         <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black">
     </a>
