@@ -880,6 +880,7 @@ class PostOptionalCreateInput(TypedDict, total=False):
 class PostCreateInput(PostOptionalCreateInput):
     """Required arguments to the Post create method"""
     title: str
+    author_id: int
 
 
 # TODO: remove this in favour of without explicit relations
@@ -896,6 +897,7 @@ class PostOptionalCreateWithoutRelationsInput(TypedDict, total=False):
 class PostCreateWithoutRelationsInput(PostOptionalCreateWithoutRelationsInput):
     """Required arguments to the Post create method, without relations"""
     title: str
+    author_id: int
 
 
 class PostCreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -7156,6 +7158,7 @@ class ManyRequiredOptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the ManyRequired create method"""
     id: int
     one: 'OneOptionalCreateNestedWithoutRelationsInput'
+    one_optional_id: Optional[int]
     optional_int: Optional[int]
     optional_float: Optional[float]
     optional_string: Optional[str]
@@ -7178,6 +7181,7 @@ class ManyRequiredCreateInput(ManyRequiredOptionalCreateInput):
 class ManyRequiredOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the ManyRequired create method, without relations"""
     id: int
+    one_optional_id: Optional[int]
     optional_int: Optional[int]
     optional_float: Optional[float]
     optional_string: Optional[str]
