@@ -349,6 +349,7 @@ class QueryBuilder:
                 transformed[alias] = [
                     self._transform_aliases(arguments=data)
                     for data in value
+                    if isinstance(data, dict)
                 ]
             else:
                 transformed[alias] = value
