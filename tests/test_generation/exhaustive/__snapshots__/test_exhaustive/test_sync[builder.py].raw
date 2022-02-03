@@ -347,9 +347,8 @@ class QueryBuilder:
                 # it is safe to map any iterable type to a list here as it is only being used
                 # to serialise the query and we only officially support lists anyway
                 transformed[alias] = [
-                    self._transform_aliases(arguments=data)
+                    self._transform_aliases(arguments=data) if isinstance(data, dict) else data
                     for data in value
-                    if isinstance(data, dict)
                 ]
             else:
                 transformed[alias] = value
