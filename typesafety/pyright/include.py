@@ -1,8 +1,8 @@
-from prisma import Client
+from prisma import Prisma
 from prisma.models import User
 
 
-async def main(client: Client) -> None:
+async def main(client: Prisma) -> None:
     user = await client.user.find_unique(where={'id': '1'}, include={'posts': True})
     reveal_type(user)  # T: User | None
     assert user is not None
@@ -17,7 +17,7 @@ async def main(client: Client) -> None:
     reveal_type(user.posts)  # T: List[Post]
 
 
-async def order_by(client: Client, user: User) -> None:
+async def order_by(client: Prisma, user: User) -> None:
     # case: 1-M valid
     await client.user.find_unique(
         where={

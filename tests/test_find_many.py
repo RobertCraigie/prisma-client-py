@@ -1,10 +1,10 @@
 import pytest
 import prisma
-from prisma import Client
+from prisma import Prisma
 
 
 @pytest.mark.asyncio
-async def test_find_many(client: Client) -> None:
+async def test_find_many(client: Prisma) -> None:
     """Filters and ordering work as suggested"""
     posts = [
         await client.post.create({'title': 'Test post 1', 'published': False}),
@@ -49,7 +49,7 @@ async def test_find_many(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_cursor(client: Client) -> None:
+async def test_cursor(client: Prisma) -> None:
     """Cursor argument correctly paginates results"""
     posts = [
         await client.post.create({'title': 'Foo 1', 'published': False}),
@@ -77,7 +77,7 @@ async def test_cursor(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_one_to_one_relation(client: Client) -> None:
+async def test_filtering_one_to_one_relation(client: Prisma) -> None:
     """Filtering by a 1-1 relational field and negating the filter"""
     async with client.batch_() as batcher:
         batcher.user.create(
@@ -123,7 +123,7 @@ async def test_filtering_one_to_one_relation(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_one_to_many_relation(client: Client) -> None:
+async def test_filtering_one_to_many_relation(client: Prisma) -> None:
     """Filtering by a 1-M relational field and negating the filter"""
     async with client.batch_() as batcher:
         batcher.user.create(
@@ -177,7 +177,7 @@ async def test_filtering_one_to_many_relation(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_ordering(client: Client) -> None:
+async def test_ordering(client: Prisma) -> None:
     """Ordering by `asc` and `desc` correctly changes the order of the returned records"""
     async with client.batch_() as batcher:
         batcher.post.create({'title': 'Test post 1', 'published': False})
@@ -221,7 +221,7 @@ async def test_ordering(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_order_field_not_nullable(client: Client) -> None:
+async def test_order_field_not_nullable(client: Prisma) -> None:
     """Order by fields, if present, cannot be None"""
     with pytest.raises(prisma.errors.MissingRequiredValueError) as exc:
         await client.post.find_many(order={'desc': None})  # type: ignore

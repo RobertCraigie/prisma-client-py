@@ -1,9 +1,9 @@
 import pytest
-from prisma import Client, Json
+from prisma import Prisma, Json
 
 
 @pytest.mark.asyncio
-async def test_create(client: Client) -> None:
+async def test_create(client: Prisma) -> None:
     """Creating a model with Json data"""
     model = await client.types.create(
         data={
@@ -63,7 +63,7 @@ async def test_create(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_keys(client: Client) -> None:
+async def test_keys(client: Prisma) -> None:
     """Handling of non-string keys"""
     model = await client.types.create(
         data={
@@ -103,7 +103,7 @@ async def test_keys(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_base_filtering(client: Client) -> None:
+async def test_base_filtering(client: Prisma) -> None:
     """Searching for records by Json values without the preview feature enabled"""
     found = await client.types.find_first(
         where={
@@ -150,12 +150,12 @@ async def test_base_filtering(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_unserializable_type(client: Client) -> None:
+async def test_unserializable_type(client: Prisma) -> None:
     """Error is raised when an unserializable type is encountered"""
     with pytest.raises(TypeError) as exc:
         await client.types.create(
             data={
-                'json_obj': Json.keys(foo=Client),  # type: ignore
+                'json_obj': Json.keys(foo=Prisma),  # type: ignore
             },
         )
 

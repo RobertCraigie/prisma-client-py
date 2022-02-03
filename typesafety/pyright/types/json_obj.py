@@ -1,5 +1,5 @@
 from typing import Dict
-from prisma import Json, Client
+from prisma import Json, Prisma
 
 
 def raw() -> None:
@@ -67,7 +67,7 @@ def keys() -> None:
     Json.keys(item={})
 
 
-async def allowed_operations(client: Client) -> None:
+async def allowed_operations(client: Prisma) -> None:
     model = await client.types.create(data={'json_obj': Json('foo')})
     obj = model.json_obj
     assert obj is not None
@@ -84,7 +84,7 @@ async def allowed_operations(client: Client) -> None:
     assert obj[1:3] == 'er'
 
 
-async def narrowing_types(client: Client) -> None:
+async def narrowing_types(client: Prisma) -> None:
     model = await client.types.create(data={'json_obj': Json('foo')})
     obj = model.json_obj
     assert obj is not None
@@ -101,7 +101,7 @@ async def narrowing_types(client: Client) -> None:
         obj.append('foo')
 
 
-async def client_api(client: Client) -> None:
+async def client_api(client: Prisma) -> None:
     # case: cannot pass Json to string field
     # TODO: this should error
     await client.types.create(

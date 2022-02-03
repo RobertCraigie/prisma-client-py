@@ -1,11 +1,11 @@
 import pytest
-from prisma import Client
+from prisma import Prisma
 from prisma.fields import Base64
 from prisma.models import Types
 
 
 @pytest.mark.asyncio
-async def test_filtering(client: Client) -> None:
+async def test_filtering(client: Prisma) -> None:
     """Finding records by a Bytes value"""
     async with client.batch_() as batcher:
         batcher.types.create({'bytes': Base64.encode(b'a')})
@@ -52,7 +52,7 @@ async def test_filtering(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_json(client: Client) -> None:
+async def test_json(client: Prisma) -> None:
     """Base64 fields can be serialised to and from JSON"""
     record = await client.types.create(
         data={
@@ -65,7 +65,7 @@ async def test_json(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_constructing(client: Client) -> None:
+async def test_constructing(client: Prisma) -> None:
     """Base64 fields can be passed to the model constructor"""
     record = await client.types.create({})
     model = Types.parse_obj(

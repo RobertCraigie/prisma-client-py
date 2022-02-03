@@ -1,11 +1,11 @@
 import pytest
 
-from prisma import errors, Client
+from prisma import errors, Prisma
 from .utils import assert_time_like_now
 
 
 @pytest.mark.asyncio
-async def test_create(client: Client) -> None:
+async def test_create(client: Prisma) -> None:
     """Basic record creation"""
     post = await client.post.create(
         {
@@ -31,7 +31,7 @@ async def test_create(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_create_with_relationship(client: Client) -> None:
+async def test_create_with_relationship(client: Prisma) -> None:
     """Creating a record with a nested relationship record creation"""
     post = await client.post.create(
         {
@@ -50,7 +50,7 @@ async def test_create_with_relationship(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_create_missing_required_args(client: Client) -> None:
+async def test_create_missing_required_args(client: Prisma) -> None:
     """Trying to create a record with a missing required field raises an error"""
     with pytest.raises(TypeError):
         await client.post.create()  # type: ignore[call-arg]
@@ -64,7 +64,7 @@ async def test_create_missing_required_args(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_create_unique_violation(client: Client) -> None:
+async def test_create_unique_violation(client: Prisma) -> None:
     """Creating the same record twice raises an error"""
     user = await client.user.create({'name': 'Robert', 'id': 'user-1'})
     assert user.id == 'user-1'
@@ -75,7 +75,7 @@ async def test_create_unique_violation(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_setting_field_to_null(client: Client) -> None:
+async def test_setting_field_to_null(client: Prisma) -> None:
     """Creating a field with a None value sets the database record to None"""
     post = await client.post.create(
         data={
@@ -88,7 +88,7 @@ async def test_setting_field_to_null(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_setting_non_nullable_field_to_null(client: Client) -> None:
+async def test_setting_non_nullable_field_to_null(client: Prisma) -> None:
     """Attempting to create a record with a non-nullable field set to null raises an error"""
     with pytest.raises(errors.MissingRequiredValueError) as exc:
         await client.post.create(
@@ -102,7 +102,7 @@ async def test_setting_non_nullable_field_to_null(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_nullable_relational_field(client: Client) -> None:
+async def test_nullable_relational_field(client: Prisma) -> None:
     """Relational fields cannot be set to None"""
     with pytest.raises(errors.MissingRequiredValueError) as exc:
         await client.post.create(

@@ -1,9 +1,9 @@
 import pytest
-from prisma import Client
+from prisma import Prisma
 
 
 @pytest.mark.asyncio
-async def test_update_many(client: Client) -> None:
+async def test_update_many(client: Prisma) -> None:
     """Filters update correct records
 
     TODO: refactor this test, its a messs
@@ -57,7 +57,7 @@ async def test_update_many(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_setting_to_null(client: Client) -> None:
+async def test_setting_to_null(client: Prisma) -> None:
     """Setting a field to None sets the database record to None"""
     post = await client.post.create(
         data={'title': 'Foo', 'published': True, 'desc': 'Description'}

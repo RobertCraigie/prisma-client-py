@@ -31,7 +31,7 @@ from typing_extensions import TypedDict, Literal
 # -- template client.py.jinja --
 from types import TracebackType
 
-from . import types, models, errors, actions
+from . import types, models, errors, actions, utils
 from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
@@ -363,6 +363,10 @@ class Client:
         if self.__engine is not None:
             self.__engine.stop()
             self.__engine = None
+
+    def __repr__(self) -> str:
+        sig = utils.fn_signature(type(self).__init__)
+        return f"Prisma({sig})"
 
     def __enter__(self) -> 'Client':
         self.connect()

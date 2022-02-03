@@ -3,9 +3,10 @@ from typing import TYPE_CHECKING, Any, Mapping
 
 import httpx
 import pytest
-from mock import AsyncMock
+from unittest.mock import AsyncMock
 from pytest_mock import MockerFixture
-from prisma import ENGINE_TYPE, Client, get_client, errors
+from prisma import ENGINE_TYPE, Prisma, get_client, errors
+from prisma import Prisma
 from prisma.http_abstract import DEFAULT_CONFIG
 from prisma.engine.http import HTTPEngine
 from prisma.engine.errors import AlreadyConnectedError
@@ -15,7 +16,6 @@ from prisma.types import HttpConfig
 
 from .utils import Testdir, patch_method
 
-
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
 
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 @pytest.mark.asyncio
 async def test_catches_not_connected() -> None:
     """Trying to make a query before connecting raises an error"""
-    client = Client()
+    client = Prisma()
     with pytest.raises(errors.ClientNotConnectedError) as exc:
         await client.post.delete_many()
 
@@ -31,7 +31,7 @@ async def test_catches_not_connected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_create_many_invalid_provider(client: Client) -> None:
+async def test_create_many_invalid_provider(client: Prisma) -> None:
     """Trying to call create_many() fails as SQLite does not support it"""
     with pytest.raises(errors.UnsupportedDatabaseError) as exc:
         await client.user.create_many([{'name': 'Robert'}])
@@ -40,7 +40,7 @@ async def test_create_many_invalid_provider(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_datasource_overwriting(testdir: Testdir, client: Client) -> None:
+async def test_datasource_overwriting(testdir: Testdir, client: Prisma) -> None:
     """Ensure the client can connect and query to a custom datasource"""
     # we have to do this messing with the schema so that we can run db push on the new database
     schema = Path(__file__).parent / 'data' / 'schema.prisma'
@@ -49,7 +49,7 @@ async def test_datasource_overwriting(testdir: Testdir, client: Client) -> None:
     )
     run(['db', 'push', '--skip-generate'], env={'_PY_DB': 'file:./tmp.db'})
 
-    other = Client(
+    other = Prisma(
         datasource={'url': 'file:./tmp.db'},
     )
     await other.connect(timeout=1)
@@ -63,7 +63,7 @@ async def test_datasource_overwriting(testdir: Testdir, client: Client) -> None:
 @pytest.mark.asyncio
 async def test_context_manager() -> None:
     """Client can be used as a context manager to connect and disconnect from the database"""
-    client = Client()
+    client = Prisma()
     assert not client.is_connected()
 
     async with client:
@@ -84,7 +84,7 @@ def test_auto_register() -> None:
         with pytest.raises(errors.ClientNotRegisteredError):
             get_client()
 
-        client = Client(auto_register=True)
+        client = Prisma(auto_register=True)
         assert get_client() == client
 
 
@@ -96,7 +96,7 @@ def test_engine_type() -> None:
 @pytest.mark.asyncio
 async def test_connect_timeout(mocker: MockerFixture) -> None:
     """Setting the timeout on a client and a per-call basis works"""
-    client = Client(connect_timeout=7)
+    client = Prisma(connect_timeout=7)
     mocked = mocker.patch.object(
         client._engine_class,  # pylint: disable=protected-access
         'connect',
@@ -125,7 +125,7 @@ async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
         ...
 
     async def _test(config: HttpConfig) -> None:
-        client = Client(
+        client = Prisma(
             http=config,
         )
         engine = client._create_engine()  # pylint: disable=protected-access

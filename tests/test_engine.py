@@ -7,7 +7,7 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from pytest_subprocess import FakeProcess
 
-from prisma import Client
+from prisma import Prisma
 from prisma.utils import temp_env_update
 from prisma.binaries import platform
 from prisma.binaries import BINARIES, ENGINE_VERSION
@@ -45,7 +45,7 @@ def no_event_loop() -> Iterator[None]:
 @pytest.mark.asyncio
 async def test_engine_connects() -> None:
     """Can connect to engine"""
-    db = Client()
+    db = Prisma()
     await db.connect()
 
     with pytest.raises(errors.AlreadyConnectedError):

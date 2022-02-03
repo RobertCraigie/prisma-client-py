@@ -144,3 +144,5 @@ src/prisma/generator/debug-params.json
 
 # OS files
 .DS_Store
+# .scratchpad/
+.dmypy.json

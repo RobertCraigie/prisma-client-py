@@ -1,10 +1,10 @@
 import pytest
-from prisma import Client
+from prisma import Prisma
 from prisma.types import UserWhereInput
 
 
 @pytest.mark.asyncio
-async def test_find_first(client: Client) -> None:
+async def test_find_first(client: Prisma) -> None:
     """Skips multiple non-matching records"""
     posts = [
         await client.post.create(
@@ -178,7 +178,7 @@ async def test_find_first(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_one_to_one_relation(client: Client) -> None:
+async def test_filtering_one_to_one_relation(client: Prisma) -> None:
     """Filtering by a 1-1 relational field and negating the filter"""
     async with client.batch_() as batcher:
         batcher.user.create(
@@ -218,7 +218,7 @@ async def test_filtering_one_to_one_relation(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_and_ordering_one_to_many_relation(client: Client) -> None:
+async def test_filtering_and_ordering_one_to_many_relation(client: Prisma) -> None:
     """Filtering with every, some, none and ordering by a 1-M relational field"""
     async with client.batch_() as batcher:
         batcher.user.create(
@@ -278,7 +278,7 @@ async def test_filtering_and_ordering_one_to_many_relation(client: Client) -> No
 
 
 @pytest.mark.asyncio
-async def test_list_wrapper_query_transformation(client: Client) -> None:
+async def test_list_wrapper_query_transformation(client: Prisma) -> None:
     """Queries wrapped within a list transform global aliases"""
     query: UserWhereInput = {
         "OR": [
