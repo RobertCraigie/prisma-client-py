@@ -24,11 +24,12 @@ model Post {
 }
 
 model User {
-  id      String   @id @default(cuid())
-  name    String
-  email   String?  @unique
-  posts   Post[]
-  profile Profile?
+  id         String   @id @default(cuid())
+  name       String
+  email      String?  @unique
+  created_at DateTime @default(now())
+  posts      Post[]
+  profile    Profile?
 }
 
 model Category {

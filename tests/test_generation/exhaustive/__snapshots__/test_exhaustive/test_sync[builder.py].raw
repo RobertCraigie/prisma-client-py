@@ -57,6 +57,7 @@ from ._constants import QUERY_BUILDER_ALIASES
 log: logging.Logger = logging.getLogger(__name__)
 
 ChildType = Union['AbstractNode', str]
+ITERABLES: Tuple[Type[Any], ...] = (list, tuple, set)
 
 
 DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
@@ -342,6 +343,13 @@ class QueryBuilder:
             alias = QUERY_BUILDER_ALIASES.get(key, key)
             if isinstance(value, dict):
                 transformed[alias] = self._transform_aliases(arguments=value)
+            elif isinstance(value, ITERABLES):
+                # it is safe to map any iterable type to a list here as it is only being used
+                # to serialise the query and we only officially support lists anyway
+                transformed[alias] = [
+                    self._transform_aliases(data) if isinstance(data, dict) else data  # type: ignore
+                    for data in value
+                ]
             else:
                 transformed[alias] = value
         return transformed
@@ -563,7 +571,7 @@ class Arguments(Node):
                 children.append(
                     Key(arg, node=Data.create(self.builder, data=value))
                 )
-            elif isinstance(value, (list, tuple, set)):
+            elif isinstance(value, ITERABLES):
                 # NOTE: we have a special case for execute_raw and query_raw
                 # here as prisma expects parameters to be passed as a json string
                 # value like "[\"John\",\"123\"]", and we encode twice to ensure

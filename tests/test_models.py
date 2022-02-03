@@ -243,7 +243,7 @@ async def test_query_raw() -> None:
         await User.prisma().create({'name': 'Tegan'}),
     ]
     results = await User.prisma().query_raw(
-        'SELECT id, name FROM User WHERE id = ?', users[1].id
+        'SELECT id, name, created_at FROM User WHERE id = ?', users[1].id
     )
     assert len(results) == 1
     assert results[0].name == 'Tegan'
