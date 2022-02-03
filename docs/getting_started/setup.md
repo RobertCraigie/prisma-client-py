@@ -1,6 +1,6 @@
 # Setup
 
-As Prisma Client Python supports generating both async and non-async clients, there is some differences required when generating the client.
+As Prisma Client Python supports generating both async and non-async clients, there is some differences required when generating the conn.
 
 ## Installing
 
@@ -27,15 +27,15 @@ The minimum code required to get starting using asyncio:
 
 ```py
 import asyncio
-from prisma import Client
+from prisma import Prisma
 
 async def main() -> None:
-    client = Client()
-    await client.connect()
+    conn = Prisma()
+    await conn.connect()
 
     # write your queries here
 
-    await client.disconnect()
+    await conn.disconnect()
 
 if __name__ == '__main__':
     asyncio.run(main())
@@ -57,15 +57,15 @@ generator client {
 The minimum code required to get starting using a synchronous client:
 
 ```py
-from prisma import Client
+from prisma import Prisma
 
 def main() -> None:
-    client = Client()
-    client.connect()
+    conn = Prisma()
+    conn.connect()
 
     # write your queries here
 
-    client.disconnect()
+    conn.disconnect()
 
 if __name__ == '__main__':
     main()

@@ -3,11 +3,11 @@
 In order to make *any* Prisma Client Python queries you need to create and connect to a `Client` instance, for example:
 
 ```py
-from prisma import Client
+from prisma import Prisma
 
-client = Client()
-await client.connect()
-await client.user.create(
+conn = Prisma()
+await conn.connect()
+await conn.user.create(
     data={
         'name': 'Robert',
     },
@@ -31,7 +31,7 @@ user = await User.prisma().create(
 It is possible to override the default URL used to connect to the database:
 
 ```py
-client = Client(
+conn = Prisma(
     datasource={
         'url': 'file:./tmp.db',
     },
@@ -45,10 +45,10 @@ To make running small scripts as easy as possible, Prisma Client Python supports
 For example:
 
 ```py
-from prisma import Client
+from prisma import Prisma
 
-async with Client() as client:
-    await client.user.create(
+async with Prisma() as client:
+    await conn.user.create(
         data={
             'name': 'Robert',
         },
@@ -58,20 +58,20 @@ async with Client() as client:
 Which is functionally equivalent to:
 
 ```py
-from prisma import Client
+from prisma import Prisma
 
-client = Client()
+conn = Prisma()
 
 try:
-    await client.connect()
-    await client.user.create(
+    await conn.connect()
+    await conn.user.create(
         data={
             'name': 'Robert',
         },
     )
 finally:
-    if client.is_connected():
-        await client.disconnect()
+    if conn.is_connected():
+        await conn.disconnect()
 ```
 
 ## HTTP Options
@@ -81,7 +81,7 @@ Some of the methods that Prisma Client Python uses to communicate with the under
 The HTTPX options can be passed to client using the `http` parameter, for example:
 
 ```py
-client = Client(
+conn = Prisma(
     http={
         'timeout': 10,
     },

@@ -159,4 +159,4 @@ async def test_unserializable_type(client: Prisma) -> None:
             },
         )
 
-    assert exc.match(r'Type <class \'prisma.client.Client\'> not serializable')
+    assert exc.match(r'Type <class \'prisma.Prisma\'> not serializable')
