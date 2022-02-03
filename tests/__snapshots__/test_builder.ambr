@@ -11,6 +11,7 @@
       id
       name
       email
+      created_at
     }
   }
   '
@@ -106,6 +107,7 @@
       id
       name
       email
+      created_at
       posts(
         where: {
           id: 1
@@ -149,6 +151,7 @@
       id
       name
       email
+      created_at
     }
   }
   '
