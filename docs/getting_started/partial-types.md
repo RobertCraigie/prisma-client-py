@@ -90,7 +90,7 @@ One situation where partial types are particularly useful is in FastAPI endpoint
 
 ```py
 from typing import Optional
-from prisma.client import Client
+from prisma import Prisma
 from prisma.partials import UserWithoutRelations
 from fastapi import FastAPI, Depends
 from .utils import get_db
@@ -110,7 +110,7 @@ or for making raw queries type safe
 ```py
 from prisma.partials import UserInLogin
 
-user = await client.query_first(
+user = await conn.query_first(
     'SELECT name, email FROM User WHERE id = ?',
     'abc',
     model=UserInLogin,

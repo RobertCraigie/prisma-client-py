@@ -167,20 +167,20 @@ The simplest asynchronous Prisma Client Python application will either look some
 
 ```py
 import asyncio
-from prisma import Client
+from prisma import Prisma
 
 async def main() -> None:
-    client = Client()
-    await client.connect()
+    conn = Prisma()
+    await conn.connect()
 
     # write your queries here
-    user = await client.user.create(
+    user = await conn.user.create(
         data={
             'name': 'Robert',
         }.
     )
 
-    await client.disconnect()
+    await conn.disconnect()
 
 if __name__ == '__main__':
     asyncio.run(main())
@@ -190,13 +190,13 @@ or like this:
 
 ```py
 import asyncio
-from prisma import Client, register
+from prisma import Prisma, register
 from prisma.models import User
 
 async def main() -> None:
-    client = Client()
+    conn = Prisma()
     register(client)
-    await client.connect()
+    await conn.connect()
 
     # write your queries here
     user = await User.prisma().create(
@@ -205,7 +205,7 @@ async def main() -> None:
         }.
     )
 
-    await client.disconnect()
+    await conn.disconnect()
 
 if __name__ == '__main__':
     asyncio.run(main())
@@ -220,13 +220,13 @@ All query methods return [pydantic models](https://pydantic-docs.helpmanual.io/u
 **Retrieve all `User` records from the database**
 
 ```py
-users = await client.user.find_many()
+users = await conn.user.find_many()
 ```
 
 **Include the `posts` relation on each returned `User` object**
 
 ```py
-users = await client.user.find_many(
+users = await conn.user.find_many(
     include={
         'posts': True,
     },
@@ -236,7 +236,7 @@ users = await client.user.find_many(
 **Retrieve all `Post` records that contain `"prisma"`**
 
 ```py
-posts = await client.post.find_many(
+posts = await conn.post.find_many(
     where={
         'OR': [
             {'title': {'contains': 'prisma'}},
@@ -249,7 +249,7 @@ posts = await client.post.find_many(
 **Create a new `User` and a new `Post` record in the same query**
 
 ```py
-user = await client.user.create(
+user = await conn.user.create(
     data={
         'name': 'Robert',
         'email': 'robert@craigie.dev',
@@ -265,7 +265,7 @@ user = await client.user.create(
 **Update an existing `Post` record**
 
 ```py
-post = await client.post.update(
+post = await conn.post.update(
     where={
         'id': 42,
     },
@@ -297,7 +297,7 @@ Supported editors / extensions:
 - Sublime Text with [LSP-Pyright](https://github.com/sublimelsp/LSP-pyright) v1.1.96 or higher
 
 ```py
-user = await client.user.find_first(
+user = await conn.user.find_first(
     where={
         '|'
     }
