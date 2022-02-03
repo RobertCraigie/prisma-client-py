@@ -165,6 +165,7 @@ async def test_query_first(client: Client) -> None:
         WHERE User.id = ?
     '''
     found = await client.query_first(query, user.id)
+    found.pop('created_at')
     assert found == {'id': user.id, 'name': 'Robert', 'email': None}
 
 

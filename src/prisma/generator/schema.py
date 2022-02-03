@@ -121,6 +121,21 @@ class Model(BaseModel):
 
         return PrismaType.from_subtypes(subtypes, name=f'{model}WhereUniqueInput')
 
+    @cached_property
+    def order_by(self) -> PrismaType:
+        model = self.info.name
+        subtypes: List[PrismaType] = [
+            PrismaDict(
+                name=f'_{model}_{field.name}_OrderByInput',
+                total=True,
+                fields={
+                    field.name: 'SortOrder',
+                },
+            )
+            for field in self.info.scalar_fields
+        ]
+        return PrismaType.from_subtypes(subtypes, name=f'{model}OrderByInput')
+
 
 Schema.update_forward_refs()
 PrismaType.update_forward_refs()
