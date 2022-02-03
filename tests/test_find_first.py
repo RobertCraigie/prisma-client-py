@@ -1,5 +1,6 @@
 import pytest
 from prisma import Client
+from prisma.types import UserWhereInput
 
 
 @pytest.mark.asyncio
@@ -274,3 +275,27 @@ async def test_filtering_and_ordering_one_to_many_relation(client: Client) -> No
     )
     assert user is not None
     assert user.name == 'Tegan'
+
+
+@pytest.mark.asyncio
+async def test_list_wrapper_query_transformation(client: Client) -> None:
+    """Queries wrapped within a list transform global aliases"""
+    query: UserWhereInput = {
+        "OR": [
+            {"name": {"startswith": "40"}},
+            {"name": {"contains": ", 40"}},
+            {"name": {"contains": "house"}},
+        ]
+    }
+
+    await client.user.create({'name': 'Robert house'})
+    found = await client.user.find_first(where=query, order={'created_at': 'asc'})
+    assert found is not None
+    assert found.name == 'Robert house'
+
+    await client.user.create({'name': '40 robert'})
+    found = await client.user.find_first(
+        skip=1, where=query, order={'created_at': 'asc'}
+    )
+    assert found is not None
+    assert found.name == '40 robert'
