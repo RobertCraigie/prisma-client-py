@@ -29,7 +29,7 @@ from ._constants import QUERY_BUILDER_ALIASES
 log: logging.Logger = logging.getLogger(__name__)
 
 ChildType = Union['AbstractNode', str]
-ITERABLES = (list, tuple, set)
+ITERABLES: Tuple[Type[Any], ...] = (list, tuple, set)
 
 
 DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
