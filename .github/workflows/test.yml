@@ -33,6 +33,8 @@ jobs:
             tox-env: py39
           - python-version: "3.10"
             tox-env: py310
+          - python-version: "pypy-3.8"
+            tox-env: pypy
 
     steps:
       - uses: actions/checkout@v1
