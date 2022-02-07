@@ -9,13 +9,13 @@ Queries are not executed until `commit()` is called or the context manager exits
 ## Examples
 
 ```py
-async with conn.batch_() as batcher:
+async with db.batch_() as batcher:
     batcher.user.create({'name': 'Robert'})
     batcher.user.create({'name': 'Tegan'})
 ```
 
 ```py
-batcher = conn.batch_()
+batcher = db.batch_()
 batcher.user.create({'name': 'Robert'})
 batcher.user.create({'name': 'Tegan'})
 await batcher.commit()

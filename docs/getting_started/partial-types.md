@@ -110,7 +110,7 @@ or for making raw queries type safe
 ```py
 from prisma.partials import UserInLogin
 
-user = await conn.query_first(
+user = await db.query_first(
     'SELECT name, email FROM User WHERE id = ?',
     'abc',
     model=UserInLogin,

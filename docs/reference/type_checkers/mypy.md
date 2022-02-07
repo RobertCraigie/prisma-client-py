@@ -32,7 +32,7 @@ from prisma.types import UserInclude
 
 include = dict()  # type: UserInclude
 include['posts'] = True
-user = await conn.user.find_unique(
+user = await db.user.find_unique(
     where={
       'id': 'user_id',
     },
@@ -45,7 +45,7 @@ This error can be disabled in two ways:
 * Inline
 
 ```py
-user = await conn.user.find_unique(
+user = await db.user.find_unique(
     where={
         'id': 'user_id',
     },
@@ -76,7 +76,7 @@ For example, without the plugin the following snippet would have raised an error
     If no posts are found then `user.posts` will be an empty list
 
 ```py
-user = await conn.user.find_unique(
+user = await db.user.find_unique(
     where={
         'id': 'user_id',
     },
@@ -90,7 +90,7 @@ print(f'User {user.name} has {len(user.posts)} posts')
 It should be noted that if a relation is optional in the schema, the relational field will still be typed as `Optional` even when explicitly included, for example, the following will raise an error that the `profile` can be `None`
 
 ```py
-user = await conn.user.find_unique(
+user = await db.user.find_unique(
     where={
         'id': 'user_id',
     },
@@ -108,7 +108,7 @@ from prisma.types import UserInclude
 
 include = dict()  # type: UserInclude
 include['posts'] = True
-user = await conn.user.find_unique(
+user = await db.user.find_unique(
     where={
         'id': 'user_id',
     },

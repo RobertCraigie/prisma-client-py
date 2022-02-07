@@ -15,7 +15,7 @@ See the [official docs](https://www.prisma.io/docs/concepts/components/prisma-sc
 
 See [setup](../getting_started/setup.md) for more information.
 
-This option configures the method you will use to interface with the conn.
+This option configures the method you will use to interface with the db.
 
 Valid values are:
 
@@ -25,12 +25,12 @@ Valid values are:
 If `asyncio` is used then the generated client will be asynchronous and code must be ran using asyncio, e.g.
 
 ```py
-user = await conn.user.find_unique(where={'id': 'user_id'})
+user = await db.user.find_unique(where={'id': 'user_id'})
 ```
 
 And if `sync` is used then the generated client will be synchronous, e.g.
 ```py
-user = conn.user.find_unique(where={'id': 'user_id'})
+user = db.user.find_unique(where={'id': 'user_id'})
 ```
 
 ## Partial Type Generator
@@ -81,7 +81,7 @@ These examples use the following `schema.prisma` models
 The default for this option is 5. This allows for recursive types up to the following depth.
 
 ```py
-user = await conn.user.find_unique(
+user = await db.user.find_unique(
     where={'id': user_id},
     include={
         'profile': True,
@@ -126,7 +126,7 @@ generator db {
 Recursive types are now only valid up to the following depth.
 
 ```py
-user = await conn.user.find_unique(
+user = await db.user.find_unique(
     where={'id': user_id},
     include={
         'profile': True,
@@ -152,7 +152,7 @@ generator db {
 Recursive types are now only valid up to the following depth.
 
 ```py
-user = await conn.user.find_unique(
+user = await db.user.find_unique(
     where={'id': user_id},
     include={
         'profile': True,

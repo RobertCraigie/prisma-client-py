@@ -170,17 +170,17 @@ import asyncio
 from prisma import Prisma
 
 async def main() -> None:
-    conn = Prisma()
-    await conn.connect()
+    db = Prisma()
+    await db.connect()
 
     # write your queries here
-    user = await conn.user.create(
+    user = await db.user.create(
         data={
             'name': 'Robert',
         }.
     )
 
-    await conn.disconnect()
+    await db.disconnect()
 
 if __name__ == '__main__':
     asyncio.run(main())
@@ -194,9 +194,9 @@ from prisma import Prisma, register
 from prisma.models import User
 
 async def main() -> None:
-    conn = Prisma()
+    db = Prisma()
     register(client)
-    await conn.connect()
+    await db.connect()
 
     # write your queries here
     user = await User.prisma().create(
@@ -205,7 +205,7 @@ async def main() -> None:
         }.
     )
 
-    await conn.disconnect()
+    await db.disconnect()
 
 if __name__ == '__main__':
     asyncio.run(main())
@@ -220,13 +220,13 @@ All query methods return [pydantic models](https://pydantic-docs.helpmanual.io/u
 **Retrieve all `User` records from the database**
 
 ```py
-users = await conn.user.find_many()
+users = await db.user.find_many()
 ```
 
 **Include the `posts` relation on each returned `User` object**
 
 ```py
-users = await conn.user.find_many(
+users = await db.user.find_many(
     include={
         'posts': True,
     },
@@ -236,7 +236,7 @@ users = await conn.user.find_many(
 **Retrieve all `Post` records that contain `"prisma"`**
 
 ```py
-posts = await conn.post.find_many(
+posts = await db.post.find_many(
     where={
         'OR': [
             {'title': {'contains': 'prisma'}},
@@ -249,7 +249,7 @@ posts = await conn.post.find_many(
 **Create a new `User` and a new `Post` record in the same query**
 
 ```py
-user = await conn.user.create(
+user = await db.user.create(
     data={
         'name': 'Robert',
         'email': 'robert@craigie.dev',
@@ -265,7 +265,7 @@ user = await conn.user.create(
 **Update an existing `Post` record**
 
 ```py
-post = await conn.post.update(
+post = await db.post.update(
     where={
         'id': 42,
     },
@@ -297,7 +297,7 @@ Supported editors / extensions:
 - Sublime Text with [LSP-Pyright](https://github.com/sublimelsp/LSP-pyright) v1.1.96 or higher
 
 ```py
-user = await conn.user.find_first(
+user = await db.user.find_first(
     where={
         '|'
     }
