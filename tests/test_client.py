@@ -1,10 +1,10 @@
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Mapping
-from unittest.mock import AsyncMock
 
 import httpx
 import pytest
 from pytest_mock import MockerFixture
+from mock import AsyncMock
 from prisma import ENGINE_TYPE, Prisma, get_client, errors
 from prisma.http_abstract import DEFAULT_CONFIG
 from prisma.engine.http import HTTPEngine
