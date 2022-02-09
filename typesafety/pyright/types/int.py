@@ -237,7 +237,7 @@ async def updating(client: Prisma) -> None:
         where={
             'id': 1,
         },
-        data={  # E: Argument of type "dict[str, dict[str, Any]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
+        data={  # E: Argument of type "dict[str, dict[str, set[Unknown]]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
             'integer': {
                 'multiply': set(),
             },
@@ -247,7 +247,7 @@ async def updating(client: Prisma) -> None:
         where={
             'id': 1,
         },
-        data={  # E: Argument of type "dict[str, dict[str, Any]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
+        data={  # E: Argument of type "dict[str, dict[str, set[Unknown]]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
             'integer': {
                 'divide': set(),
             },
