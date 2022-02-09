@@ -3,7 +3,6 @@ import inspect
 import pytest
 import prisma
 from prisma import Prisma, register, get_client
-from typing import cast
 
 
 def pytest_sessionstart(session: pytest.Session) -> None:
@@ -19,7 +18,6 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 def client_fixture() -> Prisma:
     client = get_client()
     client.connect()
-    client = cast(Prisma, client)
     return client
 
 

@@ -22,7 +22,7 @@ try:
         utils as utils,
     )
 
-    Prisma = Client
+    Client = Prisma
 
 
 except ModuleNotFoundError:

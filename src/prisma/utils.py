@@ -1,6 +1,5 @@
 import os
 import time
-from functools import cache
 import asyncio
 import inspect
 import logging
@@ -120,7 +119,6 @@ def assert_never(value: NoReturn) -> NoReturn:
     assert False, "Unhandled type: {}".format(type(value).__name__)  # pragma: no cover
 
 
-@cache
 def fn_signature(func: FuncType) -> str:
     """Return the signature of a function."""
 
