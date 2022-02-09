@@ -22,7 +22,7 @@ class Config(BaseConfig):
     }
 
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 _created_partial_types: Set[str] = set()
 
 # packages that implicitly subclass models
