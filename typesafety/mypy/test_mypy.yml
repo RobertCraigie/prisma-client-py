@@ -4,7 +4,7 @@
     # for performance reasons, it took ~40 minutes to test 3 cases on
     # GitHub Actions which is way too slow
     from pydantic import BaseModel
-    from prisma import Client, Json
+    from prisma import Prisma, Json
     from prisma.models import Post, User
     from prisma.types import (
       UserInclude,
@@ -18,7 +18,7 @@
       title: str
 
 
-    async def test_create_data_incorrect_inputs(client: Client) -> None:
+    async def test_create_data_incorrect_inputs(client: Prisma) -> None:
       await client.post.create()  # E: Missing positional argument "data" in call to "create" of "PostActions"  [call-arg]
 
       await client.post.create({'published': False})  # E: Missing key "title" for TypedDict "PostCreateInput"  [typeddict-item]
@@ -26,7 +26,7 @@
 
       await client.post.create({'title': 'a', 'published': 'false'})  # E: Incompatible types (expression has type "str", TypedDict item "published" has type "bool")  [typeddict-item]
 
-    async def test_create_optional_data(client: Client) -> None:
+    async def test_create_optional_data(client: Prisma) -> None:
       post = await client.post.create({'title': 'Hello', 'published': True})
       reveal_type(post)  # N: Revealed type is "prisma.models.Post*"
       reveal_type(post.id)  # N: Revealed type is "builtins.str"
@@ -40,7 +40,7 @@
       reveal_type(post.desc)  # N: Revealed type is "Union[builtins.str, None]"
       reveal_type(post.title)  # N: Revealed type is "builtins.str"
 
-    async def test_create_dynamic_data(client: Client) -> None:
+    async def test_create_dynamic_data(client: Prisma) -> None:
       data = {
         'title': 'hello',
         'published': True,
@@ -52,7 +52,7 @@
 
       await client.post.create(data)
 
-    async def test_find_unique_where_incorrect_inputs(client: Client) -> None:
+    async def test_find_unique_where_incorrect_inputs(client: Prisma) -> None:
       await client.post.find_unique()  # E: Missing positional argument "where" in call to "find_unique" of "PostActions"  [call-arg]
 
       await client.post.find_unique({'published': False})  # E: Extra key "published" for TypedDict "_PostWhereUnique_id_Input"  [typeddict-item]
@@ -60,7 +60,7 @@
 
       await client.post.find_unique({'id': 2})  # E: Incompatible types (expression has type "int", TypedDict item "id" has type "str")  [typeddict-item]
 
-    async def test_find_unique_output(client: Client) -> None:
+    async def test_find_unique_output(client: Prisma) -> None:
       post = await client.post.find_unique({'id': 'dbkh232'})
       reveal_type(post)  # N: Revealed type is "Union[prisma.models.Post, None]"
 
@@ -71,7 +71,7 @@
         reveal_type(post.title.lower())  # N: Revealed type is "builtins.str"
         oops = post.oops  # E: "Post" has no attribute "oops"  [attr-defined]
 
-    async def test_include_removes_optional(client: Client) -> None:
+    async def test_include_removes_optional(client: Prisma) -> None:
       user = await client.user.find_unique({'id': '1'}, include={'posts': True})
       if user is not None:
         reveal_type(user.posts)  # N: Revealed type is "builtins.list[prisma.models.Post]"
@@ -111,7 +111,7 @@
         reveal_type(user.posts)  # N: Revealed type is "Union[builtins.list[prisma.models.Post], None]"
         reveal_type(user.profile)  # N: Revealed type is "Union[prisma.models.Profile, None]"
 
-    async def test_nested_include(client: Client) -> None:
+    async def test_nested_include(client: Prisma) -> None:
       user = await client.user.find_unique(
         where={'id': '1'},
         include={
@@ -130,7 +130,7 @@
       reveal_type(user.posts)  # N: Revealed type is "builtins.list[prisma.models.Post, prisma.models.Post]"
       reveal_type(user.posts[0].categories)  # N: Revealed type is "builtins.list[prisma.models.Category]"
 
-    async def test_explicit_include_type(client: Client) -> None:
+    async def test_explicit_include_type(client: Prisma) -> None:
       user = await client.user.find_unique(
         where={'id': '1'},
         include=UserInclude(posts=True)
@@ -140,7 +140,7 @@
       # TODO: why is the type duplicated?
       reveal_type(user.posts)  # N: Revealed type is "builtins.list[prisma.models.Post, prisma.models.Post]"
 
-    async def test_correct_return_model_type(client: Client) -> None:
+    async def test_correct_return_model_type(client: Prisma) -> None:
       query = '''
         SELECT *
         FROM public."Post"
@@ -160,7 +160,7 @@
       name = user.name
       oops = user.oops  # E: "User" has no attribute "oops"  [attr-defined]
 
-    async def test_no_model(client: Client) -> None:
+    async def test_no_model(client: Prisma) -> None:
       query = '''
         SELECT *
         FROM public."Post"
@@ -169,15 +169,15 @@
       posts = await client.query_raw(query)
       reveal_type(posts)  # N: Revealed type is "Any"
 
-    async def test_bad_model_argument(client: Client) -> None:
+    async def test_bad_model_argument(client: Prisma) -> None:
       query = '''
         SELECT *
         FROM public."Post"
         WHERE title = "hi"
       '''
-      posts = await client.query_raw(query, model=int)  # E: Value of type variable "BaseModelT" of "query_raw" of "Client" cannot be "int"  [type-var]
+      posts = await client.query_raw(query, model=int)  # E: Value of type variable "BaseModelT" of "query_raw" of "Prisma" cannot be "int"  [type-var]
 
-    async def test_non_prisma_model_basemodel(client: Client) -> None:
+    async def test_non_prisma_model_basemodel(client: Prisma) -> None:
       query = '''
         SELECT *
         FROM public."Post"
@@ -189,7 +189,7 @@
       title = models[0].title
       oops = models[0].oops  # E: "MyModel" has no attribute "oops"  [attr-defined]
 
-    async def test_one_to_one_relation(client: Client) -> None:
+    async def test_one_to_one_relation(client: Prisma) -> None:
       """Ensure relational filters are loosely typed"""
       user = await client.user.find_first(
           where={
@@ -216,7 +216,7 @@
     def test_validator() -> None:
       reveal_type(validate(PostCreateInput, {}))  # N: Revealed type is "prisma.types.PostCreateInput*"
 
-    async def test_count_select(client: Client) -> None:
+    async def test_count_select(client: Prisma) -> None:
       count = await client.post.count()
       reveal_type(count)  # N: Revealed type is "builtins.int*"
 

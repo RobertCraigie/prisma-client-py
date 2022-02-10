@@ -22,8 +22,6 @@ try:
         utils as utils,
     )
 
-    Client = Prisma
-
 
 except ModuleNotFoundError:
     # code has not been generated yet

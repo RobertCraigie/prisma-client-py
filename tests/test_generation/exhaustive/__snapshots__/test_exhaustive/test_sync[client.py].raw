@@ -1998,4 +1998,5 @@ class EBatchActions:
 
 
 
+Client = Prisma
 '
