@@ -379,10 +379,13 @@ class Config(BaseSettings):
             raise ValueError(
                 'Prisma Client Python does not support the Prisma Data Proxy yet.'
             )
-        elif value == EngineType.library and not is_library_available():
-            raise ValueError(
-                'The _prisma_query_engine package must be installed to use the library engine.'
-            )
+        elif value == EngineType.library:
+            if not is_library_available():
+                raise ValueError(
+                    'The _prisma_query_engine package must be installed to use the library engine.'
+                )
+
+            return value
         else:  # pragma: no cover
             # NOTE: the exhaustiveness check is broken for mypy
             assert_never(value)  # type: ignore
