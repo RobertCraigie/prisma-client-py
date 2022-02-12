@@ -89,7 +89,7 @@ class HttpConfig(TypedDict, total=False):
     http1: bool
     http2: bool
     limits: httpx.Limits
-    timeout: Union[float, httpx.Timeout]
+    timeout: Union[None, float, httpx.Timeout]
     trust_env: bool
     max_redirects: int
 
