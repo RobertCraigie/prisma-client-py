@@ -90,6 +90,16 @@ db = Prisma(
 
 Will then use a 10 second timeout for all http operations.
 
+You can also remove the timeout by passing None, for example:
+
+```py
+client = Client(
+    http={
+        'timeout': None,
+    },
+)
+```
+
 Not all options that HTTPX support are supported by Prisma Client Python, a full list can be found below:
 
 ```py
@@ -98,7 +108,7 @@ class HttpConfig(TypedDict, total=False):
     http1: bool
     http2: bool
     limits: httpx.Limits
-    timeout: Union[float, httpx.Timeout]
+    timeout: Union[None, float, httpx.Timeout]
     trust_env: bool
     max_redirects: int
 ```
