@@ -170,17 +170,17 @@ import asyncio
 from prisma import Prisma
 
 async def main() -> None:
-    db = Prisma()
-    await db.connect()
+    prisma = Prisma()
+    await prisma.connect()
 
     # write your queries here
-    user = await db.user.create(
+    user = await prisma.user.create(
         data={
             'name': 'Robert',
         }.
     )
 
-    await db.disconnect()
+    await prisma.disconnect()
 
 if __name__ == '__main__':
     asyncio.run(main())
@@ -190,12 +190,11 @@ or like this:
 
 ```py
 import asyncio
-from prisma import Prisma, register
+from prisma import Prisma
 from prisma.models import User
 
 async def main() -> None:
-    db = Prisma()
-    register(client)
+    db = Prisma(auto_register=True)
     await db.connect()
 
     # write your queries here

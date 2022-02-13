@@ -144,7 +144,7 @@ import pytest
 from prisma import Prisma
 
 @pytest.mark.asyncio
-async def test_example(client: Client) -> None:
+async def test_example(client: Prisma) -> None:
     """Test docstring"""
     ...
 ```

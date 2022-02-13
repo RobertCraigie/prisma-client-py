@@ -51,12 +51,12 @@ You can only do this once in the same python process.
 You can also pass a function that returns a client instance.
 
 ```py
-import prisma
+from prisma import Prisma, register
 
-def get_client() -> prisma.Client:
-    return prisma.Prisma()
+def get_client() -> Prisma:
+    return Prisma()
 
-prisma.register(get_client)
+register(get_client)
 ```
 
 ## Usage
