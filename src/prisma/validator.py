@@ -51,10 +51,11 @@ def validate(type: Type[T], data: Any) -> T:  # pylint: disable=redefined-builti
     For example:
 
     from prisma import validate, types
+    from prisma.models import User
 
     def user_create_handler(data: Any) -> None:
         validated = validate(types.UserCreateInput, data)
-        user = await client.user.create(data=validated)
+        user = await User.prisma().create(data=validated)
     """
     # avoid patching pydantic until we know we need to in case our
     # monkey patching fails
