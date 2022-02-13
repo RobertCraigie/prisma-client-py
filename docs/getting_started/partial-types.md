@@ -101,7 +101,7 @@ app = FastAPI()
     '/users/{user_id}',
     response_model=UserWithoutRelations,
 )
-async def get_user(user_id: str, db: Client = Depends(get_db)) -> Optional[User]:
+async def get_user(user_id: str, db: Prisma = Depends(get_db)) -> Optional[User]:
     return await db.user.find_unique(where={'id': user_id})
 ```
 

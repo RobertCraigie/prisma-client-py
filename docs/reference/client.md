@@ -47,7 +47,7 @@ For example:
 ```py
 from prisma import Prisma
 
-async with Prisma() as client:
+async with Prisma() as db:
     await db.user.create(
         data={
             'name': 'Robert',
@@ -93,7 +93,7 @@ Will then use a 10 second timeout for all http operations.
 You can also remove the timeout by passing None, for example:
 
 ```py
-client = Client(
+db = Prisma(
     http={
         'timeout': None,
     },

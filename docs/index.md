@@ -195,7 +195,7 @@ from prisma.models import User
 
 async def main() -> None:
     db = Prisma()
-    register(client)
+    register(db)
     await db.connect()
 
     # write your queries here
