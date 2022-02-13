@@ -133,7 +133,6 @@ src/prisma/engine/http.py
 src/prisma/engine/query.py
 src/prisma/engine/abstract.py
 src/prisma/http.py.original
-src/prisma/http.py
 
 # debug files
 src/prisma/generator/debug-data.json
