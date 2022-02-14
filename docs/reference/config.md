@@ -15,7 +15,7 @@ See the [official docs](https://www.prisma.io/docs/concepts/components/prisma-sc
 
 See [setup](../getting_started/setup.md) for more information.
 
-This option configures the method you will use to interface with the db.
+This option configures the method you will use to interface with the client.
 
 Valid values are:
 
