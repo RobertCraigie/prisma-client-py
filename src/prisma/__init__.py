@@ -18,10 +18,7 @@ try:
         models as models,
         partials as partials,
         types as types,
-        utils as utils,
     )
-
-
 except ModuleNotFoundError:
     # code has not been generated yet
     # TODO: this could swallow unexpected errors
