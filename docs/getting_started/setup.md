@@ -1,6 +1,6 @@
 # Setup
 
-As Prisma Client Python supports generating both async and non-async clients, there is some differences required when generating the db.
+As Prisma Client Python supports generating both async and non-async clients, there is some differences required when generating the client.
 
 ## Installing
 
