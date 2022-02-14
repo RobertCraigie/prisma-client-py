@@ -17,7 +17,6 @@ def _env_bool(key: str) -> bool:
 
 DEBUG = _env_bool('PRISMA_PY_DEBUG')
 DEBUG_GENERATOR = _env_bool('PRISMA_PY_DEBUG_GENERATOR')
-MAX_FN_SIGNATURE = 90
 
 
 class _NoneType:  # pyright: reportUnusedClass=false
