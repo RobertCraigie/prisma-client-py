@@ -8,8 +8,4 @@
         "**/.DS_Store": true,
         "**/Thumbs.db": true
     },
-    "hide-files.files": [],
-    "conventionalCommits.scopes": [
-        "httptwo"
-    ]
 }
