@@ -6,7 +6,6 @@ __license__ = 'APACHE'
 __copyright__ = 'Copyright 2020-2021 RobertCraigie'
 __version__ = '0.6.0a'
 
-
 from .utils import setup_logging
 from . import errors as errors
 from .validator import *
