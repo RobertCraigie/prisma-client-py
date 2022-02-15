@@ -36,6 +36,7 @@ def assert_session_state(http: HTTP, state: State) -> None:
 async def test_request_on_closed_sessions() -> None:
     """Attempting to make a request on a closed session raises an error"""
     http = HTTP()
+    http.open()
     assert http.closed is False
     await http.close()
 
