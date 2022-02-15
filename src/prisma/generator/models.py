@@ -21,7 +21,6 @@ from typing import (
     Iterator,
     Dict,
     Type,
-    TYPE_CHECKING,
     cast,
 )
 
