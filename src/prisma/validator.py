@@ -45,7 +45,7 @@ def patch_pydantic() -> None:
     annotated_types.create_model_from_typeddict = patched_create_model
 
 
-def validate(type: Type[T], data: Any) -> T:  # pylint: disable=redefined-builtin
+def validate(type: Type[T], data: Any) -> T:
     """Validate untrusted data matches a given TypedDict
 
     For example:

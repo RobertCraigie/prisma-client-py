@@ -19,7 +19,6 @@ State = Literal['initial', 'open', 'closed']
 
 
 def assert_session_state(http: HTTP, state: State) -> None:
-    # pylint: disable=protected-access
     if state == 'initial':
         assert http._session is _NoneType
     elif state == 'open':

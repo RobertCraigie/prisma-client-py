@@ -21,7 +21,6 @@ from typing import (
     Iterator,
     Dict,
     Type,
-    TYPE_CHECKING,
     cast,
 )
 
@@ -394,9 +393,7 @@ class Config(BaseSettings):
 
     @validator('engine_type', always=True, allow_reuse=True)
     @classmethod
-    def engine_type_validator(  # pylint: disable=no-else-raise,inconsistent-return-statements,no-else-return
-        cls, value: EngineType
-    ) -> EngineType:
+    def engine_type_validator(cls, value: EngineType) -> EngineType:
         if value == EngineType.binary:
             return value
         elif value == EngineType.dataproxy:  # pragma: no cover
@@ -441,15 +438,11 @@ class Model(BaseModel):
     is_generated: bool = FieldInfo(alias='isGenerated')
     compound_primary_key: Optional['PrimaryKey'] = FieldInfo(alias='primaryKey')
     unique_indexes: List['UniqueIndex'] = FieldInfo(alias='uniqueIndexes')
+    all_fields: List['Field'] = FieldInfo(alias='fields')
+
     _sampler: Sampler = PrivateAttr()
 
-    if TYPE_CHECKING:
-        # pylint thinks all_fields is not an iterable
-        all_fields: List['Field']
-    else:
-        all_fields: List['Field'] = FieldInfo(alias='fields')
-
-    # no idea why mypy throws this error
+    # mypy throws an error here - probbaly because of the pydantic plugin
     def __init__(self, **data: Any) -> None:  # type: ignore[no-redef]
         super().__init__(**data)
         self._sampler = Sampler(self)
@@ -792,7 +785,6 @@ class Field(BaseModel):
         return sampled
 
     def _get_sample_data(self) -> str:
-        # pylint: disable=no-else-return,too-many-return-statements
         if self.is_relational:  # pragma: no cover
             raise RuntimeError('Data sampling for relational fields not supported yet')
 

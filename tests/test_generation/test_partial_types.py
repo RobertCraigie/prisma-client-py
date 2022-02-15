@@ -76,7 +76,7 @@ model Foo {{
 def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
     """Grouped tests for partial types to improve test speed"""
 
-    def tests() -> None:  # pylint: disable=all  mark: filedef
+    def tests() -> None:  # mark: filedef
         import sys
         import datetime
         from typing import Type, Dict, Iterator, Any, Tuple, Set, Optional

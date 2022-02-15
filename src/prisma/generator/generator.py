@@ -184,13 +184,13 @@ class Generator(GenericGenerator[PythonData]):
             f'{Generator} cannot be subclassed, maybe you meant {BaseGenerator}?'
         )
 
-    def get_manifest(self) -> Manifest:  # pylint: disable=no-self-use
+    def get_manifest(self) -> Manifest:
         return Manifest(
             name=f'Prisma Client Python (v{__version__})',
             default_output=BASE_PACKAGE_DIR,
         )
 
-    def generate(self, data: PythonData) -> None:  # pylint: disable=no-self-use
+    def generate(self, data: PythonData) -> None:
         config = data.generator.config
         rootdir = Path(data.generator.output.value)
         if not rootdir.exists():

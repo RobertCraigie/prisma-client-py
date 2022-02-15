@@ -101,7 +101,7 @@ class Runner:
             default_args = args
         else:
 
-            def _cli() -> None:  # pylint: disable=function-redefined
+            def _cli() -> None:
                 if args is not None:  # pragma: no branch
                     # fake invocation context
                     args.insert(0, 'prisma')
@@ -125,7 +125,6 @@ class Runner:
         def _patched_subprocess_run(
             *args: Any, **kwargs: Any
         ) -> 'subprocess.CompletedProcess[str]':
-            # pylint: disable=subprocess-run-check
             kwargs['stdout'] = subprocess.PIPE
             kwargs['stderr'] = subprocess.PIPE
             kwargs['encoding'] = sys.getdefaultencoding()
@@ -178,7 +177,7 @@ class Testdir:
     ) -> 'subprocess.CompletedProcess[bytes]':
         path = self.make_schema(schema, options, **extra)
         args = [sys.executable, '-m', 'prisma', 'generate', f'--schema={path}']
-        proc = subprocess.run(  # pylint: disable=subprocess-run-check
+        proc = subprocess.run(
             args,
             env=os.environ,
             stdout=subprocess.PIPE,
