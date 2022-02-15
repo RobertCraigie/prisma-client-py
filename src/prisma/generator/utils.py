@@ -7,7 +7,7 @@ from pathlib import Path
 from ..utils import monkeypatch
 
 if TYPE_CHECKING:
-    from .models import Model, Field  # pylint: disable=cyclic-import
+    from .models import Model, Field
 
 
 T = TypeVar('T')

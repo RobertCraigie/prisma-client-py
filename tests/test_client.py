@@ -98,7 +98,7 @@ async def test_connect_timeout(mocker: MockerFixture) -> None:
     """Setting the timeout on a client and a per-call basis works"""
     client = Client(connect_timeout=7)
     mocked = mocker.patch.object(
-        client._engine_class,  # pylint: disable=protected-access
+        client._engine_class,
         'connect',
         new=AsyncMock(),
     )

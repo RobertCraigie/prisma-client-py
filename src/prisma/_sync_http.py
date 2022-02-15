@@ -10,8 +10,6 @@ __all__ = ('HTTP', 'Response', 'client')
 
 
 class HTTP(AbstractHTTP[httpx.Client, httpx.Response]):
-    # pylint: disable=invalid-overridden-method,attribute-defined-outside-init
-
     session: httpx.Client
 
     def download(self, url: str, dest: str) -> None:
@@ -40,8 +38,6 @@ client: HTTP = HTTP()
 
 
 class Response(AbstractResponse[httpx.Response]):
-    # pylint: disable=invalid-overridden-method
-
     @property
     def status(self) -> int:
         return self.original.status_code

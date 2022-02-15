@@ -74,9 +74,6 @@ class PrismaPluginConfig:
             setattr(self, key, setting)
 
 
-# pylint: disable=no-self-use
-
-
 class PrismaPlugin(Plugin):
     config: PrismaPluginConfig
 
@@ -141,7 +138,7 @@ class PrismaPlugin(Plugin):
         try:
             include = self.parse_expression_to_dict(include_expr)
             new_model = self.modify_model_from_include(model_type, include)
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception as exc:
             log.debug(
                 'Ignoring %s exception while parsing include: %s',
                 type(exc).__name__,
@@ -153,7 +150,7 @@ class PrismaPlugin(Plugin):
                 # TODO: add more details
                 # e.g. "include" to "find_unique" of "UserActions"
                 if isinstance(exc, UnparsedExpression):
-                    err_ctx = exc.context  # pylint: disable=no-member
+                    err_ctx = exc.context
                 else:
                     err_ctx = include_expr
 

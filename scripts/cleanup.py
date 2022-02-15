@@ -21,10 +21,7 @@ if file.exists():
 
 sys.path.insert(0, '.')
 
-from prisma.generator.generator import (  # pylint: disable=wrong-import-position
-    BASE_PACKAGE_DIR,
-    cleanup_templates,
-)
+from prisma.generator.generator import BASE_PACKAGE_DIR, cleanup_templates
 
 
 def main() -> None:
