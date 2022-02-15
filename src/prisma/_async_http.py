@@ -14,12 +14,7 @@ class HTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
     session: httpx.AsyncClient
 
     async def download(self, url: str, dest: str) -> None:
-        # pyright thinks that stream() doesn't return a context manager
-        # due to how httpx handles compatability imports
-        # https://github.com/encode/httpx/discussions/1829
-        async with self.session.stream(
-            'GET', url, timeout=None
-        ) as resp:  # pyright: reportGeneralTypeIssues=false
+        async with self.session.stream('GET', url, timeout=None) as resp:
             resp.raise_for_status()
             with open(dest, 'wb') as fd:
                 async for chunk in resp.aiter_bytes():
@@ -32,7 +27,7 @@ class HTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
         self.session = httpx.AsyncClient(**self.session_kwargs)
 
     async def close(self) -> None:
-        if not self.closed:
+        if self.should_close():
             await self.session.aclose()
 
             # mypy doesn't like us assigning None as the type of

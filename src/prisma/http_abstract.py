@@ -63,6 +63,7 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
             self.open()
             return cast(Session, self._session)
 
+        # TODO: make this not strict, just open a new session
         if session is None:
             raise HTTPClientClosedError()
 
@@ -73,6 +74,9 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         self, value: Optional[Session]
     ) -> None:  # pyright: reportPropertyTypeMismatch=false
         self._session = value
+
+    def should_close(self) -> bool:
+        return self._session is not _NoneType and not self.closed
 
     def __repr__(self) -> str:
         return str(self)

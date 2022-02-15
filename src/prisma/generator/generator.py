@@ -18,7 +18,6 @@ from .utils import (
     copy_tree,
     is_same_path,
     resolve_template_path,
-    resolve_original_file,
 )
 from .. import __version__
 from ..utils import DEBUG_GENERATOR
@@ -42,9 +41,6 @@ GENERIC_GENERATOR_NAME = 'prisma.generator.generator.GenericGenerator'
 
 # set of templates that should be rendered after every other template
 DEFERRED_TEMPLATES = {'partials.py.jinja'}
-
-# set of templates that override existing modules
-OVERRIDING_TEMPLATES = {'http.py.jinja'}
 
 DEFAULT_ENV = Environment(
     trim_blocks=True,
@@ -233,15 +229,7 @@ def cleanup_templates(rootdir: Path, *, env: Optional[Environment] = None) -> No
 
     for name in env.list_templates():
         file = resolve_template_path(rootdir=rootdir, name=name)
-        original = resolve_original_file(file)
-        if original.exists():
-            if file.exists():
-                log.debug('Removing overridden template at %s', file)
-                file.unlink()
-
-            log.debug('Renaming file at %s to %s', original, file)
-            original.rename(file)
-        elif file.exists() and name not in OVERRIDING_TEMPLATES:
+        if file.exists():
             log.debug('Removing rendered template at %s', file)
             file.unlink()
 
@@ -262,12 +250,6 @@ def render_template(
     file = resolve_template_path(rootdir=rootdir, name=name)
     if not file.parent.exists():
         file.parent.mkdir(parents=True, exist_ok=True)
-
-    if name in OVERRIDING_TEMPLATES and file.exists():
-        original = resolve_original_file(file)
-        if not original.exists():
-            log.debug('Making backup of %s', file)
-            file.rename(original)
 
     file.write_bytes(output.encode(sys.getdefaultencoding()))
     log.debug('Rendered template to %s', file.absolute())
