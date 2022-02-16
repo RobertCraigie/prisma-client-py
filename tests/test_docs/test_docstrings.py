@@ -43,11 +43,15 @@ def test_completeness(method: Any) -> None:
             qualified = name
 
         match = re.search(
-            r'Parameters\n----------((.|\n)*)^{0}$((.|\n)*)Returns'.format(qualified),
+            r'Parameters\n----------((.|\n)*)^{0}$((.|\n)*)Returns'.format(
+                qualified
+            ),
             doc,
             re.MULTILINE,
         )
-        assert match is not None, f'Missing documentation for parameter: {qualified}'
+        assert (
+            match is not None
+        ), f'Missing documentation for parameter: {qualified}'
 
     assert 'TODO' not in doc
     assert method.__name__ in doc

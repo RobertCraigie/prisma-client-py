@@ -7,7 +7,9 @@ from prisma.generator.models import Module, Config
 
 def test_module_serialization() -> None:
     """Python module serialization to json"""
-    path = Path(__file__).parent.parent.joinpath('scripts/partial_type_generator.py')
+    path = Path(__file__).parent.parent.joinpath(
+        'scripts/partial_type_generator.py'
+    )
     module = Module.parse_obj({'spec': str(path)})
     assert Module.parse_raw(module.json()).spec.name == module.spec.name
 
@@ -21,7 +23,9 @@ def test_recursive_type_depth() -> None:
         assert exc.match('Value must equal -1 or be greater than 1.')
 
     with pytest.raises(ValidationError) as exc:
-        Config(recursive_type_depth='a')  # pyright: reportGeneralTypeIssues=false
+        Config(
+            recursive_type_depth='a'
+        )  # pyright: reportGeneralTypeIssues=false
 
     assert exc.match('value is not a valid integer')
 

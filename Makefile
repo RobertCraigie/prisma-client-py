@@ -31,7 +31,7 @@ test:
 
 .PHONY: format
 format:
-	black .
+	blue .
 	for schema in `find . -name '*.schema.prisma'` ; do \
         prisma format --schema=$$schema ; \
     done

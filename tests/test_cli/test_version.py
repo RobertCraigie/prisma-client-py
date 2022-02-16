@@ -65,7 +65,9 @@ def test_no_extras_installed(runner: Runner, monkeypatch: MonkeyPatch) -> None:
     def patched_import_module(mod: str) -> None:
         raise ImportError(mod)
 
-    monkeypatch.setattr(version, 'import_module', patched_import_module, raising=True)
+    monkeypatch.setattr(
+        version, 'import_module', patched_import_module, raising=True
+    )
 
     result = runner.invoke(['py', 'version'])
     assert result.exit_code == 0
@@ -75,14 +77,18 @@ def test_no_extras_installed(runner: Runner, monkeypatch: MonkeyPatch) -> None:
     assert match.group('installed_extras') == '[]'
 
 
-def test_no_extras_installed_json(runner: Runner, monkeypatch: MonkeyPatch) -> None:
+def test_no_extras_installed_json(
+    runner: Runner, monkeypatch: MonkeyPatch
+) -> None:
     """Outputs empty list with no extras installed and --json"""
     from prisma.cli.commands import version
 
     def patched_import_module(mod: str) -> None:
         raise ImportError(mod)
 
-    monkeypatch.setattr(version, 'import_module', patched_import_module, raising=True)
+    monkeypatch.setattr(
+        version, 'import_module', patched_import_module, raising=True
+    )
 
     result = runner.invoke(['py', 'version', '--json'])
     assert result.exit_code == 0

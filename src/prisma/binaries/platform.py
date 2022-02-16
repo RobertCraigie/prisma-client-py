@@ -24,7 +24,9 @@ def linux_distro() -> str:
     if distro_id == 'alpine':
         return 'alpine'
 
-    if any(distro in distro_id_like for distro in ['centos', 'fedora', 'rhel']):
+    if any(
+        distro in distro_id_like for distro in ['centos', 'fedora', 'rhel']
+    ):
         return 'rhel'
 
     # default to debian

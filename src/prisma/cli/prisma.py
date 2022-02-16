@@ -45,8 +45,12 @@ def run(
                 fg='red',
             ),
         )
-        click.echo('\nThere are two other possible ways to use Prisma Studio:\n')
-        click.echo(click.style('1. Download the Prisma Studio app\n', bold=True))
+        click.echo(
+            '\nThere are two other possible ways to use Prisma Studio:\n'
+        )
+        click.echo(
+            click.style('1. Download the Prisma Studio app\n', bold=True)
+        )
         click.echo(
             indent(
                 'Prisma Studio can be downloaded from: '
@@ -56,7 +60,9 @@ def run(
                 ' ' * 3,
             )
         )
-        click.echo(click.style('\n2. Use the Node based Prisma CLI:\n', bold=True))
+        click.echo(
+            click.style('\n2. Use the Node based Prisma CLI:\n', bold=True)
+        )
         click.echo(
             indent(
                 'If you have Node / NPX installed you can launch Prisma Studio by running the command: ',

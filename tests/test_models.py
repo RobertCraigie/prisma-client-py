@@ -276,11 +276,15 @@ def test_subclassing_warns() -> None:
         class MyUser(User):  # pyright: reportUnusedClass=false
             pass
 
-    class MyUser2(User, warn_subclass=False):  # pyright: reportUnusedClass=false
+    class MyUser2(
+        User, warn_subclass=False
+    ):  # pyright: reportUnusedClass=false
         pass
 
     # ensure other arguments can be passed to support multiple inheritance
-    class MyUser3(User, warn_subclass=False, foo=1):  # pyright: reportUnusedClass=false
+    class MyUser3(
+        User, warn_subclass=False, foo=1
+    ):  # pyright: reportUnusedClass=false
         pass
 
 
