@@ -1,5 +1,2 @@
-[tool.black]
-skip-string-normalization = true
-
 [tool.pyright]
 typeCheckingMode = "strict"

@@ -25,7 +25,9 @@ class OSAgnosticSingleFileExtension(SingleFileSnapshotExtension):
         exclude: Optional[Any] = None,
         matcher: Optional[Any] = None,
     ) -> bytes:
-        serialized = DataSerializer.serialize(data, exclude=exclude, matcher=matcher)
+        serialized = DataSerializer.serialize(
+            data, exclude=exclude, matcher=matcher
+        )
         return bytes(serialized, 'utf-8')
 
 
@@ -45,7 +47,9 @@ def get_files_from_templates(directory: Path) -> List[str]:
     for template in directory.iterdir():
         if template.is_dir():
             files.extend(get_files_from_templates(template))
-        elif template.name.endswith('.py.jinja') and not template.name.startswith('_'):
+        elif template.name.endswith(
+            '.py.jinja'
+        ) and not template.name.startswith('_'):
             if directory.name == 'templates':
                 name = template.name
             else:

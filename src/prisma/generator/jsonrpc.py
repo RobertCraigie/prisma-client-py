@@ -40,7 +40,9 @@ class Manifest(BaseModel):
     prettyName: str = Field(alias='name')
     defaultOutput: Union[str, Path] = Field(alias='default_output')
     denylist: Optional[List[str]] = None
-    requiresEngines: Optional[List[str]] = Field(alias='requires_engines', default=None)
+    requiresEngines: Optional[List[str]] = Field(
+        alias='requires_engines', default=None
+    )
     requiresGenerators: Optional[List[str]] = Field(
         alias='requires_generators', default=None
     )

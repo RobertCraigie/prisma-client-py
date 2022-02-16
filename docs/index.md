@@ -7,8 +7,8 @@
     <a href="https://discord.gg/HpFaJbepBH">
         <img src="https://img.shields.io/discord/933860922039099444?color=blue&label=chat&logo=discord" alt="Chat on Discord">
     </a>
-    <a href="https://github.com/psf/black">
-        <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black">
+    <a href="https://github.com/grantjenks/blue">
+        <img src="https://camo.githubusercontent.com/dbdbcf26db37abfa1f2ab7e6c28c8b3a199f2dad98e4ef53a50e9c45c7e4ace8/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636f64652532307374796c652d626c75652d626c75652e737667" alt="Code style: blue">
     </a>
     <a href="https://codecov.io/gh/RobertCraigie/prisma-client-py">
         <img src="https://codecov.io/gh/RobertCraigie/prisma-client-py/branch/main/graph/badge.svg?token=MVMavta8LR"/>

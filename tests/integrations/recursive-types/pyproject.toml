@@ -2,6 +2,3 @@
 pythonVersion = "3.9"
 typeCheckingMode = "strict"
 reportPrivateUsage = false
-
-[tool.black]
-skip-string-normalization = true

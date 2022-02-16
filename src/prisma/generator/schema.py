@@ -112,14 +112,18 @@ class Model(BaseModel):
                             name=f'{name}Inner',
                             fields={
                                 field.name: field.python_type
-                                for field in map(info.resolve_field, key.fields)
+                                for field in map(
+                                    info.resolve_field, key.fields
+                                )
                             },
                         )
                     ],
                 )
             )
 
-        return PrismaType.from_subtypes(subtypes, name=f'{model}WhereUniqueInput')
+        return PrismaType.from_subtypes(
+            subtypes, name=f'{model}WhereUniqueInput'
+        )
 
     @cached_property
     def order_by(self) -> PrismaType:
