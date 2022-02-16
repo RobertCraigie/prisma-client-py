@@ -75,7 +75,9 @@ def pytest_sessionfinish(session: pytest.Session) -> None:
 def pytest_collection_modifyitems(
     session: pytest.Session, config: 'Config', items: List[pytest.Item]
 ) -> None:
-    items.sort(key=lambda item: item.__class__.__name__ == 'IntegrationTestItem')
+    items.sort(
+        key=lambda item: item.__class__.__name__ == 'IntegrationTestItem'
+    )
 
 
 @pytest.fixture(name='patch_prisma', autouse=True)

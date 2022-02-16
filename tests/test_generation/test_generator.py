@@ -26,7 +26,11 @@ def iter_templates_dir(path: Path) -> Iterator[Path]:
     for template in templates.iterdir():
         name = template.name
 
-        if template.is_dir() or not name.endswith('.py.jinja') or name.startswith('_'):
+        if (
+            template.is_dir()
+            or not name.endswith('.py.jinja')
+            or name.startswith('_')
+        ):
             continue
 
         yield resolve_template_path(path, template.relative_to(templates))
@@ -79,7 +83,11 @@ def test_erroneous_template_cleanup(testdir: Testdir) -> None:
 
     template = '{{ undefined.foo }}'
     template_path = (
-        testdir.path / 'prisma' / 'generator' / 'templates' / 'template.py.jinja'
+        testdir.path
+        / 'prisma'
+        / 'generator'
+        / 'templates'
+        / 'template.py.jinja'
     )
     template_path.write_text(template)
 

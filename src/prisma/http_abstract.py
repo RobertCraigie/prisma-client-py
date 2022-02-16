@@ -1,5 +1,15 @@
 from abc import abstractmethod, ABC
-from typing import Any, Union, Coroutine, Type, Dict, TypeVar, Generic, Optional, cast
+from typing import (
+    Any,
+    Union,
+    Coroutine,
+    Type,
+    Dict,
+    TypeVar,
+    Generic,
+    Optional,
+    cast,
+)
 
 from httpx import Limits, Timeout
 
@@ -28,7 +38,9 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         # NoneType = not used yet
         # None = closed
         # Session = open
-        self._session = _NoneType  # type: Optional[Union[Session, Type[_NoneType]]]
+        self._session = (
+            _NoneType
+        )  # type: Optional[Union[Session, Type[_NoneType]]]
         self.session_kwargs = {
             **DEFAULT_CONFIG,
             **kwargs,

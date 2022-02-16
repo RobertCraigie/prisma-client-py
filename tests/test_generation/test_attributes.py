@@ -16,7 +16,7 @@ def test_field_map(testdir: Testdir) -> None:
             assert user.my_field == 'bar'  # type: ignore[attr-defined]
             assert user.foo_field == 'baz'  # type: ignore[attr-defined]
 
-    schema = '''
+    schema = """
         datasource db {{
           provider = "sqlite"
           url      = "file:dev.db"
@@ -33,7 +33,7 @@ def test_field_map(testdir: Testdir) -> None:
             my_field  String @map("myField")
             foo_field String @map(name: "fooField")
         }}
-    '''
+    """
     testdir.generate(schema=schema)
     testdir.make_from_function(tests)
     testdir.runpytest().assert_outcomes(passed=1)

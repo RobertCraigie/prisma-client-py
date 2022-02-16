@@ -40,7 +40,9 @@ class MismatchedVersionsError(EngineError):
     expected: str
 
     def __init__(self, *, expected: str, got: str):
-        super().__init__(f'Expected query engine version `{expected}` but got `{got}`')
+        super().__init__(
+            f'Expected query engine version `{expected}` but got `{got}`'
+        )
         self.expected = expected
         self.got = got
 

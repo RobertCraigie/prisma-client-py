@@ -108,10 +108,14 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
                 )
             elif request.method == 'generate':
                 if request.params is None:  # pragma: no cover
-                    raise RuntimeError('Prisma JSONRPC did not send data to generate.')
+                    raise RuntimeError(
+                        'Prisma JSONRPC did not send data to generate.'
+                    )
 
                 if DEBUG_GENERATOR:
-                    _write_debug_data('params', json.dumps(request.params, indent=2))
+                    _write_debug_data(
+                        'params', json.dumps(request.params, indent=2)
+                    )
 
                 data = self.data_class.parse_obj(request.params)
 
@@ -156,7 +160,9 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
 
         args = get_args(typ)
         if not args:
-            raise RuntimeError(f'Could not resolve generic arguments from type: {typ}')
+            raise RuntimeError(
+                f'Could not resolve generic arguments from type: {typ}'
+            )
 
         model = args[0]
         if not issubclass(model, BaseModel):
@@ -222,7 +228,9 @@ class Generator(GenericGenerator[PythonData]):
         log.debug('Finished generating the prisma python client')
 
 
-def cleanup_templates(rootdir: Path, *, env: Optional[Environment] = None) -> None:
+def cleanup_templates(
+    rootdir: Path, *, env: Optional[Environment] = None
+) -> None:
     """Revert module to pre-generation state"""
     if env is None:
         env = DEFAULT_ENV

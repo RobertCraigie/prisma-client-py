@@ -16,7 +16,9 @@ with open('README.md', 'r') as f:
 
 version = ''
 with open('src/prisma/__init__.py') as f:
-    match = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE)
+    match = re.search(
+        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE
+    )
     if not match:
         raise RuntimeError('version is not set')
 
@@ -52,7 +54,9 @@ setup(
     zip_safe=False,
     extras_require={
         **extras,
-        'all': [req for requirements in extras.values() for req in requirements],
+        'all': [
+            req for requirements in extras.values() for req in requirements
+        ],
     },
     entry_points={
         'console_scripts': [
