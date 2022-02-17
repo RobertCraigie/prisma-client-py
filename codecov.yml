@@ -3,7 +3,7 @@ coverage:
     project:
       # default is required to exist
       default: false
-      tests:
+      full-coverage:
         target: 100%
         paths:
           - "tests/"
