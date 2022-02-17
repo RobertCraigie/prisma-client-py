@@ -6,21 +6,11 @@ from prisma import Client
 from prisma.models import User, Post
 from prisma.types import UserUpdateInput
 from prisma.partials import UserWithoutRelations, PostWithoutRelations
+from prisma.ext.fastapi import register_prisma
 
 
 app = FastAPI()
-prisma = Client(auto_register=True)
-
-
-@app.on_event('startup')  # type: ignore
-async def startup() -> None:
-    await prisma.connect()
-
-
-@app.on_event('shutdown')  # type: ignore
-async def shutdown() -> None:
-    if prisma.is_connected():
-        await prisma.disconnect()
+register_prisma(app, Client(auto_register=True))
 
 
 @app.get(
