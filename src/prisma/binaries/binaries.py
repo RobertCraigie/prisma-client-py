@@ -36,10 +36,16 @@ ENGINE_VERSION = os.environ.get(
 
 # path constants
 GLOBAL_TEMP_DIR: Path = (
-    Path(tempfile.gettempdir()) / 'prisma' / 'binaries' / 'engines' / ENGINE_VERSION
+    Path(tempfile.gettempdir())
+    / 'prisma'
+    / 'binaries'
+    / 'engines'
+    / ENGINE_VERSION
 )
 PLATFORM_EXE_EXTENSION: str = '.exe' if OS_SETTINGS.is_windows() else ''
-PRISMA_CLI_NAME = f'prisma-cli-{PRISMA_VERSION}-{CLI_PLATFORM}{PLATFORM_EXE_EXTENSION}'
+PRISMA_CLI_NAME = (
+    f'prisma-cli-{PRISMA_VERSION}-{CLI_PLATFORM}{PLATFORM_EXE_EXTENSION}'
+)
 
 
 def default_prisma_cli_path() -> Path:
@@ -51,7 +57,9 @@ def default_engine_path(name: str) -> Callable[[], Path]:
 
 
 class PrismaSettings(BaseSettings):
-    PRISMA_CLI_MIRROR: str = 'https://prisma-photongo.s3-eu-west-1.amazonaws.com'
+    PRISMA_CLI_MIRROR: str = (
+        'https://prisma-photongo.s3-eu-west-1.amazonaws.com'
+    )
     PRISMA_ENGINES_MIRROR: str = 'https://binaries.prisma.sh'
 
     PRISMA_QUERY_ENGINE_BINARY: Path = Field(
@@ -64,7 +72,9 @@ class PrismaSettings(BaseSettings):
         default_factory=default_engine_path('introspection-engine')
     )
     PRISMA_CLI_BINARY: Path = Field(default_factory=default_prisma_cli_path)
-    PRISMA_FMT_BINARY: Path = Field(default_factory=default_engine_path('prisma-fmt'))
+    PRISMA_FMT_BINARY: Path = Field(
+        default_factory=default_engine_path('prisma-fmt')
+    )
     PRISMA_CLI_BINARY_TARGETS: List[str] = Field(default_factory=list)
 
     def engine_url(self, name: str) -> str:
@@ -88,8 +98,12 @@ class InvalidBinaryVersion(PrismaError):
     expected: str
     actual: str
 
-    def __init__(self, binary: 'Binary', actual: str, expected: str = ENGINE_VERSION):
-        super().__init__(f'{binary.name}\'s binary version {actual} is not {expected}')
+    def __init__(
+        self, binary: 'Binary', actual: str, expected: str = ENGINE_VERSION
+    ):
+        super().__init__(
+            f"{binary.name}'s binary version {actual} is not {expected}"
+        )
         self.expected = expected
         self.actual = actual
 
@@ -177,7 +191,10 @@ def engines_from_settings(
 ) -> EnginesType:
     return (
         Binary(name='query-engine', path=settings.PRISMA_QUERY_ENGINE_BINARY),
-        Binary(name='migration-engine', path=settings.PRISMA_MIGRATION_ENGINE_BINARY),
+        Binary(
+            name='migration-engine',
+            path=settings.PRISMA_MIGRATION_ENGINE_BINARY,
+        ),
         Binary(
             name='introspection-engine',
             path=settings.PRISMA_INTROSPECTION_ENGINE_BINARY,

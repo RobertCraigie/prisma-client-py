@@ -45,14 +45,14 @@ CapturedArgs = Tuple[Tuple[object, ...], Mapping[str, object]]
 # when we import them again, however we also have to ignore
 # any prisma.generator modules as we rely on the import caching
 # mechanism for loading partial model types
-IMPORT_RELOADER = '''
+IMPORT_RELOADER = """
 import sys
 for name in sys.modules.copy():
     if 'prisma' in name and 'generator' not in name:
         sys.modules.pop(name, None)
-'''
+"""
 
-SCHEMA_HEADER = '''
+SCHEMA_HEADER = """
 datasource db {{
   provider = "sqlite"
   url      = "file:dev.db"
@@ -64,18 +64,18 @@ generator db {{
   {options}
 }}
 
-'''
+"""
 
 DEFAULT_SCHEMA = (
     SCHEMA_HEADER
-    + '''
+    + """
 model User {{
   id           String   @id @default(cuid())
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
   name         String
 }}
-'''
+"""
 )
 
 
@@ -101,7 +101,7 @@ class Runner:
             default_args = args
         else:
 
-            def _cli() -> None:  # pylint: disable=function-redefined
+            def _cli() -> None:
                 if args is not None:  # pragma: no branch
                     # fake invocation context
                     args.insert(0, 'prisma')
@@ -125,7 +125,6 @@ class Runner:
         def _patched_subprocess_run(
             *args: Any, **kwargs: Any
         ) -> 'subprocess.CompletedProcess[str]':
-            # pylint: disable=subprocess-run-check
             kwargs['stdout'] = subprocess.PIPE
             kwargs['stderr'] = subprocess.PIPE
             kwargs['encoding'] = sys.getdefaultencoding()
@@ -139,7 +138,9 @@ class Runner:
             return process
 
         old_subprocess_run = subprocess.run
-        self._patcher.setattr(subprocess, 'run', _patched_subprocess_run, raising=True)
+        self._patcher.setattr(
+            subprocess, 'run', _patched_subprocess_run, raising=True
+        )
 
 
 class Testdir:
@@ -150,7 +151,9 @@ class Testdir:
     def __init__(self, testdir: 'PytestTestdir') -> None:
         self.testdir = testdir
 
-    def _make_relative(self, path: Union[str, Path]) -> str:  # pragma: no cover
+    def _make_relative(
+        self, path: Union[str, Path]
+    ) -> str:  # pragma: no cover
         if not isinstance(path, Path):
             path = Path(path)
 
@@ -178,7 +181,7 @@ class Testdir:
     ) -> 'subprocess.CompletedProcess[bytes]':
         path = self.make_schema(schema, options, **extra)
         args = [sys.executable, '-m', 'prisma', 'generate', f'--schema={path}']
-        proc = subprocess.run(  # pylint: disable=subprocess-run-check
+        proc = subprocess.run(
             args,
             env=os.environ,
             stdout=subprocess.PIPE,
@@ -263,14 +266,16 @@ def get_source_from_function(function: FuncType, **env: Any) -> str:
     lines = textwrap.dedent('\n'.join(lines)).splitlines()
     for name, value in env.items():
         if isinstance(value, str):  # pragma: no branch
-            value = f'\'{value}\''
+            value = f"'{value}'"
 
         lines.insert(start, f'{name} = {value}')
 
     return IMPORT_RELOADER + '\n'.join(lines)
 
 
-def assert_similar_time(dt1: datetime, dt2: datetime, threshold: float = 0.5) -> None:
+def assert_similar_time(
+    dt1: datetime, dt2: datetime, threshold: float = 0.5
+) -> None:
     """Assert the delta between the two datetimes is less than the given threshold (in seconds).
 
     This is required as there seems to be small data loss when marshalling and unmarshalling
@@ -333,7 +338,7 @@ def patch_method(
 
 
 def async_fixture(
-    scope: "Union[_Scope, Callable[[str, Config], _Scope]]" = "function",
+    scope: 'Union[_Scope, Callable[[str, Config], _Scope]]' = 'function',
     params: Optional[Iterable[object]] = None,
     autouse: bool = False,
     ids: Optional[

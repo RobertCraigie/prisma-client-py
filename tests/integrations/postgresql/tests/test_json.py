@@ -114,7 +114,11 @@ async def test_base_filtering(client: Client) -> None:
     )
     assert found is None
 
-    model = await client.types.create(data={'json_obj': Json.keys(country='Scotland')})
+    model = await client.types.create(
+        data={
+            'json_obj': Json.keys(country='Scotland'),
+        },
+    )
     assert model.json_obj == {'country': 'Scotland'}
 
     found = await client.types.find_first(

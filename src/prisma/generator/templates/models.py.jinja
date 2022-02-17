@@ -2,6 +2,8 @@
 {% from '_utils.py.jinja' import recursive_types with context %}
 # -- template models.py.jinja --
 import os
+import logging
+import inspect
 import warnings
 from pydantic import BaseConfig, BaseModel, Field, validator
 
@@ -20,10 +22,33 @@ class Config(BaseConfig):
     }
 
 
+log: logging.Logger = logging.getLogger(__name__)
 _created_partial_types: Set[str] = set()
 
+# packages that implicitly subclass models
+# this should not raise any warnings as users
+# of these packages cannot do anything about it
+_implicit_subclass_packages: Set[str] = {
+    'fastapi',
+}
 
-def _warn_subclassing(new_model: str, base_model: str) -> None:
+
+def _maybe_warn_subclassing(new_model: str, base_model: str, *, stacklevel: int = 3) -> None:
+    # at least 3 frames are guaranteed to exist if we are being called from __init_subclass__
+    # stack: 1 = __init_subclass__, 2 = abc, 3 = <caller>
+    try:
+        frame = inspect.stack()[stacklevel]
+        module = inspect.getmodule(frame[0])
+        if module is not None:
+            name, *_ = module.__name__.split('.')
+            if name in _implicit_subclass_packages:
+                return
+    except Exception as exc:
+        # disabling subclass warnings depending on the caller module is not a mission critical
+        # feature, users can disable these warnings themselves
+        # https://github.com/RobertCraigie/prisma-client-py/issues/278#issuecomment-1031421561
+        log.debug('Ignoring exception encountered during stack inspection check: %s', str(exc))
+
     message = (
         'Subclassing models while using pseudo-recursive types may cause unexpected '
         'errors when static type checking;\n'
@@ -70,7 +95,7 @@ class {{ model.name }}(BaseModel):
     ) -> None:
         super().__init_subclass__()
         if warn_subclass:
-            _warn_subclassing(cls.__name__, '{{ model.name }}')
+            _maybe_warn_subclassing(cls.__name__, '{{ model.name }}', stacklevel=3)
     {% endif %}
 
     @staticmethod

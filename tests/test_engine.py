@@ -88,18 +88,22 @@ def test_mismatched_version_error(fake_process: FakeProcess) -> None:
         query_engine.ensure_binary()
         # "{self.name} binary version {version} is not {ENGINE_VERSION}"
     assert exc.match(
-        f'{query_engine.name}\'s binary version unexpected-hash is not {ENGINE_VERSION}'
+        f"{query_engine.name}'s binary version unexpected-hash is not {ENGINE_VERSION}"
     )
 
 
 # TODO: reimplement this test
 @pytest.mark.skip(
-    reason='Local binary paths are no longer supported, this test still exists as support will be added again in the future'  # pylint: disable=line-too-long
+    reason='Local binary paths are no longer supported, this test still exists as support will be added again in the future'
 )
-def test_ensure_local_path(testdir: Testdir, fake_process: FakeProcess) -> None:
+def test_ensure_local_path(
+    testdir: Testdir, fake_process: FakeProcess
+) -> None:
     """Query engine in current directory required to be the expected version"""
 
-    fake_engine = testdir.path / ('prisma-query-engine' + PLATFORM_EXE_EXTENSION)
+    fake_engine = testdir.path / (
+        'prisma-query-engine' + PLATFORM_EXE_EXTENSION
+    )
     fake_engine.touch()
 
     fake_process.register_subprocess(
@@ -118,7 +122,9 @@ def test_ensure_local_path(testdir: Testdir, fake_process: FakeProcess) -> None:
     # assert path == fake_engine
 
 
-def test_ensure_env_override(testdir: Testdir, fake_process: FakeProcess) -> None:
+def test_ensure_env_override(
+    testdir: Testdir, fake_process: FakeProcess
+) -> None:
     """Query engine path in environment variable can be any version"""
     fake_engine = testdir.path / 'my-query-engine'
     fake_engine.touch()
@@ -134,7 +140,7 @@ def test_ensure_env_override(testdir: Testdir, fake_process: FakeProcess) -> Non
         with pytest.raises(InvalidBinaryVersion) as exc:
             query_engine.ensure_binary()
     assert exc.match(
-        f'{query_engine.name}\'s binary version a-different-hash is not {ENGINE_VERSION}'
+        f"{query_engine.name}'s binary version a-different-hash is not {ENGINE_VERSION}"
     )
     # query_engine.ensure_binary()
 

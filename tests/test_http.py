@@ -19,7 +19,6 @@ State = Literal['initial', 'open', 'closed']
 
 
 def assert_session_state(http: HTTP, state: State) -> None:
-    # pylint: disable=protected-access
     if state == 'initial':
         assert http._session is _NoneType
     elif state == 'open':
@@ -37,6 +36,7 @@ def assert_session_state(http: HTTP, state: State) -> None:
 async def test_request_on_closed_sessions() -> None:
     """Attempting to make a request on a closed session raises an error"""
     http = HTTP()
+    http.open()
     assert http.closed is False
     await http.close()
 

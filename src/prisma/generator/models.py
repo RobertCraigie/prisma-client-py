@@ -21,7 +21,6 @@ from typing import (
     Iterator,
     Dict,
     Type,
-    TYPE_CHECKING,
     cast,
 )
 
@@ -62,13 +61,13 @@ ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float']
 
 TYPE_MAPPING = {
     'String': 'str',
-    'Bytes': '\'fields.Base64\'',
+    'Bytes': "'fields.Base64'",
     'DateTime': 'datetime.datetime',
     'Boolean': 'bool',
     'Int': 'int',
     'Float': 'float',
     'BigInt': 'int',
-    'Json': '\'fields.Json\'',
+    'Json': "'fields.Json'",
 }
 FILTER_TYPES = [
     'String',
@@ -96,7 +95,10 @@ def get_list_types() -> Iterable[Tuple[str, str]]:
     # WARNING: do not edit this function without also editing Field.is_supported_scalar_list_type()
     return chain(
         ((t, TYPE_MAPPING[t]) for t in FILTER_TYPES),
-        ((enum.name, f'\'enums.{enum.name}\'') for enum in get_datamodel().enums),
+        (
+            (enum.name, f"'enums.{enum.name}'")
+            for enum in get_datamodel().enums
+        ),
     )
 
 
@@ -124,8 +126,8 @@ def type_as_string(typ: str) -> str:
     enums.Role -> 'enums.Role'
     """
     # TODO: use this function internally in this module
-    if not typ.startswith('\'') and not typ.startswith('"'):
-        return f'\'{typ}\''
+    if not typ.startswith("'") and not typ.startswith('"'):
+        return f"'{typ}'"
     return typ
 
 
@@ -193,7 +195,9 @@ class Module(BaseModel):
                 spec = None
 
         if spec is None:
-            raise ValueError(f'Could not find a python file or module at {value}')
+            raise ValueError(
+                f'Could not find a python file or module at {value}'
+            )
 
         return spec
 
@@ -209,7 +213,9 @@ class Module(BaseModel):
         try:
             loader.exec_module(mod)
         except:
-            print('An exception ocurred while running the partial type generator')
+            print(
+                'An exception ocurred while running the partial type generator'
+            )
             raise
 
 
@@ -356,7 +362,9 @@ class Config(BaseSettings):
 
     @root_validator(pre=True)
     @classmethod
-    def removed_http_option_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+    def removed_http_option_validator(
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
         http = values.get('http')
         if http is not None:
             if http in {'aiohttp', 'httpx-async'}:
@@ -374,9 +382,13 @@ class Config(BaseSettings):
             )
         return values
 
-    @validator('partial_type_generator', pre=True, always=True, allow_reuse=True)
+    @validator(
+        'partial_type_generator', pre=True, always=True, allow_reuse=True
+    )
     @classmethod
-    def partial_type_generator_converter(cls, value: Optional[str]) -> Optional[Module]:
+    def partial_type_generator_converter(
+        cls, value: Optional[str]
+    ) -> Optional[Module]:
         try:
             return Module(spec=value)  # pyright: reportGeneralTypeIssues=false
         except ValueError:
@@ -394,9 +406,7 @@ class Config(BaseSettings):
 
     @validator('engine_type', always=True, allow_reuse=True)
     @classmethod
-    def engine_type_validator(  # pylint: disable=no-else-raise,inconsistent-return-statements,no-else-return
-        cls, value: EngineType
-    ) -> EngineType:
+    def engine_type_validator(cls, value: EngineType) -> EngineType:
         if value == EngineType.binary:
             return value
         elif value == EngineType.dataproxy:  # pragma: no cover
@@ -439,17 +449,15 @@ class Model(BaseModel):
     name: str
     db_name: Optional[str] = FieldInfo(alias='dbName')
     is_generated: bool = FieldInfo(alias='isGenerated')
-    compound_primary_key: Optional['PrimaryKey'] = FieldInfo(alias='primaryKey')
+    compound_primary_key: Optional['PrimaryKey'] = FieldInfo(
+        alias='primaryKey'
+    )
     unique_indexes: List['UniqueIndex'] = FieldInfo(alias='uniqueIndexes')
+    all_fields: List['Field'] = FieldInfo(alias='fields')
+
     _sampler: Sampler = PrivateAttr()
 
-    if TYPE_CHECKING:
-        # pylint thinks all_fields is not an iterable
-        all_fields: List['Field']
-    else:
-        all_fields: List['Field'] = FieldInfo(alias='fields')
-
-    # no idea why mypy throws this error
+    # mypy throws an error here - probbaly because of the pydantic plugin
     def __init__(self, **data: Any) -> None:  # type: ignore[no-redef]
         super().__init__(**data)
         self._sampler = Sampler(self)
@@ -585,8 +593,12 @@ class Field(BaseModel):
 
     relation_name: Optional[str] = FieldInfo(alias='relationName')
     relation_on_delete: Optional[str] = FieldInfo(alias='relationOnDelete')
-    relation_to_fields: Optional[List[str]] = FieldInfo(alias='relationToFields')
-    relation_from_fields: Optional[List[str]] = FieldInfo(alias='relationFromFields')
+    relation_to_fields: Optional[List[str]] = FieldInfo(
+        alias='relationToFields'
+    )
+    relation_from_fields: Optional[List[str]] = FieldInfo(
+        alias='relationFromFields'
+    )
 
     _last_sampled: Optional[str] = PrivateAttr()
 
@@ -643,21 +655,21 @@ class Field(BaseModel):
     def python_type_as_string(self) -> str:
         type_ = self._actual_python_type
         if self.is_list:
-            type_ = type_.replace('\'', '\\\'')
-            return f'\'List[{type_}]\''
+            type_ = type_.replace("'", "\\'")
+            return f"'List[{type_}]'"
 
-        if not type_.startswith('\''):
-            type_ = f'\'{type_}\''
+        if not type_.startswith("'"):
+            type_ = f"'{type_}'"
 
         return type_
 
     @property
     def _actual_python_type(self) -> str:
         if self.kind == 'enum':
-            return f'\'enums.{self.type}\''
+            return f"'enums.{self.type}'"
 
         if self.kind == 'object':
-            return f'\'models.{self.type}\''
+            return f"'models.{self.type}'"
 
         try:
             return TYPE_MAPPING[self.type]
@@ -673,24 +685,24 @@ class Field(BaseModel):
             return self.python_type
 
         if self.is_list:
-            return f'\'{self.type}CreateManyNestedWithoutRelationsInput\''
+            return f"'{self.type}CreateManyNestedWithoutRelationsInput'"
 
-        return f'\'{self.type}CreateNestedWithoutRelationsInput\''
+        return f"'{self.type}CreateNestedWithoutRelationsInput'"
 
     @property
     def where_input_type(self) -> str:
         typ = self.type
         if self.is_relational:
             if self.is_list:
-                return f'\'{typ}ListRelationFilter\''
-            return f'\'{typ}RelationFilter\''
+                return f"'{typ}ListRelationFilter'"
+            return f"'{typ}RelationFilter'"
 
         if self.is_list:
             self.check_supported_scalar_list_type()
-            return f'\'types.{typ}ListFilter\''
+            return f"'types.{typ}ListFilter'"
 
         if typ in FILTER_TYPES:
-            return f'Union[{self._actual_python_type}, \'types.{typ}Filter\']'
+            return f"Union[{self._actual_python_type}, 'types.{typ}Filter']"
 
         return self.python_type
 
@@ -701,7 +713,7 @@ class Field(BaseModel):
 
         typ = self.type
         if typ in FILTER_TYPES:
-            return f'Union[{self._actual_python_type}, \'types.{typ}WithAggregatesFilter\']'
+            return f"Union[{self._actual_python_type}, 'types.{typ}WithAggregatesFilter']"
         return self.python_type
 
     @property
@@ -745,12 +757,12 @@ class Field(BaseModel):
     def get_update_input_type(self) -> str:
         if self.kind == 'object':
             if self.is_list:
-                return f'\'{self.type}UpdateManyWithoutRelationsInput\''
-            return f'\'{self.type}UpdateOneWithoutRelationsInput\''
+                return f"'{self.type}UpdateManyWithoutRelationsInput'"
+            return f"'{self.type}UpdateOneWithoutRelationsInput'"
 
         if self.is_list:
             self.check_supported_scalar_list_type()
-            return f'\'types.{self.type}ListUpdate\''
+            return f"'types.{self.type}ListUpdate'"
 
         if self.is_atomic:
             return f'Union[Atomic{self.type}Input, {self.python_type}]'
@@ -758,7 +770,9 @@ class Field(BaseModel):
         return self.python_type
 
     def check_supported_scalar_list_type(self) -> None:
-        if self.type not in FILTER_TYPES and self.kind != 'enum':  # pragma: no branch
+        if (
+            self.type not in FILTER_TYPES and self.kind != 'enum'
+        ):  # pragma: no branch
             raise UnsupportedListTypeError(self.type)
 
     def get_relational_model(self) -> Optional['Model']:
@@ -792,9 +806,10 @@ class Field(BaseModel):
         return sampled
 
     def _get_sample_data(self) -> str:
-        # pylint: disable=no-else-return,too-many-return-statements
         if self.is_relational:  # pragma: no cover
-            raise RuntimeError('Data sampling for relational fields not supported yet')
+            raise RuntimeError(
+                'Data sampling for relational fields not supported yet'
+            )
 
         if self.kind == 'enum':
             enum = self.get_corresponding_enum()
@@ -807,7 +822,7 @@ class Field(BaseModel):
         elif typ == 'Int':
             return str(FAKER.integer())
         elif typ == 'String':
-            return f'\'{FAKER.string()}\''
+            return f"'{FAKER.string()}'"
         elif typ == 'Float':
             return f'{FAKER.integer()}.{FAKER.integer() // 10000}'
         elif typ == 'BigInt':  # pragma: no cover
@@ -816,9 +831,9 @@ class Field(BaseModel):
             # TODO: random dates
             return 'datetime.datetime.utcnow()'
         elif typ == 'Json':
-            return f'Json({{\'{FAKER.string()}\': True}})'
+            return f"Json({{'{FAKER.string()}': True}})"
         elif typ == 'Bytes':
-            return f'Base64.encode(b\'{FAKER.string()}\')'
+            return f"Base64.encode(b'{FAKER.string()}')"
         else:  # pragma: no cover
             raise RuntimeError(f'Sample data not supported for {typ} yet')
 

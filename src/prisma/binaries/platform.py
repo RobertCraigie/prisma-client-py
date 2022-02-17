@@ -41,7 +41,9 @@ def get_openssl() -> str:
     process = subprocess.run(
         ['openssl', 'version', '-v'], stdout=subprocess.PIPE, check=True
     )
-    version = parse_openssl_version(str(process.stdout, sys.getdefaultencoding()))
+    version = parse_openssl_version(
+        str(process.stdout, sys.getdefaultencoding())
+    )
     if version not in ('1.0.x', '1.1.x'):
         # If not 1.0 or 1.1 then it's most likely 3.0
         # Currently prisma doesn't provide binaries for 3.0

@@ -2,7 +2,16 @@ import json
 from enum import Enum
 from pathlib import Path
 from itertools import chain
-from typing import Optional, Iterator, Dict, Any, Callable, Generator, Tuple, Type
+from typing import (
+    Optional,
+    Iterator,
+    Dict,
+    Any,
+    Callable,
+    Generator,
+    Tuple,
+    Type,
+)
 
 import pydantic
 import pytest
@@ -56,10 +65,15 @@ def run_test(
 def from_enum(
     enum: Type[Enum], arg: str
 ) -> Generator[Tuple[str, str, None], None, None]:
-    return ((item.value, arg + item.value, None) for item in enum.__members__.values())
+    return (
+        (item.value, arg + item.value, None)
+        for item in enum.__members__.values()
+    )
 
 
-def test_unsupported_pydantic_version(runner: Runner, monkeypatch: MonkeyPatch) -> None:
+def test_unsupported_pydantic_version(
+    runner: Runner, monkeypatch: MonkeyPatch
+) -> None:
     """Using an older version of pydantic outputs warning
 
     We need to use pydantic>=1.8.2 as that added the customise_sources config option to
@@ -77,13 +91,15 @@ def test_bad_interface_option(runner: Runner) -> None:
     """Passing an unknown interface option raises an error"""
     result = runner.invoke(['py', 'generate', '--interface=foo'])
     assert result.exit_code != 0
-    assert 'Error: Invalid value for \'--interface\'' in result.output
+    assert "Error: Invalid value for '--interface'" in result.output
     assert 'foo' in result.output
     assert 'sync' in result.output
     assert 'asyncio' in result.output
 
 
-def test_prisma_error_non_zero_exit_code(testdir: Testdir, runner: Runner) -> None:
+def test_prisma_error_non_zero_exit_code(
+    testdir: Testdir, runner: Runner
+) -> None:
     """Exits non-zero when the prisma process exits non-zero"""
     path = testdir.make_schema(schema=testdir.default_schema + 'foo')
     result = runner.invoke(['py', 'generate', f'--schema={path}'])
@@ -96,7 +112,7 @@ def test_schema_not_found(runner: Runner) -> None:
     result = runner.invoke(['py', 'generate', '--schema=foo'])
     assert result.exit_code != 0
     assert (
-        'Error: Invalid value for \'--schema\': File \'foo\' does not exist.'
+        "Error: Invalid value for '--schema': File 'foo' does not exist."
         in result.output
     )
 
@@ -107,7 +123,8 @@ def test_schema_not_found(runner: Runner) -> None:
         from_enum(InterfaceChoices, '--interface='),
         [
             ('sync', None, 'interface = sync'),  # ensure uses schema property
-            ('asyncio', '--interface=asyncio', 'interface = sync'),  # ensure overrides
+            # ensure overrides
+            ('asyncio', '--interface=asyncio', 'interface = sync'),
         ],
     ),
 )
@@ -149,7 +166,9 @@ def test_partials_option(
     """partial type generator option is overrided correctly"""
 
     def do_assert(data: Dict[str, Any]) -> None:
-        partial_type_generator = data['generator']['config']['partial_type_generator']
+        partial_type_generator = data['generator']['config'][
+            'partial_type_generator'
+        ]
         if target is None:
             assert partial_type_generator is None
         else:

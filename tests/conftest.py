@@ -1,4 +1,3 @@
-# pylint: disable=global-statement
 import os
 import sys
 import asyncio
@@ -65,18 +64,20 @@ def testdir_fixture(testdir: 'PytestTestdir') -> Iterator[Testdir]:
 
 # TODO: don't emulate the with statement
 def pytest_sessionstart(session: pytest.Session) -> None:
-    LOGGING_CONTEXT_MANAGER.__enter__()  # pylint: disable=no-member
+    LOGGING_CONTEXT_MANAGER.__enter__()
 
 
 def pytest_sessionfinish(session: pytest.Session) -> None:
     if LOGGING_CONTEXT_MANAGER is not None:  # pragma: no branch
-        LOGGING_CONTEXT_MANAGER.__exit__(None, None, None)  # pylint: disable=no-member
+        LOGGING_CONTEXT_MANAGER.__exit__(None, None, None)
 
 
 def pytest_collection_modifyitems(
     session: pytest.Session, config: 'Config', items: List[pytest.Item]
 ) -> None:
-    items.sort(key=lambda item: item.__class__.__name__ == 'IntegrationTestItem')
+    items.sort(
+        key=lambda item: item.__class__.__name__ == 'IntegrationTestItem'
+    )
 
 
 @pytest.fixture(name='patch_prisma', autouse=True)

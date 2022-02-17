@@ -1,5 +1,7 @@
-from ..http import Response
+from typing import Any
+
 from ..errors import PrismaError
+from ..http_abstract import AbstractResponse
 
 
 __all__ = (
@@ -10,6 +12,9 @@ __all__ = (
     'NotConnectedError',
     'UnprocessableEntityError',
 )
+
+
+_AnyResponse = AbstractResponse[Any]
 
 
 class EngineError(PrismaError):
@@ -24,14 +29,26 @@ class NotConnectedError(EngineError):
     pass
 
 
+class MismatchedVersionsError(EngineError):
+    got: str
+    expected: str
+
+    def __init__(self, *, expected: str, got: str):
+        super().__init__(
+            f'Expected query engine version `{expected}` but got `{got}`'
+        )
+        self.expected = expected
+        self.got = got
+
+
 class EngineConnectionError(EngineError):
     pass
 
 
 class EngineRequestError(EngineError):
-    response: Response
+    response: _AnyResponse
 
-    def __init__(self, response: Response, body: str):
+    def __init__(self, response: _AnyResponse, body: str):
         self.response = response
 
         # TODO: better error message
@@ -39,7 +56,7 @@ class EngineRequestError(EngineError):
 
 
 class UnprocessableEntityError(EngineRequestError):
-    def __init__(self, response: Response):
+    def __init__(self, response: _AnyResponse):
         super().__init__(
             response,
             (

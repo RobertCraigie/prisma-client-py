@@ -1,5 +1,15 @@
 from abc import abstractmethod, ABC
-from typing import Any, Union, Coroutine, Type, Dict, TypeVar, Generic, Optional, cast
+from typing import (
+    Any,
+    Union,
+    Coroutine,
+    Type,
+    Dict,
+    TypeVar,
+    Generic,
+    Optional,
+    cast,
+)
 
 from httpx import Limits, Timeout
 
@@ -28,7 +38,9 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         # NoneType = not used yet
         # None = closed
         # Session = open
-        self._session = _NoneType  # type: Optional[Union[Session, Type[_NoneType]]]
+        self._session = (
+            _NoneType
+        )  # type: Optional[Union[Session, Type[_NoneType]]]
         self.session_kwargs = {
             **DEFAULT_CONFIG,
             **kwargs,
@@ -63,6 +75,7 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
             self.open()
             return cast(Session, self._session)
 
+        # TODO: make this not strict, just open a new session
         if session is None:
             raise HTTPClientClosedError()
 
@@ -73,6 +86,9 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         self, value: Optional[Session]
     ) -> None:  # pyright: reportPropertyTypeMismatch=false
         self._session = value
+
+    def should_close(self) -> bool:
+        return self._session is not _NoneType and not self.closed
 
     def __repr__(self) -> str:
         return str(self)

@@ -77,20 +77,23 @@ def test_mock_darwin_os(
 # DISTRO_ID, DISTRO_LIKE, EXPECTED
 DISTRO_ID_LIKE: List[Tuple[str, str, str]] = [
     ('alpine', '', 'musl'),
-    ('raspbian', "", 'arm'),
-    ('nixos', "", 'nixos'),
-    ('ubuntu', "debian", 'debian'),
-    ('debian', "debian", 'debian'),
-    ('fedora', "fedora", 'rhel'),
-    ('rhel', "rhel", 'rhel'),
-    ('centos', "centos", 'rhel'),
-    ('oracle', "fedora", 'rhel'),
+    ('raspbian', '', 'arm'),
+    ('nixos', '', 'nixos'),
+    ('ubuntu', 'debian', 'debian'),
+    ('debian', 'debian', 'debian'),
+    ('fedora', 'fedora', 'rhel'),
+    ('rhel', 'rhel', 'rhel'),
+    ('centos', 'centos', 'rhel'),
+    ('oracle', 'fedora', 'rhel'),
 ]
 
 
 @pytest.mark.parametrize(('distro_id,distro_like,expected'), DISTRO_ID_LIKE)
 def test_resolve_known_distro(
-    monkeypatch: pytest.MonkeyPatch, distro_id: str, distro_like: str, expected: str
+    monkeypatch: pytest.MonkeyPatch,
+    distro_id: str,
+    distro_like: str,
+    expected: str,
 ) -> None:
     """
     Mock the platform.system() to return 'linux' and platform.machine()
@@ -113,15 +116,21 @@ def test_resolve_known_distro(
 # TODO: add more arm datapoints
 # MACHINE, DISTRO_ID, DISTRO_LIKE, RESOLVED_DISTRO, EPXECTED
 LINUX_PLATFORMS: List[Tuple[str, str, str, Optional[str], str]] = [
-    ('x86_64', "alpine", "", "musl", 'linux-musl'),
-    ('aarch64', "ubuntu", "debian", "debian", 'linux-arm64-openssl-1.1.x'),
-    ('arm', "raspbian", "", "arm", 'linux-arm-openssl-1.1.x'),
-    ('x86_64', "nixos", "", "nixos", 'linux-nixos'),
-    ('x86_64', "fedora", "fedora", "rhel", 'rhel-openssl-1.1.x'),
-    ('x86_64', "debian", "debian", "debian", 'debian-openssl-1.1.x'),
-    ('x86_64', "niche-distro", "niche-like", None, 'debian-openssl-1.1.x'),
-    ('arm', "niche-distro", "niche-like", None, 'linux-arm-openssl-1.1.x'),
-    ('aarch64', "niche-distro", "niche-like", None, 'linux-arm64-openssl-1.1.x'),
+    ('x86_64', 'alpine', '', 'musl', 'linux-musl'),
+    ('aarch64', 'ubuntu', 'debian', 'debian', 'linux-arm64-openssl-1.1.x'),
+    ('arm', 'raspbian', '', 'arm', 'linux-arm-openssl-1.1.x'),
+    ('x86_64', 'nixos', '', 'nixos', 'linux-nixos'),
+    ('x86_64', 'fedora', 'fedora', 'rhel', 'rhel-openssl-1.1.x'),
+    ('x86_64', 'debian', 'debian', 'debian', 'debian-openssl-1.1.x'),
+    ('x86_64', 'niche-distro', 'niche-like', None, 'debian-openssl-1.1.x'),
+    ('arm', 'niche-distro', 'niche-like', None, 'linux-arm-openssl-1.1.x'),
+    (
+        'aarch64',
+        'niche-distro',
+        'niche-like',
+        None,
+        'linux-arm64-openssl-1.1.x',
+    ),
 ]
 
 

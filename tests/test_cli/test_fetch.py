@@ -27,7 +27,8 @@ def test_fetch(runner: Runner) -> None:
 
 
 @pytest.mark.skipif(
-    OS_SETTINGS.is_windows(), reason="Open file issue, can't remove files on windows"
+    OS_SETTINGS.is_windows(),
+    reason="Open file issue, can't remove files on windows",
 )
 def test_fetch_one_binary_missing(runner: Runner) -> None:
     """Downloads a binary if it is missing"""
@@ -40,7 +41,8 @@ def test_fetch_one_binary_missing(runner: Runner) -> None:
 
 
 @pytest.mark.skipif(
-    OS_SETTINGS.is_windows(), reason="Open file issue, can't remove files on windows"
+    OS_SETTINGS.is_windows(),
+    reason="Open file issue, can't remove files on windows",
 )
 def test_fetch_force(runner: Runner) -> None:
     """Passing --force re-downloads an already existing binary"""
@@ -60,7 +62,8 @@ def test_fetch_force(runner: Runner) -> None:
 
 
 @pytest.mark.skipif(
-    OS_SETTINGS.is_windows(), reason="Open file issue, can't remove files on windows"
+    OS_SETTINGS.is_windows(),
+    reason="Open file issue, can't remove files on windows",
 )
 def test_fetch_force_no_dir(runner: Runner) -> None:
     """Passing --force when the base directory does not exist"""

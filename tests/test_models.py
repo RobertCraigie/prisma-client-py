@@ -1,4 +1,6 @@
 import pytest
+from fastapi import FastAPI
+
 from prisma.models import User
 from prisma.errors import UnsupportedSubclassWarning
 
@@ -274,9 +276,31 @@ def test_subclassing_warns() -> None:
         class MyUser(User):  # pyright: reportUnusedClass=false
             pass
 
-    class MyUser2(User, warn_subclass=False):  # pyright: reportUnusedClass=false
+    class MyUser2(
+        User, warn_subclass=False
+    ):  # pyright: reportUnusedClass=false
         pass
 
     # ensure other arguments can be passed to support multiple inheritance
-    class MyUser3(User, warn_subclass=False, foo=1):  # pyright: reportUnusedClass=false
+    class MyUser3(
+        User, warn_subclass=False, foo=1
+    ):  # pyright: reportUnusedClass=false
         pass
+
+
+# NOTE: we only include a FastAPI test here as it is a small dependency
+# if we need to ignore warnings for other packages, we do not need unit tests
+
+
+def test_subclass_ignores_fastapi_response_model() -> None:
+    """FastAPI implicitly creates new types from the model passed to response_model.
+    This calls __init_subclass__ which will raise warnings that users cannot do anything about.
+    """
+    # this test may look like it does not test anything but as we turn
+    # warnings into errors when running pytest, this will catch any
+    # warnings we raise
+    app = FastAPI()
+
+    @app.get('/', response_model=User)
+    async def _() -> None:  # pragma: no cover
+        ...
