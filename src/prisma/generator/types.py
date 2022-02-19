@@ -3,8 +3,8 @@ from .._types import TypedDict
 
 
 __all__ = (
+    'PartialModel',
     'PartialModelField',
-    'PartialModelFields',
 )
 
 
@@ -15,4 +15,7 @@ class PartialModelField(TypedDict):
     type: str
 
 
-PartialModelFields = Dict[str, PartialModelField]
+class PartialModel(TypedDict):
+    name: str
+    from_model: str
+    fields: Dict[str, PartialModelField]

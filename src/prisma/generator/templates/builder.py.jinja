@@ -25,20 +25,17 @@ from .types import Serializable
 from .errors import UnknownModelError, UnknownRelationalFieldError
 from ._constants import QUERY_BUILDER_ALIASES
 
+if TYPE_CHECKING:
+    from .bases import PrismaModel
+
 
 log: logging.Logger = logging.getLogger(__name__)
 
 ChildType = Union['AbstractNode', str]
 ITERABLES: Tuple[Type[Any], ...] = (list, tuple, set)
-
-
-DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
+PRISMA_MODELS: Set[str] = {
     {% for model in dmmf.datamodel.models %}
-    '{{ model.name }}': [
-        {% for field in model.scalar_fields %}
-        '{{ field.name }}',
-        {% endfor %}
-    ],
+    '{{ model.name }}',
     {% endfor %}
 }
 
@@ -61,7 +58,7 @@ class QueryBuilder:
     operation: str
 
     # prisma model
-    model: Optional[str]
+    model: Optional[Type['PrismaModel']]
 
     # mapping of relational fields to include in the result
     include: Optional[Dict[str, Any]]
@@ -78,7 +75,7 @@ class QueryBuilder:
         method: str,
         operation: str,
         arguments: Dict[str, Any],
-        model: Optional[str] = None,
+        model: Optional[Type['PrismaModel']] = None,
         root_selection: Optional[List[str]] = None
     ) -> None:
         self.model = model
@@ -137,31 +134,45 @@ class QueryBuilder:
         )
         return root
 
-    def get_default_fields(self, model: str) -> List[str]:
+    def get_default_fields(self, model: Type['PrismaModel']) -> List[str]:
         """Returns a list of all the scalar fields of a model
 
         Raises UnknownModelError if the current model cannot be found.
         """
-        try:
-            return DEFAULT_FIELDS_MAPPING[model].copy()
-        except KeyError as exc:
-            raise UnknownModelError(model) from exc
+        name = model.__prisma_name__
+        if name not in PRISMA_MODELS:
+            raise UnknownModelError(name)
 
-    def get_relational_model(self, current_model: str, field: str) -> str:
+        return [
+            field
+            for field, info in model.__fields__.items()
+            if not info.is_complex()
+        ]
+
+    def get_relational_model(self, current_model: Type['PrismaModel'], field: str) -> Type['PrismaModel']:
         """Returns the model that the field is related to.
 
         Raises UnknownModelError if the current model is invalid.
         Raises UnknownRelationalFieldError if the field does not exist.
         """
+        # TODO: is this mappings bit required?
         try:
-            mappings = RELATIONAL_FIELD_MAPPINGS[current_model]
+            mappings = RELATIONAL_FIELD_MAPPINGS[current_model.__prisma_name__]
         except KeyError as exc:
-            raise UnknownModelError(current_model) from exc
+            raise UnknownModelError(current_model.__prisma_name__) from exc
+
+        if field not in mappings:
+            raise UnknownRelationalFieldError(model=current_model.__name__, field=field)
 
         try:
-            return mappings[field]
+            info = current_model.__fields__[field]
         except KeyError as exc:
-            raise UnknownRelationalFieldError(model=current_model, field=field) from exc
+            raise UnknownRelationalFieldError(model=current_model.__name__, field=field)
+
+        if not info.is_complex():
+            raise RuntimeError('TODO')
+
+        return info.type_
 
     def _transform_aliases(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """Transform dict keys to match global aliases
@@ -347,7 +358,7 @@ class ResultNode(Node):
     def enter(self) -> str:
         model = self.builder.model
         if model is not None:
-            return f'result: {self.builder.method}{model}'
+            return f'result: {self.builder.method}{model.__prisma_name__}'
 
         return f'result: {self.builder.method}'
 
@@ -526,13 +537,13 @@ class Selection(Node):
         }
     }
     """
-    model: Optional[str]
+    model: Optional[Type['PrismaModel']]
     include: Optional[Dict[str, Any]]
     root_selection: Optional[List[str]]
 
     def __init__(
         self,
-        model: Optional[str] = None,
+        model: Optional[Type['PrismaModel']] = None,
         include: Optional[Dict[str, Any]] = None,
         root_selection: Optional[List[str]] = None,
         **kwargs: Any

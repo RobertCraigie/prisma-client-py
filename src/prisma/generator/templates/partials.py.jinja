@@ -1,12 +1,13 @@
 {% include '_header.py.jinja' %}
 # -- template partials.py.jinja --
 from pydantic import BaseModel, Field, validator
-from . import types, models, fields, enums
+from . import types, fields, enums
+from .bases import PrismaModel as _PrismaModel
 
 
-{% for name, fields in partial_models.items() %}
-class {{ name }}(BaseModel):
-    {% for field in fields.values() %}
+{% for partial in partial_models %}
+class {{ partial.name }}(_PrismaModel):
+    {% for field in partial.fields.values() %}
     {{ field.name }}:
             {%- if field.optional -%}
                 {{ ' ' }}Optional[{{ field.type }}]
@@ -15,15 +16,15 @@ class {{ name }}(BaseModel):
             {% endif %}
     {% endfor %}
 
-    Config = models.Config
+    __prisma_name__: ClassVar[str] = '{{ partial.name }}'
 
     {# TODO: this should be one validator for all bytes types #}
     {# TODO: this type check feels very hacky #}
-    {% for name, field in fields.items() %}
+    {% for field in partial.fields %}
     {% if field.type in ['fields.Base64', 'List[\'fields.Base64\']'] %}
-    @validator('{{ name }}', pre=True, allow_reuse=True)
+    @validator('{{ field.name }}', pre=True, allow_reuse=True)
     @classmethod
-    def _prisma_{{ name }}_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
+    def _prisma_{{ field.name }}_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
         return fields.Base64._internal_from_prisma(value)
     {% endif %}
     {% endfor %}
@@ -35,8 +36,8 @@ class {{ name }}(BaseModel):
 # so we have to import ourselves in order to resolve forward references
 from . import partials
 
-{% for name, fields in partial_models.items() %}
-{{ name }}.update_forward_refs()
+{% for partial in partial_models %}
+{{ partial.name }}.update_forward_refs()
 {% endfor %}
 
 # fmt: on

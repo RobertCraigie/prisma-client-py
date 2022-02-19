@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 from abc import ABC, abstractmethod
 from contextvars import ContextVar
-from typing import Generic, Dict, Type, Any, Optional, cast
+from typing import Generic, Dict, Type, List, Any, Optional, cast
 
 from jinja2 import Environment, FileSystemLoader
 from pydantic import BaseModel
@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from . import jsonrpc
 from .jsonrpc import Manifest
 from .models import DefaultData, PythonData
-from .types import PartialModelFields
+from .types import PartialModel
 from .utils import (
     copy_tree,
     is_same_path,
@@ -47,8 +47,8 @@ DEFAULT_ENV = Environment(
     lstrip_blocks=True,
     loader=FileSystemLoader(Path(__file__).parent / 'templates'),
 )
-partial_models_ctx: ContextVar[Dict[str, PartialModelFields]] = ContextVar(
-    'partial_models_ctx', default={}
+partial_models_ctx: ContextVar[List[PartialModel]] = ContextVar(
+    'partial_models_ctx', default=[]
 )
 
 

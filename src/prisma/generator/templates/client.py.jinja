@@ -6,6 +6,7 @@ from types import TracebackType
 from . import types, models, errors, actions
 from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT
+from .bases import PrismaModel
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
 from .generator.models import EngineType
@@ -284,7 +285,7 @@ class Client:
         method: str,
         operation: str,
         arguments: Dict[str, Any],
-        model: Optional[str] = None,
+        model: Optional[Type['PrismaModel']] = None,
         root_selection: Optional[List[str]] = None
     ) -> Any:
         builder = QueryBuilder(
@@ -398,7 +399,7 @@ class {{ model.name }}BatchActions:
         self._batcher._add(
             operation='{{ operations.create }}',
             method='{{ methods.create }}',
-            model='{{ model.name }}',
+            model=models.{{ model.name }},
             arguments={
                 'data': data,
                 'include': include,
@@ -417,7 +418,7 @@ class {{ model.name }}BatchActions:
         self._batcher._add(
             operation='{{ operations.create_many }}',
             method='{{ methods.create_many }}',
-            model='{{ model.name }}',
+            model=models.{{ model.name }},
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -433,7 +434,7 @@ class {{ model.name }}BatchActions:
         self._batcher._add(
             operation='{{ operations.delete }}',
             method='{{ methods.delete }}',
-            model='{{ model.name }}',
+            model=models.{{ model.name }},
             arguments={
                 'where': where,
                 'include': include,
@@ -449,7 +450,7 @@ class {{ model.name }}BatchActions:
         self._batcher._add(
             operation='{{ operations["update"] }}',
             method='{{ methods["update"] }}',
-            model='{{ model.name }}',
+            model=models.{{ model.name }},
             arguments={
                 'data': data,
                 'where': where,
@@ -466,7 +467,7 @@ class {{ model.name }}BatchActions:
         self._batcher._add(
             operation='{{ operations.upsert }}',
             method='{{ methods.upsert }}',
-            model='{{ model.name }}',
+            model=models.{{ model.name }},
             arguments={
                 'where': where,
                 'include': include,
@@ -483,7 +484,7 @@ class {{ model.name }}BatchActions:
         self._batcher._add(
             operation='{{ operations.update_many }}',
             method='{{ methods.update_many }}',
-            model='{{ model.name }}',
+            model=models.{{ model.name }},
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -495,7 +496,7 @@ class {{ model.name }}BatchActions:
         self._batcher._add(
             operation='{{ operations.delete_many }}',
             method='{{ methods.delete_many }}',
-            model='{{ model.name }}',
+            model=models.{{ model.name }},
             arguments={'where': where},
             root_selection=['count'],
         )
