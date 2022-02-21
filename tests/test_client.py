@@ -3,8 +3,9 @@ from typing import TYPE_CHECKING, Any, Mapping
 
 import httpx
 import pytest
-from pytest_mock import MockerFixture
 from mock import AsyncMock
+from pytest_mock import MockerFixture
+
 from prisma import ENGINE_TYPE, Prisma, get_client, errors
 from prisma.http_abstract import DEFAULT_CONFIG
 from prisma.engine.http import HTTPEngine
