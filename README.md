@@ -284,6 +284,13 @@ All Prisma Client Python methods are fully statically typed, this means you can 
 
 For more details see the [documentation](https://prisma-client-py.readthedocs.io/en/stable/getting_started/type-safety/).
 
+
+#### How does Prisma Python interface with Prisma?
+
+Prisma Client Python connects to the database and executes queries using Prisma's rust-based Query Engine, of which the source code can be found here: https://github.com/prisma/prisma-engines.
+
+The Prisma CLI, which is written in TypeScript, is packaged into a single binary which is downloaded for you when you use Prisma Python. The CLI interface is the exact same as the standard [Prisma CLI](https://www.prisma.io/docs/reference/api-reference/command-reference).
+
 ## Room for improvement
 
 Prisma Client Python is a new project and as such there are some features that are missing or incomplete.
