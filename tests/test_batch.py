@@ -86,7 +86,7 @@ async def test_mixing_models(client: Prisma) -> None:
         batcher.profile.create(
             {
                 'user': {'connect': {'id': 'abc'}},
-                'bio': 'Robert\'s profile',
+                'bio': "Robert's profile",
                 'country': 'Scotland',
             }
         )
@@ -97,7 +97,7 @@ async def test_mixing_models(client: Prisma) -> None:
     assert user is not None
     assert user.name == 'Robert'
     assert user.profile is not None
-    assert user.profile.bio == 'Robert\'s profile'
+    assert user.profile.bio == "Robert's profile"
 
     assert await client.user.count() == 1
     assert await client.profile.count() == 1
@@ -254,7 +254,9 @@ def test_ensure_batch_and_action_signatures_are_equal(client: Prisma) -> None:
     have found a method that you think is good please make an issue/PR.
     """
     actions = client.user
-    for name, meth in inspect.getmembers(client.batch_().user, inspect.ismethod):
+    for name, meth in inspect.getmembers(
+        client.batch_().user, inspect.ismethod
+    ):
         if name.startswith('_'):
             continue
 

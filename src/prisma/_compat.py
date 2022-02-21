@@ -13,7 +13,6 @@ if TYPE_CHECKING:
     # to simply return the callable back unchanged.
 
     def root_validator(
-        # pylint: disable=unused-argument
         *,
         pre: bool = False,
         allow_reuse: bool = False,
@@ -22,7 +21,6 @@ if TYPE_CHECKING:
         ...
 
     def validator(
-        # pylint: disable=unused-argument
         *fields: str,
         pre: bool = ...,
         each_item: bool = ...,
@@ -32,6 +30,7 @@ if TYPE_CHECKING:
         allow_reuse: bool = ...,
     ) -> Callable[[CallableT], CallableT]:
         ...
+
 
 else:
     from pydantic import (

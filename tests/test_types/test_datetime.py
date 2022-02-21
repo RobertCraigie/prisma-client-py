@@ -11,7 +11,9 @@ async def test_filtering(client: Prisma) -> None:
     now = datetime.datetime.now(datetime.timezone.utc)
     async with client.batch_() as batcher:
         for i in range(10):
-            batcher.types.create({'datetime': now + datetime.timedelta(hours=i)})
+            batcher.types.create(
+                {'datetime': now + datetime.timedelta(hours=i)}
+            )
 
     total = await client.types.count(
         where={'datetime': {'gte': now + datetime.timedelta(hours=5)}}
@@ -166,9 +168,9 @@ async def test_tz_aware(client: Prisma) -> None:
     found = await client.types.find_first(
         where={
             'datetime': {
-                'lt': (record.datetime + datetime.timedelta(hours=1)).astimezone(
-                    datetime.timezone.max
-                )
+                'lt': (
+                    record.datetime + datetime.timedelta(hours=1)
+                ).astimezone(datetime.timezone.max)
             }
         }
     )

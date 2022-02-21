@@ -1,10 +1,10 @@
 # Setup
 
-As Prisma Client Python supports generating both async and non-async clients, there is some differences required when generating the client.
+As Prisma Python supports generating both async and non-async clients, there is some differences required when generating the client.
 
 ## Installing
 
-Prisma Client Python can be installed from [PyPi](https://pypi.org/project/prisma/) with [pip](https://pip.pypa.io/en/stable/)
+Prisma Python can be installed from [PyPi](https://pypi.org/project/prisma/) with [pip](https://pip.pypa.io/en/stable/)
 
 ```sh
 pip install prisma

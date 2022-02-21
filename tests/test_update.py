@@ -51,7 +51,9 @@ async def test_update_with_create_disconnect(
     client: Prisma, user_id: str, method: str
 ) -> None:
     """Removing a relational field"""
-    user = await client.user.find_unique(where={'id': user_id}, include={'posts': True})
+    user = await client.user.find_unique(
+        where={'id': user_id}, include={'posts': True}
+    )
     assert user is not None
     assert len(user.posts) == 0  # pyright: reportGeneralTypeIssues=false
 

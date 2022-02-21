@@ -31,6 +31,7 @@ async def test_skip_duplicates(client: Prisma) -> None:
     assert exc.match(r'Unique constraint failed on the fields: \(`id`\)')
 
     count = await client.user.create_many(
-        [{'id': user.id, 'name': 'Robert 2'}, {'name': 'Tegan'}], skip_duplicates=True
+        [{'id': user.id, 'name': 'Robert 2'}, {'name': 'Tegan'}],
+        skip_duplicates=True,
     )
     assert count == 1

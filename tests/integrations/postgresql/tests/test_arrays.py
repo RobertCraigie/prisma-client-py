@@ -13,7 +13,9 @@ def _utcnow() -> datetime:
     return now.replace(microsecond=int(now.microsecond / 1000) * 1000)
 
 
-def _assert_datelist_equal(actual: List[datetime], expected: List[datetime]) -> None:
+def _assert_datelist_equal(
+    actual: List[datetime], expected: List[datetime]
+) -> None:
     actual = [dt.replace(tzinfo=None) for dt in actual]
     expected = [dt.replace(tzinfo=None) for dt in expected]
     assert actual == expected
@@ -435,7 +437,11 @@ async def test_updating_bigints(client: Prisma) -> None:
         },
     )
     assert model is not None
-    assert model.bigints == [539506179039297536, 281454500584095754, 186214420957888512]
+    assert model.bigints == [
+        539506179039297536,
+        281454500584095754,
+        186214420957888512,
+    ]
 
     model = await client.lists.update(
         where={

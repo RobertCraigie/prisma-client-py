@@ -82,7 +82,9 @@ class MissingRequiredValueError(DataError):
 class RawQueryError(DataError):
     def __init__(self, data: Any):
         try:
-            super().__init__(data, message=data['user_facing_error']['meta']['message'])
+            super().__init__(
+                data, message=data['user_facing_error']['meta']['message']
+            )
         except KeyError:
             super().__init__(data)
 

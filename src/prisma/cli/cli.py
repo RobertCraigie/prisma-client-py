@@ -10,8 +10,8 @@ from . import prisma
 from .utils import error
 from .custom import cli
 
-from .. import http
-from ..utils import maybe_async_run, DEBUG
+from .. import _sync_http as http
+from ..utils import DEBUG
 from ..generator import Generator
 
 
@@ -93,7 +93,7 @@ def cleanup(do_cleanup: bool = True) -> Iterator[None]:
         yield
     finally:
         if do_cleanup:
-            maybe_async_run(http.client.close)
+            http.client.close()
 
 
 if __name__ == '__main__':

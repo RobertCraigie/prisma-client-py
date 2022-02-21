@@ -1,6 +1,6 @@
 # Batching Write Queries
 
-In some cases you may want to insert a lot of rows at once or create two non-related models at the same time but only create the records if they all are created sucessfully. Prisma Client Python supports this by batching write queries.
+In some cases you may want to insert a lot of rows at once or create two non-related models at the same time but only create the records if they all are created sucessfully. Prisma Python supports this by batching write queries.
 
 Batching queries offers the exact same API as the standard Client with the exception of any finding queries such as `find_first` which are not supported.
 

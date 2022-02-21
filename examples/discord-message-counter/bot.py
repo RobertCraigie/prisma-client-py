@@ -52,12 +52,16 @@ bot = Bot()
 
 
 @bot.command()
-async def total(ctx: Context, channel: Optional[discord.TextChannel] = None) -> None:
+async def total(
+    ctx: Context, channel: Optional[discord.TextChannel] = None
+) -> None:
     if channel is None:
         if isinstance(ctx.channel, discord.TextChannel):
             channel = ctx.channel
         else:
-            await ctx.send('Could not resolve channel, this should never happen')
+            await ctx.send(
+                'Could not resolve channel, this should never happen'
+            )
             return
 
     record = await ctx.bot.prisma.channel.find_unique(
@@ -67,9 +71,9 @@ async def total(ctx: Context, channel: Optional[discord.TextChannel] = None) -> 
     )
     if record is None:
         await ctx.send(
-            f'No messages have been sent in {channel.mention} since I\'ve been here!'
+            f"No messages have been sent in {channel.mention} since I've been here!"
         )
     else:
         await ctx.send(
-            f'{record.total} messages have been sent in {channel.mention} since I\'ve been here!'
+            f"{record.total} messages have been sent in {channel.mention} since I've been here!"
         )

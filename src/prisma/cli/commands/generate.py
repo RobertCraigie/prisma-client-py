@@ -59,7 +59,9 @@ def cli(schema: Optional[Path], watch: bool, **kwargs: Any) -> None:
         if value is None:
             continue
 
-        env[prefix + ARG_TO_CONFIG_KEY.get(key, key).upper()] = serialize(key, value)
+        env[prefix + ARG_TO_CONFIG_KEY.get(key, key).upper()] = serialize(
+            key, value
+        )
 
     log.debug('Running generate with env: %s', env)
     sys.exit(prisma.run(args, env=env))

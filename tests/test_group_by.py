@@ -65,7 +65,9 @@ async def test_group_by(snapshot: SnapshotAssertion, client: Prisma) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_docs_example(snapshot: SnapshotAssertion, client: Prisma) -> None:
+async def test_docs_example(
+    snapshot: SnapshotAssertion, client: Prisma
+) -> None:
     """Test the example given in the Prisma documentation:
     https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#groupby
     """
@@ -100,7 +102,8 @@ async def test_order(
 ) -> None:
     """Test ordering results by a grouped field"""
     assert (
-        await client.profile.group_by(['country'], order={'country': order}) == snapshot
+        await client.profile.group_by(['country'], order={'country': order})
+        == snapshot
     )
 
 
@@ -154,7 +157,9 @@ async def test_take(
 ) -> None:
     """Take argument limits number of records returned"""
     assert (
-        await client.profile.group_by(['country'], take=1, order={'country': order})
+        await client.profile.group_by(
+            ['country'], take=1, order={'country': order}
+        )
         == snapshot
     )
 
@@ -167,7 +172,7 @@ async def test_take_missing_order_argument(client: Prisma) -> None:
         await client.profile.group_by(['country'], take=1)
 
     assert exc.match(
-        'Missing argument: \'order\' which is required when \'take\' is present'
+        "Missing argument: 'order' which is required when 'take' is present"
     )
 
 
@@ -179,7 +184,9 @@ async def test_skip(
 ) -> None:
     """Skipping grouped records"""
     assert (
-        await client.profile.group_by(['country'], skip=1, order={'country': order})
+        await client.profile.group_by(
+            ['country'], skip=1, order={'country': order}
+        )
         == snapshot
     )
 
@@ -192,7 +199,7 @@ async def test_skip_missing_order_argument(client: Prisma) -> None:
         await client.profile.group_by(['country'], skip=1)
 
     assert exc.match(
-        'Missing argument: \'order\' which is required when \'skip\' is present'
+        "Missing argument: 'order' which is required when 'skip' is present"
     )
 
 
@@ -200,7 +207,9 @@ async def test_skip_missing_order_argument(client: Prisma) -> None:
 @pytest.mark.persist_data
 async def test_where(client: Prisma) -> None:
     """Where argument correctly filters records"""
-    results = await client.profile.group_by(['country'], where={'country': 'Denmark'})
+    results = await client.profile.group_by(
+        ['country'], where={'country': 'Denmark'}
+    )
     assert len(results) == 1
     assert results[0].get('country') == 'Denmark'
 
@@ -234,7 +243,9 @@ async def test_having_missing_field_in_by(client: Prisma) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_having_aggregation(snapshot: SnapshotAssertion, client: Prisma) -> None:
+async def test_having_aggregation(
+    snapshot: SnapshotAssertion, client: Prisma
+) -> None:
     """Having aggregation filters records correctly"""
     assert (
         await client.profile.group_by(
@@ -359,8 +370,14 @@ async def test_having_aggregation_nested(
 async def test_count(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Counting records"""
     assert await client.profile.group_by(['country'], count=True) == snapshot
-    assert await client.profile.group_by(['country'], count={'_all': True}) == snapshot
-    assert await client.profile.group_by(['country'], count={'city': True}) == snapshot
+    assert (
+        await client.profile.group_by(['country'], count={'_all': True})
+        == snapshot
+    )
+    assert (
+        await client.profile.group_by(['country'], count={'city': True})
+        == snapshot
+    )
     assert (
         await client.profile.group_by(
             ['country'], count={'city': True, 'country': True}
@@ -373,9 +390,14 @@ async def test_count(snapshot: SnapshotAssertion, client: Prisma) -> None:
 @pytest.mark.persist_data
 async def test_avg(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the average of records"""
-    assert await client.profile.group_by(['country'], avg={'views': True}) == snapshot
     assert (
-        await client.types.group_by(['string'], avg={'integer': True, 'bigint': True})
+        await client.profile.group_by(['country'], avg={'views': True})
+        == snapshot
+    )
+    assert (
+        await client.types.group_by(
+            ['string'], avg={'integer': True, 'bigint': True}
+        )
         == snapshot
     )
 
@@ -384,18 +406,27 @@ async def test_avg(snapshot: SnapshotAssertion, client: Prisma) -> None:
 @pytest.mark.persist_data
 async def test_sum(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the sum of records"""
-    assert await client.profile.group_by(['country'], sum={'views': True}) == snapshot
+    assert (
+        await client.profile.group_by(['country'], sum={'views': True})
+        == snapshot
+    )
 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
 async def test_min(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the minimum value of records"""
-    assert await client.profile.group_by(['country'], min={'views': True}) == snapshot
+    assert (
+        await client.profile.group_by(['country'], min={'views': True})
+        == snapshot
+    )
 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
 async def test_max(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the maximum value of records"""
-    assert await client.profile.group_by(['country'], max={'views': True}) == snapshot
+    assert (
+        await client.profile.group_by(['country'], max={'views': True})
+        == snapshot
+    )

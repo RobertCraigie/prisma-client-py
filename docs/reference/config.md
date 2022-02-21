@@ -1,6 +1,6 @@
 # Configuration
 
-Options are passed to Prisma Client Python using the `generator` block in the `schema.prisma` file
+Options are passed to Prisma Python using the `generator` block in the `schema.prisma` file
 
 For example:
 ```prisma
@@ -9,7 +9,7 @@ generator db {
   config_option = "value"
 }
 ```
-See the [official docs](https://www.prisma.io/docs/concepts/components/prisma-schema/generators) for options that are not specific to Prisma Client Python.
+See the [official docs](https://www.prisma.io/docs/concepts/components/prisma-schema/generators) for options that are not specific to Prisma Python.
 
 ## Interface
 
@@ -64,7 +64,7 @@ generator db {
 !!! warning
     Increasing the number of types generated can exponentially increase the time taken and resources used by static type checkers.
 
-As some python static type checkers do not support recursive types, Prisma Client Python can generate recursive and psuedo-recursive types to an arbitrary depth.
+As some python static type checkers do not support recursive types, Prisma Python can generate recursive and psuedo-recursive types to an arbitrary depth.
 
 This depth can be controlled with the `recursive_type_depth` option, if `-1` is given then recursive types will be generated and if a value greater than or equal to  `2` is given then psuedo-recursive types will be generated to the given depth.
 

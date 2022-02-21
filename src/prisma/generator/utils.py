@@ -7,7 +7,7 @@ from pathlib import Path
 from ..utils import monkeypatch
 
 if TYPE_CHECKING:
-    from .models import Model, Field  # pylint: disable=cyclic-import
+    from .models import Model, Field
 
 
 T = TypeVar('T')
@@ -69,10 +69,6 @@ def is_same_path(path: Path, other: Path) -> bool:
 
 def resolve_template_path(rootdir: Path, name: Union[str, Path]) -> Path:
     return rootdir.joinpath(remove_suffix(name, '.jinja'))
-
-
-def resolve_original_file(file: Path) -> Path:
-    return file.parent.joinpath(file.name + '.original')
 
 
 def remove_suffix(path: Union[str, Path], suf: str) -> str:

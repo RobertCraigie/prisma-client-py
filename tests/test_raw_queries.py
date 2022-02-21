@@ -9,10 +9,10 @@ from prisma.partials import PostOnlyPublished
 async def test_query_raw(client: Prisma) -> None:
     """Standard usage, erroneous query and correct queries"""
     with pytest.raises(errors.RawQueryError):
-        query = '''
+        query = """
             SELECT *
             FROM bad_table;
-        '''
+        """
         await client.query_raw(query)
 
     post = await client.post.create(
@@ -22,19 +22,19 @@ async def test_query_raw(client: Prisma) -> None:
         }
     )
 
-    query = '''
+    query = """
         SELECT COUNT(*) as count
         FROM Post
-    '''
+    """
     results = await client.query_raw(query)
     assert len(results) == 1
     assert isinstance(results[0]['count'], int)
 
-    query = '''
+    query = """
         SELECT *
         FROM Post
         WHERE id = $1
-    '''
+    """
     results = await client.query_raw(query, post.id)
     assert len(results) == 1
     assert results[0]['id'] == post.id
@@ -51,11 +51,11 @@ async def test_query_raw_model(client: Prisma) -> None:
         }
     )
 
-    query = '''
+    query = """
         SELECT *
         FROM Post
         WHERE id = $1
-    '''
+    """
     posts = await client.query_raw(query, post.id, model=Post)
     assert len(posts) == 1
 
@@ -74,14 +74,16 @@ async def test_query_raw_partial_model(client: Prisma) -> None:
         await client.post.create({'title': 'foo', 'published': True}),
         await client.post.create({'title': 'foo', 'published': False}),
     ]
-    query = '''
+    query = """
         SELECT id, published
         FROM Post
         WHERE published = 0
-    '''
+    """
     results = await client.query_raw(query, model=PostOnlyPublished)
     assert len(results) == 2
-    assert {p.id for p in results} == {p.id for p in posts if p.published is False}
+    assert {p.id for p in results} == {
+        p.id for p in posts if p.published is False
+    }
     assert not hasattr(results[0], 'title')
     assert results[0].published is False
     assert results[1].published is False
@@ -90,11 +92,11 @@ async def test_query_raw_partial_model(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_query_raw_no_result(client: Prisma) -> None:
     """No result returns empty list"""
-    query = '''
+    query = """
         SELECT *
         FROM Post
         WHERE id = 'sdldsd'
-    '''
+    """
     results = await client.query_raw(query)
     assert len(results) == 0
 
@@ -105,10 +107,10 @@ async def test_query_raw_no_result(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_query_raw_incorrect_params(client: Prisma) -> None:
     """Passings too many parameters raises an error"""
-    query = '''
+    query = """
         SELECT COUNT(*) as total
         FROM Post
-    '''
+    """
     results = await client.query_raw(query)
     assert len(results) == 1
     assert results[0]['total'] == 0
@@ -128,11 +130,11 @@ async def test_execute_raw(client: Prisma) -> None:
     )
     assert isinstance(post.id, str)
 
-    query = '''
+    query = """
         UPDATE Post
         SET title = 'My edited title'
         WHERE id = $1
-    '''
+    """
     count = await client.execute_raw(query, post.id)
     assert count == 1
 
@@ -145,11 +147,11 @@ async def test_execute_raw(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_execute_raw_no_result(client: Prisma) -> None:
     """No result returns 0"""
-    query = '''
+    query = """
         UPDATE Post
         SET title = 'updated title'
         WHERE id = 'sdldsd'
-    '''
+    """
     count = await client.execute_raw(query)
     assert count == 0
 
@@ -159,11 +161,11 @@ async def test_query_first(client: Prisma) -> None:
     """Standard usage"""
     user = await client.user.create({'name': 'Robert'})
 
-    query = '''
+    query = """
         SELECT *
         FROM User
         WHERE User.id = ?
-    '''
+    """
     found = await client.query_first(query, user.id)
     found.pop('created_at')
     assert found == {'id': user.id, 'name': 'Robert', 'email': None}
@@ -174,11 +176,11 @@ async def test_query_first_model(client: Prisma) -> None:
     """Transforms result to a BaseModel if given"""
     user = await client.user.create({'name': 'Robert'})
 
-    query = '''
+    query = """
         SELECT *
         FROM User
         WHERE User.id = ?
-    '''
+    """
     found = await client.query_first(query, user.id, model=User)
     assert found is not None
     assert found.id == user.id

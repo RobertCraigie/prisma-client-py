@@ -16,7 +16,9 @@ with open('README.md', 'r') as f:
 
 version = ''
 with open('src/prisma/__init__.py') as f:
-    match = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE)
+    match = re.search(
+        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE
+    )
     if not match:
         raise RuntimeError('version is not set')
 
@@ -40,7 +42,7 @@ setup(
     maintainer='Robert Craigie',
     license='APACHE',
     url='https://github.com/RobertCraigie/prisma-client-py',
-    description='Prisma Client Python is an auto-generated and fully type-safe database client',
+    description='Prisma Python is an auto-generated and fully type-safe database client',
     install_requires=requirements('base.txt'),
     long_description=readme,
     long_description_content_type='text/markdown',
@@ -52,7 +54,9 @@ setup(
     zip_safe=False,
     extras_require={
         **extras,
-        'all': [req for requirements in extras.values() for req in requirements],
+        'all': [
+            req for requirements in extras.values() for req in requirements
+        ],
     },
     entry_points={
         'console_scripts': [

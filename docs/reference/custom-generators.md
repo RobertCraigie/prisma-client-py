@@ -18,7 +18,7 @@ The metadata step is used by Prisma to collect information about your generator,
 - The name of the generator
 - The default output location
 
-This data is represented in Prisma Client Python with the `Manifest` model:
+This data is represented in Prisma Python with the `Manifest` model:
 
 ```py
 from prisma.generator import BaseGenerator, Manifest
@@ -35,7 +35,7 @@ class MyGenerator(BaseGenerator):
 
 Prisma sends generators the Prisma Schema DMMF during the generate step, this is your Prisma Schema in AST form.
 
-The DMMF is represented in Prisma Client python with the `Data` model:
+The DMMF is represented in Prisma Python with the `Data` model:
 
 ```py
 from pathlib import Path
@@ -127,7 +127,7 @@ generator my_generator {
 
 ### Redundant Validation
 
-It is currently not possible to disable any data validation that only applies to Prisma Client Python. For example, the following schema will raise a validation error as the field name would generate invalid python code.
+It is currently not possible to disable any data validation that only applies to Prisma Python. For example, the following schema will raise a validation error as the field name would generate invalid python code.
 
 ```prisma
 model User {
@@ -136,4 +136,4 @@ model User {
 }
 ```
 
-However you may not be generating python code or even be using the Prisma Client Python generator in your project which would make this validation error redundant.
+However you may not be generating python code or even be using the Prisma Python generator in your project which would make this validation error redundant.

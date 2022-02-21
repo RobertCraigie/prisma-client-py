@@ -17,11 +17,7 @@ coverage:
         branches:
           - main
 
-    patch:
-      default:
-        target: auto
-        threshold: 10%
-        base: auto
+    patch: off
 
 ignore:
   - "src/prisma/generator/templates/**/*"

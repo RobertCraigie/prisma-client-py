@@ -3,11 +3,17 @@ from prisma.models import User
 
 
 async def main(client: Prisma) -> None:
-    user = await client.user.find_unique(where={'id': '1'}, include={'posts': True})
+    user = await client.user.find_unique(
+        where={'id': '1'}, include={'posts': True}
+    )
     reveal_type(user)  # T: User | None
     assert user is not None
 
-    for _ in user.posts:  # E: Object of type "None" cannot be used as iterable value
+    for (
+        _
+    ) in (
+        user.posts  # E: Object of type "None" cannot be used as iterable value
+    ):
         ...
 
     assert user.posts is not None

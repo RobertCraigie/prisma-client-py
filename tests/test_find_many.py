@@ -19,17 +19,25 @@ async def test_find_many(client: Prisma) -> None:
     )
     assert len(posts) == 2
 
-    posts = await client.post.find_many(where={'title': {'contains': 'Test post'}})
+    posts = await client.post.find_many(
+        where={'title': {'contains': 'Test post'}}
+    )
     assert len(posts) == 2
 
-    posts = await client.post.find_many(where={'title': {'startswith': 'Test post'}})
+    posts = await client.post.find_many(
+        where={'title': {'startswith': 'Test post'}}
+    )
     assert len(posts) == 2
 
-    posts = await client.post.find_many(where={'title': {'not_in': ['Test post 1']}})
+    posts = await client.post.find_many(
+        where={'title': {'not_in': ['Test post 1']}}
+    )
     assert len(posts) == 1
     assert posts[0].title == 'Test post 2'
 
-    posts = await client.post.find_many(where={'title': {'equals': 'Test post 2'}})
+    posts = await client.post.find_many(
+        where={'title': {'equals': 'Test post 2'}}
+    )
     assert len(posts) == 1
     assert posts[0].title == 'Test post 2'
 
@@ -84,7 +92,10 @@ async def test_filtering_one_to_one_relation(client: Prisma) -> None:
             {
                 'name': 'Robert',
                 'profile': {
-                    'create': {'bio': 'My very cool bio.', 'country': 'Scotland'}
+                    'create': {
+                        'bio': 'My very cool bio.',
+                        'country': 'Scotland',
+                    }
                 },
             },
         )
@@ -172,7 +183,9 @@ async def test_filtering_one_to_many_relation(client: Prisma) -> None:
     assert len(users) == 1
     assert users[0].name == 'Callum'
 
-    users = await client.user.find_many(where={'posts': {'some': {'title': 'foo'}}})
+    users = await client.user.find_many(
+        where={'posts': {'some': {'title': 'foo'}}}
+    )
     assert len(users) == 0
 
 

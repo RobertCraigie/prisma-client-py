@@ -8,8 +8,8 @@ from prisma.models import Customer
 
 class App(MDApp):
     def build(self) -> Builder:
-        self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "BlueGray"
+        self.theme_cls.theme_style = 'Dark'
+        self.theme_cls.primary_palette = 'BlueGray'
 
         # we need to un-monkeypatch stderr as client.connect()
         # opens a subprocess which will cause an error if the
@@ -30,7 +30,9 @@ class App(MDApp):
         )
 
         # Add a little message
-        self.root.ids.word_label.text = f'{self.root.ids.word_input.text} Added'
+        self.root.ids.word_label.text = (
+            f'{self.root.ids.word_input.text} Added'
+        )
 
         # Clear the input box
         self.root.ids.word_input.text = ''

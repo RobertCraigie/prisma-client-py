@@ -121,6 +121,7 @@ venv.bak/
 tmp/
 
 # generated code
+src/prisma/http.py
 src/prisma/types.py
 src/prisma/enums.py
 src/prisma/client.py
@@ -132,7 +133,6 @@ src/prisma/partials.py
 src/prisma/engine/http.py
 src/prisma/engine/query.py
 src/prisma/engine/abstract.py
-src/prisma/http.py.original
 
 # debug files
 src/prisma/generator/debug-data.json

@@ -84,5 +84,7 @@ def stats():
             'clicks': 'desc',
         }
     )
-    short_urls = {url.id: request.host_url + hashids.encode(url.id) for url in urls}
+    short_urls = {
+        url.id: request.host_url + hashids.encode(url.id) for url in urls
+    }
     return render_template('stats.html', urls=urls, short_urls=short_urls)

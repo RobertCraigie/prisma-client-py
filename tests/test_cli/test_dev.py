@@ -29,7 +29,7 @@ def test_playground_skip_generate_no_client(
     monkeypatch.setattr(dev, 'module_exists', mock_return, raising=True)
     result = runner.invoke(['py', 'dev', 'playground', '--skip-generate'])
     assert result.exit_code == 1
-    assert result.output == 'Prisma Client Python has not been generated yet.\n'
+    assert result.output == 'Prisma Python has not been generated yet.\n'
 
 
 @pytest.mark.asyncio
@@ -39,7 +39,9 @@ def test_playground_skip_generate_no_client(
 async def test_playground(testdir: Testdir) -> None:
     """Starts local HTTP server"""
 
-    def output_reader(proc: 'subprocess.Popen[bytes]', lines: List[str]) -> List[str]:
+    def output_reader(
+        proc: 'subprocess.Popen[bytes]', lines: List[str]
+    ) -> List[str]:
         assert proc.stdout is not None
         for line in iter(proc.stdout.readline, b''):
             lines.append(line.decode('utf-8'))
@@ -67,7 +69,7 @@ async def test_playground(testdir: Testdir) -> None:
         stdout = ''.join(lines)
         print(stdout)
 
-        assert 'Generated Prisma Client Python' in stdout
+        assert 'Generated Prisma Python' in stdout
 
         match = re.search(
             r'Started http server on (?P<url>http://127.0.0.1:\d+)', stdout
@@ -80,7 +82,7 @@ async def test_playground(testdir: Testdir) -> None:
         assert '<title>Rust Playground</title>' in await resp.text()
     finally:
         if sys.platform == 'win32':  # pragma: no cover
-            sig = signal.CTRL_C_EVENT  # pylint: disable=no-member
+            sig = signal.CTRL_C_EVENT
         else:
             sig = signal.SIGINT
 

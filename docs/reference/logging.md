@@ -1,6 +1,6 @@
 # Logging
 
-Prisma Client Python uses python's [logging library](https://docs.python.org/3/library/logging.html) for logging messages.
+Prisma Python uses python's [logging library](https://docs.python.org/3/library/logging.html) for logging messages.
 
 ## Debugging the CLI
 

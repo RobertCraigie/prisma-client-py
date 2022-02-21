@@ -3,7 +3,7 @@
 !!! note
     Adapted from the Prisma Client Go [documentation](https://github.com/prisma/prisma-client-go/blob/master/docs/quickstart.md)
 
-In this page, you will learn how to send queries to an SQLite database using Prisma Client Python and
+In this page, you will learn how to send queries to an SQLite database using Prisma Python and
 run static type checks.
 
 ## Setup
@@ -30,7 +30,7 @@ Note that you will have to run the activation command on every new shell instanc
 |          | PowerShell      | `PS C:\> .venv\Scripts\Activate.ps1`    |
 
 
-3) Install Prisma Client Python
+3) Install Prisma Python
 
 <!-- TODO: show how to setup a synchronous as well and explain the difference -->
 

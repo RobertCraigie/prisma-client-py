@@ -9,7 +9,7 @@ from ...utils import maybe_async_run, temp_env_update, module_exists
 
 @click.group()
 def cli() -> None:
-    """Commands for developing Prisma Client Python"""
+    """Commands for developing Prisma Python"""
 
 
 @cli.command()
@@ -18,7 +18,7 @@ def cli() -> None:
 def playground(schema: Optional[str], skip_generate: bool) -> None:
     """Run the GraphQL playground"""
     if skip_generate and not module_exists('prisma.client'):
-        error('Prisma Client Python has not been generated yet.')
+        error('Prisma Python has not been generated yet.')
     else:
         generate_client(schema=schema, reload=True)
 
@@ -27,14 +27,16 @@ def playground(schema: Optional[str], skip_generate: bool) -> None:
     from ...engine import QueryEngine
 
     client = Prisma()
-    engine_class = client._engine_class  # pylint: disable=protected-access
+    engine_class = client._engine_class
     if engine_class.__name__ == 'QueryEngine':
         with temp_env_update({'__PRISMA_PY_PLAYGROUND': '1'}):
             maybe_async_run(client.connect)
 
         # TODO: this is the result of a badly designed class
-        engine = cast(QueryEngine, client._engine)  # pylint: disable=protected-access
-        assert engine.process is not None, 'Engine process unavailable for some reason'
+        engine = cast(QueryEngine, client._engine)
+        assert (
+            engine.process is not None
+        ), 'Engine process unavailable for some reason'
         engine.process.wait()
     else:  # pragma: no cover
         error(f'Unsupported engine type: "{engine_class}"')

@@ -40,7 +40,13 @@ class Binary(BaseModel):
     def path(self) -> Path:
         env = os.environ.get(self.env)
         if env is not None:
-            log.debug('Using environment variable location: %s for %s', env, self.name)
+            log.debug(
+                'Using environment variable location: %s for %s',
+                env,
+                self.name,
+            )
             return Path(env)
 
-        return GLOBAL_TEMP_DIR.joinpath(platform.check_for_extension(self.name))
+        return GLOBAL_TEMP_DIR.joinpath(
+            platform.check_for_extension(self.name)
+        )
