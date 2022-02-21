@@ -1,6 +1,6 @@
 # Partial Types
 
-Prisma Client Python exposes an interface for creating partial models at generation time based off of schema-defined models.
+Prisma Python exposes an interface for creating partial models at generation time based off of schema-defined models.
 This is useful in situations where only certain fields of a model are available or certain fields are optional / required.
 
 Partial models are generated to `prisma.partials`.

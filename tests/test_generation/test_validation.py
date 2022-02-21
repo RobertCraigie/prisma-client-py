@@ -79,7 +79,7 @@ def test_field_name_prisma_not_allowed(testdir: Testdir) -> None:
         testdir.generate(schema=schema)
 
     assert (
-        'Field name "prisma" shadows a Prisma Client Python method; '
+        'Field name "prisma" shadows a Prisma Python method; '
         'use a different field name with \'@map("prisma")\''
     ) in str(exc.value.output, 'utf-8')
 
@@ -160,7 +160,7 @@ def test_binary_targets_warning(testdir: Testdir) -> None:
     assert_no_generator_output(stdout)
     assert (
         'Warning: The binaryTargets option '
-        'is not currently supported by Prisma Client Python' in stdout
+        'is not currently supported by Prisma Python' in stdout
     )
 
 

@@ -7,7 +7,7 @@ from .utils import PrismaCLI
 )
 def cli() -> None:
     """Custom command line arguments specifically for
-    Prisma Client Python.
+    Prisma Python.
 
     For other prisma commands, see prisma --help
     """

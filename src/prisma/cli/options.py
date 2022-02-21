@@ -23,5 +23,5 @@ skip_generate: FuncType = click.option(
     '--skip-generate',
     is_flag=True,
     default=False,
-    help='Skip triggering generators (e.g. Prisma Client Python)',
+    help='Skip triggering generators (e.g. Prisma Python)',
 )
