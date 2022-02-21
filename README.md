@@ -25,6 +25,8 @@
 
 Prisma Client Python is a next-generation ORM built on top of [Prisma](https://github.com/prisma/prisma) that has been designed from the ground up for ease of use and correctness.
 
+[Prisma](https://www.prisma.io/) is a TypeScript ORM with zero-cost type safety for your database, although don't worry, Prisma Python [interfaces](#how-does-prisma-python-interface-with-prisma) with Prisma using Rust, you don't need Node or TypeScript.
+
 Prisma Client Python can be used in _any_ Python backend application. This can be a REST API, a GraphQL API or _anything_ else that needs a database.
 
 ![GIF showcasing Prisma Client Python usage](./docs/showcase.gif)
