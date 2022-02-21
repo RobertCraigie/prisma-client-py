@@ -37,6 +37,7 @@ However, the arguably best feature that Prisma Client Python provides is [autoco
 
 Core features:
 
+- [Prisma Migrate](https://www.prisma.io/docs/concepts/components/prisma-migrate)
 - [Full type safety](https://prisma-client-py.readthedocs.io/en/stable/getting_started/type-safety/)
 - [With / without async](https://prisma-client-py.readthedocs.io/en/stable/getting_started/setup/)
 - [Recursive and pseudo-recursive types](https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive-type-depth)
