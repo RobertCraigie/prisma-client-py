@@ -59,7 +59,7 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
 
         This is used by prisma to display the post-generate message e.g.
 
-        ✔ Generated Prisma Client Python to ./.venv/lib/python3.9/site-packages/prisma
+        ✔ Generated Prisma Python to ./.venv/lib/python3.9/site-packages/prisma
         """
         ...
 
@@ -188,7 +188,7 @@ class Generator(GenericGenerator[PythonData]):
 
     def get_manifest(self) -> Manifest:
         return Manifest(
-            name=f'Prisma Client Python (v{__version__})',
+            name=f'Prisma Python (v{__version__})',
             default_output=BASE_PACKAGE_DIR,
         )
 

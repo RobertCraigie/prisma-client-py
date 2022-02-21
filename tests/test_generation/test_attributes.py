@@ -3,7 +3,7 @@ from ..utils import Testdir
 
 def test_field_map(testdir: Testdir) -> None:
     """Mapping fields does not rename pydantic model fields"""
-    # NOTE: this just tests that map can be used with Prisma Client Python
+    # NOTE: this just tests that map can be used with Prisma Python
     #       prisma handles mapping for us
     def tests() -> None:  # mark: filedef
         # pyright: reportUnusedFunction = false, reportGeneralTypeIssues = false

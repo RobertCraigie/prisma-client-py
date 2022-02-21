@@ -266,7 +266,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
         version = values.get('version')
         if not DEBUG_GENERATOR and version != ENGINE_VERSION:
             raise ValueError(
-                f'Prisma Client Python expected Prisma version: {ENGINE_VERSION} '
+                f'Prisma Python expected Prisma version: {ENGINE_VERSION} '
                 f'but got: {version}\n'
                 '  If this is intentional, set the PRISMA_PY_DEBUG_GENERATOR environment '
                 'variable to 1 and try again.\n'
@@ -302,7 +302,7 @@ class Generator(GenericModel, Generic[ConfigT]):
             click.echo(
                 click.style(
                     'Warning: '
-                    'The binaryTargets option is not currently supported by Prisma Client Python',
+                    'The binaryTargets option is not currently supported by Prisma Python',
                     fg='yellow',
                 ),
                 file=sys.stdout,
@@ -411,11 +411,11 @@ class Config(BaseSettings):
             return value
         elif value == EngineType.dataproxy:  # pragma: no cover
             raise ValueError(
-                'Prisma Client Python does not support the Prisma Data Proxy yet.'
+                'Prisma Python does not support the Prisma Data Proxy yet.'
             )
         elif value == EngineType.library:  # pragma: no cover
             raise ValueError(
-                'Prisma Client Python does not support native engine bindings yet.'
+                'Prisma Python does not support native engine bindings yet.'
             )
         else:  # pragma: no cover
             # NOTE: the exhaustiveness check is broken for mypy
@@ -631,7 +631,7 @@ class Field(BaseModel):
 
         if name == 'prisma':
             raise ValueError(
-                'Field name "prisma" shadows a Prisma Client Python method; '
+                'Field name "prisma" shadows a Prisma Python method; '
                 'use a different field name with \'@map("prisma")\'.'
             )
 
@@ -849,7 +849,7 @@ class _EmptyModel(BaseModel):
 
 
 class PythonData(GenericData[Config]):
-    """Data class including the default Prisma Client Python config"""
+    """Data class including the default Prisma Python config"""
 
 
 class DefaultData(GenericData[_EmptyModel]):

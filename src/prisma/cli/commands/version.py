@@ -12,7 +12,7 @@ from ...binaries.platform import binary_platform
 
 
 @click.command(
-    'version', short_help='Display Prisma Client Python version information.'
+    'version', short_help='Display Prisma Python version information.'
 )
 @click.option(
     '--json',
@@ -21,7 +21,7 @@ from ...binaries.platform import binary_platform
     help='Output version information in JSON format.',
 )
 def cli(output_json: bool) -> None:
-    """Display Prisma Client Python version information."""
+    """Display Prisma Python version information."""
     extras = {
         'dev': 'tox',
         'docs': 'mkdocs',
@@ -37,7 +37,7 @@ def cli(output_json: bool) -> None:
 
     info = {
         'prisma': PRISMA_VERSION,
-        'prisma client python': __version__,
+        'prisma python': __version__,
         'platform': binary_platform(),
         'engines': ENGINE_VERSION,
         'install path': str(Path(__file__).resolve().parent.parent.parent),
