@@ -4,14 +4,11 @@
 import warnings
 
 from . import types, errors
-from ._types import BaseModelT
-from .bases import PrismaModel
+from .bases import PrismaModelT, PrismaModel
 
 if TYPE_CHECKING:
     from .client import Client
 
-
-PrismaModelT = TypeVar('PrismaModelT', bound=PrismaModel)
 
 {# TODO: support sampling combined unique constraints #}
 {% macro sample_where_unique(model) %}

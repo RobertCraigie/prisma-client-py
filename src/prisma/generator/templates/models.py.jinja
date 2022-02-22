@@ -1,5 +1,5 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import recursive_types with context %}
+{% from '_utils.py.jinja' import recursive_types, query_methods with context %}
 # -- template models.py.jinja --
 import os
 import logging
@@ -8,8 +8,8 @@ import warnings
 from pydantic import BaseConfig, BaseModel, Field, validator
 
 from . import types, enums, errors, fields
-from .bases import PrismaModel as _PrismaModel
-from ._types import BaseModelT, FuncType
+from .bases import PrismaModelT, PrismaModel as _PrismaModel
+from ._types import FuncType
 from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
 
@@ -65,19 +65,9 @@ class {{ model.name }}(_PrismaModel):
 
     __prisma_model__: ClassVar[str] = '{{ model.name }}'
 
-    {% if recursive_types %}
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.{{ model.name }}Actions[BaseModelT]':
-        from .client import get_client
+    {{ query_methods(model.name) }}
 
-        return actions.{{ model.name }}Actions[BaseModelT](get_client(), cls)
-    {% else %}
-    @classmethod
-    def prisma(cls) -> 'actions.{{ model.name }}Actions':
-        from .client import get_client
-
-        return actions.{{ model.name }}Actions(get_client(), cls)
-
+    {% if not recursive_types %}
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,

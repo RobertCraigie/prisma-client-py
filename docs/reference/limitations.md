@@ -59,6 +59,10 @@ class MyUser(User, warn_subclass=False):
     pass
 ```
 
+### Querying from Partial Models
+
+TODO
+
 ### Filtering by Relational Fields
 
 Prisma supports searching for records based off of relational record values.

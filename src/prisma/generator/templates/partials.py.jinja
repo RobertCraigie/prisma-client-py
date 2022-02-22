@@ -1,8 +1,9 @@
 {% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import recursive_types, query_methods with context %}
 # -- template partials.py.jinja --
-from pydantic import BaseModel, Field, validator
-from . import types, fields, enums
-from .bases import PrismaModel as _PrismaModel
+from pydantic import validator
+from . import types, fields, enums, actions
+from .bases import PrismaModelT, PrismaModel as _PrismaModel
 
 
 {% for partial in partial_models %}
@@ -16,7 +17,9 @@ class {{ partial.name }}(_PrismaModel):
             {% endif %}
     {% endfor %}
 
-    __prisma_model__: ClassVar[str] = '{{ partial.name }}'
+    __prisma_model__: ClassVar[str] = '{{ partial.from_model }}'
+
+    {{ query_methods(partial.from_model, false) }}
 
     {# TODO: this should be one validator for all bytes types #}
     {# TODO: this type check feels very hacky #}

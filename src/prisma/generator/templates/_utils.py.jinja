@@ -57,3 +57,36 @@ time.sleep({{ duration }})
 %}
 
 {% set active_provider = datasources[0].active_provider %}
+
+{% macro query_methods(name, enable_non_recursive=True) %}
+{% if recursive_types %}
+
+    @classmethod
+    def prisma(cls: Type[PrismaModelT]) -> 'actions.{{ name }}Actions[PrismaModelT]':
+        from .client import get_client
+
+        return actions.{{ name }}Actions[PrismaModelT](get_client(), cls)
+{% else %}
+
+    {% if enable_non_recursive %}
+    @classmethod
+    def prisma(cls) -> 'actions.{{ name }}Actions':
+        from .client import get_client
+
+        return actions.{{ name }}Actions(get_client(), cls)
+    {% else %}
+    # TODO: type actions to return object instead?
+    # this would mean that it would be possible to query from
+    # partial models on pseudo-recursive types while still
+    # retaining type safety, it would just be annoying to use.
+    @classmethod
+    def prisma(cls) -> 'NoReturn':
+        raise RuntimeError(
+            'Querying has been disabled as it cannot be typed with mypy;\n'
+            'You must switch to using fully recursive types to enable querying from this model\n'
+            'https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/#querying-from-partial-models'
+        )
+    {% endif %}
+
+{% endif %}
+{% endmacro %}

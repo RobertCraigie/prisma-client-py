@@ -8,6 +8,9 @@ from ._types import FuncType
 from .builder import serialize_base64
 
 
+PrismaModelT = TypeVar('PrismaModelT', bound='PrismaModel')
+
+
 class Config(BaseConfig):
     use_enum_values: bool = True
     arbitrary_types_allowed: bool = True
