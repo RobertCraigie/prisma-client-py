@@ -20,6 +20,5 @@ class Config(BaseConfig):
 class PrismaModel(BaseModel):
     Config = Config
 
-    # TODO: rename to __prisma_model__
     # TODO: ensure this is required by subclasses
     __prisma_model__: ClassVar[str]
