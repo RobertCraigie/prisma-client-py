@@ -63,7 +63,7 @@ class {{ model.name }}(_PrismaModel):
             {% endif %}
     {% endfor %}
 
-    __prisma_name__: ClassVar[str] = '{{ model.name }}'
+    __prisma_model__: ClassVar[str] = '{{ model.name }}'
 
     {% if recursive_types %}
     @classmethod

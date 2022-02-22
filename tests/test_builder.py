@@ -160,7 +160,7 @@ def test_unicode(snapshot: SnapshotAssertion) -> None:
 def test_unknown_model() -> None:
     """Passing unknown model raises an error"""
     class FooModel(PrismaModel):
-        __prisma_name__ = 'Foo'
+        __prisma_model__ = 'Foo'
 
     with pytest.raises(UnknownModelError) as exc:
         QueryBuilder(
@@ -228,13 +228,13 @@ def test_select(snapshot: SnapshotAssertion) -> None:
     """Selecting a subset of fields"""
     class OtherModel(PrismaModel):
         name: str
-        __prisma_name__ = 'User'
+        __prisma_model__ = 'User'
 
     class CustomModel(PrismaModel):
         published: bool
         author: Optional[OtherModel]
 
-        __prisma_name__ = 'Post'
+        __prisma_model__ = 'Post'
 
     query = QueryBuilder(
         operation='query',

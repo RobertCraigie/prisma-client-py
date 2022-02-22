@@ -16,7 +16,7 @@ class {{ partial.name }}(_PrismaModel):
             {% endif %}
     {% endfor %}
 
-    __prisma_name__: ClassVar[str] = '{{ partial.name }}'
+    __prisma_model__: ClassVar[str] = '{{ partial.name }}'
 
     {# TODO: this should be one validator for all bytes types #}
     {# TODO: this type check feels very hacky #}
