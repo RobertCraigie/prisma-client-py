@@ -1,8 +1,8 @@
-from prisma import Client
+from prisma import Prisma
 from prisma.models import User
 
 
-async def main(client: Client) -> None:
+async def main(client: Prisma) -> None:
     user = await client.query_first('', model=User)
     reveal_type(user)  # T: User | None
     assert user is not None

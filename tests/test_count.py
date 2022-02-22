@@ -1,26 +1,26 @@
 import pytest
-from prisma import Client
+from prisma import Prisma
 
 
 # TODO: more tests
 
 
 @pytest.mark.asyncio
-async def test_count(client: Client) -> None:
+async def test_count(client: Prisma) -> None:
     """Basic usage with a result"""
     await client.post.create({'title': 'post 1', 'published': False})
     assert await client.post.count() == 1
 
 
 @pytest.mark.asyncio
-async def test_count_no_results(client: Client) -> None:
+async def test_count_no_results(client: Prisma) -> None:
     """No results returns 0"""
     total = await client.post.count(where={'title': 'kdbsajdh'})
     assert total == 0
 
 
 @pytest.mark.asyncio
-async def test_take(client: Client) -> None:
+async def test_take(client: Prisma) -> None:
     """Take argument limits the maximum value"""
     async with client.batch_() as batcher:
         batcher.post.create({'title': 'Foo 1', 'published': False})
@@ -32,7 +32,7 @@ async def test_take(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_skip(client: Client) -> None:
+async def test_skip(client: Prisma) -> None:
     """Skip argument ignores the first N records"""
     async with client.batch_() as batcher:
         batcher.post.create({'title': 'Foo 1', 'published': False})
@@ -44,7 +44,7 @@ async def test_skip(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_select(client: Client) -> None:
+async def test_select(client: Prisma) -> None:
     """Selecting a field counts non-null values"""
     async with client.batch_() as batcher:
         batcher.post.create({'title': 'Foo', 'published': False})

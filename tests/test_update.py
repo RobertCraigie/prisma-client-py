@@ -1,19 +1,19 @@
 import pytest
 import prisma
-from prisma import Client
+from prisma import Prisma
 from prisma.models import User, Types
 
 from .utils import async_fixture
 
 
 @async_fixture(name='user_id')
-async def user_id_fixture(client: Client) -> str:
+async def user_id_fixture(client: Prisma) -> str:
     user = await client.user.create({'name': 'Robert'})
     return user.id
 
 
 @pytest.mark.asyncio
-async def test_update(client: Client) -> None:
+async def test_update(client: Prisma) -> None:
     """Standard usage"""
     post = await client.post.create(
         {
@@ -48,7 +48,7 @@ async def test_update(client: Client) -> None:
 @pytest.mark.asyncio
 @pytest.mark.parametrize('method', ['disconnect', 'delete'])
 async def test_update_with_create_disconnect(
-    client: Client, user_id: str, method: str
+    client: Prisma, user_id: str, method: str
 ) -> None:
     """Removing a relational field"""
     user = await client.user.find_unique(
@@ -85,7 +85,7 @@ async def test_update_with_create_disconnect(
 
 
 @pytest.mark.asyncio
-async def test_atomic_update(client: Client) -> None:
+async def test_atomic_update(client: Prisma) -> None:
     """Atomically incrementing a value by 1"""
     post = await client.post.create({'title': 'My Post', 'published': False})
     assert post.title == 'My Post'
@@ -99,7 +99,7 @@ async def test_atomic_update(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_update_record_not_found(client: Client) -> None:
+async def test_update_record_not_found(client: Prisma) -> None:
     """Updating a non-existent record returns None"""
     post = await client.post.update(
         where={'id': 'wow'}, data={'title': 'Hi from Update!'}
@@ -108,7 +108,7 @@ async def test_update_record_not_found(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_setting_field_to_null(client: Client) -> None:
+async def test_setting_field_to_null(client: Prisma) -> None:
     """Updating a field to None sets the database record to None"""
     post = await client.post.create(
         data={
@@ -131,7 +131,7 @@ async def test_setting_field_to_null(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_setting_non_nullable_field_to_null(client: Client) -> None:
+async def test_setting_non_nullable_field_to_null(client: Prisma) -> None:
     """Attempting to set a non-nullable field to null raises an error"""
     post = await client.post.create(
         data={

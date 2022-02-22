@@ -1,9 +1,9 @@
 import asyncio
-from prisma import Client
+from prisma import Prisma
 
 
 async def main() -> None:
-    db = Client()
+    db = Prisma()
     await db.connect()
 
     post = await db.post.create(

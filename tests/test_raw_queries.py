@@ -1,12 +1,12 @@
 import pytest
 
-from prisma import errors, Client
+from prisma import errors, Prisma
 from prisma.models import Post, User
 from prisma.partials import PostOnlyPublished
 
 
 @pytest.mark.asyncio
-async def test_query_raw(client: Client) -> None:
+async def test_query_raw(client: Prisma) -> None:
     """Standard usage, erroneous query and correct queries"""
     with pytest.raises(errors.RawQueryError):
         query = """
@@ -42,7 +42,7 @@ async def test_query_raw(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_query_raw_model(client: Client) -> None:
+async def test_query_raw_model(client: Prisma) -> None:
     """Transforms resuls to a BaseModel when given"""
     post = await client.post.create(
         {
@@ -66,7 +66,7 @@ async def test_query_raw_model(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_query_raw_partial_model(client: Client) -> None:
+async def test_query_raw_partial_model(client: Prisma) -> None:
     """Transforms results to a partial model"""
     posts = [
         await client.post.create({'title': 'foo', 'published': False}),
@@ -90,7 +90,7 @@ async def test_query_raw_partial_model(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_query_raw_no_result(client: Client) -> None:
+async def test_query_raw_no_result(client: Prisma) -> None:
     """No result returns empty list"""
     query = """
         SELECT *
@@ -105,7 +105,7 @@ async def test_query_raw_no_result(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_query_raw_incorrect_params(client: Client) -> None:
+async def test_query_raw_incorrect_params(client: Prisma) -> None:
     """Passings too many parameters raises an error"""
     query = """
         SELECT COUNT(*) as total
@@ -120,7 +120,7 @@ async def test_query_raw_incorrect_params(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_execute_raw(client: Client) -> None:
+async def test_execute_raw(client: Prisma) -> None:
     """Basic usage"""
     post = await client.post.create(
         {
@@ -145,7 +145,7 @@ async def test_execute_raw(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_execute_raw_no_result(client: Client) -> None:
+async def test_execute_raw_no_result(client: Prisma) -> None:
     """No result returns 0"""
     query = """
         UPDATE Post
@@ -157,7 +157,7 @@ async def test_execute_raw_no_result(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_query_first(client: Client) -> None:
+async def test_query_first(client: Prisma) -> None:
     """Standard usage"""
     user = await client.user.create({'name': 'Robert'})
 
@@ -172,7 +172,7 @@ async def test_query_first(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_query_first_model(client: Client) -> None:
+async def test_query_first_model(client: Prisma) -> None:
     """Transforms result to a BaseModel if given"""
     user = await client.user.create({'name': 'Robert'})
 

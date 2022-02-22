@@ -1,8 +1,8 @@
 import pytest
-from prisma import Client, engine
+from prisma import Prisma, engine
 
 
-def test_basic(client: Client) -> None:
+def test_basic(client: Prisma) -> None:
     """Basic call to create, just here as a placeholder, more tests should be added"""
     user = client.user.create({'name': 'Robert'})
     assert user.name == 'Robert'
@@ -10,7 +10,7 @@ def test_basic(client: Client) -> None:
 
 def test_context_manager() -> None:
     """Client can be used as a context manager to connect and disconnect from the database"""
-    client = Client()
+    client = Prisma()
     assert not client.is_connected()
 
     with client:

@@ -7,7 +7,7 @@ from typing import List, Iterator, TYPE_CHECKING
 import pytest
 
 import prisma
-from prisma import Client
+from prisma import Prisma
 from prisma.cli import setup_logging
 from prisma.testing import reset_client
 from prisma.utils import get_or_create_event_loop
@@ -26,11 +26,11 @@ pytest_plugins = ['pytester']
 LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
 
 
-prisma.register(Client())
+prisma.register(Prisma())
 
 
 @async_fixture(name='client', scope='session')
-async def client_fixture() -> Client:
+async def client_fixture() -> Prisma:
     client = prisma.get_client()
     if not client.is_connected():  # pragma: no cover
         await client.connect()
@@ -120,7 +120,7 @@ def request_has_client(request: 'FixtureRequest') -> bool:
     )
 
 
-async def cleanup_client(client: Client) -> None:
+async def cleanup_client(client: Prisma) -> None:
     async with client.batch_() as batcher:
         for _, item in inspect.getmembers(batcher):
             if item.__class__.__name__.endswith('Actions'):

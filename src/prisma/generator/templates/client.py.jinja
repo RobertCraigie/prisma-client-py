@@ -13,7 +13,7 @@ from .generator.models import EngineType
 
 __all__ = (
     'ENGINE_TYPE',
-    'Client',
+    'Prisma',
     'load_env',
     'register',
     'get_client',
@@ -25,7 +25,7 @@ SCHEMA = '''
 
 ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
 
-RegisteredClient = Union['Client', Callable[[], 'Client']]
+RegisteredClient = Union['Prisma', Callable[[], 'Prisma']]
 _registered_client: Optional[RegisteredClient] = None
 
 
@@ -77,15 +77,15 @@ def register(client: RegisteredClient) -> None:
     if _registered_client is not None:
         raise errors.ClientAlreadyRegisteredError()
 
-    if not isinstance(client, Client) and not callable(client):
+    if not isinstance(client, Prisma) and not callable(client):
         raise TypeError(
-            f'Expected either a {Client} instance or a function that returns a {Client} but got {client} instead.'
+            f'Expected either a {Prisma} instance or a function that returns a {Prisma} but got {client} instead.'
         )
 
     _registered_client = client
 
 
-def get_client() -> 'Client':
+def get_client() -> 'Prisma':
     """Get the registered client instance
 
     Raises errors.ClientNotRegisteredError() if no client instance has been registered.
@@ -94,19 +94,19 @@ def get_client() -> 'Client':
     if registered is None:
         raise errors.ClientNotRegisteredError() from None
 
-    if isinstance(registered, Client):
+    if isinstance(registered, Prisma):
         return registered
 
     client = registered()
-    if not isinstance(client, Client):  # pyright: reportUnnecessaryIsInstance=false
+    if not isinstance(client, Prisma):  # pyright: reportUnnecessaryIsInstance=false
         raise TypeError(
-            f'Registered function returned {client} instead of a {Client} instance.'
+            f'Registered function returned {client} instead of a {Prisma} instance.'
         )
 
     return client
 
 
-class Client:
+class Prisma:
     {% for model in dmmf.datamodel.models %}
     {% if recursive_types %}
     {{ model.name.lower() }}: 'actions.{{ model.name }}Actions[models.{{ model.name }}]'
@@ -150,8 +150,9 @@ class Client:
             self.__engine.stop()
             self.__engine = None
 
+
     {% if is_async %}
-    async def __aenter__(self) -> 'Client':
+    async def __aenter__(self) -> 'Prisma':
         await self.connect()
         return self
 
@@ -164,7 +165,7 @@ class Client:
         if self.is_connected():
             await self.disconnect()
     {% else %}
-    def __enter__(self) -> 'Client':
+    def __enter__(self) -> 'Prisma':
         self.connect()
         return self
 
@@ -324,7 +325,7 @@ class Batch:
     {{ model.name.lower() }}: '{{ model.name }}BatchActions'
     {% endfor %}
 
-    def __init__(self, client: Client) -> None:
+    def __init__(self, client: Prisma) -> None:
         self.__client = client
         self.__queries: List[str] = []
         self._active_provider = client._active_provider
@@ -502,3 +503,5 @@ class {{ model.name }}BatchActions:
 
 
 {% endfor %}
+
+Client = Prisma

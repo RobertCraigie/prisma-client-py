@@ -1,7 +1,7 @@
-from prisma import Client
+from prisma import Prisma
 
 
-async def main(client: Client) -> None:
+async def main(client: Prisma) -> None:
     # case: missing arguments
     await client.post.create()  # E: Argument missing for parameter "data"
     await client.post.create(
@@ -75,7 +75,7 @@ async def main(client: Client) -> None:
     )
 
 
-async def nested_create(client: Client) -> None:
+async def nested_create(client: Prisma) -> None:
     # TODO: test invalid cases
     # case: valid nested create one-one
     await client.post.create(

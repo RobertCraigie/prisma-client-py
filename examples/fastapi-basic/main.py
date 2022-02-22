@@ -2,14 +2,14 @@
 from typing import Optional, List
 
 from fastapi import FastAPI
-from prisma import Client
+from prisma import Prisma
 from prisma.models import User, Post
 from prisma.types import UserUpdateInput
 from prisma.partials import UserWithoutRelations, PostWithoutRelations
 
 
 app = FastAPI()
-prisma = Client(auto_register=True)
+prisma = Prisma(auto_register=True)
 
 
 @app.on_event('startup')  # type: ignore

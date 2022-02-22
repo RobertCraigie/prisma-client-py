@@ -1,7 +1,7 @@
-from prisma import Client
+from prisma import Prisma
 
 
-async def one_to_one_relation(client: Client) -> None:
+async def one_to_one_relation(client: Prisma) -> None:
     """Ensure relational filters are strongly typed with pyright"""
     user = await client.user.find_first(
         where={

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import Any, List
 
 import pytest
-from prisma import Client, Json, Base64
+from prisma import Prisma, Json, Base64
 from prisma.enums import Role
 from prisma.models import Lists
 
@@ -22,7 +22,7 @@ def _assert_datelist_equal(
 
 
 @pytest.mark.asyncio
-async def test_order_by(client: Client) -> None:
+async def test_order_by(client: Prisma) -> None:
     """Results can be ordered by a String[] field"""
     total = await client.lists.create_many(
         [
@@ -44,7 +44,7 @@ async def test_order_by(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_update_many(client: Client) -> None:
+async def test_update_many(client: Prisma) -> None:
     """Updating many String[] values"""
     result = await client.lists.create_many(
         [
@@ -80,7 +80,7 @@ async def test_update_many(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_strings(client: Client) -> None:
+async def test_updating_strings(client: Prisma) -> None:
     """Updating a String[] value"""
     models = [
         await client.lists.create({}),
@@ -143,7 +143,7 @@ async def test_updating_strings(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_bytes(client: Client) -> None:
+async def test_updating_bytes(client: Prisma) -> None:
     """Updating a Bytes[] value"""
     models = [
         await client.lists.create({}),
@@ -210,7 +210,7 @@ async def test_updating_bytes(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_datetime(client: Client) -> None:
+async def test_updating_datetime(client: Prisma) -> None:
     """Updating a DateTime[] value"""
     now = _utcnow()
     models = [
@@ -276,7 +276,7 @@ async def test_updating_datetime(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_boolean(client: Client) -> None:
+async def test_updating_boolean(client: Prisma) -> None:
     """Updating a Boolean[] value"""
     models = [
         await client.lists.create({}),
@@ -339,7 +339,7 @@ async def test_updating_boolean(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_ints(client: Client) -> None:
+async def test_updating_ints(client: Prisma) -> None:
     """Updating a Int[] value"""
     models = [
         await client.lists.create({}),
@@ -402,7 +402,7 @@ async def test_updating_ints(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_bigints(client: Client) -> None:
+async def test_updating_bigints(client: Prisma) -> None:
     """Updating a BigInt[] value"""
     models = [
         await client.lists.create({}),
@@ -469,7 +469,7 @@ async def test_updating_bigints(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_floats(client: Client) -> None:
+async def test_updating_floats(client: Prisma) -> None:
     """Updating a Float[] value"""
     models = [
         await client.lists.create({}),
@@ -532,7 +532,7 @@ async def test_updating_floats(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_json(client: Client) -> None:
+async def test_updating_json(client: Prisma) -> None:
     """Updating a Json[] value"""
     models = [
         await client.lists.create({}),
@@ -595,7 +595,7 @@ async def test_updating_json(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_enum(client: Client) -> None:
+async def test_updating_enum(client: Prisma) -> None:
     """Updating a Role[] enum value"""
     models = [
         await client.lists.create({}),
@@ -658,7 +658,7 @@ async def test_updating_enum(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_strings(client: Client) -> None:
+async def test_filtering_strings(client: Prisma) -> None:
     """Searching for records by a String[] value"""
     async with client.batch_() as batcher:
         batcher.lists.create({})
@@ -752,7 +752,7 @@ async def test_filtering_strings(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_bools(client: Client) -> None:
+async def test_filtering_bools(client: Prisma) -> None:
     """Searching for records by a Boolean[] value"""
     async with client.batch_() as batcher:
         batcher.lists.create({})
@@ -848,7 +848,7 @@ async def test_filtering_bools(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_ints(client: Client) -> None:
+async def test_filtering_ints(client: Prisma) -> None:
     """Searching for records by a Int[] value"""
     async with client.batch_() as batcher:
         batcher.lists.create({})
@@ -942,7 +942,7 @@ async def test_filtering_ints(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_floats(client: Client) -> None:
+async def test_filtering_floats(client: Prisma) -> None:
     """Searching for records by a Float[] value"""
     async with client.batch_() as batcher:
         batcher.lists.create({})
@@ -1036,7 +1036,7 @@ async def test_filtering_floats(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_bigints(client: Client) -> None:
+async def test_filtering_bigints(client: Prisma) -> None:
     """Searching for records by a BigInt[] value"""
     async with client.batch_() as batcher:
         batcher.lists.create({})
@@ -1130,7 +1130,7 @@ async def test_filtering_bigints(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_json(client: Client) -> None:
+async def test_filtering_json(client: Prisma) -> None:
     """Searching for records by a Json[] value"""
     expected_raw: List[Any] = [[], {'country': 'Scotland'}]
     expected_objects = [Json([]), Json.keys(country='Scotland')]
@@ -1227,7 +1227,7 @@ async def test_filtering_json(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_datetime(client: Client) -> None:
+async def test_filtering_datetime(client: Prisma) -> None:
     """Searching for records by a DateTime[] value"""
     now = _utcnow()
     expected_objects = [now, now + timedelta(hours=1)]
@@ -1323,7 +1323,7 @@ async def test_filtering_datetime(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_bytes(client: Client) -> None:
+async def test_filtering_bytes(client: Prisma) -> None:
     """Searching for records by a Bytes[] value"""
     expected_objects = [Base64.encode(b'foo'), Base64.encode(b'bar')]
     async with client.batch_() as batcher:
@@ -1418,7 +1418,7 @@ async def test_filtering_bytes(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_enums(client: Client) -> None:
+async def test_filtering_enums(client: Prisma) -> None:
     """Searching for records by a Role[] enum value"""
     async with client.batch_() as batcher:
         batcher.lists.create({})
@@ -1512,7 +1512,7 @@ async def test_filtering_enums(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_bytes_constructing(client: Client) -> None:
+async def test_bytes_constructing(client: Prisma) -> None:
     """A list of Base64 fields can be passed to the model constructor"""
     record = await client.lists.create({})
     model = Lists.parse_obj(

@@ -141,10 +141,10 @@ To add a test case find the appropriate test file in the `tests` directory (if n
 
 ```py
 import pytest
-from prisma import Client
+from prisma import Prisma
 
 @pytest.mark.asyncio
-async def test_example(client: Client) -> None:
+async def test_example(client: Prisma) -> None:
     """Test docstring"""
     ...
 ```

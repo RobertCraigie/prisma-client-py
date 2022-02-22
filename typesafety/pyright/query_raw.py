@@ -1,8 +1,8 @@
-from prisma import Client
+from prisma import Prisma
 from prisma.models import User
 
 
-async def main(client: Client) -> None:
+async def main(client: Prisma) -> None:
     users = await client.query_raw('', model=User)
     reveal_type(users)  # T: List[User]
     reveal_type(users[0])  # T: User

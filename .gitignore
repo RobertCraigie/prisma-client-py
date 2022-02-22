@@ -54,6 +54,7 @@ cover/
 
 # cache
 .mypy_cache
+.dmypy.json
 
 # Translations
 *.mo
