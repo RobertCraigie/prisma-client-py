@@ -71,7 +71,7 @@ def test_unresolvable_loader(
     monkeypatch.setattr(pkgutil, 'get_loader', patched_get_loader)
 
     with pytest.raises(SystemExit) as exc:
-        cleanup()  # type: ignore
+        cleanup()
 
     captured = capsys.readouterr()
     assert exc.value.code == 1
