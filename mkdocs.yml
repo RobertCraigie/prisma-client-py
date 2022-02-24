@@ -59,6 +59,7 @@ nav:
       - Model Based Access: reference/model-actions.md
       - Batching Queries: reference/batching.md
       - Partial Types: reference/partials.md
+      - Troubleshooting: reference/troubleshooting.md
       - Type Checkers:
           - Pyright: reference/type_checkers/pyright.md
           - Mypy: reference/type_checkers/mypy.md
