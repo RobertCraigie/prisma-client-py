@@ -52,10 +52,7 @@ setup(
     ),
     package_dir={'': 'src'},
     python_requires='>=3.7.0',
-    package_data={
-        '': ['generator/templates/**/*.py.jinja', 'py.typed'],
-        'prisma_cleanup': ['py.typed'],
-    },
+    package_data={'': ['generator/templates/**/*.py.jinja', 'py.typed']},
     include_package_data=True,
     zip_safe=False,
     extras_require={
