@@ -322,7 +322,7 @@ Given the cursor is where the `|` is, an IDE should suggest the following comple
 
 ### Performance
 
-There has currently not been any work done on improving the performance of Prisma Python queries, this is something that will be worked on in the future and there is room for massive improvements.
+While there has currently not been any work done on improving the performance of Prisma Python queries, they should be reasonably fast. Performance is something that will be worked on in the future and there is room for massive improvements.
 
 ### Supported platforms
 
