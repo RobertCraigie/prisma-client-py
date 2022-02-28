@@ -63,6 +63,12 @@ CONFIGFILE_KEY = 'prisma-mypy'
 log: logging.Logger = logging.getLogger(__name__)
 
 
+# due to the way the mypy API is typed we unfortunately have to disable Pyright type checks
+# this is because mypy type hints are written like this: `Bogus[str]` instead of `str`
+# mypy uses internal magic to transform Bogus[T] to T which pyright cannot understand.
+# pyright: reportGeneralTypeIssues=false, reportUnnecessaryComparison=false
+
+
 def plugin(version: str) -> TypingType[Plugin]:
     return PrismaPlugin
 
