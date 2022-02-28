@@ -12,7 +12,6 @@ from .utils import assert_module_is_clean, assert_module_not_clean
 from ..utils import Testdir
 
 if TYPE_CHECKING:
-    from _pytest.capture import CaptureFixture
     from _pytest.monkeypatch import MonkeyPatch
 
 
@@ -58,9 +57,7 @@ def test_main_works_with_erroneous_client(testdir: Testdir) -> None:
     assert_module_is_clean(path)
 
 
-def test_unresolvable_loader(
-    monkeypatch: 'MonkeyPatch', capsys: 'CaptureFixture[str]'
-) -> None:
+def test_unresolvable_loader(monkeypatch: 'MonkeyPatch') -> None:
     """pkgutil.get_loader() can return a loader that doesn't have access to
     the packages source location.
     """
@@ -70,9 +67,7 @@ def test_unresolvable_loader(
 
     monkeypatch.setattr(pkgutil, 'get_loader', patched_get_loader)
 
-    with pytest.raises(SystemExit) as exc:
+    with pytest.raises(RuntimeError) as exc:
         cleanup()
 
-    captured = capsys.readouterr()
-    assert exc.value.code == 1
-    assert captured.out == 'Received unresolvable import loader: Dummy\n'
+    assert exc.value.args[0] == 'Received unresolvable import loader: Dummy'
