@@ -36,7 +36,7 @@ def test_custom_help(runner: Runner, args: List[str]) -> None:
     result = runner.invoke(args)
     assert 'Usage: prisma py' in result.output
     assert (
-        'Custom command line arguments specifically for Prisma Python.'
+        'Custom command line arguments specifically for Prisma Client Python.'
         in result.output
     )
 
@@ -46,7 +46,10 @@ def test_outputs_custom_commands_info(runner: Runner, args: List[str]) -> None:
     """Running `prisma --help` also outputs a message for our help command"""
     result = runner.invoke(args)
     assert 'Python Commands' in result.output
-    assert 'For Prisma Python commands see prisma py --help' in result.output
+    assert (
+        'For Prisma Client Python commands see prisma py --help'
+        in result.output
+    )
 
 
 def test_int_enum_choice() -> None:
@@ -107,6 +110,6 @@ def test_prisma_studio_not_supported_error(runner: Runner) -> None:
     result = runner.invoke(['studio'])
     assert result.exit_code == 1
     assert (
-        'ERROR: Prisma Studio does not work natively with Prisma Python'
+        'ERROR: Prisma Studio does not work natively with Prisma Client Python'
         in result.output
     )

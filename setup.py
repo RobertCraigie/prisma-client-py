@@ -42,7 +42,7 @@ setup(
     maintainer='Robert Craigie',
     license='APACHE',
     url='https://github.com/RobertCraigie/prisma-client-py',
-    description='Prisma Python is an auto-generated and fully type-safe database client',
+    description='Prisma Client Python is an auto-generated and fully type-safe database client',
     install_requires=requirements('base.txt'),
     long_description=readme,
     long_description_content_type='text/markdown',

@@ -41,7 +41,7 @@ def run(
     if args and args[0] == 'studio':
         click.echo(
             click.style(
-                'ERROR: Prisma Studio does not work natively with Prisma Python',
+                'ERROR: Prisma Studio does not work natively with Prisma Client Python',
                 fg='red',
             ),
         )
@@ -86,7 +86,7 @@ def run(
         click.echo(click.style(prefix + 'Python Commands\n', bold=True))
         click.echo(
             prefix
-            + 'For Prisma Python commands see '
+            + 'For Prisma Client Python commands see '
             + click.style('prisma py --help', bold=True)
         )
 

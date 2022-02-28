@@ -5,7 +5,7 @@
 !!! note
     This page is intended for users that are new to type hinting in python, if you are already using type hints this page will not benefit you.
 
-All Prisma Python methods are fully[^1] statically typed, in this page we will explain what this means and why it is important.
+All Prisma Client Python methods are fully[^1] statically typed, in this page we will explain what this means and why it is important.
 
 ## Introduction
 

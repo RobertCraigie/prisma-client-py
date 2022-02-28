@@ -1,6 +1,6 @@
 site_url: https://example.com/
 site_dir: build/site
-site_name: Prisma Python
+site_name: Prisma Client Python
 site_description: An auto-generated and fully type-safe database client
 site_author: Robert Craigie
 

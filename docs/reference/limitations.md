@@ -1,12 +1,12 @@
 # Limitations
 
-There are two forms of limitations imposed on Prisma Python, the [first](#default-type-limitations) is due to missing features / performance issues with mypy and can be re-enabled by switching to use `pyright instead`. The [second](#python-limitations) is due to scenarios that cannot be accurately represented within Python's type system.
+There are two forms of limitations imposed on Prisma Client Python, the [first](#default-type-limitations) is due to missing features / performance issues with mypy and can be re-enabled by switching to use `pyright instead`. The [second](#python-limitations) is due to scenarios that cannot be accurately represented within Python's type system.
 
 ## Default Type Limitations
 
 !!! note
     It is highly recommended to use [pyright](https://github.com/microsoft/pyright) as your type
-    checker of choice for Prisma Python applications.
+    checker of choice for Prisma Client Python applications.
 
 Due to mypy limtations, some types are not as explicit as they should be and as such cannot
 be considered fully type safe, however all of the limitations imposed by mypy can be removed
@@ -20,7 +20,7 @@ and [configuring](config.md#recursive) prisma to use recursive types.
 
 ### Querying Using Model-based Access
 
-Prisma Python supports querying directly from model classes, however, internally typing this feature to support subclassing with generics causes mypy to be *incredibly* slow, it takes upwards of 35 minutes to type check the Prisma Python codebase on CI and upwards of 2 hours locally.
+Prisma Client Python supports querying directly from model classes, however, internally typing this feature to support subclassing with generics causes mypy to be *incredibly* slow, it takes upwards of 35 minutes to type check the Prisma Client Python codebase on CI and upwards of 2 hours locally.
 
 This kind of performance is not acceptable and as such, this typing has been disabled by default (switching to use recursive types will re-enable subclassing).
 
@@ -102,7 +102,7 @@ to use recursive types.
 
 ## Python Limitations
 
-There are some limitations to type safety due to Python's inability to expressively work with input types. While it would be *possible* to work around this as Prisma Python code is auto-generated, we need to strike a balance between performance and correctness.
+There are some limitations to type safety due to Python's inability to expressively work with input types. While it would be *possible* to work around this as Prisma Client Python code is auto-generated, we need to strike a balance between performance and correctness.
 
 These limitations only effect **2** arguments in one query method in the **entire** client API.
 

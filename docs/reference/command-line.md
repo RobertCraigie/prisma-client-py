@@ -2,13 +2,13 @@
 
 <!-- TODO: this page should be more expansive -->
 
-Prisma Python comes bundled with the [Prisma CLI](https://www.prisma.io/docs/reference/api-reference/command-reference), all commands and arguments are the same. You can invoke the CLI using the installed console script:
+Prisma Client Python comes bundled with the [Prisma CLI](https://www.prisma.io/docs/reference/api-reference/command-reference), all commands and arguments are the same. You can invoke the CLI using the installed console script:
 
 ```
 $ prisma db push
 ```
 
-or by directly invoking the Prisma Python module:
+or by directly invoking the Prisma Client Python module:
 
 ```
 $ python -m prisma db push
@@ -27,13 +27,13 @@ $ npx prisma generate
 
 ## Commands
 
-Prisma Python adds commands on top of the commands that [prisma provides](https://www.prisma.io/docs/reference/api-reference/command-reference).
+Prisma Client Python adds commands on top of the commands that [prisma provides](https://www.prisma.io/docs/reference/api-reference/command-reference).
 
 All python commands must be prefixed by `py`
 
 ### Generate
 
-Adds support for modifying Prisma Python schema [options](config.md) without having to make any changes to your prisma schema file.
+Adds support for modifying Prisma Client Python schema [options](config.md) without having to make any changes to your prisma schema file.
 
 ```
 Usage: prisma py generate [OPTIONS]
@@ -51,7 +51,7 @@ Options:
 
 ### Version
 
-Displays Prisma Python version information.
+Displays Prisma Client Python version information.
 
 ```
 Usage: prisma py version [OPTIONS]
