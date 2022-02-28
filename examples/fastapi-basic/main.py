@@ -1,4 +1,4 @@
-"""Basic FastAPI app for CRUD operations on users and posts using Prisma Python"""
+"""Basic FastAPI app for CRUD operations on users and posts using Prisma Client Python"""
 from typing import Optional, List
 
 from fastapi import FastAPI

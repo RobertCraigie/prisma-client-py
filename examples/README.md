@@ -1,6 +1,6 @@
 # Examples
 
-This directory contains examples for using Prisma Python with many different frameworks in the Python ecosystem.
+This directory contains examples for using Prisma Client Python with many different frameworks in the Python ecosystem.
 
 - FastAPI
     - [Basic Example](./fastapi-basic)

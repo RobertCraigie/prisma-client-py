@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 {% endmacro %}
 {% set base_error_doc = clean_multiline('''
         prisma.errors.PrismaError
-            Catch all for every exception raised by Prisma Python
+            Catch all for every exception raised by Prisma Client Python
 ''')
 %}
 {% set query_error_doc = clean_multiline('''

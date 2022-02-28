@@ -1,13 +1,13 @@
 ---
 name: Bug report
-about: Create a bug report to help us improve Prisma Python
+about: Create a bug report to help us improve Prisma Client Python
 title: ""
 labels: ""
 assignees: ""
 ---
 
 <!--
-Thanks for helping us improve Prisma Python! 🙏 Please follow the sections in the template and provide as much information as possible about your problem, e.g. by enabling additional logging output.
+Thanks for helping us improve Prisma Client Python! 🙏 Please follow the sections in the template and provide as much information as possible about your problem, e.g. by enabling additional logging output.
 
 See https://prisma-client-py.readthedocs.io/en/stable/reference/logging/ for how to enable additional logging output.
 -->
@@ -32,7 +32,7 @@ Steps to reproduce the behavior:
 
 ## Prisma information
 
-<!-- Your Prisma schema, Prisma Python queries, ...
+<!-- Your Prisma schema, Prisma Client Python queries, ...
 Do not include your database credentials when sharing your Prisma schema! -->
 
 ```prisma

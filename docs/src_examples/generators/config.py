@@ -13,7 +13,7 @@ class Data(GenericData[Config]):
     pass
 
 
-# the GenericGenerator[Data] part is what tells Prisma Python to use our
+# the GenericGenerator[Data] part is what tells Prisma Client Python to use our
 # custom Data class with our custom Config class
 class MyGenerator(GenericGenerator[Data]):
     def get_manifest(self) -> Manifest:

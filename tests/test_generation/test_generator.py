@@ -76,7 +76,7 @@ def test_erroneous_template_cleanup(testdir: Testdir) -> None:
 def test_generation_version_number(testdir: Testdir) -> None:
     """Ensure the version number is shown when the client is generated"""
     stdout = testdir.generate().stdout.decode('utf-8')
-    assert f'Generated Prisma Python (v{__version__})' in stdout
+    assert f'Generated Prisma Client Python (v{__version__})' in stdout
 
 
 def test_faker() -> None:

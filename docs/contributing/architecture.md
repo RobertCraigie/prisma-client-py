@@ -2,7 +2,7 @@
 
 <!-- TODO: more detail -->
 
-This page covers how core Prisma Python features work internally. It's intended to aid in inderstanding the code and hopefully enabling more people to contribute.
+This page covers how core Prisma Client Python features work internally. It's intended to aid in inderstanding the code and hopefully enabling more people to contribute.
 
 !!! note
     This page assumes you have at least a basic working knowledge of python.
@@ -17,7 +17,7 @@ This page covers how core Prisma Python features work internally. It's intended 
 
 <!-- TODO: mermaid.js diagrams -->
 
-Prisma Python is made up of two core components, [Client generation](#generation) and the [Client API](#client-api).
+Prisma Client Python is made up of two core components, [Client generation](#generation) and the [Client API](#client-api).
 
 ### Generation
 
