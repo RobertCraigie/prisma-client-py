@@ -19,3 +19,19 @@ from prisma_cleanup import cleanup
 
 cleanup()
 ```
+
+### Custom client
+
+If you are using a custom output directory for Prisma Client Python then you simply have to pass the import path to `prisma_cleanup`, for example:
+
+```
+python -m prisma_cleanup app.prisma
+```
+
+For a custom output defined like this
+
+```prisma
+generator py {
+  provider = "prisma-client-py"
+  output   = "app/prisma"
+}

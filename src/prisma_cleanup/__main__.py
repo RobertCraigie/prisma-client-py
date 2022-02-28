@@ -1,3 +1,4 @@
-from ._cleanup import cleanup
+import sys
+from ._cleanup import main
 
-cleanup()
+main(*sys.argv[1:])
