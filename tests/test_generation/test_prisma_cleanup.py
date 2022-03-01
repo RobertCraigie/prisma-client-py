@@ -71,3 +71,41 @@ def test_unresolvable_loader(monkeypatch: 'MonkeyPatch') -> None:
         cleanup()
 
     assert exc.value.args[0] == 'Received unresolvable import loader: Dummy'
+
+
+def test_custom_package(testdir: Testdir) -> None:
+    """Cleaning up custom package location"""
+    path = testdir.path / 'app' / 'prisma'
+    assert not path.exists()
+    copy_tree(BASE_PACKAGE_DIR, path)
+
+    assert_module_not_clean(path)
+    subprocess.run(
+        [sys.executable, '-m', 'prisma_cleanup', 'app.prisma'],
+        check=True,
+        stdout=subprocess.PIPE,
+    )
+    assert_module_is_clean(path)
+
+
+def test_cleanup_non_prisma_package(testdir: Testdir) -> None:
+    """Cleaning up a non Prisma package does not work"""
+    path = testdir.path / 'prisma_custom' / '__init__.py'
+    path.parent.mkdir()
+    path.touch()
+
+    with pytest.raises(RuntimeError) as exc:
+        cleanup('prisma_custom')
+
+    assert (
+        exc.value.args[0]
+        == 'The given package does not appear to be a Prisma Client Python package.'
+    )
+
+
+def test_cleanup_package_not_found(testdir: Testdir) -> None:
+    """Cleaning up a non-existent package does not work"""
+    with pytest.raises(RuntimeError) as exc:
+        cleanup('prisma_custom')
+
+    assert exc.value.args[0] == 'Could not resolve package: prisma_custom'
