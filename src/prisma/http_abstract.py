@@ -32,6 +32,11 @@ DEFAULT_CONFIG: Dict[str, Any] = {
 class AbstractHTTP(ABC, Generic[Session, Response]):
     session_kwargs: Dict[str, Any]
 
+    __slots__ = (
+        '_session',
+        'session_kwargs',
+    )
+
     # NOTE: ParamSpec wouldn't be valid here:
     # https://github.com/microsoft/pyright/issues/2667
     def __init__(self, **kwargs: Any) -> None:
@@ -99,6 +104,8 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
 
 class AbstractResponse(ABC, Generic[Response]):
     original: Response
+
+    __slots__ = ('original',)
 
     def __init__(self, original: Response) -> None:
         self.original = original
