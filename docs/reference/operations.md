@@ -414,6 +414,8 @@ profile = await db.profile.find_first(
         # or
         'image': {
             'equals': Base64.encode(b'my binary data'),
+            'in': [Base64.encode(b'my binary data')],
+            'not_in': [Base64.encode(b'my other binary data')],
             'not': Base64(b'WW91IGZvdW5kIGFuIGVhc3RlciBlZ2chIExldCBAUm9iZXJ0Q3JhaWdpZSBrbm93IDop'),
         },
     },
