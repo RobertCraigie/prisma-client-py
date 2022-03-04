@@ -60,6 +60,15 @@ async def test_filtering(client: Prisma) -> None:
     assert found is not None
     assert found.bytes.decode() == b'a'
 
+    found = await client.types.find_first(
+        where={
+            'bytes': {
+                'in': [Base64.encode(b'c')],
+            },
+        },
+    )
+    assert found is None
+
     found = await client.types.find_many(
         where={
             'bytes': {
