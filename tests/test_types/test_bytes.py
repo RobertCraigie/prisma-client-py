@@ -69,15 +69,14 @@ async def test_filtering(client: Prisma) -> None:
     )
     assert found is None
 
-    found = await client.types.find_many(
+    found_list = await client.types.find_many(
         where={
             'bytes': {
                 'not_in': [Base64.encode(b'a'), Base64.encode(b'c')],
             }
         },
     )
-    assert found is not None
-    found_values = {record.bytes.decode() for record in found}
+    found_values = {record.bytes.decode() for record in found_list}
     assert found_values == {b'b', b'foo bar'}
 
 
