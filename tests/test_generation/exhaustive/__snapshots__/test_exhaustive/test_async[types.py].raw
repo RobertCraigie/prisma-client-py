@@ -369,6 +369,8 @@ BytesFilter = TypedDict(
     'BytesFilter',
     {
         'equals': 'fields.Base64',
+        'in': List['fields.Base64'],
+        'not_in': List['fields.Base64'],
         'not': Union['fields.Base64', 'BytesFilterRecursive1'],
     },
     total=False,
@@ -379,6 +381,8 @@ BytesFilterRecursive1 = TypedDict(
     'BytesFilterRecursive1',
     {
         'equals': 'fields.Base64',
+        'in': List['fields.Base64'],
+        'not_in': List['fields.Base64'],
         'not': Union['fields.Base64', 'BytesFilterRecursive2'],
     },
     total=False,
@@ -389,6 +393,8 @@ BytesFilterRecursive2 = TypedDict(
     'BytesFilterRecursive2',
     {
         'equals': 'fields.Base64',
+        'in': List['fields.Base64'],
+        'not_in': List['fields.Base64'],
             },
     total=False,
 )

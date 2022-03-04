@@ -50,6 +50,35 @@ async def test_filtering(client: Prisma) -> None:
     assert found is not None
     assert found.bytes.decode() == b'a'
 
+    found = await client.types.find_first(
+        where={
+            'bytes': {
+                'in': [Base64.encode(b'a'), Base64.encode(b'c')],
+            }
+        },
+    )
+    assert found is not None
+    assert found.bytes.decode() == b'a'
+
+    found = await client.types.find_first(
+        where={
+            'bytes': {
+                'in': [Base64.encode(b'c')],
+            },
+        },
+    )
+    assert found is None
+
+    found_list = await client.types.find_many(
+        where={
+            'bytes': {
+                'not_in': [Base64.encode(b'a'), Base64.encode(b'c')],
+            }
+        },
+    )
+    found_values = {record.bytes.decode() for record in found_list}
+    assert found_values == {b'b', b'foo bar'}
+
 
 @pytest.mark.asyncio
 async def test_json(client: Prisma) -> None:

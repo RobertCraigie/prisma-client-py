@@ -275,6 +275,8 @@ class FloatWithAggregatesFilter(FloatFilter, total=False):
     '{{ name }}',
     {
         'equals': 'fields.Base64',
+        'in': List['fields.Base64'],
+        'not_in': List['fields.Base64'],
         {%+ if next != '' -%}
             'not': Union['fields.Base64', '{{ next }}'],
         {% endif %}
