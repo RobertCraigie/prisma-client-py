@@ -42,6 +42,11 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
 {% set ModelType = "'models.%s'" % model.name %}
 class {{ model.name }}Actions:
 {% endif %}
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type[{{ ModelType }}]) -> None:
         self._client = client
         self._model = model

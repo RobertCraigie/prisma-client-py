@@ -115,6 +115,18 @@ class Prisma:
     {% endif %}
     {% endfor %}
 
+    __slots__ = (
+        {% for model in dmmf.datamodel.models %}
+        '{{ model.name.lower() }}',
+        {% endfor %}
+        '__engine',
+        '_active_provider',
+        '_log_queries',
+        '_datasource',
+        '_connect_timeout',
+        '_http_config',
+    )
+
     def __init__(
         self,
         *,

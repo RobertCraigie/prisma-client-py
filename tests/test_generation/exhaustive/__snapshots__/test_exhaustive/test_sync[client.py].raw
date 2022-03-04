@@ -323,6 +323,27 @@ class Prisma:
     d: 'actions.DActions'
     e: 'actions.EActions'
 
+    __slots__ = (
+        'post',
+        'user',
+        'm',
+        'n',
+        'oneoptional',
+        'manyrequired',
+        'lists',
+        'a',
+        'b',
+        'c',
+        'd',
+        'e',
+        '__engine',
+        '_active_provider',
+        '_log_queries',
+        '_datasource',
+        '_connect_timeout',
+        '_http_config',
+    )
+
     def __init__(
         self,
         *,

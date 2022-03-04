@@ -72,6 +72,8 @@ class Json(_PydanticJson):
 
 
 class Base64:
+    __slots__ = ('_raw',)
+
     def __init__(self, raw: bytes) -> None:
         self._raw = raw
 
