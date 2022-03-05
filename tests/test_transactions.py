@@ -3,14 +3,14 @@ import asyncio
 import pytest
 
 import prisma
-from prisma import Client
+from prisma import Prisma
 
 
 # TODO: more tests
 
 
 @pytest.mark.asyncio
-async def test_context_manager(client: Client) -> None:
+async def test_context_manager(client: Prisma) -> None:
     async with client.tx() as transaction:
         user = await transaction.user.create({'name': 'Robert'})
         assert user.name == 'Robert'
@@ -18,7 +18,9 @@ async def test_context_manager(client: Client) -> None:
         # ensure not commited outside transaction
         assert await client.user.count() == 0
 
-        await transaction.profile.create({'bio': 'Hello, there!', 'user_id': user.id})
+        await transaction.profile.create(
+            {'bio': 'Hello, there!', 'user_id': user.id}
+        )
 
     found = await client.user.find_unique(
         where={'id': user.id}, include={'profile': True}
@@ -30,7 +32,7 @@ async def test_context_manager(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_context_manager_auto_rollback(client: Client) -> None:
+async def test_context_manager_auto_rollback(client: Prisma) -> None:
     with pytest.raises(RuntimeError) as exc:
         async with client.tx() as tx:
             user = await tx.user.create({'name': 'Tegan'})
@@ -42,7 +44,7 @@ async def test_context_manager_auto_rollback(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_batch_within_transaction(client: Client) -> None:
+async def test_batch_within_transaction(client: Prisma) -> None:
     async with client.tx(timeout=6000) as transaction:
         async with transaction.batch_() as batcher:
             batcher.user.create({'name': 'Tegan'})
@@ -55,7 +57,7 @@ async def test_batch_within_transaction(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_timeout(client: Client) -> None:
+async def test_timeout(client: Prisma) -> None:
     async with client.tx(timeout=50) as transaction:
         await asyncio.sleep(0.05)
 
@@ -64,23 +66,29 @@ async def test_timeout(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_concurrent_transactions(client: Client) -> None:
+async def test_concurrent_transactions(client: Prisma) -> None:
     timeout = 10000
-    async with client.tx(timeout=timeout) as tx1, client.tx(timeout=timeout) as tx2:
+    async with client.tx(timeout=timeout) as tx1, client.tx(
+        timeout=timeout
+    ) as tx2:
         user1 = await tx1.user.create({'name': 'Tegan'})
         user2 = await tx2.user.create({'name': 'Robert'})
 
         assert await tx1.user.find_first(where={'name': 'Robert'}) is None
         assert await tx2.user.find_first(where={'name': 'Tegan'}) is None
 
-        assert await tx1.user.find_first(where={'name': 'Tegan'}).id == user1.id
-        assert await tx2.user.find_first(where={'name': 'Robert'}).id == user2.id
+        assert (
+            await tx1.user.find_first(where={'name': 'Tegan'}).id == user1.id
+        )
+        assert (
+            await tx2.user.find_first(where={'name': 'Robert'}).id == user2.id
+        )
 
     assert await client.user.count() == 2
 
 
 @pytest.mark.asyncio
-async def test_transaction_within_transaction_warning(client: Client) -> None:
+async def test_transaction_within_transaction_warning(client: Prisma) -> None:
     tx1 = await client.tx().start()
     with pytest.warns(UserWarning) as warnings:
         await tx1.tx().start()
@@ -88,12 +96,17 @@ async def test_transaction_within_transaction_warning(client: Client) -> None:
     assert len(warnings) == 1
     record = warnings[0]
     assert not isinstance(record.message, str)
-    assert record.message.args[0] == 'The current client is already in a transaction.'
+    assert (
+        record.message.args[0]
+        == 'The current client is already in a transaction.'
+    )
     assert record.filename == __file__
 
 
 @pytest.mark.asyncio
-async def test_transaction_within_transaction_context_warning(client: Client) -> None:
+async def test_transaction_within_transaction_context_warning(
+    client: Prisma,
+) -> None:
     async with client.tx() as tx1:
         with pytest.warns(UserWarning) as warnings:
             async with tx1.tx():
@@ -102,12 +115,15 @@ async def test_transaction_within_transaction_context_warning(client: Client) ->
     assert len(warnings) == 1
     record = warnings[0]
     assert not isinstance(record.message, str)
-    assert record.message.args[0] == 'The current client is already in a transaction.'
+    assert (
+        record.message.args[0]
+        == 'The current client is already in a transaction.'
+    )
     assert record.filename == __file__
 
 
 @pytest.mark.asyncio
-async def test_transaction_not_started(client: Client) -> None:
+async def test_transaction_not_started(client: Prisma) -> None:
     tx = client.tx()
 
     with pytest.raises(prisma.errors.TransactionNotStartedError):
@@ -118,7 +134,7 @@ async def test_transaction_not_started(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_transaction_already_closed(client: Client) -> None:
+async def test_transaction_already_closed(client: Prisma) -> None:
     async with client.tx() as transaction:
         pass
 
@@ -127,5 +143,5 @@ async def test_transaction_already_closed(client: Client) -> None:
 
     assert exc.match(
         'Transaction API error: Transaction already closed: '
-        'Transaction is no longer valid. Last state: \'Committed\''
+        "Transaction is no longer valid. Last state: 'Committed'"
     )

@@ -121,11 +121,12 @@ class Prisma:
         '{{ model.name.lower() }}',
         {% endfor %}
         '__engine',
-        '_active_provider',
-        '_log_queries',
+        '_tx_id',
         '_datasource',
-        '_connect_timeout',
+        '_log_queries',
         '_http_config',
+        '_connect_timeout',
+        '_active_provider',
     )
 
     def __init__(
@@ -300,8 +301,8 @@ class Prisma:
     def tx(self, *, max_wait:int = 2000, timeout: int = 5000) -> 'TransactionManager':
         """Returns a context manager for executing queries within a transaction.
 
-        Entering the context manager returns a new Client() instance wrapping all
-        actions within a transaction, queries will be isolated to the Client and
+        Entering the context manager returns a new Prisma instance wrapping all
+        actions within a transaction, queries will be isolated to the Prisma instance and
         will not be commited to the database until the context manager exits.
         """
         return TransactionManager(client=self, max_wait=max_wait, timeout=timeout)
@@ -329,11 +330,9 @@ class Prisma:
         )
         return {{ maybe_await }}self._engine.query(builder.build(), tx_id=self._tx_id)
 
-    def _copy(self) -> 'Client':
-        """Return a new instance of the Client, if the client is connected then
-        the same engine process is used.
-        """
-        new = Client(use_dotenv=False, log_queries=self._log_queries)
+    def _copy(self) -> 'Prisma':
+        """Return a new Prisma instance using the same engine process (if connected)."""
+        new = Prisma(use_dotenv=False, log_queries=self._log_queries)
 
         if self.__engine is not None:
             new._engine = self.__engine
@@ -366,13 +365,13 @@ class Prisma:
 
 
 class TransactionManager:
-    """Context manager for wrapping a Client within a transaction.
+    """Context manager for wrapping a Prisma instance within a transaction.
 
     This should never be created manually, instead it should be used
-    through the client.tx() method.
+    through the Prisma().tx() method.
     """
 
-    def __init__(self, client: Client, max_wait: int, timeout: int) -> None:
+    def __init__(self, client: Prisma, max_wait: int, timeout: int) -> None:
         self.__client = client
         self._max_wait = max_wait
         self._timeout = timeout
@@ -380,8 +379,8 @@ class TransactionManager:
 
     # TODO: these endpoints should be abstract methods in the engine class
 
-    {{ maybe_async_def }}start(self, *, _from_context: bool = False) -> Client:
-        """Start the transaction and return the wrapped Client"""
+    {{ maybe_async_def }}start(self, *, _from_context: bool = False) -> Prisma:
+        """Start the transaction and return the wrapped Prisma instance"""
         if self.__client.is_transaction():
             # if we were called from the context manager then the stacklevel
             # needs to be one higher to warn on the actual offending code
@@ -425,7 +424,7 @@ class TransactionManager:
         )
 
     {% if is_async %}
-    async def __aenter__(self) -> Client:
+    async def __aenter__(self) -> Prisma:
         return await self.start(_from_context=True)
 
     async def __aexit__(
@@ -437,7 +436,7 @@ class TransactionManager:
         if exc is None:
             await self.commit()
     {% else %}
-    def __enter__(self) -> Client:
+    def __enter__(self) -> Prisma:
         return self.start(_from_context=True)
 
     def __exit__(
