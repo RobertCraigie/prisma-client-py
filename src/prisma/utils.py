@@ -35,7 +35,9 @@ def setup_logging() -> None:
         logging.getLogger('prisma').setLevel(logging.DEBUG)
 
 
-def maybe_async_run(func: Union[FuncType, CoroType], *args: Any, **kwargs: Any) -> Any:
+def maybe_async_run(
+    func: Union[FuncType, CoroType], *args: Any, **kwargs: Any
+) -> Any:
     if is_coroutine(func):
         return async_run(func(*args, **kwargs))
     return func(*args, **kwargs)
@@ -63,7 +65,7 @@ def temp_env_update(env: Dict[str, str]) -> Iterator[None]:
         os.environ.update(env)
         yield
     finally:
-        for key in env.keys():
+        for key in env:
             os.environ.pop(key, None)
 
         os.environ.update(old)
@@ -115,4 +117,6 @@ def assert_never(value: NoReturn) -> NoReturn:
 
     https://github.com/microsoft/pyright/issues/767
     """
-    assert False, "Unhandled type: {}".format(type(value).__name__)  # pragma: no cover
+    assert False, 'Unhandled type: {}'.format(
+        type(value).__name__
+    )  # pragma: no cover

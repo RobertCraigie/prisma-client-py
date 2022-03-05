@@ -1,7 +1,7 @@
-from prisma import Client
+from prisma import Prisma
 
 
-async def main(client: Client) -> None:
+async def main(client: Prisma) -> None:
     # data is missing create and update keys
     post = await client.post.upsert(
         where={

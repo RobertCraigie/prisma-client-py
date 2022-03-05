@@ -133,7 +133,7 @@ class QueryEngine(HTTPEngine):
         for _ in range(int(timeout / 0.1)):
             try:
                 data = {{ maybe_await }}self.request('GET', '/status')
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exc:
                 last_exc = exc
                 log.debug(
                     'Could not connect to query engine due to %s; retrying...',

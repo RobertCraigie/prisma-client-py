@@ -1,10 +1,10 @@
-from prisma import Client
+from prisma import Prisma
 
 
 # TODO: more tests
 
 
-async def main(client: Client) -> None:
+async def main(client: Prisma) -> None:
     # case: missing args
     await client.post.update()  # E: Arguments missing for parameters "data", "where"
 

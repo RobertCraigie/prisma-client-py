@@ -27,18 +27,18 @@ The minimum code required to get starting using asyncio:
 
 ```py
 import asyncio
-from prisma import Client
+from prisma import Prisma
 
 async def main() -> None:
-    client = Client()
-    await client.connect()
+    db = Prisma()
+    await db.connect()
 
     # write your queries here
 
-    await client.disconnect()
+    await db.disconnect()
 
 if __name__ == '__main__':
-    asyncio.get_event_loop().run_until_complete(main())
+    asyncio.run(main())
 ```
 
 ## Synchronous client
@@ -57,15 +57,15 @@ generator client {
 The minimum code required to get starting using a synchronous client:
 
 ```py
-from prisma import Client
+from prisma import Prisma
 
 def main() -> None:
-    client = Client()
-    client.connect()
+    db = Prisma()
+    db.connect()
 
     # write your queries here
 
-    client.disconnect()
+    db.disconnect()
 
 if __name__ == '__main__':
     main()

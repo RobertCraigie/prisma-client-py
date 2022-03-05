@@ -1,4 +1,3 @@
-# pylint: disable=global-statement
 import os
 import sys
 import asyncio
@@ -8,12 +7,12 @@ from typing import List, Iterator, TYPE_CHECKING
 import pytest
 
 import prisma
-from prisma import Client
+from prisma import Prisma
 from prisma.cli import setup_logging
 from prisma.testing import reset_client
 from prisma.utils import get_or_create_event_loop
 
-from .utils import Runner, Testdir
+from .utils import Runner, Testdir, async_fixture
 
 
 if TYPE_CHECKING:
@@ -27,13 +26,15 @@ pytest_plugins = ['pytester']
 LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
 
 
-prisma.register(Client())
+prisma.register(Prisma())
 
 
-@pytest.fixture(name='client', scope='session')
-async def client_fixture() -> Client:
+@async_fixture(name='client', scope='session')
+async def client_fixture() -> Prisma:
     client = prisma.get_client()
-    await client.connect()
+    if not client.is_connected():  # pragma: no cover
+        await client.connect()
+
     await cleanup_client(client)
     return client
 
@@ -63,18 +64,20 @@ def testdir_fixture(testdir: 'PytestTestdir') -> Iterator[Testdir]:
 
 # TODO: don't emulate the with statement
 def pytest_sessionstart(session: pytest.Session) -> None:
-    LOGGING_CONTEXT_MANAGER.__enter__()  # pylint: disable=no-member
+    LOGGING_CONTEXT_MANAGER.__enter__()
 
 
 def pytest_sessionfinish(session: pytest.Session) -> None:
     if LOGGING_CONTEXT_MANAGER is not None:  # pragma: no branch
-        LOGGING_CONTEXT_MANAGER.__exit__(None, None, None)  # pylint: disable=no-member
+        LOGGING_CONTEXT_MANAGER.__exit__(None, None, None)
 
 
 def pytest_collection_modifyitems(
     session: pytest.Session, config: 'Config', items: List[pytest.Item]
 ) -> None:
-    items.sort(key=lambda item: item.__class__.__name__ == 'IntegrationTestItem')
+    items.sort(
+        key=lambda item: item.__class__.__name__ == 'IntegrationTestItem'
+    )
 
 
 @pytest.fixture(name='patch_prisma', autouse=True)
@@ -93,7 +96,7 @@ def patch_prisma_fixture(request: 'FixtureRequest') -> Iterator[None]:
             yield
 
 
-@pytest.fixture(name='setup_client', autouse=True)
+@async_fixture(name='setup_client', autouse=True)
 async def setup_client_fixture(request: 'FixtureRequest') -> None:
     if not request_has_client(request):
         return
@@ -117,7 +120,7 @@ def request_has_client(request: 'FixtureRequest') -> bool:
     )
 
 
-async def cleanup_client(client: Client) -> None:
+async def cleanup_client(client: Prisma) -> None:
     async with client.batch_() as batcher:
         for _, item in inspect.getmembers(batcher):
             if item.__class__.__name__.endswith('Actions'):

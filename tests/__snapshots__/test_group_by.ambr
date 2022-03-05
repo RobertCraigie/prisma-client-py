@@ -1,0 +1,318 @@
+# name: test_avg
+  <class 'list'> [
+    <class 'dict'> {
+      '_avg': <class 'dict'> {
+        'views': 700.0,
+      },
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      '_avg': <class 'dict'> {
+        'views': 250.0,
+      },
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_avg.1
+  <class 'list'> [
+    <class 'dict'> {
+      '_avg': <class 'dict'> {
+        'bigint': 0.0,
+        'integer': 4.5,
+      },
+      'string': '',
+    },
+  ]
+---
+# name: test_count
+  <class 'list'> [
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        '_all': 20,
+      },
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        '_all': 1,
+      },
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_count.1
+  <class 'list'> [
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        '_all': 20,
+      },
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        '_all': 1,
+      },
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_count.2
+  <class 'list'> [
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        'city': 8,
+      },
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        'city': 1,
+      },
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_count.3
+  <class 'list'> [
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        'city': 8,
+        'country': 20,
+      },
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        'city': 1,
+        'country': 1,
+      },
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_docs_example
+  <class 'list'> [
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        '_all': 1,
+        'city': 1,
+      },
+      '_sum': <class 'dict'> {
+        'views': 250,
+      },
+      'city': 'Edinburgh',
+      'country': 'Scotland',
+    },
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        '_all': 12,
+        'city': 0,
+      },
+      '_sum': <class 'dict'> {
+        'views': 6000,
+      },
+      'city': None,
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        '_all': 8,
+        'city': 8,
+      },
+      '_sum': <class 'dict'> {
+        'views': 8000,
+      },
+      'city': 'Copenhagen',
+      'country': 'Denmark',
+    },
+  ]
+---
+# name: test_group_by
+  <class 'list'> [
+    <class 'dict'> {
+      'name': 'Robert',
+    },
+    <class 'dict'> {
+      'name': 'Tegan',
+    },
+  ]
+---
+# name: test_group_by.1
+  <class 'list'> [
+    <class 'dict'> {
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_having_aggregation
+  <class 'list'> [
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        '_all': 20,
+      },
+      'country': 'Denmark',
+    },
+  ]
+---
+# name: test_having_aggregation.1
+  <class 'list'> [
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        '_all': 1,
+      },
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_having_aggregation_nested
+  <class 'list'> [
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        '_all': 1,
+      },
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_having_aggregation_nested.1
+  <class 'list'> [
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        '_all': 20,
+      },
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        '_all': 1,
+      },
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_having_aggregation_nested.2
+  <class 'list'> [
+    <class 'dict'> {
+      '_count': <class 'dict'> {
+        '_all': 20,
+      },
+      'country': 'Denmark',
+    },
+  ]
+---
+# name: test_max
+  <class 'list'> [
+    <class 'dict'> {
+      '_max': <class 'dict'> {
+        'views': 1000,
+      },
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      '_max': <class 'dict'> {
+        'views': 250,
+      },
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_min
+  <class 'list'> [
+    <class 'dict'> {
+      '_min': <class 'dict'> {
+        'views': 500,
+      },
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      '_min': <class 'dict'> {
+        'views': 250,
+      },
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_order[asc]
+  <class 'list'> [
+    <class 'dict'> {
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_order[desc]
+  <class 'list'> [
+    <class 'dict'> {
+      'country': 'Scotland',
+    },
+    <class 'dict'> {
+      'country': 'Denmark',
+    },
+  ]
+---
+# name: test_order_list
+  <class 'list'> [
+    <class 'dict'> {
+      'city': 'Copenhagen',
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      'city': None,
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      'city': 'Edinburgh',
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_skip[asc]
+  <class 'list'> [
+    <class 'dict'> {
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_skip[desc]
+  <class 'list'> [
+    <class 'dict'> {
+      'country': 'Denmark',
+    },
+  ]
+---
+# name: test_sum
+  <class 'list'> [
+    <class 'dict'> {
+      '_sum': <class 'dict'> {
+        'views': 14000,
+      },
+      'country': 'Denmark',
+    },
+    <class 'dict'> {
+      '_sum': <class 'dict'> {
+        'views': 250,
+      },
+      'country': 'Scotland',
+    },
+  ]
+---
+# name: test_take[asc]
+  <class 'list'> [
+    <class 'dict'> {
+      'country': 'Denmark',
+    },
+  ]
+---
+# name: test_take[desc]
+  <class 'list'> [
+    <class 'dict'> {
+      'country': 'Scotland',
+    },
+  ]
+---

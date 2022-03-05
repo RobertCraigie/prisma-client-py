@@ -1,0 +1,5 @@
+pyright>=1.1.225
+pytest==6.2.4
+
+# TODO: this should not be required
+pytest-asyncio==0.17.0

@@ -1,9 +1,9 @@
 import pytest
-from prisma import Client
+from prisma import Prisma
 
 
 @pytest.mark.asyncio
-async def test_filtering(client: Client) -> None:
+async def test_filtering(client: Prisma) -> None:
     """Finding records by a Boolean value"""
     async with client.batch_() as batcher:
         for i in range(10):

@@ -23,11 +23,8 @@ jobs:
     name: test
     runs-on: ubuntu-latest
     strategy:
-      # TODO: test more python versions
       matrix:
         include:
-          - python-version: 3.6
-            tox-env: py36
           - python-version: 3.7
             tox-env: py37
           - python-version: 3.8
@@ -38,10 +35,10 @@ jobs:
             tox-env: py310
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -92,10 +89,10 @@ jobs:
           - python-version: 3.9
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -123,10 +120,10 @@ jobs:
         python-version: [3.7]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -197,10 +194,10 @@ jobs:
           - 5432:5432
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -220,7 +217,7 @@ jobs:
 
       - name: Run tests
         run: |
-          tox -e setup,${{ matrix.tox-env }},report -- tests/integrations/postgresql
+          tox -e setup,${{ matrix.tox-env }},report -- --confcutdir . tests/integrations/postgresql
         env:
           PRISMA_PY_POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/postgres
 

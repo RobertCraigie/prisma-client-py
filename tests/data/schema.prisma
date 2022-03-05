@@ -25,11 +25,12 @@ model Post {
 }
 
 model User {
-  id      String   @id @default(cuid())
-  name    String
-  email   String?  @unique
-  posts   Post[]
-  profile Profile?
+  id         String   @id @default(cuid())
+  name       String
+  email      String?  @unique
+  created_at DateTime @default(now())
+  posts      Post[]
+  profile    Profile?
 }
 
 model Category {
@@ -39,10 +40,13 @@ model Category {
 }
 
 model Profile {
-  id      Int    @id @default(autoincrement())
-  user    User   @relation(fields: [user_id], references: [id])
-  user_id String @unique
+  id      Int     @id @default(autoincrement())
+  user    User    @relation(fields: [user_id], references: [id])
+  user_id String  @unique
   bio     String
+  city    String?
+  country String
+  views   Int     @default(0)
 }
 
 // model that just exists for testing different schema types

@@ -72,6 +72,8 @@ class Json(_PydanticJson):
 
 
 class Base64:
+    __slots__ = ('_raw',)
+
     def __init__(self, raw: bytes) -> None:
         self._raw = raw
 
@@ -80,7 +82,7 @@ class Base64:
         """Encode bytes into valid Base64"""
         return cls(base64.b64encode(value))
 
-    def decode(self, encoding: str = BASE64_ENCODING) -> bytes:
+    def decode(self) -> bytes:
         """Decode from Base64 to the original bytes object"""
         return base64.b64decode(self._raw)
 
