@@ -24,6 +24,21 @@ SCHEMA = '''
 {{ datamodel }}
 '''
 
+{% set itx_missing_doc = clean_multiline('''
+        Interactive transactions require a preview feature flag to be set.
+
+        If you would like to enable interactive transactions then you should modify
+        your client definition in your Prisma Schema file:
+
+        ```prisma
+        generator py {
+            provider = "prisma-client-py"
+            previewFeatures = ["interactiveTransactions"]
+        }
+        ```
+''')
+%}
+
 ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
 
 RegisteredClient = Union['Prisma', Callable[[], 'Prisma']]
@@ -298,7 +313,7 @@ class Prisma:
         return Batch(client=self)
 
     {% if 'interactiveTransactions' in generator.preview_features %}
-    def tx(self, *, max_wait:int = 2000, timeout: int = 5000) -> 'TransactionManager':
+    def tx(self, *, max_wait: int = 2000, timeout: int = 5000) -> 'TransactionManager':
         """Returns a context manager for executing queries within a transaction.
 
         Entering the context manager returns a new Prisma instance wrapping all
@@ -306,6 +321,17 @@ class Prisma:
         will not be commited to the database until the context manager exits.
         """
         return TransactionManager(client=self, max_wait=max_wait, timeout=timeout)
+    {% else %}
+    def tx(self, *, max_wait: int = ..., timeout: int = ...) -> NoReturn:
+        """
+        {{ itx_missing_doc }}
+        """
+        # TODO: fix formatting for this message.
+        raise RuntimeError(
+            '''
+            {{ itx_missing_doc }}
+            '''
+        )
     {% endif %}
 
     def is_transaction(self) -> bool:

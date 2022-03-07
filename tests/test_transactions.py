@@ -1,9 +1,11 @@
 import asyncio
+from typing import Optional
 
 import pytest
 
 import prisma
 from prisma import Prisma
+from prisma.models import User
 
 
 # TODO: more tests
@@ -19,7 +21,15 @@ async def test_context_manager(client: Prisma) -> None:
         assert await client.user.count() == 0
 
         await transaction.profile.create(
-            {'bio': 'Hello, there!', 'user_id': user.id}
+            {
+                'bio': 'Hello, there!',
+                'country': 'Scotland',
+                'user': {
+                    'connect': {
+                        'id': user.id,
+                    },
+                },
+            },
         )
 
     found = await client.user.find_unique(
@@ -33,12 +43,16 @@ async def test_context_manager(client: Prisma) -> None:
 
 @pytest.mark.asyncio
 async def test_context_manager_auto_rollback(client: Prisma) -> None:
+    user: Optional[User] = None
+
     with pytest.raises(RuntimeError) as exc:
         async with client.tx() as tx:
             user = await tx.user.create({'name': 'Tegan'})
             raise RuntimeError('Error ocurred mid transaction.')
 
     assert exc.match('Error ocurred mid transaction.')
+
+    assert user is not None
     found = await client.user.find_unique(where={'id': user.id})
     assert found is None
 
