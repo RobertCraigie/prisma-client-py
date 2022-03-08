@@ -1,6 +1,6 @@
 name: Publish to PyPi
 on:
-  pull_request:
+  push:
     branches:
       - refactor/publish
   workflow_dispatch:
