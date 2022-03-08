@@ -242,12 +242,14 @@ def cleanup_templates(
             file.unlink()
 
 
+# TODO: remove rootdir argument requirement when file is passed
 def render_template(
     rootdir: Path,
     name: str,
     params: Dict[str, Any],
     *,
     env: Optional[Environment] = None,
+    file: Optional[Path] = None,
 ) -> None:
     if env is None:
         env = DEFAULT_ENV
@@ -255,7 +257,9 @@ def render_template(
     template = env.get_template(name)
     output = template.render(**params)
 
-    file = resolve_template_path(rootdir=rootdir, name=name)
+    if file is None:
+        file = resolve_template_path(rootdir=rootdir, name=name)
+
     if not file.parent.exists():
         file.parent.mkdir(parents=True, exist_ok=True)
 

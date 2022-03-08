@@ -1,0 +1,160 @@
+datasource db {
+  provider = "postgres"
+  url      = env("PRISMA_PY_POSTGRESQL_URL")
+}
+
+generator py {
+  provider               = "prisma-client-py"
+  interface              = "asyncio"
+  recursive_type_depth   = -1
+}
+
+model Post {
+  id         String     @id @default(cuid())
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  title      String
+  published  Boolean
+  views      Int        @default(0)
+  desc       String?
+  author     User?      @relation(fields: [author_id], references: [id])
+  author_id  String?
+  categories Category[] @relation(references: [id])
+}
+
+model User {
+  id         String   @id @default(cuid())
+  name       String
+  email      String?  @unique
+  created_at DateTime @default(now())
+  posts      Post[]
+  profile    Profile?
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  posts Post[] @relation(references: [id])
+  name  String
+}
+
+model Profile {
+  id      Int     @id @default(autoincrement())
+  user    User    @relation(fields: [user_id], references: [id])
+  user_id String  @unique
+  bio     String
+  city    String?
+  country String
+  views   Int     @default(0)
+}
+
+// model that just exists for testing different schema types
+model Types {
+  id       Int      @id @default(autoincrement())
+  bool_    Boolean  @default(false)
+  string   String   @default("")
+  bytes    Bytes    @default("")
+  bigint   BigInt   @default(0)
+  integer  Int      @default(0)
+  float_   Float    @default(0)
+  datetime DateTime @default(now())
+  json_obj Json?    @default("{}")
+  enum     Role     @default(USER)
+}
+
+model Lists {
+  id           String     @id @default(cuid())
+  strings      String[]
+  bytes        Bytes[]
+  dates        DateTime[]
+  bools        Boolean[]
+  ints         Int[]
+  floats       Float[]
+  bigints      BigInt[]
+  json_objects Json[]
+  roles        Role[]
+}
+
+enum Role {
+  USER
+  ADMIN
+  EDITOR
+}
+
+model Unique1 {
+  name    String
+  surname String
+
+  @@unique([name, surname])
+}
+
+model Unique2 {
+  name    String
+  surname String @unique
+
+  @@unique([name, surname])
+}
+
+model Unique3 {
+  id      String @id @default(cuid())
+  name    String
+  surname String @unique
+
+  @@unique([name, surname])
+}
+
+model Unique4 {
+  name    String
+  surname String
+
+  @@unique([name, surname], name: "my_unique")
+}
+
+model Unique5 {
+  name       String
+  middlename String
+  surname    String
+
+  @@unique([name, middlename, surname])
+}
+
+model Unique6 {
+  name String
+  role Role
+
+  @@unique([name, role])
+}
+
+model Id1 {
+  name    String
+  surname String
+
+  @@id([name, surname])
+}
+
+model Id2 {
+  name    String
+  surname String @unique
+
+  @@id([name, surname])
+}
+
+model Id3 {
+  name    String
+  surname String
+
+  @@id([name, surname], name: "my_id")
+}
+
+model Id4 {
+  name       String
+  middlename String
+  surname    String
+
+  @@id([name, middlename, surname])
+}
+model Id5 {
+  name String
+  role Role
+
+  @@unique([name, role])
+}

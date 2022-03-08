@@ -1,0 +1,7 @@
+{% extends 'base/schema.prisma.jinja' %}
+{% block datasource %}
+datasource db {
+  provider = "postgres"
+  url      = env("PRISMA_PY_POSTGRESQL_URL")
+}
+{% endblock %}
