@@ -32,7 +32,7 @@ Prisma Client Python is a next-generation ORM built on top of [Prisma](https://g
 
 Prisma Client Python can be used in _any_ Python backend application. This can be a REST API, a GraphQL API or _anything_ else that needs a database.
 
-![GIF showcasing Prisma Client Python usage](./docs/showcase.gif)
+![GIF showcasing Prisma Client Python usage](https://raw.githubusercontent.com/RobertCraigie/prisma-client-py/main/docs/showcase.gif)
 
 ## Why should you use Prisma Client Python?
 
