@@ -1,0 +1,26 @@
+name: Publish to PyPi
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-pypi:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          pip install -U -r requirements/dev.txt
+
+      - name: Build Package
+        run: |
+          make package
+
+      - name: Upload to PyPi
+        run: |
+          twine upload --repository testpypi -u __token__ -p ${{ secrets.TESTPYPI_TOKEN }} dist/*

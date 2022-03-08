@@ -20,11 +20,6 @@ package:
 	python setup.py sdist bdist_wheel
 	sh scripts/check_pkg.sh
 
-. PHONE: release
-release:
-	sh scripts/check_pkg.sh
-	twine upload dist/*
-
 .PHONY: test
 test:
 	tox $(ARGS)
