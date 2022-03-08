@@ -1,8 +1,5 @@
 name: Publish to PyPi
 on:
-  push:
-    branches:
-      - refactor/publish
   workflow_dispatch:
 
 jobs:
@@ -26,4 +23,4 @@ jobs:
 
       - name: Upload to PyPi
         run: |
-          twine upload --repository testpypi -u __token__ -p ${{ secrets.TESTPYPI_TOKEN }} dist/*
+          twine upload -u __token__ -p ${{ secrets.PYPI_TOKEN }} dist/*
