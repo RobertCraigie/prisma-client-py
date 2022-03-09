@@ -69,6 +69,7 @@ nav:
       - Custom Generators: reference/custom-generators.md
       - Logging: reference/logging.md
       - Binaries: reference/binaries.md
+      - Switching Databases: reference/migrating-providers.md
   - Contributing:
       - How to Contribute: contributing/contributing.md
       - Architecture: contributing/architecture.md

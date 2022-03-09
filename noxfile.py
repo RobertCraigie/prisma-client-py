@@ -4,6 +4,7 @@ from typing import Set, Dict, Any
 from typing_extensions import TypedDict, Literal
 
 import nox
+from pydantic import BaseModel
 
 from prisma.generator import render_template
 from prisma.generator.models import raise_err
@@ -22,13 +23,21 @@ class Feature(Enum):
     case_sensitivity = auto()
 
 
+class Defaults(BaseModel):
+    case_sensitive_filtering: bool
+
+
 class DatabaseConfig(TypedDict):
     disable_features: Set[Feature]
+    defaults: Defaults
 
 
 CONFIG: Dict[str, DatabaseConfig] = {
     'postgresql': {
         'disable_features': set(),
+        'defaults': Defaults(
+            case_sensitive_filtering=True,
+        ),
     },
     'sqlite': {
         'disable_features': {
@@ -38,6 +47,9 @@ CONFIG: Dict[str, DatabaseConfig] = {
             Feature.create_many,
             Feature.case_sensitivity,
         },
+        'defaults': Defaults(
+            case_sensitive_filtering=False,
+        ),
     },
 }
 TEMPLATE_TO_FEATURE = {
