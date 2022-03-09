@@ -8,6 +8,7 @@ import pytest
 
 import prisma
 from prisma import Prisma
+from prisma.client import load_env
 from prisma.cli import setup_logging
 from prisma.testing import reset_client
 from prisma.utils import get_or_create_event_loop
