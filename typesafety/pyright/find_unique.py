@@ -1,7 +1,7 @@
-from prisma import Client
+from prisma import Prisma
 
 
-async def main(client: Client) -> None:
+async def main(client: Prisma) -> None:
     # case: missing arguments
     await client.user.find_unique()  # E: Argument missing for parameter "where"
     await client.user.find_unique(

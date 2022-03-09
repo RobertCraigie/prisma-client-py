@@ -1,9 +1,9 @@
 import asyncio
-from prisma import Client
+from prisma import Prisma
 
 
 async def main() -> None:
-    db = Client()
+    db = Prisma()
     await db.connect()
 
     post = await db.post.create(
@@ -23,4 +23,4 @@ async def main() -> None:
 
 
 if __name__ == '__main__':
-    asyncio.get_event_loop().run_until_complete(main())
+    asyncio.run(main())

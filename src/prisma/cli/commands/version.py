@@ -46,7 +46,9 @@ def cli(output_json: bool) -> None:
 
     if output_json:
         click.echo(
-            json.dumps({k.replace(' ', '-'): v for k, v in info.items()}, indent=2)
+            json.dumps(
+                {k.replace(' ', '-'): v for k, v in info.items()}, indent=2
+            )
         )
     else:
         click.echo(pretty_info(info))

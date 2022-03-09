@@ -1,20 +1,19 @@
 import pytest
 import prisma
-from prisma import Client
+from prisma import Prisma
+from prisma.models import User, Types
+
+from .utils import async_fixture
 
 
-# TODO: update persist_data stuff, some tests shouldn't have it
-
-
-@pytest.fixture(scope='module', name='user_id')
-async def user_id_fixture(client: Client) -> str:
+@async_fixture(name='user_id')
+async def user_id_fixture(client: Prisma) -> str:
     user = await client.user.create({'name': 'Robert'})
     return user.id
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
-async def test_update(client: Client) -> None:
+async def test_update(client: Prisma) -> None:
     """Standard usage"""
     post = await client.post.create(
         {
@@ -47,13 +46,14 @@ async def test_update(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
 @pytest.mark.parametrize('method', ['disconnect', 'delete'])
 async def test_update_with_create_disconnect(
-    client: Client, user_id: str, method: str
+    client: Prisma, user_id: str, method: str
 ) -> None:
     """Removing a relational field"""
-    user = await client.user.find_unique(where={'id': user_id}, include={'posts': True})
+    user = await client.user.find_unique(
+        where={'id': user_id}, include={'posts': True}
+    )
     assert user is not None
     assert len(user.posts) == 0  # pyright: reportGeneralTypeIssues=false
 
@@ -85,8 +85,7 @@ async def test_update_with_create_disconnect(
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
-async def test_atomic_update(client: Client) -> None:
+async def test_atomic_update(client: Prisma) -> None:
     """Atomically incrementing a value by 1"""
     post = await client.post.create({'title': 'My Post', 'published': False})
     assert post.title == 'My Post'
@@ -100,8 +99,7 @@ async def test_atomic_update(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
-async def test_update_record_not_found(client: Client) -> None:
+async def test_update_record_not_found(client: Prisma) -> None:
     """Updating a non-existent record returns None"""
     post = await client.post.update(
         where={'id': 'wow'}, data={'title': 'Hi from Update!'}
@@ -110,8 +108,7 @@ async def test_update_record_not_found(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
-async def test_setting_field_to_null(client: Client) -> None:
+async def test_setting_field_to_null(client: Prisma) -> None:
     """Updating a field to None sets the database record to None"""
     post = await client.post.create(
         data={
@@ -134,8 +131,7 @@ async def test_setting_field_to_null(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.persist_data
-async def test_setting_non_nullable_field_to_null(client: Client) -> None:
+async def test_setting_non_nullable_field_to_null(client: Prisma) -> None:
     """Attempting to set a non-nullable field to null raises an error"""
     post = await client.post.create(
         data={
@@ -154,3 +150,69 @@ async def test_setting_non_nullable_field_to_null(client: Client) -> None:
         )
 
     assert exc.match(r'published')
+
+
+@pytest.mark.prisma
+@pytest.mark.asyncio
+async def test_update_id_field() -> None:
+    """Setting an ID field"""
+    user = await User.prisma().create(
+        data={
+            'name': 'Robert',
+        },
+    )
+    updated = await User.prisma().update(
+        where={
+            'id': user.id,
+        },
+        data={
+            'id': 'abcd123',
+        },
+    )
+    assert updated is not None
+    assert updated.id == 'abcd123'
+
+
+@pytest.mark.prisma
+@pytest.mark.asyncio
+async def test_update_id_field_atomic() -> None:
+    """Setting an ID field atomically"""
+    record = await Types.prisma().create({})
+    updated = await Types.prisma().update(
+        where={
+            'id': record.id,
+        },
+        data={
+            'id': {
+                'increment': 500,
+            },
+        },
+    )
+    assert updated is not None
+    assert updated.id == record.id + 500
+
+
+@pytest.mark.prisma
+@pytest.mark.asyncio
+async def test_update_unique_field() -> None:
+    """Setting a unique field"""
+    user = await User.prisma().create(
+        data={
+            'name': 'Robert',
+            'email': 'robert@craigie.dev',
+        },
+    )
+    email = user.email
+    assert email is not None
+
+    updated = await User.prisma().update(
+        where={
+            'email': email,
+        },
+        data={
+            'email': 'foo@gmail.com',
+        },
+    )
+    assert updated is not None
+    assert updated.id == user.id
+    assert updated.email == 'foo@gmail.com'

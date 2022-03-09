@@ -37,10 +37,13 @@ model Category {
 }
 
 model Profile {
-  id      Int    @id @default(autoincrement())
-  user    User   @relation(fields: [user_id], references: [id])
-  user_id String @unique
+  id      Int     @id @default(autoincrement())
+  user    User    @relation(fields: [user_id], references: [id])
+  user_id String  @unique
   bio     String
+  city    String?
+  country String?
+  views   Int     @default(0)
 }
 
 // models that just exists for testing different schema types

@@ -1,16 +1,16 @@
 from typing import Optional
 
-from prisma import Client, register, get_client
+from prisma import Prisma, register, get_client
 from prisma.models import Url
 from hashids import Hashids
 from flask import Flask, render_template, request, flash, redirect, url_for, g
 
 
-def get_db() -> Client:
+def get_db() -> Prisma:
     try:
         return g.db
     except AttributeError:
-        g.db = db = Client()
+        g.db = db = Prisma()
         db.connect()
         return db
 
@@ -84,5 +84,7 @@ def stats():
             'clicks': 'desc',
         }
     )
-    short_urls = {url.id: request.host_url + hashids.encode(url.id) for url in urls}
+    short_urls = {
+        url.id: request.host_url + hashids.encode(url.id) for url in urls
+    }
     return render_template('stats.html', urls=urls, short_urls=short_urls)

@@ -1,7 +1,7 @@
-from prisma import Client, Base64
+from prisma import Prisma, Base64
 
 
-async def filtering(client: Client) -> None:
+async def filtering(client: Prisma) -> None:
     # case: all valid filter fields
     await client.types.find_first(
         where={

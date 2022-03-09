@@ -1,4 +1,5 @@
-tox==3.24.0
-wheel==0.37.0
-black==21.11b1
-pre-commit==2.15.0
+tox==3.24.5
+wheel==0.37.1
+blue==0.8.0
+pre-commit==2.17.0
+twine==3.8.0

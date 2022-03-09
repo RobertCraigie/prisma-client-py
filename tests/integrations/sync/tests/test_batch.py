@@ -1,9 +1,9 @@
 import pytest
 import prisma
-from prisma import Client
+from prisma import Prisma
 
 
-def test_base_usage(client: Client) -> None:
+def test_base_usage(client: Prisma) -> None:
     """Basic non context manager usage"""
     batcher = client.batch_()
     batcher.user.create({'name': 'Robert'})
@@ -19,7 +19,7 @@ def test_base_usage(client: Client) -> None:
     assert user.name == 'Tegan'
 
 
-def test_context_manager(client: Client) -> None:
+def test_context_manager(client: Prisma) -> None:
     """Basic usage with a context manager"""
     with client.batch_() as batcher:
         batcher.user.create({'name': 'Robert'})
@@ -34,7 +34,7 @@ def test_context_manager(client: Client) -> None:
     assert user.name == 'Tegan'
 
 
-def test_batch_error(client: Client) -> None:
+def test_batch_error(client: Prisma) -> None:
     """Error while committing does not commit any records"""
     with pytest.raises(prisma.errors.UniqueViolationError) as exc:
         batcher = client.batch_()
@@ -46,7 +46,7 @@ def test_batch_error(client: Client) -> None:
     assert client.user.count() == 0
 
 
-def test_context_manager_error(client: Client) -> None:
+def test_context_manager_error(client: Prisma) -> None:
     """Error exiting context manager does not commit any records"""
     with pytest.raises(prisma.errors.UniqueViolationError) as exc:
         with client.batch_() as batcher:
@@ -57,7 +57,7 @@ def test_context_manager_error(client: Client) -> None:
     assert client.user.count() == 0
 
 
-def test_commit(client: Client) -> None:
+def test_commit(client: Prisma) -> None:
     """Commits created records"""
     with client.batch_() as batcher:
         batcher.user.create({'name': 'Robert'})

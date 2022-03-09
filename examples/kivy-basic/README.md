@@ -1,4 +1,4 @@
-# Baic Kivy Example
+# Basic Kivy Example
 
 This example uses [Kivy](https://kivy.org/) along with [KivyMD](https://kivymd.readthedocs.io/en/latest/) to create a very basic app to store and list names of users.
 

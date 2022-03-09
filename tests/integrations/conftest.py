@@ -41,7 +41,10 @@ def is_integration_test_file(local_path: LocalPath) -> bool:
     if len(path.parts) != 4:  # pragma: no cover
         return False
 
-    return path.parts[:2] == ('tests', 'integrations') and path.parts[-1] == 'test.sh'
+    return (
+        path.parts[:2] == ('tests', 'integrations')
+        and path.parts[-1] == 'test.sh'
+    )
 
 
 def pytest_ignore_collect(path: LocalPath, config: Config) -> Optional[bool]:
@@ -74,7 +77,11 @@ def pytest_ignore_collect(path: LocalPath, config: Config) -> Optional[bool]:
 def pytest_collect_file(
     path: LocalPath, parent: Node
 ) -> Optional['IntegrationTestFile']:
-    if path.ext == '.sh' and is_integration_test_file(path) and sys.platform != 'win32':
+    if (
+        path.ext == '.sh'
+        and is_integration_test_file(path)
+        and sys.platform != 'win32'
+    ):
         return IntegrationTestFile.from_parent(parent, fspath=path)
 
     return None
@@ -87,7 +94,12 @@ def create_wheels() -> None:
         shutil.rmtree(str(dist))
 
     result = subprocess.run(
-        [sys.executable, 'setup.py', 'bdist_wheel', '--dist-dir=.tests_cache/dist'],
+        [
+            sys.executable,
+            'setup.py',
+            'bdist_wheel',
+            '--dist-dir=.tests_cache/dist',
+        ],
         check=False,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,

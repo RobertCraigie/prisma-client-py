@@ -1,16 +1,16 @@
-from prisma import Client
+from prisma import Prisma
 
 
 # TODO: more tests
 
 
-async def main(client: Client) -> None:
+async def main(client: Prisma) -> None:
     # case: no arguments
     total = await client.post.count()
     reveal_type(total)  # T: int
 
 
-async def select(client: Client) -> None:
+async def select(client: Prisma) -> None:
     # case: None
     total = await client.post.count(select=None)
     reveal_type(total)  # T: int

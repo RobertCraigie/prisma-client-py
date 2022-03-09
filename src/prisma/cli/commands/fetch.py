@@ -15,4 +15,6 @@ def cli(force: bool) -> None:
         binaries.remove_all()
 
     directory = binaries.ensure_cached()
-    click.echo(f'Downloaded binaries to {click.style(str(directory), fg="green")}')
+    click.echo(
+        f'Downloaded binaries to {click.style(str(directory), fg="green")}'
+    )

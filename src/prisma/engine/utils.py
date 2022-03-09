@@ -10,7 +10,7 @@ from typing import NoReturn, Dict, Type, Any
 from . import errors
 from .. import errors as prisma_errors
 
-from ..http import Response
+from ..http_abstract import AbstractResponse
 from ..utils import time_since
 from ..binaries import GLOBAL_TEMP_DIR, ENGINE_VERSION, platform
 
@@ -20,6 +20,7 @@ ERROR_MAPPING: Dict[str, Type[Exception]] = {
     'P2002': prisma_errors.UniqueViolationError,
     'P2010': prisma_errors.RawQueryError,
     'P2012': prisma_errors.MissingRequiredValueError,
+    'P2019': prisma_errors.InputError,
     'P2021': prisma_errors.TableNotFoundError,
     'P2025': prisma_errors.RecordNotFoundError,
 }
@@ -78,7 +79,9 @@ def ensure() -> Path:
     log.debug('Using query engine version %s', version)
 
     if force_version and version != ENGINE_VERSION:
-        raise errors.MismatchedVersionsError(expected=ENGINE_VERSION, got=version)
+        raise errors.MismatchedVersionsError(
+            expected=ENGINE_VERSION, got=version
+        )
 
     log.debug('Using query engine at %s', file)
     log.debug('Ensuring query engine took: %s', time_since(start_time))
@@ -94,7 +97,7 @@ def get_open_port() -> int:
     return int(port)
 
 
-def handle_response_errors(resp: Response, data: Any) -> NoReturn:
+def handle_response_errors(resp: AbstractResponse[Any], data: Any) -> NoReturn:
     for error in data:
         try:
             user_facing = error.get('user_facing_error', {})
@@ -106,7 +109,8 @@ def handle_response_errors(resp: Response, data: Any) -> NoReturn:
             if exc is not None:
                 raise exc(error)
 
-            if 'A value is required but not set' in user_facing.get('message', ''):
+            message = user_facing.get('message', '')
+            if 'A value is required but not set' in message:
                 raise prisma_errors.MissingRequiredValueError(error)
         except (KeyError, TypeError):
             continue
