@@ -23,7 +23,7 @@ class PrismaError(Exception):
 class ClientNotRegisteredError(PrismaError):
     def __init__(self) -> None:
         super().__init__(
-            'No client instance registered; You must call prisma.register(prisma.Client())'
+            'No client instance registered; You must call prisma.register(prisma.Prisma())'
         )
 
 
@@ -82,7 +82,9 @@ class MissingRequiredValueError(DataError):
 class RawQueryError(DataError):
     def __init__(self, data: Any):
         try:
-            super().__init__(data, message=data['user_facing_error']['meta']['message'])
+            super().__init__(
+                data, message=data['user_facing_error']['meta']['message']
+            )
         except KeyError:
             super().__init__(data)
 

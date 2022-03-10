@@ -18,7 +18,6 @@ from .utils import (
     copy_tree,
     is_same_path,
     resolve_template_path,
-    resolve_original_file,
 )
 from .. import __version__
 from ..utils import DEBUG_GENERATOR
@@ -42,9 +41,6 @@ GENERIC_GENERATOR_NAME = 'prisma.generator.generator.GenericGenerator'
 
 # set of templates that should be rendered after every other template
 DEFERRED_TEMPLATES = {'partials.py.jinja'}
-
-# set of templates that override existing modules
-OVERRIDING_TEMPLATES = {'http.py.jinja'}
 
 DEFAULT_ENV = Environment(
     trim_blocks=True,
@@ -112,10 +108,14 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
                 )
             elif request.method == 'generate':
                 if request.params is None:  # pragma: no cover
-                    raise RuntimeError('Prisma JSONRPC did not send data to generate.')
+                    raise RuntimeError(
+                        'Prisma JSONRPC did not send data to generate.'
+                    )
 
                 if DEBUG_GENERATOR:
-                    _write_debug_data('params', json.dumps(request.params, indent=2))
+                    _write_debug_data(
+                        'params', json.dumps(request.params, indent=2)
+                    )
 
                 data = self.data_class.parse_obj(request.params)
 
@@ -160,7 +160,9 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
 
         args = get_args(typ)
         if not args:
-            raise RuntimeError(f'Could not resolve generic arguments from type: {typ}')
+            raise RuntimeError(
+                f'Could not resolve generic arguments from type: {typ}'
+            )
 
         model = args[0]
         if not issubclass(model, BaseModel):
@@ -184,13 +186,13 @@ class Generator(GenericGenerator[PythonData]):
             f'{Generator} cannot be subclassed, maybe you meant {BaseGenerator}?'
         )
 
-    def get_manifest(self) -> Manifest:  # pylint: disable=no-self-use
+    def get_manifest(self) -> Manifest:
         return Manifest(
             name=f'Prisma Client Python (v{__version__})',
             default_output=BASE_PACKAGE_DIR,
         )
 
-    def generate(self, data: PythonData) -> None:  # pylint: disable=no-self-use
+    def generate(self, data: PythonData) -> None:
         config = data.generator.config
         rootdir = Path(data.generator.output.value)
         if not rootdir.exists():
@@ -223,25 +225,19 @@ class Generator(GenericGenerator[PythonData]):
             cleanup_templates(rootdir, env=DEFAULT_ENV)
             raise
 
-        log.debug('Finished generating the prisma python client')
+        log.debug('Finished generating Prisma Client Python')
 
 
-def cleanup_templates(rootdir: Path, *, env: Optional[Environment] = None) -> None:
+def cleanup_templates(
+    rootdir: Path, *, env: Optional[Environment] = None
+) -> None:
     """Revert module to pre-generation state"""
     if env is None:
         env = DEFAULT_ENV
 
     for name in env.list_templates():
         file = resolve_template_path(rootdir=rootdir, name=name)
-        original = resolve_original_file(file)
-        if original.exists():
-            if file.exists():
-                log.debug('Removing overridden template at %s', file)
-                file.unlink()
-
-            log.debug('Renaming file at %s to %s', original, file)
-            original.rename(file)
-        elif file.exists() and name not in OVERRIDING_TEMPLATES:
+        if file.exists():
             log.debug('Removing rendered template at %s', file)
             file.unlink()
 
@@ -262,12 +258,6 @@ def render_template(
     file = resolve_template_path(rootdir=rootdir, name=name)
     if not file.parent.exists():
         file.parent.mkdir(parents=True, exist_ok=True)
-
-    if name in OVERRIDING_TEMPLATES and file.exists():
-        original = resolve_original_file(file)
-        if not original.exists():
-            log.debug('Making backup of %s', file)
-            file.rename(original)
 
     file.write_bytes(output.encode(sys.getdefaultencoding()))
     log.debug('Rendered template to %s', file.absolute())

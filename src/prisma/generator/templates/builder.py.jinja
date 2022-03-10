@@ -29,6 +29,7 @@ from ._constants import QUERY_BUILDER_ALIASES
 log: logging.Logger = logging.getLogger(__name__)
 
 ChildType = Union['AbstractNode', str]
+ITERABLES: Tuple[Type[Any], ...] = (list, tuple, set)
 
 
 DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
@@ -70,6 +71,15 @@ class QueryBuilder:
 
     # list of fields to select
     root_selection: Optional[List[str]]
+
+    __slots__ = (
+        'method',
+        'operation',
+        'model',
+        'include',
+        'arguments',
+        'root_selection',
+    )
 
     def __init__(
         self,
@@ -172,12 +182,21 @@ class QueryBuilder:
             alias = QUERY_BUILDER_ALIASES.get(key, key)
             if isinstance(value, dict):
                 transformed[alias] = self._transform_aliases(arguments=value)
+            elif isinstance(value, ITERABLES):
+                # it is safe to map any iterable type to a list here as it is only being used
+                # to serialise the query and we only officially support lists anyway
+                transformed[alias] = [
+                    self._transform_aliases(data) if isinstance(data, dict) else data  # type: ignore
+                    for data in value
+                ]
             else:
                 transformed[alias] = value
         return transformed
 
 
 class AbstractNode(ABC):
+    __slots__ = ()
+
     @abstractmethod
     def render(self) -> Optional[str]:
         """Render the node to a string
@@ -201,6 +220,13 @@ class Node(AbstractNode):
     indent: str
     builder: QueryBuilder
     children: List[ChildType]
+
+    __slots__ = (
+        'joiner',
+        'indent',
+        'builder',
+        'children',
+    )
 
     def __init__(
         self,
@@ -302,6 +328,9 @@ class RootNode(Node):
         <children>
     }
     """
+
+    __slots__ = ()
+
     {% raw %}
     def enter(self) -> str:
         return f'{self.builder.operation} {{'
@@ -333,6 +362,9 @@ class ResultNode(Node):
     result: executeRaw
         <children>
     """
+
+    __slots__ = ()
+
     def __init__(self, indent: str = '', **kwargs: Any) -> None:
         super().__init__(indent=indent, **kwargs)
 
@@ -369,6 +401,8 @@ class Arguments(Node):
     """
     arguments: Dict[str, Any]
 
+    __slots__ = ('arguments',)
+
     def __init__(self, arguments: Dict[str, Any], **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.arguments = arguments
@@ -394,7 +428,7 @@ class Arguments(Node):
                 children.append(
                     Key(arg, node=Data.create(self.builder, data=value))
                 )
-            elif isinstance(value, (list, tuple, set)):
+            elif isinstance(value, ITERABLES):
                 # NOTE: we have a special case for execute_raw and query_raw
                 # here as prisma expects parameters to be passed as a json string
                 # value like "[\"John\",\"123\"]", and we encode twice to ensure
@@ -421,6 +455,8 @@ class Data(Node):
     }
     """
     data: Mapping[str, Any]
+
+    __slots__ = ('data',)
 
     def __init__(
         self,
@@ -456,6 +492,8 @@ class Data(Node):
 
 class ListNode(Node):
     data: Iterable[Any]
+
+    __slots__ = ('data',)
 
     def __init__(self, data: Iterable[Any], joiner: str = ',\n', **kwargs: Any) -> None:
         super().__init__(joiner=joiner, **kwargs)
@@ -521,6 +559,12 @@ class Selection(Node):
     model: Optional[str]
     include: Optional[Dict[str, Any]]
     root_selection: Optional[List[str]]
+
+    __slots__ = (
+        'model',
+        'include',
+        'root_selection',
+    )
 
     def __init__(
         self,
@@ -616,6 +660,12 @@ class Key(AbstractNode):
     key: str
     sep: str
     node: Node
+
+    __slots__ = (
+        'key',
+        'sep',
+        'node',
+    )
 
     def __init__(self, key: str, node: Node, sep: str = ': ') -> None:
         self.key = key

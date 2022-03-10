@@ -4,7 +4,15 @@ import logging
 import builtins
 import operator
 from configparser import ConfigParser
-from typing import Optional, Callable, Dict, Any, Union, Type as TypingType, cast
+from typing import (
+    Optional,
+    Callable,
+    Dict,
+    Any,
+    Union,
+    Type as TypingType,
+    cast,
+)
 
 from mypy.options import Options
 from mypy.errorcodes import ErrorCode
@@ -55,6 +63,12 @@ CONFIGFILE_KEY = 'prisma-mypy'
 log: logging.Logger = logging.getLogger(__name__)
 
 
+# due to the way the mypy API is typed we unfortunately have to disable Pyright type checks
+# this is because mypy type hints are written like this: `Bogus[str]` instead of `str`
+# mypy uses internal magic to transform Bogus[T] to T which pyright cannot understand.
+# pyright: reportGeneralTypeIssues=false, reportUnnecessaryComparison=false
+
+
 def plugin(version: str) -> TypingType[Plugin]:
     return PrismaPlugin
 
@@ -70,11 +84,10 @@ class PrismaPluginConfig:
         plugin_config = ConfigParser()
         plugin_config.read(options.config_file)
         for key in self.__slots__:
-            setting = plugin_config.getboolean(CONFIGFILE_KEY, key, fallback=True)
+            setting = plugin_config.getboolean(
+                CONFIGFILE_KEY, key, fallback=True
+            )
             setattr(self, key, setting)
-
-
-# pylint: disable=no-self-use
 
 
 class PrismaPlugin(Plugin):
@@ -141,7 +154,7 @@ class PrismaPlugin(Plugin):
         try:
             include = self.parse_expression_to_dict(include_expr)
             new_model = self.modify_model_from_include(model_type, include)
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception as exc:
             log.debug(
                 'Ignoring %s exception while parsing include: %s',
                 type(exc).__name__,
@@ -153,7 +166,7 @@ class PrismaPlugin(Plugin):
                 # TODO: add more details
                 # e.g. "include" to "find_unique" of "UserActions"
                 if isinstance(exc, UnparsedExpression):
-                    err_ctx = exc.context  # pylint: disable=no-member
+                    err_ctx = exc.context
                 else:
                     err_ctx = include_expr
 
@@ -167,7 +180,9 @@ class PrismaPlugin(Plugin):
 
         if is_optional:
             actual_ret = cast(UnionType, actual_ret)
-            modified_ret = self.copy_modified_optional_type(actual_ret, new_model)
+            modified_ret = self.copy_modified_optional_type(
+                actual_ret, new_model
+            )
         else:
             modified_ret = new_model  # type: ignore
 
@@ -235,7 +250,9 @@ class PrismaPlugin(Plugin):
 
         return new
 
-    def get_arg_named(self, name: str, ctx: MethodContext) -> Optional[Expression]:
+    def get_arg_named(
+        self, name: str, ctx: MethodContext
+    ) -> Optional[Expression]:
         """Return the expression for an argument."""
         # keyword arguments
         for i, names in enumerate(ctx.arg_names):
@@ -262,7 +279,9 @@ class PrismaPlugin(Plugin):
         return bool(typ.type.fullname == 'typing.Coroutine')
 
     def is_list_type(self, typ: Type) -> bool:
-        return isinstance(typ, Instance) and typ.type.fullname == 'builtins.list'
+        return (
+            isinstance(typ, Instance) and typ.type.fullname == 'builtins.list'
+        )
 
     def is_dict_call_type(self, expr: NameExpr) -> bool:
         # statically wise, TypedDicts do not inherit from dict
@@ -285,13 +304,17 @@ class PrismaPlugin(Plugin):
         new.type.metaclass_type = instance.type.metaclass_type
         return new
 
-    def copy_modified_optional_type(self, original: UnionType, typ: Type) -> UnionType:
+    def copy_modified_optional_type(
+        self, original: UnionType, typ: Type
+    ) -> UnionType:
         new = copy.copy(original)
         new.items = new.items.copy()
         new.items[0] = typ
         return new
 
-    def parse_expression_to_dict(self, expression: Expression) -> Dict[Any, Any]:
+    def parse_expression_to_dict(
+        self, expression: Expression
+    ) -> Dict[Any, Any]:
         if isinstance(expression, DictExpr):
             return self._dictexpr_to_dict(expression)
 
@@ -315,7 +338,9 @@ class PrismaPlugin(Plugin):
 
         return parsed
 
-    def _callexpr_to_dict(self, expr: CallExpr, strict: bool = True) -> Dict[str, Any]:
+    def _callexpr_to_dict(
+        self, expr: CallExpr, strict: bool = True
+    ) -> Dict[str, Any]:
         if not isinstance(expr.callee, NameExpr):
             raise TypeError(
                 f'Expected CallExpr.callee to be a NameExpr but got {type(expr.callee)} instead.'
@@ -386,9 +411,9 @@ ERROR_PARSING = ErrorCode('prisma-parsing', 'Unable to parse', 'Prisma')
 def error_unable_to_parse(
     api: CheckerPluginInterface, context: Context, detail: str
 ) -> None:
-    link = 'https://github.com/RobertCraigie/prisma-client-py/issues/new/choose'
-    full_message = f'The prisma mypy plugin was unable to parse: {detail}\n'
-    full_message += (
-        f'Please consider reporting this bug at {link} so we can try to fix it!'
+    link = (
+        'https://github.com/RobertCraigie/prisma-client-py/issues/new/choose'
     )
+    full_message = f'The prisma mypy plugin was unable to parse: {detail}\n'
+    full_message += f'Please consider reporting this bug at {link} so we can try to fix it!'
     api.fail(full_message, context, code=ERROR_PARSING)

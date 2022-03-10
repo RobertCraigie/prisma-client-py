@@ -1,7 +1,7 @@
 import os
 
 import pytest
-from prisma import Client, load_env
+from prisma import Prisma, load_env
 
 from .utils import Testdir
 
@@ -28,10 +28,10 @@ def test_client_loads_dotenv(testdir: Testdir, name: str) -> None:
     """Initializing the client overrides os.environ variables"""
     make_env_file(testdir, name=name)
 
-    Client(use_dotenv=False)
+    Prisma(use_dotenv=False)
     assert ENV_KEY not in os.environ
 
-    Client()
+    Prisma()
     assert ENV_KEY in os.environ
 
 
