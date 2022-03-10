@@ -1,5 +1,5 @@
 pytest==7.0.1
 syrupy==1.7.4
 coverage==6.3.2
-pyright==1.1.227
+pyright==1.1.228
 pytest-asyncio==0.18.2

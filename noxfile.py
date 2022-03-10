@@ -61,12 +61,17 @@ TEMPLATE_TO_FEATURE = {
 }
 
 
-@nox.session
-def postgresql(session: nox.Session) -> None:
-    # TODO: ensure templates up to date
+def _setup_env(session: nox.Session) -> None:
     session.install('-r', 'databases/requirements.txt')
     session.install('.')
+    session.run('python', '-m', 'prisma_cleanup')
 
+
+@nox.session
+def postgresql(session: nox.Session) -> None:
+    _setup_env(session)
+
+    # TODO: ensure templates up to date
     with session.chdir('databases/postgresql'):
         session.run(
             'prisma', 'db', 'push', '--accept-data-loss', '--force-reset'
@@ -87,8 +92,7 @@ def postgresql(session: nox.Session) -> None:
 @nox.session
 def sqlite(session: nox.Session) -> None:
     # TODO: ensure templates up to date
-    session.install('-r', 'databases/requirements.txt')
-    session.install('.')
+    _setup_env(session)
 
     with session.chdir('databases/sqlite'):
         session.run(

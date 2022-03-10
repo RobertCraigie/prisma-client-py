@@ -1,9 +1,6 @@
-import pytest
 from prisma.models import User
 
 
-@pytest.mark.prisma
-@pytest.mark.asyncio
 async def test_include_many_order_by() -> None:
     """Including a 1-M relation and ordering it works
 
