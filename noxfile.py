@@ -7,7 +7,7 @@ import nox
 from pydantic import BaseModel
 
 from prisma.generator import render_template
-from prisma.generator.models import raise_err
+from prisma.generator.models import raise_err, clean_multiline
 from prisma.generator.utils import resolve_template_path
 
 
@@ -71,6 +71,9 @@ def _setup_env(session: nox.Session) -> None:
 def postgresql(session: nox.Session) -> None:
     _setup_env(session)
 
+    session.env['DEBUG'] = '*'
+    session.env['PRISMA_PY_DEBUG'] = '1'
+
     # TODO: ensure templates up to date
     with session.chdir('databases/postgresql'):
         session.run(
@@ -122,7 +125,12 @@ def databases(session: nox.Session) -> None:
 
 
 from pathlib import Path
-from jinja2 import Environment, FileSystemLoader, TemplateNotFound
+from jinja2 import (
+    Environment,
+    FileSystemLoader,
+    TemplateNotFound,
+    StrictUndefined,
+)
 
 
 def generate(target: Literal['postgresql', 'sqlite']) -> None:
@@ -136,6 +144,7 @@ def generate(target: Literal['postgresql', 'sqlite']) -> None:
     env = Environment(
         trim_blocks=True,
         lstrip_blocks=True,
+        undefined=StrictUndefined,
         keep_trailing_newline=True,
         loader=FileSystemLoader(Path.cwd() / 'templates'),
     )
@@ -145,10 +154,12 @@ def generate(target: Literal['postgresql', 'sqlite']) -> None:
         name: func
         for name, func in [
             ('raise_err', raise_err),
+            ('clean_multiline', clean_multiline),
             ('has_feature', partial(has_feature, config)),
         ]
     }
     params['config'] = config
+    params['db_name'] = target
 
     for template in env.list_templates():
         # TODO: cleanup

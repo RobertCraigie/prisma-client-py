@@ -241,7 +241,7 @@ async def test_create_many_unsupported(client: Prisma) -> None:
         async with client.batch_() as batcher:
             batcher.user.create_many([{'name': 'Robert'}])
 
-    assert exc.match(r'create_many\(\) is not supported by sqlite')
+    assert exc.match(r'create_many\(\) is not supported by {{ db_name }}')
 {% endif %}
 
 

@@ -1,0 +1,6 @@
+{% set unknown_table_query = clean_multiline('''
+            SELECT *
+        FROM bad_table;
+'''
+)%}
+{% include 'base/test_raw_queries.py.jinja' %}

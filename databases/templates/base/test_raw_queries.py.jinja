@@ -2,7 +2,8 @@ import pytest
 
 from prisma import errors, Prisma
 from prisma.models import Post, User
-from prisma.partials import PostOnlyPublished
+
+# from prisma.partials import PostOnlyPublished
 
 
 @pytest.mark.asyncio
@@ -10,8 +11,7 @@ async def test_query_raw(client: Prisma) -> None:
     """Standard usage, erroneous query and correct queries"""
     with pytest.raises(errors.RawQueryError):
         query = """
-            SELECT *
-            FROM bad_table;
+        {{ unknown_table_query }}
         """
         await client.query_raw(query)
 
@@ -24,7 +24,7 @@ async def test_query_raw(client: Prisma) -> None:
 
     query = """
         SELECT COUNT(*) as count
-        FROM Post
+        FROM "Post"
     """
     results = await client.query_raw(query)
     assert len(results) == 1
@@ -32,7 +32,7 @@ async def test_query_raw(client: Prisma) -> None:
 
     query = """
         SELECT *
-        FROM Post
+        FROM "Post"
         WHERE id = $1
     """
     results = await client.query_raw(query, post.id)
@@ -53,7 +53,7 @@ async def test_query_raw_model(client: Prisma) -> None:
 
     query = """
         SELECT *
-        FROM Post
+        FROM "Post"
         WHERE id = $1
     """
     posts = await client.query_raw(query, post.id, model=Post)
@@ -65,6 +65,7 @@ async def test_query_raw_model(client: Prisma) -> None:
     assert found.id == post.id
 
 
+@pytest.mark.skip
 @pytest.mark.asyncio
 async def test_query_raw_partial_model(client: Prisma) -> None:
     """Transforms results to a partial model"""
@@ -76,7 +77,7 @@ async def test_query_raw_partial_model(client: Prisma) -> None:
     ]
     query = """
         SELECT id, published
-        FROM Post
+        FROM "Post"
         WHERE published = 0
     """
     results = await client.query_raw(query, model=PostOnlyPublished)
@@ -94,7 +95,7 @@ async def test_query_raw_no_result(client: Prisma) -> None:
     """No result returns empty list"""
     query = """
         SELECT *
-        FROM Post
+        FROM "Post"
         WHERE id = 'sdldsd'
     """
     results = await client.query_raw(query)
@@ -109,7 +110,7 @@ async def test_query_raw_incorrect_params(client: Prisma) -> None:
     """Passings too many parameters raises an error"""
     query = """
         SELECT COUNT(*) as total
-        FROM Post
+        FROM "Post"
     """
     results = await client.query_raw(query)
     assert len(results) == 1
@@ -131,7 +132,7 @@ async def test_execute_raw(client: Prisma) -> None:
     assert isinstance(post.id, str)
 
     query = """
-        UPDATE Post
+        UPDATE "Post"
         SET title = 'My edited title'
         WHERE id = $1
     """
@@ -148,7 +149,7 @@ async def test_execute_raw(client: Prisma) -> None:
 async def test_execute_raw_no_result(client: Prisma) -> None:
     """No result returns 0"""
     query = """
-        UPDATE Post
+        UPDATE "Post"
         SET title = 'updated title'
         WHERE id = 'sdldsd'
     """
@@ -163,7 +164,7 @@ async def test_query_first(client: Prisma) -> None:
 
     query = """
         SELECT *
-        FROM User
+        FROM "User"
         WHERE User.id = ?
     """
     found = await client.query_first(query, user.id)
@@ -178,7 +179,7 @@ async def test_query_first_model(client: Prisma) -> None:
 
     query = """
         SELECT *
-        FROM User
+        FROM "User"
         WHERE User.id = ?
     """
     found = await client.query_first(query, user.id, model=User)

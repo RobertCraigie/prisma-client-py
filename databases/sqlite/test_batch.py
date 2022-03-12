@@ -218,7 +218,7 @@ async def test_delete_many(client: Prisma) -> None:
 
 
 async def test_create_many_unsupported(client: Prisma) -> None:
-    """Cannot call create_many as  does not support it"""
+    """Cannot call create_many as sqlite does not support it"""
     with pytest.raises(prisma.errors.UnsupportedDatabaseError) as exc:
         async with client.batch_() as batcher:
             batcher.user.create_many([{'name': 'Robert'}])
