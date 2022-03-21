@@ -47,7 +47,7 @@ GLOBAL_TEMP_DIR = (
 )
 
 # local file path for the prisma CLI
-if platform.name() == 'windows':  # pyright: reportConstantRedefinition=false
+if platform.name() == 'windows':
     PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}.exe'
 else:
-    PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}'
+    PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}'  # pyright: ignore[reportConstantRedefinition]

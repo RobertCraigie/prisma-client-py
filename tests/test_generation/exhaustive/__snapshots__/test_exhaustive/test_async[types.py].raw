@@ -972,7 +972,7 @@ class PostUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class PostUpsertInput(TypedDict):
     create: 'PostCreateInput'
-    update: 'PostUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'PostUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _Post_id_OrderByInput = TypedDict(
@@ -2131,7 +2131,7 @@ class UserUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class UserUpsertInput(TypedDict):
     create: 'UserCreateInput'
-    update: 'UserUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'UserUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _User_id_OrderByInput = TypedDict(
@@ -3422,7 +3422,7 @@ class MUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class MUpsertInput(TypedDict):
     create: 'MCreateInput'
-    update: 'MUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'MUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _M_id_OrderByInput = TypedDict(
@@ -4698,7 +4698,7 @@ class NUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class NUpsertInput(TypedDict):
     create: 'NCreateInput'
-    update: 'NUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'NUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _N_id_OrderByInput = TypedDict(
@@ -6012,7 +6012,7 @@ class OneOptionalUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class OneOptionalUpsertInput(TypedDict):
     create: 'OneOptionalCreateInput'
-    update: 'OneOptionalUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'OneOptionalUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _OneOptional_id_OrderByInput = TypedDict(
@@ -7280,7 +7280,7 @@ class ManyRequiredUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class ManyRequiredUpsertInput(TypedDict):
     create: 'ManyRequiredCreateInput'
-    update: 'ManyRequiredUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'ManyRequiredUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _ManyRequired_id_OrderByInput = TypedDict(
@@ -8564,7 +8564,7 @@ class ListsUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class ListsUpsertInput(TypedDict):
     create: 'ListsCreateInput'
-    update: 'ListsUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'ListsUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _Lists_id_OrderByInput = TypedDict(
@@ -9784,7 +9784,7 @@ class AUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class AUpsertInput(TypedDict):
     create: 'ACreateInput'
-    update: 'AUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'AUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _A_email_OrderByInput = TypedDict(
@@ -10988,7 +10988,7 @@ class BUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class BUpsertInput(TypedDict):
     create: 'BCreateInput'
-    update: 'BUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'BUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _B_id_OrderByInput = TypedDict(
@@ -12043,7 +12043,7 @@ class CUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class CUpsertInput(TypedDict):
     create: 'CCreateInput'
-    update: 'CUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'CUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _C_char_OrderByInput = TypedDict(
@@ -13152,7 +13152,7 @@ class DUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class DUpsertInput(TypedDict):
     create: 'DCreateInput'
-    update: 'DUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'DUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _D_id_OrderByInput = TypedDict(
@@ -14253,7 +14253,7 @@ class EUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class EUpsertInput(TypedDict):
     create: 'ECreateInput'
-    update: 'EUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'EUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _E_id_OrderByInput = TypedDict(

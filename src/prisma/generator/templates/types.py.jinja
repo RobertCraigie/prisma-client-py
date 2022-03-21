@@ -517,7 +517,7 @@ class {{ model.name }}UpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class {{ model.name }}UpsertInput(TypedDict):
     create: '{{ model.name }}CreateInput'
-    update: '{{ model.name }}UpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: '{{ model.name }}UpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 {{ render_type(model_schema.order_by) }}

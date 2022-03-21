@@ -109,9 +109,8 @@ def test_invalid_type_argument() -> None:
         def generate(self, data: Path) -> None:  # pragma: no cover
             return super().generate(data)
 
-    # TODO: pyright regression?
     with pytest.raises(TypeError) as exc:
-        MyGenerator().data_class  # pyright: reportGeneralTypeIssues=false
+        MyGenerator().data_class
 
     assert 'pathlib.Path' in exc.value.args[0]
     assert 'pydantic.main.BaseModel' in exc.value.args[0]
@@ -131,7 +130,7 @@ def test_generator_subclass_mismatch() -> None:
     """Attempting to subclass Generator instead of BaseGenerator raises an error"""
     with pytest.raises(TypeError) as exc:
 
-        class MyGenerator(Generator):  # pyright: reportUnusedClass=false
+        class MyGenerator(Generator):  # pyright: ignore[reportUnusedClass]
             ...
 
     message = exc.value.args[0]

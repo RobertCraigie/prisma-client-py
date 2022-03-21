@@ -83,9 +83,12 @@ async def test_find_unique_include(client: Prisma, user_id: str) -> None:
     )
     assert user is not None
     assert user.name == 'Robert'
-    assert len(user.posts) == 4  # pyright: reportGeneralTypeIssues=false
+    assert len(user.posts) == 4  # pyright: ignore[reportGeneralTypeIssues]
 
-    for i, post in enumerate(user.posts, start=1):
+    for i, post in enumerate(
+        user.posts,  # pyright: ignore[reportGeneralTypeIssues]
+        start=1,
+    ):
         assert post.author is None
         assert post.author_id == user.id
         assert post.title == f'Post {i}'
@@ -96,10 +99,17 @@ async def test_find_unique_include(client: Prisma, user_id: str) -> None:
 async def test_find_unique_include_take(client: Prisma, user_id: str) -> None:
     """Including a one-to-many relationship with take limits amount of returned models"""
     user = await client.user.find_unique(
-        where={'id': user_id}, include={'posts': {'take': 1}}
+        where={
+            'id': user_id,
+        },
+        include={
+            'posts': {
+                'take': 1,
+            },
+        },
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: reportGeneralTypeIssues=false
+    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
 
 
 @pytest.mark.asyncio
@@ -113,7 +123,7 @@ async def test_find_unique_include_where(
         include={'posts': {'where': {'created_at': posts[0].created_at}}},
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: reportGeneralTypeIssues=false
+    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
     assert user.posts[0].id == posts[0].id
 
 
@@ -130,7 +140,7 @@ async def test_find_unique_include_pagination(
         },
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: reportGeneralTypeIssues=false
+    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
     assert user.posts[0].id == posts[1].id
 
     user = await client.user.find_unique(
@@ -140,7 +150,7 @@ async def test_find_unique_include_pagination(
         },
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: reportGeneralTypeIssues=false
+    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
     assert user.posts[0].id == posts[0].id
 
 
@@ -161,7 +171,7 @@ async def test_find_unique_include_nested_where_or(
     assert user is not None
 
     assert posts[0].published is False
-    assert len(user.posts) == 3  # pyright: reportGeneralTypeIssues=false
+    assert len(user.posts) == 3  # pyright: ignore[reportGeneralTypeIssues]
 
     assert user.posts[0].id == posts[0].id
     assert user.posts[1].id == posts[1].id
