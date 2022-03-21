@@ -295,6 +295,10 @@ Prisma Client Python connects to the database and executes queries using Prisma'
 
 The Prisma CLI, which is written in TypeScript, is packaged into a single binary which is downloaded for you when you use Prisma Client Python. The CLI interface is the exact same as the standard [Prisma CLI](https://www.prisma.io/docs/reference/api-reference/command-reference).
 
+## Affiliation
+
+Prisma Client Python is *not* an official Prisma product although it is very generously sponsored by Prisma.
+
 ## Room for improvement
 
 Prisma Client Python is a new project and as such there are some features that are missing or incomplete.
