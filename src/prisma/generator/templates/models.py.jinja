@@ -222,7 +222,7 @@ class {{ model.name }}(BaseModel):
         {% endfor %}
     }
 {% else -%}
-    _{{ model.name }}_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
+    _{{ model.name }}_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
 {% endif %}
 _{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] = {
     {% for field in model.all_fields %}

@@ -138,7 +138,7 @@ async def test_order_mismatched_arguments(client: Prisma) -> None:
     with pytest.raises(prisma.errors.InputError) as exc:
         await client.profile.group_by(
             ['city'],
-            order={  # pyright: reportGeneralTypeIssues=false
+            order={
                 'country': 'asc',
             },
         )

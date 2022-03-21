@@ -19,7 +19,7 @@ DEBUG = _env_bool('PRISMA_PY_DEBUG')
 DEBUG_GENERATOR = _env_bool('PRISMA_PY_DEBUG_GENERATOR')
 
 
-class _NoneType:  # pyright: reportUnusedClass=false
+class _NoneType:  # pyright: ignore[reportUnusedClass]
     def __bool__(self) -> bool:
         return False
 

@@ -157,9 +157,7 @@ class IntegrationTestItem(pytest.Item):
 
 class IntegrationTestFile(pytest.File):
     @classmethod
-    def from_parent(
-        cls, *args: Any, **kwargs: Any
-    ) -> 'IntegrationTestFile':  # pyright: reportIncompatibleMethodOverride=false
+    def from_parent(cls, *args: Any, **kwargs: Any) -> 'IntegrationTestFile':
         return cast(
             IntegrationTestFile,
             super().from_parent(*args, **kwargs),  # type: ignore[no-untyped-call]

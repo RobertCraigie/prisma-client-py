@@ -390,7 +390,9 @@ class Config(BaseSettings):
         cls, value: Optional[str]
     ) -> Optional[Module]:
         try:
-            return Module(spec=value)  # pyright: reportGeneralTypeIssues=false
+            return Module(
+                spec=value  # pyright: ignore[reportGeneralTypeIssues]
+            )
         except ValueError:
             if value is None:
                 # no config value passed and the default location was not found

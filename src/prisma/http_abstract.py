@@ -89,7 +89,7 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
     @session.setter
     def session(
         self, value: Optional[Session]
-    ) -> None:  # pyright: reportPropertyTypeMismatch=false
+    ) -> None:  # pyright: ignore[reportPropertyTypeMismatch]
         self._session = value
 
     def should_close(self) -> bool:

@@ -99,7 +99,7 @@ def get_client() -> 'Prisma':
         return registered
 
     client = registered()
-    if not isinstance(client, Prisma):  # pyright: reportUnnecessaryIsInstance=false
+    if not isinstance(client, Prisma):  # pyright: ignore[reportUnnecessaryIsInstance]
         raise TypeError(
             f'Registered function returned {client} instead of a {Prisma} instance.'
         )

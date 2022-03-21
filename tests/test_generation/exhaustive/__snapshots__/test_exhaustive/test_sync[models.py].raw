@@ -1986,7 +1986,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = {
     },
 }
 
-_Lists_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
+_Lists_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
 _Lists_fields: Dict['types.ListsKeys', PartialModelField] = {
     'id': {
         'name': 'id',
@@ -2044,7 +2044,7 @@ _Lists_fields: Dict['types.ListsKeys', PartialModelField] = {
     },
 }
 
-_A_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
+_A_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
 _A_fields: Dict['types.AKeys', PartialModelField] = {
     'email': {
         'name': 'email',
@@ -2102,7 +2102,7 @@ _A_fields: Dict['types.AKeys', PartialModelField] = {
     },
 }
 
-_B_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
+_B_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
 _B_fields: Dict['types.BKeys', PartialModelField] = {
     'id': {
         'name': 'id',
@@ -2124,7 +2124,7 @@ _B_fields: Dict['types.BKeys', PartialModelField] = {
     },
 }
 
-_C_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
+_C_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
 _C_fields: Dict['types.CKeys', PartialModelField] = {
     'char': {
         'name': 'char',
@@ -2164,7 +2164,7 @@ _C_fields: Dict['types.CKeys', PartialModelField] = {
     },
 }
 
-_D_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
+_D_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
 _D_fields: Dict['types.DKeys', PartialModelField] = {
     'id': {
         'name': 'id',
@@ -2204,7 +2204,7 @@ _D_fields: Dict['types.DKeys', PartialModelField] = {
     },
 }
 
-_E_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
+_E_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
 _E_fields: Dict['types.EKeys', PartialModelField] = {
     'id': {
         'name': 'id',
