@@ -9,6 +9,7 @@ from importlib import machinery, util as importlib_util
 from importlib.abc import InspectLoader
 from contextvars import ContextVar
 from typing import (
+    TYPE_CHECKING,
     Any,
     Generic,
     Iterable,
@@ -61,6 +62,7 @@ ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float']
 
 TYPE_MAPPING = {
     'String': 'str',
+    'Bytes': "'fields.Base64'",
     'DateTime': 'datetime.datetime',
     'Boolean': 'bool',
     'Int': 'int',
@@ -82,13 +84,27 @@ FILTER_TYPES = [
 
 FAKER: Faker = Faker()
 
+
 ConfigT = TypeVar('ConfigT', bound=PydanticBaseModel)
 
+# Although we should just be able to access the config from the datamodel
+# we have to do some validation that requires access to the config, this is difficult
+# with heavily nested models as our current workaround only sets the datamodel context
+# post-validation meaning we cannot access it in validators. To get around this we have
+# a separate config context.
+# TODO: better solution
 data_ctx: ContextVar['AnyData'] = ContextVar('data_ctx')
+config_ctx: ContextVar['Config'] = ContextVar('config_ctx')
 
 
 def get_datamodel() -> 'Datamodel':
     return data_ctx.get().dmmf.datamodel
+
+
+# typed to ensure the caller has to handle the case where
+# a custom generator config is being used
+def get_config() -> Union[PydanticBaseModel, 'Config']:
+    return config_ctx.get()
 
 
 def get_list_types() -> Iterable[Tuple[str, str]]:
@@ -328,6 +344,19 @@ class Config(BaseSettings):
     partial_type_generator: Optional[Module] = None
     recursive_type_depth: int = FieldInfo(default=5)
     engine_type: EngineType = FieldInfo(default=EngineType.binary)
+
+    # this should be a list of experimental features
+    # https://github.com/prisma/prisma/issues/12442
+    enable_experimental_decimal: bool = FieldInfo(default=False)
+
+    # this seems to be the only good method for setting the contextvar.
+    # we do not expose this to type checkers so that the generated __init__
+    # signature is preserved.
+    if not TYPE_CHECKING:
+
+        def __init__(self, **kwargs: object) -> None:
+            super().__init__(**kwargs)
+            config_ctx.set(self)
 
     class Config(BaseSettings.Config):
         extra: Extra = Extra.forbid
@@ -613,6 +642,23 @@ class Field(BaseModel):
                 raise ValueError(f'Unsupported scalar field type: {type_}')
 
         return values
+
+    @validator('type')
+    @classmethod
+    def experimental_decimal_validator(cls, typ: str) -> str:
+        if typ == 'Decimal':
+            config = get_config()
+            if (
+                isinstance(config, Config)
+                and not config.enable_experimental_decimal
+            ):
+                raise ValueError(
+                    'Support for the Decimal type is experimental\n'
+                    '  As such you must set the `enable_experimental_decimal` config flag to true\n'
+                    '  for more information see: https://github.com/RobertCraigie/prisma-client-py/issues/106'
+                )
+
+        return typ
 
     @validator('name')
     @classmethod
