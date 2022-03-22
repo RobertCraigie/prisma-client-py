@@ -80,6 +80,7 @@ FILTER_TYPES = [
     'BigInt',
     'Float',
     'Json',
+    'Decimal',
 ]
 
 FAKER: Faker = Faker()

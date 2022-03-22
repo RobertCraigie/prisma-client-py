@@ -112,8 +112,7 @@ model Lists {
   floats       Float[]
   bigints      BigInt[]
   json_objects Json[]
-  // TODO
-  // decimals     Decimal[]
+  decimals     Decimal[]
 }
 
 enum ABeautifulEnum {
@@ -137,13 +136,11 @@ model A {
 }
 
 model B {
-  id      String @id @default(cuid())
-  float   Float  @db.Real
-  d_float Float  @db.DoublePrecision
-
-  // TODO
-  // decFloat Decimal @db.Decimal(2, 1)
-  // numFloat Decimal @db.Decimal(10, 6)
+  id       String  @id @default(cuid())
+  float    Float   @db.Real
+  d_float  Float   @db.DoublePrecision
+  decFloat Decimal @db.Decimal(2, 1)
+  numFloat Decimal @db.Decimal(10, 6)
 
   @@unique([float, d_float], name: "my_constraint")
 }
