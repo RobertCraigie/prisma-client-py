@@ -6,6 +6,7 @@
 
 # global imports for type checking
 import sys
+import decimal
 import datetime
 from typing import (
     TYPE_CHECKING,
@@ -900,6 +901,7 @@ class Lists(BaseModel):
     floats: List[float]
     bigints: List[int]
     json_objects: List['fields.Json']
+    decimals: List[decimal.Decimal]
 
     Config = Config
 
@@ -1112,6 +1114,8 @@ class B(BaseModel):
     id: str
     float: float
     d_float: float
+    decFloat: decimal.Decimal
+    numFloat: decimal.Decimal
 
     Config = Config
 
@@ -2042,6 +2046,12 @@ _Lists_fields: Dict['types.ListsKeys', PartialModelField] = {
         'optional': False,
         'type': 'List[\'fields.Json\']',
     },
+    'decimals': {
+        'name': 'decimals',
+        'is_list': True,
+        'optional': False,
+        'type': 'List[decimal.Decimal]',
+    },
 }
 
 _A_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
@@ -2121,6 +2131,18 @@ _B_fields: Dict['types.BKeys', PartialModelField] = {
         'is_list': False,
         'optional': False,
         'type': 'float',
+    },
+    'decFloat': {
+        'name': 'decFloat',
+        'is_list': False,
+        'optional': False,
+        'type': 'decimal.Decimal',
+    },
+    'numFloat': {
+        'name': 'numFloat',
+        'is_list': False,
+        'optional': False,
+        'type': 'decimal.Decimal',
     },
 }
 

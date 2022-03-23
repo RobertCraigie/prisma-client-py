@@ -1,5 +1,6 @@
-from datetime import datetime, timedelta
+from decimal import Decimal
 from typing import Any, List
+from datetime import datetime, timedelta
 
 import pytest
 from prisma import Prisma, Json, Base64
@@ -655,6 +656,69 @@ async def test_updating_enum(client: Prisma) -> None:
     )
     assert model is not None
     assert model.roles == [Role.ADMIN]
+
+
+@pytest.mark.asyncio
+async def test_updating_decimal(client: Prisma) -> None:
+    """Updating a Decimal[] value"""
+    models = [
+        await client.lists.create({}),
+        await client.lists.create(
+            data={
+                'decimals': [Decimal('22.99'), Decimal('30.01')],
+            },
+        ),
+    ]
+
+    model = await client.lists.update(
+        where={
+            'id': models[0].id,
+        },
+        data={
+            'decimals': {
+                'push': [Decimal('22.99'), Decimal('31')],
+            },
+        },
+    )
+    assert model is not None
+    assert model.decimals == [Decimal('22.99'), Decimal('31')]
+
+    model = await client.lists.update(
+        where={
+            'id': models[1].id,
+        },
+        data={
+            'decimals': {
+                'push': [Decimal('5')],
+            },
+        },
+    )
+    assert model is not None
+    assert model.decimals == [Decimal('22.99'), Decimal('30.01'), Decimal('5')]
+
+    model = await client.lists.update(
+        where={
+            'id': models[1].id,
+        },
+        data={
+            'decimals': {
+                'set': [Decimal('3')],
+            },
+        },
+    )
+    assert model is not None
+    assert model.decimals == [Decimal('3')]
+
+    model = await client.lists.update(
+        where={
+            'id': models[1].id,
+        },
+        data={
+            'decimals': [Decimal('7')],
+        },
+    )
+    assert model is not None
+    assert model.decimals == [Decimal('7')]
 
 
 @pytest.mark.asyncio
@@ -1504,6 +1568,100 @@ async def test_filtering_enums(client: Prisma) -> None:
     count = await client.lists.count(
         where={
             'roles': {
+                'is_empty': True,
+            },
+        },
+    )
+    assert count == 1
+
+
+@pytest.mark.asyncio
+async def test_filtering_decimal(client: Prisma) -> None:
+    """Searching for records by a Decimal[] value"""
+    async with client.batch_() as batcher:
+        batcher.lists.create({})
+        batcher.lists.create(
+            data={
+                'decimals': [],
+            },
+        )
+        batcher.lists.create(
+            data={
+                'decimals': [Decimal('1'), Decimal('2')],
+            },
+        )
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'equals': None,
+            },
+        },
+    )
+    assert model is not None
+    assert model.decimals == []
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'equals': [Decimal('1'), Decimal('2')],
+            },
+        },
+    )
+    assert model is not None
+    assert model.roles == [Decimal(1), Decimal(2)]
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'has': Decimal('1'),
+            },
+        },
+    )
+    assert model is not None
+    assert model.roles == [Decimal(1), Decimal(2)]
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'has': Decimal(3),
+            },
+        },
+    )
+    assert model is None
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'has_some': [Decimal(1), Decimal(3)],
+            },
+        },
+    )
+    assert model is not None
+    assert model.roles == [Decimal(1), Decimal(2)]
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'has_every': [Decimal(1), Decimal(2), Decimal(3)],
+            },
+        },
+    )
+    assert model is None
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'has_every': [Decimal(1)],
+            },
+        },
+    )
+    assert model is not None
+    assert model.roles == [Decimal(1), Decimal(2)]
+
+    count = await client.lists.count(
+        where={
+            'decimals': {
                 'is_empty': True,
             },
         },

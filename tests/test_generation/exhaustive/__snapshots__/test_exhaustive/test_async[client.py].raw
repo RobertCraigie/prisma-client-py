@@ -6,6 +6,7 @@
 
 # global imports for type checking
 import sys
+import decimal
 import datetime
 from typing import (
     TYPE_CHECKING,
@@ -56,10 +57,11 @@ datasource db {
 }
 
 generator db {
-  provider             = "prisma-client-py"
-  interface            = "asyncio"
-  recursive_type_depth = 3
-  output               = "../../../.tests_cache/generation/exhaustive/__prisma_async_output__/prisma"
+  provider                    = "prisma-client-py"
+  interface                   = "asyncio"
+  recursive_type_depth        = 3
+  output                      = "../../../.tests_cache/generation/exhaustive/__prisma_async_output__/prisma"
+  enable_experimental_decimal = true
 }
 
 model Post {
@@ -162,8 +164,7 @@ model Lists {
   floats       Float[]
   bigints      BigInt[]
   json_objects Json[]
-  // TODO
-  // decimals     Decimal[]
+  decimals     Decimal[]
 }
 
 enum ABeautifulEnum {
@@ -187,13 +188,11 @@ model A {
 }
 
 model B {
-  id      String @id @default(cuid())
-  float   Float  @db.Real
-  d_float Float  @db.DoublePrecision
-
-  // TODO
-  // decFloat Decimal @db.Decimal(2, 1)
-  // numFloat Decimal @db.Decimal(10, 6)
+  id       String  @id @default(cuid())
+  float    Float   @db.Real
+  d_float  Float   @db.DoublePrecision
+  decFloat Decimal @db.Decimal(2, 1)
+  numFloat Decimal @db.Decimal(10, 6)
 
   @@unique([float, d_float], name: "my_constraint")
 }

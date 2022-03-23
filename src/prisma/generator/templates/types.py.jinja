@@ -313,6 +313,34 @@ class JsonWithAggregatesFilter(JsonFilter, total=False):
     _count: 'IntFilter'
 
 
+{% call(name, next, iteration) recursive('DecimalFilter') %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': decimal.Decimal,
+        'not_in': List[decimal.Decimal],
+        'lt': decimal.Decimal,
+        'lte': decimal.Decimal,
+        'gt': decimal.Decimal,
+        'gte': decimal.Decimal,
+        'in': List[decimal.Decimal],
+        {%+ if next != '' -%}
+            'not': Union[decimal.Decimal, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
+{% endcall %}
+
+
+class DecimalWithAggregatesFilter(StringFilter, total=False):
+    _max: 'DecimalFilter'
+    _min: 'DecimalFilter'
+    _sum: 'DecimalFilter'
+    _avg: 'DecimalFilter'
+    _count: 'IntFilter'
+
+
 class _FloatSetInput(TypedDict):
     set: float
 

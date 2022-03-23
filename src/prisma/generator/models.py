@@ -9,6 +9,7 @@ from importlib import machinery, util as importlib_util
 from importlib.abc import InspectLoader
 from contextvars import ContextVar
 from typing import (
+    TYPE_CHECKING,
     Any,
     Generic,
     Iterable,
@@ -68,6 +69,7 @@ TYPE_MAPPING = {
     'Float': 'float',
     'BigInt': 'int',
     'Json': "'fields.Json'",
+    'Decimal': 'decimal.Decimal',
 }
 FILTER_TYPES = [
     'String',
@@ -78,17 +80,32 @@ FILTER_TYPES = [
     'BigInt',
     'Float',
     'Json',
+    'Decimal',
 ]
 
 FAKER: Faker = Faker()
 
+
 ConfigT = TypeVar('ConfigT', bound=PydanticBaseModel)
 
+# Although we should just be able to access the config from the datamodel
+# we have to do some validation that requires access to the config, this is difficult
+# with heavily nested models as our current workaround only sets the datamodel context
+# post-validation meaning we cannot access it in validators. To get around this we have
+# a separate config context.
+# TODO: better solution
 data_ctx: ContextVar['AnyData'] = ContextVar('data_ctx')
+config_ctx: ContextVar['Config'] = ContextVar('config_ctx')
 
 
 def get_datamodel() -> 'Datamodel':
     return data_ctx.get().dmmf.datamodel
+
+
+# typed to ensure the caller has to handle the case where
+# a custom generator config is being used
+def get_config() -> Union[PydanticBaseModel, 'Config']:
+    return config_ctx.get()
 
 
 def get_list_types() -> Iterable[Tuple[str, str]]:
@@ -328,6 +345,21 @@ class Config(BaseSettings):
     partial_type_generator: Optional[Module] = None
     recursive_type_depth: int = FieldInfo(default=5)
     engine_type: EngineType = FieldInfo(default=EngineType.binary)
+
+    # this should be a list of experimental features
+    # https://github.com/prisma/prisma/issues/12442
+    enable_experimental_decimal: bool = FieldInfo(default=False)
+
+    # this seems to be the only good method for setting the contextvar as
+    # we don't control the actual construction of the object like we do for
+    # the Data model.
+    # we do not expose this to type checkers so that the generated __init__
+    # signature is preserved.
+    if not TYPE_CHECKING:
+
+        def __init__(self, **kwargs: object) -> None:
+            super().__init__(**kwargs)
+            config_ctx.set(self)
 
     class Config(BaseSettings.Config):
         extra: Extra = Extra.forbid
@@ -616,6 +648,26 @@ class Field(BaseModel):
 
         return values
 
+    @validator('type')
+    @classmethod
+    def experimental_decimal_validator(cls, typ: str) -> str:
+        if typ == 'Decimal':
+            config = get_config()
+
+            # skip validating the experimental flag if we are
+            # being called from a custom generator
+            if (
+                isinstance(config, Config)
+                and not config.enable_experimental_decimal
+            ):
+                raise ValueError(
+                    'Support for the Decimal type is experimental\n'
+                    '  As such you must set the `enable_experimental_decimal` config flag to true\n'
+                    '  for more information see: https://github.com/RobertCraigie/prisma-client-py/issues/106'
+                )
+
+        return typ
+
     @validator('name')
     @classmethod
     def name_validator(cls, name: str) -> str:
@@ -836,6 +888,8 @@ class Field(BaseModel):
             return f"Json({{'{FAKER.string()}': True}})"
         elif typ == 'Bytes':
             return f"Base64.encode(b'{FAKER.string()}')"
+        elif typ == 'Decimal':
+            return f"Decimal('{FAKER.integer()}.{FAKER.integer() // 10000}')"
         else:  # pragma: no cover
             raise RuntimeError(f'Sample data not supported for {typ} yet')
 
