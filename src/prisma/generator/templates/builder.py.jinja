@@ -726,6 +726,12 @@ def serialize_base64(obj: fields.Base64) -> str:
     return str(obj)
 
 
+@serializer.register(decimal.Decimal)
+def serialize_decimal(obj: decimal.Decimal) -> str:
+    """Serialize a Decimal object to a string"""
+    return str(obj)
+
+
 def dumps(obj: Any, **kwargs: Any) -> str:
     kwargs.setdefault('default', serializer)
     kwargs.setdefault('ensure_ascii', False)

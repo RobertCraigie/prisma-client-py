@@ -110,34 +110,6 @@ def test_field_name_matching_query_builder_alias_not_allowed(
     ) in str(exc.value.output, 'utf-8')
 
 
-def test_unknown_type(testdir: Testdir) -> None:
-    """Unsupported scalar type is not allowed"""
-    # TODO: will have to remove this test eventually
-    schema = """
-        datasource db {{
-          provider = "postgres"
-          url      = env("POSTGRES_URL")
-        }}
-
-        generator db {{
-          provider = "coverage run -m prisma"
-          output = "{output}"
-          {options}
-        }}
-
-        model User {{
-            id   String @id
-            meta Decimal
-        }}
-    """
-    with pytest.raises(subprocess.CalledProcessError) as exc:
-        testdir.generate(schema=schema)
-
-    assert 'Unsupported scalar field type: Decimal' in str(
-        exc.value.output, 'utf-8'
-    )
-
-
 def test_native_binary_target_no_warning(testdir: Testdir) -> None:
     """binaryTargets only being native does not raise warning"""
     with temp_env_update({'PRISMA_PY_DEBUG': '0'}):
@@ -242,3 +214,24 @@ def test_compound_unique_constraint_implicit_field_shaddowing(
         'Please choose a different name. For example: \n'
         '  @@unique([name, surname], name: "my_custom_primary_key")'
     ) in str(exc.value.output, 'utf-8')
+
+
+def test_decimal_type_experimental(testdir: Testdir) -> None:
+    """The Decimal type requires a config flag to be set"""
+    schema = (
+        testdir.SCHEMA_HEADER
+        + """
+        model User {{
+          id     String @id @default(cuid())
+          points Decimal
+        }}
+    """
+    )
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    output = str(exc.value.output, 'utf-8')
+    assert 'Support for the Decimal type is experimental' in output
+    assert (
+        'set the `enable_experimental_decimal` config flag to true' in output
+    )

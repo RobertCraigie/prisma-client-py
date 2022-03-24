@@ -422,6 +422,34 @@ profile = await db.profile.find_first(
 )
 ```
 
+#### Decimal Fields
+
+```py
+from decimal import Decimal
+
+user = await db.user.find_first(
+    where={
+        'number': Decimal(1),
+        # or
+        'number': {
+            'equals': Decimal('1.23823923283'),
+            'in': [Decimal('1.3'), Decimal('5.6')],
+            'not_in': [Decimal(10), Decimal(20)],
+            'gte': Decimal(5),
+            'gt': Decimal(11),
+            'lt': Decimal(4),
+            'lte': Decimal(3),
+            'not': Decimal('123456.28'),
+            # or
+            'not': {
+                # recursive type
+                ...
+            }
+        },
+    },
+)
+```
+
 #### Lists fields
 
 !!! warning
