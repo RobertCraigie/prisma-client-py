@@ -1609,7 +1609,7 @@ async def test_filtering_decimal(client: Prisma) -> None:
         },
     )
     assert model is not None
-    assert model.roles == [Decimal(1), Decimal(2)]
+    assert model.decimals == [Decimal(1), Decimal(2)]
 
     model = await client.lists.find_first(
         where={
@@ -1619,7 +1619,7 @@ async def test_filtering_decimal(client: Prisma) -> None:
         },
     )
     assert model is not None
-    assert model.roles == [Decimal(1), Decimal(2)]
+    assert model.decimals == [Decimal(1), Decimal(2)]
 
     model = await client.lists.find_first(
         where={
@@ -1638,7 +1638,7 @@ async def test_filtering_decimal(client: Prisma) -> None:
         },
     )
     assert model is not None
-    assert model.roles == [Decimal(1), Decimal(2)]
+    assert model.decimals == [Decimal(1), Decimal(2)]
 
     model = await client.lists.find_first(
         where={
@@ -1657,7 +1657,7 @@ async def test_filtering_decimal(client: Prisma) -> None:
         },
     )
     assert model is not None
-    assert model.roles == [Decimal(1), Decimal(2)]
+    assert model.decimals == [Decimal(1), Decimal(2)]
 
     count = await client.lists.count(
         where={
