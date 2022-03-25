@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 from .._types import TypedDict
 
 
@@ -13,6 +13,7 @@ class PartialModelField(TypedDict):
     is_list: bool
     optional: bool
     type: str
+    documentation: Optional[str]
 
 
 PartialModelFields = Dict[str, PartialModelField]

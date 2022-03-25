@@ -89,12 +89,22 @@ def _maybe_warn_subclassing(new_model: str, base_model: str, *, stacklevel: int 
 
 
 class Post(BaseModel):
+    """Post model documentation
+    """
+
     id: int
     created_at: datetime.datetime
     title: str
     content: Optional[str]
     published: bool
+    """Has the post been made public yet?
+    """
+
     author: Optional['models.User']
+    """Relation to the User model
+    Second line comment with ' and "
+    """
+
     author_id: int
 
     Config = Config
@@ -218,6 +228,11 @@ class Post(BaseModel):
 
 
 class User(BaseModel):
+    """User model documentation
+
+    Third line comment
+    """
+
     id: int
     email: str
     int: int
@@ -353,6 +368,8 @@ class User(BaseModel):
 
 
 class M(BaseModel):
+    """Represents a M record"""
+
     id: int
     n: Optional[List['models.N']]
     int: int
@@ -487,6 +504,8 @@ class M(BaseModel):
 
 
 class N(BaseModel):
+    """Represents a N record"""
+
     id: int
     m: Optional[List['models.M']]
     int: int
@@ -623,6 +642,8 @@ class N(BaseModel):
 
 
 class OneOptional(BaseModel):
+    """Represents a OneOptional record"""
+
     id: int
     many: Optional[List['models.ManyRequired']]
     int: int
@@ -757,6 +778,8 @@ class OneOptional(BaseModel):
 
 
 class ManyRequired(BaseModel):
+    """Represents a ManyRequired record"""
+
     id: int
     one: Optional['models.OneOptional']
     one_optional_id: Optional[int]
@@ -892,6 +915,8 @@ class ManyRequired(BaseModel):
 
 
 class Lists(BaseModel):
+    """Represents a Lists record"""
+
     id: str
     strings: List[str]
     bytes: List['fields.Base64']
@@ -1004,6 +1029,8 @@ class Lists(BaseModel):
         return fields.Base64._internal_from_prisma(value)
 
 class A(BaseModel):
+    """Represents a A record"""
+
     email: str
     name: Optional[str]
     int: int
@@ -1111,6 +1138,8 @@ class A(BaseModel):
 
 
 class B(BaseModel):
+    """Represents a B record"""
+
     id: str
     float: float
     d_float: float
@@ -1214,6 +1243,8 @@ class B(BaseModel):
 
 
 class C(BaseModel):
+    """Represents a C record"""
+
     char: str
     v_char: str
     text: str
@@ -1318,6 +1349,8 @@ class C(BaseModel):
 
 
 class D(BaseModel):
+    """Represents a D record"""
+
     id: str
     bool: bool
     xml: str
@@ -1426,6 +1459,8 @@ class D(BaseModel):
         return fields.Base64._internal_from_prisma(value)
 
 class E(BaseModel):
+    """Represents a E record"""
+
     id: str
     date: datetime.datetime
     time: datetime.datetime
@@ -1537,42 +1572,50 @@ _Post_fields: Dict['types.PostKeys', PartialModelField] = {
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'created_at': {
         'name': 'created_at',
         'is_list': False,
         'optional': False,
         'type': 'datetime.datetime',
+        'documentation': None,
     },
     'title': {
         'name': 'title',
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'content': {
         'name': 'content',
         'is_list': False,
         'optional': True,
         'type': 'str',
+        'documentation': None,
     },
     'published': {
         'name': 'published',
         'is_list': False,
         'optional': False,
         'type': 'bool',
+        'documentation': '''Has the post been made public yet?''',
     },
     'author': {
         'name': 'author',
         'is_list': False,
         'optional': True,
         'type': 'models.User',
+        'documentation': '''Relation to the User model
+Second line comment with ' and "''',
     },
     'author_id': {
         'name': 'author_id',
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
 }
 
@@ -1585,78 +1628,91 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = {
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'email': {
         'name': 'email',
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'int': {
         'name': 'int',
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'optional_int': {
         'name': 'optional_int',
         'is_list': False,
         'optional': True,
         'type': 'int',
+        'documentation': None,
     },
     'float': {
         'name': 'float',
         'is_list': False,
         'optional': False,
         'type': 'float',
+        'documentation': None,
     },
     'optional_float': {
         'name': 'optional_float',
         'is_list': False,
         'optional': True,
         'type': 'float',
+        'documentation': None,
     },
     'string': {
         'name': 'string',
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'optional_string': {
         'name': 'optional_string',
         'is_list': False,
         'optional': True,
         'type': 'str',
+        'documentation': None,
     },
     'enum': {
         'name': 'enum',
         'is_list': False,
         'optional': False,
         'type': 'enums.ABeautifulEnum',
+        'documentation': None,
     },
     'optional_enum': {
         'name': 'optional_enum',
         'is_list': False,
         'optional': True,
         'type': 'enums.ABeautifulEnum',
+        'documentation': None,
     },
     'boolean': {
         'name': 'boolean',
         'is_list': False,
         'optional': False,
         'type': 'bool',
+        'documentation': None,
     },
     'optional_boolean': {
         'name': 'optional_boolean',
         'is_list': False,
         'optional': True,
         'type': 'bool',
+        'documentation': None,
     },
     'posts': {
         'name': 'posts',
         'is_list': True,
         'optional': True,
         'type': 'List[\'models.Post\']',
+        'documentation': None,
     },
 }
 
@@ -1669,72 +1725,84 @@ _M_fields: Dict['types.MKeys', PartialModelField] = {
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'n': {
         'name': 'n',
         'is_list': True,
         'optional': True,
         'type': 'List[\'models.N\']',
+        'documentation': None,
     },
     'int': {
         'name': 'int',
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'optional_int': {
         'name': 'optional_int',
         'is_list': False,
         'optional': True,
         'type': 'int',
+        'documentation': None,
     },
     'float': {
         'name': 'float',
         'is_list': False,
         'optional': False,
         'type': 'float',
+        'documentation': None,
     },
     'optional_float': {
         'name': 'optional_float',
         'is_list': False,
         'optional': True,
         'type': 'float',
+        'documentation': None,
     },
     'string': {
         'name': 'string',
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'optional_string': {
         'name': 'optional_string',
         'is_list': False,
         'optional': True,
         'type': 'str',
+        'documentation': None,
     },
     'enum': {
         'name': 'enum',
         'is_list': False,
         'optional': False,
         'type': 'enums.ABeautifulEnum',
+        'documentation': None,
     },
     'optional_enum': {
         'name': 'optional_enum',
         'is_list': False,
         'optional': True,
         'type': 'enums.ABeautifulEnum',
+        'documentation': None,
     },
     'boolean': {
         'name': 'boolean',
         'is_list': False,
         'optional': False,
         'type': 'bool',
+        'documentation': None,
     },
     'optional_boolean': {
         'name': 'optional_boolean',
         'is_list': False,
         'optional': True,
         'type': 'bool',
+        'documentation': None,
     },
 }
 
@@ -1747,84 +1815,98 @@ _N_fields: Dict['types.NKeys', PartialModelField] = {
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'm': {
         'name': 'm',
         'is_list': True,
         'optional': True,
         'type': 'List[\'models.M\']',
+        'documentation': None,
     },
     'int': {
         'name': 'int',
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'optional_int': {
         'name': 'optional_int',
         'is_list': False,
         'optional': True,
         'type': 'int',
+        'documentation': None,
     },
     'float': {
         'name': 'float',
         'is_list': False,
         'optional': False,
         'type': 'float',
+        'documentation': None,
     },
     'optional_float': {
         'name': 'optional_float',
         'is_list': False,
         'optional': True,
         'type': 'float',
+        'documentation': None,
     },
     'string': {
         'name': 'string',
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'optional_string': {
         'name': 'optional_string',
         'is_list': False,
         'optional': True,
         'type': 'str',
+        'documentation': None,
     },
     'json_': {
         'name': 'json_',
         'is_list': False,
         'optional': False,
         'type': 'fields.Json',
+        'documentation': None,
     },
     'optional_json': {
         'name': 'optional_json',
         'is_list': False,
         'optional': True,
         'type': 'fields.Json',
+        'documentation': None,
     },
     'enum': {
         'name': 'enum',
         'is_list': False,
         'optional': False,
         'type': 'enums.ABeautifulEnum',
+        'documentation': None,
     },
     'optional_enum': {
         'name': 'optional_enum',
         'is_list': False,
         'optional': True,
         'type': 'enums.ABeautifulEnum',
+        'documentation': None,
     },
     'boolean': {
         'name': 'boolean',
         'is_list': False,
         'optional': False,
         'type': 'bool',
+        'documentation': None,
     },
     'optional_boolean': {
         'name': 'optional_boolean',
         'is_list': False,
         'optional': True,
         'type': 'bool',
+        'documentation': None,
     },
 }
 
@@ -1837,72 +1919,84 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = {
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'many': {
         'name': 'many',
         'is_list': True,
         'optional': True,
         'type': 'List[\'models.ManyRequired\']',
+        'documentation': None,
     },
     'int': {
         'name': 'int',
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'optional_int': {
         'name': 'optional_int',
         'is_list': False,
         'optional': True,
         'type': 'int',
+        'documentation': None,
     },
     'float': {
         'name': 'float',
         'is_list': False,
         'optional': False,
         'type': 'float',
+        'documentation': None,
     },
     'optional_float': {
         'name': 'optional_float',
         'is_list': False,
         'optional': True,
         'type': 'float',
+        'documentation': None,
     },
     'string': {
         'name': 'string',
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'optional_string': {
         'name': 'optional_string',
         'is_list': False,
         'optional': True,
         'type': 'str',
+        'documentation': None,
     },
     'enum': {
         'name': 'enum',
         'is_list': False,
         'optional': False,
         'type': 'enums.ABeautifulEnum',
+        'documentation': None,
     },
     'optional_enum': {
         'name': 'optional_enum',
         'is_list': False,
         'optional': True,
         'type': 'enums.ABeautifulEnum',
+        'documentation': None,
     },
     'boolean': {
         'name': 'boolean',
         'is_list': False,
         'optional': False,
         'type': 'bool',
+        'documentation': None,
     },
     'optional_boolean': {
         'name': 'optional_boolean',
         'is_list': False,
         'optional': True,
         'type': 'bool',
+        'documentation': None,
     },
 }
 
@@ -1915,78 +2009,91 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = {
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'one': {
         'name': 'one',
         'is_list': False,
         'optional': True,
         'type': 'models.OneOptional',
+        'documentation': None,
     },
     'one_optional_id': {
         'name': 'one_optional_id',
         'is_list': False,
         'optional': True,
         'type': 'int',
+        'documentation': None,
     },
     'int': {
         'name': 'int',
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'optional_int': {
         'name': 'optional_int',
         'is_list': False,
         'optional': True,
         'type': 'int',
+        'documentation': None,
     },
     'float': {
         'name': 'float',
         'is_list': False,
         'optional': False,
         'type': 'float',
+        'documentation': None,
     },
     'optional_float': {
         'name': 'optional_float',
         'is_list': False,
         'optional': True,
         'type': 'float',
+        'documentation': None,
     },
     'string': {
         'name': 'string',
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'optional_string': {
         'name': 'optional_string',
         'is_list': False,
         'optional': True,
         'type': 'str',
+        'documentation': None,
     },
     'enum': {
         'name': 'enum',
         'is_list': False,
         'optional': False,
         'type': 'enums.ABeautifulEnum',
+        'documentation': None,
     },
     'optional_enum': {
         'name': 'optional_enum',
         'is_list': False,
         'optional': True,
         'type': 'enums.ABeautifulEnum',
+        'documentation': None,
     },
     'boolean': {
         'name': 'boolean',
         'is_list': False,
         'optional': False,
         'type': 'bool',
+        'documentation': None,
     },
     'optional_boolean': {
         'name': 'optional_boolean',
         'is_list': False,
         'optional': True,
         'type': 'bool',
+        'documentation': None,
     },
 }
 
@@ -1997,60 +2104,70 @@ _Lists_fields: Dict['types.ListsKeys', PartialModelField] = {
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'strings': {
         'name': 'strings',
         'is_list': True,
         'optional': False,
         'type': 'List[str]',
+        'documentation': None,
     },
     'bytes': {
         'name': 'bytes',
         'is_list': True,
         'optional': False,
         'type': 'List[\'fields.Base64\']',
+        'documentation': None,
     },
     'dates': {
         'name': 'dates',
         'is_list': True,
         'optional': False,
         'type': 'List[datetime.datetime]',
+        'documentation': None,
     },
     'bools': {
         'name': 'bools',
         'is_list': True,
         'optional': False,
         'type': 'List[bool]',
+        'documentation': None,
     },
     'ints': {
         'name': 'ints',
         'is_list': True,
         'optional': False,
         'type': 'List[int]',
+        'documentation': None,
     },
     'floats': {
         'name': 'floats',
         'is_list': True,
         'optional': False,
         'type': 'List[float]',
+        'documentation': None,
     },
     'bigints': {
         'name': 'bigints',
         'is_list': True,
         'optional': False,
         'type': 'List[int]',
+        'documentation': None,
     },
     'json_objects': {
         'name': 'json_objects',
         'is_list': True,
         'optional': False,
         'type': 'List[\'fields.Json\']',
+        'documentation': None,
     },
     'decimals': {
         'name': 'decimals',
         'is_list': True,
         'optional': False,
         'type': 'List[decimal.Decimal]',
+        'documentation': None,
     },
 }
 
@@ -2061,54 +2178,63 @@ _A_fields: Dict['types.AKeys', PartialModelField] = {
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'name': {
         'name': 'name',
         'is_list': False,
         'optional': True,
         'type': 'str',
+        'documentation': None,
     },
     'int': {
         'name': 'int',
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'sInt': {
         'name': 'sInt',
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'inc_int': {
         'name': 'inc_int',
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'inc_sInt': {
         'name': 'inc_sInt',
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'bInt': {
         'name': 'bInt',
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'inc_bInt': {
         'name': 'inc_bInt',
         'is_list': False,
         'optional': False,
         'type': 'int',
+        'documentation': None,
     },
     'enum': {
         'name': 'enum',
         'is_list': False,
         'optional': False,
         'type': 'enums.ABeautifulEnum',
+        'documentation': None,
     },
 }
 
@@ -2119,30 +2245,35 @@ _B_fields: Dict['types.BKeys', PartialModelField] = {
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'float': {
         'name': 'float',
         'is_list': False,
         'optional': False,
         'type': 'float',
+        'documentation': None,
     },
     'd_float': {
         'name': 'd_float',
         'is_list': False,
         'optional': False,
         'type': 'float',
+        'documentation': None,
     },
     'decFloat': {
         'name': 'decFloat',
         'is_list': False,
         'optional': False,
         'type': 'decimal.Decimal',
+        'documentation': None,
     },
     'numFloat': {
         'name': 'numFloat',
         'is_list': False,
         'optional': False,
         'type': 'decimal.Decimal',
+        'documentation': None,
     },
 }
 
@@ -2153,36 +2284,42 @@ _C_fields: Dict['types.CKeys', PartialModelField] = {
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'v_char': {
         'name': 'v_char',
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'text': {
         'name': 'text',
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'bit': {
         'name': 'bit',
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'v_bit': {
         'name': 'v_bit',
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'uuid': {
         'name': 'uuid',
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
 }
 
@@ -2193,36 +2330,42 @@ _D_fields: Dict['types.DKeys', PartialModelField] = {
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'bool': {
         'name': 'bool',
         'is_list': False,
         'optional': False,
         'type': 'bool',
+        'documentation': None,
     },
     'xml': {
         'name': 'xml',
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'json_': {
         'name': 'json_',
         'is_list': False,
         'optional': False,
         'type': 'fields.Json',
+        'documentation': None,
     },
     'jsonb': {
         'name': 'jsonb',
         'is_list': False,
         'optional': False,
         'type': 'fields.Json',
+        'documentation': None,
     },
     'binary': {
         'name': 'binary',
         'is_list': False,
         'optional': False,
         'type': 'fields.Base64',
+        'documentation': None,
     },
 }
 
@@ -2233,24 +2376,28 @@ _E_fields: Dict['types.EKeys', PartialModelField] = {
         'is_list': False,
         'optional': False,
         'type': 'str',
+        'documentation': None,
     },
     'date': {
         'name': 'date',
         'is_list': False,
         'optional': False,
         'type': 'datetime.datetime',
+        'documentation': None,
     },
     'time': {
         'name': 'time',
         'is_list': False,
         'optional': False,
         'type': 'datetime.datetime',
+        'documentation': None,
     },
     'ts': {
         'name': 'ts',
         'is_list': False,
         'optional': False,
         'type': 'datetime.datetime',
+        'documentation': None,
     },
 }
 

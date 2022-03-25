@@ -64,16 +64,25 @@ generator db {
   enable_experimental_decimal = true
 }
 
+/// Post model documentation
 model Post {
   id         Int      @id @default(autoincrement())
   created_at DateTime @default(now())
   title      String
   content    String?
-  published  Boolean  @default(false)
-  author     User     @relation(fields: [author_id], references: [id])
-  author_id  Int
+
+  /// Has the post been made public yet?
+  published Boolean @default(false)
+
+  /// Relation to the User model
+  /// Second line comment with ' and "
+  author    User @relation(fields: [author_id], references: [id])
+  author_id Int
 }
 
+/// User model documentation
+///
+/// Third line comment
 model User {
   id               Int             @id @default(autoincrement())
   email            String          @unique
