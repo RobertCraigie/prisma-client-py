@@ -1,6 +1,7 @@
 import os
 import sys
 import enum
+import textwrap
 import importlib
 from pathlib import Path
 from keyword import iskeyword
@@ -148,6 +149,33 @@ def type_as_string(typ: str) -> str:
     return typ
 
 
+def format_documentation(doc: str, indent: int = 4) -> str:
+    """Format a schema comment by indenting nested lines, e.g.
+
+        '''Foo
+    Bar'''
+
+    Becomes
+
+        '''Foo
+        Bar
+        '''
+    """
+    if not doc:
+        # empty string, nothing to do
+        return doc
+
+    prefix = ' ' * indent
+    first, *rest = doc.splitlines()
+    return '\n'.join(
+        [
+            first,
+            *[textwrap.indent(line, prefix) for line in rest],
+            prefix,
+        ]
+    )
+
+
 def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
     assert spec.origin is not None, 'Cannot serialize module with no origin'
     return spec.origin
@@ -266,11 +294,12 @@ class GenericData(GenericModel, Generic[ConfigT]):
 
         # add utility functions
         for func in [
-            get_list_types,
             sql_param,
-            clean_multiline,
             raise_err,
             type_as_string,
+            get_list_types,
+            clean_multiline,
+            format_documentation,
         ]:
             params[func.__name__] = func
 
@@ -481,6 +510,7 @@ class EnumValue(BaseModel):
 
 class Model(BaseModel):
     name: str
+    documentation: Optional[str] = None
     db_name: Optional[str] = FieldInfo(alias='dbName')
     is_generated: bool = FieldInfo(alias='isGenerated')
     compound_primary_key: Optional['PrimaryKey'] = FieldInfo(
@@ -609,6 +639,7 @@ class UniqueIndex(Constraint):
 
 class Field(BaseModel):
     name: str
+    documentation: Optional[str] = None
 
     # TODO: switch to enums
     kind: str

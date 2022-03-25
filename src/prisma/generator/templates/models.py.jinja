@@ -62,6 +62,12 @@ def _maybe_warn_subclassing(new_model: str, base_model: str, *, stacklevel: int 
 
 {% for model in dmmf.datamodel.models %}
 class {{ model.name }}(BaseModel):
+    {% if model.documentation is none %}
+    """Represents a {{ model.name }} record"""
+    {% else %}
+    """{{ format_documentation(model.documentation) }}"""
+    {% endif %}
+
     {% for field in model.all_fields %}
     {{ field.name }}:
             {%- if field.is_required and not field.relation_name -%}
@@ -69,6 +75,10 @@ class {{ model.name }}(BaseModel):
             {% else -%}
                 {{ ' ' }}Optional[{{ field.python_type }}]
             {% endif %}
+    {% if not field.documentation is none %}
+    """{{ format_documentation(field.documentation) }}"""
+
+    {% endif %}
     {% endfor %}
 
     Config = Config
@@ -231,6 +241,7 @@ _{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] 
         'is_list': {{ field.is_list }},
         'optional': {{ field.is_optional }},
         'type': {{ field.python_type_as_string }},
+        'documentation': {% if field.documentation is none %}None{% else %}'''{{ field.documentation }}'''{% endif %},
     },
     {% endfor %}
 }
