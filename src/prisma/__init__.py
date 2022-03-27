@@ -36,6 +36,7 @@ except ModuleNotFoundError:
             try:
                 return globals()[name]
             except KeyError:
+                # TODO: support checking for 'models' here too
                 if name in {'Prisma', 'Client'}:
                     # TODO: remove this frame from the stack trace
                     raise RuntimeError(
