@@ -240,9 +240,7 @@ class Testdir:
         return self.testdir.runpytest('-p', 'no:sugar', *args, **kwargs)
 
     def runpython_c(self, command: str) -> 'RunResult':
-        result = self.testdir.runpython_c(command)
-        assert isinstance(result, RunResult)
-        return result
+        return self.testdir.runpython_c(command)  # type: ignore
 
     @contextlib.contextmanager
     def redirect_stdout_to_file(
