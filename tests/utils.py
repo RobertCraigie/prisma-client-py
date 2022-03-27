@@ -28,6 +28,8 @@ from click.testing import CliRunner, Result
 
 from prisma.cli import main
 from prisma._types import FuncType
+from prisma.generator.utils import copy_tree
+from prisma.generator.generator import BASE_PACKAGE_DIR
 
 
 if TYPE_CHECKING:
@@ -176,6 +178,16 @@ class Testdir:
         else:
             self.makefile(ext, source)
 
+    def copy_pkg(self, clean: bool = True) -> None:
+        path = self.path / 'prisma'
+        copy_tree(BASE_PACKAGE_DIR, path)
+
+        if clean:
+            result = self.runpython_c(
+                'import prisma_cleanup; prisma_cleanup.cleanup()'
+            )
+            assert result.ret == 0
+
     def generate(
         self, schema: Optional[str] = None, options: str = '', **extra: Any
     ) -> 'subprocess.CompletedProcess[bytes]':
@@ -226,6 +238,9 @@ class Testdir:
     ) -> 'RunResult':
         # pytest-sugar breaks result parsing
         return self.testdir.runpytest('-p', 'no:sugar', *args, **kwargs)
+
+    def runpython_c(self, command: str) -> 'RunResult':
+        return self.testdir.runpython_c(command)
 
     @contextlib.contextmanager
     def redirect_stdout_to_file(
