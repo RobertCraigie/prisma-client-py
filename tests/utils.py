@@ -182,7 +182,7 @@ class Testdir:
         path = self.path / 'prisma'
         copy_tree(BASE_PACKAGE_DIR, path)
 
-        if clean:
+        if clean:  # pragma: no branch
             result = self.runpython_c(
                 'import prisma_cleanup; prisma_cleanup.cleanup()'
             )
