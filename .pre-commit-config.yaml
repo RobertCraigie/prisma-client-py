@@ -13,6 +13,7 @@ repos:
       rev: v4.0.1
       hooks:
           - id: check-yaml
+            args: ['--unsafe']
           - id: check-toml
           - id: check-vcs-permalinks
           - id: end-of-file-fixer

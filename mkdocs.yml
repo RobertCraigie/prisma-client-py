@@ -25,6 +25,8 @@ theme:
   features:
     - navigation.tabs
     - navigation.tabs.sticky
+    - toc.follow
+    - content.tabs.link
   logo: "logo.svg"
   favicon: "favicon.png"
   font:
@@ -34,12 +36,19 @@ theme:
 markdown_extensions:
   - pymdownx.highlight:
       use_pygments: false
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
   - pymdownx.extra
   - pymdownx.tabbed
   - pymdownx.details
   - pymdownx.snippets
   - pymdownx.superfences
   - admonition
+  - meta
+  - attr_list
+  - md_in_html
+
 
 extra_javascript:
   - https://unpkg.com/shiki@0.9.6
