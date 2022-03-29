@@ -34,7 +34,7 @@ ENGINE_URL = os.environ.get(
 
 # versions can be found under https://github.com/prisma/prisma-engine/commits/master
 ENGINE_VERSION = os.environ.get(
-    'PRISMA_ENGINE_VERSION', 'e210a2181b57ca56592cf598ed55bdb21a38a9d2'
+    'PRISMA_ENGINE_VERSION', '1a2506facaf1a4727b7c26850735e88ec779dee9'
 )
 
 # where the binaries live
