@@ -12,8 +12,7 @@ def cli() -> None:
     """Commands for developing Prisma Client Python"""
 
 
-# TODO: why does mypy not like this?
-@cli.command()  # type: ignore[misc]
+@cli.command()
 @options.schema
 @options.skip_generate
 def playground(schema: Optional[str], skip_generate: bool) -> None:
