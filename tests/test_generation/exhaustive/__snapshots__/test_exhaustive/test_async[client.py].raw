@@ -41,6 +41,7 @@ from .generator.models import EngineType
 
 __all__ = (
     'ENGINE_TYPE',
+    'Batch',
     'Prisma',
     'Client',
     'load_env',
