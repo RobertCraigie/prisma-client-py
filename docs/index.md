@@ -301,16 +301,20 @@ Prisma Client Python is *not* an official Prisma product although it is very gen
 
 ## Room for improvement
 
-Prisma Client Python is a new project and as such there are some features that are missing or incomplete.
+Prisma Client Python is a fairly new project and as such there are some features that are missing or incomplete.
 
 ### Auto completion for query arguments
 
-Prisma Client Python query arguments make use of `TypedDict` types. While there is very limited support for completion of these types within the Python ecosystem some editors do support it.
+Prisma Client Python query arguments make use of `TypedDict` types. Support for completion of these types within the Python ecosystem is now fairly widespread. This section is only here for documenting support.
 
 Supported editors / extensions:
 
 - VSCode with [pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance) v2021.9.4 or higher
-- Sublime Text with [LSP-Pyright](https://github.com/sublimelsp/LSP-pyright) v1.1.96 or higher
+- Sublime Text with [LSP-Pyright](https://github.com/sublimelsp/LSP-pyright) v1.1.196 or higher
+- PyCharm [2022.1 EAP 3](https://youtrack.jetbrains.com/articles/PY-A-233537928/PyCharm-2022.1-EAP-3-(221.4994.44-build)-Release-Notes) or higher
+- Any editor that supports the Language Server Protocol and has an extension supporting Pyright v1.1.196 or higher
+    - vim and neovim with [coc.nvim](https://github.com/fannheyward/coc-pyright)
+    - [emacs](https://github.com/emacs-lsp/lsp-pyright)
 
 ```py
 user = await db.user.find_first(
