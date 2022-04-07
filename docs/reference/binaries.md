@@ -9,7 +9,7 @@ Prisma Client Python *should* automatically download the correct binaries for yo
 - Clone the prisma-engines repository at the current version that the python client supports:
 
 ```
-git clone https://github.com/prisma/prisma-engines --branch=3.11.1
+git clone https://github.com/prisma/prisma-engines --branch=3.12.0
 ```
 
 - Build the binaries following the steps found [here](https://github.com/prisma/prisma-engines#building-prisma-engines)
