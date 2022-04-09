@@ -225,7 +225,7 @@ class Generator(GenericGenerator[PythonData]):
             cleanup_templates(rootdir, env=DEFAULT_ENV)
             raise
 
-        log.debug('Finished generating the prisma python client')
+        log.debug('Finished generating Prisma Client Python')
 
 
 def cleanup_templates(

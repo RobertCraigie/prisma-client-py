@@ -1,7 +1,6 @@
 import sys
 import subprocess
 from pathlib import Path
-from typing import Iterator
 
 import pytest
 from jinja2 import Environment, FileSystemLoader
@@ -14,36 +13,10 @@ from prisma.generator import (
     render_template,
     cleanup_templates,
 )
-from prisma.generator.utils import Faker, resolve_template_path, copy_tree
+from prisma.generator.utils import Faker, copy_tree
 
+from .utils import assert_module_is_clean, assert_module_not_clean
 from ..utils import Testdir
-
-
-def iter_templates_dir(path: Path) -> Iterator[Path]:
-    templates = path / 'generator' / 'templates'
-    assert templates.exists()
-
-    for template in templates.iterdir():
-        name = template.name
-
-        if (
-            template.is_dir()
-            or not name.endswith('.py.jinja')
-            or name.startswith('_')
-        ):
-            continue
-
-        yield resolve_template_path(path, template.relative_to(templates))
-
-
-def assert_module_is_clean(path: Path) -> None:
-    for template in iter_templates_dir(path):
-        assert not template.exists()
-
-
-def assert_module_not_clean(path: Path) -> None:
-    for template in iter_templates_dir(path):
-        assert template.exists()
 
 
 def test_repeated_rstrip_bug(tmp_path: Path) -> None:
@@ -136,9 +109,8 @@ def test_invalid_type_argument() -> None:
         def generate(self, data: Path) -> None:  # pragma: no cover
             return super().generate(data)
 
-    # TODO: pyright regression?
     with pytest.raises(TypeError) as exc:
-        MyGenerator().data_class  # pyright: reportGeneralTypeIssues=false
+        MyGenerator().data_class
 
     assert 'pathlib.Path' in exc.value.args[0]
     assert 'pydantic.main.BaseModel' in exc.value.args[0]
@@ -158,7 +130,7 @@ def test_generator_subclass_mismatch() -> None:
     """Attempting to subclass Generator instead of BaseGenerator raises an error"""
     with pytest.raises(TypeError) as exc:
 
-        class MyGenerator(Generator):  # pyright: reportUnusedClass=false
+        class MyGenerator(Generator):  # pyright: ignore[reportUnusedClass]
             ...
 
     message = exc.value.args[0]

@@ -6,6 +6,7 @@
 
 # global imports for type checking
 import sys
+import decimal
 import datetime
 from typing import (
     TYPE_CHECKING,
@@ -40,6 +41,8 @@ from .generator.models import EngineType
 
 __all__ = (
     'ENGINE_TYPE',
+    'Batch',
+    'Prisma',
     'Client',
     'load_env',
     'register',
@@ -55,22 +58,32 @@ datasource db {
 }
 
 generator db {
-  provider             = "prisma-client-py"
-  interface            = "asyncio"
-  recursive_type_depth = 3
-  output               = "../../../.tests_cache/generation/exhaustive/__prisma_async_output__/prisma"
+  provider                    = "prisma-client-py"
+  interface                   = "asyncio"
+  recursive_type_depth        = 3
+  output                      = "../../../.tests_cache/generation/exhaustive/__prisma_async_output__/prisma"
+  enable_experimental_decimal = true
 }
 
+/// Post model documentation
 model Post {
   id         Int      @id @default(autoincrement())
   created_at DateTime @default(now())
   title      String
   content    String?
-  published  Boolean  @default(false)
-  author     User     @relation(fields: [author_id], references: [id])
-  author_id  Int
+
+  /// Has the post been made public yet?
+  published Boolean @default(false)
+
+  /// Relation to the User model
+  /// Second line comment with ' and "
+  author    User @relation(fields: [author_id], references: [id])
+  author_id Int
 }
 
+/// User model documentation
+///
+/// Third line comment
 model User {
   id               Int             @id @default(autoincrement())
   email            String          @unique
@@ -161,8 +174,7 @@ model Lists {
   floats       Float[]
   bigints      BigInt[]
   json_objects Json[]
-  // TODO
-  // decimals     Decimal[]
+  decimals     Decimal[]
 }
 
 enum ABeautifulEnum {
@@ -186,13 +198,11 @@ model A {
 }
 
 model B {
-  id      String @id @default(cuid())
-  float   Float  @db.Real
-  d_float Float  @db.DoublePrecision
-
-  // TODO
-  // decFloat Decimal @db.Decimal(2, 1)
-  // numFloat Decimal @db.Decimal(10, 6)
+  id       String  @id @default(cuid())
+  float    Float   @db.Real
+  d_float  Float   @db.DoublePrecision
+  decFloat Decimal @db.Decimal(2, 1)
+  numFloat Decimal @db.Decimal(10, 6)
 
   @@unique([float, d_float], name: "my_constraint")
 }
@@ -228,7 +238,7 @@ model E {
 
 ENGINE_TYPE: EngineType = EngineType.binary
 
-RegisteredClient = Union['Client', Callable[[], 'Client']]
+RegisteredClient = Union['Prisma', Callable[[], 'Prisma']]
 _registered_client: Optional[RegisteredClient] = None
 
 
@@ -280,15 +290,15 @@ def register(client: RegisteredClient) -> None:
     if _registered_client is not None:
         raise errors.ClientAlreadyRegisteredError()
 
-    if not isinstance(client, Client) and not callable(client):
+    if not isinstance(client, Prisma) and not callable(client):
         raise TypeError(
-            f'Expected either a {Client} instance or a function that returns a {Client} but got {client} instead.'
+            f'Expected either a {Prisma} instance or a function that returns a {Prisma} but got {client} instead.'
         )
 
     _registered_client = client
 
 
-def get_client() -> 'Client':
+def get_client() -> 'Prisma':
     """Get the registered client instance
 
     Raises errors.ClientNotRegisteredError() if no client instance has been registered.
@@ -297,19 +307,19 @@ def get_client() -> 'Client':
     if registered is None:
         raise errors.ClientNotRegisteredError() from None
 
-    if isinstance(registered, Client):
+    if isinstance(registered, Prisma):
         return registered
 
     client = registered()
-    if not isinstance(client, Client):  # pyright: reportUnnecessaryIsInstance=false
+    if not isinstance(client, Prisma):  # pyright: ignore[reportUnnecessaryIsInstance]
         raise TypeError(
-            f'Registered function returned {client} instead of a {Client} instance.'
+            f'Registered function returned {client} instead of a {Prisma} instance.'
         )
 
     return client
 
 
-class Client:
+class Prisma:
     post: 'actions.PostActions'
     user: 'actions.UserActions'
     m: 'actions.MActions'
@@ -322,6 +332,27 @@ class Client:
     c: 'actions.CActions'
     d: 'actions.DActions'
     e: 'actions.EActions'
+
+    __slots__ = (
+        'post',
+        'user',
+        'm',
+        'n',
+        'oneoptional',
+        'manyrequired',
+        'lists',
+        'a',
+        'b',
+        'c',
+        'd',
+        'e',
+        '__engine',
+        '_active_provider',
+        '_log_queries',
+        '_datasource',
+        '_connect_timeout',
+        '_http_config',
+    )
 
     def __init__(
         self,
@@ -363,7 +394,8 @@ class Client:
             self.__engine.stop()
             self.__engine = None
 
-    async def __aenter__(self) -> 'Client':
+
+    async def __aenter__(self) -> 'Prisma':
         await self.connect()
         return self
 
@@ -527,7 +559,7 @@ class Batch:
     d: 'DBatchActions'
     e: 'EBatchActions'
 
-    def __init__(self, client: Client) -> None:
+    def __init__(self, client: Prisma) -> None:
         self.__client = client
         self.__queries: List[str] = []
         self._active_provider = client._active_provider
@@ -1997,4 +2029,5 @@ class EBatchActions:
 
 
 
+Client = Prisma
 '

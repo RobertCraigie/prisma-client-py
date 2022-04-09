@@ -1,6 +1,7 @@
 import os
 import sys
 import enum
+import textwrap
 import importlib
 from pathlib import Path
 from keyword import iskeyword
@@ -9,6 +10,7 @@ from importlib import machinery, util as importlib_util
 from importlib.abc import InspectLoader
 from contextvars import ContextVar
 from typing import (
+    TYPE_CHECKING,
     Any,
     Generic,
     Iterable,
@@ -68,6 +70,7 @@ TYPE_MAPPING = {
     'Float': 'float',
     'BigInt': 'int',
     'Json': "'fields.Json'",
+    'Decimal': 'decimal.Decimal',
 }
 FILTER_TYPES = [
     'String',
@@ -78,17 +81,32 @@ FILTER_TYPES = [
     'BigInt',
     'Float',
     'Json',
+    'Decimal',
 ]
 
 FAKER: Faker = Faker()
 
+
 ConfigT = TypeVar('ConfigT', bound=PydanticBaseModel)
 
+# Although we should just be able to access the config from the datamodel
+# we have to do some validation that requires access to the config, this is difficult
+# with heavily nested models as our current workaround only sets the datamodel context
+# post-validation meaning we cannot access it in validators. To get around this we have
+# a separate config context.
+# TODO: better solution
 data_ctx: ContextVar['AnyData'] = ContextVar('data_ctx')
+config_ctx: ContextVar['Config'] = ContextVar('config_ctx')
 
 
 def get_datamodel() -> 'Datamodel':
     return data_ctx.get().dmmf.datamodel
+
+
+# typed to ensure the caller has to handle the case where
+# a custom generator config is being used
+def get_config() -> Union[PydanticBaseModel, 'Config']:
+    return config_ctx.get()
 
 
 def get_list_types() -> Iterable[Tuple[str, str]]:
@@ -129,6 +147,33 @@ def type_as_string(typ: str) -> str:
     if not typ.startswith("'") and not typ.startswith('"'):
         return f"'{typ}'"
     return typ
+
+
+def format_documentation(doc: str, indent: int = 4) -> str:
+    """Format a schema comment by indenting nested lines, e.g.
+
+        '''Foo
+    Bar'''
+
+    Becomes
+
+        '''Foo
+        Bar
+        '''
+    """
+    if not doc:
+        # empty string, nothing to do
+        return doc
+
+    prefix = ' ' * indent
+    first, *rest = doc.splitlines()
+    return '\n'.join(
+        [
+            first,
+            *[textwrap.indent(line, prefix) for line in rest],
+            prefix,
+        ]
+    )
 
 
 def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
@@ -249,11 +294,12 @@ class GenericData(GenericModel, Generic[ConfigT]):
 
         # add utility functions
         for func in [
-            get_list_types,
             sql_param,
-            clean_multiline,
             raise_err,
             type_as_string,
+            get_list_types,
+            clean_multiline,
+            format_documentation,
         ]:
             params[func.__name__] = func
 
@@ -329,6 +375,21 @@ class Config(BaseSettings):
     recursive_type_depth: int = FieldInfo(default=5)
     engine_type: EngineType = FieldInfo(default=EngineType.binary)
 
+    # this should be a list of experimental features
+    # https://github.com/prisma/prisma/issues/12442
+    enable_experimental_decimal: bool = FieldInfo(default=False)
+
+    # this seems to be the only good method for setting the contextvar as
+    # we don't control the actual construction of the object like we do for
+    # the Data model.
+    # we do not expose this to type checkers so that the generated __init__
+    # signature is preserved.
+    if not TYPE_CHECKING:
+
+        def __init__(self, **kwargs: object) -> None:
+            super().__init__(**kwargs)
+            config_ctx.set(self)
+
     class Config(BaseSettings.Config):
         extra: Extra = Extra.forbid
         use_enum_values: bool = True
@@ -390,7 +451,9 @@ class Config(BaseSettings):
         cls, value: Optional[str]
     ) -> Optional[Module]:
         try:
-            return Module(spec=value)  # pyright: reportGeneralTypeIssues=false
+            return Module(
+                spec=value  # pyright: ignore[reportGeneralTypeIssues]
+            )
         except ValueError:
             if value is None:
                 # no config value passed and the default location was not found
@@ -447,6 +510,7 @@ class EnumValue(BaseModel):
 
 class Model(BaseModel):
     name: str
+    documentation: Optional[str] = None
     db_name: Optional[str] = FieldInfo(alias='dbName')
     is_generated: bool = FieldInfo(alias='isGenerated')
     compound_primary_key: Optional['PrimaryKey'] = FieldInfo(
@@ -575,6 +639,7 @@ class UniqueIndex(Constraint):
 
 class Field(BaseModel):
     name: str
+    documentation: Optional[str] = None
 
     # TODO: switch to enums
     kind: str
@@ -613,6 +678,26 @@ class Field(BaseModel):
                 raise ValueError(f'Unsupported scalar field type: {type_}')
 
         return values
+
+    @validator('type')
+    @classmethod
+    def experimental_decimal_validator(cls, typ: str) -> str:
+        if typ == 'Decimal':
+            config = get_config()
+
+            # skip validating the experimental flag if we are
+            # being called from a custom generator
+            if (
+                isinstance(config, Config)
+                and not config.enable_experimental_decimal
+            ):
+                raise ValueError(
+                    'Support for the Decimal type is experimental\n'
+                    '  As such you must set the `enable_experimental_decimal` config flag to true\n'
+                    '  for more information see: https://github.com/RobertCraigie/prisma-client-py/issues/106'
+                )
+
+        return typ
 
     @validator('name')
     @classmethod
@@ -834,6 +919,8 @@ class Field(BaseModel):
             return f"Json({{'{FAKER.string()}': True}})"
         elif typ == 'Bytes':
             return f"Base64.encode(b'{FAKER.string()}')"
+        elif typ == 'Decimal':
+            return f"Decimal('{FAKER.integer()}.{FAKER.integer() // 10000}')"
         else:  # pragma: no cover
             raise RuntimeError(f'Sample data not supported for {typ} yet')
 

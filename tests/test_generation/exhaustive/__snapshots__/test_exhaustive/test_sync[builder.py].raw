@@ -6,6 +6,7 @@
 
 # global imports for type checking
 import sys
+import decimal
 import datetime
 from typing import (
     TYPE_CHECKING,
@@ -147,6 +148,7 @@ DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
         'floats',
         'bigints',
         'json_objects',
+        'decimals',
     ],
     'A': [
         'email',
@@ -163,6 +165,8 @@ DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
         'id',
         'float',
         'd_float',
+        'decFloat',
+        'numFloat',
     ],
     'C': [
         'char',
@@ -240,6 +244,15 @@ class QueryBuilder:
 
     # list of fields to select
     root_selection: Optional[List[str]]
+
+    __slots__ = (
+        'method',
+        'operation',
+        'model',
+        'include',
+        'arguments',
+        'root_selection',
+    )
 
     def __init__(
         self,
@@ -355,6 +368,8 @@ class QueryBuilder:
 
 
 class AbstractNode(ABC):
+    __slots__ = ()
+
     @abstractmethod
     def render(self) -> Optional[str]:
         """Render the node to a string
@@ -378,6 +393,13 @@ class Node(AbstractNode):
     indent: str
     builder: QueryBuilder
     children: List[ChildType]
+
+    __slots__ = (
+        'joiner',
+        'indent',
+        'builder',
+        'children',
+    )
 
     def __init__(
         self,
@@ -480,6 +502,9 @@ class RootNode(Node):
     }
     """
 
+    __slots__ = ()
+
+
     def enter(self) -> str:
         return f'{self.builder.operation} {{'
 
@@ -509,6 +534,9 @@ class ResultNode(Node):
     result: executeRaw
         <children>
     """
+
+    __slots__ = ()
+
     def __init__(self, indent: str = '', **kwargs: Any) -> None:
         super().__init__(indent=indent, **kwargs)
 
@@ -544,6 +572,8 @@ class Arguments(Node):
     )
     """
     arguments: Dict[str, Any]
+
+    __slots__ = ('arguments',)
 
     def __init__(self, arguments: Dict[str, Any], **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -598,6 +628,8 @@ class Data(Node):
     """
     data: Mapping[str, Any]
 
+    __slots__ = ('data',)
+
     def __init__(
         self,
         data: Mapping[str, Any],
@@ -632,6 +664,8 @@ class Data(Node):
 
 class ListNode(Node):
     data: Iterable[Any]
+
+    __slots__ = ('data',)
 
     def __init__(self, data: Iterable[Any], joiner: str = ',\n', **kwargs: Any) -> None:
         super().__init__(joiner=joiner, **kwargs)
@@ -697,6 +731,12 @@ class Selection(Node):
     model: Optional[str]
     include: Optional[Dict[str, Any]]
     root_selection: Optional[List[str]]
+
+    __slots__ = (
+        'model',
+        'include',
+        'root_selection',
+    )
 
     def __init__(
         self,
@@ -793,6 +833,12 @@ class Key(AbstractNode):
     sep: str
     node: Node
 
+    __slots__ = (
+        'key',
+        'sep',
+        'node',
+    )
+
     def __init__(self, key: str, node: Node, sep: str = ': ') -> None:
         self.key = key
         self.node = node
@@ -849,6 +895,12 @@ def serialize_json(obj: fields.Json) -> str:
 @serializer.register(fields.Base64)
 def serialize_base64(obj: fields.Base64) -> str:
     """Serialize a Base64 wrapper object to raw binary data"""
+    return str(obj)
+
+
+@serializer.register(decimal.Decimal)
+def serialize_decimal(obj: decimal.Decimal) -> str:
+    """Serialize a Decimal object to a string"""
     return str(obj)
 
 

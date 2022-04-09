@@ -2,7 +2,7 @@ from typing import Optional, TYPE_CHECKING
 
 import discord
 from discord.ext import commands  # pyright: reportMissingTypeStubs=false
-from prisma import Client
+from prisma import Prisma
 
 
 # commands.Bot is only a Generic Type while type checking
@@ -26,7 +26,7 @@ class Bot(BotBase):
 
     def __init__(self) -> None:  # pyright: reportGeneralTypeIssues=false
         super().__init__(command_prefix=commands.when_mentioned_or('>'))
-        self.prisma = Client()
+        self.prisma = Prisma()
 
     async def on_message(self, message: discord.Message) -> None:
         await self.prisma.channel.upsert(

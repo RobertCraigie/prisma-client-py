@@ -53,10 +53,11 @@ def validate(type: Type[T], data: Any) -> T:
     For example:
 
     from prisma import validate, types
+    from prisma.models import User
 
     def user_create_handler(data: Any) -> None:
         validated = validate(types.UserCreateInput, data)
-        user = await client.user.create(data=validated)
+        user = await User.prisma().create(data=validated)
     """
     # avoid patching pydantic until we know we need to in case our
     # monkey patching fails
@@ -78,7 +79,7 @@ def validate(type: Type[T], data: Any) -> T:
         # incorrectly inferred type as we have verified that the given type
         # is indeed a TypedDict
         model = create_model_from_typeddict(
-            type, __config__=Config  # pyright: reportGeneralTypeIssues=false
+            type, __config__=Config  # pyright: ignore[reportGeneralTypeIssues]
         )
         model.update_forward_refs(**vars(_get_module(type)))
         type.__pydantic_model__ = model  # type: ignore

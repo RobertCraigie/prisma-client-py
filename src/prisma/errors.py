@@ -23,7 +23,7 @@ class PrismaError(Exception):
 class ClientNotRegisteredError(PrismaError):
     def __init__(self) -> None:
         super().__init__(
-            'No client instance registered; You must call prisma.register(prisma.Client())'
+            'No client instance registered; You must call prisma.register(prisma.Prisma())'
         )
 
 

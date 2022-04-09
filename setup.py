@@ -46,7 +46,10 @@ setup(
     install_requires=requirements('base.txt'),
     long_description=readme,
     long_description_content_type='text/markdown',
-    packages=find_packages(where='src', include=['prisma', 'prisma.*']),
+    packages=find_packages(
+        where='src',
+        include=['prisma', 'prisma.*', 'prisma_cleanup'],
+    ),
     package_dir={'': 'src'},
     python_requires='>=3.7.0',
     package_data={'': ['generator/templates/**/*.py.jinja', 'py.typed']},

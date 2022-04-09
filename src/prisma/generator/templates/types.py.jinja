@@ -275,6 +275,8 @@ class FloatWithAggregatesFilter(FloatFilter, total=False):
     '{{ name }}',
     {
         'equals': 'fields.Base64',
+        'in': List['fields.Base64'],
+        'not_in': List['fields.Base64'],
         {%+ if next != '' -%}
             'not': Union['fields.Base64', '{{ next }}'],
         {% endif %}
@@ -308,6 +310,34 @@ class JsonWithAggregatesFilter(JsonFilter, total=False):
     _min: 'JsonFilter'
     _sum: 'JsonFilter'
     _avg: 'JsonFilter'
+    _count: 'IntFilter'
+
+
+{% call(name, next, iteration) recursive('DecimalFilter') %}
+{{ name }} = TypedDict(
+    '{{ name }}',
+    {
+        'equals': decimal.Decimal,
+        'not_in': List[decimal.Decimal],
+        'lt': decimal.Decimal,
+        'lte': decimal.Decimal,
+        'gt': decimal.Decimal,
+        'gte': decimal.Decimal,
+        'in': List[decimal.Decimal],
+        {%+ if next != '' -%}
+            'not': Union[decimal.Decimal, '{{ next }}'],
+        {% endif %}
+    },
+    total=False,
+)
+{% endcall %}
+
+
+class DecimalWithAggregatesFilter(StringFilter, total=False):
+    _max: 'DecimalFilter'
+    _min: 'DecimalFilter'
+    _sum: 'DecimalFilter'
+    _avg: 'DecimalFilter'
     _count: 'IntFilter'
 
 
@@ -515,7 +545,7 @@ class {{ model.name }}UpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class {{ model.name }}UpsertInput(TypedDict):
     create: '{{ model.name }}CreateInput'
-    update: '{{ model.name }}UpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: '{{ model.name }}UpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 {{ render_type(model_schema.order_by) }}

@@ -1,7 +1,7 @@
-from prisma import Client
+from prisma import Prisma
 
 
-async def order(client: Client) -> None:
+async def order(client: Prisma) -> None:
     # case: valid
     await client.post.find_first(
         order={

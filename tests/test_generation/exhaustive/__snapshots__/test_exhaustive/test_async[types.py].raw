@@ -6,6 +6,7 @@
 
 # global imports for type checking
 import sys
+import decimal
 import datetime
 from typing import (
     TYPE_CHECKING,
@@ -369,6 +370,8 @@ BytesFilter = TypedDict(
     'BytesFilter',
     {
         'equals': 'fields.Base64',
+        'in': List['fields.Base64'],
+        'not_in': List['fields.Base64'],
         'not': Union['fields.Base64', 'BytesFilterRecursive1'],
     },
     total=False,
@@ -379,6 +382,8 @@ BytesFilterRecursive1 = TypedDict(
     'BytesFilterRecursive1',
     {
         'equals': 'fields.Base64',
+        'in': List['fields.Base64'],
+        'not_in': List['fields.Base64'],
         'not': Union['fields.Base64', 'BytesFilterRecursive2'],
     },
     total=False,
@@ -389,6 +394,8 @@ BytesFilterRecursive2 = TypedDict(
     'BytesFilterRecursive2',
     {
         'equals': 'fields.Base64',
+        'in': List['fields.Base64'],
+        'not_in': List['fields.Base64'],
             },
     total=False,
 )
@@ -418,6 +425,63 @@ class JsonWithAggregatesFilter(JsonFilter, total=False):
     _min: 'JsonFilter'
     _sum: 'JsonFilter'
     _avg: 'JsonFilter'
+    _count: 'IntFilter'
+
+
+    
+
+DecimalFilter = TypedDict(
+    'DecimalFilter',
+    {
+        'equals': decimal.Decimal,
+        'not_in': List[decimal.Decimal],
+        'lt': decimal.Decimal,
+        'lte': decimal.Decimal,
+        'gt': decimal.Decimal,
+        'gte': decimal.Decimal,
+        'in': List[decimal.Decimal],
+        'not': Union[decimal.Decimal, 'DecimalFilterRecursive1'],
+    },
+    total=False,
+)
+
+
+DecimalFilterRecursive1 = TypedDict(
+    'DecimalFilterRecursive1',
+    {
+        'equals': decimal.Decimal,
+        'not_in': List[decimal.Decimal],
+        'lt': decimal.Decimal,
+        'lte': decimal.Decimal,
+        'gt': decimal.Decimal,
+        'gte': decimal.Decimal,
+        'in': List[decimal.Decimal],
+        'not': Union[decimal.Decimal, 'DecimalFilterRecursive2'],
+    },
+    total=False,
+)
+
+
+DecimalFilterRecursive2 = TypedDict(
+    'DecimalFilterRecursive2',
+    {
+        'equals': decimal.Decimal,
+        'not_in': List[decimal.Decimal],
+        'lt': decimal.Decimal,
+        'lte': decimal.Decimal,
+        'gt': decimal.Decimal,
+        'gte': decimal.Decimal,
+        'in': List[decimal.Decimal],
+            },
+    total=False,
+)
+
+
+class DecimalWithAggregatesFilter(StringFilter, total=False):
+    _max: 'DecimalFilter'
+    _min: 'DecimalFilter'
+    _sum: 'DecimalFilter'
+    _avg: 'DecimalFilter'
     _count: 'IntFilter'
 
 
@@ -821,6 +885,49 @@ JsonListUpdate = Union[
     _JsonListUpdatePush,
 ]
 
+class _DecimalListFilterEqualsInput(TypedDict):
+    equals: Optional[List[decimal.Decimal]]
+
+
+class _DecimalListFilterHasInput(TypedDict):
+    has: decimal.Decimal
+
+
+class _DecimalListFilterHasEveryInput(TypedDict):
+    has_every: List[decimal.Decimal]
+
+
+class _DecimalListFilterHasSomeInput(TypedDict):
+    has_some: List[decimal.Decimal]
+
+
+class _DecimalListFilterIsEmptyInput(TypedDict):
+    is_empty: bool
+
+
+DecimalListFilter = Union[
+    _DecimalListFilterHasInput,
+    _DecimalListFilterEqualsInput,
+    _DecimalListFilterHasSomeInput,
+    _DecimalListFilterIsEmptyInput,
+    _DecimalListFilterHasEveryInput,
+]
+
+
+class _DecimalListUpdateSet(TypedDict):
+    set: List[decimal.Decimal]
+
+
+class _DecimalListUpdatePush(TypedDict):
+    push: List[decimal.Decimal]
+
+
+DecimalListUpdate = Union[
+    List[decimal.Decimal],
+    _DecimalListUpdateSet,
+    _DecimalListUpdatePush,
+]
+
 class _ABeautifulEnumListFilterEqualsInput(TypedDict):
     equals: Optional[List['enums.ABeautifulEnum']]
 
@@ -966,7 +1073,7 @@ class PostUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class PostUpsertInput(TypedDict):
     create: 'PostCreateInput'
-    update: 'PostUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'PostUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _Post_id_OrderByInput = TypedDict(
@@ -2125,7 +2232,7 @@ class UserUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class UserUpsertInput(TypedDict):
     create: 'UserCreateInput'
-    update: 'UserUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'UserUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _User_id_OrderByInput = TypedDict(
@@ -3416,7 +3523,7 @@ class MUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class MUpsertInput(TypedDict):
     create: 'MCreateInput'
-    update: 'MUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'MUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _M_id_OrderByInput = TypedDict(
@@ -4692,7 +4799,7 @@ class NUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class NUpsertInput(TypedDict):
     create: 'NCreateInput'
-    update: 'NUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'NUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _N_id_OrderByInput = TypedDict(
@@ -6006,7 +6113,7 @@ class OneOptionalUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class OneOptionalUpsertInput(TypedDict):
     create: 'OneOptionalCreateInput'
-    update: 'OneOptionalUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'OneOptionalUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _OneOptional_id_OrderByInput = TypedDict(
@@ -7274,7 +7381,7 @@ class ManyRequiredUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class ManyRequiredUpsertInput(TypedDict):
     create: 'ManyRequiredCreateInput'
-    update: 'ManyRequiredUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'ManyRequiredUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _ManyRequired_id_OrderByInput = TypedDict(
@@ -8456,6 +8563,7 @@ class ListsOptionalCreateInput(TypedDict, total=False):
     floats: List[float]
     bigints: List[int]
     json_objects: List['fields.Json']
+    decimals: List[decimal.Decimal]
 
 
 class ListsCreateInput(ListsOptionalCreateInput):
@@ -8476,6 +8584,7 @@ class ListsOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     floats: List[float]
     bigints: List[int]
     json_objects: List['fields.Json']
+    decimals: List[decimal.Decimal]
 
 
 class ListsCreateWithoutRelationsInput(ListsOptionalCreateWithoutRelationsInput):
@@ -8514,6 +8623,7 @@ class ListsUpdateInput(TypedDict, total=False):
     floats: 'types.FloatListUpdate'
     bigints: 'types.BigIntListUpdate'
     json_objects: 'types.JsonListUpdate'
+    decimals: 'types.DecimalListUpdate'
 
 
 class ListsUpdateManyMutationInput(TypedDict, total=False):
@@ -8527,6 +8637,7 @@ class ListsUpdateManyMutationInput(TypedDict, total=False):
     floats: 'types.FloatListUpdate'
     bigints: 'types.BigIntListUpdate'
     json_objects: 'types.JsonListUpdate'
+    decimals: 'types.DecimalListUpdate'
 
 
 class ListsUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -8558,7 +8669,7 @@ class ListsUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class ListsUpsertInput(TypedDict):
     create: 'ListsCreateInput'
-    update: 'ListsUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'ListsUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _Lists_id_OrderByInput = TypedDict(
@@ -8633,6 +8744,14 @@ _Lists_json_objects_OrderByInput = TypedDict(
     total=True
 )
 
+_Lists_decimals_OrderByInput = TypedDict(
+    '_Lists_decimals_OrderByInput',
+    {
+        'decimals': 'SortOrder',
+    },
+    total=True
+)
+
 ListsOrderByInput = Union[
     '_Lists_id_OrderByInput',
     '_Lists_strings_OrderByInput',
@@ -8643,6 +8762,7 @@ ListsOrderByInput = Union[
     '_Lists_floats_OrderByInput',
     '_Lists_bigints_OrderByInput',
     '_Lists_json_objects_OrderByInput',
+    '_Lists_decimals_OrderByInput',
 ]
 
 
@@ -9402,6 +9522,7 @@ class ListsWhereInput(TypedDict, total=False):
     floats: 'types.FloatListFilter'
     bigints: 'types.BigIntListFilter'
     json_objects: 'types.JsonListFilter'
+    decimals: 'types.DecimalListFilter'
 
     # should be noted that AND and NOT should be Union['ListsWhereInputRecursive1', List['ListsWhereInputRecursive1']]
     # but this causes mypy to hang :/
@@ -9421,6 +9542,7 @@ class ListsWhereInputRecursive1(TypedDict, total=False):
     floats: 'types.FloatListFilter'
     bigints: 'types.BigIntListFilter'
     json_objects: 'types.JsonListFilter'
+    decimals: 'types.DecimalListFilter'
 
     # should be noted that AND and NOT should be Union['ListsWhereInputRecursive2', List['ListsWhereInputRecursive2']]
     # but this causes mypy to hang :/
@@ -9440,6 +9562,7 @@ class ListsWhereInputRecursive2(TypedDict, total=False):
     floats: 'types.FloatListFilter'
     bigints: 'types.BigIntListFilter'
     json_objects: 'types.JsonListFilter'
+    decimals: 'types.DecimalListFilter'
 
 
 
@@ -9459,6 +9582,7 @@ class ListsScalarWhereWithAggregatesInput(TypedDict, total=False):
     floats: Union[float, 'types.FloatWithAggregatesFilter']
     bigints: Union[int, 'types.BigIntWithAggregatesFilter']
     json_objects: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    decimals: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
     AND: List['ListsScalarWhereWithAggregatesInputRecursive1']
     OR: List['ListsScalarWhereWithAggregatesInputRecursive1']
@@ -9476,6 +9600,7 @@ class ListsScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     floats: Union[float, 'types.FloatWithAggregatesFilter']
     bigints: Union[int, 'types.BigIntWithAggregatesFilter']
     json_objects: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    decimals: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
     AND: List['ListsScalarWhereWithAggregatesInputRecursive2']
     OR: List['ListsScalarWhereWithAggregatesInputRecursive2']
@@ -9493,6 +9618,7 @@ class ListsScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     floats: Union[float, 'types.FloatWithAggregatesFilter']
     bigints: Union[int, 'types.BigIntWithAggregatesFilter']
     json_objects: Union['fields.Json', 'types.JsonWithAggregatesFilter']
+    decimals: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
 
 
@@ -9506,6 +9632,7 @@ class ListsGroupByOutput(TypedDict, total=False):
     floats: List[float]
     bigints: List[int]
     json_objects: List['fields.Json']
+    decimals: List[decimal.Decimal]
     _sum: 'ListsSumAggregateOutput'
     _avg: 'ListsAvgAggregateOutput'
     _min: 'ListsMinAggregateOutput'
@@ -9538,6 +9665,7 @@ class ListsScalarAggregateOutput(TypedDict, total=False):
     floats: List[float]
     bigints: List[int]
     json_objects: List['fields.Json']
+    decimals: List[decimal.Decimal]
 
 
 ListsMinAggregateOutput = ListsScalarAggregateOutput
@@ -9555,6 +9683,7 @@ class ListsMaxAggregateInput(TypedDict, total=False):
     floats: bool
     bigints: bool
     json_objects: bool
+    decimals: bool
 
 
 class ListsMinAggregateInput(TypedDict, total=False):
@@ -9568,6 +9697,7 @@ class ListsMinAggregateInput(TypedDict, total=False):
     floats: bool
     bigints: bool
     json_objects: bool
+    decimals: bool
 
 
 class ListsNumberAggregateInput(TypedDict, total=False):
@@ -9593,6 +9723,7 @@ ListsCountAggregateInput = TypedDict(
         'floats': bool,
         'bigints': bool,
         'json_objects': bool,
+        'decimals': bool,
         '_all': bool,
     },
     total=False,
@@ -9610,6 +9741,7 @@ ListsCountAggregateOutput = TypedDict(
         'floats': int,
         'bigints': int,
         'json_objects': int,
+        'decimals': int,
         '_all': int,
     },
     total=False,
@@ -9626,6 +9758,7 @@ ListsKeys = Literal[
     'floats',
     'bigints',
     'json_objects',
+    'decimals',
 ]
 ListsScalarFieldKeys = Literal[
     'id',
@@ -9637,6 +9770,7 @@ ListsScalarFieldKeys = Literal[
     'floats',
     'bigints',
     'json_objects',
+    'decimals',
 ]
 ListsScalarFieldKeysT = TypeVar('ListsScalarFieldKeysT', bound=ListsScalarFieldKeys)
 
@@ -9778,7 +9912,7 @@ class AUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class AUpsertInput(TypedDict):
     create: 'ACreateInput'
-    update: 'AUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'AUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _A_email_OrderByInput = TypedDict(
@@ -10882,6 +11016,8 @@ class BCreateInput(BOptionalCreateInput):
     """Required arguments to the B create method"""
     float: float
     d_float: float
+    decFloat: decimal.Decimal
+    numFloat: decimal.Decimal
 
 
 # TODO: remove this in favour of without explicit relations
@@ -10896,6 +11032,8 @@ class BCreateWithoutRelationsInput(BOptionalCreateWithoutRelationsInput):
     """Required arguments to the B create method, without relations"""
     float: float
     d_float: float
+    decFloat: decimal.Decimal
+    numFloat: decimal.Decimal
 
 
 class BCreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -10944,6 +11082,8 @@ class BUpdateInput(TypedDict, total=False):
     id: str
     float: Union[AtomicFloatInput, float]
     d_float: Union[AtomicFloatInput, float]
+    decFloat: decimal.Decimal
+    numFloat: decimal.Decimal
 
 
 class BUpdateManyMutationInput(TypedDict, total=False):
@@ -10951,6 +11091,8 @@ class BUpdateManyMutationInput(TypedDict, total=False):
     id: str
     float: Union[AtomicFloatInput, float]
     d_float: Union[AtomicFloatInput, float]
+    decFloat: decimal.Decimal
+    numFloat: decimal.Decimal
 
 
 class BUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -10982,7 +11124,7 @@ class BUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class BUpsertInput(TypedDict):
     create: 'BCreateInput'
-    update: 'BUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'BUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _B_id_OrderByInput = TypedDict(
@@ -11009,10 +11151,28 @@ _B_d_float_OrderByInput = TypedDict(
     total=True
 )
 
+_B_decFloat_OrderByInput = TypedDict(
+    '_B_decFloat_OrderByInput',
+    {
+        'decFloat': 'SortOrder',
+    },
+    total=True
+)
+
+_B_numFloat_OrderByInput = TypedDict(
+    '_B_numFloat_OrderByInput',
+    {
+        'numFloat': 'SortOrder',
+    },
+    total=True
+)
+
 BOrderByInput = Union[
     '_B_id_OrderByInput',
     '_B_float_OrderByInput',
     '_B_d_float_OrderByInput',
+    '_B_decFloat_OrderByInput',
+    '_B_numFloat_OrderByInput',
 ]
 
 
@@ -11766,6 +11926,8 @@ class BWhereInput(TypedDict, total=False):
     id: Union[str, 'types.StringFilter']
     float: Union[float, 'types.FloatFilter']
     d_float: Union[float, 'types.FloatFilter']
+    decFloat: Union[decimal.Decimal, 'types.DecimalFilter']
+    numFloat: Union[decimal.Decimal, 'types.DecimalFilter']
 
     # should be noted that AND and NOT should be Union['BWhereInputRecursive1', List['BWhereInputRecursive1']]
     # but this causes mypy to hang :/
@@ -11779,6 +11941,8 @@ class BWhereInputRecursive1(TypedDict, total=False):
     id: Union[str, 'types.StringFilter']
     float: Union[float, 'types.FloatFilter']
     d_float: Union[float, 'types.FloatFilter']
+    decFloat: Union[decimal.Decimal, 'types.DecimalFilter']
+    numFloat: Union[decimal.Decimal, 'types.DecimalFilter']
 
     # should be noted that AND and NOT should be Union['BWhereInputRecursive2', List['BWhereInputRecursive2']]
     # but this causes mypy to hang :/
@@ -11792,6 +11956,8 @@ class BWhereInputRecursive2(TypedDict, total=False):
     id: Union[str, 'types.StringFilter']
     float: Union[float, 'types.FloatFilter']
     d_float: Union[float, 'types.FloatFilter']
+    decFloat: Union[decimal.Decimal, 'types.DecimalFilter']
+    numFloat: Union[decimal.Decimal, 'types.DecimalFilter']
 
 
 
@@ -11805,6 +11971,8 @@ class BScalarWhereWithAggregatesInput(TypedDict, total=False):
     id: Union[str, 'types.StringWithAggregatesFilter']
     float: Union[float, 'types.FloatWithAggregatesFilter']
     d_float: Union[float, 'types.FloatWithAggregatesFilter']
+    decFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
+    numFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
     AND: List['BScalarWhereWithAggregatesInputRecursive1']
     OR: List['BScalarWhereWithAggregatesInputRecursive1']
@@ -11816,6 +11984,8 @@ class BScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     id: Union[str, 'types.StringWithAggregatesFilter']
     float: Union[float, 'types.FloatWithAggregatesFilter']
     d_float: Union[float, 'types.FloatWithAggregatesFilter']
+    decFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
+    numFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
     AND: List['BScalarWhereWithAggregatesInputRecursive2']
     OR: List['BScalarWhereWithAggregatesInputRecursive2']
@@ -11827,6 +11997,8 @@ class BScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     id: Union[str, 'types.StringWithAggregatesFilter']
     float: Union[float, 'types.FloatWithAggregatesFilter']
     d_float: Union[float, 'types.FloatWithAggregatesFilter']
+    decFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
+    numFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
 
 
@@ -11834,6 +12006,8 @@ class BGroupByOutput(TypedDict, total=False):
     id: str
     float: float
     d_float: float
+    decFloat: decimal.Decimal
+    numFloat: decimal.Decimal
     _sum: 'BSumAggregateOutput'
     _avg: 'BAvgAggregateOutput'
     _min: 'BMinAggregateOutput'
@@ -11858,6 +12032,8 @@ class BScalarAggregateOutput(TypedDict, total=False):
     id: str
     float: float
     d_float: float
+    decFloat: decimal.Decimal
+    numFloat: decimal.Decimal
 
 
 BMinAggregateOutput = BScalarAggregateOutput
@@ -11869,6 +12045,8 @@ class BMaxAggregateInput(TypedDict, total=False):
     id: bool
     float: bool
     d_float: bool
+    decFloat: bool
+    numFloat: bool
 
 
 class BMinAggregateInput(TypedDict, total=False):
@@ -11876,6 +12054,8 @@ class BMinAggregateInput(TypedDict, total=False):
     id: bool
     float: bool
     d_float: bool
+    decFloat: bool
+    numFloat: bool
 
 
 class BNumberAggregateInput(TypedDict, total=False):
@@ -11894,6 +12074,8 @@ BCountAggregateInput = TypedDict(
         'id': bool,
         'float': bool,
         'd_float': bool,
+        'decFloat': bool,
+        'numFloat': bool,
         '_all': bool,
     },
     total=False,
@@ -11905,6 +12087,8 @@ BCountAggregateOutput = TypedDict(
         'id': int,
         'float': int,
         'd_float': int,
+        'decFloat': int,
+        'numFloat': int,
         '_all': int,
     },
     total=False,
@@ -11915,11 +12099,15 @@ BKeys = Literal[
     'id',
     'float',
     'd_float',
+    'decFloat',
+    'numFloat',
 ]
 BScalarFieldKeys = Literal[
     'id',
     'float',
     'd_float',
+    'decFloat',
+    'numFloat',
 ]
 BScalarFieldKeysT = TypeVar('BScalarFieldKeysT', bound=BScalarFieldKeys)
 
@@ -12037,7 +12225,7 @@ class CUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class CUpsertInput(TypedDict):
     create: 'CCreateInput'
-    update: 'CUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'CUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _C_char_OrderByInput = TypedDict(
@@ -13146,7 +13334,7 @@ class DUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class DUpsertInput(TypedDict):
     create: 'DCreateInput'
-    update: 'DUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'DUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _D_id_OrderByInput = TypedDict(
@@ -14247,7 +14435,7 @@ class EUpdateOneWithoutRelationsInput(TypedDict, total=False):
 
 class EUpsertInput(TypedDict):
     create: 'ECreateInput'
-    update: 'EUpdateInput'  # pyright: reportIncompatibleMethodOverride=false
+    update: 'EUpdateInput'  # pyright: ignore[reportIncompatibleMethodOverride]
 
 
 _E_id_OrderByInput = TypedDict(

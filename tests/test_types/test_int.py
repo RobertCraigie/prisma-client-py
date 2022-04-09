@@ -1,10 +1,10 @@
 import pytest
-from prisma import Client
+from prisma import Prisma
 from prisma.errors import DataError
 
 
 @pytest.mark.asyncio
-async def test_filtering(client: Client) -> None:
+async def test_filtering(client: Prisma) -> None:
     """Finding records by a an integer value"""
     async with client.batch_() as batcher:
         for i in range(10):
@@ -117,7 +117,7 @@ async def test_filtering(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_atomic_update(client: Client) -> None:
+async def test_atomic_update(client: Prisma) -> None:
     """Atomically updating an integer value"""
     model = await client.types.create({'id': 1, 'integer': 1})
     assert model.integer == 1
@@ -187,14 +187,14 @@ async def test_atomic_update(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_atomic_update_invalid_input(client: Client) -> None:
+async def test_atomic_update_invalid_input(client: Prisma) -> None:
     """Integer atomic update only allows one field to be passed"""
     with pytest.raises(DataError) as exc:
         await client.types.update(
             where={
                 'id': 1,
             },
-            data={  # pyright: reportGeneralTypeIssues=false
+            data={
                 'integer': {  # type: ignore
                     'divide': 1,
                     'multiply': 2,

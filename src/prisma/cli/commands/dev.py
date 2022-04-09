@@ -23,10 +23,10 @@ def playground(schema: Optional[str], skip_generate: bool) -> None:
         generate_client(schema=schema, reload=True)
 
     # TODO: this assumes we are generating to the same location that we are being invoked from
-    from ... import Client
+    from ... import Prisma
     from ...engine import QueryEngine
 
-    client = Client()
+    client = Prisma()
     engine_class = client._engine_class
     if engine_class.__name__ == 'QueryEngine':
         with temp_env_update({'__PRISMA_PY_PLAYGROUND': '1'}):

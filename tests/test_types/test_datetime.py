@@ -1,12 +1,12 @@
 import datetime
 import pytest
-from prisma import Client
+from prisma import Prisma
 
 from ..utils import assert_similar_time
 
 
 @pytest.mark.asyncio
-async def test_filtering(client: Client) -> None:
+async def test_filtering(client: Prisma) -> None:
     """Finding records by a DateTime value"""
     now = datetime.datetime.now(datetime.timezone.utc)
     async with client.batch_() as batcher:
@@ -147,7 +147,7 @@ async def test_filtering(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_finds(client: Client) -> None:
+async def test_finds(client: Prisma) -> None:
     """Adding 1 second timedelta finds the record"""
     record = await client.types.create(data={})
     found = await client.types.find_first(
@@ -162,7 +162,7 @@ async def test_finds(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_tz_aware(client: Client) -> None:
+async def test_tz_aware(client: Prisma) -> None:
     """Modifying timezone still finds the record"""
     record = await client.types.create(data={})
     found = await client.types.find_first(

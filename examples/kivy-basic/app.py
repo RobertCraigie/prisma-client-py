@@ -2,7 +2,7 @@ import contextlib
 from kivy.lang import Builder
 from kivy.logger import previous_stderr
 from kivymd.app import MDApp
-from prisma import Client
+from prisma import Prisma
 from prisma.models import Customer
 
 
@@ -17,7 +17,7 @@ class App(MDApp):
         with contextlib.redirect_stderr(previous_stderr):
             # auto_register the client instance so that we can query
             # from model classes
-            client = Client(auto_register=True)
+            client = Prisma(auto_register=True)
             client.connect()
 
         return Builder.load_file('app.kv')

@@ -33,8 +33,7 @@ Whenever you make changes to your model, migrate your database and re-generate y
 
 ```sh
 # apply migrations
-prisma migrate save --name "add comment model"
-prisma migrate up
+prisma migrate dev --name "add comment model"
 # generate
 prisma generate
 ```
@@ -42,13 +41,13 @@ prisma generate
 In order to create comments, we can either create a post, and then connect that post when creating a comment or create a post while creating the comment.
 
 ```py
-post = await client.post.create({
+post = await db.post.create({
     'title': 'My new post',
     'published': True,
 })
 print(f'post: {post.json(indent=2)}\n')
 
-first = await client.comment.create({
+first = await db.comment.create({
     'content': 'First comment',
     'post': {
         'connect': {
@@ -58,7 +57,7 @@ first = await client.comment.create({
 })
 print(f'first comment: {first.json(indent=2)}\n')
 
-second = await client.comment.create({
+second = await db.comment.create({
     'content': 'Second comment',
     'post': {
         'connect': {
@@ -71,7 +70,7 @@ print(f'second comment: {second.json(indent=2)}\n')
 
 ??? note "Alternative method"
     ```py
-    first = await client.comment.create(
+    first = await db.comment.create(
         data={
             'content': 'First comment',
             'post': {
@@ -83,7 +82,7 @@ print(f'second comment: {second.json(indent=2)}\n')
         },
         include={'post': True}
     )
-    second = await client.comment.create({
+    second = await db.comment.create({
         'content': 'Second comment',
         'post': {
             'connect': {
@@ -97,7 +96,7 @@ Now that a post and comments have been created, you can query for them as follow
 
 ```py
 # find all comments on a post
-comments = await client.comments.find_many({
+comments = await db.comments.find_many({
     'where': {
         'post_id': post.id
     }
@@ -105,7 +104,7 @@ comments = await client.comments.find_many({
 print(f'comments of post with id {post.id}: {json.dumps(comments, indent=2)}')
 
 # find at most 3 comments on a post
-filtered = await client.comments.find_many({
+filtered = await db.comments.find_many({
     'where': {
         'post_id': post.id
     },
@@ -119,7 +118,7 @@ few of their comments in just a few lines and with full type-safety:
 
 ```py
 # fetch a post and 3 of it's comments
-post = await client.post.find_unique(
+post = await db.post.find_unique(
     where={
         'id': post.id,
     },

@@ -39,12 +39,12 @@ The DMMF is represented in Prisma Client python with the `Data` model:
 
 ```py
 from pathlib import Path
-from prisma.generator import BaseGenerator, Data
+from prisma.generator import BaseGenerator, DefaultData
 
 class MyGenerator(BaseGenerator):
     # some code has been ommited from this example for brevity
     # the full boilerplate example can be found below
-    def generate(self, data: Data) -> None:
+    def generate(self, data: DaDefaultDatata) -> None:
         content = [
             model.name
             for model in data.dmmf.datamodel.models
@@ -62,7 +62,7 @@ class MyGenerator(BaseGenerator):
 The minimum code required to get started writing your own Prisma generator:
 
 ```py
-from prisma.generator import BaseGenerator, Manifest, Data
+from prisma.generator import BaseGenerator, Manifest, DefaultData
 
 class MyGenerator(BaseGenerator):
     def get_manifest(self) -> Manifest:
@@ -71,7 +71,7 @@ class MyGenerator(BaseGenerator):
             default_output='output.txt',
         )
 
-    def generate(self, data: Data) -> None:
+    def generate(self, data: DefaultData) -> None:
         pass
 
 if __name__ == '__main__':

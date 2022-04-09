@@ -6,6 +6,7 @@
 
 # global imports for type checking
 import sys
+import decimal
 import datetime
 from typing import (
     TYPE_CHECKING,
@@ -39,6 +40,11 @@ if TYPE_CHECKING:
 
 
 class PostActions:
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type['models.Post']) -> None:
         self._client = client
         self._model = model
@@ -953,6 +959,11 @@ class PostActions:
 
 
 class UserActions:
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type['models.User']) -> None:
         self._client = client
         self._model = model
@@ -1887,6 +1898,11 @@ class UserActions:
 
 
 class MActions:
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type['models.M']) -> None:
         self._client = client
         self._model = model
@@ -2816,6 +2832,11 @@ class MActions:
 
 
 class NActions:
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type['models.N']) -> None:
         self._client = client
         self._model = model
@@ -3750,6 +3771,11 @@ class NActions:
 
 
 class OneOptionalActions:
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type['models.OneOptional']) -> None:
         self._client = client
         self._model = model
@@ -4679,6 +4705,11 @@ class OneOptionalActions:
 
 
 class ManyRequiredActions:
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type['models.ManyRequired']) -> None:
         self._client = client
         self._model = model
@@ -5608,6 +5639,11 @@ class ManyRequiredActions:
 
 
 class ListsActions:
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type['models.Lists']) -> None:
         self._client = client
         self._model = model
@@ -6512,6 +6548,11 @@ class ListsActions:
 
 
 class AActions:
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type['models.A']) -> None:
         self._client = client
         self._model = model
@@ -7434,6 +7475,11 @@ class AActions:
 
 
 class BActions:
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type['models.B']) -> None:
         self._client = client
         self._model = model
@@ -7551,6 +7597,8 @@ class BActions:
                 # data to create a B record
                 'float': 1468890740.62903,
                 'd_float': 1214168082.89861,
+                'decFloat': Decimal('658378208.95462'),
+                'numFloat': Decimal('1214809950.104782'),
             },
         )
         ```
@@ -7606,13 +7654,17 @@ class BActions:
             data=[
                 {
                     # data to create a B record
-                    'float': 658378208.95462,
-                    'd_float': 1214809950.104782,
+                    'float': 1302734860.89305,
+                    'd_float': 280083306.54966,
+                    'decFloat': Decimal('76790008.209829'),
+                    'numFloat': Decimal('245900342.81186'),
                 },
                 {
                     # data to create a B record
-                    'float': 1302734860.89305,
-                    'd_float': 280083306.54966,
+                    'float': 1388801188.75257,
+                    'd_float': 1187663298.76968,
+                    'decFloat': Decimal('1214295824.102141'),
+                    'numFloat': Decimal('351503374.132118'),
                 },
             ],
             skip_duplicates=True,
@@ -7667,7 +7719,7 @@ class BActions:
         ```py
         b = B.prisma().delete(
             where={
-                'id': 'hghjaaai',
+                'id': 'dgjhdcggi',
             },
         )
         ```
@@ -7720,7 +7772,7 @@ class BActions:
         ```py
         b = B.prisma().find_unique(
             where={
-                'id': 'cajicjjdef',
+                'id': 'bbjbcdfabd',
             },
         )
         ```
@@ -7845,11 +7897,11 @@ class BActions:
         Example
         -------
         ```py
-        # find the second B record ordered by the id field
+        # find the second B record ordered by the decFloat field
         b = B.prisma().find_first(
             skip=1,
             order={
-                'id': 'desc',
+                'decFloat': 'desc',
             },
         )
         ```
@@ -7905,7 +7957,7 @@ class BActions:
         ```py
         b = B.prisma().update(
             where={
-                'id': 'cefjaadec',
+                'id': 'gchfgbcec',
             },
             data={
                 # data to update the B record to
@@ -7963,17 +8015,21 @@ class BActions:
         ```py
         b = B.prisma().upsert(
             where={
-                'id': 'ibbigdigd',
+                'id': 'bihcjfcjah',
             },
             data={
                 'create': {
-                    'id': 'ibbigdigd',
-                    'float': 1302734860.89305,
-                    'd_float': 280083306.54966,
+                    'id': 'bihcjfcjah',
+                    'float': 1388801188.75257,
+                    'd_float': 1187663298.76968,
+                    'decFloat': Decimal('1214295824.102141'),
+                    'numFloat': Decimal('351503374.132118'),
                 },
                 'update': {
-                    'float': 1302734860.89305,
-                    'd_float': 280083306.54966,
+                    'float': 1388801188.75257,
+                    'd_float': 1187663298.76968,
+                    'decFloat': Decimal('1214295824.102141'),
+                    'numFloat': Decimal('351503374.132118'),
                 },
             },
         )
@@ -8022,7 +8078,7 @@ class BActions:
         # update all B records
         total = B.prisma().update_many(
             data={
-                'float': 1388801188.75257
+                'numFloat': Decimal('1793282088.181439')
             },
             where={}
         )
@@ -8087,7 +8143,7 @@ class BActions:
         results = B.prisma().count(
             select={
                 '_all': True,
-                'd_float': True,
+                'id': True,
             },
         )
         ```
@@ -8154,7 +8210,7 @@ class BActions:
         results = B.prisma().count(
             select={
                 '_all': True,
-                'id': True,
+                'float': True,
             },
         )
         ```
@@ -8296,10 +8352,10 @@ class BActions:
         Example
         -------
         ```py
-        # group B records by float values
+        # group B records by d_float values
         # and count how many records are in each group
         results = B.prisma().group_by(
-            ['float'],
+            ['d_float'],
             count=True,
         )
         ```
@@ -8348,6 +8404,11 @@ class BActions:
 
 
 class CActions:
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type['models.C']) -> None:
         self._client = client
         self._model = model
@@ -8384,7 +8445,7 @@ class CActions:
         ```py
         users = C.prisma().query_raw(
             'SELECT * FROM C WHERE char = $1',
-            'bbihggdcji',
+            'bjcdajabfa',
         )
         ```
         """
@@ -8424,7 +8485,7 @@ class CActions:
         ```py
         user = C.prisma().query_first(
             'SELECT * FROM C WHERE v_char = $1',
-            'hgjgibdgd',
+            'bchhceeeff',
         )
         ```
         """
@@ -8463,12 +8524,12 @@ class CActions:
         c = C.prisma().create(
             data={
                 # data to create a C record
-                'char': 'bcbecjfice',
-                'v_char': 'bacbebhjjd',
-                'text': 'dfbfaddhe',
-                'bit': 'bdcbbieibf',
-                'v_bit': 'dgjhdcggi',
-                'uuid': 'bbjbcdfabd',
+                'char': 'bbgaifhdaa',
+                'v_char': 'dgbcdaegb',
+                'text': 'beagfbbjig',
+                'bit': 'beicihhijb',
+                'v_bit': 'fgggcdcjg',
+                'uuid': 'ccjbbjigf',
             },
         )
         ```
@@ -8524,21 +8585,21 @@ class CActions:
             data=[
                 {
                     # data to create a C record
-                    'char': 'gchfgbcec',
-                    'v_char': 'bihcjfcjah',
-                    'text': 'bhjdcicaii',
-                    'bit': 'bibedjhcej',
-                    'v_bit': 'bjcdajabfa',
-                    'uuid': 'bchhceeeff',
+                    'char': 'bhfaabbaha',
+                    'v_char': 'ebajedhhf',
+                    'text': 'jajacedge',
+                    'bit': 'hffgbabgf',
+                    'v_bit': 'biacbiieja',
+                    'uuid': 'cjejbgbff',
                 },
                 {
                     # data to create a C record
-                    'char': 'bbgaifhdaa',
-                    'v_char': 'dgbcdaegb',
-                    'text': 'beagfbbjig',
-                    'bit': 'beicihhijb',
-                    'v_bit': 'fgggcdcjg',
-                    'uuid': 'ccjbbjigf',
+                    'char': 'fgeahddae',
+                    'v_char': 'diageigcf',
+                    'text': 'badagbgeha',
+                    'bit': 'ibgebbjch',
+                    'v_bit': 'baieajjiee',
+                    'uuid': 'bahjhaccfd',
                 },
             ],
             skip_duplicates=True,
@@ -8948,7 +9009,7 @@ class CActions:
         # update all C records
         total = C.prisma().update_many(
             data={
-                'v_bit': 'bhfaabbaha'
+                'v_bit': 'hffhfabhi'
             },
             where={}
         )
@@ -9274,6 +9335,11 @@ class CActions:
 
 
 class DActions:
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type['models.D']) -> None:
         self._client = client
         self._model = model
@@ -9310,7 +9376,7 @@ class DActions:
         ```py
         users = D.prisma().query_raw(
             'SELECT * FROM D WHERE id = $1',
-            'ebajedhhf',
+            'bbcigiadhb',
         )
         ```
         """
@@ -9390,10 +9456,10 @@ class DActions:
             data={
                 # data to create a D record
                 'bool': False,
-                'xml': 'biacbiieja',
-                'json_': Json({'cjejbgbff': True}),
-                'jsonb': Json({'fgeahddae': True}),
-                'binary': Base64.encode(b'diageigcf'),
+                'xml': 'bdadhibhec',
+                'json_': Json({'bfhdjaiejf': True}),
+                'jsonb': Json({'bbjfijjadg': True}),
+                'binary': Base64.encode(b'hdjacbehh'),
             },
         )
         ```
@@ -9450,18 +9516,18 @@ class DActions:
                 {
                     # data to create a D record
                     'bool': True,
-                    'xml': 'ibgebbjch',
-                    'json_': Json({'baieajjiee': True}),
-                    'jsonb': Json({'bahjhaccfd': True}),
-                    'binary': Base64.encode(b'hffhfabhi'),
+                    'xml': 'bcgjbdgjdj',
+                    'json_': Json({'fhdbhifae': True}),
+                    'jsonb': Json({'beeacgfcej': True}),
+                    'binary': Base64.encode(b'bbifhdiicc'),
                 },
                 {
                     # data to create a D record
                     'bool': False,
-                    'xml': 'cfjagbbae',
-                    'json_': Json({'bbbfhdidef': True}),
-                    'jsonb': Json({'bdadhibhec': True}),
-                    'binary': Base64.encode(b'bfhdjaiejf'),
+                    'xml': 'bjagdgabbg',
+                    'json_': Json({'bjbbcffdij': True}),
+                    'jsonb': Json({'begcgchdi': True}),
+                    'binary': Base64.encode(b'bhbjceagbb'),
                 },
             ],
             skip_duplicates=True,
@@ -9516,7 +9582,7 @@ class DActions:
         ```py
         d = D.prisma().delete(
             where={
-                'id': 'bbjfijjadg',
+                'id': 'bjeifffjdg',
             },
         )
         ```
@@ -9569,7 +9635,7 @@ class DActions:
         ```py
         d = D.prisma().find_unique(
             where={
-                'id': 'hdjacbehh',
+                'id': 'bdidcfdfjd',
             },
         )
         ```
@@ -9754,7 +9820,7 @@ class DActions:
         ```py
         d = D.prisma().update(
             where={
-                'id': 'bhcccbeaba',
+                'id': 'dfeggejja',
             },
             data={
                 # data to update the D record to
@@ -9812,23 +9878,23 @@ class DActions:
         ```py
         d = D.prisma().upsert(
             where={
-                'id': 'bcgjbdgjdj',
+                'id': 'gehbgghbj',
             },
             data={
                 'create': {
-                    'id': 'bcgjbdgjdj',
+                    'id': 'gehbgghbj',
                     'bool': False,
-                    'xml': 'cfjagbbae',
-                    'json_': Json({'bbbfhdidef': True}),
-                    'jsonb': Json({'bdadhibhec': True}),
-                    'binary': Base64.encode(b'bfhdjaiejf'),
+                    'xml': 'bjagdgabbg',
+                    'json_': Json({'bjbbcffdij': True}),
+                    'jsonb': Json({'begcgchdi': True}),
+                    'binary': Base64.encode(b'bhbjceagbb'),
                 },
                 'update': {
                     'bool': False,
-                    'xml': 'cfjagbbae',
-                    'json_': Json({'bbbfhdidef': True}),
-                    'jsonb': Json({'bdadhibhec': True}),
-                    'binary': Base64.encode(b'bfhdjaiejf'),
+                    'xml': 'bjagdgabbg',
+                    'json_': Json({'bjbbcffdij': True}),
+                    'jsonb': Json({'begcgchdi': True}),
+                    'binary': Base64.encode(b'bhbjceagbb'),
                 },
             },
         )
@@ -9877,7 +9943,7 @@ class DActions:
         # update all D records
         total = D.prisma().update_many(
             data={
-                'jsonb': Json({'fhdbhifae': True})
+                'jsonb': Json({'dfhaijeie': True})
             },
             where={}
         )
@@ -10203,6 +10269,11 @@ class DActions:
 
 
 class EActions:
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type['models.E']) -> None:
         self._client = client
         self._model = model
@@ -10239,7 +10310,7 @@ class EActions:
         ```py
         users = E.prisma().query_raw(
             'SELECT * FROM E WHERE id = $1',
-            'beeacgfcej',
+            'gbcdjgicb',
         )
         ```
         """
@@ -10439,7 +10510,7 @@ class EActions:
         ```py
         e = E.prisma().delete(
             where={
-                'id': 'bbifhdiicc',
+                'id': 'biaibdagac',
             },
         )
         ```
@@ -10492,7 +10563,7 @@ class EActions:
         ```py
         e = E.prisma().find_unique(
             where={
-                'id': 'bgjeccejad',
+                'id': 'bbfbheibcd',
             },
         )
         ```
@@ -10677,7 +10748,7 @@ class EActions:
         ```py
         e = E.prisma().update(
             where={
-                'id': 'bjagdgabbg',
+                'id': 'hiagajie',
             },
             data={
                 # data to update the E record to
@@ -10735,11 +10806,11 @@ class EActions:
         ```py
         e = E.prisma().upsert(
             where={
-                'id': 'bjbbcffdij',
+                'id': 'eeejidbif',
             },
             data={
                 'create': {
-                    'id': 'bjbbcffdij',
+                    'id': 'eeejidbif',
                     'date': datetime.datetime.utcnow(),
                     'time': datetime.datetime.utcnow(),
                     'ts': datetime.datetime.utcnow(),
@@ -10796,7 +10867,7 @@ class EActions:
         # update all E records
         total = E.prisma().update_many(
             data={
-                'id': 'begcgchdi'
+                'id': 'efgbahec'
             },
             where={}
         )
