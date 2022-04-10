@@ -4,7 +4,7 @@ from typing import Any
 import httpx
 
 from ._types import Method
-from .http_abstract import AbstractResponse, AbstractHTTP
+from .http_abstract import AbstractResponse, AbstractHTTP, PathToDest
 
 
 __all__ = ('HTTP', 'Response', 'client')
@@ -15,7 +15,7 @@ class HTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
 
     __slots__ = ()
 
-    async def download(self, url: str, dest: str) -> None:
+    async def download(self, url: str, dest: PathToDest) -> None:
         async with self.session.stream('GET', url, timeout=None) as resp:
             resp.raise_for_status()
             with open(dest, 'wb') as fd:

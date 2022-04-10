@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABC
+import os
 from typing import (
     Any,
     Union,
@@ -22,6 +23,7 @@ Session = TypeVar('Session')
 Response = TypeVar('Response')
 ReturnType = TypeVar('ReturnType')
 MaybeCoroutine = Union[Coroutine[Any, Any, ReturnType], ReturnType]
+PathToDest = Union[str, bytes, 'os.PathLike[str]']
 
 DEFAULT_CONFIG: Dict[str, Any] = {
     'limits': Limits(max_connections=1000),
@@ -52,7 +54,7 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         }
 
     @abstractmethod
-    def download(self, url: str, dest: str) -> MaybeCoroutine[None]:
+    def download(self, url: str, dest: PathToDest) -> MaybeCoroutine[None]:
         ...
 
     @abstractmethod
