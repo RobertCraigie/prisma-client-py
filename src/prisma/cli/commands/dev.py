@@ -12,7 +12,7 @@ def cli() -> None:
     """Commands for developing Prisma Client Python"""
 
 
-@cli.command()
+@cli.command
 @options.schema
 @options.skip_generate
 def playground(schema: Optional[str], skip_generate: bool) -> None:

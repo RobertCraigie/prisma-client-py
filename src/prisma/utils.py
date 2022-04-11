@@ -6,9 +6,12 @@ import logging
 import warnings
 import contextlib
 from importlib.util import find_spec
-from typing import Any, Union, Dict, Iterator, Coroutine, NoReturn
+from typing import Any, TypeVar, Union, Dict, Iterator, Coroutine, NoReturn
 
-from ._types import FuncType, CoroType
+from ._types import FuncType, CoroType, TypeGuard
+
+
+_T = TypeVar('_T')
 
 
 def _env_bool(key: str) -> bool:
@@ -36,20 +39,21 @@ def setup_logging() -> None:
 
 
 def maybe_async_run(
-    func: Union[FuncType, CoroType], *args: Any, **kwargs: Any
-) -> Any:
+    func: Union[FuncType, CoroType],
+    *args: Any,
+    **kwargs: Any,
+) -> object:
     if is_coroutine(func):
         return async_run(func(*args, **kwargs))
     return func(*args, **kwargs)
 
 
-# TODO: TypeVar return
-def async_run(coro: Coroutine[Any, Any, Any]) -> Any:
+def async_run(coro: Coroutine[Any, Any, _T]) -> _T:
     """Execute the coroutine and return the result."""
     return get_or_create_event_loop().run_until_complete(coro)
 
 
-def is_coroutine(obj: Any) -> bool:
+def is_coroutine(obj: Any) -> TypeGuard[CoroType]:
     return asyncio.iscoroutinefunction(obj) or inspect.isgeneratorfunction(obj)
 
 
