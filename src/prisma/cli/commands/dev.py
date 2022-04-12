@@ -19,7 +19,7 @@ def _cli() -> None:
 cli = cast(Any, _cli)
 
 
-@cli.command()
+@cli.command()  # type: ignore[misc]
 @options.schema
 @options.skip_generate
 def playground(schema: Optional[str], skip_generate: bool) -> None:
