@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import Optional, Any, cast
 
 import click
 
@@ -8,11 +8,18 @@ from ...utils import maybe_async_run, temp_env_update, module_exists
 
 
 @click.group()
-def cli() -> None:
+def _cli() -> None:
     """Commands for developing Prisma Client Python"""
 
 
-@cli.command
+# There are some weird false positives that `cli` being a `Group` introduces
+# for some reason. Fixing the errors for one type checker causes errors in an another
+# so just switch to Any for the time being as this is internal and only used once, directly
+# below this line.
+cli = cast(Any, _cli)
+
+
+@cli.command()
 @options.schema
 @options.skip_generate
 def playground(schema: Optional[str], skip_generate: bool) -> None:
