@@ -1025,7 +1025,7 @@ class Lists(BaseModel):
 
     @validator('bytes', pre=True, allow_reuse=True)
     @classmethod
-    def _prisma_bytes_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
+    def _prisma_bytes_bytes_validator(cls, value: Any) -> Union[None, fields.Base64, List[fields.Base64]]:
         return fields.Base64._internal_from_prisma(value)
 
 class A(BaseModel):
@@ -1455,7 +1455,7 @@ class D(BaseModel):
 
     @validator('binary', pre=True, allow_reuse=True)
     @classmethod
-    def _prisma_binary_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
+    def _prisma_binary_bytes_validator(cls, value: Any) -> Union[None, fields.Base64, List[fields.Base64]]:
         return fields.Base64._internal_from_prisma(value)
 
 class E(BaseModel):
