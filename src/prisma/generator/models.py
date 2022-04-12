@@ -787,6 +787,8 @@ class Field(BaseModel):
             return f"'types.{typ}ListFilter'"
 
         if typ in FILTER_TYPES:
+            if self.is_optional:
+                return f"Union[None, {self._actual_python_type}, 'types.{typ}Filter']"
             return f"Union[{self._actual_python_type}, 'types.{typ}Filter']"
 
         return self.python_type

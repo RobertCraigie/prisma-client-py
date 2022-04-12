@@ -51,13 +51,23 @@ model Profile {
 
 // model that just exists for testing different schema types
 model Types {
-  id       Int      @id @default(autoincrement())
-  bool_    Boolean  @default(false)
-  string   String   @default("")
-  bytes    Bytes    @default("")
-  bigint   BigInt   @default(0)
-  integer  Int      @default(0)
-  float_   Float    @default(0)
-  datetime DateTime @default(now())
-  decimal  Decimal  @default(1)
+  id        Int      @id @default(autoincrement())
+  bool_     Boolean  @default(false)
+  string    String   @default("")
+  bytes     Bytes    @default("")
+  bigint    BigInt   @default(0)
+  integer   Int      @default(0)
+  float_    Float    @default(0)
+  datetime_ DateTime @default(now())
+  decimal_  Decimal  @default(1)
+
+  optional_int      Int?      @default(0)
+  optional_bool     Boolean?  @default(false)
+  optional_string   String?   @default("")
+  optional_bytes    Bytes?    @default("")
+  optional_bigint   BigInt?   @default(0)
+  optional_integer  Int?      @default(0)
+  optional_float    Float?    @default(0)
+  optional_datetime DateTime? @default(now())
+  optional_decimal  Decimal?  @default(1)
 }

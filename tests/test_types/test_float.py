@@ -205,3 +205,60 @@ async def test_atomic_update_invalid_input(client: Prisma) -> None:
     message = exc.value.args[0]
     assert isinstance(message, str)
     assert 'Expected exactly one field to be present, got 2' in message
+
+
+@pytest.mark.asyncio
+async def test_filtering_nulls(client: Prisma) -> None:
+    """None is a valid filter for nullable Float fields"""
+    await client.types.create(
+        {
+            'string': 'a',
+            'optional_float': None,
+        },
+    )
+    await client.types.create(
+        {
+            'string': 'b',
+            'optional_float': 1.2,
+        },
+    )
+    await client.types.create(
+        {
+            'string': 'c',
+            'optional_float': 5,
+        },
+    )
+
+    found = await client.types.find_first(
+        where={
+            'NOT': [
+                {
+                    'optional_float': None,
+                },
+            ],
+        },
+        order={
+            'string': 'asc',
+        },
+    )
+    assert found is not None
+    assert found.string == 'b'
+    assert found.optional_float == 1.2
+
+    count = await client.types.count(
+        where={
+            'optional_float': None,
+        },
+    )
+    assert count == 1
+
+    count = await client.types.count(
+        where={
+            'NOT': [
+                {
+                    'optional_float': None,
+                },
+            ],
+        },
+    )
+    assert count == 2

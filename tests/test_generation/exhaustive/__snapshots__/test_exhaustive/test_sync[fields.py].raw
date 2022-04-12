@@ -144,8 +144,11 @@ class Base64:
     @classmethod
     def _internal_from_prisma(
         cls,
-        value: Union[str, 'Base64', List[Union[str, 'Base64']]]
-    ) -> Union['Base64', List['Base64']]:
+        value: Union[None, str, 'Base64', List[Union[str, 'Base64']]]
+    ) -> Union[None, 'Base64', List['Base64']]:
+        if value is None:
+            return None
+
         if isinstance(value, Base64):
             return value
 

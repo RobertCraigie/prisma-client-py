@@ -205,3 +205,60 @@ async def test_atomic_update_invalid_input(client: Prisma) -> None:
     message = exc.value.args[0]
     assert isinstance(message, str)
     assert 'Expected exactly one field to be present, got 2' in message
+
+
+@pytest.mark.asyncio
+async def test_filtering_nulls(client: Prisma) -> None:
+    """None is a valid filter for nullable BigInt fields"""
+    await client.types.create(
+        {
+            'string': 'a',
+            'optional_bigint': None,
+        },
+    )
+    await client.types.create(
+        {
+            'string': 'b',
+            'optional_bigint': 12437823782382,
+        },
+    )
+    await client.types.create(
+        {
+            'string': 'c',
+            'optional_bigint': 8239829842494,
+        },
+    )
+
+    found = await client.types.find_first(
+        where={
+            'NOT': [
+                {
+                    'optional_bigint': None,
+                },
+            ],
+        },
+        order={
+            'string': 'asc',
+        },
+    )
+    assert found is not None
+    assert found.string == 'b'
+    assert found.optional_bigint == 12437823782382
+
+    count = await client.types.count(
+        where={
+            'optional_bigint': None,
+        },
+    )
+    assert count == 1
+
+    count = await client.types.count(
+        where={
+            'NOT': [
+                {
+                    'optional_bigint': None,
+                },
+            ],
+        },
+    )
+    assert count == 2
