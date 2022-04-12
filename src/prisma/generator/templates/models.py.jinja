@@ -218,7 +218,7 @@ class {{ model.name }}(BaseModel):
     {% for field in model.get_fields_of_type('Bytes') %}
     @validator('{{ field.name }}', pre=True, allow_reuse=True)
     @classmethod
-    def _prisma_{{ field.name }}_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
+    def _prisma_{{ field.name }}_bytes_validator(cls, value: Any) -> Union[None, fields.Base64, List[fields.Base64]]:
         return fields.Base64._internal_from_prisma(value)
     {% endfor %}
 

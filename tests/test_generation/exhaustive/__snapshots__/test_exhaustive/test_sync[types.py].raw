@@ -1885,7 +1885,7 @@ class PostWhereInput(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     created_at: Union[datetime.datetime, 'types.DateTimeFilter']
     title: Union[str, 'types.StringFilter']
-    content: Union[str, 'types.StringFilter']
+    content: Union[None, str, 'types.StringFilter']
     published: Union[bool, 'types.BooleanFilter']
     author: 'UserRelationFilter'
     author_id: Union[int, 'types.IntFilter']
@@ -1902,7 +1902,7 @@ class PostWhereInputRecursive1(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     created_at: Union[datetime.datetime, 'types.DateTimeFilter']
     title: Union[str, 'types.StringFilter']
-    content: Union[str, 'types.StringFilter']
+    content: Union[None, str, 'types.StringFilter']
     published: Union[bool, 'types.BooleanFilter']
     author: 'UserRelationFilter'
     author_id: Union[int, 'types.IntFilter']
@@ -1919,7 +1919,7 @@ class PostWhereInputRecursive2(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     created_at: Union[datetime.datetime, 'types.DateTimeFilter']
     title: Union[str, 'types.StringFilter']
-    content: Union[str, 'types.StringFilter']
+    content: Union[None, str, 'types.StringFilter']
     published: Union[bool, 'types.BooleanFilter']
     author: 'UserRelationFilter'
     author_id: Union[int, 'types.IntFilter']
@@ -3098,15 +3098,15 @@ class UserWhereInput(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     email: Union[str, 'types.StringFilter']
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
     posts: 'PostListRelationFilter'
 
     # should be noted that AND and NOT should be Union['UserWhereInputRecursive1', List['UserWhereInputRecursive1']]
@@ -3121,15 +3121,15 @@ class UserWhereInputRecursive1(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     email: Union[str, 'types.StringFilter']
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
     posts: 'PostListRelationFilter'
 
     # should be noted that AND and NOT should be Union['UserWhereInputRecursive2', List['UserWhereInputRecursive2']]
@@ -3144,15 +3144,15 @@ class UserWhereInputRecursive2(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     email: Union[str, 'types.StringFilter']
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
     posts: 'PostListRelationFilter'
 
 
@@ -4380,15 +4380,15 @@ class MWhereInput(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     n: 'NListRelationFilter'
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['MWhereInputRecursive1', List['MWhereInputRecursive1']]
     # but this causes mypy to hang :/
@@ -4402,15 +4402,15 @@ class MWhereInputRecursive1(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     n: 'NListRelationFilter'
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['MWhereInputRecursive2', List['MWhereInputRecursive2']]
     # but this causes mypy to hang :/
@@ -4424,15 +4424,15 @@ class MWhereInputRecursive2(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     n: 'NListRelationFilter'
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
 
 
 
@@ -5674,17 +5674,17 @@ class NWhereInput(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     m: 'MListRelationFilter'
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     json_: Union['fields.Json', 'types.JsonFilter']
-    optional_json: Union['fields.Json', 'types.JsonFilter']
+    optional_json: Union[None, 'fields.Json', 'types.JsonFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['NWhereInputRecursive1', List['NWhereInputRecursive1']]
     # but this causes mypy to hang :/
@@ -5698,17 +5698,17 @@ class NWhereInputRecursive1(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     m: 'MListRelationFilter'
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     json_: Union['fields.Json', 'types.JsonFilter']
-    optional_json: Union['fields.Json', 'types.JsonFilter']
+    optional_json: Union[None, 'fields.Json', 'types.JsonFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['NWhereInputRecursive2', List['NWhereInputRecursive2']]
     # but this causes mypy to hang :/
@@ -5722,17 +5722,17 @@ class NWhereInputRecursive2(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     m: 'MListRelationFilter'
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     json_: Union['fields.Json', 'types.JsonFilter']
-    optional_json: Union['fields.Json', 'types.JsonFilter']
+    optional_json: Union[None, 'fields.Json', 'types.JsonFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
 
 
 
@@ -6970,15 +6970,15 @@ class OneOptionalWhereInput(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     many: 'ManyRequiredListRelationFilter'
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive1', List['OneOptionalWhereInputRecursive1']]
     # but this causes mypy to hang :/
@@ -6992,15 +6992,15 @@ class OneOptionalWhereInputRecursive1(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     many: 'ManyRequiredListRelationFilter'
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive2', List['OneOptionalWhereInputRecursive2']]
     # but this causes mypy to hang :/
@@ -7014,15 +7014,15 @@ class OneOptionalWhereInputRecursive2(TypedDict, total=False):
     id: Union[int, 'types.IntFilter']
     many: 'ManyRequiredListRelationFilter'
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
 
 
 
@@ -8246,17 +8246,17 @@ class ManyRequiredWhereInput(TypedDict, total=False):
     """ManyRequired arguments for searching"""
     id: Union[int, 'types.IntFilter']
     one: 'OneOptionalRelationFilter'
-    one_optional_id: Union[int, 'types.IntFilter']
+    one_optional_id: Union[None, int, 'types.IntFilter']
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive1', List['ManyRequiredWhereInputRecursive1']]
     # but this causes mypy to hang :/
@@ -8269,17 +8269,17 @@ class ManyRequiredWhereInputRecursive1(TypedDict, total=False):
     """ManyRequired arguments for searching"""
     id: Union[int, 'types.IntFilter']
     one: 'OneOptionalRelationFilter'
-    one_optional_id: Union[int, 'types.IntFilter']
+    one_optional_id: Union[None, int, 'types.IntFilter']
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive2', List['ManyRequiredWhereInputRecursive2']]
     # but this causes mypy to hang :/
@@ -8292,17 +8292,17 @@ class ManyRequiredWhereInputRecursive2(TypedDict, total=False):
     """ManyRequired arguments for searching"""
     id: Union[int, 'types.IntFilter']
     one: 'OneOptionalRelationFilter'
-    one_optional_id: Union[int, 'types.IntFilter']
+    one_optional_id: Union[None, int, 'types.IntFilter']
     int: Union[int, 'types.IntFilter']
-    optional_int: Union[int, 'types.IntFilter']
+    optional_int: Union[None, int, 'types.IntFilter']
     float: Union[float, 'types.FloatFilter']
-    optional_float: Union[float, 'types.FloatFilter']
+    optional_float: Union[None, float, 'types.FloatFilter']
     string: Union[str, 'types.StringFilter']
-    optional_string: Union[str, 'types.StringFilter']
+    optional_string: Union[None, str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
     boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, bool, 'types.BooleanFilter']
 
 
 
@@ -10748,7 +10748,7 @@ FindFirstAArgs = FindManyAArgsFromA
 class AWhereInput(TypedDict, total=False):
     """A arguments for searching"""
     email: Union[str, 'types.StringFilter']
-    name: Union[str, 'types.StringFilter']
+    name: Union[None, str, 'types.StringFilter']
     int: Union[int, 'types.IntFilter']
     sInt: Union[int, 'types.IntFilter']
     inc_int: Union[int, 'types.IntFilter']
@@ -10767,7 +10767,7 @@ class AWhereInput(TypedDict, total=False):
 class AWhereInputRecursive1(TypedDict, total=False):
     """A arguments for searching"""
     email: Union[str, 'types.StringFilter']
-    name: Union[str, 'types.StringFilter']
+    name: Union[None, str, 'types.StringFilter']
     int: Union[int, 'types.IntFilter']
     sInt: Union[int, 'types.IntFilter']
     inc_int: Union[int, 'types.IntFilter']
@@ -10786,7 +10786,7 @@ class AWhereInputRecursive1(TypedDict, total=False):
 class AWhereInputRecursive2(TypedDict, total=False):
     """A arguments for searching"""
     email: Union[str, 'types.StringFilter']
-    name: Union[str, 'types.StringFilter']
+    name: Union[None, str, 'types.StringFilter']
     int: Union[int, 'types.IntFilter']
     sInt: Union[int, 'types.IntFilter']
     inc_int: Union[int, 'types.IntFilter']
