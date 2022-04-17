@@ -1,9 +1,13 @@
-from pydantic import BaseModel
-from prisma.generator import GenericGenerator, GenericData, Manifest
+from prisma.generator import (
+    GenericGenerator,
+    GenericData,
+    BaseConfig,
+    Manifest,
+)
 
 
 # custom options must be defined using a pydantic BaseModel
-class Config(BaseModel):
+class Config(BaseConfig):
     my_option: int
 
 
