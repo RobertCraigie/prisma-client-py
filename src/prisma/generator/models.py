@@ -277,9 +277,9 @@ class GenericData(GenericModel, Generic[ConfigT]):
     dmmf: 'DMMF' = FieldInfo(alias='dmmf')
     schema_path: str = FieldInfo(alias='schemaPath')
     datasources: List['Datasource'] = FieldInfo(alias='datasources')
-
-    # TODO
-    other_generators: List[Any] = FieldInfo(alias='otherGenerators')
+    other_generators: List['Generator[BaseModel]'] = FieldInfo(
+        alias='otherGenerators'
+    )
 
     @classmethod
     def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
