@@ -935,8 +935,8 @@ class DefaultValue(BaseModel):
     name: str
 
 
-class _EmptyModel(BaseModel):
-    class Config(BaseModel.Config):
+class _EmptyModel(BaseConfig):
+    class Config(BaseConfig.Config):
         extra: Extra = Extra.forbid
 
 
