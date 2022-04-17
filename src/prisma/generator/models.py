@@ -278,7 +278,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
     dmmf: 'DMMF' = FieldInfo(alias='dmmf')
     schema_path: str = FieldInfo(alias='schemaPath')
     datasources: List['Datasource'] = FieldInfo(alias='datasources')
-    other_generators: List['Generator[BaseModel]'] = FieldInfo(
+    other_generators: List['Generator[BaseConfig]'] = FieldInfo(
         alias='otherGenerators'
     )
 
