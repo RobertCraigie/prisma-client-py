@@ -277,7 +277,8 @@ class GenericData(GenericModel, Generic[ConfigT]):
     dmmf: 'DMMF' = FieldInfo(alias='dmmf')
     schema_path: str = FieldInfo(alias='schemaPath')
     datasources: List['Datasource'] = FieldInfo(alias='datasources')
-    other_generators: List['Generator[BaseModel]'] = FieldInfo(
+
+    other_generators: List['Generator[_ModelAllowAll]'] = FieldInfo(
         alias='otherGenerators'
     )
 
@@ -935,6 +936,11 @@ class DefaultValue(BaseModel):
 class _EmptyModel(BaseModel):
     class Config(BaseModel.Config):
         extra: Extra = Extra.forbid
+
+
+class _ModelAllowAll(BaseModel):
+    class Config(BaseModel.Config):
+        extra: Extra = Extra.allow
 
 
 class PythonData(GenericData[Config]):
