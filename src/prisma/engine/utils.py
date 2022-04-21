@@ -106,13 +106,19 @@ def handle_response_errors(resp: AbstractResponse[Any], data: Any) -> NoReturn:
             if code is None:
                 continue
 
-            exc = ERROR_MAPPING.get(code)
-            if exc is not None:
-                raise exc(error)
-
+            # TODO: the order of these if statements is important because
+            # the P2009 code can be returned for both: missing a required value
+            # and an unknown field error. As we want to explicitly handle
+            # the missing a required value error then we need to check for that first.
+            # As we can only check for this error by searching the message then this
+            # comes with performance concerns.
             message = user_facing.get('message', '')
             if 'A value is required but not set' in message:
                 raise prisma_errors.MissingRequiredValueError(error)
+
+            exc = ERROR_MAPPING.get(code)
+            if exc is not None:
+                raise exc(error)
         except (KeyError, TypeError):
             continue
 
