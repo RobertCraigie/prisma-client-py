@@ -6,6 +6,9 @@ from prisma.errors import FieldNotFoundError
 
 @pytest.mark.asyncio
 async def test_field_not_found_error(client: Prisma) -> None:
+    """The FieldNotFoundError is raised when an unknown field is passed to
+    both queries and mutations.
+    """
     with pytest.raises(FieldNotFoundError, match='bad_field'):
         await client.post.find_first(where={'bad_field': 'foo'})  # type: ignore
 
