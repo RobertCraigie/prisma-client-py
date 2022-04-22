@@ -95,6 +95,13 @@ class TableNotFoundError(DataError):
         self.table = self.meta.get('table')  # type: Optional[str]
 
 
+class FieldNotFoundError(DataError):
+    # currently we cannot easilt resolve the erroneous field as Prisma
+    # returns different results for unknown fields in different situations
+    # e.g. root query, nested query and mutation queries
+    ...
+
+
 class RecordNotFoundError(DataError):
     pass
 
