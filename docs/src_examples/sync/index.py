@@ -1,8 +1,8 @@
-from prisma import Client
+from prisma import Prisma
 
 
 def main() -> None:
-    db = Client()
+    db = Prisma()
     db.connect()
 
     post = db.post.create(

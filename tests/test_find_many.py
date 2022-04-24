@@ -1,10 +1,10 @@
 import pytest
 import prisma
-from prisma import Client
+from prisma import Prisma
 
 
 @pytest.mark.asyncio
-async def test_find_many(client: Client) -> None:
+async def test_find_many(client: Prisma) -> None:
     """Filters and ordering work as suggested"""
     posts = [
         await client.post.create({'title': 'Test post 1', 'published': False}),
@@ -19,17 +19,25 @@ async def test_find_many(client: Client) -> None:
     )
     assert len(posts) == 2
 
-    posts = await client.post.find_many(where={'title': {'contains': 'Test post'}})
+    posts = await client.post.find_many(
+        where={'title': {'contains': 'Test post'}}
+    )
     assert len(posts) == 2
 
-    posts = await client.post.find_many(where={'title': {'startswith': 'Test post'}})
+    posts = await client.post.find_many(
+        where={'title': {'startswith': 'Test post'}}
+    )
     assert len(posts) == 2
 
-    posts = await client.post.find_many(where={'title': {'not_in': ['Test post 1']}})
+    posts = await client.post.find_many(
+        where={'title': {'not_in': ['Test post 1']}}
+    )
     assert len(posts) == 1
     assert posts[0].title == 'Test post 2'
 
-    posts = await client.post.find_many(where={'title': {'equals': 'Test post 2'}})
+    posts = await client.post.find_many(
+        where={'title': {'equals': 'Test post 2'}}
+    )
     assert len(posts) == 1
     assert posts[0].title == 'Test post 2'
 
@@ -49,7 +57,7 @@ async def test_find_many(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_cursor(client: Client) -> None:
+async def test_cursor(client: Prisma) -> None:
     """Cursor argument correctly paginates results"""
     posts = [
         await client.post.create({'title': 'Foo 1', 'published': False}),
@@ -77,14 +85,17 @@ async def test_cursor(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_one_to_one_relation(client: Client) -> None:
+async def test_filtering_one_to_one_relation(client: Prisma) -> None:
     """Filtering by a 1-1 relational field and negating the filter"""
     async with client.batch_() as batcher:
         batcher.user.create(
             {
                 'name': 'Robert',
                 'profile': {
-                    'create': {'bio': 'My very cool bio.', 'country': 'Scotland'}
+                    'create': {
+                        'bio': 'My very cool bio.',
+                        'country': 'Scotland',
+                    }
                 },
             },
         )
@@ -123,7 +134,7 @@ async def test_filtering_one_to_one_relation(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_one_to_many_relation(client: Client) -> None:
+async def test_filtering_one_to_many_relation(client: Prisma) -> None:
     """Filtering by a 1-M relational field and negating the filter"""
     async with client.batch_() as batcher:
         batcher.user.create(
@@ -172,12 +183,14 @@ async def test_filtering_one_to_many_relation(client: Client) -> None:
     assert len(users) == 1
     assert users[0].name == 'Callum'
 
-    users = await client.user.find_many(where={'posts': {'some': {'title': 'foo'}}})
+    users = await client.user.find_many(
+        where={'posts': {'some': {'title': 'foo'}}}
+    )
     assert len(users) == 0
 
 
 @pytest.mark.asyncio
-async def test_ordering(client: Client) -> None:
+async def test_ordering(client: Prisma) -> None:
     """Ordering by `asc` and `desc` correctly changes the order of the returned records"""
     async with client.batch_() as batcher:
         batcher.post.create({'title': 'Test post 1', 'published': False})
@@ -221,7 +234,7 @@ async def test_ordering(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_order_field_not_nullable(client: Client) -> None:
+async def test_order_field_not_nullable(client: Prisma) -> None:
     """Order by fields, if present, cannot be None"""
     with pytest.raises(prisma.errors.MissingRequiredValueError) as exc:
         await client.post.find_many(order={'desc': None})  # type: ignore

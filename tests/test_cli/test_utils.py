@@ -44,7 +44,7 @@ def test_wrong_cli_type(runner: Runner) -> None:
     assert isinstance(result.exception, AssertionError)
     assert str(result.exception) == (
         'Expected command module attribute tests.test_cli.commands.wrong_cli_type.cli '
-        'to be a <class \'click.core.Command\'> instance but got <class \'function\'> '
+        "to be a <class 'click.core.Command'> instance but got <class 'function'> "
         'instead'
     )
 

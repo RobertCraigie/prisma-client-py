@@ -6,22 +6,32 @@ datasource db {
 }
 
 generator db {
-  provider             = "prisma-client-py"
-  interface            = "asyncio"
-  recursive_type_depth = 3
-  output               = "../../../.tests_cache/generation/exhaustive/__prisma_async_output__/prisma"
+  provider                    = "prisma-client-py"
+  interface                   = "asyncio"
+  recursive_type_depth        = 3
+  output                      = "../../../.tests_cache/generation/exhaustive/__prisma_async_output__/prisma"
+  enable_experimental_decimal = true
 }
 
+/// Post model documentation
 model Post {
   id         Int      @id @default(autoincrement())
   created_at DateTime @default(now())
   title      String
   content    String?
-  published  Boolean  @default(false)
-  author     User     @relation(fields: [author_id], references: [id])
-  author_id  Int
+
+  /// Has the post been made public yet?
+  published Boolean @default(false)
+
+  /// Relation to the User model
+  /// Second line comment with ' and "
+  author    User @relation(fields: [author_id], references: [id])
+  author_id Int
 }
 
+/// User model documentation
+///
+/// Third line comment
 model User {
   id               Int             @id @default(autoincrement())
   email            String          @unique
@@ -112,8 +122,7 @@ model Lists {
   floats       Float[]
   bigints      BigInt[]
   json_objects Json[]
-  // TODO
-  // decimals     Decimal[]
+  decimals     Decimal[]
 }
 
 enum ABeautifulEnum {
@@ -137,13 +146,11 @@ model A {
 }
 
 model B {
-  id      String @id @default(cuid())
-  float   Float  @db.Real
-  d_float Float  @db.DoublePrecision
-
-  // TODO
-  // decFloat Decimal @db.Decimal(2, 1)
-  // numFloat Decimal @db.Decimal(10, 6)
+  id       String  @id @default(cuid())
+  float    Float   @db.Real
+  d_float  Float   @db.DoublePrecision
+  decFloat Decimal @db.Decimal(2, 1)
+  numFloat Decimal @db.Decimal(10, 6)
 
   @@unique([float, d_float], name: "my_constraint")
 }

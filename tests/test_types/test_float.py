@@ -1,10 +1,10 @@
 import pytest
-from prisma import Client
+from prisma import Prisma
 from prisma.errors import DataError
 
 
 @pytest.mark.asyncio
-async def test_filtering(client: Client) -> None:
+async def test_filtering(client: Prisma) -> None:
     """Finding records by a a float value"""
     async with client.batch_() as batcher:
         for i in range(10):
@@ -117,7 +117,7 @@ async def test_filtering(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_atomic_update(client: Client) -> None:
+async def test_atomic_update(client: Prisma) -> None:
     """Atomically updating a float value"""
     model = await client.types.create({'id': 1, 'float_': 1})
     assert model.float_ == 1
@@ -187,14 +187,14 @@ async def test_atomic_update(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_atomic_update_invalid_input(client: Client) -> None:
+async def test_atomic_update_invalid_input(client: Prisma) -> None:
     """Float atomic update only allows one field to be passed"""
     with pytest.raises(DataError) as exc:
         await client.types.update(
             where={
                 'id': 1,
             },
-            data={  # pyright: reportGeneralTypeIssues=false
+            data={  # pyright: ignore[reportGeneralTypeIssues]
                 'float_': {  # type: ignore
                     'divide': 1,
                     'multiply': 2,
@@ -205,3 +205,60 @@ async def test_atomic_update_invalid_input(client: Client) -> None:
     message = exc.value.args[0]
     assert isinstance(message, str)
     assert 'Expected exactly one field to be present, got 2' in message
+
+
+@pytest.mark.asyncio
+async def test_filtering_nulls(client: Prisma) -> None:
+    """None is a valid filter for nullable Float fields"""
+    await client.types.create(
+        {
+            'string': 'a',
+            'optional_float': None,
+        },
+    )
+    await client.types.create(
+        {
+            'string': 'b',
+            'optional_float': 1.2,
+        },
+    )
+    await client.types.create(
+        {
+            'string': 'c',
+            'optional_float': 5,
+        },
+    )
+
+    found = await client.types.find_first(
+        where={
+            'NOT': [
+                {
+                    'optional_float': None,
+                },
+            ],
+        },
+        order={
+            'string': 'asc',
+        },
+    )
+    assert found is not None
+    assert found.string == 'b'
+    assert found.optional_float == 1.2
+
+    count = await client.types.count(
+        where={
+            'optional_float': None,
+        },
+    )
+    assert count == 1
+
+    count = await client.types.count(
+        where={
+            'NOT': [
+                {
+                    'optional_float': None,
+                },
+            ],
+        },
+    )
+    assert count == 2

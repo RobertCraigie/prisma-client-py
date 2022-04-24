@@ -2,7 +2,7 @@ import threading
 from typing import Optional, NoReturn, Any
 
 import pytest
-from prisma import Client
+from prisma import Prisma
 from prisma.models import User
 
 
@@ -51,7 +51,7 @@ def test_propagating_thread() -> None:
         thread.join()
 
 
-def test_threading(client: Client) -> None:
+def test_threading(client: Prisma) -> None:
     """Ensure the registered client is shared between threads"""
 
     def runner() -> None:

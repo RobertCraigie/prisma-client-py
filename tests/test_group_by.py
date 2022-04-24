@@ -2,7 +2,7 @@ import pytest
 from syrupy.assertion import SnapshotAssertion
 
 import prisma
-from prisma import Client
+from prisma import Prisma
 from prisma.types import SortOrder
 
 from .utils import async_fixture
@@ -13,7 +13,7 @@ from .utils import async_fixture
 
 
 @async_fixture(autouse=True, scope='session')
-async def create_test_data(client: Client) -> None:
+async def create_test_data(client: Prisma) -> None:
     create = client.profile.create
     await create(
         {
@@ -57,7 +57,7 @@ async def create_test_data(client: Client) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_group_by(snapshot: SnapshotAssertion, client: Client) -> None:
+async def test_group_by(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Basic test grouping by 1 field with no additional filters"""
     assert await client.user.group_by(['name']) == snapshot
     assert await client.profile.group_by(['country']) == snapshot
@@ -65,7 +65,9 @@ async def test_group_by(snapshot: SnapshotAssertion, client: Client) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_docs_example(snapshot: SnapshotAssertion, client: Client) -> None:
+async def test_docs_example(
+    snapshot: SnapshotAssertion, client: Prisma
+) -> None:
     """Test the example given in the Prisma documentation:
     https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#groupby
     """
@@ -96,17 +98,18 @@ async def test_docs_example(snapshot: SnapshotAssertion, client: Client) -> None
 @pytest.mark.persist_data
 @pytest.mark.parametrize('order', ['asc', 'desc'])
 async def test_order(
-    snapshot: SnapshotAssertion, client: Client, order: SortOrder
+    snapshot: SnapshotAssertion, client: Prisma, order: SortOrder
 ) -> None:
     """Test ordering results by a grouped field"""
     assert (
-        await client.profile.group_by(['country'], order={'country': order}) == snapshot
+        await client.profile.group_by(['country'], order={'country': order})
+        == snapshot
     )
 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_order_list(snapshot: SnapshotAssertion, client: Client) -> None:
+async def test_order_list(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Test ordering results by a list of grouped fields"""
     results = await client.profile.group_by(
         by=['country', 'city'],
@@ -120,7 +123,7 @@ async def test_order_list(snapshot: SnapshotAssertion, client: Client) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_order_multiple_fields(client: Client) -> None:
+async def test_order_multiple_fields(client: Prisma) -> None:
     """Test ordering results by multiple fields is not support"""
     with pytest.raises(prisma.errors.DataError):
         await client.profile.group_by(
@@ -130,12 +133,12 @@ async def test_order_multiple_fields(client: Client) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_order_mismatched_arguments(client: Client) -> None:
+async def test_order_mismatched_arguments(client: Prisma) -> None:
     """The order argument only accepts fields that are being grouped"""
     with pytest.raises(prisma.errors.InputError) as exc:
         await client.profile.group_by(
             ['city'],
-            order={  # pyright: reportGeneralTypeIssues=false
+            order={
                 'country': 'asc',
             },
         )
@@ -150,24 +153,26 @@ async def test_order_mismatched_arguments(client: Client) -> None:
 @pytest.mark.persist_data
 @pytest.mark.parametrize('order', ['asc', 'desc'])
 async def test_take(
-    snapshot: SnapshotAssertion, client: Client, order: SortOrder
+    snapshot: SnapshotAssertion, client: Prisma, order: SortOrder
 ) -> None:
     """Take argument limits number of records returned"""
     assert (
-        await client.profile.group_by(['country'], take=1, order={'country': order})
+        await client.profile.group_by(
+            ['country'], take=1, order={'country': order}
+        )
         == snapshot
     )
 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_take_missing_order_argument(client: Client) -> None:
+async def test_take_missing_order_argument(client: Prisma) -> None:
     """The order argument must be provided to use take"""
     with pytest.raises(TypeError) as exc:
         await client.profile.group_by(['country'], take=1)
 
     assert exc.match(
-        'Missing argument: \'order\' which is required when \'take\' is present'
+        "Missing argument: 'order' which is required when 'take' is present"
     )
 
 
@@ -175,32 +180,36 @@ async def test_take_missing_order_argument(client: Client) -> None:
 @pytest.mark.persist_data
 @pytest.mark.parametrize('order', ['asc', 'desc'])
 async def test_skip(
-    snapshot: SnapshotAssertion, client: Client, order: SortOrder
+    snapshot: SnapshotAssertion, client: Prisma, order: SortOrder
 ) -> None:
     """Skipping grouped records"""
     assert (
-        await client.profile.group_by(['country'], skip=1, order={'country': order})
+        await client.profile.group_by(
+            ['country'], skip=1, order={'country': order}
+        )
         == snapshot
     )
 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_skip_missing_order_argument(client: Client) -> None:
+async def test_skip_missing_order_argument(client: Prisma) -> None:
     """The order argument must be provided to use skip"""
     with pytest.raises(TypeError) as exc:
         await client.profile.group_by(['country'], skip=1)
 
     assert exc.match(
-        'Missing argument: \'order\' which is required when \'skip\' is present'
+        "Missing argument: 'order' which is required when 'skip' is present"
     )
 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_where(client: Client) -> None:
+async def test_where(client: Prisma) -> None:
     """Where argument correctly filters records"""
-    results = await client.profile.group_by(['country'], where={'country': 'Denmark'})
+    results = await client.profile.group_by(
+        ['country'], where={'country': 'Denmark'}
+    )
     assert len(results) == 1
     assert results[0].get('country') == 'Denmark'
 
@@ -213,7 +222,7 @@ async def test_where(client: Client) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_having_missing_field_in_by(client: Client) -> None:
+async def test_having_missing_field_in_by(client: Prisma) -> None:
     """Having filters must be an aggregation filter or be included in by"""
     with pytest.raises(prisma.errors.InputError) as exc:
         await client.profile.group_by(
@@ -234,7 +243,9 @@ async def test_having_missing_field_in_by(client: Client) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_having_aggregation(snapshot: SnapshotAssertion, client: Client) -> None:
+async def test_having_aggregation(
+    snapshot: SnapshotAssertion, client: Prisma
+) -> None:
     """Having aggregation filters records correctly"""
     assert (
         await client.profile.group_by(
@@ -269,7 +280,7 @@ async def test_having_aggregation(snapshot: SnapshotAssertion, client: Client) -
 @pytest.mark.asyncio
 @pytest.mark.persist_data
 async def test_having_aggregation_nested(
-    snapshot: SnapshotAssertion, client: Client
+    snapshot: SnapshotAssertion, client: Prisma
 ) -> None:
     """Having aggregation filters nested within statements correctly filters records"""
     results = await client.profile.group_by(
@@ -356,11 +367,17 @@ async def test_having_aggregation_nested(
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_count(snapshot: SnapshotAssertion, client: Client) -> None:
+async def test_count(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Counting records"""
     assert await client.profile.group_by(['country'], count=True) == snapshot
-    assert await client.profile.group_by(['country'], count={'_all': True}) == snapshot
-    assert await client.profile.group_by(['country'], count={'city': True}) == snapshot
+    assert (
+        await client.profile.group_by(['country'], count={'_all': True})
+        == snapshot
+    )
+    assert (
+        await client.profile.group_by(['country'], count={'city': True})
+        == snapshot
+    )
     assert (
         await client.profile.group_by(
             ['country'], count={'city': True, 'country': True}
@@ -371,31 +388,45 @@ async def test_count(snapshot: SnapshotAssertion, client: Client) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_avg(snapshot: SnapshotAssertion, client: Client) -> None:
+async def test_avg(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the average of records"""
-    assert await client.profile.group_by(['country'], avg={'views': True}) == snapshot
     assert (
-        await client.types.group_by(['string'], avg={'integer': True, 'bigint': True})
+        await client.profile.group_by(['country'], avg={'views': True})
+        == snapshot
+    )
+    assert (
+        await client.types.group_by(
+            ['string'], avg={'integer': True, 'bigint': True}
+        )
         == snapshot
     )
 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_sum(snapshot: SnapshotAssertion, client: Client) -> None:
+async def test_sum(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the sum of records"""
-    assert await client.profile.group_by(['country'], sum={'views': True}) == snapshot
+    assert (
+        await client.profile.group_by(['country'], sum={'views': True})
+        == snapshot
+    )
 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_min(snapshot: SnapshotAssertion, client: Client) -> None:
+async def test_min(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the minimum value of records"""
-    assert await client.profile.group_by(['country'], min={'views': True}) == snapshot
+    assert (
+        await client.profile.group_by(['country'], min={'views': True})
+        == snapshot
+    )
 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_max(snapshot: SnapshotAssertion, client: Client) -> None:
+async def test_max(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the maximum value of records"""
-    assert await client.profile.group_by(['country'], max={'views': True}) == snapshot
+    assert (
+        await client.profile.group_by(['country'], max={'views': True})
+        == snapshot
+    )

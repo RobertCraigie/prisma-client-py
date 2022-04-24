@@ -3,11 +3,12 @@ datasource db {
   url      = env("PRISMA_PY_POSTGRES_URL")
 }
 
-generator db {
-  provider             = "coverage run -m prisma"
-  interface            = "asyncio"
-  recursive_type_depth = -1
-  engineType           = "binary"
+generator client {
+  provider                    = "coverage run -m prisma"
+  interface                   = "asyncio"
+  recursive_type_depth        = -1
+  engineType                  = "binary"
+  enable_experimental_decimal = true
 }
 
 model User {
@@ -54,6 +55,7 @@ model Lists {
   bigints      BigInt[]
   json_objects Json[]
   roles        Role[]
+  decimals     Decimal[]
 }
 
 // these models are here for testing different combinations of unique constraints

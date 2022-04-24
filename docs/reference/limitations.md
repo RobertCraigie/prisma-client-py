@@ -69,10 +69,10 @@ filtering by a relational field, for example, the following will not raise any m
 however an error will be raised at runtime.
 
 ```py
-from prisma import Client
+from prisma import Prisma
 
-async def main(client: Client) -> None:
-    user = await client.user.find_first(
+async def main(db: Prisma) -> None:
+    user = await db.user.find_first(
         where={
             'profile': {
                 'is': {

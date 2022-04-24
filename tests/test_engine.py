@@ -7,7 +7,7 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from pytest_subprocess import FakeProcess
 
-from prisma import Client
+from prisma import Prisma
 from prisma.utils import temp_env_update
 from prisma.binaries import platform
 from prisma.binaries import BINARIES, ENGINE_VERSION
@@ -45,7 +45,7 @@ def no_event_loop() -> Iterator[None]:
 @pytest.mark.asyncio
 async def test_engine_connects() -> None:
     """Can connect to engine"""
-    db = Client()
+    db = Prisma()
     await db.connect()
 
     with pytest.raises(errors.AlreadyConnectedError):
@@ -92,7 +92,9 @@ def test_mismatched_version_error(fake_process: FakeProcess) -> None:
     )
 
 
-def test_ensure_local_path(testdir: Testdir, fake_process: FakeProcess) -> None:
+def test_ensure_local_path(
+    testdir: Testdir, fake_process: FakeProcess
+) -> None:
     """Query engine in current directory required to be the expected version"""
     fake_engine = testdir.path / platform.check_for_extension(
         f'prisma-query-engine-{platform.binary_platform()}'
@@ -114,7 +116,9 @@ def test_ensure_local_path(testdir: Testdir, fake_process: FakeProcess) -> None:
     assert path == fake_engine
 
 
-def test_ensure_env_override(testdir: Testdir, fake_process: FakeProcess) -> None:
+def test_ensure_env_override(
+    testdir: Testdir, fake_process: FakeProcess
+) -> None:
     """Query engine path in environment variable can be any version"""
     fake_engine = testdir.path / 'my-query-engine'
     fake_engine.touch()

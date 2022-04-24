@@ -27,7 +27,7 @@ def test_no_args_outside_generation_warning(runner: Runner) -> None:
 def test_invalid_command(runner: Runner) -> None:
     """Trying to run an unknown command errors"""
     result = runner.invoke(['py', 'unknown'])
-    assert 'Error: No such command \'unknown\'' in result.output
+    assert "Error: No such command 'unknown'" in result.output
 
 
 @pytest.mark.parametrize('args', [['py'], ['py', '--help']])
@@ -46,7 +46,10 @@ def test_outputs_custom_commands_info(runner: Runner, args: List[str]) -> None:
     """Running `prisma --help` also outputs a message for our help command"""
     result = runner.invoke(args)
     assert 'Python Commands' in result.output
-    assert 'For Prisma Client Python commands see prisma py --help' in result.output
+    assert (
+        'For Prisma Client Python commands see prisma py --help'
+        in result.output
+    )
 
 
 def test_int_enum_choice() -> None:
@@ -90,7 +93,7 @@ def test_str_enum_choice(runner: Runner) -> None:
     assert result.output == 'is alice\n'
 
     result = runner.invoke(['--argument=invalid'], cli=cli)
-    assert 'Error: Invalid value for \'--argument\':' in result.output
+    assert "Error: Invalid value for '--argument':" in result.output
     assert 'bob' in result.output
     assert 'alice' in result.output
     assert 'invalid' in result.output

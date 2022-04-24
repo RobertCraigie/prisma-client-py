@@ -1,9 +1,10 @@
 import pytest
-from prisma import Client
+from prisma import Prisma
+from prisma.types import UserWhereInput
 
 
 @pytest.mark.asyncio
-async def test_find_first(client: Client) -> None:
+async def test_find_first(client: Prisma) -> None:
     """Skips multiple non-matching records"""
     posts = [
         await client.post.create(
@@ -52,7 +53,9 @@ async def test_find_first(client: Client) -> None:
     assert post.title == 'Test post 4'
     assert post.published is True
 
-    post = await client.post.find_first(where={'title': {'contains': 'not found'}})
+    post = await client.post.find_first(
+        where={'title': {'contains': 'not found'}}
+    )
     assert post is None
 
     post = await client.post.find_first(where={'published': True}, skip=1)
@@ -177,14 +180,17 @@ async def test_find_first(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_one_to_one_relation(client: Client) -> None:
+async def test_filtering_one_to_one_relation(client: Prisma) -> None:
     """Filtering by a 1-1 relational field and negating the filter"""
     async with client.batch_() as batcher:
         batcher.user.create(
             {
                 'name': 'Robert',
                 'profile': {
-                    'create': {'bio': 'My very cool bio.', 'country': 'Scotland'},
+                    'create': {
+                        'bio': 'My very cool bio.',
+                        'country': 'Scotland',
+                    },
                 },
             },
         )
@@ -217,7 +223,9 @@ async def test_filtering_one_to_one_relation(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_and_ordering_one_to_many_relation(client: Client) -> None:
+async def test_filtering_and_ordering_one_to_many_relation(
+    client: Prisma,
+) -> None:
     """Filtering with every, some, none and ordering by a 1-M relational field"""
     async with client.batch_() as batcher:
         batcher.user.create(
@@ -256,7 +264,9 @@ async def test_filtering_and_ordering_one_to_many_relation(client: Client) -> No
     assert user is not None
     assert user.name == 'Callum'
 
-    user = await client.user.find_first(where={'posts': {'some': {'title': 'foo'}}})
+    user = await client.user.find_first(
+        where={'posts': {'some': {'title': 'foo'}}}
+    )
     assert user is None
 
     # ordering
@@ -274,3 +284,29 @@ async def test_filtering_and_ordering_one_to_many_relation(client: Client) -> No
     )
     assert user is not None
     assert user.name == 'Tegan'
+
+
+@pytest.mark.asyncio
+async def test_list_wrapper_query_transformation(client: Prisma) -> None:
+    """Queries wrapped within a list transform global aliases"""
+    query: UserWhereInput = {
+        'OR': [
+            {'name': {'startswith': '40'}},
+            {'name': {'contains': ', 40'}},
+            {'name': {'contains': 'house'}},
+        ]
+    }
+
+    await client.user.create({'name': 'Robert house'})
+    found = await client.user.find_first(
+        where=query, order={'created_at': 'asc'}
+    )
+    assert found is not None
+    assert found.name == 'Robert house'
+
+    await client.user.create({'name': '40 robert'})
+    found = await client.user.find_first(
+        skip=1, where=query, order={'created_at': 'asc'}
+    )
+    assert found is not None
+    assert found.name == '40 robert'

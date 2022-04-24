@@ -8,7 +8,7 @@ set +x
 source .venv/bin/activate
 set -x
 
-pip install -U 'pyright>=0.0.7'
+pip install -U -r requirements.txt
 pip install -U --force-reinstall ../../../.tests_cache/dist/*.whl
 
 prisma generate

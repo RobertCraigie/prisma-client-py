@@ -10,8 +10,12 @@ from ..utils import Testdir
 def _remove_coverage_warnings(output: str) -> str:
     # as we run generation under coverage we need to remove any warnings
     # for example, coverage.py will warn that the tests module was not imported
-    output = re.sub(r'.* prisma:GeneratorProcess .* CoverageWarning:.*', '', output)
-    output = re.sub(r'.* prisma:GeneratorProcess .* was never imported.*', '', output)
+    output = re.sub(
+        r'.* prisma:GeneratorProcess .* CoverageWarning:.*', '', output
+    )
+    output = re.sub(
+        r'.* prisma:GeneratorProcess .* was never imported.*', '', output
+    )
     return output
 
 
@@ -23,12 +27,12 @@ def test_field_name_basemodel_attribute(testdir: Testdir) -> None:
     """Field name shadowing a basemodel attribute is not allowed"""
     schema = (
         testdir.SCHEMA_HEADER
-        + '''
+        + """
         model User {{
             id   String @id
             json String
         }}
-    '''
+    """
     )
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(schema=schema)
@@ -44,12 +48,12 @@ def test_field_name_python_keyword(testdir: Testdir) -> None:
     """Field name shadowing a python keyword is not allowed"""
     schema = (
         testdir.SCHEMA_HEADER
-        + '''
+        + """
         model User {{
             id   String @id
             from String
         }}
-    '''
+    """
     )
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(schema=schema)
@@ -64,12 +68,12 @@ def test_field_name_prisma_not_allowed(testdir: Testdir) -> None:
     """Field name "prisma" is not allowed as it overrides our own method"""
     schema = (
         testdir.SCHEMA_HEADER
-        + '''
+        + """
         model User {{
             id     String @id
             prisma String
         }}
-    '''
+    """
     )
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(schema=schema)
@@ -80,7 +84,9 @@ def test_field_name_prisma_not_allowed(testdir: Testdir) -> None:
     ) in str(exc.value.output, 'utf-8')
 
 
-def test_field_name_matching_query_builder_alias_not_allowed(testdir: Testdir) -> None:
+def test_field_name_matching_query_builder_alias_not_allowed(
+    testdir: Testdir,
+) -> None:
     """A field name that is the same as an alias used by our internal query builder
     is not allowed as it will lead to confusing error messages
 
@@ -88,12 +94,12 @@ def test_field_name_matching_query_builder_alias_not_allowed(testdir: Testdir) -
     """
     schema = (
         testdir.SCHEMA_HEADER
-        + '''
+        + """
         model User {{
             id       String @id
             order_by String
         }}
-    '''
+    """
     )
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(schema=schema)
@@ -102,32 +108,6 @@ def test_field_name_matching_query_builder_alias_not_allowed(testdir: Testdir) -
         'Field name "order_by" shadows an internal keyword; '
         'use a different field name with \'@map("order_by")\''
     ) in str(exc.value.output, 'utf-8')
-
-
-def test_unknown_type(testdir: Testdir) -> None:
-    """Unsupported scalar type is not allowed"""
-    # TODO: will have to remove this test eventually
-    schema = '''
-        datasource db {{
-          provider = "postgres"
-          url      = env("POSTGRES_URL")
-        }}
-
-        generator db {{
-          provider = "coverage run -m prisma"
-          output = "{output}"
-          {options}
-        }}
-
-        model User {{
-            id   String @id
-            meta Decimal
-        }}
-    '''
-    with pytest.raises(subprocess.CalledProcessError) as exc:
-        testdir.generate(schema=schema)
-
-    assert 'Unsupported scalar field type: Decimal' in str(exc.value.output, 'utf-8')
 
 
 def test_native_binary_target_no_warning(testdir: Testdir) -> None:
@@ -187,7 +167,7 @@ def test_compound_id_implicit_field_shaddowing(testdir: Testdir) -> None:
     """
     schema = (
         testdir.SCHEMA_HEADER
-        + '''
+        + """
         model User {{
             name         String
             surname      String
@@ -195,7 +175,7 @@ def test_compound_id_implicit_field_shaddowing(testdir: Testdir) -> None:
 
             @@id([name, surname])
         }}
-    '''
+    """
     )
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(schema=schema)
@@ -207,14 +187,16 @@ def test_compound_id_implicit_field_shaddowing(testdir: Testdir) -> None:
     ) in str(exc.value.output, 'utf-8')
 
 
-def test_compound_unique_constraint_implicit_field_shaddowing(testdir: Testdir) -> None:
+def test_compound_unique_constraint_implicit_field_shaddowing(
+    testdir: Testdir,
+) -> None:
     """Compound unique constraints cannot implicitly have the same name as an already defined field
 
     https://github.com/prisma/prisma/issues/10456
     """
     schema = (
         testdir.SCHEMA_HEADER
-        + '''
+        + """
         model User {{
             name         String
             surname      String
@@ -222,7 +204,7 @@ def test_compound_unique_constraint_implicit_field_shaddowing(testdir: Testdir) 
 
             @@unique([name, surname])
         }}
-    '''
+    """
     )
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(schema=schema)
@@ -232,3 +214,24 @@ def test_compound_unique_constraint_implicit_field_shaddowing(testdir: Testdir) 
         'Please choose a different name. For example: \n'
         '  @@unique([name, surname], name: "my_custom_primary_key")'
     ) in str(exc.value.output, 'utf-8')
+
+
+def test_decimal_type_experimental(testdir: Testdir) -> None:
+    """The Decimal type requires a config flag to be set"""
+    schema = (
+        testdir.SCHEMA_HEADER
+        + """
+        model User {{
+          id     String @id @default(cuid())
+          points Decimal
+        }}
+    """
+    )
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    output = str(exc.value.output, 'utf-8')
+    assert 'Support for the Decimal type is experimental' in output
+    assert (
+        'set the `enable_experimental_decimal` config flag to true' in output
+    )
