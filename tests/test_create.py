@@ -115,7 +115,7 @@ async def test_nullable_relational_field(client: Prisma) -> None:
 
 
 @pytest.mark.asyncio
-async def test_required_relation_key_field(client: Client) -> None:
+async def test_required_relation_key_field(client: Prisma) -> None:
     """Explicitly passing a field used as a foreign key connects the relation"""
     user = await client.user.create(
         data={

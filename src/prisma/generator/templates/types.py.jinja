@@ -450,7 +450,7 @@ class _{{ type }}ListUpdatePush(TypedDict):
 class {{ model.name }}OptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the {{ model.name }} create method"""
     {% for field in model.all_fields %}
-        {%- if not field.required_on_create -%}
+        {%- if not field.required_on_create or field.is_read_only -%}
             {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.create_input_type) }}
         {% endif %}
     {% endfor %}
@@ -459,7 +459,7 @@ class {{ model.name }}OptionalCreateInput(TypedDict, total=False):
 class {{ model.name }}CreateInput({{ model.name }}OptionalCreateInput):
     """Required arguments to the {{ model.name }} create method"""
     {% for field in model.all_fields %}
-        {%- if field.required_on_create -%}
+        {%- if field.required_on_create and not field.is_read_only -%}
             {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.create_input_type) }}
         {% endif %}
     {% endfor %}
@@ -471,7 +471,7 @@ class {{ model.name }}CreateInput({{ model.name }}OptionalCreateInput):
 class {{ model.name }}OptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the {{ model.name }} create method, without relations"""
     {% for field in model.scalar_fields %}
-        {%- if not field.required_on_create -%}
+        {%- if not field.required_on_create or field.is_read_only -%}
             {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.create_input_type) }}
         {% endif %}
     {% endfor %}
@@ -480,7 +480,7 @@ class {{ model.name }}OptionalCreateWithoutRelationsInput(TypedDict, total=False
 class {{ model.name }}CreateWithoutRelationsInput({{ model.name }}OptionalCreateWithoutRelationsInput):
     """Required arguments to the {{ model.name }} create method, without relations"""
     {% for field in model.scalar_fields %}
-        {%- if field.required_on_create -%}
+        {%- if field.required_on_create and not field.is_read_only -%}
             {{'    '}}{{ field.name }}: {{ field.maybe_optional(field.create_input_type) }}
         {% endif %}
     {% endfor %}

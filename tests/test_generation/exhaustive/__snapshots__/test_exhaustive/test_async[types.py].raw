@@ -981,12 +981,12 @@ class PostOptionalCreateInput(TypedDict, total=False):
     content: Optional[str]
     published: bool
     author: 'UserCreateNestedWithoutRelationsInput'
+    author_id: int
 
 
 class PostCreateInput(PostOptionalCreateInput):
     """Required arguments to the Post create method"""
     title: str
-    author_id: int
 
 
 # TODO: remove this in favour of without explicit relations
@@ -998,12 +998,12 @@ class PostOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     created_at: datetime.datetime
     content: Optional[str]
     published: bool
+    author_id: int
 
 
 class PostCreateWithoutRelationsInput(PostOptionalCreateWithoutRelationsInput):
     """Required arguments to the Post create method, without relations"""
     title: str
-    author_id: int
 
 
 class PostCreateNestedWithoutRelationsInput(TypedDict, total=False):
