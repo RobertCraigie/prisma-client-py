@@ -18,6 +18,14 @@ model User {
   name       String
   role       Role     @default(USER)
   posts      Post[]
+  profile    Profile?
+}
+
+model Profile {
+  id          String @default(cuid())
+  description String
+  user        User   @relation(fields: [user_id], references: [id])
+  user_id     String @unique
 }
 
 model Post {

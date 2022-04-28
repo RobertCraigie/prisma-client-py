@@ -981,6 +981,7 @@ class PostOptionalCreateInput(TypedDict, total=False):
     content: Optional[str]
     published: bool
     author: 'UserCreateNestedWithoutRelationsInput'
+    author_id: int
 
 
 class PostCreateInput(PostOptionalCreateInput):
@@ -997,6 +998,7 @@ class PostOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     created_at: datetime.datetime
     content: Optional[str]
     published: bool
+    author_id: int
 
 
 class PostCreateWithoutRelationsInput(PostOptionalCreateWithoutRelationsInput):
@@ -7262,6 +7264,7 @@ class ManyRequiredOptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the ManyRequired create method"""
     id: int
     one: 'OneOptionalCreateNestedWithoutRelationsInput'
+    one_optional_id: Optional[int]
     optional_int: Optional[int]
     optional_float: Optional[float]
     optional_string: Optional[str]
@@ -7284,6 +7287,7 @@ class ManyRequiredCreateInput(ManyRequiredOptionalCreateInput):
 class ManyRequiredOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the ManyRequired create method, without relations"""
     id: int
+    one_optional_id: Optional[int]
     optional_int: Optional[int]
     optional_float: Optional[float]
     optional_string: Optional[str]

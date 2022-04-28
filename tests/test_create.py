@@ -112,3 +112,26 @@ async def test_nullable_relational_field(client: Prisma) -> None:
         )
 
     assert exc.match(r'author')
+
+
+@pytest.mark.asyncio
+async def test_required_relation_key_field(client: Prisma) -> None:
+    """Explicitly passing a field used as a foreign key connects the relation"""
+    user = await client.user.create(
+        data={
+            'name': 'Robert',
+        },
+    )
+    profile = await client.profile.create(
+        data={
+            'bio': 'My bio!',
+            'country': 'Scotland',
+            'user_id': user.id,
+        },
+        include={
+            'user': True,
+        },
+    )
+    assert profile.user is not None
+    assert profile.user.id == user.id
+    assert profile.user.name == 'Robert'
