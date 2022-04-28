@@ -833,7 +833,7 @@ class Field(BaseModel):
 
     @property
     def is_number(self) -> bool:
-        return self.type in {'Int', 'BigInt', 'Float'}
+        return self.type in {'Int', 'BigInt', 'Float', 'Decimal'}
 
     def maybe_optional(self, typ: str) -> str:
         """Wrap the given type string within `Optional` if applicable"""

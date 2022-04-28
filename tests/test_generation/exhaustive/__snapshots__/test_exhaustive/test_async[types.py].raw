@@ -9649,6 +9649,7 @@ class ListsAvgAggregateOutput(TypedDict, total=False):
     ints: float
     floats: float
     bigints: float
+    decimals: float
 
 
 class ListsSumAggregateOutput(TypedDict, total=False):
@@ -9656,6 +9657,7 @@ class ListsSumAggregateOutput(TypedDict, total=False):
     ints: List[int]
     floats: List[float]
     bigints: List[int]
+    decimals: List[decimal.Decimal]
 
 
 class ListsScalarAggregateOutput(TypedDict, total=False):
@@ -9709,6 +9711,7 @@ class ListsNumberAggregateInput(TypedDict, total=False):
     ints: bool
     floats: bool
     bigints: bool
+    decimals: bool
 
 
 ListsAvgAggregateInput = ListsNumberAggregateInput
@@ -12023,12 +12026,16 @@ class BAvgAggregateOutput(TypedDict, total=False):
     """B output for aggregating averages"""
     float: float
     d_float: float
+    decFloat: float
+    numFloat: float
 
 
 class BSumAggregateOutput(TypedDict, total=False):
     """B output for aggregating sums"""
     float: float
     d_float: float
+    decFloat: decimal.Decimal
+    numFloat: decimal.Decimal
 
 
 class BScalarAggregateOutput(TypedDict, total=False):
@@ -12066,6 +12073,8 @@ class BNumberAggregateInput(TypedDict, total=False):
     """B input for aggregating numbers"""
     float: bool
     d_float: bool
+    decFloat: bool
+    numFloat: bool
 
 
 BAvgAggregateInput = BNumberAggregateInput

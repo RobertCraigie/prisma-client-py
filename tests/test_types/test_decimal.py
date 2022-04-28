@@ -1,7 +1,9 @@
 from decimal import Decimal, getcontext
+from typing import TypedDict, List
 
 import pytest
 from prisma import Prisma
+import prisma
 
 
 DEFAULT_PRECISION = getcontext().prec
@@ -255,3 +257,34 @@ async def test_filtering_nulls(client: Prisma) -> None:
         },
     )
     assert count == 2
+
+
+@pytest.mark.asyncio
+async def test_group_by(client: Prisma) -> None:
+    client.types
+    async with client.batch_() as batcher:
+        batcher.types.create({'integer': 0, 'decimal_': Decimal('0.12')})
+        batcher.types.create({'integer': 0, 'decimal_': Decimal('1.33')})
+        batcher.types.create({'integer': 0, 'decimal_': Decimal('2.55')})
+        batcher.types.create({'integer': 1, 'decimal_': Decimal('0.01')})
+        batcher.types.create({'integer': 1, 'decimal_': Decimal('0.02')})
+
+    aggregates = await client.types.group_by(
+        by=['integer'],
+        sum={
+            'decimal_': True,
+        },
+    )
+
+    def assert_sum(i: int, v: str):
+        aggregate = aggregates[i]
+
+        assert '_sum' in aggregate
+        assert 'decimal_' in aggregate['_sum']
+        res = aggregate['_sum'][
+            'decimal_'
+        ]  # BUG: type should be str, not Decimal
+        assert res == v
+
+    assert_sum(0, '4')
+    assert_sum(1, '0.03')

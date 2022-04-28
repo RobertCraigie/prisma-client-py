@@ -1,3 +1,16 @@
+[tool.poetry]
+name = "prisma-client-py"
+version = "0.6.5a"
+description = "Prisma Client Python is an auto-generated and fully type-safe database client"
+authors=["Robert Craigie <robert@craigie.dev>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+syrupy = "^2.0.0"
+
 [tool.pyright]
 include = [
     "src",
