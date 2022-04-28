@@ -28,7 +28,7 @@
 
     async def test_create_optional_data(client: Prisma) -> None:
       post = await client.post.create({'title': 'Hello', 'published': True})
-      reveal_type(post)  # N: Revealed type is "prisma.models.Post*"
+      reveal_type(post)  # N: Revealed type is "prisma.models.Post"
       reveal_type(post.id)  # N: Revealed type is "builtins.str"
       reveal_type(post.title)  # N: Revealed type is "builtins.str"
       reveal_type(post.published)  # N: Revealed type is "builtins.bool"
@@ -147,14 +147,14 @@
         WHERE title = "hi"
       '''
       posts = await client.query_raw(query, model=Post)
-      reveal_type(posts)  # N: Revealed type is "builtins.list*[prisma.models.Post*]"
+      reveal_type(posts)  # N: Revealed type is "builtins.list[prisma.models.Post]"
       post = posts[0]
       id = post.id
       oops = post.oops  # E: "Post" has no attribute "oops"  [attr-defined]
       oops = posts[0].oops  # E: "Post" has no attribute "oops"  [attr-defined]
 
       users = await client.query_raw(query, model=User)
-      reveal_type(users)  # N: Revealed type is "builtins.list*[prisma.models.User*]"
+      reveal_type(users)  # N: Revealed type is "builtins.list[prisma.models.User]"
       user = users[0]
       id = user.id
       name = user.name
@@ -184,7 +184,7 @@
         WHERE title = "hi"
       '''
       models = await client.query_raw(query, model=MyModel)
-      reveal_type(models)  # N: Revealed type is "builtins.list*[main.MyModel*]"
+      reveal_type(models)  # N: Revealed type is "builtins.list[main.MyModel]"
       id = models[0].id
       title = models[0].title
       oops = models[0].oops  # E: "MyModel" has no attribute "oops"  [attr-defined]
@@ -214,11 +214,11 @@
       )
 
     def test_validator() -> None:
-      reveal_type(validate(PostCreateInput, {}))  # N: Revealed type is "prisma.types.PostCreateInput*"
+      reveal_type(validate(PostCreateInput, {}))  # N: Revealed type is "prisma.types.PostCreateInput"
 
     async def test_count_select(client: Prisma) -> None:
       count = await client.post.count()
-      reveal_type(count)  # N: Revealed type is "builtins.int*"
+      reveal_type(count)  # N: Revealed type is "builtins.int"
 
       # NOTE: we can't just reveal_type(results) as mypy prints an overly verbose type, e.g.
       # TypedDict('prisma.types.PostCountAggregateOutput', {'id'?: builtins.int})
