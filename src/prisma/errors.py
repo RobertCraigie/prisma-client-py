@@ -75,6 +75,10 @@ class UniqueViolationError(DataError):
     pass
 
 
+class ForeignKeyViolationError(DataError):
+    pass
+
+
 class MissingRequiredValueError(DataError):
     pass
 
