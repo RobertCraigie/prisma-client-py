@@ -5,6 +5,7 @@ __all__ = (
     'PrismaError',
     'DataError',
     'UniqueViolationError',
+    'ForeignKeyViolationError',
     'MissingRequiredValueError',
     'RawQueryError',
     'TableNotFoundError',
