@@ -36,7 +36,7 @@ async def test_field_not_found_error(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_foreign_key_violation_error(client: Prisma) -> None:
     """The ForeignKeyViolationError is raised when a foreign key is invalid."""
-    with pytest.raises(ForeignKeyViolationError):
+    with pytest.raises(ForeignKeyViolationError, match='foreign key'):
         await client.post.create(
             data={
                 'title': 'foo',
