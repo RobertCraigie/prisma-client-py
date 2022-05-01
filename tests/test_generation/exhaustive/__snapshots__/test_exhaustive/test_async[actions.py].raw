@@ -26,7 +26,7 @@ from typing import (
     overload,
     cast,
 )
-from typing_extensions import TypedDict, Literal
+from typing_extensions import TypedDict, Literal, LiteralString
 
 # -- template actions.py.jinja --
 import warnings
@@ -51,7 +51,7 @@ class PostActions:
 
     async def query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List['models.Post']:
         """Execute a raw SQL query
@@ -970,7 +970,7 @@ class UserActions:
 
     async def query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List['models.User']:
         """Execute a raw SQL query
@@ -1909,7 +1909,7 @@ class MActions:
 
     async def query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List['models.M']:
         """Execute a raw SQL query
@@ -2843,7 +2843,7 @@ class NActions:
 
     async def query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List['models.N']:
         """Execute a raw SQL query
@@ -3782,7 +3782,7 @@ class OneOptionalActions:
 
     async def query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List['models.OneOptional']:
         """Execute a raw SQL query
@@ -4716,7 +4716,7 @@ class ManyRequiredActions:
 
     async def query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List['models.ManyRequired']:
         """Execute a raw SQL query
@@ -5650,7 +5650,7 @@ class ListsActions:
 
     async def query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List['models.Lists']:
         """Execute a raw SQL query
@@ -6559,7 +6559,7 @@ class AActions:
 
     async def query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List['models.A']:
         """Execute a raw SQL query
@@ -7486,7 +7486,7 @@ class BActions:
 
     async def query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List['models.B']:
         """Execute a raw SQL query
@@ -8415,7 +8415,7 @@ class CActions:
 
     async def query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List['models.C']:
         """Execute a raw SQL query
@@ -9346,7 +9346,7 @@ class DActions:
 
     async def query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List['models.D']:
         """Execute a raw SQL query
@@ -10280,7 +10280,7 @@ class EActions:
 
     async def query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List['models.E']:
         """Execute a raw SQL query

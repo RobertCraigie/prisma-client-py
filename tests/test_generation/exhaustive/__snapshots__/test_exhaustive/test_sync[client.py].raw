@@ -26,7 +26,7 @@ from typing import (
     overload,
     cast,
 )
-from typing_extensions import TypedDict, Literal
+from typing_extensions import TypedDict, Literal, LiteralString
 
 # -- template client.py.jinja --
 from types import TracebackType
@@ -476,15 +476,15 @@ class Prisma:
         return results[0]
 
     @overload
-    def query_raw(self, query: str, *args: Any) -> Any:
+    def query_raw(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    def query_raw(self, query: str, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
+    def query_raw(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
         ...
 
     def query_raw(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[List[BaseModelT], Any]:
         resp = self._execute(
             operation='mutation',

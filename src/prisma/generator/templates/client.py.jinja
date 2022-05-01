@@ -267,15 +267,15 @@ class Prisma:
         return results[0]
 
     @overload
-    {{ maybe_async_def }}query_raw(self, query: str, *args: Any) -> Any:
+    {{ maybe_async_def }}query_raw(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    {{ maybe_async_def }}query_raw(self, query: str, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
+    {{ maybe_async_def }}query_raw(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
         ...
 
     {{ maybe_async_def }}query_raw(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[List[BaseModelT], Any]:
         resp = {{ maybe_await }}self._execute(
             operation='{{ operations.query_raw }}',
