@@ -89,7 +89,7 @@ class PostActions:
 
     def query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional['models.Post']:
         """Execute a raw SQL query, returning the first result
@@ -1008,7 +1008,7 @@ class UserActions:
 
     def query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional['models.User']:
         """Execute a raw SQL query, returning the first result
@@ -1947,7 +1947,7 @@ class MActions:
 
     def query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional['models.M']:
         """Execute a raw SQL query, returning the first result
@@ -2881,7 +2881,7 @@ class NActions:
 
     def query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional['models.N']:
         """Execute a raw SQL query, returning the first result
@@ -3820,7 +3820,7 @@ class OneOptionalActions:
 
     def query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional['models.OneOptional']:
         """Execute a raw SQL query, returning the first result
@@ -4754,7 +4754,7 @@ class ManyRequiredActions:
 
     def query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional['models.ManyRequired']:
         """Execute a raw SQL query, returning the first result
@@ -5688,7 +5688,7 @@ class ListsActions:
 
     def query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional['models.Lists']:
         """Execute a raw SQL query, returning the first result
@@ -6597,7 +6597,7 @@ class AActions:
 
     def query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional['models.A']:
         """Execute a raw SQL query, returning the first result
@@ -7524,7 +7524,7 @@ class BActions:
 
     def query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional['models.B']:
         """Execute a raw SQL query, returning the first result
@@ -8453,7 +8453,7 @@ class CActions:
 
     def query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional['models.C']:
         """Execute a raw SQL query, returning the first result
@@ -9384,7 +9384,7 @@ class DActions:
 
     def query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional['models.D']:
         """Execute a raw SQL query, returning the first result
@@ -10318,7 +10318,7 @@ class EActions:
 
     def query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional['models.E']:
         """Execute a raw SQL query, returning the first result
