@@ -25,6 +25,11 @@ from typing import (
     overload,
     cast,
 )
-from typing_extensions import TypedDict, Literal, LiteralString
+from typing_extensions import TypedDict, Literal
 
+{% if recursive_types %}
+from typing_extensions import LiteralString
+{% else %}
+LiteralString = str
+{% endif %}
 

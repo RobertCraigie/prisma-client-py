@@ -26,8 +26,9 @@ from typing import (
     overload,
     cast,
 )
-from typing_extensions import TypedDict, Literal, LiteralString
+from typing_extensions import TypedDict, Literal
 
+LiteralString = str
 # -- template actions.py.jinja --
 import warnings
 
