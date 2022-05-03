@@ -155,7 +155,7 @@ class Prisma:
         elif isinstance(connect_timeout, int):
             message = (
                 'Using integers for connect_timeout argument is deprecated'
-                ' and will be removed in the next release.\n'
+                ' and will be removed in the next major release.\n'
                 'You can disable this warning by passing a datetime.timedelta object instead of an integer. e.g.'
                 'prisma = Prisma(connect_timeout=datetime.timedelta(seconds=10))'
             )
@@ -222,7 +222,7 @@ class Prisma:
         elif isinstance(timeout, int):
             message = (
                 'Using integers for timeout argument is deprecated'
-                ' and will be removed in the next release.\n'
+                ' and will be removed in the next major release.\n'
                 'You can disable this warning by passing a datetime.timedelta object instead of an integer. e.g.'
                 'prisma.connect(timeout=datetime.timedelta(seconds=10))'
             )
