@@ -18,5 +18,6 @@ async def main(client: Prisma) -> None:
 
     query = str('unsafe str query')
     await client.query_raw(
-        query, model=User
-    )   # E: Argument of type "str" cannot be assigned to parameter "query" of type "LiteralString" in function "query_raw"
+        query,  # E: Argument of type "str" cannot be assigned to parameter "query" of type "LiteralString" in function "query_raw"
+        model=User,
+    )
