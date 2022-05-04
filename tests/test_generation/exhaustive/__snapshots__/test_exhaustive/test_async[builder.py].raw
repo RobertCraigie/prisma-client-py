@@ -28,6 +28,8 @@ from typing import (
 )
 from typing_extensions import TypedDict, Literal
 
+
+LiteralString = str
 # -- template builder.py.jinja --
 
 # TODO: the QueryBuilder should validate and add type information context.

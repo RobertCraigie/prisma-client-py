@@ -28,6 +28,8 @@ from typing import (
 )
 from typing_extensions import TypedDict, Literal
 
+
+LiteralString = str
 # -- template client.py.jinja --
 from types import TracebackType
 
@@ -444,7 +446,7 @@ class Prisma:
             await self.__engine.aclose()
             self.__engine = None
 
-    async def execute_raw(self, query: str, *args: Any) -> int:
+    async def execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = await self._execute(
             operation='mutation',
             method='executeRaw',
@@ -456,15 +458,15 @@ class Prisma:
         return int(resp['data']['result'])
 
     @overload
-    async def query_first(self, query: str, *args: Any) -> Any:
+    async def query_first(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    async def query_first(self, query: str, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
+    async def query_first(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
         ...
 
     async def query_first(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[Optional[BaseModelT], Any]:
         if model is not None:
             results = await self.query_raw(query, *args, model=model)
@@ -477,15 +479,15 @@ class Prisma:
         return results[0]
 
     @overload
-    async def query_raw(self, query: str, *args: Any) -> Any:
+    async def query_raw(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    async def query_raw(self, query: str, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
+    async def query_raw(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
         ...
 
     async def query_raw(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[List[BaseModelT], Any]:
         resp = await self._execute(
             operation='mutation',
