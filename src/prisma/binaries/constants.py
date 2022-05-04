@@ -50,4 +50,4 @@ GLOBAL_TEMP_DIR = (
 if platform.name() == 'windows':
     PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}.exe'
 else:
-    PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}-arm64'  # pyright: ignore[reportConstantRedefinition]
+    PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}'  # pyright: ignore[reportConstantRedefinition]
