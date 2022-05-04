@@ -30,6 +30,6 @@ repos:
           - id: mixed-line-ending
             args: [--fix=lf]
     - repo: https://github.com/grantjenks/blue.git
-      rev: v0.7.0
+      rev: v0.9.0
       hooks:
       - id: blue
