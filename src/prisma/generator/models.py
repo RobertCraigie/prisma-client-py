@@ -32,7 +32,6 @@ from pydantic import (
     BaseSettings,
     Extra,
     Field as FieldInfo,
-    validator,
 )
 from pydantic.fields import PrivateAttr
 from pydantic.generics import GenericModel as PydanticGenericModel
