@@ -32,6 +32,7 @@ from pydantic import (
     BaseSettings,
     Extra,
     Field as FieldInfo,
+    validator,
 )
 from pydantic.fields import PrivateAttr
 from pydantic.generics import GenericModel as PydanticGenericModel
@@ -83,6 +84,25 @@ FILTER_TYPES = [
     'Json',
     'Decimal',
 ]
+RECURSIVE_TYPE_DEPTH_WARNING = """
+Some types are disabled by default due to being incompatible with Mypy, it is highly recommended
+to use Pyright instead and configure Prisma Python to use recursive types to re-enable certain types:
+
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = -1
+}
+
+If you need to use Mypy, you can also disable this message by explicitly setting the default value:
+
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = 5
+}
+
+For more information see: https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/#default-type-limitations
+
+"""
 
 FAKER: Faker = Faker()
 
@@ -372,7 +392,7 @@ class Config(BaseSettings):
 
     interface: InterfaceChoices = InterfaceChoices.asyncio
     partial_type_generator: Optional[Module] = None
-    recursive_type_depth: int = FieldInfo(default=5)
+    recursive_type_depth: Optional[int] = None
     engine_type: EngineType = FieldInfo(default=EngineType.binary)
 
     # this should be a list of experimental features
@@ -462,7 +482,15 @@ class Config(BaseSettings):
 
     @validator('recursive_type_depth', always=True, allow_reuse=True)
     @classmethod
-    def recursive_type_depth_validator(cls, value: int) -> int:
+    def recursive_type_depth_validator(cls, value: Optional[int]) -> int:
+        if value is None:
+            click.echo(
+                click.style(
+                    RECURSIVE_TYPE_DEPTH_WARNING,
+                    fg='yellow',
+                )
+            )
+            return 5
         if value < -1 or value in {0, 1}:
             raise ValueError('Value must equal -1 or be greater than 1.')
         return value

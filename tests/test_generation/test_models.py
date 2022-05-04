@@ -32,3 +32,21 @@ def test_recursive_type_depth() -> None:
     for value in [-1, 2, 3, 10, 99]:
         config = Config(recursive_type_depth=value)
         assert config.recursive_type_depth == value
+
+
+def test_default_recursive_type_depth(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Warn when recursive type depth is not set:
+
+    https://github.com/RobertCraigie/prisma-client-py/issues/252
+
+    Ensure that we provide advice on what value to use.
+    Also ensure that it defaults to 5.
+    """
+    c = Config()
+    captured = capsys.readouterr()
+    assert 'it is highly recommended to use Pyright' in captured.out.replace(
+        '\n', ' '
+    )
+    assert c.recursive_type_depth == 5
