@@ -28,6 +28,8 @@ from typing import (
 )
 from typing_extensions import TypedDict, Literal
 
+
+LiteralString = str
 # -- template types.py.jinja --
 from typing import TypeVar
 

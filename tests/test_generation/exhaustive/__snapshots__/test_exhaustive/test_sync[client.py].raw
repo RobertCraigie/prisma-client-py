@@ -28,6 +28,8 @@ from typing import (
 )
 from typing_extensions import TypedDict, Literal
 
+
+LiteralString = str
 # -- template client.py.jinja --
 from types import TracebackType
 
@@ -443,7 +445,7 @@ class Prisma:
             self.__engine.stop()
             self.__engine = None
 
-    def execute_raw(self, query: str, *args: Any) -> int:
+    def execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = self._execute(
             operation='mutation',
             method='executeRaw',
@@ -455,15 +457,15 @@ class Prisma:
         return int(resp['data']['result'])
 
     @overload
-    def query_first(self, query: str, *args: Any) -> Any:
+    def query_first(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    def query_first(self, query: str, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
+    def query_first(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
         ...
 
     def query_first(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[Optional[BaseModelT], Any]:
         if model is not None:
             results = self.query_raw(query, *args, model=model)
@@ -476,15 +478,15 @@ class Prisma:
         return results[0]
 
     @overload
-    def query_raw(self, query: str, *args: Any) -> Any:
+    def query_raw(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    def query_raw(self, query: str, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
+    def query_raw(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
         ...
 
     def query_raw(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[List[BaseModelT], Any]:
         resp = self._execute(
             operation='mutation',
