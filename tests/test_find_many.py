@@ -14,8 +14,14 @@ async def test_find_many(client: Prisma) -> None:
     assert len(found) == 1
     assert found[0].id == posts[0].id
 
+    # OR is deprecated and will be removed in a future release
     posts = await client.post.find_many(
         where={'OR': [{'title': 'Test post 1'}, {'title': 'Test post 2'}]}
+    )
+    assert len(posts) == 2
+
+    posts = await client.post.find_many(
+        where={'ANY': [{'title': 'Test post 1'}, {'title': 'Test post 2'}]}
     )
     assert len(posts) == 2
 

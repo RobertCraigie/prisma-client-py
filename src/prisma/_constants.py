@@ -11,4 +11,5 @@ QUERY_BUILDER_ALIASES: Dict[str, str] = {
     'order_by': 'orderBy',
     'not_in': 'notIn',
     'is_not': 'isNot',
+    'ANY': 'OR',
 }

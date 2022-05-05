@@ -637,7 +637,7 @@ class {{ current }}(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['{{ next }}', List['{{ next }}']]
     # but this causes mypy to hang :/
     AND: List['{{ next }}']
-    # OR is deprecated for ANY in https://github.com/RobertCraigie/prisma-client-py/issues/293
+    # `OR` is deprecated and will be removed in a future release
     OR: List['{{ next }}']
     ANY: List['{{ next }}']
     NOT: List['{{ next }}']
@@ -657,7 +657,7 @@ class {{ current }}(TypedDict, total=False):
 
     {% if next != '' %}
     AND: List['{{ next }}']
-    # OR is deprecated for ANY in https://github.com/RobertCraigie/prisma-client-py/issues/293
+    # `OR` is deprecated and will be removed in a future release
     OR: List['{{ next }}']
     ANY: List['{{ next }}']
     NOT: List['{{ next }}']

@@ -1897,7 +1897,9 @@ class PostWhereInput(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['PostWhereInputRecursive1', List['PostWhereInputRecursive1']]
     # but this causes mypy to hang :/
     AND: List['PostWhereInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['PostWhereInputRecursive1']
+    ANY: List['PostWhereInputRecursive1']
     NOT: List['PostWhereInputRecursive1']
 
 
@@ -1914,7 +1916,9 @@ class PostWhereInputRecursive1(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['PostWhereInputRecursive2', List['PostWhereInputRecursive2']]
     # but this causes mypy to hang :/
     AND: List['PostWhereInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['PostWhereInputRecursive2']
+    ANY: List['PostWhereInputRecursive2']
     NOT: List['PostWhereInputRecursive2']
 
 
@@ -1945,7 +1949,9 @@ class PostScalarWhereWithAggregatesInput(TypedDict, total=False):
     author_id: Union[int, 'types.IntWithAggregatesFilter']
 
     AND: List['PostScalarWhereWithAggregatesInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['PostScalarWhereWithAggregatesInputRecursive1']
+    ANY: List['PostScalarWhereWithAggregatesInputRecursive1']
     NOT: List['PostScalarWhereWithAggregatesInputRecursive1']
 
 
@@ -1959,7 +1965,9 @@ class PostScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     author_id: Union[int, 'types.IntWithAggregatesFilter']
 
     AND: List['PostScalarWhereWithAggregatesInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['PostScalarWhereWithAggregatesInputRecursive2']
+    ANY: List['PostScalarWhereWithAggregatesInputRecursive2']
     NOT: List['PostScalarWhereWithAggregatesInputRecursive2']
 
 
@@ -3116,7 +3124,9 @@ class UserWhereInput(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['UserWhereInputRecursive1', List['UserWhereInputRecursive1']]
     # but this causes mypy to hang :/
     AND: List['UserWhereInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['UserWhereInputRecursive1']
+    ANY: List['UserWhereInputRecursive1']
     NOT: List['UserWhereInputRecursive1']
 
 
@@ -3139,7 +3149,9 @@ class UserWhereInputRecursive1(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['UserWhereInputRecursive2', List['UserWhereInputRecursive2']]
     # but this causes mypy to hang :/
     AND: List['UserWhereInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['UserWhereInputRecursive2']
+    ANY: List['UserWhereInputRecursive2']
     NOT: List['UserWhereInputRecursive2']
 
 
@@ -3182,7 +3194,9 @@ class UserScalarWhereWithAggregatesInput(TypedDict, total=False):
     optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['UserScalarWhereWithAggregatesInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['UserScalarWhereWithAggregatesInputRecursive1']
+    ANY: List['UserScalarWhereWithAggregatesInputRecursive1']
     NOT: List['UserScalarWhereWithAggregatesInputRecursive1']
 
 
@@ -3202,7 +3216,9 @@ class UserScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['UserScalarWhereWithAggregatesInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['UserScalarWhereWithAggregatesInputRecursive2']
+    ANY: List['UserScalarWhereWithAggregatesInputRecursive2']
     NOT: List['UserScalarWhereWithAggregatesInputRecursive2']
 
 
@@ -4397,7 +4413,9 @@ class MWhereInput(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['MWhereInputRecursive1', List['MWhereInputRecursive1']]
     # but this causes mypy to hang :/
     AND: List['MWhereInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['MWhereInputRecursive1']
+    ANY: List['MWhereInputRecursive1']
     NOT: List['MWhereInputRecursive1']
 
 
@@ -4419,7 +4437,9 @@ class MWhereInputRecursive1(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['MWhereInputRecursive2', List['MWhereInputRecursive2']]
     # but this causes mypy to hang :/
     AND: List['MWhereInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['MWhereInputRecursive2']
+    ANY: List['MWhereInputRecursive2']
     NOT: List['MWhereInputRecursive2']
 
 
@@ -4460,7 +4480,9 @@ class MScalarWhereWithAggregatesInput(TypedDict, total=False):
     optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['MScalarWhereWithAggregatesInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['MScalarWhereWithAggregatesInputRecursive1']
+    ANY: List['MScalarWhereWithAggregatesInputRecursive1']
     NOT: List['MScalarWhereWithAggregatesInputRecursive1']
 
 
@@ -4479,7 +4501,9 @@ class MScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['MScalarWhereWithAggregatesInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['MScalarWhereWithAggregatesInputRecursive2']
+    ANY: List['MScalarWhereWithAggregatesInputRecursive2']
     NOT: List['MScalarWhereWithAggregatesInputRecursive2']
 
 
@@ -5693,7 +5717,9 @@ class NWhereInput(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['NWhereInputRecursive1', List['NWhereInputRecursive1']]
     # but this causes mypy to hang :/
     AND: List['NWhereInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['NWhereInputRecursive1']
+    ANY: List['NWhereInputRecursive1']
     NOT: List['NWhereInputRecursive1']
 
 
@@ -5717,7 +5743,9 @@ class NWhereInputRecursive1(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['NWhereInputRecursive2', List['NWhereInputRecursive2']]
     # but this causes mypy to hang :/
     AND: List['NWhereInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['NWhereInputRecursive2']
+    ANY: List['NWhereInputRecursive2']
     NOT: List['NWhereInputRecursive2']
 
 
@@ -5762,7 +5790,9 @@ class NScalarWhereWithAggregatesInput(TypedDict, total=False):
     optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['NScalarWhereWithAggregatesInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['NScalarWhereWithAggregatesInputRecursive1']
+    ANY: List['NScalarWhereWithAggregatesInputRecursive1']
     NOT: List['NScalarWhereWithAggregatesInputRecursive1']
 
 
@@ -5783,7 +5813,9 @@ class NScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['NScalarWhereWithAggregatesInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['NScalarWhereWithAggregatesInputRecursive2']
+    ANY: List['NScalarWhereWithAggregatesInputRecursive2']
     NOT: List['NScalarWhereWithAggregatesInputRecursive2']
 
 
@@ -6987,7 +7019,9 @@ class OneOptionalWhereInput(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive1', List['OneOptionalWhereInputRecursive1']]
     # but this causes mypy to hang :/
     AND: List['OneOptionalWhereInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['OneOptionalWhereInputRecursive1']
+    ANY: List['OneOptionalWhereInputRecursive1']
     NOT: List['OneOptionalWhereInputRecursive1']
 
 
@@ -7009,7 +7043,9 @@ class OneOptionalWhereInputRecursive1(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive2', List['OneOptionalWhereInputRecursive2']]
     # but this causes mypy to hang :/
     AND: List['OneOptionalWhereInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['OneOptionalWhereInputRecursive2']
+    ANY: List['OneOptionalWhereInputRecursive2']
     NOT: List['OneOptionalWhereInputRecursive2']
 
 
@@ -7050,7 +7086,9 @@ class OneOptionalScalarWhereWithAggregatesInput(TypedDict, total=False):
     optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['OneOptionalScalarWhereWithAggregatesInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['OneOptionalScalarWhereWithAggregatesInputRecursive1']
+    ANY: List['OneOptionalScalarWhereWithAggregatesInputRecursive1']
     NOT: List['OneOptionalScalarWhereWithAggregatesInputRecursive1']
 
 
@@ -7069,7 +7107,9 @@ class OneOptionalScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False
     optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['OneOptionalScalarWhereWithAggregatesInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['OneOptionalScalarWhereWithAggregatesInputRecursive2']
+    ANY: List['OneOptionalScalarWhereWithAggregatesInputRecursive2']
     NOT: List['OneOptionalScalarWhereWithAggregatesInputRecursive2']
 
 
@@ -8267,7 +8307,9 @@ class ManyRequiredWhereInput(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive1', List['ManyRequiredWhereInputRecursive1']]
     # but this causes mypy to hang :/
     AND: List['ManyRequiredWhereInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['ManyRequiredWhereInputRecursive1']
+    ANY: List['ManyRequiredWhereInputRecursive1']
     NOT: List['ManyRequiredWhereInputRecursive1']
 
 
@@ -8290,7 +8332,9 @@ class ManyRequiredWhereInputRecursive1(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive2', List['ManyRequiredWhereInputRecursive2']]
     # but this causes mypy to hang :/
     AND: List['ManyRequiredWhereInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['ManyRequiredWhereInputRecursive2']
+    ANY: List['ManyRequiredWhereInputRecursive2']
     NOT: List['ManyRequiredWhereInputRecursive2']
 
 
@@ -8333,7 +8377,9 @@ class ManyRequiredScalarWhereWithAggregatesInput(TypedDict, total=False):
     optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['ManyRequiredScalarWhereWithAggregatesInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['ManyRequiredScalarWhereWithAggregatesInputRecursive1']
+    ANY: List['ManyRequiredScalarWhereWithAggregatesInputRecursive1']
     NOT: List['ManyRequiredScalarWhereWithAggregatesInputRecursive1']
 
 
@@ -8353,7 +8399,9 @@ class ManyRequiredScalarWhereWithAggregatesInputRecursive1(TypedDict, total=Fals
     optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['ManyRequiredScalarWhereWithAggregatesInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['ManyRequiredScalarWhereWithAggregatesInputRecursive2']
+    ANY: List['ManyRequiredScalarWhereWithAggregatesInputRecursive2']
     NOT: List['ManyRequiredScalarWhereWithAggregatesInputRecursive2']
 
 
@@ -9533,7 +9581,9 @@ class ListsWhereInput(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['ListsWhereInputRecursive1', List['ListsWhereInputRecursive1']]
     # but this causes mypy to hang :/
     AND: List['ListsWhereInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['ListsWhereInputRecursive1']
+    ANY: List['ListsWhereInputRecursive1']
     NOT: List['ListsWhereInputRecursive1']
 
 
@@ -9553,7 +9603,9 @@ class ListsWhereInputRecursive1(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['ListsWhereInputRecursive2', List['ListsWhereInputRecursive2']]
     # but this causes mypy to hang :/
     AND: List['ListsWhereInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['ListsWhereInputRecursive2']
+    ANY: List['ListsWhereInputRecursive2']
     NOT: List['ListsWhereInputRecursive2']
 
 
@@ -9591,7 +9643,9 @@ class ListsScalarWhereWithAggregatesInput(TypedDict, total=False):
     decimals: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
     AND: List['ListsScalarWhereWithAggregatesInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['ListsScalarWhereWithAggregatesInputRecursive1']
+    ANY: List['ListsScalarWhereWithAggregatesInputRecursive1']
     NOT: List['ListsScalarWhereWithAggregatesInputRecursive1']
 
 
@@ -9609,7 +9663,9 @@ class ListsScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     decimals: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
     AND: List['ListsScalarWhereWithAggregatesInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['ListsScalarWhereWithAggregatesInputRecursive2']
+    ANY: List['ListsScalarWhereWithAggregatesInputRecursive2']
     NOT: List['ListsScalarWhereWithAggregatesInputRecursive2']
 
 
@@ -10766,7 +10822,9 @@ class AWhereInput(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['AWhereInputRecursive1', List['AWhereInputRecursive1']]
     # but this causes mypy to hang :/
     AND: List['AWhereInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['AWhereInputRecursive1']
+    ANY: List['AWhereInputRecursive1']
     NOT: List['AWhereInputRecursive1']
 
 
@@ -10785,7 +10843,9 @@ class AWhereInputRecursive1(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['AWhereInputRecursive2', List['AWhereInputRecursive2']]
     # but this causes mypy to hang :/
     AND: List['AWhereInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['AWhereInputRecursive2']
+    ANY: List['AWhereInputRecursive2']
     NOT: List['AWhereInputRecursive2']
 
 
@@ -10821,7 +10881,9 @@ class AScalarWhereWithAggregatesInput(TypedDict, total=False):
     enum: 'enums.ABeautifulEnum'
 
     AND: List['AScalarWhereWithAggregatesInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['AScalarWhereWithAggregatesInputRecursive1']
+    ANY: List['AScalarWhereWithAggregatesInputRecursive1']
     NOT: List['AScalarWhereWithAggregatesInputRecursive1']
 
 
@@ -10838,7 +10900,9 @@ class AScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     enum: 'enums.ABeautifulEnum'
 
     AND: List['AScalarWhereWithAggregatesInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['AScalarWhereWithAggregatesInputRecursive2']
+    ANY: List['AScalarWhereWithAggregatesInputRecursive2']
     NOT: List['AScalarWhereWithAggregatesInputRecursive2']
 
 
@@ -11938,7 +12002,9 @@ class BWhereInput(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['BWhereInputRecursive1', List['BWhereInputRecursive1']]
     # but this causes mypy to hang :/
     AND: List['BWhereInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['BWhereInputRecursive1']
+    ANY: List['BWhereInputRecursive1']
     NOT: List['BWhereInputRecursive1']
 
 
@@ -11953,7 +12019,9 @@ class BWhereInputRecursive1(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['BWhereInputRecursive2', List['BWhereInputRecursive2']]
     # but this causes mypy to hang :/
     AND: List['BWhereInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['BWhereInputRecursive2']
+    ANY: List['BWhereInputRecursive2']
     NOT: List['BWhereInputRecursive2']
 
 
@@ -11981,7 +12049,9 @@ class BScalarWhereWithAggregatesInput(TypedDict, total=False):
     numFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
     AND: List['BScalarWhereWithAggregatesInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['BScalarWhereWithAggregatesInputRecursive1']
+    ANY: List['BScalarWhereWithAggregatesInputRecursive1']
     NOT: List['BScalarWhereWithAggregatesInputRecursive1']
 
 
@@ -11994,7 +12064,9 @@ class BScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     numFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
     AND: List['BScalarWhereWithAggregatesInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['BScalarWhereWithAggregatesInputRecursive2']
+    ANY: List['BScalarWhereWithAggregatesInputRecursive2']
     NOT: List['BScalarWhereWithAggregatesInputRecursive2']
 
 
@@ -13049,7 +13121,9 @@ class CWhereInput(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['CWhereInputRecursive1', List['CWhereInputRecursive1']]
     # but this causes mypy to hang :/
     AND: List['CWhereInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['CWhereInputRecursive1']
+    ANY: List['CWhereInputRecursive1']
     NOT: List['CWhereInputRecursive1']
 
 
@@ -13065,7 +13139,9 @@ class CWhereInputRecursive1(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['CWhereInputRecursive2', List['CWhereInputRecursive2']]
     # but this causes mypy to hang :/
     AND: List['CWhereInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['CWhereInputRecursive2']
+    ANY: List['CWhereInputRecursive2']
     NOT: List['CWhereInputRecursive2']
 
 
@@ -13095,7 +13171,9 @@ class CScalarWhereWithAggregatesInput(TypedDict, total=False):
     uuid: Union[str, 'types.StringWithAggregatesFilter']
 
     AND: List['CScalarWhereWithAggregatesInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['CScalarWhereWithAggregatesInputRecursive1']
+    ANY: List['CScalarWhereWithAggregatesInputRecursive1']
     NOT: List['CScalarWhereWithAggregatesInputRecursive1']
 
 
@@ -13109,7 +13187,9 @@ class CScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     uuid: Union[str, 'types.StringWithAggregatesFilter']
 
     AND: List['CScalarWhereWithAggregatesInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['CScalarWhereWithAggregatesInputRecursive2']
+    ANY: List['CScalarWhereWithAggregatesInputRecursive2']
     NOT: List['CScalarWhereWithAggregatesInputRecursive2']
 
 
@@ -14158,7 +14238,9 @@ class DWhereInput(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['DWhereInputRecursive1', List['DWhereInputRecursive1']]
     # but this causes mypy to hang :/
     AND: List['DWhereInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['DWhereInputRecursive1']
+    ANY: List['DWhereInputRecursive1']
     NOT: List['DWhereInputRecursive1']
 
 
@@ -14174,7 +14256,9 @@ class DWhereInputRecursive1(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['DWhereInputRecursive2', List['DWhereInputRecursive2']]
     # but this causes mypy to hang :/
     AND: List['DWhereInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['DWhereInputRecursive2']
+    ANY: List['DWhereInputRecursive2']
     NOT: List['DWhereInputRecursive2']
 
 
@@ -14204,7 +14288,9 @@ class DScalarWhereWithAggregatesInput(TypedDict, total=False):
     binary: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
 
     AND: List['DScalarWhereWithAggregatesInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['DScalarWhereWithAggregatesInputRecursive1']
+    ANY: List['DScalarWhereWithAggregatesInputRecursive1']
     NOT: List['DScalarWhereWithAggregatesInputRecursive1']
 
 
@@ -14218,7 +14304,9 @@ class DScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     binary: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
 
     AND: List['DScalarWhereWithAggregatesInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['DScalarWhereWithAggregatesInputRecursive2']
+    ANY: List['DScalarWhereWithAggregatesInputRecursive2']
     NOT: List['DScalarWhereWithAggregatesInputRecursive2']
 
 
@@ -15239,7 +15327,9 @@ class EWhereInput(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['EWhereInputRecursive1', List['EWhereInputRecursive1']]
     # but this causes mypy to hang :/
     AND: List['EWhereInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['EWhereInputRecursive1']
+    ANY: List['EWhereInputRecursive1']
     NOT: List['EWhereInputRecursive1']
 
 
@@ -15253,7 +15343,9 @@ class EWhereInputRecursive1(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['EWhereInputRecursive2', List['EWhereInputRecursive2']]
     # but this causes mypy to hang :/
     AND: List['EWhereInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['EWhereInputRecursive2']
+    ANY: List['EWhereInputRecursive2']
     NOT: List['EWhereInputRecursive2']
 
 
@@ -15279,7 +15371,9 @@ class EScalarWhereWithAggregatesInput(TypedDict, total=False):
     ts: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
 
     AND: List['EScalarWhereWithAggregatesInputRecursive1']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['EScalarWhereWithAggregatesInputRecursive1']
+    ANY: List['EScalarWhereWithAggregatesInputRecursive1']
     NOT: List['EScalarWhereWithAggregatesInputRecursive1']
 
 
@@ -15291,7 +15385,9 @@ class EScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     ts: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
 
     AND: List['EScalarWhereWithAggregatesInputRecursive2']
+    # `OR` is deprecated and will be removed in a future release
     OR: List['EScalarWhereWithAggregatesInputRecursive2']
+    ANY: List['EScalarWhereWithAggregatesInputRecursive2']
     NOT: List['EScalarWhereWithAggregatesInputRecursive2']
 
 

@@ -1,3 +1,4 @@
+from typing import Literal
 import pytest
 from syrupy.assertion import SnapshotAssertion
 
@@ -287,7 +288,7 @@ async def test_having_aggregation_nested(
         by=['country'],
         count=True,
         having={
-            'OR': [
+            'ANY': [
                 {
                     'views': {
                         '_avg': {
@@ -311,7 +312,7 @@ async def test_having_aggregation_nested(
         by=['country'],
         count=True,
         having={
-            'OR': [
+            'ANY': [
                 {
                     'views': {
                         '_avg': {
@@ -335,7 +336,7 @@ async def test_having_aggregation_nested(
         by=['country'],
         count=True,
         having={
-            'OR': [
+            'ANY': [
                 {
                     'views': {
                         '_avg': {
