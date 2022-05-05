@@ -1,4 +1,3 @@
-from typing import Literal
 import pytest
 from syrupy.assertion import SnapshotAssertion
 
