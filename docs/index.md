@@ -243,7 +243,7 @@ users = await db.user.find_many(
 ```py
 posts = await db.post.find_many(
     where={
-        'OR': [
+        'ANY': [
             {'title': {'contains': 'prisma'}},
             {'content': {'contains': 'prisma'}},
         ]

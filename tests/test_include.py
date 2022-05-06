@@ -164,7 +164,7 @@ async def test_find_unique_include_nested_where_or(
         where={'id': user_id},
         include={
             'posts': {
-                'where': {'OR': [{'published': True}, {'id': posts[0].id}]}
+                'where': {'ANY': [{'published': True}, {'id': posts[0].id}]}
             }
         },
     )

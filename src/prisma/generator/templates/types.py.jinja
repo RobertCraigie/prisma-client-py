@@ -637,10 +637,8 @@ class {{ current }}(TypedDict, total=False):
     # should be noted that AND and NOT should be Union['{{ next }}', List['{{ next }}']]
     # but this causes mypy to hang :/
     AND: List['{{ next }}']
-    # `OR` is deprecated and will be removed in a future release
-    OR: List['{{ next }}']
-    ANY: List['{{ next }}']
     NOT: List['{{ next }}']
+    ANY: List['{{ next }}']
     {% endif %}
 {% endcall %}
 
@@ -657,10 +655,8 @@ class {{ current }}(TypedDict, total=False):
 
     {% if next != '' %}
     AND: List['{{ next }}']
-    # `OR` is deprecated and will be removed in a future release
-    OR: List['{{ next }}']
-    ANY: List['{{ next }}']
     NOT: List['{{ next }}']
+    ANY: List['{{ next }}']
     {% endif %}
 {% endcall %}
 

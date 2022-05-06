@@ -505,7 +505,7 @@ The following query will return the first post where the title contains the word
 ```py
 post = await db.post.find_first(
     where={
-        'OR': [
+        'ANY': [
             {
                 'title': {
                     'contains': 'prisma',
