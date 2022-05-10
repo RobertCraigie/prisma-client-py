@@ -204,6 +204,16 @@ def _pathlib_serializer(path: Path) -> str:
     return str(path.absolute())
 
 
+def _recursive_type_depth_factory() -> int:
+    click.echo(
+        click.style(
+            RECURSIVE_TYPE_DEPTH_WARNING,
+            fg='yellow',
+        )
+    )
+    return 5
+
+
 class BaseModel(PydanticBaseModel):
     class Config:
         arbitrary_types_allowed: bool = True
@@ -391,7 +401,9 @@ class Config(BaseSettings):
 
     interface: InterfaceChoices = InterfaceChoices.asyncio
     partial_type_generator: Optional[Module] = None
-    recursive_type_depth: Optional[int] = None
+    recursive_type_depth: int = FieldInfo(
+        default_factory=_recursive_type_depth_factory
+    )
     engine_type: EngineType = FieldInfo(default=EngineType.binary)
 
     # this should be a list of experimental features
@@ -481,15 +493,7 @@ class Config(BaseSettings):
 
     @validator('recursive_type_depth', always=True, allow_reuse=True)
     @classmethod
-    def recursive_type_depth_validator(cls, value: Optional[int]) -> int:
-        if value is None:
-            click.echo(
-                click.style(
-                    RECURSIVE_TYPE_DEPTH_WARNING,
-                    fg='yellow',
-                )
-            )
-            return 5
+    def recursive_type_depth_validator(cls, value: int) -> int:
         if value < -1 or value in {0, 1}:
             raise ValueError('Value must equal -1 or be greater than 1.')
         return value
