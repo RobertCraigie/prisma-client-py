@@ -1,7 +1,7 @@
 import pytest
 import prisma
 from prisma import Prisma, register, get_client
-from prisma.testing import reset_client
+from prisma.testing import reset_client, unregister_client
 
 
 @pytest.mark.prisma
@@ -29,3 +29,17 @@ def test_reset_client() -> None:
         assert get_client() == client
 
     assert get_client() == original
+
+
+@pytest.mark.prisma
+def test_unregister_client() -> None:
+    """Unregistering the client works as expected"""
+    original = get_client()
+    assert isinstance(original, Prisma)
+    unregister_client()
+
+    with pytest.raises(prisma.errors.ClientNotRegisteredError):
+        get_client()
+
+    with pytest.raises(prisma.errors.ClientNotRegisteredError):
+        unregister_client()

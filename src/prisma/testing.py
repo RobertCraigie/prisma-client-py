@@ -23,3 +23,11 @@ def reset_client(
         yield
     finally:
         _client._registered_client = client
+
+
+def unregister_client() -> None:
+    """Unregister the current client."""
+    if _client._registered_client is None:
+        raise ClientNotRegisteredError()
+
+    _client._registered_client = None
