@@ -84,7 +84,7 @@ FILTER_TYPES = [
     'Decimal',
 ]
 RECURSIVE_TYPE_DEPTH_WARNING = """Some types are disabled by default due to being incompatible with Mypy, it is highly recommended
-to use Pyright instead and configure Prisma Python to use recursive types to re-enable certain types:"""
+to use Pyright instead and configure Prisma Python to use recursive types. To re-enable certain types:"""
 
 RECURSIVE_TYPE_DEPTH_WARNING_DESC = """
 generator client {
