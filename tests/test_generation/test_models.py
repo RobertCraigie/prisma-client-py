@@ -41,8 +41,9 @@ def test_default_recursive_type_depth(
 
     https://github.com/RobertCraigie/prisma-client-py/issues/252
 
-    Ensure that we provide advice on what value to use.
-    Also ensure that it defaults to 5.
+    Ensure that we provide advice on what value to use and that it defaults to 5.
+
+    Also validate that when a type depth is provided, no warning is shown.
     """
     c = Config()
     captured = capsys.readouterr()
@@ -50,3 +51,19 @@ def test_default_recursive_type_depth(
         '\n', ' '
     )
     assert c.recursive_type_depth == 5
+
+    c = Config(recursive_type_depth=5)
+    captured = capsys.readouterr()
+    assert (
+        'it is highly recommended to use Pyright'
+        not in captured.out.replace('\n', ' ')
+    )
+    assert c.recursive_type_depth == 5
+
+    c = Config(recursive_type_depth=2)
+    captured = capsys.readouterr()
+    assert (
+        'it is highly recommended to use Pyright'
+        not in captured.out.replace('\n', ' ')
+    )
+    assert c.recursive_type_depth == 2
