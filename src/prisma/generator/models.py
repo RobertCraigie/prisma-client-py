@@ -83,10 +83,10 @@ FILTER_TYPES = [
     'Json',
     'Decimal',
 ]
-RECURSIVE_TYPE_DEPTH_WARNING = """
-Some types are disabled by default due to being incompatible with Mypy, it is highly recommended
-to use Pyright instead and configure Prisma Python to use recursive types to re-enable certain types:
+RECURSIVE_TYPE_DEPTH_WARNING = """Some types are disabled by default due to being incompatible with Mypy, it is highly recommended
+to use Pyright instead and configure Prisma Python to use recursive types to re-enable certain types:"""
 
+RECURSIVE_TYPE_DEPTH_WARNING_DESC = """
 generator client {
   provider             = "prisma-client-py"
   recursive_type_depth = -1
@@ -100,7 +100,6 @@ generator client {
 }
 
 For more information see: https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/#default-type-limitations
-
 """
 
 FAKER: Faker = Faker()
@@ -207,10 +206,11 @@ def _pathlib_serializer(path: Path) -> str:
 def _recursive_type_depth_factory() -> int:
     click.echo(
         click.style(
-            RECURSIVE_TYPE_DEPTH_WARNING,
+            f'\n{RECURSIVE_TYPE_DEPTH_WARNING}',
             fg='yellow',
         )
     )
+    click.echo(f'{RECURSIVE_TYPE_DEPTH_WARNING_DESC}\n')
     return 5
 
 
