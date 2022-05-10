@@ -43,3 +43,6 @@ def test_unregister_client() -> None:
 
     with pytest.raises(prisma.errors.ClientNotRegisteredError):
         unregister_client()
+
+    # test cleanup
+    register(original)
