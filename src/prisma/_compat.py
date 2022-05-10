@@ -31,7 +31,6 @@ if TYPE_CHECKING:
     ) -> Callable[[CallableT], CallableT]:
         ...
 
-
 else:
     from pydantic import (
         validator as validator,

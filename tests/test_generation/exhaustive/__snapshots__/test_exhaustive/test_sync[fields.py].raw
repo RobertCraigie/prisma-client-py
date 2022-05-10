@@ -28,6 +28,8 @@ from typing import (
 )
 from typing_extensions import TypedDict, Literal
 
+
+LiteralString = str
 # -- template fields.py.jinja --
 import base64
 from pydantic import Json as _PydanticJson

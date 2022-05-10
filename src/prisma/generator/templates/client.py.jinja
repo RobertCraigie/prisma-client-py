@@ -234,7 +234,7 @@ class Prisma:
             self.__engine = None
 
     {% if active_provider != 'mongodb' %}
-    {{ maybe_async_def }}execute_raw(self, query: str, *args: Any) -> int:
+    {{ maybe_async_def }}execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = {{ maybe_await }}self._execute(
             operation='{{ operations.execute_raw }}',
             method='{{ methods.execute_raw }}',
@@ -246,15 +246,15 @@ class Prisma:
         return int(resp['data']['result'])
 
     @overload
-    {{ maybe_async_def }}query_first(self, query: str, *args: Any) -> Any:
+    {{ maybe_async_def }}query_first(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    {{ maybe_async_def }}query_first(self, query: str, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
+    {{ maybe_async_def }}query_first(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
         ...
 
     {{ maybe_async_def }}query_first(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[Optional[BaseModelT], Any]:
         if model is not None:
             results = {{ maybe_await }}self.query_raw(query, *args, model=model)
@@ -267,15 +267,15 @@ class Prisma:
         return results[0]
 
     @overload
-    {{ maybe_async_def }}query_raw(self, query: str, *args: Any) -> Any:
+    {{ maybe_async_def }}query_raw(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    {{ maybe_async_def }}query_raw(self, query: str, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
+    {{ maybe_async_def }}query_raw(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
         ...
 
     {{ maybe_async_def }}query_raw(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[List[BaseModelT], Any]:
         resp = {{ maybe_await }}self._execute(
             operation='{{ operations.query_raw }}',

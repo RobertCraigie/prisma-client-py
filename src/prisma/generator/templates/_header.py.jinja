@@ -27,4 +27,11 @@ from typing import (
 )
 from typing_extensions import TypedDict, Literal
 
+{% from '_utils.py.jinja' import recursive_types with context %}
+
+{% if recursive_types %}
+from typing_extensions import LiteralString
+{% else %}
+LiteralString = str
+{% endif %}
 
