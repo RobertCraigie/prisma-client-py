@@ -29,7 +29,7 @@ async def create() -> None:
     reveal_type(user)  # T: User
 
     type_ = await Types.prisma().create(data={})
-    reveal_type(type_.bool_)  # T: bool
+    reveal_type(type_.bool)  # T: bool
     reveal_type(type_.string)  # T: str
     reveal_type(type_.bigint)  # T: int
     reveal_type(type_.integer)  # T: int
