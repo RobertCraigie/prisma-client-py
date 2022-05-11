@@ -62,13 +62,13 @@ __all__ = (
 ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float']
 
 TYPE_MAPPING = {
-    'String': 'str',
+    'String': '_str',
     'Bytes': "'fields.Base64'",
     'DateTime': 'datetime.datetime',
-    'Boolean': 'bool',
-    'Int': 'int',
-    'Float': 'float',
-    'BigInt': 'int',
+    'Boolean': '_bool',
+    'Int': '_int',
+    'Float': '_float',
+    'BigInt': '_int',
     'Json': "'fields.Json'",
     'Decimal': 'decimal.Decimal',
 }
