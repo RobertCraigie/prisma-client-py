@@ -5,6 +5,9 @@ from prisma.models import User
 from prisma.errors import UnsupportedSubclassWarning
 
 
+# pyright: reportUnusedClass=false
+
+
 async def create_user() -> User:
     user = await User.prisma().create(
         data={
@@ -273,18 +276,14 @@ def test_subclassing_warns() -> None:
     """
     with pytest.warns(UnsupportedSubclassWarning):
 
-        class MyUser(User):  # pyright: reportUnusedClass=false
+        class MyUser(User):
             pass
 
-    class MyUser2(
-        User, warn_subclass=False
-    ):  # pyright: reportUnusedClass=false
+    class MyUser2(User, warn_subclass=False):
         pass
 
     # ensure other arguments can be passed to support multiple inheritance
-    class MyUser3(
-        User, warn_subclass=False, foo=1
-    ):  # pyright: reportUnusedClass=false
+    class MyUser3(User, warn_subclass=False, foo=1):
         pass
 
 

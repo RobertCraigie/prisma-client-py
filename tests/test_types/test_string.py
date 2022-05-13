@@ -114,3 +114,62 @@ async def test_filtering(client: Prisma) -> None:
     )
     assert found is not None
     assert found.string == 'b'
+
+
+@pytest.mark.asyncio
+async def test_filtering_nulls(client: Prisma) -> None:
+    """None is a valid filter for nullable String fields"""
+    await client.types.create(
+        {
+            'string': 'a',
+            'optional_string': None,
+        },
+    )
+    await client.types.create(
+        {
+            'string': 'b',
+            'optional_string': 'null',
+        },
+    )
+    await client.types.create(
+        {
+            'string': 'c',
+            'optional_string': 'robert@craigie.dev',
+        },
+    )
+
+    found = await client.types.find_first(
+        where={
+            'NOT': [
+                {
+                    'optional_string': None,
+                },
+            ],
+        },
+        order={
+            'string': 'asc',
+        },
+    )
+    assert found is not None
+    assert found.string == 'b'
+    assert found.optional_string == 'null'
+
+    count = await client.types.count(
+        where={
+            'optional_string': None,
+        },
+    )
+    assert count == 1
+
+    count = await client.types.count(
+        where={
+            'NOT': [
+                {
+                    'optional_string': None,
+                },
+            ],
+        },
+    )
+    assert count == 2
+
+    # TODO: test passing 'null'

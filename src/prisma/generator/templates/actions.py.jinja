@@ -1,5 +1,5 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types with context %}
+{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider with context %}
 # -- template actions.py.jinja --
 import warnings
 
@@ -51,9 +51,10 @@ class {{ model.name }}Actions:
         self._client = client
         self._model = model
 
+    {% if active_provider != 'mongodb' %}
     {{ maybe_async_def }}query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List[{{ ModelType }}]:
         """Execute a raw SQL query
@@ -91,7 +92,7 @@ class {{ model.name }}Actions:
 
     {{ maybe_async_def }}query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional[{{ ModelType }}]:
         """Execute a raw SQL query, returning the first result
@@ -128,6 +129,7 @@ class {{ model.name }}Actions:
         ```
         """
         return {{ maybe_await }}self._client.query_first(query, *args, model=self._model)
+    {% endif %}
 
     {{ maybe_async_def }}create(
         self,

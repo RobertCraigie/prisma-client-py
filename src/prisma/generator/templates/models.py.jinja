@@ -62,6 +62,12 @@ def _maybe_warn_subclassing(new_model: str, base_model: str, *, stacklevel: int 
 
 {% for model in dmmf.datamodel.models %}
 class {{ model.name }}(BaseModel):
+    {% if model.documentation is none %}
+    """Represents a {{ model.name }} record"""
+    {% else %}
+    """{{ format_documentation(model.documentation) }}"""
+    {% endif %}
+
     {% for field in model.all_fields %}
     {{ field.name }}:
             {%- if field.is_required and not field.relation_name -%}
@@ -69,6 +75,10 @@ class {{ model.name }}(BaseModel):
             {% else -%}
                 {{ ' ' }}Optional[{{ field.python_type }}]
             {% endif %}
+    {% if not field.documentation is none %}
+    """{{ format_documentation(field.documentation) }}"""
+
+    {% endif %}
     {% endfor %}
 
     Config = Config
@@ -208,7 +218,7 @@ class {{ model.name }}(BaseModel):
     {% for field in model.get_fields_of_type('Bytes') %}
     @validator('{{ field.name }}', pre=True, allow_reuse=True)
     @classmethod
-    def _prisma_{{ field.name }}_bytes_validator(cls, value: Any) -> Union[fields.Base64, List[fields.Base64]]:
+    def _prisma_{{ field.name }}_bytes_validator(cls, value: Any) -> Union[None, fields.Base64, List[fields.Base64]]:
         return fields.Base64._internal_from_prisma(value)
     {% endfor %}
 
@@ -222,7 +232,7 @@ class {{ model.name }}(BaseModel):
         {% endfor %}
     }
 {% else -%}
-    _{{ model.name }}_relational_fields: Set[str] = set()  # pyright: reportUnusedVariable=false
+    _{{ model.name }}_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
 {% endif %}
 _{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] = {
     {% for field in model.all_fields %}
@@ -231,6 +241,7 @@ _{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] 
         'is_list': {{ field.is_list }},
         'optional': {{ field.is_optional }},
         'type': {{ field.python_type_as_string }},
+        'documentation': {% if field.documentation is none %}None{% else %}'''{{ field.documentation }}'''{% endif %},
     },
     {% endfor %}
 }

@@ -69,7 +69,18 @@ function highlightAll(dark) {
 }
 
 function isDarkTheme() {
-  const data = JSON.parse(window.localStorage.getItem('/.__palette'));
+  let baseKey = '/.__palette';
+  let raw = window.localStorage.getItem(baseKey);
+  if (raw == null) {
+    // this happens on ReadTheDocs as the theme storage keys use a different
+    // naming schema, e.g. /en/stable/.__palette instead of just /.__palette.
+    // Work around this by finding the first two parts of the path and
+    // inserting that to the start of the key if the original key is not found
+    let key = window.location.pathname.split('/').splice(0, 3).join('/');
+    raw = window.localStorage.getItem(key + baseKey);
+  }
+
+  const data = JSON.parse(raw);
 
   if (data) {
     return data.color.scheme == 'slate';
@@ -89,7 +100,5 @@ document.body.addEventListener('click', (event) => {
 });
 
 document$.subscribe(() => {
-  // we wait 200ms before applying highlighting as highlighting for the dark theme
-  // could occasionally break on initial load
-  setTimeout(() => highlightAll(isDarkTheme()), 200);
+  highlightAll(isDarkTheme());
 });

@@ -33,8 +33,7 @@ Whenever you make changes to your model, migrate your database and re-generate y
 
 ```sh
 # apply migrations
-prisma migrate save --name "add comment model"
-prisma migrate up
+prisma migrate dev --name "add comment model"
 # generate
 prisma generate
 ```

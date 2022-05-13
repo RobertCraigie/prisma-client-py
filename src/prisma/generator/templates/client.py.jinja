@@ -1,5 +1,5 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types with context %}
+{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider with context %}
 # -- template client.py.jinja --
 import warnings
 from types import TracebackType
@@ -14,7 +14,9 @@ from .generator.models import EngineType
 
 __all__ = (
     'ENGINE_TYPE',
+    'Batch',
     'Prisma',
+    'Client',
     'load_env',
     'register',
     'get_client',
@@ -114,7 +116,7 @@ def get_client() -> 'Prisma':
         return registered
 
     client = registered()
-    if not isinstance(client, Prisma):  # pyright: reportUnnecessaryIsInstance=false
+    if not isinstance(client, Prisma):  # pyright: ignore[reportUnnecessaryIsInstance]
         raise TypeError(
             f'Registered function returned {client} instead of a {Prisma} instance.'
         )
@@ -162,7 +164,7 @@ class Prisma:
         {% endif %}
         {% endfor %}
         self.__engine: Optional[AbstractEngine] = None
-        self._active_provider = '{{ datasources[0].active_provider }}'
+        self._active_provider = '{{ active_provider }}'
         self._log_queries = log_queries
         self._datasource = datasource
         self._connect_timeout = connect_timeout
@@ -252,7 +254,8 @@ class Prisma:
             {% endif %}
             self.__engine = None
 
-    {{ maybe_async_def }}execute_raw(self, query: str, *args: Any) -> int:
+    {% if active_provider != 'mongodb' %}
+    {{ maybe_async_def }}execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = {{ maybe_await }}self._execute(
             operation='{{ operations.execute_raw }}',
             method='{{ methods.execute_raw }}',
@@ -264,15 +267,15 @@ class Prisma:
         return int(resp['data']['result'])
 
     @overload
-    {{ maybe_async_def }}query_first(self, query: str, *args: Any) -> Any:
+    {{ maybe_async_def }}query_first(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    {{ maybe_async_def }}query_first(self, query: str, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
+    {{ maybe_async_def }}query_first(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
         ...
 
     {{ maybe_async_def }}query_first(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[Optional[BaseModelT], Any]:
         if model is not None:
             results = {{ maybe_await }}self.query_raw(query, *args, model=model)
@@ -285,15 +288,15 @@ class Prisma:
         return results[0]
 
     @overload
-    {{ maybe_async_def }}query_raw(self, query: str, *args: Any) -> Any:
+    {{ maybe_async_def }}query_raw(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    {{ maybe_async_def }}query_raw(self, query: str, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
+    {{ maybe_async_def }}query_raw(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
         ...
 
     {{ maybe_async_def }}query_raw(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[List[BaseModelT], Any]:
         resp = {{ maybe_await }}self._execute(
             operation='{{ operations.query_raw }}',
@@ -307,6 +310,7 @@ class Prisma:
         if model is not None:
             return [model.parse_obj(r) for r in result]
         return result
+    {% endif %}
 
     def batch_(self) -> 'Batch':
         """Returns a context manager for grouping write queries into a single transaction."""

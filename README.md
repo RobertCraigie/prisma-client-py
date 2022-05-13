@@ -8,7 +8,7 @@
         <img src="https://img.shields.io/discord/933860922039099444?color=blue&label=chat&logo=discord" alt="Chat on Discord">
     </a>
     <a href="https://prisma.io">
-        <img src="https://img.shields.io/static/v1?label=prisma&message=3.9.1&color=blue&logo=prisma" alt="Supported Prisma version is 3.9.1">
+        <img src="https://img.shields.io/static/v1?label=prisma&message=3.13.0&color=blue&logo=prisma" alt="Supported Prisma version is 3.13.0">
     </a>
     <a href="https://github.com/grantjenks/blue">
         <img src="https://camo.githubusercontent.com/dbdbcf26db37abfa1f2ab7e6c28c8b3a199f2dad98e4ef53a50e9c45c7e4ace8/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636f64652532307374796c652d626c75652d626c75652e737667" alt="Code style: blue">
@@ -32,7 +32,7 @@ Prisma Client Python is a next-generation ORM built on top of [Prisma](https://g
 
 Prisma Client Python can be used in _any_ Python backend application. This can be a REST API, a GraphQL API or _anything_ else that needs a database.
 
-![GIF showcasing Prisma Client Python usage](./docs/showcase.gif)
+![GIF showcasing Prisma Client Python usage](https://raw.githubusercontent.com/RobertCraigie/prisma-client-py/main/docs/showcase.gif)
 
 ## Why should you use Prisma Client Python?
 
@@ -295,18 +295,27 @@ Prisma Client Python connects to the database and executes queries using Prisma'
 
 The Prisma CLI, which is written in TypeScript, is packaged into a single binary which is downloaded for you when you use Prisma Client Python. The CLI interface is the exact same as the standard [Prisma CLI](https://www.prisma.io/docs/reference/api-reference/command-reference).
 
+## Affiliation
+
+Prisma Client Python is *not* an official Prisma product although it is very generously sponsored by Prisma.
+
 ## Room for improvement
 
-Prisma Client Python is a new project and as such there are some features that are missing or incomplete.
+Prisma Client Python is a fairly new project and as such there are some features that are missing or incomplete.
 
 ### Auto completion for query arguments
 
-Prisma Client Python query arguments make use of `TypedDict` types. While there is very limited support for completion of these types within the Python ecosystem some editors do support it.
+Prisma Client Python query arguments make use of `TypedDict` types. Support for completion of these types within the Python ecosystem is now fairly widespread. This section is only here for documenting support.
 
 Supported editors / extensions:
 
 - VSCode with [pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance) v2021.9.4 or higher
-- Sublime Text with [LSP-Pyright](https://github.com/sublimelsp/LSP-pyright) v1.1.96 or higher
+- Sublime Text with [LSP-Pyright](https://github.com/sublimelsp/LSP-pyright) v1.1.196 or higher
+- PyCharm [2022.1 EAP 3](https://youtrack.jetbrains.com/articles/PY-A-233537928/PyCharm-2022.1-EAP-3-(221.4994.44-build)-Release-Notes) added support for completing `TypedDict`s
+    - This does not yet work for Prisma Client Python unfortunately, see [this issue](https://youtrack.jetbrains.com/issue/PY-54151/TypedDict-completion-at-callee-does-not-work-for-methods)
+- Any editor that supports the Language Server Protocol and has an extension supporting Pyright v1.1.196 or higher
+    - vim and neovim with [coc.nvim](https://github.com/fannheyward/coc-pyright)
+    - [emacs](https://github.com/emacs-lsp/lsp-pyright)
 
 ```py
 user = await db.user.find_first(

@@ -79,7 +79,7 @@ def validate(type: Type[T], data: Any) -> T:
         # incorrectly inferred type as we have verified that the given type
         # is indeed a TypedDict
         model = create_model_from_typeddict(
-            type, __config__=Config  # pyright: reportGeneralTypeIssues=false
+            type, __config__=Config  # pyright: ignore[reportGeneralTypeIssues]
         )
         model.update_forward_refs(**vars(_get_module(type)))
         type.__pydantic_model__ = model  # type: ignore

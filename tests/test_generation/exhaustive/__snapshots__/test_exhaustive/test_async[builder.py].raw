@@ -6,6 +6,7 @@
 
 # global imports for type checking
 import sys
+import decimal
 import datetime
 from typing import (
     TYPE_CHECKING,
@@ -27,6 +28,8 @@ from typing import (
 )
 from typing_extensions import TypedDict, Literal
 
+
+LiteralString = str
 # -- template builder.py.jinja --
 
 # TODO: the QueryBuilder should validate and add type information context.
@@ -147,6 +150,7 @@ DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
         'floats',
         'bigints',
         'json_objects',
+        'decimals',
     ],
     'A': [
         'email',
@@ -163,6 +167,8 @@ DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
         'id',
         'float',
         'd_float',
+        'decFloat',
+        'numFloat',
     ],
     'C': [
         'char',
@@ -891,6 +897,12 @@ def serialize_json(obj: fields.Json) -> str:
 @serializer.register(fields.Base64)
 def serialize_base64(obj: fields.Base64) -> str:
     """Serialize a Base64 wrapper object to raw binary data"""
+    return str(obj)
+
+
+@serializer.register(decimal.Decimal)
+def serialize_decimal(obj: decimal.Decimal) -> str:
+    """Serialize a Decimal object to a string"""
     return str(obj)
 
 

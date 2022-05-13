@@ -4,11 +4,12 @@ datasource db {
 }
 
 generator db {
-  provider               = "prisma-client-py"
-  interface              = "asyncio"
-  recursive_type_depth   = 5
-  partial_type_generator = "tests/scripts/partial_type_generator.py"
-  previewFeatures        = ["interactiveTransactions"]
+  provider                    = "prisma-client-py"
+  interface                   = "asyncio"
+  recursive_type_depth        = 5
+  partial_type_generator      = "tests/scripts/partial_type_generator.py"
+  previewFeatures             = ["interactiveTransactions"]
+  enable_experimental_decimal = true
 }
 
 model Post {
@@ -51,12 +52,23 @@ model Profile {
 
 // model that just exists for testing different schema types
 model Types {
-  id       Int      @id @default(autoincrement())
-  bool_    Boolean  @default(false)
-  string   String   @default("")
-  bytes    Bytes    @default("")
-  bigint   BigInt   @default(0)
-  integer  Int      @default(0)
-  float_   Float    @default(0)
-  datetime DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  bool_     Boolean  @default(false)
+  string    String   @default("")
+  bytes     Bytes    @default("")
+  bigint    BigInt   @default(0)
+  integer   Int      @default(0)
+  float_    Float    @default(0)
+  datetime_ DateTime @default(now())
+  decimal_  Decimal  @default(1)
+
+  optional_int      Int?      @default(0)
+  optional_bool     Boolean?  @default(false)
+  optional_string   String?   @default("")
+  optional_bytes    Bytes?    @default("")
+  optional_bigint   BigInt?   @default(0)
+  optional_integer  Int?      @default(0)
+  optional_float    Float?    @default(0)
+  optional_datetime DateTime? @default(now())
+  optional_decimal  Decimal?  @default(1)
 }

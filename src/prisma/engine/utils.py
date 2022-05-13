@@ -18,6 +18,8 @@ from ..binaries import GLOBAL_TEMP_DIR, ENGINE_VERSION, platform
 log: logging.Logger = logging.getLogger(__name__)
 ERROR_MAPPING: Dict[str, Type[Exception]] = {
     'P2002': prisma_errors.UniqueViolationError,
+    'P2003': prisma_errors.ForeignKeyViolationError,
+    'P2009': prisma_errors.FieldNotFoundError,
     'P2010': prisma_errors.RawQueryError,
     'P2012': prisma_errors.MissingRequiredValueError,
     'P2019': prisma_errors.InputError,
@@ -105,10 +107,12 @@ def handle_response_errors(resp: AbstractResponse[Any], data: Any) -> NoReturn:
             if code is None:
                 continue
 
-            exc = ERROR_MAPPING.get(code)
-            if exc is not None:
-                raise exc(error)
-
+            # TODO: the order of these if statements is important because
+            # the P2009 code can be returned for both: missing a required value
+            # and an unknown field error. As we want to explicitly handle
+            # the missing a required value error then we need to check for that first.
+            # As we can only check for this error by searching the message then this
+            # comes with performance concerns.
             message = user_facing.get('message', '')
 
             if code == 'P2028':
@@ -118,6 +122,10 @@ def handle_response_errors(resp: AbstractResponse[Any], data: Any) -> NoReturn:
 
             if 'A value is required but not set' in message:
                 raise prisma_errors.MissingRequiredValueError(error)
+
+            exc = ERROR_MAPPING.get(code)
+            if exc is not None:
+                raise exc(error)
         except (KeyError, TypeError):
             continue
 

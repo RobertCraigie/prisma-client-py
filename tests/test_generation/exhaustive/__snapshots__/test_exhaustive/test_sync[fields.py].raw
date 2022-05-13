@@ -6,6 +6,7 @@
 
 # global imports for type checking
 import sys
+import decimal
 import datetime
 from typing import (
     TYPE_CHECKING,
@@ -27,6 +28,8 @@ from typing import (
 )
 from typing_extensions import TypedDict, Literal
 
+
+LiteralString = str
 # -- template fields.py.jinja --
 import base64
 from pydantic import Json as _PydanticJson
@@ -91,10 +94,10 @@ class Json(_PydanticJson):
             ...
 
         @overload
-        def __getitem__(self, i: '_JsonKeys') -> 'Serializable':  # pyright: reportIncompatibleMethodOverride=false
+        def __getitem__(self, i: '_JsonKeys') -> 'Serializable':
             ...
 
-        def __getitem__(self, i: Union['_JsonKeys', slice]) -> 'Serializable':
+        def __getitem__(self, i: Union['_JsonKeys', slice]) -> 'Serializable':  # pyright: ignore[reportIncompatibleMethodOverride]
             ...
 
 
@@ -143,8 +146,11 @@ class Base64:
     @classmethod
     def _internal_from_prisma(
         cls,
-        value: Union[str, 'Base64', List[Union[str, 'Base64']]]
-    ) -> Union['Base64', List['Base64']]:
+        value: Union[None, str, 'Base64', List[Union[str, 'Base64']]]
+    ) -> Union[None, 'Base64', List['Base64']]:
+        if value is None:
+            return None
+
         if isinstance(value, Base64):
             return value
 

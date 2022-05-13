@@ -47,14 +47,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install codecov==2.1.11 .[dev]
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .mypy_cache
           key: ${{ runner.os }}-mypy
@@ -101,7 +101,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install .[dev]
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
@@ -132,14 +132,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements/dev.txt codecov==2.1.11
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: .mypy_cache
           key: ${{ runner.os }}-mypy
@@ -206,7 +206,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install codecov==2.1.11 .[dev]
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}

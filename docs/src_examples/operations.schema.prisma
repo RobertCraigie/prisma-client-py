@@ -8,6 +8,7 @@ model User {
   name    String
   points  Float    @default(0)
   meta    Json     @default("{}")
+  number  Decimal  @default(0)
   emails  String[]
   posts   Post[]
   profile Profile?

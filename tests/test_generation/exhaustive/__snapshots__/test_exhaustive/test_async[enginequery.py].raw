@@ -6,6 +6,7 @@
 
 # global imports for type checking
 import sys
+import decimal
 import datetime
 from typing import (
     TYPE_CHECKING,
@@ -27,6 +28,8 @@ from typing import (
 )
 from typing_extensions import TypedDict, Literal
 
+
+LiteralString = str
 # -- template engine/query.py.jinja --
 
 import os

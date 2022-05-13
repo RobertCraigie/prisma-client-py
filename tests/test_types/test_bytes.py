@@ -104,3 +104,60 @@ async def test_constructing(client: Prisma) -> None:
         },
     )
     assert model.bytes == Base64.encode(b'foo')
+
+
+@pytest.mark.asyncio
+async def test_filtering_nulls(client: Prisma) -> None:
+    """None is a valid filter for nullable Bytes fields"""
+    await client.types.create(
+        {
+            'string': 'a',
+            'optional_bytes': None,
+        },
+    )
+    await client.types.create(
+        {
+            'string': 'b',
+            'optional_bytes': Base64.encode(b'foo'),
+        },
+    )
+    await client.types.create(
+        {
+            'string': 'c',
+            'optional_bytes': Base64.encode(b'bar'),
+        },
+    )
+
+    found = await client.types.find_first(
+        where={
+            'NOT': [
+                {
+                    'optional_bytes': None,
+                },
+            ],
+        },
+        order={
+            'string': 'asc',
+        },
+    )
+    assert found is not None
+    assert found.string == 'b'
+    assert found.optional_bytes == Base64.encode(b'foo')
+
+    count = await client.types.count(
+        where={
+            'optional_bytes': None,
+        },
+    )
+    assert count == 1
+
+    count = await client.types.count(
+        where={
+            'NOT': [
+                {
+                    'optional_bytes': None,
+                },
+            ],
+        },
+    )
+    assert count == 2

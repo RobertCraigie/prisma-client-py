@@ -1,6 +1,7 @@
 from typing import Callable, Coroutine, TypeVar, Type, Tuple, Any
 from pydantic import BaseModel
 from typing_extensions import (
+    TypeGuard as TypeGuard,
     TypedDict as TypedDict,
     Protocol as Protocol,
     Literal as Literal,
@@ -14,8 +15,8 @@ CallableT = TypeVar('CallableT', bound='FuncType')
 BaseModelT = TypeVar('BaseModelT', bound=BaseModel)
 
 # TODO: use a TypeVar everywhere
-FuncType = Callable[..., Any]
-CoroType = Callable[..., Coroutine[Any, Any, Any]]
+FuncType = Callable[..., object]
+CoroType = Callable[..., Coroutine[Any, Any, object]]
 
 
 @runtime_checkable

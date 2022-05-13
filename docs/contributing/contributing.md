@@ -49,7 +49,7 @@ After any code changes are made you must run linters and add tests to ensure you
 You can run the linters and tests with coverage with the following commands.
 
 !!! note
-    There commands will not run mypy checks as it takes a significant amount of time to complete.
+    These commands will not run mypy checks as it takes a significant amount of time to complete.
 
     Mypy checks can be ran with `tox -e mypy`
 

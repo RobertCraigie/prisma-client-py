@@ -6,6 +6,7 @@
 
 # global imports for type checking
 import sys
+import decimal
 import datetime
 from typing import (
     TYPE_CHECKING,
@@ -27,6 +28,8 @@ from typing import (
 )
 from typing_extensions import TypedDict, Literal
 
+
+LiteralString = str
 # -- template client.py.jinja --
 from types import TracebackType
 
@@ -40,7 +43,9 @@ from .generator.models import EngineType
 
 __all__ = (
     'ENGINE_TYPE',
+    'Batch',
     'Prisma',
+    'Client',
     'load_env',
     'register',
     'get_client',
@@ -55,22 +60,32 @@ datasource db {
 }
 
 generator db {
-  provider             = "prisma-client-py"
-  interface            = "asyncio"
-  recursive_type_depth = 3
-  output               = "../../../.tests_cache/generation/exhaustive/__prisma_async_output__/prisma"
+  provider                    = "prisma-client-py"
+  interface                   = "asyncio"
+  recursive_type_depth        = 3
+  output                      = "../../../.tests_cache/generation/exhaustive/__prisma_async_output__/prisma"
+  enable_experimental_decimal = true
 }
 
+/// Post model documentation
 model Post {
   id         Int      @id @default(autoincrement())
   created_at DateTime @default(now())
   title      String
   content    String?
-  published  Boolean  @default(false)
-  author     User     @relation(fields: [author_id], references: [id])
-  author_id  Int
+
+  /// Has the post been made public yet?
+  published Boolean @default(false)
+
+  /// Relation to the User model
+  /// Second line comment with ' and "
+  author    User @relation(fields: [author_id], references: [id])
+  author_id Int
 }
 
+/// User model documentation
+///
+/// Third line comment
 model User {
   id               Int             @id @default(autoincrement())
   email            String          @unique
@@ -161,8 +176,7 @@ model Lists {
   floats       Float[]
   bigints      BigInt[]
   json_objects Json[]
-  // TODO
-  // decimals     Decimal[]
+  decimals     Decimal[]
 }
 
 enum ABeautifulEnum {
@@ -186,13 +200,11 @@ model A {
 }
 
 model B {
-  id      String @id @default(cuid())
-  float   Float  @db.Real
-  d_float Float  @db.DoublePrecision
-
-  // TODO
-  // decFloat Decimal @db.Decimal(2, 1)
-  // numFloat Decimal @db.Decimal(10, 6)
+  id       String  @id @default(cuid())
+  float    Float   @db.Real
+  d_float  Float   @db.DoublePrecision
+  decFloat Decimal @db.Decimal(2, 1)
+  numFloat Decimal @db.Decimal(10, 6)
 
   @@unique([float, d_float], name: "my_constraint")
 }
@@ -301,7 +313,7 @@ def get_client() -> 'Prisma':
         return registered
 
     client = registered()
-    if not isinstance(client, Prisma):  # pyright: reportUnnecessaryIsInstance=false
+    if not isinstance(client, Prisma):  # pyright: ignore[reportUnnecessaryIsInstance]
         raise TypeError(
             f'Registered function returned {client} instead of a {Prisma} instance.'
         )
@@ -434,7 +446,7 @@ class Prisma:
             await self.__engine.aclose()
             self.__engine = None
 
-    async def execute_raw(self, query: str, *args: Any) -> int:
+    async def execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = await self._execute(
             operation='mutation',
             method='executeRaw',
@@ -446,15 +458,15 @@ class Prisma:
         return int(resp['data']['result'])
 
     @overload
-    async def query_first(self, query: str, *args: Any) -> Any:
+    async def query_first(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    async def query_first(self, query: str, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
+    async def query_first(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
         ...
 
     async def query_first(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[Optional[BaseModelT], Any]:
         if model is not None:
             results = await self.query_raw(query, *args, model=model)
@@ -467,15 +479,15 @@ class Prisma:
         return results[0]
 
     @overload
-    async def query_raw(self, query: str, *args: Any) -> Any:
+    async def query_raw(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    async def query_raw(self, query: str, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
+    async def query_raw(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
         ...
 
     async def query_raw(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[List[BaseModelT], Any]:
         resp = await self._execute(
             operation='mutation',

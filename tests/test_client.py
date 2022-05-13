@@ -156,3 +156,10 @@ async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
             'trust_env': False,
         },
     )
+
+
+def test_old_client_alias() -> None:
+    """Ensure that Prisma can be imported from the root package under the Client alias"""
+    from prisma import Client, Prisma
+
+    assert Client == Prisma
