@@ -131,11 +131,63 @@ class {{ model.name }}Actions:
         return {{ maybe_await }}self._client.query_first(query, *args, model=self._model)
     {% endif %}
 
+    @overload
     {{ maybe_async_def }}create(
         self,
         data: types.{{ model.name }}CreateInput,
-        include: Optional[types.{{ model.name}}Include] = None
+        include: Optional[types.{{ model.name}}Include],
+        discard_result: Literal[False],
     ) -> {{ ModelType }}:
+        ...
+
+    @overload
+    {{ maybe_async_def }}create(
+        self,
+        data: types.{{ model.name }}CreateInput,
+        include: Optional[types.{{ model.name}}Include],
+        discard_result: Literal[True],
+    ) -> None:
+        ...
+
+    @overload
+    {{ maybe_async_def }}create(
+        self,
+        data: types.{{ model.name }}CreateInput,
+        *,
+        discard_result: Literal[True],
+    ) -> None:
+        ...
+
+    @overload
+    {{ maybe_async_def }}create(
+        self,
+        data: types.{{ model.name }}CreateInput,
+        *,
+        discard_result: Literal[False],
+    ) -> {{ ModelType }}:
+        ...
+
+    @overload
+    {{ maybe_async_def }}create(
+        self,
+        data: types.{{ model.name }}CreateInput,
+        include: Optional[types.{{ model.name}}Include],
+    ) -> {{ ModelType }}:
+        ...
+
+    @overload
+    {{ maybe_async_def }}create(
+        self,
+        data: types.{{ model.name }}CreateInput,
+    ) -> {{ ModelType }}:
+        ...
+
+    {{ maybe_async_def }}create(
+        self,
+        data: types.{{ model.name }}CreateInput,
+        include: Optional[types.{{ model.name}}Include] = None,
+        discard_result: bool = False,
+    ) -> Optional[{{ ModelType }}]:
         """Create a new {{ model.name }} record.
 
         Parameters
@@ -180,6 +232,8 @@ class {{ model.name }}Actions:
                 'include': include,
             },
         )
+        if discard_result:
+            return None
         return self._model.parse_obj(resp['data']['result'])
 
     {{ maybe_async_def }}create_many(

@@ -28,6 +28,56 @@ async def create() -> None:
     )
     reveal_type(user)  # T: User
 
+    # case: pyright overloading
+    user = await User.prisma().create(
+        data={
+            'name': 'Robert',
+        },
+    )
+    reveal_type(user)  # T: User
+
+    user = await User.prisma().create(
+        data={
+            'name': 'Robert',
+        },
+        include={},
+    )
+    reveal_type(user)  # T: User
+
+    user = await User.prisma().create(
+        data={
+            'name': 'Robert',
+        },
+        include={},
+        discard_result=False,
+    )
+    reveal_type(user)  # T: User
+
+    user = await User.prisma().create(
+        data={
+            'name': 'Robert',
+        },
+        discard_result=False,
+    )
+    reveal_type(user)  # T: User
+
+    user = await User.prisma().create(
+        data={
+            'name': 'Robert',
+        },
+        include={},
+        discard_result=True,
+    )
+    reveal_type(user)  # T: None
+
+    user = await User.prisma().create(
+        data={
+            'name': 'Robert',
+        },
+        discard_result=True,
+    )
+    reveal_type(user)  # T: None
+
     # case: subclassing
     user2 = await MyUser.prisma().create(
         data={
