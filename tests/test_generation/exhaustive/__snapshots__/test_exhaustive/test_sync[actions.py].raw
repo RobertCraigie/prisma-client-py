@@ -179,7 +179,7 @@ class PostActions:
         data: types.PostCreateInput,
     ) -> 'models.Post':
         ...
-    
+
     def create(
         self,
         data: types.PostCreateInput,
@@ -194,6 +194,8 @@ class PostActions:
             Post record data
         include
             Specifies which relations should be loaded on the returned Post model
+        discard_result
+            Disables object creation from query results, this can have performance benefits on large queries
 
         Returns
         -------
@@ -1152,7 +1154,7 @@ class UserActions:
         data: types.UserCreateInput,
     ) -> 'models.User':
         ...
-    
+
     def create(
         self,
         data: types.UserCreateInput,
@@ -1167,6 +1169,8 @@ class UserActions:
             User record data
         include
             Specifies which relations should be loaded on the returned User model
+        discard_result
+            Disables object creation from query results, this can have performance benefits on large queries
 
         Returns
         -------
@@ -2145,7 +2149,7 @@ class MActions:
         data: types.MCreateInput,
     ) -> 'models.M':
         ...
-    
+
     def create(
         self,
         data: types.MCreateInput,
@@ -2160,6 +2164,8 @@ class MActions:
             M record data
         include
             Specifies which relations should be loaded on the returned M model
+        discard_result
+            Disables object creation from query results, this can have performance benefits on large queries
 
         Returns
         -------
@@ -3133,7 +3139,7 @@ class NActions:
         data: types.NCreateInput,
     ) -> 'models.N':
         ...
-    
+
     def create(
         self,
         data: types.NCreateInput,
@@ -3148,6 +3154,8 @@ class NActions:
             N record data
         include
             Specifies which relations should be loaded on the returned N model
+        discard_result
+            Disables object creation from query results, this can have performance benefits on large queries
 
         Returns
         -------
@@ -4126,7 +4134,7 @@ class OneOptionalActions:
         data: types.OneOptionalCreateInput,
     ) -> 'models.OneOptional':
         ...
-    
+
     def create(
         self,
         data: types.OneOptionalCreateInput,
@@ -4141,6 +4149,8 @@ class OneOptionalActions:
             OneOptional record data
         include
             Specifies which relations should be loaded on the returned OneOptional model
+        discard_result
+            Disables object creation from query results, this can have performance benefits on large queries
 
         Returns
         -------
@@ -5114,7 +5124,7 @@ class ManyRequiredActions:
         data: types.ManyRequiredCreateInput,
     ) -> 'models.ManyRequired':
         ...
-    
+
     def create(
         self,
         data: types.ManyRequiredCreateInput,
@@ -5129,6 +5139,8 @@ class ManyRequiredActions:
             ManyRequired record data
         include
             Specifies which relations should be loaded on the returned ManyRequired model
+        discard_result
+            Disables object creation from query results, this can have performance benefits on large queries
 
         Returns
         -------
@@ -6102,7 +6114,7 @@ class ListsActions:
         data: types.ListsCreateInput,
     ) -> 'models.Lists':
         ...
-    
+
     def create(
         self,
         data: types.ListsCreateInput,
@@ -6117,6 +6129,8 @@ class ListsActions:
             Lists record data
         include
             Specifies which relations should be loaded on the returned Lists model
+        discard_result
+            Disables object creation from query results, this can have performance benefits on large queries
 
         Returns
         -------
@@ -7065,7 +7079,7 @@ class AActions:
         data: types.ACreateInput,
     ) -> 'models.A':
         ...
-    
+
     def create(
         self,
         data: types.ACreateInput,
@@ -7080,6 +7094,8 @@ class AActions:
             A record data
         include
             Specifies which relations should be loaded on the returned A model
+        discard_result
+            Disables object creation from query results, this can have performance benefits on large queries
 
         Returns
         -------
@@ -8046,7 +8062,7 @@ class BActions:
         data: types.BCreateInput,
     ) -> 'models.B':
         ...
-    
+
     def create(
         self,
         data: types.BCreateInput,
@@ -8061,6 +8077,8 @@ class BActions:
             B record data
         include
             Specifies which relations should be loaded on the returned B model
+        discard_result
+            Disables object creation from query results, this can have performance benefits on large queries
 
         Returns
         -------
@@ -9029,7 +9047,7 @@ class CActions:
         data: types.CCreateInput,
     ) -> 'models.C':
         ...
-    
+
     def create(
         self,
         data: types.CCreateInput,
@@ -9044,6 +9062,8 @@ class CActions:
             C record data
         include
             Specifies which relations should be loaded on the returned C model
+        discard_result
+            Disables object creation from query results, this can have performance benefits on large queries
 
         Returns
         -------
@@ -10014,7 +10034,7 @@ class DActions:
         data: types.DCreateInput,
     ) -> 'models.D':
         ...
-    
+
     def create(
         self,
         data: types.DCreateInput,
@@ -10029,6 +10049,8 @@ class DActions:
             D record data
         include
             Specifies which relations should be loaded on the returned D model
+        discard_result
+            Disables object creation from query results, this can have performance benefits on large queries
 
         Returns
         -------
@@ -11002,7 +11024,7 @@ class EActions:
         data: types.ECreateInput,
     ) -> 'models.E':
         ...
-    
+
     def create(
         self,
         data: types.ECreateInput,
@@ -11017,6 +11039,8 @@ class EActions:
             E record data
         include
             Specifies which relations should be loaded on the returned E model
+        discard_result
+            Disables object creation from query results, this can have performance benefits on large queries
 
         Returns
         -------

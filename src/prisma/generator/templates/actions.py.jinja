@@ -34,6 +34,7 @@ if TYPE_CHECKING:
 {% for model in dmmf.datamodel.models %}
 {% set RawModelType = "prisma.models.%s" % model.name %}
 {% set include_doc = 'Specifies which relations should be loaded on the returned %s model' % model.name %}
+{% set discard_result_doc = 'Disables object creation from query results, this can have performance benefits on large queries' %}
 
 {% if recursive_types %}
 {% set ModelType = 'BaseModelT' %}
@@ -196,6 +197,8 @@ class {{ model.name }}Actions:
             {{ model.name }} record data
         include
             {{ include_doc }}
+        discard_result
+            {{ discard_result_doc }}
 
         Returns
         -------
