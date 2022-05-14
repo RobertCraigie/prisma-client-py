@@ -3,7 +3,7 @@ from prisma import Prisma
 
 async def main(client: Prisma) -> None:
     # case: missing arguments
-    await client.post.create()  # E: Argument missing for parameter "data"
+    await client.post.create()  # E: No overloads for "create" match the provided arguments
     await client.post.create(
         data={}  # E: Argument of type "dict[Any, Any]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
     )
