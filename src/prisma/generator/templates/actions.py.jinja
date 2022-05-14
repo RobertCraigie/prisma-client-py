@@ -137,7 +137,7 @@ class {{ model.name }}Actions:
         self,
         data: types.{{ model.name }}CreateInput,
         include: Optional[types.{{ model.name}}Include],
-        discard_result: Literal[False],
+        discard_result: Literal[False] = False,
     ) -> {{ ModelType }}:
         ...
 
@@ -146,7 +146,7 @@ class {{ model.name }}Actions:
         self,
         data: types.{{ model.name }}CreateInput,
         include: Optional[types.{{ model.name}}Include],
-        discard_result: Literal[True],
+        discard_result: Literal[True] = True,
     ) -> None:
         ...
 
@@ -165,14 +165,6 @@ class {{ model.name }}Actions:
         data: types.{{ model.name }}CreateInput,
         *,
         discard_result: Literal[False],
-    ) -> {{ ModelType }}:
-        ...
-
-    @overload
-    {{ maybe_async_def }}create(
-        self,
-        data: types.{{ model.name }}CreateInput,
-        include: Optional[types.{{ model.name}}Include],
     ) -> {{ ModelType }}:
         ...
 

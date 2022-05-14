@@ -134,7 +134,7 @@ class PostActions:
         self,
         data: types.PostCreateInput,
         include: Optional[types.PostInclude],
-        discard_result: Literal[False],
+        discard_result: Literal[False] = False,
     ) -> 'models.Post':
         ...
 
@@ -143,7 +143,7 @@ class PostActions:
         self,
         data: types.PostCreateInput,
         include: Optional[types.PostInclude],
-        discard_result: Literal[True],
+        discard_result: Literal[True] = True,
     ) -> None:
         ...
 
@@ -162,14 +162,6 @@ class PostActions:
         data: types.PostCreateInput,
         *,
         discard_result: Literal[False],
-    ) -> 'models.Post':
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.PostCreateInput,
-        include: Optional[types.PostInclude],
     ) -> 'models.Post':
         ...
 
@@ -1109,7 +1101,7 @@ class UserActions:
         self,
         data: types.UserCreateInput,
         include: Optional[types.UserInclude],
-        discard_result: Literal[False],
+        discard_result: Literal[False] = False,
     ) -> 'models.User':
         ...
 
@@ -1118,7 +1110,7 @@ class UserActions:
         self,
         data: types.UserCreateInput,
         include: Optional[types.UserInclude],
-        discard_result: Literal[True],
+        discard_result: Literal[True] = True,
     ) -> None:
         ...
 
@@ -1137,14 +1129,6 @@ class UserActions:
         data: types.UserCreateInput,
         *,
         discard_result: Literal[False],
-    ) -> 'models.User':
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.UserCreateInput,
-        include: Optional[types.UserInclude],
     ) -> 'models.User':
         ...
 
@@ -2104,7 +2088,7 @@ class MActions:
         self,
         data: types.MCreateInput,
         include: Optional[types.MInclude],
-        discard_result: Literal[False],
+        discard_result: Literal[False] = False,
     ) -> 'models.M':
         ...
 
@@ -2113,7 +2097,7 @@ class MActions:
         self,
         data: types.MCreateInput,
         include: Optional[types.MInclude],
-        discard_result: Literal[True],
+        discard_result: Literal[True] = True,
     ) -> None:
         ...
 
@@ -2132,14 +2116,6 @@ class MActions:
         data: types.MCreateInput,
         *,
         discard_result: Literal[False],
-    ) -> 'models.M':
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.MCreateInput,
-        include: Optional[types.MInclude],
     ) -> 'models.M':
         ...
 
@@ -3094,7 +3070,7 @@ class NActions:
         self,
         data: types.NCreateInput,
         include: Optional[types.NInclude],
-        discard_result: Literal[False],
+        discard_result: Literal[False] = False,
     ) -> 'models.N':
         ...
 
@@ -3103,7 +3079,7 @@ class NActions:
         self,
         data: types.NCreateInput,
         include: Optional[types.NInclude],
-        discard_result: Literal[True],
+        discard_result: Literal[True] = True,
     ) -> None:
         ...
 
@@ -3122,14 +3098,6 @@ class NActions:
         data: types.NCreateInput,
         *,
         discard_result: Literal[False],
-    ) -> 'models.N':
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.NCreateInput,
-        include: Optional[types.NInclude],
     ) -> 'models.N':
         ...
 
@@ -4089,7 +4057,7 @@ class OneOptionalActions:
         self,
         data: types.OneOptionalCreateInput,
         include: Optional[types.OneOptionalInclude],
-        discard_result: Literal[False],
+        discard_result: Literal[False] = False,
     ) -> 'models.OneOptional':
         ...
 
@@ -4098,7 +4066,7 @@ class OneOptionalActions:
         self,
         data: types.OneOptionalCreateInput,
         include: Optional[types.OneOptionalInclude],
-        discard_result: Literal[True],
+        discard_result: Literal[True] = True,
     ) -> None:
         ...
 
@@ -4117,14 +4085,6 @@ class OneOptionalActions:
         data: types.OneOptionalCreateInput,
         *,
         discard_result: Literal[False],
-    ) -> 'models.OneOptional':
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.OneOptionalCreateInput,
-        include: Optional[types.OneOptionalInclude],
     ) -> 'models.OneOptional':
         ...
 
@@ -5079,7 +5039,7 @@ class ManyRequiredActions:
         self,
         data: types.ManyRequiredCreateInput,
         include: Optional[types.ManyRequiredInclude],
-        discard_result: Literal[False],
+        discard_result: Literal[False] = False,
     ) -> 'models.ManyRequired':
         ...
 
@@ -5088,7 +5048,7 @@ class ManyRequiredActions:
         self,
         data: types.ManyRequiredCreateInput,
         include: Optional[types.ManyRequiredInclude],
-        discard_result: Literal[True],
+        discard_result: Literal[True] = True,
     ) -> None:
         ...
 
@@ -5107,14 +5067,6 @@ class ManyRequiredActions:
         data: types.ManyRequiredCreateInput,
         *,
         discard_result: Literal[False],
-    ) -> 'models.ManyRequired':
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.ManyRequiredCreateInput,
-        include: Optional[types.ManyRequiredInclude],
     ) -> 'models.ManyRequired':
         ...
 
@@ -6069,7 +6021,7 @@ class ListsActions:
         self,
         data: types.ListsCreateInput,
         include: Optional[types.ListsInclude],
-        discard_result: Literal[False],
+        discard_result: Literal[False] = False,
     ) -> 'models.Lists':
         ...
 
@@ -6078,7 +6030,7 @@ class ListsActions:
         self,
         data: types.ListsCreateInput,
         include: Optional[types.ListsInclude],
-        discard_result: Literal[True],
+        discard_result: Literal[True] = True,
     ) -> None:
         ...
 
@@ -6097,14 +6049,6 @@ class ListsActions:
         data: types.ListsCreateInput,
         *,
         discard_result: Literal[False],
-    ) -> 'models.Lists':
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.ListsCreateInput,
-        include: Optional[types.ListsInclude],
     ) -> 'models.Lists':
         ...
 
@@ -7034,7 +6978,7 @@ class AActions:
         self,
         data: types.ACreateInput,
         include: Optional[types.AInclude],
-        discard_result: Literal[False],
+        discard_result: Literal[False] = False,
     ) -> 'models.A':
         ...
 
@@ -7043,7 +6987,7 @@ class AActions:
         self,
         data: types.ACreateInput,
         include: Optional[types.AInclude],
-        discard_result: Literal[True],
+        discard_result: Literal[True] = True,
     ) -> None:
         ...
 
@@ -7062,14 +7006,6 @@ class AActions:
         data: types.ACreateInput,
         *,
         discard_result: Literal[False],
-    ) -> 'models.A':
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.ACreateInput,
-        include: Optional[types.AInclude],
     ) -> 'models.A':
         ...
 
@@ -8017,7 +7953,7 @@ class BActions:
         self,
         data: types.BCreateInput,
         include: Optional[types.BInclude],
-        discard_result: Literal[False],
+        discard_result: Literal[False] = False,
     ) -> 'models.B':
         ...
 
@@ -8026,7 +7962,7 @@ class BActions:
         self,
         data: types.BCreateInput,
         include: Optional[types.BInclude],
-        discard_result: Literal[True],
+        discard_result: Literal[True] = True,
     ) -> None:
         ...
 
@@ -8045,14 +7981,6 @@ class BActions:
         data: types.BCreateInput,
         *,
         discard_result: Literal[False],
-    ) -> 'models.B':
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.BCreateInput,
-        include: Optional[types.BInclude],
     ) -> 'models.B':
         ...
 
@@ -9002,7 +8930,7 @@ class CActions:
         self,
         data: types.CCreateInput,
         include: Optional[types.CInclude],
-        discard_result: Literal[False],
+        discard_result: Literal[False] = False,
     ) -> 'models.C':
         ...
 
@@ -9011,7 +8939,7 @@ class CActions:
         self,
         data: types.CCreateInput,
         include: Optional[types.CInclude],
-        discard_result: Literal[True],
+        discard_result: Literal[True] = True,
     ) -> None:
         ...
 
@@ -9030,14 +8958,6 @@ class CActions:
         data: types.CCreateInput,
         *,
         discard_result: Literal[False],
-    ) -> 'models.C':
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.CCreateInput,
-        include: Optional[types.CInclude],
     ) -> 'models.C':
         ...
 
@@ -9989,7 +9909,7 @@ class DActions:
         self,
         data: types.DCreateInput,
         include: Optional[types.DInclude],
-        discard_result: Literal[False],
+        discard_result: Literal[False] = False,
     ) -> 'models.D':
         ...
 
@@ -9998,7 +9918,7 @@ class DActions:
         self,
         data: types.DCreateInput,
         include: Optional[types.DInclude],
-        discard_result: Literal[True],
+        discard_result: Literal[True] = True,
     ) -> None:
         ...
 
@@ -10017,14 +9937,6 @@ class DActions:
         data: types.DCreateInput,
         *,
         discard_result: Literal[False],
-    ) -> 'models.D':
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.DCreateInput,
-        include: Optional[types.DInclude],
     ) -> 'models.D':
         ...
 
@@ -10979,7 +10891,7 @@ class EActions:
         self,
         data: types.ECreateInput,
         include: Optional[types.EInclude],
-        discard_result: Literal[False],
+        discard_result: Literal[False] = False,
     ) -> 'models.E':
         ...
 
@@ -10988,7 +10900,7 @@ class EActions:
         self,
         data: types.ECreateInput,
         include: Optional[types.EInclude],
-        discard_result: Literal[True],
+        discard_result: Literal[True] = True,
     ) -> None:
         ...
 
@@ -11007,14 +10919,6 @@ class EActions:
         data: types.ECreateInput,
         *,
         discard_result: Literal[False],
-    ) -> 'models.E':
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.ECreateInput,
-        include: Optional[types.EInclude],
     ) -> 'models.E':
         ...
 
