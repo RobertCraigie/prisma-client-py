@@ -620,11 +620,12 @@ class Batch:
 class PostBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-
+    
     def create(
         self,
         data: types.PostCreateInput,
-        include: Optional[types.PostInclude] = None
+        include: Optional[types.PostInclude] = None,
+        discard_result: bool = False,
     ) -> None:
         self._batcher._add(
             operation='mutation',
@@ -738,11 +739,12 @@ class PostBatchActions:
 class UserBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-
+    
     def create(
         self,
         data: types.UserCreateInput,
-        include: Optional[types.UserInclude] = None
+        include: Optional[types.UserInclude] = None,
+        discard_result: bool = False,
     ) -> None:
         self._batcher._add(
             operation='mutation',
@@ -856,11 +858,12 @@ class UserBatchActions:
 class MBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-
+    
     def create(
         self,
         data: types.MCreateInput,
-        include: Optional[types.MInclude] = None
+        include: Optional[types.MInclude] = None,
+        discard_result: bool = False,
     ) -> None:
         self._batcher._add(
             operation='mutation',
@@ -974,11 +977,12 @@ class MBatchActions:
 class NBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-
+    
     def create(
         self,
         data: types.NCreateInput,
-        include: Optional[types.NInclude] = None
+        include: Optional[types.NInclude] = None,
+        discard_result: bool = False,
     ) -> None:
         self._batcher._add(
             operation='mutation',
@@ -1092,11 +1096,12 @@ class NBatchActions:
 class OneOptionalBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-
+    
     def create(
         self,
         data: types.OneOptionalCreateInput,
-        include: Optional[types.OneOptionalInclude] = None
+        include: Optional[types.OneOptionalInclude] = None,
+        discard_result: bool = False,
     ) -> None:
         self._batcher._add(
             operation='mutation',
@@ -1210,11 +1215,12 @@ class OneOptionalBatchActions:
 class ManyRequiredBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-
+    
     def create(
         self,
         data: types.ManyRequiredCreateInput,
-        include: Optional[types.ManyRequiredInclude] = None
+        include: Optional[types.ManyRequiredInclude] = None,
+        discard_result: bool = False,
     ) -> None:
         self._batcher._add(
             operation='mutation',
@@ -1328,11 +1334,12 @@ class ManyRequiredBatchActions:
 class ListsBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-
+    
     def create(
         self,
         data: types.ListsCreateInput,
-        include: Optional[types.ListsInclude] = None
+        include: Optional[types.ListsInclude] = None,
+        discard_result: bool = False,
     ) -> None:
         self._batcher._add(
             operation='mutation',
@@ -1446,11 +1453,12 @@ class ListsBatchActions:
 class ABatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-
+    
     def create(
         self,
         data: types.ACreateInput,
-        include: Optional[types.AInclude] = None
+        include: Optional[types.AInclude] = None,
+        discard_result: bool = False,
     ) -> None:
         self._batcher._add(
             operation='mutation',
@@ -1564,11 +1572,12 @@ class ABatchActions:
 class BBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-
+    
     def create(
         self,
         data: types.BCreateInput,
-        include: Optional[types.BInclude] = None
+        include: Optional[types.BInclude] = None,
+        discard_result: bool = False,
     ) -> None:
         self._batcher._add(
             operation='mutation',
@@ -1682,11 +1691,12 @@ class BBatchActions:
 class CBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-
+    
     def create(
         self,
         data: types.CCreateInput,
-        include: Optional[types.CInclude] = None
+        include: Optional[types.CInclude] = None,
+        discard_result: bool = False,
     ) -> None:
         self._batcher._add(
             operation='mutation',
@@ -1800,11 +1810,12 @@ class CBatchActions:
 class DBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-
+    
     def create(
         self,
         data: types.DCreateInput,
-        include: Optional[types.DInclude] = None
+        include: Optional[types.DInclude] = None,
+        discard_result: bool = False,
     ) -> None:
         self._batcher._add(
             operation='mutation',
@@ -1918,11 +1929,12 @@ class DBatchActions:
 class EBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-
+    
     def create(
         self,
         data: types.ECreateInput,
-        include: Optional[types.EInclude] = None
+        include: Optional[types.EInclude] = None,
+        discard_result: bool = False,
     ) -> None:
         self._batcher._add(
             operation='mutation',

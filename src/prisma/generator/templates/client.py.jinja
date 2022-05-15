@@ -410,7 +410,8 @@ class {{ model.name }}BatchActions:
     def create(
         self,
         data: types.{{ model.name }}CreateInput,
-        include: Optional[types.{{ model.name}}Include] = None
+        include: Optional[types.{{ model.name}}Include] = None,
+        discard_result: bool = False,
     ) -> None:
         self._batcher._add(
             operation='{{ operations.create }}',

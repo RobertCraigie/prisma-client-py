@@ -154,6 +154,15 @@ class {{ model.name }}Actions:
     {{ maybe_async_def }}create(
         self,
         data: types.{{ model.name }}CreateInput,
+        include: Optional[types.{{ model.name}}Include],
+        discard_result: bool,
+    ) -> Optional[{{ ModelType }}]:
+        ...
+
+    @overload
+    {{ maybe_async_def }}create(
+        self,
+        data: types.{{ model.name }}CreateInput,
         *,
         discard_result: Literal[True],
     ) -> None:
