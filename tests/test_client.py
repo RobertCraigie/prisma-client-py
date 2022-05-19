@@ -111,6 +111,10 @@ async def test_connect_timeout(mocker: MockerFixture) -> None:
 
     await client.connect(timeout=timedelta(seconds=5))
     mocked.assert_called_once_with(timeout=5, datasources=None)
+    mocked.reset_mock()
+
+    await client.connect(timeout=timedelta(minutes=1, seconds=5))
+    mocked.assert_called_once_with(timeout=65, datasources=None)
 
 
 @pytest.mark.asyncio
