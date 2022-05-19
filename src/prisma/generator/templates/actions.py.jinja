@@ -54,7 +54,7 @@ class {{ model.name }}Actions:
     {% if active_provider != 'mongodb' %}
     {{ maybe_async_def }}query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List[{{ ModelType }}]:
         """Execute a raw SQL query
@@ -92,7 +92,7 @@ class {{ model.name }}Actions:
 
     {{ maybe_async_def }}query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional[{{ ModelType }}]:
         """Execute a raw SQL query, returning the first result

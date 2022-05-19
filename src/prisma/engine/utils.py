@@ -18,6 +18,7 @@ from ..binaries import GLOBAL_TEMP_DIR, ENGINE_VERSION, platform
 log: logging.Logger = logging.getLogger(__name__)
 ERROR_MAPPING: Dict[str, Type[Exception]] = {
     'P2002': prisma_errors.UniqueViolationError,
+    'P2003': prisma_errors.ForeignKeyViolationError,
     'P2009': prisma_errors.FieldNotFoundError,
     'P2010': prisma_errors.RawQueryError,
     'P2012': prisma_errors.MissingRequiredValueError,

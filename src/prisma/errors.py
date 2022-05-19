@@ -5,6 +5,7 @@ __all__ = (
     'PrismaError',
     'DataError',
     'UniqueViolationError',
+    'ForeignKeyViolationError',
     'MissingRequiredValueError',
     'RawQueryError',
     'TableNotFoundError',
@@ -72,6 +73,10 @@ class DataError(PrismaError):
 
 
 class UniqueViolationError(DataError):
+    pass
+
+
+class ForeignKeyViolationError(DataError):
     pass
 
 

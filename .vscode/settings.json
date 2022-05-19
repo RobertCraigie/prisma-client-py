@@ -1,4 +1,7 @@
 {
   "python.formatting.provider": "black",
-  "python.formatting.blackPath": "blue"
+  "python.formatting.blackPath": "blue",
+  "[javascript]": {
+      "editor.tabSize": 2
+  }
 }

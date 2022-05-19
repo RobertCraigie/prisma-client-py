@@ -28,6 +28,8 @@ from typing import (
 )
 from typing_extensions import TypedDict, Literal
 
+
+LiteralString = str
 # -- template partials.py.jinja --
 from pydantic import BaseModel, Field, validator
 from . import types, models, fields, enums
