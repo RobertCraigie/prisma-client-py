@@ -7,6 +7,7 @@ from prisma.enums import Role
 @pytest.mark.asyncio
 async def test_create_many(client: Prisma) -> None:
     """Standard usage"""
+    # TODO: this should work without Role
     total = await client.user.create_many(
         [{'name': 'Robert', 'role': Role.ADMIN}, {'name': 'Tegan'}]
     )
@@ -52,8 +53,12 @@ async def test_required_relation_key_field(client: Prisma) -> None:
     )
     count = await client.profile.create_many(
         data=[
-            {'user_id': user.id, 'description': 'Foo'},
-            {'user_id': user2.id, 'description': 'Foo 2'},
+            {'user_id': user.id, 'description': 'Foo', 'country': 'Scotland'},
+            {
+                'user_id': user2.id,
+                'description': 'Foo 2',
+                'country': 'Scotland',
+            },
         ],
     )
     assert count == 2

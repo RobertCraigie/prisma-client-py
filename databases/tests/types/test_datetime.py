@@ -239,3 +239,29 @@ async def test_filtering_nulls(client: Prisma) -> None:
         },
     )
     assert count == 2
+
+
+@pytest.mark.asyncio
+async def test_precision_loss(client: Prisma) -> None:
+    """https://github.com/RobertCraigie/prisma-client-py/issues/129"""
+    date = datetime.datetime.utcnow()
+    post = await client.post.create(
+        data={
+            'title': 'My first post',
+            'published': False,
+            'created_at': date,
+        },
+    )
+    found = await client.post.find_first(
+        where={
+            'created_at': date,
+        },
+    )
+    assert found is not None
+
+    found = await client.post.find_first(
+        where={
+            'created_at': post.created_at,
+        },
+    )
+    assert found is not None

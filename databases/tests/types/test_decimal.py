@@ -44,7 +44,7 @@ async def test_filtering(client: Prisma) -> None:
     """Finding records by a Decimal value"""
     async with client.batch_() as batcher:
         batcher.types.create({'decimal_': Decimal(1)})
-        batcher.types.create({'decimal_': Decimal(2.1234)})
+        batcher.types.create({'decimal_': Decimal('2.1234')})
         batcher.types.create({'decimal_': Decimal(3)})
 
     total = await client.types.count(
@@ -57,7 +57,7 @@ async def test_filtering(client: Prisma) -> None:
     found = await client.types.find_first(
         where={
             'decimal_': {
-                'equals': Decimal(2.1234),
+                'equals': Decimal('2.1234'),
             },
         },
     )

@@ -47,18 +47,37 @@ async def test_find_first(client: Prisma) -> None:
         ),
     ]
 
-    post = await client.post.find_first(where={'published': True})
+    post = await client.post.find_first(
+        where={
+            'published': True,
+        },
+        order={
+            'title': 'asc',
+        },
+    )
     assert post is not None
     assert post.id == posts[3].id
     assert post.title == 'Test post 4'
     assert post.published is True
 
     post = await client.post.find_first(
-        where={'title': {'contains': 'not found'}}
+        where={
+            'title': {
+                'contains': 'not found',
+            }
+        }
     )
     assert post is None
 
-    post = await client.post.find_first(where={'published': True}, skip=1)
+    post = await client.post.find_first(
+        where={
+            'published': True,
+        },
+        order={
+            'title': 'asc',
+        },
+        skip=1,
+    )
     assert post is not None
     assert post.id == posts[5].id
     assert post.title == 'Test post 6'
@@ -188,7 +207,7 @@ async def test_filtering_one_to_one_relation(client: Prisma) -> None:
                 'name': 'Robert',
                 'profile': {
                     'create': {
-                        'bio': 'My very cool bio.',
+                        'description': 'My very cool bio.',
                         'country': 'Scotland',
                     },
                 },
@@ -199,7 +218,7 @@ async def test_filtering_one_to_one_relation(client: Prisma) -> None:
                 'name': 'Tegan',
                 'profile': {
                     'create': {
-                        'bio': 'Hello world, this is my bio.',
+                        'description': 'Hello world, this is my bio.',
                         'country': 'Scotland',
                     },
                 },
@@ -208,14 +227,30 @@ async def test_filtering_one_to_one_relation(client: Prisma) -> None:
         batcher.user.create({'name': 'Callum'})
 
     user = await client.user.find_first(
-        where={'profile': {'is': {'bio': {'contains': 'cool'}}}}
+        where={
+            'profile': {
+                'is': {
+                    'description': {
+                        'contains': 'cool',
+                    }
+                }
+            }
+        }
     )
     assert user is not None
     assert user.name == 'Robert'
     assert user.profile is None
 
     user = await client.user.find_first(
-        where={'profile': {'is_not': {'bio': {'contains': 'bio'}}}}
+        where={
+            'profile': {
+                'is_not': {
+                    'description': {
+                        'contains': 'bio',
+                    }
+                }
+            }
+        }
     )
     assert user is not None
     assert user.name == 'Callum'
@@ -253,33 +288,74 @@ async def test_filtering_and_ordering_one_to_many_relation(
         batcher.user.create({'name': 'Callum'})
 
     user = await client.user.find_first(
-        where={'posts': {'every': {'title': {'contains': 'post'}}}},
+        where={
+            'posts': {
+                'every': {
+                    'title': {
+                        'contains': 'post',
+                    }
+                }
+            }
+        },
     )
     assert user is not None
     assert user.name == 'Robert'
 
     user = await client.user.find_first(
-        where={'posts': {'none': {'title': {'contains': 'Post'}}}}
+        where={
+            'posts': {
+                'none': {
+                    'title': {
+                        'contains': 'Post',
+                    }
+                }
+            }
+        },
+        order={
+            'name': 'asc',
+        },
     )
     assert user is not None
     assert user.name == 'Callum'
 
     user = await client.user.find_first(
-        where={'posts': {'some': {'title': 'foo'}}}
+        where={
+            'posts': {
+                'some': {
+                    'title': 'foo',
+                }
+            }
+        }
     )
     assert user is None
 
     # ordering
 
     user = await client.user.find_first(
-        where={'posts': {'some': {'title': {'contains': 'post'}}}},
+        where={
+            'posts': {
+                'some': {
+                    'title': {
+                        'contains': 'post',
+                    }
+                }
+            }
+        },
         order={'name': 'asc'},
     )
     assert user is not None
     assert user.name == 'Robert'
 
     user = await client.user.find_first(
-        where={'posts': {'some': {'title': {'contains': 'post'}}}},
+        where={
+            'posts': {
+                'some': {
+                    'title': {
+                        'contains': 'post',
+                    }
+                }
+            }
+        },
         order={'name': 'desc'},
     )
     assert user is not None

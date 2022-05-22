@@ -88,7 +88,7 @@ async def test_json(client: Prisma) -> None:
             'bytes': Base64.encode(b'foo'),
         },
     )
-    model = Types.parse_raw(record.json())
+    model = Types.parse_raw(record.json(exclude={'json_obj'}))
     assert isinstance(model.bytes, Base64)
     assert model.bytes.decode() == b'foo'
 
@@ -99,7 +99,7 @@ async def test_constructing(client: Prisma) -> None:
     record = await client.types.create({})
     model = Types.parse_obj(
         {
-            **record.dict(),
+            **record.dict(exclude={'json_obj'}),
             'bytes': Base64.encode(b'foo'),
         },
     )

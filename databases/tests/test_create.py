@@ -1,6 +1,6 @@
 import pytest
-
 from prisma import errors, Prisma
+
 from .utils import assert_time_like_now
 
 
@@ -11,13 +11,14 @@ async def test_create(client: Prisma) -> None:
         {
             'title': 'Hi from Prisma!',
             'published': True,
-            'desc': 'Prisma is a database toolkit that makes databases easy.',
+            'description': 'Prisma is a database toolkit that makes databases easy.',
         }
     )
     assert isinstance(post.id, str)
     assert post.title == 'Hi from Prisma!'
     assert (
-        post.desc == 'Prisma is a database toolkit that makes databases easy.'
+        post.description
+        == 'Prisma is a database toolkit that makes databases easy.'
     )
     assert post.published is True
     assert_time_like_now(post.created_at)
@@ -60,7 +61,7 @@ async def test_create_missing_required_args(client: Prisma) -> None:
     with pytest.raises(errors.MissingRequiredValueError):
         await client.post.create(
             {  # type: ignore[typeddict-item]
-                'title': 'Hi from Prisma!',
+                'published': False,
             }
         )
 
@@ -83,10 +84,10 @@ async def test_setting_field_to_null(client: Prisma) -> None:
         data={
             'title': 'Post',
             'published': False,
-            'desc': None,
+            'description': None,
         },
     )
-    assert post.desc is None
+    assert post.description is None
 
 
 @pytest.mark.asyncio
@@ -124,7 +125,7 @@ async def test_required_relation_key_field(client: Prisma) -> None:
     )
     profile = await client.profile.create(
         data={
-            'bio': 'My bio!',
+            'description': 'My bio!',
             'country': 'Scotland',
             'user_id': user.id,
         },

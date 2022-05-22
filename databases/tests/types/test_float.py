@@ -194,7 +194,7 @@ async def test_atomic_update_invalid_input(client: Prisma) -> None:
             where={
                 'id': 1,
             },
-            data={  # pyright: ignore[reportGeneralTypeIssues]
+            data={
                 'float_': {  # type: ignore
                     'divide': 1,
                     'multiply': 2,
