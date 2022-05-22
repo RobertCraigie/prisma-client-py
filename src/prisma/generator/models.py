@@ -83,6 +83,24 @@ FILTER_TYPES = [
     'Json',
     'Decimal',
 ]
+RECURSIVE_TYPE_DEPTH_WARNING = """Some types are disabled by default due to being incompatible with Mypy, it is highly recommended
+to use Pyright instead and configure Prisma Python to use recursive types. To re-enable certain types:"""
+
+RECURSIVE_TYPE_DEPTH_WARNING_DESC = """
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = -1
+}
+
+If you need to use Mypy, you can also disable this message by explicitly setting the default value:
+
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = 5
+}
+
+For more information see: https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/#default-type-limitations
+"""
 
 FAKER: Faker = Faker()
 
@@ -183,6 +201,17 @@ def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
 
 def _pathlib_serializer(path: Path) -> str:
     return str(path.absolute())
+
+
+def _recursive_type_depth_factory() -> int:
+    click.echo(
+        click.style(
+            f'\n{RECURSIVE_TYPE_DEPTH_WARNING}',
+            fg='yellow',
+        )
+    )
+    click.echo(f'{RECURSIVE_TYPE_DEPTH_WARNING_DESC}\n')
+    return 5
 
 
 class BaseModel(PydanticBaseModel):
@@ -372,7 +401,9 @@ class Config(BaseSettings):
 
     interface: InterfaceChoices = InterfaceChoices.asyncio
     partial_type_generator: Optional[Module] = None
-    recursive_type_depth: int = FieldInfo(default=5)
+    recursive_type_depth: int = FieldInfo(
+        default_factory=_recursive_type_depth_factory
+    )
     engine_type: EngineType = FieldInfo(default=EngineType.binary)
 
     # this should be a list of experimental features

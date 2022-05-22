@@ -85,7 +85,8 @@ datasource db {
 
 // generator
 generator client {
-  provider = "prisma-client-py"
+  provider             = "prisma-client-py"
+  recursive_type_depth = 5
 }
 
 // data models

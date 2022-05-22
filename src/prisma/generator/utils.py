@@ -1,7 +1,7 @@
 import os
 import shutil
 from textwrap import dedent
-from typing import Any, List, TypeVar, Union, TYPE_CHECKING
+from typing import Any, List, Dict, Iterator, TypeVar, Union, TYPE_CHECKING
 from pathlib import Path
 
 from ..utils import monkeypatch
@@ -11,6 +11,10 @@ if TYPE_CHECKING:
 
 
 T = TypeVar('T')
+
+# we have to use a mapping outside of the `Sampler` class
+# to avoid https://github.com/RobertCraigie/prisma-client-py/issues/402
+SAMPLER_ITER_MAPPING: 'Dict[str, Iterator[Field]]' = {}
 
 
 class Faker:
@@ -51,14 +55,16 @@ class Sampler:
 
     def __init__(self, model: 'Model') -> None:
         self.model = model
-        self._field_iter = model.scalar_fields
+        SAMPLER_ITER_MAPPING[model.name] = model.scalar_fields
 
     def get_field(self) -> 'Field':
+        mapping = SAMPLER_ITER_MAPPING
+
         try:
-            field = next(self._field_iter)
+            field = next(mapping[self.model.name])
         except StopIteration:
-            self._field_iter = self.model.scalar_fields
-            field = next(self._field_iter)
+            mapping[self.model.name] = field_iter = self.model.scalar_fields
+            field = next(field_iter)
 
         return field
 
