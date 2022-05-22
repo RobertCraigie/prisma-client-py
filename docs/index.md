@@ -85,7 +85,8 @@ datasource db {
 
 // generator
 generator client {
-  provider = "prisma-client-py"
+  provider             = "prisma-client-py"
+  recursive_type_depth = 5
 }
 
 // data models
@@ -311,7 +312,7 @@ Supported editors / extensions:
 
 - VSCode with [pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance) v2021.9.4 or higher
 - Sublime Text with [LSP-Pyright](https://github.com/sublimelsp/LSP-pyright) v1.1.196 or higher
-- PyCharm [2022.1 EAP 3](https://youtrack.jetbrains.com/articles/PY-A-233537928/PyCharm-2022.1-EAP-3-(221.4994.44-build)-Release-Notes) added support for completing `TypedDict`
+- PyCharm [2022.1 EAP 3](https://youtrack.jetbrains.com/articles/PY-A-233537928/PyCharm-2022.1-EAP-3-(221.4994.44-build)-Release-Notes) added support for completing `TypedDict`s
     - This does not yet work for Prisma Client Python unfortunately, see [this issue](https://youtrack.jetbrains.com/issue/PY-54151/TypedDict-completion-at-callee-does-not-work-for-methods)
 - Any editor that supports the Language Server Protocol and has an extension supporting Pyright v1.1.196 or higher
     - vim and neovim with [coc.nvim](https://github.com/fannheyward/coc-pyright)
