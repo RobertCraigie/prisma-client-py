@@ -619,7 +619,7 @@ class Batch:
 class PostBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-    
+
     def create(
         self,
         data: types.PostCreateInput,
@@ -738,7 +738,7 @@ class PostBatchActions:
 class UserBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-    
+
     def create(
         self,
         data: types.UserCreateInput,
@@ -857,7 +857,7 @@ class UserBatchActions:
 class MBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-    
+
     def create(
         self,
         data: types.MCreateInput,
@@ -976,7 +976,7 @@ class MBatchActions:
 class NBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-    
+
     def create(
         self,
         data: types.NCreateInput,
@@ -1095,7 +1095,7 @@ class NBatchActions:
 class OneOptionalBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-    
+
     def create(
         self,
         data: types.OneOptionalCreateInput,
@@ -1214,7 +1214,7 @@ class OneOptionalBatchActions:
 class ManyRequiredBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-    
+
     def create(
         self,
         data: types.ManyRequiredCreateInput,
@@ -1333,7 +1333,7 @@ class ManyRequiredBatchActions:
 class ListsBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-    
+
     def create(
         self,
         data: types.ListsCreateInput,
@@ -1452,7 +1452,7 @@ class ListsBatchActions:
 class ABatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-    
+
     def create(
         self,
         data: types.ACreateInput,
@@ -1571,7 +1571,7 @@ class ABatchActions:
 class BBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-    
+
     def create(
         self,
         data: types.BCreateInput,
@@ -1690,7 +1690,7 @@ class BBatchActions:
 class CBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-    
+
     def create(
         self,
         data: types.CCreateInput,
@@ -1809,7 +1809,7 @@ class CBatchActions:
 class DBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-    
+
     def create(
         self,
         data: types.DCreateInput,
@@ -1928,7 +1928,7 @@ class DBatchActions:
 class EBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
-    
+
     def create(
         self,
         data: types.ECreateInput,
