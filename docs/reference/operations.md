@@ -473,7 +473,7 @@ user = await db.user.find_first(
 
 ### Combining arguments
 
-All of the above mentioned filters can be combined with other filters using `AND`, `NOT` and `OR`.
+All of the above mentioned filters can be combined with other filters using `AND`, `NOT` and `ANY`.
 
 #### AND
 
@@ -498,7 +498,7 @@ post = await db.post.find_first(
 )
 ```
 
-#### OR
+#### ANY
 
 The following query will return the first post where the title contains the word `prisma` or is published.
 
