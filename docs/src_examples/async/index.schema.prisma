@@ -5,8 +5,9 @@ datasource db {
 }
 
 generator db {
-  provider  = "prisma-client-py"
-  interface = "asyncio"
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
 }
 
 model Post {
