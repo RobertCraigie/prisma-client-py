@@ -19,12 +19,12 @@
 
 
     async def test_create_data_incorrect_inputs(client: Prisma) -> None:
-      await client.post.create()  # E: Missing positional argument "data" in call to "create" of "PostActions"  [call-arg]
+      await client.post.create()  # E: All overload variants of "create" of "PostActions" require at least one argument  [call-overload]
 
-      await client.post.create({'published': False})  # E: Missing key "title" for TypedDict "PostCreateInput"  [typeddict-item]
-      await client.post.create({'title': 'Hello, world'})  # E: Missing key "published" for TypedDict "PostCreateInput"  [typeddict-item]
+      await client.post.create({'published': False})  # E: No overload variant of "create" of "PostActions" matches argument type "Dict[str, bool]"  [call-overload]
+      await client.post.create({'title': 'Hello, world'})  # E: No overload variant of "create" of "PostActions" matches argument type "Dict[str, str]"  [call-overload]
 
-      await client.post.create({'title': 'a', 'published': 'false'})  # E: Incompatible types (expression has type "str", TypedDict item "published" has type "bool")  [typeddict-item]
+      await client.post.create({'title': 'a', 'published': 'false'})  # E: No overload variant of "create" of "PostActions" matches argument type "Dict[str, str]"  [call-overload]
 
     async def test_create_optional_data(client: Prisma) -> None:
       post = await client.post.create({'title': 'Hello', 'published': True})
@@ -226,3 +226,32 @@
       desc_count = results.get('desc')
       if desc_count is not None:
         reveal_type(desc_count)  # N: Revealed type is "builtins.int"
+  out: |
+    main:20: note:     def create(self, data: PostCreateInput) -> Coroutine[Any, Any, Post]
+    main:20: note:     def create(self, data: PostCreateInput, *, discard_result: Literal[False]) -> Coroutine[Any, Any, Post]
+    main:20: note:     def create(self, data: PostCreateInput, *, discard_result: Literal[True]) -> Coroutine[Any, Any, None]
+    main:20: note:     def create(self, data: PostCreateInput, include: Optional[PostInclude], discard_result: Literal[False] = ...) -> Coroutine[Any, Any, Post]
+    main:20: note:     def create(self, data: PostCreateInput, include: Optional[PostInclude], discard_result: Literal[True] = ...) -> Coroutine[Any, Any, None]
+    main:20: note:     def create(self, data: PostCreateInput, include: Optional[PostInclude], discard_result: bool) -> Coroutine[Any, Any, Optional[Post]]
+    main:20: note: Possible overload variants:
+    main:22: note:     def create(self, data: PostCreateInput) -> Coroutine[Any, Any, Post]
+    main:22: note:     def create(self, data: PostCreateInput, *, discard_result: Literal[False]) -> Coroutine[Any, Any, Post]
+    main:22: note:     def create(self, data: PostCreateInput, *, discard_result: Literal[True]) -> Coroutine[Any, Any, None]
+    main:22: note:     def create(self, data: PostCreateInput, include: Optional[PostInclude], discard_result: Literal[False] = ...) -> Coroutine[Any, Any, Post]
+    main:22: note:     def create(self, data: PostCreateInput, include: Optional[PostInclude], discard_result: Literal[True] = ...) -> Coroutine[Any, Any, None]
+    main:22: note:     def create(self, data: PostCreateInput, include: Optional[PostInclude], discard_result: bool) -> Coroutine[Any, Any, Optional[Post]]
+    main:22: note: Possible overload variants:
+    main:23: note:     def create(self, data: PostCreateInput) -> Coroutine[Any, Any, Post]
+    main:23: note:     def create(self, data: PostCreateInput, *, discard_result: Literal[False]) -> Coroutine[Any, Any, Post]
+    main:23: note:     def create(self, data: PostCreateInput, *, discard_result: Literal[True]) -> Coroutine[Any, Any, None]
+    main:23: note:     def create(self, data: PostCreateInput, include: Optional[PostInclude], discard_result: Literal[False] = ...) -> Coroutine[Any, Any, Post]
+    main:23: note:     def create(self, data: PostCreateInput, include: Optional[PostInclude], discard_result: Literal[True] = ...) -> Coroutine[Any, Any, None]
+    main:23: note:     def create(self, data: PostCreateInput, include: Optional[PostInclude], discard_result: bool) -> Coroutine[Any, Any, Optional[Post]]
+    main:23: note: Possible overload variants:
+    main:25: note:     def create(self, data: PostCreateInput) -> Coroutine[Any, Any, Post]
+    main:25: note:     def create(self, data: PostCreateInput, *, discard_result: Literal[False]) -> Coroutine[Any, Any, Post]
+    main:25: note:     def create(self, data: PostCreateInput, *, discard_result: Literal[True]) -> Coroutine[Any, Any, None]
+    main:25: note:     def create(self, data: PostCreateInput, include: Optional[PostInclude], discard_result: Literal[False] = ...) -> Coroutine[Any, Any, Post]
+    main:25: note:     def create(self, data: PostCreateInput, include: Optional[PostInclude], discard_result: Literal[True] = ...) -> Coroutine[Any, Any, None]
+    main:25: note:     def create(self, data: PostCreateInput, include: Optional[PostInclude], discard_result: bool) -> Coroutine[Any, Any, Optional[Post]]
+    main:25: note: Possible overload variants:
