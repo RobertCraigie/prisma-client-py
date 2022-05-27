@@ -14,7 +14,7 @@ async def test_field_not_found_error(client: Prisma) -> None:
 
     with pytest.raises(FieldNotFoundError, match='foo'):
         await client.post.create(  # type: ignore[call-overload]
-            data={  # type: ignore
+            data={
                 'title': 'foo',
                 'published': True,
                 'foo': 'bar',
