@@ -55,10 +55,10 @@ async def test_create_with_relationship(client: Prisma) -> None:
 async def test_create_missing_required_args(client: Prisma) -> None:
     """Trying to create a record with a missing required field raises an error"""
     with pytest.raises(TypeError):
-        await client.post.create()  # type: ignore[call-arg]
+        await client.post.create()  # type: ignore[call-overload]
 
     with pytest.raises(errors.MissingRequiredValueError):
-        await client.post.create(
+        await client.post.create(  # type: ignore[call-overload]
             {  # type: ignore[typeddict-item]
                 'title': 'Hi from Prisma!',
             }
@@ -93,7 +93,7 @@ async def test_setting_field_to_null(client: Prisma) -> None:
 async def test_setting_non_nullable_field_to_null(client: Prisma) -> None:
     """Attempting to create a record with a non-nullable field set to null raises an error"""
     with pytest.raises(errors.MissingRequiredValueError) as exc:
-        await client.post.create(
+        await client.post.create(  # type: ignore[call-overload]
             data={
                 'title': 'Post',
                 'published': None,  # type: ignore
@@ -107,7 +107,7 @@ async def test_setting_non_nullable_field_to_null(client: Prisma) -> None:
 async def test_nullable_relational_field(client: Prisma) -> None:
     """Relational fields cannot be set to None"""
     with pytest.raises(errors.MissingRequiredValueError) as exc:
-        await client.post.create(
+        await client.post.create(  # type: ignore[call-overload]
             data={'title': 'Post', 'published': False, 'author': None}  # type: ignore
         )
 
