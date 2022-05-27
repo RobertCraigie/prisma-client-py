@@ -146,17 +146,8 @@ class {{ model.name }}Actions:
         self,
         data: types.{{ model.name }}CreateInput,
         include: Optional[types.{{ model.name}}Include],
-        discard_result: Literal[True] = True,
+        discard_result: Literal[True],
     ) -> None:
-        ...
-
-    @overload
-    {{ maybe_async_def }}create(
-        self,
-        data: types.{{ model.name }}CreateInput,
-        include: Optional[types.{{ model.name}}Include],
-        discard_result: bool,
-    ) -> Optional[{{ ModelType }}]:
         ...
 
     @overload

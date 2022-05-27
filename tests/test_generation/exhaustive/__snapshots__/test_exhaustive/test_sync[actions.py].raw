@@ -143,17 +143,8 @@ class PostActions:
         self,
         data: types.PostCreateInput,
         include: Optional[types.PostInclude],
-        discard_result: Literal[True] = True,
+        discard_result: Literal[True],
     ) -> None:
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.PostCreateInput,
-        include: Optional[types.PostInclude],
-        discard_result: bool,
-    ) -> Optional['models.Post']:
         ...
 
     @overload
@@ -1119,17 +1110,8 @@ class UserActions:
         self,
         data: types.UserCreateInput,
         include: Optional[types.UserInclude],
-        discard_result: Literal[True] = True,
+        discard_result: Literal[True],
     ) -> None:
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.UserCreateInput,
-        include: Optional[types.UserInclude],
-        discard_result: bool,
-    ) -> Optional['models.User']:
         ...
 
     @overload
@@ -2115,17 +2097,8 @@ class MActions:
         self,
         data: types.MCreateInput,
         include: Optional[types.MInclude],
-        discard_result: Literal[True] = True,
+        discard_result: Literal[True],
     ) -> None:
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.MCreateInput,
-        include: Optional[types.MInclude],
-        discard_result: bool,
-    ) -> Optional['models.M']:
         ...
 
     @overload
@@ -3106,17 +3079,8 @@ class NActions:
         self,
         data: types.NCreateInput,
         include: Optional[types.NInclude],
-        discard_result: Literal[True] = True,
+        discard_result: Literal[True],
     ) -> None:
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.NCreateInput,
-        include: Optional[types.NInclude],
-        discard_result: bool,
-    ) -> Optional['models.N']:
         ...
 
     @overload
@@ -4102,17 +4066,8 @@ class OneOptionalActions:
         self,
         data: types.OneOptionalCreateInput,
         include: Optional[types.OneOptionalInclude],
-        discard_result: Literal[True] = True,
+        discard_result: Literal[True],
     ) -> None:
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.OneOptionalCreateInput,
-        include: Optional[types.OneOptionalInclude],
-        discard_result: bool,
-    ) -> Optional['models.OneOptional']:
         ...
 
     @overload
@@ -5093,17 +5048,8 @@ class ManyRequiredActions:
         self,
         data: types.ManyRequiredCreateInput,
         include: Optional[types.ManyRequiredInclude],
-        discard_result: Literal[True] = True,
+        discard_result: Literal[True],
     ) -> None:
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.ManyRequiredCreateInput,
-        include: Optional[types.ManyRequiredInclude],
-        discard_result: bool,
-    ) -> Optional['models.ManyRequired']:
         ...
 
     @overload
@@ -6084,17 +6030,8 @@ class ListsActions:
         self,
         data: types.ListsCreateInput,
         include: Optional[types.ListsInclude],
-        discard_result: Literal[True] = True,
+        discard_result: Literal[True],
     ) -> None:
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.ListsCreateInput,
-        include: Optional[types.ListsInclude],
-        discard_result: bool,
-    ) -> Optional['models.Lists']:
         ...
 
     @overload
@@ -7050,17 +6987,8 @@ class AActions:
         self,
         data: types.ACreateInput,
         include: Optional[types.AInclude],
-        discard_result: Literal[True] = True,
+        discard_result: Literal[True],
     ) -> None:
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.ACreateInput,
-        include: Optional[types.AInclude],
-        discard_result: bool,
-    ) -> Optional['models.A']:
         ...
 
     @overload
@@ -8034,17 +7962,8 @@ class BActions:
         self,
         data: types.BCreateInput,
         include: Optional[types.BInclude],
-        discard_result: Literal[True] = True,
+        discard_result: Literal[True],
     ) -> None:
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.BCreateInput,
-        include: Optional[types.BInclude],
-        discard_result: bool,
-    ) -> Optional['models.B']:
         ...
 
     @overload
@@ -9020,17 +8939,8 @@ class CActions:
         self,
         data: types.CCreateInput,
         include: Optional[types.CInclude],
-        discard_result: Literal[True] = True,
+        discard_result: Literal[True],
     ) -> None:
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.CCreateInput,
-        include: Optional[types.CInclude],
-        discard_result: bool,
-    ) -> Optional['models.C']:
         ...
 
     @overload
@@ -10008,17 +9918,8 @@ class DActions:
         self,
         data: types.DCreateInput,
         include: Optional[types.DInclude],
-        discard_result: Literal[True] = True,
+        discard_result: Literal[True],
     ) -> None:
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.DCreateInput,
-        include: Optional[types.DInclude],
-        discard_result: bool,
-    ) -> Optional['models.D']:
         ...
 
     @overload
@@ -10999,17 +10900,8 @@ class EActions:
         self,
         data: types.ECreateInput,
         include: Optional[types.EInclude],
-        discard_result: Literal[True] = True,
+        discard_result: Literal[True],
     ) -> None:
-        ...
-
-    @overload
-    def create(
-        self,
-        data: types.ECreateInput,
-        include: Optional[types.EInclude],
-        discard_result: bool,
-    ) -> Optional['models.E']:
         ...
 
     @overload
