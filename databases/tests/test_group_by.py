@@ -17,7 +17,7 @@ async def create_test_data(client: Prisma) -> None:
     create = client.profile.create
     await create(
         {
-            'bio': 'from scotland',
+            'description': 'from scotland',
             'country': 'Scotland',
             'city': 'Edinburgh',
             'views': 250,
@@ -28,7 +28,7 @@ async def create_test_data(client: Prisma) -> None:
     for _ in range(12):
         await create(
             {
-                'bio': 'bio',
+                'description': 'description',
                 'country': 'Denmark',
                 'views': 500,
                 'user': {'create': {'name': 'Robert'}},
@@ -38,7 +38,7 @@ async def create_test_data(client: Prisma) -> None:
     for _ in range(8):
         await create(
             {
-                'bio': 'bio',
+                'description': 'description',
                 'country': 'Denmark',
                 'city': 'Copenhagen',
                 'views': 1000,
@@ -59,8 +59,24 @@ async def create_test_data(client: Prisma) -> None:
 @pytest.mark.persist_data
 async def test_group_by(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Basic test grouping by 1 field with no additional filters"""
-    assert await client.user.group_by(['name']) == snapshot
-    assert await client.profile.group_by(['country']) == snapshot
+    assert (
+        await client.user.group_by(
+            ['name'],
+            order={
+                'name': 'asc',
+            },
+        )
+        == snapshot
+    )
+    assert (
+        await client.profile.group_by(
+            ['country'],
+            order={
+                'country': 'asc',
+            },
+        )
+        == snapshot
+    )
 
 
 @pytest.mark.asyncio
@@ -118,6 +134,10 @@ async def test_order_list(snapshot: SnapshotAssertion, client: Prisma) -> None:
             {'city': 'desc'},
         ],
     )
+    # we have to apply this sorted operation as SQlite and PostgreSQL
+    # have different default behaviour for sorting by nulls
+    # and we don't support changing it yet
+    results = sorted(results, key=lambda p: p.get('city') is not None)
     assert results == snapshot
 
 
@@ -127,7 +147,11 @@ async def test_order_multiple_fields(client: Prisma) -> None:
     """Test ordering results by multiple fields is not support"""
     with pytest.raises(prisma.errors.DataError):
         await client.profile.group_by(
-            ['country', 'city'], order={'country': 'asc', 'city': 'desc'}
+            ['country', 'city'],
+            order={
+                'city': 'desc',
+                'country': 'asc',
+            },
         )
 
 
@@ -138,7 +162,7 @@ async def test_order_mismatched_arguments(client: Prisma) -> None:
     with pytest.raises(prisma.errors.InputError) as exc:
         await client.profile.group_by(
             ['city'],
-            order={
+            order={  # pyright: ignore
                 'country': 'asc',
             },
         )
@@ -153,12 +177,16 @@ async def test_order_mismatched_arguments(client: Prisma) -> None:
 @pytest.mark.persist_data
 @pytest.mark.parametrize('order', ['asc', 'desc'])
 async def test_take(
-    snapshot: SnapshotAssertion, client: Prisma, order: SortOrder
+    snapshot: SnapshotAssertion,
+    client: Prisma,
+    order: SortOrder,
 ) -> None:
     """Take argument limits number of records returned"""
     assert (
         await client.profile.group_by(
-            ['country'], take=1, order={'country': order}
+            ['country'],
+            take=1,
+            order={'country': order},
         )
         == snapshot
     )
@@ -180,12 +208,16 @@ async def test_take_missing_order_argument(client: Prisma) -> None:
 @pytest.mark.persist_data
 @pytest.mark.parametrize('order', ['asc', 'desc'])
 async def test_skip(
-    snapshot: SnapshotAssertion, client: Prisma, order: SortOrder
+    snapshot: SnapshotAssertion,
+    client: Prisma,
+    order: SortOrder,
 ) -> None:
     """Skipping grouped records"""
     assert (
         await client.profile.group_by(
-            ['country'], skip=1, order={'country': order}
+            ['country'],
+            skip=1,
+            order={'country': order},
         )
         == snapshot
     )
@@ -208,13 +240,27 @@ async def test_skip_missing_order_argument(client: Prisma) -> None:
 async def test_where(client: Prisma) -> None:
     """Where argument correctly filters records"""
     results = await client.profile.group_by(
-        ['country'], where={'country': 'Denmark'}
+        ['country'],
+        where={
+            'country': 'Denmark',
+        },
+        order={
+            'country': 'asc',
+        },
     )
     assert len(results) == 1
     assert results[0].get('country') == 'Denmark'
 
     results = await client.profile.group_by(
-        ['country'], where={'bio': {'contains': 'scotland'}}
+        ['country'],
+        where={
+            'description': {
+                'contains': 'scotland',
+            },
+        },
+        order={
+            'country': 'asc',
+        },
     )
     assert len(results) == 1
     assert results[0].get('country') == 'Scotland'
@@ -232,6 +278,9 @@ async def test_having_missing_field_in_by(client: Prisma) -> None:
                 'views': {
                     'gt': 50,
                 },
+            },
+            order={
+                'country': 'asc',
             },
         )
 
@@ -258,6 +307,9 @@ async def test_having_aggregation(
                     }
                 }
             },
+            order={
+                'country': 'asc',
+            },
         )
         == snapshot
     )
@@ -271,6 +323,9 @@ async def test_having_aggregation(
                         'lt': 600,
                     }
                 }
+            },
+            order={
+                'country': 'asc',
             },
         )
         == snapshot
@@ -304,6 +359,9 @@ async def test_having_aggregation_nested(
                 },
             ],
         },
+        order={
+            'country': 'asc',
+        },
     )
     assert results == snapshot
 
@@ -327,6 +385,9 @@ async def test_having_aggregation_nested(
                     },
                 },
             ],
+        },
+        order={
+            'country': 'asc',
         },
     )
     assert results == snapshot
@@ -361,6 +422,9 @@ async def test_having_aggregation_nested(
                 },
             ],
         },
+        order={
+            'country': 'asc',
+        },
     )
     assert results == snapshot
 
@@ -369,18 +433,50 @@ async def test_having_aggregation_nested(
 @pytest.mark.persist_data
 async def test_count(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Counting records"""
-    assert await client.profile.group_by(['country'], count=True) == snapshot
     assert (
-        await client.profile.group_by(['country'], count={'_all': True})
-        == snapshot
-    )
-    assert (
-        await client.profile.group_by(['country'], count={'city': True})
+        await client.profile.group_by(
+            ['country'],
+            count=True,
+            order={
+                'country': 'asc',
+            },
+        )
         == snapshot
     )
     assert (
         await client.profile.group_by(
-            ['country'], count={'city': True, 'country': True}
+            ['country'],
+            count={
+                '_all': True,
+            },
+            order={
+                'country': 'asc',
+            },
+        )
+        == snapshot
+    )
+    assert (
+        await client.profile.group_by(
+            ['country'],
+            count={
+                'city': True,
+            },
+            order={
+                'country': 'asc',
+            },
+        )
+        == snapshot
+    )
+    assert (
+        await client.profile.group_by(
+            ['country'],
+            count={
+                'city': True,
+                'country': True,
+            },
+            order={
+                'country': 'asc',
+            },
         )
         == snapshot
     )
@@ -391,12 +487,18 @@ async def test_count(snapshot: SnapshotAssertion, client: Prisma) -> None:
 async def test_avg(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the average of records"""
     assert (
-        await client.profile.group_by(['country'], avg={'views': True})
+        await client.profile.group_by(
+            ['country'],
+            avg={'views': True},
+            order={'country': 'asc'},
+        )
         == snapshot
     )
     assert (
         await client.types.group_by(
-            ['string'], avg={'integer': True, 'bigint': True}
+            ['string'],
+            avg={'integer': True, 'bigint': True},
+            order={'string': 'asc'},
         )
         == snapshot
     )
@@ -407,7 +509,15 @@ async def test_avg(snapshot: SnapshotAssertion, client: Prisma) -> None:
 async def test_sum(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the sum of records"""
     assert (
-        await client.profile.group_by(['country'], sum={'views': True})
+        await client.profile.group_by(
+            ['country'],
+            sum={
+                'views': True,
+            },
+            order={
+                'country': 'asc',
+            },
+        )
         == snapshot
     )
 
@@ -417,7 +527,15 @@ async def test_sum(snapshot: SnapshotAssertion, client: Prisma) -> None:
 async def test_min(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the minimum value of records"""
     assert (
-        await client.profile.group_by(['country'], min={'views': True})
+        await client.profile.group_by(
+            ['country'],
+            min={
+                'views': True,
+            },
+            order={
+                'country': 'asc',
+            },
+        )
         == snapshot
     )
 
@@ -427,6 +545,14 @@ async def test_min(snapshot: SnapshotAssertion, client: Prisma) -> None:
 async def test_max(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the maximum value of records"""
     assert (
-        await client.profile.group_by(['country'], max={'views': True})
+        await client.profile.group_by(
+            ['country'],
+            max={
+                'views': True,
+            },
+            order={
+                'country': 'asc',
+            },
+        )
         == snapshot
     )

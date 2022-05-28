@@ -1,7 +1,7 @@
 import pytest
 import prisma
 from prisma import Prisma
-from prisma.models import User, Types
+from prisma.models import Unique2, User, Types
 
 from .utils import async_fixture
 
@@ -19,14 +19,23 @@ async def test_update(client: Prisma) -> None:
         {
             'title': 'Hi from Create!',
             'published': True,
-            'desc': 'Prisma is a database toolkit that makes databases easy.',
-            'author': {'create': {'name': 'Bob'}},
+            'description': 'Prisma is a database toolkit that makes databases easy.',
+            'author': {
+                'create': {
+                    'name': 'Bob',
+                },
+            },
         }
     )
     assert post.author is None
     assert post.title == 'Hi from Create!'
     updated = await client.post.update(
-        where={'id': post.id}, data={'title': 'Hi from Update!'}
+        where={
+            'id': post.id,
+        },
+        data={
+            'title': 'Hi from Update!',
+        },
     )
     assert updated is not None
     assert updated.title == 'Hi from Update!'
@@ -34,13 +43,20 @@ async def test_update(client: Prisma) -> None:
     assert updated.created_at == post.created_at
 
     updated = await client.post.update(
-        where={'id': post.id},
-        include={'author': True},
-        data={'published': False, 'desc': 'Updated desc.'},
+        where={
+            'id': post.id,
+        },
+        include={
+            'author': True,
+        },
+        data={
+            'published': False,
+            'description': 'Updated desc.',
+        },
     )
     assert updated is not None
     assert updated.published is False
-    assert updated.desc == 'Updated desc.'
+    assert updated.description == 'Updated desc.'
     assert updated.author is not None
     assert updated.author.name == 'Bob'
 
@@ -114,20 +130,20 @@ async def test_setting_field_to_null(client: Prisma) -> None:
         data={
             'title': 'Post',
             'published': False,
-            'desc': 'My description',
+            'description': 'My description',
         },
     )
-    assert post.desc == 'My description'
+    assert post.description == 'My description'
 
     updated = await client.post.update(
         where={
             'id': post.id,
         },
-        data={'desc': None},
+        data={'description': None},
     )
     assert updated is not None
     assert updated.id == post.id
-    assert updated.desc is None
+    assert updated.description is None
 
 
 @pytest.mark.asyncio
@@ -196,23 +212,21 @@ async def test_update_id_field_atomic() -> None:
 @pytest.mark.asyncio
 async def test_update_unique_field() -> None:
     """Setting a unique field"""
-    user = await User.prisma().create(
+    record = await Unique2.prisma().create(
         data={
             'name': 'Robert',
-            'email': 'robert@craigie.dev',
-        },
+            'surname': 'Craigie',
+        }
     )
-    email = user.email
-    assert email is not None
 
-    updated = await User.prisma().update(
+    updated = await Unique2.prisma().update(
         where={
-            'email': email,
+            'surname': record.surname,
         },
         data={
-            'email': 'foo@gmail.com',
+            'surname': 'George',
         },
     )
     assert updated is not None
-    assert updated.id == user.id
-    assert updated.email == 'foo@gmail.com'
+    assert updated.name == record.name
+    assert updated.surname == 'George'

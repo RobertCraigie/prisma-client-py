@@ -1,0 +1,318 @@
+# name: test_avg
+  list([
+    dict({
+      '_avg': dict({
+        'views': 700.0,
+      }),
+      'country': 'Denmark',
+    }),
+    dict({
+      '_avg': dict({
+        'views': 250.0,
+      }),
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_avg.1
+  list([
+    dict({
+      '_avg': dict({
+        'bigint': 0.0,
+        'integer': 4.5,
+      }),
+      'string': '',
+    }),
+  ])
+# ---
+# name: test_count
+  list([
+    dict({
+      '_count': dict({
+        '_all': 20,
+      }),
+      'country': 'Denmark',
+    }),
+    dict({
+      '_count': dict({
+        '_all': 1,
+      }),
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_count.1
+  list([
+    dict({
+      '_count': dict({
+        '_all': 20,
+      }),
+      'country': 'Denmark',
+    }),
+    dict({
+      '_count': dict({
+        '_all': 1,
+      }),
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_count.2
+  list([
+    dict({
+      '_count': dict({
+        'city': 8,
+      }),
+      'country': 'Denmark',
+    }),
+    dict({
+      '_count': dict({
+        'city': 1,
+      }),
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_count.3
+  list([
+    dict({
+      '_count': dict({
+        'city': 8,
+        'country': 20,
+      }),
+      'country': 'Denmark',
+    }),
+    dict({
+      '_count': dict({
+        'city': 1,
+        'country': 1,
+      }),
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_docs_example
+  list([
+    dict({
+      '_count': dict({
+        '_all': 1,
+        'city': 1,
+      }),
+      '_sum': dict({
+        'views': 250,
+      }),
+      'city': 'Edinburgh',
+      'country': 'Scotland',
+    }),
+    dict({
+      '_count': dict({
+        '_all': 12,
+        'city': 0,
+      }),
+      '_sum': dict({
+        'views': 6000,
+      }),
+      'city': None,
+      'country': 'Denmark',
+    }),
+    dict({
+      '_count': dict({
+        '_all': 8,
+        'city': 8,
+      }),
+      '_sum': dict({
+        'views': 8000,
+      }),
+      'city': 'Copenhagen',
+      'country': 'Denmark',
+    }),
+  ])
+# ---
+# name: test_group_by
+  list([
+    dict({
+      'name': 'Robert',
+    }),
+    dict({
+      'name': 'Tegan',
+    }),
+  ])
+# ---
+# name: test_group_by.1
+  list([
+    dict({
+      'country': 'Denmark',
+    }),
+    dict({
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_having_aggregation
+  list([
+    dict({
+      '_count': dict({
+        '_all': 20,
+      }),
+      'country': 'Denmark',
+    }),
+  ])
+# ---
+# name: test_having_aggregation.1
+  list([
+    dict({
+      '_count': dict({
+        '_all': 1,
+      }),
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_having_aggregation_nested
+  list([
+    dict({
+      '_count': dict({
+        '_all': 1,
+      }),
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_having_aggregation_nested.1
+  list([
+    dict({
+      '_count': dict({
+        '_all': 20,
+      }),
+      'country': 'Denmark',
+    }),
+    dict({
+      '_count': dict({
+        '_all': 1,
+      }),
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_having_aggregation_nested.2
+  list([
+    dict({
+      '_count': dict({
+        '_all': 20,
+      }),
+      'country': 'Denmark',
+    }),
+  ])
+# ---
+# name: test_max
+  list([
+    dict({
+      '_max': dict({
+        'views': 1000,
+      }),
+      'country': 'Denmark',
+    }),
+    dict({
+      '_max': dict({
+        'views': 250,
+      }),
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_min
+  list([
+    dict({
+      '_min': dict({
+        'views': 500,
+      }),
+      'country': 'Denmark',
+    }),
+    dict({
+      '_min': dict({
+        'views': 250,
+      }),
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_order[asc]
+  list([
+    dict({
+      'country': 'Denmark',
+    }),
+    dict({
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_order[desc]
+  list([
+    dict({
+      'country': 'Scotland',
+    }),
+    dict({
+      'country': 'Denmark',
+    }),
+  ])
+# ---
+# name: test_order_list
+  list([
+    dict({
+      'city': None,
+      'country': 'Denmark',
+    }),
+    dict({
+      'city': 'Copenhagen',
+      'country': 'Denmark',
+    }),
+    dict({
+      'city': 'Edinburgh',
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_skip[asc]
+  list([
+    dict({
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_skip[desc]
+  list([
+    dict({
+      'country': 'Denmark',
+    }),
+  ])
+# ---
+# name: test_sum
+  list([
+    dict({
+      '_sum': dict({
+        'views': 14000,
+      }),
+      'country': 'Denmark',
+    }),
+    dict({
+      '_sum': dict({
+        'views': 250,
+      }),
+      'country': 'Scotland',
+    }),
+  ])
+# ---
+# name: test_take[asc]
+  list([
+    dict({
+      'country': 'Denmark',
+    }),
+  ])
+# ---
+# name: test_take[desc]
+  list([
+    dict({
+      'country': 'Scotland',
+    }),
+  ])
+# ---

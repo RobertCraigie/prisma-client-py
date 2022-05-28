@@ -49,7 +49,7 @@ async def test_select(client: Prisma) -> None:
     async with client.batch_() as batcher:
         batcher.post.create({'title': 'Foo', 'published': False})
         batcher.post.create(
-            {'title': 'Foo 2', 'published': False, 'desc': 'A'}
+            {'title': 'Foo 2', 'published': False, 'description': 'A'}
         )
 
     count = await client.post.count(
@@ -59,15 +59,15 @@ async def test_select(client: Prisma) -> None:
 
     count = await client.post.count(
         select={
-            'desc': True,
+            'description': True,
         },
     )
-    assert count == {'desc': 1}
+    assert count == {'description': 1}
 
     count = await client.post.count(
         select={
             '_all': True,
-            'desc': True,
+            'description': True,
         },
     )
-    assert count == {'_all': 2, 'desc': 1}
+    assert count == {'_all': 2, 'description': 1}

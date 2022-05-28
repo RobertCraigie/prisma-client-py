@@ -25,7 +25,7 @@ async def test_field_not_found_error(client: Prisma) -> None:
         await client.post.find_first(
             where={
                 'author': {
-                    'is': {
+                    'is': {  # pyright: ignore
                         'foo': 'bar',
                     },
                 },

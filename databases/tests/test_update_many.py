@@ -60,15 +60,22 @@ async def test_update_many(client: Prisma) -> None:
 async def test_setting_to_null(client: Prisma) -> None:
     """Setting a field to None sets the database record to None"""
     post = await client.post.create(
-        data={'title': 'Foo', 'published': True, 'desc': 'Description'}
+        data={
+            'title': 'Foo',
+            'published': True,
+            'description': 'Description',
+        }
     )
-    assert post.desc == 'Description'
+    assert post.description == 'Description'
 
-    count = await client.post.update_many(where={}, data={'desc': None})
+    count = await client.post.update_many(
+        where={},
+        data={'description': None},
+    )
     assert count == 1
 
     found = await client.post.find_unique(where={'id': post.id})
     assert found is not None
     assert found.id == post.id
     assert found.title == 'Foo'
-    assert found.desc is None
+    assert found.description is None
