@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Mapping
-
+from datetime import timedelta
 import httpx
 import pytest
 from mock import AsyncMock
@@ -54,7 +54,7 @@ async def test_datasource_overwriting(
     other = Prisma(
         datasource={'url': 'file:./tmp.db'},
     )
-    await other.connect(timeout=1)
+    await other.connect(timeout=timedelta(seconds=1))
 
     user = await other.user.create({'name': 'Robert'})
     assert user.name == 'Robert'
@@ -98,7 +98,7 @@ def test_engine_type() -> None:
 @pytest.mark.asyncio
 async def test_connect_timeout(mocker: MockerFixture) -> None:
     """Setting the timeout on a client and a per-call basis works"""
-    client = Prisma(connect_timeout=7)
+    client = Prisma(connect_timeout=timedelta(seconds=7))
     mocked = mocker.patch.object(
         client._engine_class,
         'connect',
@@ -109,8 +109,12 @@ async def test_connect_timeout(mocker: MockerFixture) -> None:
     mocked.assert_called_once_with(timeout=7, datasources=None)
     mocked.reset_mock()
 
-    await client.connect(timeout=5)
+    await client.connect(timeout=timedelta(seconds=5))
     mocked.assert_called_once_with(timeout=5, datasources=None)
+    mocked.reset_mock()
+
+    await client.connect(timeout=timedelta(minutes=1, seconds=5))
+    mocked.assert_called_once_with(timeout=65, datasources=None)
 
 
 @pytest.mark.asyncio
@@ -163,3 +167,18 @@ def test_old_client_alias() -> None:
     from prisma import Client, Prisma
 
     assert Client == Prisma
+
+
+@pytest.mark.asyncio
+async def test_warn_when_connect_timeout_is_int() -> None:
+    """Ensure that when Prisma(connect_timeout:int), connect_timeout is converted to a timedelta and a warning is emitted"""
+    with pytest.warns(DeprecationWarning):
+        Prisma(connect_timeout=10)
+
+
+@pytest.mark.asyncio
+async def test_warn_when_client_connecting_with_int_timeout() -> None:
+    """Ensure that when calling client.connect(timeout:int), timeout is converted to a timedelta and a warning is emitted"""
+    with pytest.warns(DeprecationWarning):
+        client = Prisma()
+        await client.connect(timeout=10)

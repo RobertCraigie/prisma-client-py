@@ -36,7 +36,7 @@ from typing_extensions import TypedDict, Literal
 LiteralString = str
 # -- template client.py.jinja --
 from types import TracebackType
-
+import warnings
 from . import types, models, errors, actions
 from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT
@@ -253,13 +253,13 @@ class UseClientDefault:
     by typing the parameter with this class rather than using None, for example:
 
     ```py
-    def connect(timeout: Union[int, UseClientDefault] = UseClientDefault()) -> None: ...
+    def connect(timeout: Union[datetime.timedelta, int, UseClientDefault] = UseClientDefault()) -> None: ...
     ```
 
     relays the intention more clearly than:
 
     ```py
-    def connect(timeout: Optional[int] = None) -> None: ...
+    def connect(timeout: Optional[datetime.timedelta, int] = None) -> None: ...
     ```
 
     This solution also allows us to indicate an "unset" state that is uniquely distinct
@@ -367,7 +367,7 @@ class Prisma:
         log_queries: bool = False,
         auto_register: bool = False,
         datasource: Optional[DatasourceOverride] = None,
-        connect_timeout: int = 10,
+        connect_timeout: Optional[Union[datetime.timedelta, int,UseClientDefault]] = _USE_CLIENT_DEFAULT,
         http: Optional[HttpConfig] = None,
     ) -> None:
         self.post = actions.PostActions(self, models.Post)
@@ -386,7 +386,19 @@ class Prisma:
         self._active_provider = 'postgresql'
         self._log_queries = log_queries
         self._datasource = datasource
-        self._connect_timeout = connect_timeout
+        if connect_timeout is None or isinstance(connect_timeout, UseClientDefault):
+            self._connect_timeout = datetime.timedelta(seconds=10)
+        elif isinstance(connect_timeout, int):
+            message = (
+                'Using integers for connect_timeout argument is deprecated'
+                ' and will be removed in the next major release.\n'
+                'You can disable this warning by passing a datetime.timedelta object instead of an integer. e.g.'
+                'prisma = Prisma(connect_timeout=datetime.timedelta(seconds=10))'
+            )
+            warnings.warn(message, DeprecationWarning, stacklevel=4)
+            self._connect_timeout = datetime.timedelta(seconds=connect_timeout)
+        else:
+            self._connect_timeout = connect_timeout
         self._http_config: HttpConfig = http or {}
 
         if use_dotenv:
@@ -420,7 +432,7 @@ class Prisma:
 
     def connect(
         self,
-        timeout: Union[int, UseClientDefault] = _USE_CLIENT_DEFAULT,
+        timeout: Union[datetime.timedelta, int, UseClientDefault] = _USE_CLIENT_DEFAULT,
     ) -> None:
         """Connect to the Prisma query engine.
 
@@ -428,6 +440,15 @@ class Prisma:
         """
         if isinstance(timeout, UseClientDefault):
             timeout = self._connect_timeout
+        elif isinstance(timeout, int):
+            message = (
+                'Using integers for timeout argument is deprecated'
+                ' and will be removed in the next major release.\n'
+                'You can disable this warning by passing a datetime.timedelta object instead of an integer. e.g.'
+                'prisma.connect(timeout=datetime.timedelta(seconds=10))'
+            )
+            warnings.warn(message, DeprecationWarning, stacklevel=4)
+            timeout = datetime.timedelta(seconds=timeout)
 
         if self.__engine is None:
             self.__engine = self._create_engine(dml=SCHEMA)
@@ -439,7 +460,7 @@ class Prisma:
             datasources = [ds]
 
         self.__engine.connect(
-            timeout=timeout,
+            timeout=int(timeout.total_seconds()),
             datasources=datasources,
         )
 

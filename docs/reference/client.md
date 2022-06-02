@@ -38,6 +38,30 @@ db = Prisma(
 )
 ```
 
+## Connection Timeout
+
+You can set the timeout used to connect to the database on a Client level and on an indiviual `connect()` call basis. The default timeout is 10 seconds.
+
+Client level setting:
+```py
+from datetime import timedelta
+
+db = Prisma(
+    connect_timeout=timedelta(seconds=15),
+)
+```
+
+All subsequent calls to `connect()` will now timeout after 15 seconds.
+
+```py
+from datetime import timedelta
+
+db = Prisma()
+await db.connect(timeout=timedelta(seconds=5))
+```
+
+The `db.connect()` call will timeout if it takes longer than 5 seconds.
+
 ## Context Manager
 
 To make running small scripts as easy as possible, Prisma Client Python supports connecting and disconnecting from the database using a [context manager](https://book.pythontips.com/en/latest/context_managers.html).
