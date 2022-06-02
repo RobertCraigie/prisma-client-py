@@ -1,13 +1,22 @@
-import re
-import sys
-import subprocess
 import platform as _platform
+import re
+import subprocess
+import sys
 from functools import lru_cache
 from typing import Tuple
 
 
 def name() -> str:
-    return _platform.system().lower()
+    system = _platform.system().lower()
+    machine = _platform.machine()
+
+    if machine in ("arm64", "aarch64"):
+        return f"{system}-arm64"
+
+    if machine != "x86_64":
+        raise RuntimeError(f"don't know how to fetch binaries for {machine}")
+
+    return system
 
 
 def check_for_extension(file: str) -> str:
@@ -50,7 +59,7 @@ def _get_linux_distro_details() -> Tuple[str, str]:
 @lru_cache(maxsize=None)
 def binary_platform() -> str:
     platform = name()
-    if platform != 'linux':
+    if platform not in ('linux', 'linux-arm64'):
         return platform
 
     distro = linux_distro()
@@ -58,6 +67,9 @@ def binary_platform() -> str:
         return 'linux-musl'
 
     ssl = get_openssl()
+    if platform == "linux-arm64":
+        return f'{platform}-openssl-{ssl}'
+
     return f'{distro}-openssl-{ssl}'
 
 
