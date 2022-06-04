@@ -6,7 +6,7 @@ import pytest
 from mock import AsyncMock
 from pytest_mock import MockerFixture
 
-from prisma import ENGINE_TYPE, Prisma, get_client, errors
+from prisma import ENGINE_TYPE, SCHEMA_PATH, Prisma, get_client, errors
 from prisma.http_abstract import DEFAULT_CONFIG
 from prisma.engine.http import HTTPEngine
 from prisma.engine.errors import AlreadyConnectedError
@@ -106,11 +106,17 @@ async def test_connect_timeout(mocker: MockerFixture) -> None:
     )
 
     await client.connect()
-    mocked.assert_called_once_with(timeout=7, datasources=None)
+    mocked.assert_called_once_with(
+        timeout=7,
+        datasources=[client._make_sqlite_datasource()],
+    )
     mocked.reset_mock()
 
     await client.connect(timeout=5)
-    mocked.assert_called_once_with(timeout=5, datasources=None)
+    mocked.assert_called_once_with(
+        timeout=5,
+        datasources=[client._make_sqlite_datasource()],
+    )
 
 
 @pytest.mark.asyncio
@@ -163,3 +169,31 @@ def test_old_client_alias() -> None:
     from prisma import Client, Prisma
 
     assert Client == Prisma
+
+
+def test_sqlite_url(client: Prisma) -> None:
+    """Ensure that the default overriden SQLite URL uses the correct relative path
+
+    https://github.com/RobertCraigie/prisma-client-py/issues/409
+    """
+    rootdir = Path(__file__).parent
+
+    url = client._make_sqlite_url('file:dev.db')
+    assert url == f'file:{SCHEMA_PATH.parent.joinpath("dev.db")}'
+
+    url = client._make_sqlite_url('file:dev.db', relative_to=rootdir)
+    assert url == f'file:{rootdir.joinpath("dev.db")}'
+
+    url = client._make_sqlite_url('sqlite:../dev.db', relative_to=rootdir)
+    assert url == f'file:{rootdir.parent.joinpath("dev.db")}'
+
+    # already absolute paths are not updated
+    url = client._make_sqlite_url(
+        f'sqlite:{rootdir.parent.joinpath("foo.db").absolute()}',
+        relative_to=rootdir,
+    )
+    assert url == f'sqlite:{rootdir.parent.joinpath("foo.db").absolute()}'
+
+    # unknown prefixes are not updated
+    url = client._make_sqlite_url('unknown:dev.db', relative_to=rootdir)
+    assert url == 'unknown:dev.db'
