@@ -87,7 +87,7 @@ def schema_path_matcher(
 def test_sync(snapshot: SnapshotAssertion, file: str) -> None:
     """Ensure synchronous client files match"""
     assert SYNC_ROOTDIR.joinpath(file).absolute().read_text() == snapshot(
-        matcher=schema_path_matcher(THIS_DIR / 'sync.schema.prisma')
+        matcher=schema_path_matcher(THIS_DIR / 'sync.schema.prisma')  # type: ignore
     )
 
 
@@ -95,7 +95,7 @@ def test_sync(snapshot: SnapshotAssertion, file: str) -> None:
 def test_async(snapshot: SnapshotAssertion, file: str) -> None:
     """Ensure asynchronous client files match"""
     assert ASYNC_ROOTDIR.joinpath(file).absolute().read_text() == snapshot(
-        matcher=schema_path_matcher(THIS_DIR / 'async.schema.prisma')
+        matcher=schema_path_matcher(THIS_DIR / 'async.schema.prisma')  # type: ignore
     )
 
 
