@@ -1,7 +1,6 @@
 import pytest
 from _pytest.capture import CaptureFixture
 
-import prisma
 from prisma import Prisma
 from prisma.models import User
 
@@ -36,9 +35,8 @@ async def test_logs_sql_queries(testdir: Testdir) -> None:
     with testdir.redirect_stdout_to_file() as file:
         await client.connect()
 
-        # implementation detail of this test
-        with pytest.raises(prisma.errors.TableNotFoundError):
-            await client.user.find_unique(where={'id': 'jsdhsjd'})
+        user = await client.user.find_unique(where={'id': 'jsdhsjd'})
+        assert user is None
 
         await client.disconnect()
 

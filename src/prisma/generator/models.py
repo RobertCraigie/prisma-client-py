@@ -304,7 +304,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
     version: str
     generator: 'Generator[ConfigT]'
     dmmf: 'DMMF' = FieldInfo(alias='dmmf')
-    schema_path: str = FieldInfo(alias='schemaPath')
+    schema_path: Path = FieldInfo(alias='schemaPath')
     datasources: List['Datasource'] = FieldInfo(alias='datasources')
     other_generators: List['Generator[_ModelAllowAll]'] = FieldInfo(
         alias='otherGenerators'
@@ -394,6 +394,19 @@ class ValueFromEnvVar(BaseModel):
 class OptionalValueFromEnvVar(BaseModel):
     value: Optional[str]
     from_env_var: Optional[str] = FieldInfo(alias='fromEnvVar')
+
+    def resolve(self) -> str:
+        value = self.value
+        if value is not None:
+            return value
+
+        env_var = self.from_env_var
+        assert env_var is not None, 'from_env_var should not be None'
+        value = os.environ.get(env_var)
+        if value is None:
+            raise RuntimeError(f'Environment variable not found: {env_var}')
+
+        return value
 
 
 class Config(BaseSettings):

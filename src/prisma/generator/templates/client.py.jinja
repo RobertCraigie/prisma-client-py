@@ -1,6 +1,7 @@
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider with context %}
 # -- template client.py.jinja --
+from pathlib import Path
 from types import TracebackType
 
 from . import types, models, errors, actions
@@ -8,11 +9,12 @@ from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
-from .generator.models import EngineType
+from .generator.models import EngineType, OptionalValueFromEnvVar
 
 
 __all__ = (
     'ENGINE_TYPE',
+    'SCHEMA_PATH',
     'Batch',
     'Prisma',
     'Client',
@@ -24,6 +26,7 @@ __all__ = (
 SCHEMA = '''
 {{ datamodel }}
 '''
+SCHEMA_PATH = Path('{{ schema_path }}')
 
 ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
 
@@ -216,6 +219,12 @@ class Prisma:
             ds = self._datasource.copy()
             ds.setdefault('name', '{{ datasources[0].name }}')
             datasources = [ds]
+        {% if active_provider == 'sqlite' %}
+        else:
+            # Override the default SQLite path to protect against
+            # https://github.com/RobertCraigie/prisma-client-py/issues/409
+            datasources = [self._make_sqlite_datasource()]
+        {% endif %}
 
         {{ maybe_await }}self.__engine.connect(
             timeout=timeout,
@@ -332,6 +341,29 @@ class Prisma:
         if engine is None:
             raise errors.ClientNotConnectedError()
         return engine
+
+    def _make_sqlite_datasource(self) -> DatasourceOverride:
+        return {
+            'name': '{{ datasources[0].name }}',
+            'url': self._make_sqlite_url(self._default_datasource['url']),
+        }
+
+    def _make_sqlite_url(self, url: str, *, relative_to: Path = SCHEMA_PATH.parent) -> str:
+        url_path = url.lstrip('file:').lstrip('sqlite:')
+        if url_path == url:
+            return url
+
+        if Path(url_path).is_absolute():
+            return url
+
+        return f'file:{relative_to.joinpath(url_path).resolve()}'
+
+    @property
+    def _default_datasource(self) -> DatasourceOverride:
+        return {
+            'name': '{{ datasources[0].name }}',
+            'url': OptionalValueFromEnvVar(**{{ datasources[0].url.dict(by_alias=True) }}).resolve(),
+        }
 
 
 # TODO: this should return the results as well
