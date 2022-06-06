@@ -5,6 +5,10 @@
 # fmt: off
 
 # global imports for type checking
+from builtins import bool as _bool
+from builtins import int as _int
+from builtins import float as _float
+from builtins import str as _str
 import sys
 import decimal
 import datetime
@@ -31,6 +35,7 @@ from typing_extensions import TypedDict, Literal
 
 LiteralString = str
 # -- template client.py.jinja --
+from pathlib import Path
 from types import TracebackType
 
 from . import types, models, errors, actions
@@ -38,11 +43,12 @@ from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
-from .generator.models import EngineType
+from .generator.models import EngineType, OptionalValueFromEnvVar
 
 
 __all__ = (
     'ENGINE_TYPE',
+    'SCHEMA_PATH',
     'Batch',
     'Prisma',
     'Client',
@@ -237,6 +243,7 @@ model E {
 }
 
 '''
+SCHEMA_PATH = Path('<absolute-schema-path>')
 
 ENGINE_TYPE: EngineType = EngineType.binary
 
@@ -543,6 +550,29 @@ class Prisma:
         if engine is None:
             raise errors.ClientNotConnectedError()
         return engine
+
+    def _make_sqlite_datasource(self) -> DatasourceOverride:
+        return {
+            'name': 'db',
+            'url': self._make_sqlite_url(self._default_datasource['url']),
+        }
+
+    def _make_sqlite_url(self, url: str, *, relative_to: Path = SCHEMA_PATH.parent) -> str:
+        url_path = url.lstrip('file:').lstrip('sqlite:')
+        if url_path == url:
+            return url
+
+        if Path(url_path).is_absolute():
+            return url
+
+        return f'file:{relative_to.joinpath(url_path).resolve()}'
+
+    @property
+    def _default_datasource(self) -> DatasourceOverride:
+        return {
+            'name': 'db',
+            'url': OptionalValueFromEnvVar(**{'value': None, 'fromEnvVar': 'DB_URL'}).resolve(),
+        }
 
 
 # TODO: this should return the results as well

@@ -5,6 +5,10 @@
 # fmt: off
 
 # global imports for type checking
+from builtins import bool as _bool
+from builtins import int as _int
+from builtins import float as _float
+from builtins import str as _str
 import sys
 import decimal
 import datetime
@@ -544,19 +548,19 @@ AtomicIntInput = Union[
 AtomicBigIntInput = AtomicIntInput
 
 class _StringListFilterEqualsInput(TypedDict):
-    equals: Optional[List[str]]
+    equals: Optional[List[_str]]
 
 
 class _StringListFilterHasInput(TypedDict):
-    has: str
+    has: _str
 
 
 class _StringListFilterHasEveryInput(TypedDict):
-    has_every: List[str]
+    has_every: List[_str]
 
 
 class _StringListFilterHasSomeInput(TypedDict):
-    has_some: List[str]
+    has_some: List[_str]
 
 
 class _StringListFilterIsEmptyInput(TypedDict):
@@ -573,15 +577,15 @@ StringListFilter = Union[
 
 
 class _StringListUpdateSet(TypedDict):
-    set: List[str]
+    set: List[_str]
 
 
 class _StringListUpdatePush(TypedDict):
-    push: List[str]
+    push: List[_str]
 
 
 StringListUpdate = Union[
-    List[str],
+    List[_str],
     _StringListUpdateSet,
     _StringListUpdatePush,
 ]
@@ -673,19 +677,19 @@ DateTimeListUpdate = Union[
 ]
 
 class _BooleanListFilterEqualsInput(TypedDict):
-    equals: Optional[List[bool]]
+    equals: Optional[List[_bool]]
 
 
 class _BooleanListFilterHasInput(TypedDict):
-    has: bool
+    has: _bool
 
 
 class _BooleanListFilterHasEveryInput(TypedDict):
-    has_every: List[bool]
+    has_every: List[_bool]
 
 
 class _BooleanListFilterHasSomeInput(TypedDict):
-    has_some: List[bool]
+    has_some: List[_bool]
 
 
 class _BooleanListFilterIsEmptyInput(TypedDict):
@@ -702,33 +706,33 @@ BooleanListFilter = Union[
 
 
 class _BooleanListUpdateSet(TypedDict):
-    set: List[bool]
+    set: List[_bool]
 
 
 class _BooleanListUpdatePush(TypedDict):
-    push: List[bool]
+    push: List[_bool]
 
 
 BooleanListUpdate = Union[
-    List[bool],
+    List[_bool],
     _BooleanListUpdateSet,
     _BooleanListUpdatePush,
 ]
 
 class _IntListFilterEqualsInput(TypedDict):
-    equals: Optional[List[int]]
+    equals: Optional[List[_int]]
 
 
 class _IntListFilterHasInput(TypedDict):
-    has: int
+    has: _int
 
 
 class _IntListFilterHasEveryInput(TypedDict):
-    has_every: List[int]
+    has_every: List[_int]
 
 
 class _IntListFilterHasSomeInput(TypedDict):
-    has_some: List[int]
+    has_some: List[_int]
 
 
 class _IntListFilterIsEmptyInput(TypedDict):
@@ -745,33 +749,33 @@ IntListFilter = Union[
 
 
 class _IntListUpdateSet(TypedDict):
-    set: List[int]
+    set: List[_int]
 
 
 class _IntListUpdatePush(TypedDict):
-    push: List[int]
+    push: List[_int]
 
 
 IntListUpdate = Union[
-    List[int],
+    List[_int],
     _IntListUpdateSet,
     _IntListUpdatePush,
 ]
 
 class _BigIntListFilterEqualsInput(TypedDict):
-    equals: Optional[List[int]]
+    equals: Optional[List[_int]]
 
 
 class _BigIntListFilterHasInput(TypedDict):
-    has: int
+    has: _int
 
 
 class _BigIntListFilterHasEveryInput(TypedDict):
-    has_every: List[int]
+    has_every: List[_int]
 
 
 class _BigIntListFilterHasSomeInput(TypedDict):
-    has_some: List[int]
+    has_some: List[_int]
 
 
 class _BigIntListFilterIsEmptyInput(TypedDict):
@@ -788,33 +792,33 @@ BigIntListFilter = Union[
 
 
 class _BigIntListUpdateSet(TypedDict):
-    set: List[int]
+    set: List[_int]
 
 
 class _BigIntListUpdatePush(TypedDict):
-    push: List[int]
+    push: List[_int]
 
 
 BigIntListUpdate = Union[
-    List[int],
+    List[_int],
     _BigIntListUpdateSet,
     _BigIntListUpdatePush,
 ]
 
 class _FloatListFilterEqualsInput(TypedDict):
-    equals: Optional[List[float]]
+    equals: Optional[List[_float]]
 
 
 class _FloatListFilterHasInput(TypedDict):
-    has: float
+    has: _float
 
 
 class _FloatListFilterHasEveryInput(TypedDict):
-    has_every: List[float]
+    has_every: List[_float]
 
 
 class _FloatListFilterHasSomeInput(TypedDict):
-    has_some: List[float]
+    has_some: List[_float]
 
 
 class _FloatListFilterIsEmptyInput(TypedDict):
@@ -831,15 +835,15 @@ FloatListFilter = Union[
 
 
 class _FloatListUpdateSet(TypedDict):
-    set: List[float]
+    set: List[_float]
 
 
 class _FloatListUpdatePush(TypedDict):
-    push: List[float]
+    push: List[_float]
 
 
 FloatListUpdate = Union[
-    List[float],
+    List[_float],
     _FloatListUpdateSet,
     _FloatListUpdatePush,
 ]
@@ -978,17 +982,17 @@ ABeautifulEnumListUpdate = Union[
 
 class PostOptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the Post create method"""
-    id: int
+    id: _int
     created_at: datetime.datetime
-    content: Optional[str]
-    published: bool
+    content: Optional[_str]
+    published: _bool
     author: 'UserCreateNestedWithoutRelationsInput'
-    author_id: int
+    author_id: _int
 
 
 class PostCreateInput(PostOptionalCreateInput):
     """Required arguments to the Post create method"""
-    title: str
+    title: _str
 
 
 # TODO: remove this in favour of without explicit relations
@@ -996,16 +1000,16 @@ class PostCreateInput(PostOptionalCreateInput):
 
 class PostOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the Post create method, without relations"""
-    id: int
+    id: _int
     created_at: datetime.datetime
-    content: Optional[str]
-    published: bool
-    author_id: int
+    content: Optional[_str]
+    published: _bool
+    author_id: _int
 
 
 class PostCreateWithoutRelationsInput(PostOptionalCreateWithoutRelationsInput):
     """Required arguments to the Post create method, without relations"""
-    title: str
+    title: _str
 
 
 class PostCreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -1021,7 +1025,7 @@ class PostCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
 _PostWhereUnique_id_Input = TypedDict(
     '_PostWhereUnique_id_Input',
     {
-        'id': 'int',
+        'id': '_int',
     },
     total=True
 )
@@ -1031,21 +1035,21 @@ PostWhereUniqueInput = _PostWhereUnique_id_Input
 
 class PostUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
-    id: Union[AtomicIntInput, int]
+    id: Union[AtomicIntInput, _int]
     created_at: datetime.datetime
-    title: str
-    content: Optional[str]
-    published: bool
+    title: _str
+    content: Optional[_str]
+    published: _bool
     author: 'UserUpdateOneWithoutRelationsInput'
 
 
 class PostUpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
-    id: Union[AtomicIntInput, int]
+    id: Union[AtomicIntInput, _int]
     created_at: datetime.datetime
-    title: str
-    content: Optional[str]
-    published: bool
+    title: _str
+    content: Optional[_str]
+    published: _bool
 
 
 class PostUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -1886,13 +1890,13 @@ FindFirstPostArgs = FindManyPostArgsFromPost
 
 class PostWhereInput(TypedDict, total=False):
     """Post arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     created_at: Union[datetime.datetime, 'types.DateTimeFilter']
-    title: Union[str, 'types.StringFilter']
-    content: Union[None, str, 'types.StringFilter']
-    published: Union[bool, 'types.BooleanFilter']
+    title: Union[_str, 'types.StringFilter']
+    content: Union[None, _str, 'types.StringFilter']
+    published: Union[_bool, 'types.BooleanFilter']
     author: 'UserRelationFilter'
-    author_id: Union[int, 'types.IntFilter']
+    author_id: Union[_int, 'types.IntFilter']
 
     # should be noted that AND and NOT should be Union['PostWhereInputRecursive1', List['PostWhereInputRecursive1']]
     # but this causes mypy to hang :/
@@ -1903,13 +1907,13 @@ class PostWhereInput(TypedDict, total=False):
 
 class PostWhereInputRecursive1(TypedDict, total=False):
     """Post arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     created_at: Union[datetime.datetime, 'types.DateTimeFilter']
-    title: Union[str, 'types.StringFilter']
-    content: Union[None, str, 'types.StringFilter']
-    published: Union[bool, 'types.BooleanFilter']
+    title: Union[_str, 'types.StringFilter']
+    content: Union[None, _str, 'types.StringFilter']
+    published: Union[_bool, 'types.BooleanFilter']
     author: 'UserRelationFilter'
-    author_id: Union[int, 'types.IntFilter']
+    author_id: Union[_int, 'types.IntFilter']
 
     # should be noted that AND and NOT should be Union['PostWhereInputRecursive2', List['PostWhereInputRecursive2']]
     # but this causes mypy to hang :/
@@ -1920,13 +1924,13 @@ class PostWhereInputRecursive1(TypedDict, total=False):
 
 class PostWhereInputRecursive2(TypedDict, total=False):
     """Post arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     created_at: Union[datetime.datetime, 'types.DateTimeFilter']
-    title: Union[str, 'types.StringFilter']
-    content: Union[None, str, 'types.StringFilter']
-    published: Union[bool, 'types.BooleanFilter']
+    title: Union[_str, 'types.StringFilter']
+    content: Union[None, _str, 'types.StringFilter']
+    published: Union[_bool, 'types.BooleanFilter']
     author: 'UserRelationFilter'
-    author_id: Union[int, 'types.IntFilter']
+    author_id: Union[_int, 'types.IntFilter']
 
 
 
@@ -1937,12 +1941,12 @@ class PostWhereInputRecursive2(TypedDict, total=False):
 
 class PostScalarWhereWithAggregatesInput(TypedDict, total=False):
     """Post arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
     created_at: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
-    title: Union[str, 'types.StringWithAggregatesFilter']
-    content: Union[str, 'types.StringWithAggregatesFilter']
-    published: Union[bool, 'types.BooleanWithAggregatesFilter']
-    author_id: Union[int, 'types.IntWithAggregatesFilter']
+    title: Union[_str, 'types.StringWithAggregatesFilter']
+    content: Union[_str, 'types.StringWithAggregatesFilter']
+    published: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    author_id: Union[_int, 'types.IntWithAggregatesFilter']
 
     AND: List['PostScalarWhereWithAggregatesInputRecursive1']
     OR: List['PostScalarWhereWithAggregatesInputRecursive1']
@@ -1951,12 +1955,12 @@ class PostScalarWhereWithAggregatesInput(TypedDict, total=False):
 
 class PostScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     """Post arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
     created_at: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
-    title: Union[str, 'types.StringWithAggregatesFilter']
-    content: Union[str, 'types.StringWithAggregatesFilter']
-    published: Union[bool, 'types.BooleanWithAggregatesFilter']
-    author_id: Union[int, 'types.IntWithAggregatesFilter']
+    title: Union[_str, 'types.StringWithAggregatesFilter']
+    content: Union[_str, 'types.StringWithAggregatesFilter']
+    published: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    author_id: Union[_int, 'types.IntWithAggregatesFilter']
 
     AND: List['PostScalarWhereWithAggregatesInputRecursive2']
     OR: List['PostScalarWhereWithAggregatesInputRecursive2']
@@ -1965,22 +1969,22 @@ class PostScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
 
 class PostScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     """Post arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
     created_at: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
-    title: Union[str, 'types.StringWithAggregatesFilter']
-    content: Union[str, 'types.StringWithAggregatesFilter']
-    published: Union[bool, 'types.BooleanWithAggregatesFilter']
-    author_id: Union[int, 'types.IntWithAggregatesFilter']
+    title: Union[_str, 'types.StringWithAggregatesFilter']
+    content: Union[_str, 'types.StringWithAggregatesFilter']
+    published: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    author_id: Union[_int, 'types.IntWithAggregatesFilter']
 
 
 
 class PostGroupByOutput(TypedDict, total=False):
-    id: int
+    id: _int
     created_at: datetime.datetime
-    title: str
-    content: str
-    published: bool
-    author_id: int
+    title: _str
+    content: _str
+    published: _bool
+    author_id: _int
     _sum: 'PostSumAggregateOutput'
     _avg: 'PostAvgAggregateOutput'
     _min: 'PostMinAggregateOutput'
@@ -1996,18 +2000,18 @@ class PostAvgAggregateOutput(TypedDict, total=False):
 
 class PostSumAggregateOutput(TypedDict, total=False):
     """Post output for aggregating sums"""
-    id: int
-    author_id: int
+    id: _int
+    author_id: _int
 
 
 class PostScalarAggregateOutput(TypedDict, total=False):
     """Post output including scalar fields"""
-    id: int
+    id: _int
     created_at: datetime.datetime
-    title: str
-    content: str
-    published: bool
-    author_id: int
+    title: _str
+    content: _str
+    published: _bool
+    author_id: _int
 
 
 PostMinAggregateOutput = PostScalarAggregateOutput
@@ -2100,23 +2104,23 @@ PostRelationalFieldKeys = Literal[
 
 class UserOptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the User create method"""
-    id: int
-    optional_int: Optional[int]
-    optional_float: Optional[float]
-    optional_string: Optional[str]
+    id: _int
+    optional_int: Optional[_int]
+    optional_float: Optional[_float]
+    optional_string: Optional[_str]
     optional_enum: Optional['enums.ABeautifulEnum']
-    optional_boolean: Optional[bool]
+    optional_boolean: Optional[_bool]
     posts: 'PostCreateManyNestedWithoutRelationsInput'
 
 
 class UserCreateInput(UserOptionalCreateInput):
     """Required arguments to the User create method"""
-    email: str
-    int: int
-    float: float
-    string: str
+    email: _str
+    int: _int
+    float: _float
+    string: _str
     enum: 'enums.ABeautifulEnum'
-    boolean: bool
+    boolean: _bool
 
 
 # TODO: remove this in favour of without explicit relations
@@ -2124,22 +2128,22 @@ class UserCreateInput(UserOptionalCreateInput):
 
 class UserOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the User create method, without relations"""
-    id: int
-    optional_int: Optional[int]
-    optional_float: Optional[float]
-    optional_string: Optional[str]
+    id: _int
+    optional_int: Optional[_int]
+    optional_float: Optional[_float]
+    optional_string: Optional[_str]
     optional_enum: Optional['enums.ABeautifulEnum']
-    optional_boolean: Optional[bool]
+    optional_boolean: Optional[_bool]
 
 
 class UserCreateWithoutRelationsInput(UserOptionalCreateWithoutRelationsInput):
     """Required arguments to the User create method, without relations"""
-    email: str
-    int: int
-    float: float
-    string: str
+    email: _str
+    int: _int
+    float: _float
+    string: _str
     enum: 'enums.ABeautifulEnum'
-    boolean: bool
+    boolean: _bool
 
 
 class UserCreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -2155,7 +2159,7 @@ class UserCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
 _UserWhereUnique_id_Input = TypedDict(
     '_UserWhereUnique_id_Input',
     {
-        'id': 'int',
+        'id': '_int',
     },
     total=True
 )
@@ -2163,7 +2167,7 @@ _UserWhereUnique_id_Input = TypedDict(
 _UserWhereUnique_email_Input = TypedDict(
     '_UserWhereUnique_email_Input',
     {
-        'email': 'str',
+        'email': '_str',
     },
     total=True
 )
@@ -2176,35 +2180,35 @@ UserWhereUniqueInput = Union[
 
 class UserUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
-    id: Union[AtomicIntInput, int]
-    email: str
-    int: Union[AtomicIntInput, int]
-    optional_int: Optional[Union[AtomicIntInput, int]]
-    float: Union[AtomicFloatInput, float]
-    optional_float: Optional[Union[AtomicFloatInput, float]]
-    string: str
-    optional_string: Optional[str]
+    id: Union[AtomicIntInput, _int]
+    email: _str
+    int: Union[AtomicIntInput, _int]
+    optional_int: Optional[Union[AtomicIntInput, _int]]
+    float: Union[AtomicFloatInput, _float]
+    optional_float: Optional[Union[AtomicFloatInput, _float]]
+    string: _str
+    optional_string: Optional[_str]
     enum: 'enums.ABeautifulEnum'
     optional_enum: Optional['enums.ABeautifulEnum']
-    boolean: bool
-    optional_boolean: Optional[bool]
+    boolean: _bool
+    optional_boolean: Optional[_bool]
     posts: 'PostUpdateManyWithoutRelationsInput'
 
 
 class UserUpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
-    id: Union[AtomicIntInput, int]
-    email: str
-    int: Union[AtomicIntInput, int]
-    optional_int: Optional[Union[AtomicIntInput, int]]
-    float: Union[AtomicFloatInput, float]
-    optional_float: Optional[Union[AtomicFloatInput, float]]
-    string: str
-    optional_string: Optional[str]
+    id: Union[AtomicIntInput, _int]
+    email: _str
+    int: Union[AtomicIntInput, _int]
+    optional_int: Optional[Union[AtomicIntInput, _int]]
+    float: Union[AtomicFloatInput, _float]
+    optional_float: Optional[Union[AtomicFloatInput, _float]]
+    string: _str
+    optional_string: Optional[_str]
     enum: 'enums.ABeautifulEnum'
     optional_enum: Optional['enums.ABeautifulEnum']
-    boolean: bool
-    optional_boolean: Optional[bool]
+    boolean: _bool
+    optional_boolean: Optional[_bool]
 
 
 class UserUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -3099,18 +3103,18 @@ FindFirstUserArgs = FindManyUserArgsFromUser
 
 class UserWhereInput(TypedDict, total=False):
     """User arguments for searching"""
-    id: Union[int, 'types.IntFilter']
-    email: Union[str, 'types.StringFilter']
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    id: Union[_int, 'types.IntFilter']
+    email: Union[_str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
     posts: 'PostListRelationFilter'
 
     # should be noted that AND and NOT should be Union['UserWhereInputRecursive1', List['UserWhereInputRecursive1']]
@@ -3122,18 +3126,18 @@ class UserWhereInput(TypedDict, total=False):
 
 class UserWhereInputRecursive1(TypedDict, total=False):
     """User arguments for searching"""
-    id: Union[int, 'types.IntFilter']
-    email: Union[str, 'types.StringFilter']
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    id: Union[_int, 'types.IntFilter']
+    email: Union[_str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
     posts: 'PostListRelationFilter'
 
     # should be noted that AND and NOT should be Union['UserWhereInputRecursive2', List['UserWhereInputRecursive2']]
@@ -3145,18 +3149,18 @@ class UserWhereInputRecursive1(TypedDict, total=False):
 
 class UserWhereInputRecursive2(TypedDict, total=False):
     """User arguments for searching"""
-    id: Union[int, 'types.IntFilter']
-    email: Union[str, 'types.StringFilter']
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    id: Union[_int, 'types.IntFilter']
+    email: Union[_str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
     posts: 'PostListRelationFilter'
 
 
@@ -3168,18 +3172,18 @@ class UserWhereInputRecursive2(TypedDict, total=False):
 
 class UserScalarWhereWithAggregatesInput(TypedDict, total=False):
     """User arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    email: Union[str, 'types.StringWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    email: Union[_str, 'types.StringWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['UserScalarWhereWithAggregatesInputRecursive1']
     OR: List['UserScalarWhereWithAggregatesInputRecursive1']
@@ -3188,18 +3192,18 @@ class UserScalarWhereWithAggregatesInput(TypedDict, total=False):
 
 class UserScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     """User arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    email: Union[str, 'types.StringWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    email: Union[_str, 'types.StringWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['UserScalarWhereWithAggregatesInputRecursive2']
     OR: List['UserScalarWhereWithAggregatesInputRecursive2']
@@ -3208,34 +3212,34 @@ class UserScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
 
 class UserScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     """User arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    email: Union[str, 'types.StringWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    email: Union[_str, 'types.StringWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
 
 
 class UserGroupByOutput(TypedDict, total=False):
-    id: int
-    email: str
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
-    string: str
-    optional_string: str
+    id: _int
+    email: _str
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
+    string: _str
+    optional_string: _str
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: bool
-    optional_boolean: bool
+    boolean: _bool
+    optional_boolean: _bool
     _sum: 'UserSumAggregateOutput'
     _avg: 'UserAvgAggregateOutput'
     _min: 'UserMinAggregateOutput'
@@ -3254,27 +3258,27 @@ class UserAvgAggregateOutput(TypedDict, total=False):
 
 class UserSumAggregateOutput(TypedDict, total=False):
     """User output for aggregating sums"""
-    id: int
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
+    id: _int
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
 
 
 class UserScalarAggregateOutput(TypedDict, total=False):
     """User output including scalar fields"""
-    id: int
-    email: str
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
-    string: str
-    optional_string: str
+    id: _int
+    email: _str
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
+    string: _str
+    optional_string: _str
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: bool
-    optional_boolean: bool
+    boolean: _bool
+    optional_boolean: _bool
 
 
 UserMinAggregateOutput = UserScalarAggregateOutput
@@ -3406,22 +3410,22 @@ UserRelationalFieldKeys = Literal[
 
 class MOptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the M create method"""
-    id: int
+    id: _int
     n: 'NCreateManyNestedWithoutRelationsInput'
-    optional_int: Optional[int]
-    optional_float: Optional[float]
-    optional_string: Optional[str]
+    optional_int: Optional[_int]
+    optional_float: Optional[_float]
+    optional_string: Optional[_str]
     optional_enum: Optional['enums.ABeautifulEnum']
-    optional_boolean: Optional[bool]
+    optional_boolean: Optional[_bool]
 
 
 class MCreateInput(MOptionalCreateInput):
     """Required arguments to the M create method"""
-    int: int
-    float: float
-    string: str
+    int: _int
+    float: _float
+    string: _str
     enum: 'enums.ABeautifulEnum'
-    boolean: bool
+    boolean: _bool
 
 
 # TODO: remove this in favour of without explicit relations
@@ -3429,21 +3433,21 @@ class MCreateInput(MOptionalCreateInput):
 
 class MOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the M create method, without relations"""
-    id: int
-    optional_int: Optional[int]
-    optional_float: Optional[float]
-    optional_string: Optional[str]
+    id: _int
+    optional_int: Optional[_int]
+    optional_float: Optional[_float]
+    optional_string: Optional[_str]
     optional_enum: Optional['enums.ABeautifulEnum']
-    optional_boolean: Optional[bool]
+    optional_boolean: Optional[_bool]
 
 
 class MCreateWithoutRelationsInput(MOptionalCreateWithoutRelationsInput):
     """Required arguments to the M create method, without relations"""
-    int: int
-    float: float
-    string: str
+    int: _int
+    float: _float
+    string: _str
     enum: 'enums.ABeautifulEnum'
-    boolean: bool
+    boolean: _bool
 
 
 class MCreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -3459,7 +3463,7 @@ class MCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
 _MWhereUnique_id_Input = TypedDict(
     '_MWhereUnique_id_Input',
     {
-        'id': 'int',
+        'id': '_int',
     },
     total=True
 )
@@ -3469,33 +3473,33 @@ MWhereUniqueInput = _MWhereUnique_id_Input
 
 class MUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
-    id: Union[AtomicIntInput, int]
+    id: Union[AtomicIntInput, _int]
     n: 'NUpdateManyWithoutRelationsInput'
-    int: Union[AtomicIntInput, int]
-    optional_int: Optional[Union[AtomicIntInput, int]]
-    float: Union[AtomicFloatInput, float]
-    optional_float: Optional[Union[AtomicFloatInput, float]]
-    string: str
-    optional_string: Optional[str]
+    int: Union[AtomicIntInput, _int]
+    optional_int: Optional[Union[AtomicIntInput, _int]]
+    float: Union[AtomicFloatInput, _float]
+    optional_float: Optional[Union[AtomicFloatInput, _float]]
+    string: _str
+    optional_string: Optional[_str]
     enum: 'enums.ABeautifulEnum'
     optional_enum: Optional['enums.ABeautifulEnum']
-    boolean: bool
-    optional_boolean: Optional[bool]
+    boolean: _bool
+    optional_boolean: Optional[_bool]
 
 
 class MUpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
-    id: Union[AtomicIntInput, int]
-    int: Union[AtomicIntInput, int]
-    optional_int: Optional[Union[AtomicIntInput, int]]
-    float: Union[AtomicFloatInput, float]
-    optional_float: Optional[Union[AtomicFloatInput, float]]
-    string: str
-    optional_string: Optional[str]
+    id: Union[AtomicIntInput, _int]
+    int: Union[AtomicIntInput, _int]
+    optional_int: Optional[Union[AtomicIntInput, _int]]
+    float: Union[AtomicFloatInput, _float]
+    optional_float: Optional[Union[AtomicFloatInput, _float]]
+    string: _str
+    optional_string: Optional[_str]
     enum: 'enums.ABeautifulEnum'
     optional_enum: Optional['enums.ABeautifulEnum']
-    boolean: bool
-    optional_boolean: Optional[bool]
+    boolean: _bool
+    optional_boolean: Optional[_bool]
 
 
 class MUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -4381,18 +4385,18 @@ FindFirstMArgs = FindManyMArgsFromM
 
 class MWhereInput(TypedDict, total=False):
     """M arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     n: 'NListRelationFilter'
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['MWhereInputRecursive1', List['MWhereInputRecursive1']]
     # but this causes mypy to hang :/
@@ -4403,18 +4407,18 @@ class MWhereInput(TypedDict, total=False):
 
 class MWhereInputRecursive1(TypedDict, total=False):
     """M arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     n: 'NListRelationFilter'
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['MWhereInputRecursive2', List['MWhereInputRecursive2']]
     # but this causes mypy to hang :/
@@ -4425,18 +4429,18 @@ class MWhereInputRecursive1(TypedDict, total=False):
 
 class MWhereInputRecursive2(TypedDict, total=False):
     """M arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     n: 'NListRelationFilter'
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
 
 
 
@@ -4447,17 +4451,17 @@ class MWhereInputRecursive2(TypedDict, total=False):
 
 class MScalarWhereWithAggregatesInput(TypedDict, total=False):
     """M arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['MScalarWhereWithAggregatesInputRecursive1']
     OR: List['MScalarWhereWithAggregatesInputRecursive1']
@@ -4466,17 +4470,17 @@ class MScalarWhereWithAggregatesInput(TypedDict, total=False):
 
 class MScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     """M arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['MScalarWhereWithAggregatesInputRecursive2']
     OR: List['MScalarWhereWithAggregatesInputRecursive2']
@@ -4485,32 +4489,32 @@ class MScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
 
 class MScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     """M arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
 
 
 class MGroupByOutput(TypedDict, total=False):
-    id: int
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
-    string: str
-    optional_string: str
+    id: _int
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
+    string: _str
+    optional_string: _str
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: bool
-    optional_boolean: bool
+    boolean: _bool
+    optional_boolean: _bool
     _sum: 'MSumAggregateOutput'
     _avg: 'MAvgAggregateOutput'
     _min: 'MMinAggregateOutput'
@@ -4529,26 +4533,26 @@ class MAvgAggregateOutput(TypedDict, total=False):
 
 class MSumAggregateOutput(TypedDict, total=False):
     """M output for aggregating sums"""
-    id: int
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
+    id: _int
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
 
 
 class MScalarAggregateOutput(TypedDict, total=False):
     """M output including scalar fields"""
-    id: int
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
-    string: str
-    optional_string: str
+    id: _int
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
+    string: _str
+    optional_string: _str
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: bool
-    optional_boolean: bool
+    boolean: _bool
+    optional_boolean: _bool
 
 
 MMinAggregateOutput = MScalarAggregateOutput
@@ -4674,24 +4678,24 @@ MRelationalFieldKeys = Literal[
 
 class NOptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the N create method"""
-    id: int
+    id: _int
     m: 'MCreateManyNestedWithoutRelationsInput'
-    optional_int: Optional[int]
-    optional_float: Optional[float]
-    optional_string: Optional[str]
+    optional_int: Optional[_int]
+    optional_float: Optional[_float]
+    optional_string: Optional[_str]
     optional_json: Optional['fields.Json']
     optional_enum: Optional['enums.ABeautifulEnum']
-    optional_boolean: Optional[bool]
+    optional_boolean: Optional[_bool]
 
 
 class NCreateInput(NOptionalCreateInput):
     """Required arguments to the N create method"""
-    int: int
-    float: float
-    string: str
+    int: _int
+    float: _float
+    string: _str
     json_: 'fields.Json'
     enum: 'enums.ABeautifulEnum'
-    boolean: bool
+    boolean: _bool
 
 
 # TODO: remove this in favour of without explicit relations
@@ -4699,23 +4703,23 @@ class NCreateInput(NOptionalCreateInput):
 
 class NOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the N create method, without relations"""
-    id: int
-    optional_int: Optional[int]
-    optional_float: Optional[float]
-    optional_string: Optional[str]
+    id: _int
+    optional_int: Optional[_int]
+    optional_float: Optional[_float]
+    optional_string: Optional[_str]
     optional_json: Optional['fields.Json']
     optional_enum: Optional['enums.ABeautifulEnum']
-    optional_boolean: Optional[bool]
+    optional_boolean: Optional[_bool]
 
 
 class NCreateWithoutRelationsInput(NOptionalCreateWithoutRelationsInput):
     """Required arguments to the N create method, without relations"""
-    int: int
-    float: float
-    string: str
+    int: _int
+    float: _float
+    string: _str
     json_: 'fields.Json'
     enum: 'enums.ABeautifulEnum'
-    boolean: bool
+    boolean: _bool
 
 
 class NCreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -4731,7 +4735,7 @@ class NCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
 _NWhereUnique_id_Input = TypedDict(
     '_NWhereUnique_id_Input',
     {
-        'id': 'int',
+        'id': '_int',
     },
     total=True
 )
@@ -4741,37 +4745,37 @@ NWhereUniqueInput = _NWhereUnique_id_Input
 
 class NUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
-    id: Union[AtomicIntInput, int]
+    id: Union[AtomicIntInput, _int]
     m: 'MUpdateManyWithoutRelationsInput'
-    int: Union[AtomicIntInput, int]
-    optional_int: Optional[Union[AtomicIntInput, int]]
-    float: Union[AtomicFloatInput, float]
-    optional_float: Optional[Union[AtomicFloatInput, float]]
-    string: str
-    optional_string: Optional[str]
+    int: Union[AtomicIntInput, _int]
+    optional_int: Optional[Union[AtomicIntInput, _int]]
+    float: Union[AtomicFloatInput, _float]
+    optional_float: Optional[Union[AtomicFloatInput, _float]]
+    string: _str
+    optional_string: Optional[_str]
     json_: 'fields.Json'
     optional_json: Optional['fields.Json']
     enum: 'enums.ABeautifulEnum'
     optional_enum: Optional['enums.ABeautifulEnum']
-    boolean: bool
-    optional_boolean: Optional[bool]
+    boolean: _bool
+    optional_boolean: Optional[_bool]
 
 
 class NUpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
-    id: Union[AtomicIntInput, int]
-    int: Union[AtomicIntInput, int]
-    optional_int: Optional[Union[AtomicIntInput, int]]
-    float: Union[AtomicFloatInput, float]
-    optional_float: Optional[Union[AtomicFloatInput, float]]
-    string: str
-    optional_string: Optional[str]
+    id: Union[AtomicIntInput, _int]
+    int: Union[AtomicIntInput, _int]
+    optional_int: Optional[Union[AtomicIntInput, _int]]
+    float: Union[AtomicFloatInput, _float]
+    optional_float: Optional[Union[AtomicFloatInput, _float]]
+    string: _str
+    optional_string: Optional[_str]
     json_: 'fields.Json'
     optional_json: Optional['fields.Json']
     enum: 'enums.ABeautifulEnum'
     optional_enum: Optional['enums.ABeautifulEnum']
-    boolean: bool
-    optional_boolean: Optional[bool]
+    boolean: _bool
+    optional_boolean: Optional[_bool]
 
 
 class NUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -5675,20 +5679,20 @@ FindFirstNArgs = FindManyNArgsFromN
 
 class NWhereInput(TypedDict, total=False):
     """N arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     m: 'MListRelationFilter'
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     json_: Union['fields.Json', 'types.JsonFilter']
     optional_json: Union[None, 'fields.Json', 'types.JsonFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['NWhereInputRecursive1', List['NWhereInputRecursive1']]
     # but this causes mypy to hang :/
@@ -5699,20 +5703,20 @@ class NWhereInput(TypedDict, total=False):
 
 class NWhereInputRecursive1(TypedDict, total=False):
     """N arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     m: 'MListRelationFilter'
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     json_: Union['fields.Json', 'types.JsonFilter']
     optional_json: Union[None, 'fields.Json', 'types.JsonFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['NWhereInputRecursive2', List['NWhereInputRecursive2']]
     # but this causes mypy to hang :/
@@ -5723,20 +5727,20 @@ class NWhereInputRecursive1(TypedDict, total=False):
 
 class NWhereInputRecursive2(TypedDict, total=False):
     """N arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     m: 'MListRelationFilter'
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     json_: Union['fields.Json', 'types.JsonFilter']
     optional_json: Union[None, 'fields.Json', 'types.JsonFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
 
 
 
@@ -5747,19 +5751,19 @@ class NWhereInputRecursive2(TypedDict, total=False):
 
 class NScalarWhereWithAggregatesInput(TypedDict, total=False):
     """N arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     json_: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     optional_json: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['NScalarWhereWithAggregatesInputRecursive1']
     OR: List['NScalarWhereWithAggregatesInputRecursive1']
@@ -5768,19 +5772,19 @@ class NScalarWhereWithAggregatesInput(TypedDict, total=False):
 
 class NScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     """N arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     json_: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     optional_json: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['NScalarWhereWithAggregatesInputRecursive2']
     OR: List['NScalarWhereWithAggregatesInputRecursive2']
@@ -5789,36 +5793,36 @@ class NScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
 
 class NScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     """N arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     json_: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     optional_json: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
 
 
 class NGroupByOutput(TypedDict, total=False):
-    id: int
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
-    string: str
-    optional_string: str
+    id: _int
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
+    string: _str
+    optional_string: _str
     json_: 'fields.Json'
     optional_json: 'fields.Json'
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: bool
-    optional_boolean: bool
+    boolean: _bool
+    optional_boolean: _bool
     _sum: 'NSumAggregateOutput'
     _avg: 'NAvgAggregateOutput'
     _min: 'NMinAggregateOutput'
@@ -5837,28 +5841,28 @@ class NAvgAggregateOutput(TypedDict, total=False):
 
 class NSumAggregateOutput(TypedDict, total=False):
     """N output for aggregating sums"""
-    id: int
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
+    id: _int
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
 
 
 class NScalarAggregateOutput(TypedDict, total=False):
     """N output including scalar fields"""
-    id: int
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
-    string: str
-    optional_string: str
+    id: _int
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
+    string: _str
+    optional_string: _str
     json_: 'fields.Json'
     optional_json: 'fields.Json'
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: bool
-    optional_boolean: bool
+    boolean: _bool
+    optional_boolean: _bool
 
 
 NMinAggregateOutput = NScalarAggregateOutput
@@ -5996,22 +6000,22 @@ NRelationalFieldKeys = Literal[
 
 class OneOptionalOptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the OneOptional create method"""
-    id: int
+    id: _int
     many: 'ManyRequiredCreateManyNestedWithoutRelationsInput'
-    optional_int: Optional[int]
-    optional_float: Optional[float]
-    optional_string: Optional[str]
+    optional_int: Optional[_int]
+    optional_float: Optional[_float]
+    optional_string: Optional[_str]
     optional_enum: Optional['enums.ABeautifulEnum']
-    optional_boolean: Optional[bool]
+    optional_boolean: Optional[_bool]
 
 
 class OneOptionalCreateInput(OneOptionalOptionalCreateInput):
     """Required arguments to the OneOptional create method"""
-    int: int
-    float: float
-    string: str
+    int: _int
+    float: _float
+    string: _str
     enum: 'enums.ABeautifulEnum'
-    boolean: bool
+    boolean: _bool
 
 
 # TODO: remove this in favour of without explicit relations
@@ -6019,21 +6023,21 @@ class OneOptionalCreateInput(OneOptionalOptionalCreateInput):
 
 class OneOptionalOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the OneOptional create method, without relations"""
-    id: int
-    optional_int: Optional[int]
-    optional_float: Optional[float]
-    optional_string: Optional[str]
+    id: _int
+    optional_int: Optional[_int]
+    optional_float: Optional[_float]
+    optional_string: Optional[_str]
     optional_enum: Optional['enums.ABeautifulEnum']
-    optional_boolean: Optional[bool]
+    optional_boolean: Optional[_bool]
 
 
 class OneOptionalCreateWithoutRelationsInput(OneOptionalOptionalCreateWithoutRelationsInput):
     """Required arguments to the OneOptional create method, without relations"""
-    int: int
-    float: float
-    string: str
+    int: _int
+    float: _float
+    string: _str
     enum: 'enums.ABeautifulEnum'
-    boolean: bool
+    boolean: _bool
 
 
 class OneOptionalCreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -6049,7 +6053,7 @@ class OneOptionalCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
 _OneOptionalWhereUnique_id_Input = TypedDict(
     '_OneOptionalWhereUnique_id_Input',
     {
-        'id': 'int',
+        'id': '_int',
     },
     total=True
 )
@@ -6059,33 +6063,33 @@ OneOptionalWhereUniqueInput = _OneOptionalWhereUnique_id_Input
 
 class OneOptionalUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
-    id: Union[AtomicIntInput, int]
+    id: Union[AtomicIntInput, _int]
     many: 'ManyRequiredUpdateManyWithoutRelationsInput'
-    int: Union[AtomicIntInput, int]
-    optional_int: Optional[Union[AtomicIntInput, int]]
-    float: Union[AtomicFloatInput, float]
-    optional_float: Optional[Union[AtomicFloatInput, float]]
-    string: str
-    optional_string: Optional[str]
+    int: Union[AtomicIntInput, _int]
+    optional_int: Optional[Union[AtomicIntInput, _int]]
+    float: Union[AtomicFloatInput, _float]
+    optional_float: Optional[Union[AtomicFloatInput, _float]]
+    string: _str
+    optional_string: Optional[_str]
     enum: 'enums.ABeautifulEnum'
     optional_enum: Optional['enums.ABeautifulEnum']
-    boolean: bool
-    optional_boolean: Optional[bool]
+    boolean: _bool
+    optional_boolean: Optional[_bool]
 
 
 class OneOptionalUpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
-    id: Union[AtomicIntInput, int]
-    int: Union[AtomicIntInput, int]
-    optional_int: Optional[Union[AtomicIntInput, int]]
-    float: Union[AtomicFloatInput, float]
-    optional_float: Optional[Union[AtomicFloatInput, float]]
-    string: str
-    optional_string: Optional[str]
+    id: Union[AtomicIntInput, _int]
+    int: Union[AtomicIntInput, _int]
+    optional_int: Optional[Union[AtomicIntInput, _int]]
+    float: Union[AtomicFloatInput, _float]
+    optional_float: Optional[Union[AtomicFloatInput, _float]]
+    string: _str
+    optional_string: Optional[_str]
     enum: 'enums.ABeautifulEnum'
     optional_enum: Optional['enums.ABeautifulEnum']
-    boolean: bool
-    optional_boolean: Optional[bool]
+    boolean: _bool
+    optional_boolean: Optional[_bool]
 
 
 class OneOptionalUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -6971,18 +6975,18 @@ FindFirstOneOptionalArgs = FindManyOneOptionalArgsFromOneOptional
 
 class OneOptionalWhereInput(TypedDict, total=False):
     """OneOptional arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     many: 'ManyRequiredListRelationFilter'
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive1', List['OneOptionalWhereInputRecursive1']]
     # but this causes mypy to hang :/
@@ -6993,18 +6997,18 @@ class OneOptionalWhereInput(TypedDict, total=False):
 
 class OneOptionalWhereInputRecursive1(TypedDict, total=False):
     """OneOptional arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     many: 'ManyRequiredListRelationFilter'
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['OneOptionalWhereInputRecursive2', List['OneOptionalWhereInputRecursive2']]
     # but this causes mypy to hang :/
@@ -7015,18 +7019,18 @@ class OneOptionalWhereInputRecursive1(TypedDict, total=False):
 
 class OneOptionalWhereInputRecursive2(TypedDict, total=False):
     """OneOptional arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     many: 'ManyRequiredListRelationFilter'
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
 
 
 
@@ -7037,17 +7041,17 @@ class OneOptionalWhereInputRecursive2(TypedDict, total=False):
 
 class OneOptionalScalarWhereWithAggregatesInput(TypedDict, total=False):
     """OneOptional arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['OneOptionalScalarWhereWithAggregatesInputRecursive1']
     OR: List['OneOptionalScalarWhereWithAggregatesInputRecursive1']
@@ -7056,17 +7060,17 @@ class OneOptionalScalarWhereWithAggregatesInput(TypedDict, total=False):
 
 class OneOptionalScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     """OneOptional arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['OneOptionalScalarWhereWithAggregatesInputRecursive2']
     OR: List['OneOptionalScalarWhereWithAggregatesInputRecursive2']
@@ -7075,32 +7079,32 @@ class OneOptionalScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False
 
 class OneOptionalScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     """OneOptional arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
 
 
 class OneOptionalGroupByOutput(TypedDict, total=False):
-    id: int
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
-    string: str
-    optional_string: str
+    id: _int
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
+    string: _str
+    optional_string: _str
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: bool
-    optional_boolean: bool
+    boolean: _bool
+    optional_boolean: _bool
     _sum: 'OneOptionalSumAggregateOutput'
     _avg: 'OneOptionalAvgAggregateOutput'
     _min: 'OneOptionalMinAggregateOutput'
@@ -7119,26 +7123,26 @@ class OneOptionalAvgAggregateOutput(TypedDict, total=False):
 
 class OneOptionalSumAggregateOutput(TypedDict, total=False):
     """OneOptional output for aggregating sums"""
-    id: int
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
+    id: _int
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
 
 
 class OneOptionalScalarAggregateOutput(TypedDict, total=False):
     """OneOptional output including scalar fields"""
-    id: int
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
-    string: str
-    optional_string: str
+    id: _int
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
+    string: _str
+    optional_string: _str
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: bool
-    optional_boolean: bool
+    boolean: _bool
+    optional_boolean: _bool
 
 
 OneOptionalMinAggregateOutput = OneOptionalScalarAggregateOutput
@@ -7264,23 +7268,23 @@ OneOptionalRelationalFieldKeys = Literal[
 
 class ManyRequiredOptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the ManyRequired create method"""
-    id: int
+    id: _int
     one: 'OneOptionalCreateNestedWithoutRelationsInput'
-    one_optional_id: Optional[int]
-    optional_int: Optional[int]
-    optional_float: Optional[float]
-    optional_string: Optional[str]
+    one_optional_id: Optional[_int]
+    optional_int: Optional[_int]
+    optional_float: Optional[_float]
+    optional_string: Optional[_str]
     optional_enum: Optional['enums.ABeautifulEnum']
-    optional_boolean: Optional[bool]
+    optional_boolean: Optional[_bool]
 
 
 class ManyRequiredCreateInput(ManyRequiredOptionalCreateInput):
     """Required arguments to the ManyRequired create method"""
-    int: int
-    float: float
-    string: str
+    int: _int
+    float: _float
+    string: _str
     enum: 'enums.ABeautifulEnum'
-    boolean: bool
+    boolean: _bool
 
 
 # TODO: remove this in favour of without explicit relations
@@ -7288,22 +7292,22 @@ class ManyRequiredCreateInput(ManyRequiredOptionalCreateInput):
 
 class ManyRequiredOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the ManyRequired create method, without relations"""
-    id: int
-    one_optional_id: Optional[int]
-    optional_int: Optional[int]
-    optional_float: Optional[float]
-    optional_string: Optional[str]
+    id: _int
+    one_optional_id: Optional[_int]
+    optional_int: Optional[_int]
+    optional_float: Optional[_float]
+    optional_string: Optional[_str]
     optional_enum: Optional['enums.ABeautifulEnum']
-    optional_boolean: Optional[bool]
+    optional_boolean: Optional[_bool]
 
 
 class ManyRequiredCreateWithoutRelationsInput(ManyRequiredOptionalCreateWithoutRelationsInput):
     """Required arguments to the ManyRequired create method, without relations"""
-    int: int
-    float: float
-    string: str
+    int: _int
+    float: _float
+    string: _str
     enum: 'enums.ABeautifulEnum'
-    boolean: bool
+    boolean: _bool
 
 
 class ManyRequiredCreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -7319,7 +7323,7 @@ class ManyRequiredCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
 _ManyRequiredWhereUnique_id_Input = TypedDict(
     '_ManyRequiredWhereUnique_id_Input',
     {
-        'id': 'int',
+        'id': '_int',
     },
     total=True
 )
@@ -7329,33 +7333,33 @@ ManyRequiredWhereUniqueInput = _ManyRequiredWhereUnique_id_Input
 
 class ManyRequiredUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
-    id: Union[AtomicIntInput, int]
+    id: Union[AtomicIntInput, _int]
     one: 'OneOptionalUpdateOneWithoutRelationsInput'
-    int: Union[AtomicIntInput, int]
-    optional_int: Optional[Union[AtomicIntInput, int]]
-    float: Union[AtomicFloatInput, float]
-    optional_float: Optional[Union[AtomicFloatInput, float]]
-    string: str
-    optional_string: Optional[str]
+    int: Union[AtomicIntInput, _int]
+    optional_int: Optional[Union[AtomicIntInput, _int]]
+    float: Union[AtomicFloatInput, _float]
+    optional_float: Optional[Union[AtomicFloatInput, _float]]
+    string: _str
+    optional_string: Optional[_str]
     enum: 'enums.ABeautifulEnum'
     optional_enum: Optional['enums.ABeautifulEnum']
-    boolean: bool
-    optional_boolean: Optional[bool]
+    boolean: _bool
+    optional_boolean: Optional[_bool]
 
 
 class ManyRequiredUpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
-    id: Union[AtomicIntInput, int]
-    int: Union[AtomicIntInput, int]
-    optional_int: Optional[Union[AtomicIntInput, int]]
-    float: Union[AtomicFloatInput, float]
-    optional_float: Optional[Union[AtomicFloatInput, float]]
-    string: str
-    optional_string: Optional[str]
+    id: Union[AtomicIntInput, _int]
+    int: Union[AtomicIntInput, _int]
+    optional_int: Optional[Union[AtomicIntInput, _int]]
+    float: Union[AtomicFloatInput, _float]
+    optional_float: Optional[Union[AtomicFloatInput, _float]]
+    string: _str
+    optional_string: Optional[_str]
     enum: 'enums.ABeautifulEnum'
     optional_enum: Optional['enums.ABeautifulEnum']
-    boolean: bool
-    optional_boolean: Optional[bool]
+    boolean: _bool
+    optional_boolean: Optional[_bool]
 
 
 class ManyRequiredUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -8250,19 +8254,19 @@ FindFirstManyRequiredArgs = FindManyManyRequiredArgsFromManyRequired
 
 class ManyRequiredWhereInput(TypedDict, total=False):
     """ManyRequired arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     one: 'OneOptionalRelationFilter'
-    one_optional_id: Union[None, int, 'types.IntFilter']
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    one_optional_id: Union[None, _int, 'types.IntFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive1', List['ManyRequiredWhereInputRecursive1']]
     # but this causes mypy to hang :/
@@ -8273,19 +8277,19 @@ class ManyRequiredWhereInput(TypedDict, total=False):
 
 class ManyRequiredWhereInputRecursive1(TypedDict, total=False):
     """ManyRequired arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     one: 'OneOptionalRelationFilter'
-    one_optional_id: Union[None, int, 'types.IntFilter']
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    one_optional_id: Union[None, _int, 'types.IntFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
 
     # should be noted that AND and NOT should be Union['ManyRequiredWhereInputRecursive2', List['ManyRequiredWhereInputRecursive2']]
     # but this causes mypy to hang :/
@@ -8296,19 +8300,19 @@ class ManyRequiredWhereInputRecursive1(TypedDict, total=False):
 
 class ManyRequiredWhereInputRecursive2(TypedDict, total=False):
     """ManyRequired arguments for searching"""
-    id: Union[int, 'types.IntFilter']
+    id: Union[_int, 'types.IntFilter']
     one: 'OneOptionalRelationFilter'
-    one_optional_id: Union[None, int, 'types.IntFilter']
-    int: Union[int, 'types.IntFilter']
-    optional_int: Union[None, int, 'types.IntFilter']
-    float: Union[float, 'types.FloatFilter']
-    optional_float: Union[None, float, 'types.FloatFilter']
-    string: Union[str, 'types.StringFilter']
-    optional_string: Union[None, str, 'types.StringFilter']
+    one_optional_id: Union[None, _int, 'types.IntFilter']
+    int: Union[_int, 'types.IntFilter']
+    optional_int: Union[None, _int, 'types.IntFilter']
+    float: Union[_float, 'types.FloatFilter']
+    optional_float: Union[None, _float, 'types.FloatFilter']
+    string: Union[_str, 'types.StringFilter']
+    optional_string: Union[None, _str, 'types.StringFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanFilter']
-    optional_boolean: Union[None, bool, 'types.BooleanFilter']
+    boolean: Union[_bool, 'types.BooleanFilter']
+    optional_boolean: Union[None, _bool, 'types.BooleanFilter']
 
 
 
@@ -8319,18 +8323,18 @@ class ManyRequiredWhereInputRecursive2(TypedDict, total=False):
 
 class ManyRequiredScalarWhereWithAggregatesInput(TypedDict, total=False):
     """ManyRequired arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    one_optional_id: Union[int, 'types.IntWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    one_optional_id: Union[_int, 'types.IntWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['ManyRequiredScalarWhereWithAggregatesInputRecursive1']
     OR: List['ManyRequiredScalarWhereWithAggregatesInputRecursive1']
@@ -8339,18 +8343,18 @@ class ManyRequiredScalarWhereWithAggregatesInput(TypedDict, total=False):
 
 class ManyRequiredScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     """ManyRequired arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    one_optional_id: Union[int, 'types.IntWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    one_optional_id: Union[_int, 'types.IntWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
     AND: List['ManyRequiredScalarWhereWithAggregatesInputRecursive2']
     OR: List['ManyRequiredScalarWhereWithAggregatesInputRecursive2']
@@ -8359,34 +8363,34 @@ class ManyRequiredScalarWhereWithAggregatesInputRecursive1(TypedDict, total=Fals
 
 class ManyRequiredScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     """ManyRequired arguments for searching"""
-    id: Union[int, 'types.IntWithAggregatesFilter']
-    one_optional_id: Union[int, 'types.IntWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    optional_int: Union[int, 'types.IntWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    optional_float: Union[float, 'types.FloatWithAggregatesFilter']
-    string: Union[str, 'types.StringWithAggregatesFilter']
-    optional_string: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_int, 'types.IntWithAggregatesFilter']
+    one_optional_id: Union[_int, 'types.IntWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    optional_int: Union[_int, 'types.IntWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    optional_float: Union[_float, 'types.FloatWithAggregatesFilter']
+    string: Union[_str, 'types.StringWithAggregatesFilter']
+    optional_string: Union[_str, 'types.StringWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
-    optional_boolean: Union[bool, 'types.BooleanWithAggregatesFilter']
+    boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    optional_boolean: Union[_bool, 'types.BooleanWithAggregatesFilter']
 
 
 
 class ManyRequiredGroupByOutput(TypedDict, total=False):
-    id: int
-    one_optional_id: int
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
-    string: str
-    optional_string: str
+    id: _int
+    one_optional_id: _int
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
+    string: _str
+    optional_string: _str
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: bool
-    optional_boolean: bool
+    boolean: _bool
+    optional_boolean: _bool
     _sum: 'ManyRequiredSumAggregateOutput'
     _avg: 'ManyRequiredAvgAggregateOutput'
     _min: 'ManyRequiredMinAggregateOutput'
@@ -8406,28 +8410,28 @@ class ManyRequiredAvgAggregateOutput(TypedDict, total=False):
 
 class ManyRequiredSumAggregateOutput(TypedDict, total=False):
     """ManyRequired output for aggregating sums"""
-    id: int
-    one_optional_id: int
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
+    id: _int
+    one_optional_id: _int
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
 
 
 class ManyRequiredScalarAggregateOutput(TypedDict, total=False):
     """ManyRequired output including scalar fields"""
-    id: int
-    one_optional_id: int
-    int: int
-    optional_int: int
-    float: float
-    optional_float: float
-    string: str
-    optional_string: str
+    id: _int
+    one_optional_id: _int
+    int: _int
+    optional_int: _int
+    float: _float
+    optional_float: _float
+    string: _str
+    optional_string: _str
     enum: 'enums.ABeautifulEnum'
     optional_enum: 'enums.ABeautifulEnum'
-    boolean: bool
-    optional_boolean: bool
+    boolean: _bool
+    optional_boolean: _bool
 
 
 ManyRequiredMinAggregateOutput = ManyRequiredScalarAggregateOutput
@@ -8560,14 +8564,14 @@ ManyRequiredRelationalFieldKeys = Literal[
 
 class ListsOptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the Lists create method"""
-    id: str
-    strings: List[str]
+    id: _str
+    strings: List[_str]
     bytes: List['fields.Base64']
     dates: List[datetime.datetime]
-    bools: List[bool]
-    ints: List[int]
-    floats: List[float]
-    bigints: List[int]
+    bools: List[_bool]
+    ints: List[_int]
+    floats: List[_float]
+    bigints: List[_int]
     json_objects: List['fields.Json']
     decimals: List[decimal.Decimal]
 
@@ -8581,14 +8585,14 @@ class ListsCreateInput(ListsOptionalCreateInput):
 
 class ListsOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the Lists create method, without relations"""
-    id: str
-    strings: List[str]
+    id: _str
+    strings: List[_str]
     bytes: List['fields.Base64']
     dates: List[datetime.datetime]
-    bools: List[bool]
-    ints: List[int]
-    floats: List[float]
-    bigints: List[int]
+    bools: List[_bool]
+    ints: List[_int]
+    floats: List[_float]
+    bigints: List[_int]
     json_objects: List['fields.Json']
     decimals: List[decimal.Decimal]
 
@@ -8610,7 +8614,7 @@ class ListsCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
 _ListsWhereUnique_id_Input = TypedDict(
     '_ListsWhereUnique_id_Input',
     {
-        'id': 'str',
+        'id': '_str',
     },
     total=True
 )
@@ -8620,7 +8624,7 @@ ListsWhereUniqueInput = _ListsWhereUnique_id_Input
 
 class ListsUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
-    id: str
+    id: _str
     strings: 'types.StringListUpdate'
     bytes: 'types.BytesListUpdate'
     dates: 'types.DateTimeListUpdate'
@@ -8634,7 +8638,7 @@ class ListsUpdateInput(TypedDict, total=False):
 
 class ListsUpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
-    id: str
+    id: _str
     strings: 'types.StringListUpdate'
     bytes: 'types.BytesListUpdate'
     dates: 'types.DateTimeListUpdate'
@@ -9519,7 +9523,7 @@ FindFirstListsArgs = FindManyListsArgsFromLists
 
 class ListsWhereInput(TypedDict, total=False):
     """Lists arguments for searching"""
-    id: Union[str, 'types.StringFilter']
+    id: Union[_str, 'types.StringFilter']
     strings: 'types.StringListFilter'
     bytes: 'types.BytesListFilter'
     dates: 'types.DateTimeListFilter'
@@ -9539,7 +9543,7 @@ class ListsWhereInput(TypedDict, total=False):
 
 class ListsWhereInputRecursive1(TypedDict, total=False):
     """Lists arguments for searching"""
-    id: Union[str, 'types.StringFilter']
+    id: Union[_str, 'types.StringFilter']
     strings: 'types.StringListFilter'
     bytes: 'types.BytesListFilter'
     dates: 'types.DateTimeListFilter'
@@ -9559,7 +9563,7 @@ class ListsWhereInputRecursive1(TypedDict, total=False):
 
 class ListsWhereInputRecursive2(TypedDict, total=False):
     """Lists arguments for searching"""
-    id: Union[str, 'types.StringFilter']
+    id: Union[_str, 'types.StringFilter']
     strings: 'types.StringListFilter'
     bytes: 'types.BytesListFilter'
     dates: 'types.DateTimeListFilter'
@@ -9579,14 +9583,14 @@ class ListsWhereInputRecursive2(TypedDict, total=False):
 
 class ListsScalarWhereWithAggregatesInput(TypedDict, total=False):
     """Lists arguments for searching"""
-    id: Union[str, 'types.StringWithAggregatesFilter']
-    strings: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    strings: Union[_str, 'types.StringWithAggregatesFilter']
     bytes: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
     dates: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
-    bools: Union[bool, 'types.BooleanWithAggregatesFilter']
-    ints: Union[int, 'types.IntWithAggregatesFilter']
-    floats: Union[float, 'types.FloatWithAggregatesFilter']
-    bigints: Union[int, 'types.BigIntWithAggregatesFilter']
+    bools: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    ints: Union[_int, 'types.IntWithAggregatesFilter']
+    floats: Union[_float, 'types.FloatWithAggregatesFilter']
+    bigints: Union[_int, 'types.BigIntWithAggregatesFilter']
     json_objects: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     decimals: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
@@ -9597,14 +9601,14 @@ class ListsScalarWhereWithAggregatesInput(TypedDict, total=False):
 
 class ListsScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     """Lists arguments for searching"""
-    id: Union[str, 'types.StringWithAggregatesFilter']
-    strings: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    strings: Union[_str, 'types.StringWithAggregatesFilter']
     bytes: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
     dates: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
-    bools: Union[bool, 'types.BooleanWithAggregatesFilter']
-    ints: Union[int, 'types.IntWithAggregatesFilter']
-    floats: Union[float, 'types.FloatWithAggregatesFilter']
-    bigints: Union[int, 'types.BigIntWithAggregatesFilter']
+    bools: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    ints: Union[_int, 'types.IntWithAggregatesFilter']
+    floats: Union[_float, 'types.FloatWithAggregatesFilter']
+    bigints: Union[_int, 'types.BigIntWithAggregatesFilter']
     json_objects: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     decimals: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
@@ -9615,28 +9619,28 @@ class ListsScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
 
 class ListsScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     """Lists arguments for searching"""
-    id: Union[str, 'types.StringWithAggregatesFilter']
-    strings: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    strings: Union[_str, 'types.StringWithAggregatesFilter']
     bytes: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
     dates: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
-    bools: Union[bool, 'types.BooleanWithAggregatesFilter']
-    ints: Union[int, 'types.IntWithAggregatesFilter']
-    floats: Union[float, 'types.FloatWithAggregatesFilter']
-    bigints: Union[int, 'types.BigIntWithAggregatesFilter']
+    bools: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    ints: Union[_int, 'types.IntWithAggregatesFilter']
+    floats: Union[_float, 'types.FloatWithAggregatesFilter']
+    bigints: Union[_int, 'types.BigIntWithAggregatesFilter']
     json_objects: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     decimals: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
 
 
 class ListsGroupByOutput(TypedDict, total=False):
-    id: str
-    strings: List[str]
+    id: _str
+    strings: List[_str]
     bytes: List['fields.Base64']
     dates: List[datetime.datetime]
-    bools: List[bool]
-    ints: List[int]
-    floats: List[float]
-    bigints: List[int]
+    bools: List[_bool]
+    ints: List[_int]
+    floats: List[_float]
+    bigints: List[_int]
     json_objects: List['fields.Json']
     decimals: List[decimal.Decimal]
     _sum: 'ListsSumAggregateOutput'
@@ -9655,21 +9659,21 @@ class ListsAvgAggregateOutput(TypedDict, total=False):
 
 class ListsSumAggregateOutput(TypedDict, total=False):
     """Lists output for aggregating sums"""
-    ints: List[int]
-    floats: List[float]
-    bigints: List[int]
+    ints: List[_int]
+    floats: List[_float]
+    bigints: List[_int]
 
 
 class ListsScalarAggregateOutput(TypedDict, total=False):
     """Lists output including scalar fields"""
-    id: str
-    strings: List[str]
+    id: _str
+    strings: List[_str]
     bytes: List['fields.Base64']
     dates: List[datetime.datetime]
-    bools: List[bool]
-    ints: List[int]
-    floats: List[float]
-    bigints: List[int]
+    bools: List[_bool]
+    ints: List[_int]
+    floats: List[_float]
+    bigints: List[_int]
     json_objects: List['fields.Json']
     decimals: List[decimal.Decimal]
 
@@ -9786,19 +9790,19 @@ ListsRelationalFieldKeys = _NoneType
 
 class AOptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the A create method"""
-    name: Optional[str]
-    inc_int: int
-    inc_sInt: int
-    inc_bInt: int
+    name: Optional[_str]
+    inc_int: _int
+    inc_sInt: _int
+    inc_bInt: _int
     enum: 'enums.ABeautifulEnum'
 
 
 class ACreateInput(AOptionalCreateInput):
     """Required arguments to the A create method"""
-    email: str
-    int: int
-    sInt: int
-    bInt: int
+    email: _str
+    int: _int
+    sInt: _int
+    bInt: _int
 
 
 # TODO: remove this in favour of without explicit relations
@@ -9806,19 +9810,19 @@ class ACreateInput(AOptionalCreateInput):
 
 class AOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the A create method, without relations"""
-    name: Optional[str]
-    inc_int: int
-    inc_sInt: int
-    inc_bInt: int
+    name: Optional[_str]
+    inc_int: _int
+    inc_sInt: _int
+    inc_bInt: _int
     enum: 'enums.ABeautifulEnum'
 
 
 class ACreateWithoutRelationsInput(AOptionalCreateWithoutRelationsInput):
     """Required arguments to the A create method, without relations"""
-    email: str
-    int: int
-    sInt: int
-    bInt: int
+    email: _str
+    int: _int
+    sInt: _int
+    bInt: _int
 
 
 class ACreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -9834,7 +9838,7 @@ class ACreateManyNestedWithoutRelationsInput(TypedDict, total=False):
 _AWhereUnique_email_Input = TypedDict(
     '_AWhereUnique_email_Input',
     {
-        'email': 'str',
+        'email': '_str',
     },
     total=True
 )
@@ -9842,8 +9846,8 @@ _AWhereUnique_email_Input = TypedDict(
 _ACompoundname_email_enumKeyInner = TypedDict(
     '_ACompoundname_email_enumKeyInner',
     {
-        'name': 'str',
-        'email': 'str',
+        'name': '_str',
+        'email': '_str',
         'enum': 'enums.ABeautifulEnum',
     },
     total=True
@@ -9865,27 +9869,27 @@ AWhereUniqueInput = Union[
 
 class AUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
-    email: str
-    name: Optional[str]
-    int: Union[AtomicIntInput, int]
-    sInt: Union[AtomicIntInput, int]
-    inc_int: Union[AtomicIntInput, int]
-    inc_sInt: Union[AtomicIntInput, int]
-    bInt: Union[AtomicBigIntInput, int]
-    inc_bInt: Union[AtomicBigIntInput, int]
+    email: _str
+    name: Optional[_str]
+    int: Union[AtomicIntInput, _int]
+    sInt: Union[AtomicIntInput, _int]
+    inc_int: Union[AtomicIntInput, _int]
+    inc_sInt: Union[AtomicIntInput, _int]
+    bInt: Union[AtomicBigIntInput, _int]
+    inc_bInt: Union[AtomicBigIntInput, _int]
     enum: 'enums.ABeautifulEnum'
 
 
 class AUpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
-    email: str
-    name: Optional[str]
-    int: Union[AtomicIntInput, int]
-    sInt: Union[AtomicIntInput, int]
-    inc_int: Union[AtomicIntInput, int]
-    inc_sInt: Union[AtomicIntInput, int]
-    bInt: Union[AtomicBigIntInput, int]
-    inc_bInt: Union[AtomicBigIntInput, int]
+    email: _str
+    name: Optional[_str]
+    int: Union[AtomicIntInput, _int]
+    sInt: Union[AtomicIntInput, _int]
+    inc_int: Union[AtomicIntInput, _int]
+    inc_sInt: Union[AtomicIntInput, _int]
+    bInt: Union[AtomicBigIntInput, _int]
+    inc_bInt: Union[AtomicBigIntInput, _int]
     enum: 'enums.ABeautifulEnum'
 
 
@@ -10753,14 +10757,14 @@ FindFirstAArgs = FindManyAArgsFromA
 
 class AWhereInput(TypedDict, total=False):
     """A arguments for searching"""
-    email: Union[str, 'types.StringFilter']
-    name: Union[None, str, 'types.StringFilter']
-    int: Union[int, 'types.IntFilter']
-    sInt: Union[int, 'types.IntFilter']
-    inc_int: Union[int, 'types.IntFilter']
-    inc_sInt: Union[int, 'types.IntFilter']
-    bInt: Union[int, 'types.BigIntFilter']
-    inc_bInt: Union[int, 'types.BigIntFilter']
+    email: Union[_str, 'types.StringFilter']
+    name: Union[None, _str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    sInt: Union[_int, 'types.IntFilter']
+    inc_int: Union[_int, 'types.IntFilter']
+    inc_sInt: Union[_int, 'types.IntFilter']
+    bInt: Union[_int, 'types.BigIntFilter']
+    inc_bInt: Union[_int, 'types.BigIntFilter']
     enum: 'enums.ABeautifulEnum'
 
     # should be noted that AND and NOT should be Union['AWhereInputRecursive1', List['AWhereInputRecursive1']]
@@ -10772,14 +10776,14 @@ class AWhereInput(TypedDict, total=False):
 
 class AWhereInputRecursive1(TypedDict, total=False):
     """A arguments for searching"""
-    email: Union[str, 'types.StringFilter']
-    name: Union[None, str, 'types.StringFilter']
-    int: Union[int, 'types.IntFilter']
-    sInt: Union[int, 'types.IntFilter']
-    inc_int: Union[int, 'types.IntFilter']
-    inc_sInt: Union[int, 'types.IntFilter']
-    bInt: Union[int, 'types.BigIntFilter']
-    inc_bInt: Union[int, 'types.BigIntFilter']
+    email: Union[_str, 'types.StringFilter']
+    name: Union[None, _str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    sInt: Union[_int, 'types.IntFilter']
+    inc_int: Union[_int, 'types.IntFilter']
+    inc_sInt: Union[_int, 'types.IntFilter']
+    bInt: Union[_int, 'types.BigIntFilter']
+    inc_bInt: Union[_int, 'types.BigIntFilter']
     enum: 'enums.ABeautifulEnum'
 
     # should be noted that AND and NOT should be Union['AWhereInputRecursive2', List['AWhereInputRecursive2']]
@@ -10791,14 +10795,14 @@ class AWhereInputRecursive1(TypedDict, total=False):
 
 class AWhereInputRecursive2(TypedDict, total=False):
     """A arguments for searching"""
-    email: Union[str, 'types.StringFilter']
-    name: Union[None, str, 'types.StringFilter']
-    int: Union[int, 'types.IntFilter']
-    sInt: Union[int, 'types.IntFilter']
-    inc_int: Union[int, 'types.IntFilter']
-    inc_sInt: Union[int, 'types.IntFilter']
-    bInt: Union[int, 'types.BigIntFilter']
-    inc_bInt: Union[int, 'types.BigIntFilter']
+    email: Union[_str, 'types.StringFilter']
+    name: Union[None, _str, 'types.StringFilter']
+    int: Union[_int, 'types.IntFilter']
+    sInt: Union[_int, 'types.IntFilter']
+    inc_int: Union[_int, 'types.IntFilter']
+    inc_sInt: Union[_int, 'types.IntFilter']
+    bInt: Union[_int, 'types.BigIntFilter']
+    inc_bInt: Union[_int, 'types.BigIntFilter']
     enum: 'enums.ABeautifulEnum'
 
 
@@ -10810,14 +10814,14 @@ class AWhereInputRecursive2(TypedDict, total=False):
 
 class AScalarWhereWithAggregatesInput(TypedDict, total=False):
     """A arguments for searching"""
-    email: Union[str, 'types.StringWithAggregatesFilter']
-    name: Union[str, 'types.StringWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    sInt: Union[int, 'types.IntWithAggregatesFilter']
-    inc_int: Union[int, 'types.IntWithAggregatesFilter']
-    inc_sInt: Union[int, 'types.IntWithAggregatesFilter']
-    bInt: Union[int, 'types.BigIntWithAggregatesFilter']
-    inc_bInt: Union[int, 'types.BigIntWithAggregatesFilter']
+    email: Union[_str, 'types.StringWithAggregatesFilter']
+    name: Union[_str, 'types.StringWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    sInt: Union[_int, 'types.IntWithAggregatesFilter']
+    inc_int: Union[_int, 'types.IntWithAggregatesFilter']
+    inc_sInt: Union[_int, 'types.IntWithAggregatesFilter']
+    bInt: Union[_int, 'types.BigIntWithAggregatesFilter']
+    inc_bInt: Union[_int, 'types.BigIntWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
 
     AND: List['AScalarWhereWithAggregatesInputRecursive1']
@@ -10827,14 +10831,14 @@ class AScalarWhereWithAggregatesInput(TypedDict, total=False):
 
 class AScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     """A arguments for searching"""
-    email: Union[str, 'types.StringWithAggregatesFilter']
-    name: Union[str, 'types.StringWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    sInt: Union[int, 'types.IntWithAggregatesFilter']
-    inc_int: Union[int, 'types.IntWithAggregatesFilter']
-    inc_sInt: Union[int, 'types.IntWithAggregatesFilter']
-    bInt: Union[int, 'types.BigIntWithAggregatesFilter']
-    inc_bInt: Union[int, 'types.BigIntWithAggregatesFilter']
+    email: Union[_str, 'types.StringWithAggregatesFilter']
+    name: Union[_str, 'types.StringWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    sInt: Union[_int, 'types.IntWithAggregatesFilter']
+    inc_int: Union[_int, 'types.IntWithAggregatesFilter']
+    inc_sInt: Union[_int, 'types.IntWithAggregatesFilter']
+    bInt: Union[_int, 'types.BigIntWithAggregatesFilter']
+    inc_bInt: Union[_int, 'types.BigIntWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
 
     AND: List['AScalarWhereWithAggregatesInputRecursive2']
@@ -10844,27 +10848,27 @@ class AScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
 
 class AScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     """A arguments for searching"""
-    email: Union[str, 'types.StringWithAggregatesFilter']
-    name: Union[str, 'types.StringWithAggregatesFilter']
-    int: Union[int, 'types.IntWithAggregatesFilter']
-    sInt: Union[int, 'types.IntWithAggregatesFilter']
-    inc_int: Union[int, 'types.IntWithAggregatesFilter']
-    inc_sInt: Union[int, 'types.IntWithAggregatesFilter']
-    bInt: Union[int, 'types.BigIntWithAggregatesFilter']
-    inc_bInt: Union[int, 'types.BigIntWithAggregatesFilter']
+    email: Union[_str, 'types.StringWithAggregatesFilter']
+    name: Union[_str, 'types.StringWithAggregatesFilter']
+    int: Union[_int, 'types.IntWithAggregatesFilter']
+    sInt: Union[_int, 'types.IntWithAggregatesFilter']
+    inc_int: Union[_int, 'types.IntWithAggregatesFilter']
+    inc_sInt: Union[_int, 'types.IntWithAggregatesFilter']
+    bInt: Union[_int, 'types.BigIntWithAggregatesFilter']
+    inc_bInt: Union[_int, 'types.BigIntWithAggregatesFilter']
     enum: 'enums.ABeautifulEnum'
 
 
 
 class AGroupByOutput(TypedDict, total=False):
-    email: str
-    name: str
-    int: int
-    sInt: int
-    inc_int: int
-    inc_sInt: int
-    bInt: int
-    inc_bInt: int
+    email: _str
+    name: _str
+    int: _int
+    sInt: _int
+    inc_int: _int
+    inc_sInt: _int
+    bInt: _int
+    inc_bInt: _int
     enum: 'enums.ABeautifulEnum'
     _sum: 'ASumAggregateOutput'
     _avg: 'AAvgAggregateOutput'
@@ -10885,24 +10889,24 @@ class AAvgAggregateOutput(TypedDict, total=False):
 
 class ASumAggregateOutput(TypedDict, total=False):
     """A output for aggregating sums"""
-    int: int
-    sInt: int
-    inc_int: int
-    inc_sInt: int
-    bInt: int
-    inc_bInt: int
+    int: _int
+    sInt: _int
+    inc_int: _int
+    inc_sInt: _int
+    bInt: _int
+    inc_bInt: _int
 
 
 class AScalarAggregateOutput(TypedDict, total=False):
     """A output including scalar fields"""
-    email: str
-    name: str
-    int: int
-    sInt: int
-    inc_int: int
-    inc_sInt: int
-    bInt: int
-    inc_bInt: int
+    email: _str
+    name: _str
+    int: _int
+    sInt: _int
+    inc_int: _int
+    inc_sInt: _int
+    bInt: _int
+    inc_bInt: _int
     enum: 'enums.ABeautifulEnum'
 
 
@@ -11015,13 +11019,13 @@ ARelationalFieldKeys = _NoneType
 
 class BOptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the B create method"""
-    id: str
+    id: _str
 
 
 class BCreateInput(BOptionalCreateInput):
     """Required arguments to the B create method"""
-    float: float
-    d_float: float
+    float: _float
+    d_float: _float
     decFloat: decimal.Decimal
     numFloat: decimal.Decimal
 
@@ -11031,13 +11035,13 @@ class BCreateInput(BOptionalCreateInput):
 
 class BOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the B create method, without relations"""
-    id: str
+    id: _str
 
 
 class BCreateWithoutRelationsInput(BOptionalCreateWithoutRelationsInput):
     """Required arguments to the B create method, without relations"""
-    float: float
-    d_float: float
+    float: _float
+    d_float: _float
     decFloat: decimal.Decimal
     numFloat: decimal.Decimal
 
@@ -11055,7 +11059,7 @@ class BCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
 _BWhereUnique_id_Input = TypedDict(
     '_BWhereUnique_id_Input',
     {
-        'id': 'str',
+        'id': '_str',
     },
     total=True
 )
@@ -11063,8 +11067,8 @@ _BWhereUnique_id_Input = TypedDict(
 _BCompoundmy_constraintKeyInner = TypedDict(
     '_BCompoundmy_constraintKeyInner',
     {
-        'float': 'float',
-        'd_float': 'float',
+        'float': '_float',
+        'd_float': '_float',
     },
     total=True
 )
@@ -11085,18 +11089,18 @@ BWhereUniqueInput = Union[
 
 class BUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
-    id: str
-    float: Union[AtomicFloatInput, float]
-    d_float: Union[AtomicFloatInput, float]
+    id: _str
+    float: Union[AtomicFloatInput, _float]
+    d_float: Union[AtomicFloatInput, _float]
     decFloat: decimal.Decimal
     numFloat: decimal.Decimal
 
 
 class BUpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
-    id: str
-    float: Union[AtomicFloatInput, float]
-    d_float: Union[AtomicFloatInput, float]
+    id: _str
+    float: Union[AtomicFloatInput, _float]
+    d_float: Union[AtomicFloatInput, _float]
     decFloat: decimal.Decimal
     numFloat: decimal.Decimal
 
@@ -11929,9 +11933,9 @@ FindFirstBArgs = FindManyBArgsFromB
 
 class BWhereInput(TypedDict, total=False):
     """B arguments for searching"""
-    id: Union[str, 'types.StringFilter']
-    float: Union[float, 'types.FloatFilter']
-    d_float: Union[float, 'types.FloatFilter']
+    id: Union[_str, 'types.StringFilter']
+    float: Union[_float, 'types.FloatFilter']
+    d_float: Union[_float, 'types.FloatFilter']
     decFloat: Union[decimal.Decimal, 'types.DecimalFilter']
     numFloat: Union[decimal.Decimal, 'types.DecimalFilter']
 
@@ -11944,9 +11948,9 @@ class BWhereInput(TypedDict, total=False):
 
 class BWhereInputRecursive1(TypedDict, total=False):
     """B arguments for searching"""
-    id: Union[str, 'types.StringFilter']
-    float: Union[float, 'types.FloatFilter']
-    d_float: Union[float, 'types.FloatFilter']
+    id: Union[_str, 'types.StringFilter']
+    float: Union[_float, 'types.FloatFilter']
+    d_float: Union[_float, 'types.FloatFilter']
     decFloat: Union[decimal.Decimal, 'types.DecimalFilter']
     numFloat: Union[decimal.Decimal, 'types.DecimalFilter']
 
@@ -11959,9 +11963,9 @@ class BWhereInputRecursive1(TypedDict, total=False):
 
 class BWhereInputRecursive2(TypedDict, total=False):
     """B arguments for searching"""
-    id: Union[str, 'types.StringFilter']
-    float: Union[float, 'types.FloatFilter']
-    d_float: Union[float, 'types.FloatFilter']
+    id: Union[_str, 'types.StringFilter']
+    float: Union[_float, 'types.FloatFilter']
+    d_float: Union[_float, 'types.FloatFilter']
     decFloat: Union[decimal.Decimal, 'types.DecimalFilter']
     numFloat: Union[decimal.Decimal, 'types.DecimalFilter']
 
@@ -11974,9 +11978,9 @@ class BWhereInputRecursive2(TypedDict, total=False):
 
 class BScalarWhereWithAggregatesInput(TypedDict, total=False):
     """B arguments for searching"""
-    id: Union[str, 'types.StringWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    d_float: Union[float, 'types.FloatWithAggregatesFilter']
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    d_float: Union[_float, 'types.FloatWithAggregatesFilter']
     decFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
     numFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
@@ -11987,9 +11991,9 @@ class BScalarWhereWithAggregatesInput(TypedDict, total=False):
 
 class BScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     """B arguments for searching"""
-    id: Union[str, 'types.StringWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    d_float: Union[float, 'types.FloatWithAggregatesFilter']
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    d_float: Union[_float, 'types.FloatWithAggregatesFilter']
     decFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
     numFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
@@ -12000,18 +12004,18 @@ class BScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
 
 class BScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     """B arguments for searching"""
-    id: Union[str, 'types.StringWithAggregatesFilter']
-    float: Union[float, 'types.FloatWithAggregatesFilter']
-    d_float: Union[float, 'types.FloatWithAggregatesFilter']
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    float: Union[_float, 'types.FloatWithAggregatesFilter']
+    d_float: Union[_float, 'types.FloatWithAggregatesFilter']
     decFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
     numFloat: Union[decimal.Decimal, 'types.DecimalWithAggregatesFilter']
 
 
 
 class BGroupByOutput(TypedDict, total=False):
-    id: str
-    float: float
-    d_float: float
+    id: _str
+    float: _float
+    d_float: _float
     decFloat: decimal.Decimal
     numFloat: decimal.Decimal
     _sum: 'BSumAggregateOutput'
@@ -12029,15 +12033,15 @@ class BAvgAggregateOutput(TypedDict, total=False):
 
 class BSumAggregateOutput(TypedDict, total=False):
     """B output for aggregating sums"""
-    float: float
-    d_float: float
+    float: _float
+    d_float: _float
 
 
 class BScalarAggregateOutput(TypedDict, total=False):
     """B output including scalar fields"""
-    id: str
-    float: float
-    d_float: float
+    id: _str
+    float: _float
+    d_float: _float
     decFloat: decimal.Decimal
     numFloat: decimal.Decimal
 
@@ -12127,12 +12131,12 @@ class COptionalCreateInput(TypedDict, total=False):
 
 class CCreateInput(COptionalCreateInput):
     """Required arguments to the C create method"""
-    char: str
-    v_char: str
-    text: str
-    bit: str
-    v_bit: str
-    uuid: str
+    char: _str
+    v_char: _str
+    text: _str
+    bit: _str
+    v_bit: _str
+    uuid: _str
 
 
 # TODO: remove this in favour of without explicit relations
@@ -12144,12 +12148,12 @@ class COptionalCreateWithoutRelationsInput(TypedDict, total=False):
 
 class CCreateWithoutRelationsInput(COptionalCreateWithoutRelationsInput):
     """Required arguments to the C create method, without relations"""
-    char: str
-    v_char: str
-    text: str
-    bit: str
-    v_bit: str
-    uuid: str
+    char: _str
+    v_char: _str
+    text: _str
+    bit: _str
+    v_bit: _str
+    uuid: _str
 
 
 class CCreateNestedWithoutRelationsInput(TypedDict, total=False):
@@ -12165,8 +12169,8 @@ class CCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
 _CCompoundPrimaryKeyInner = TypedDict(
     '_CCompoundPrimaryKeyInner',
     {
-        'char': 'str',
-        'text': 'str',
+        'char': '_str',
+        'text': '_str',
     },
     total=True
 )
@@ -12184,22 +12188,22 @@ CWhereUniqueInput = _CCompoundPrimaryKey
 
 class CUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
-    char: str
-    v_char: str
-    text: str
-    bit: str
-    v_bit: str
-    uuid: str
+    char: _str
+    v_char: _str
+    text: _str
+    bit: _str
+    v_bit: _str
+    uuid: _str
 
 
 class CUpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
-    char: str
-    v_char: str
-    text: str
-    bit: str
-    v_bit: str
-    uuid: str
+    char: _str
+    v_char: _str
+    text: _str
+    bit: _str
+    v_bit: _str
+    uuid: _str
 
 
 class CUpdateManyWithoutRelationsInput(TypedDict, total=False):
@@ -13039,12 +13043,12 @@ FindFirstCArgs = FindManyCArgsFromC
 
 class CWhereInput(TypedDict, total=False):
     """C arguments for searching"""
-    char: Union[str, 'types.StringFilter']
-    v_char: Union[str, 'types.StringFilter']
-    text: Union[str, 'types.StringFilter']
-    bit: Union[str, 'types.StringFilter']
-    v_bit: Union[str, 'types.StringFilter']
-    uuid: Union[str, 'types.StringFilter']
+    char: Union[_str, 'types.StringFilter']
+    v_char: Union[_str, 'types.StringFilter']
+    text: Union[_str, 'types.StringFilter']
+    bit: Union[_str, 'types.StringFilter']
+    v_bit: Union[_str, 'types.StringFilter']
+    uuid: Union[_str, 'types.StringFilter']
 
     # should be noted that AND and NOT should be Union['CWhereInputRecursive1', List['CWhereInputRecursive1']]
     # but this causes mypy to hang :/
@@ -13055,12 +13059,12 @@ class CWhereInput(TypedDict, total=False):
 
 class CWhereInputRecursive1(TypedDict, total=False):
     """C arguments for searching"""
-    char: Union[str, 'types.StringFilter']
-    v_char: Union[str, 'types.StringFilter']
-    text: Union[str, 'types.StringFilter']
-    bit: Union[str, 'types.StringFilter']
-    v_bit: Union[str, 'types.StringFilter']
-    uuid: Union[str, 'types.StringFilter']
+    char: Union[_str, 'types.StringFilter']
+    v_char: Union[_str, 'types.StringFilter']
+    text: Union[_str, 'types.StringFilter']
+    bit: Union[_str, 'types.StringFilter']
+    v_bit: Union[_str, 'types.StringFilter']
+    uuid: Union[_str, 'types.StringFilter']
 
     # should be noted that AND and NOT should be Union['CWhereInputRecursive2', List['CWhereInputRecursive2']]
     # but this causes mypy to hang :/
@@ -13071,12 +13075,12 @@ class CWhereInputRecursive1(TypedDict, total=False):
 
 class CWhereInputRecursive2(TypedDict, total=False):
     """C arguments for searching"""
-    char: Union[str, 'types.StringFilter']
-    v_char: Union[str, 'types.StringFilter']
-    text: Union[str, 'types.StringFilter']
-    bit: Union[str, 'types.StringFilter']
-    v_bit: Union[str, 'types.StringFilter']
-    uuid: Union[str, 'types.StringFilter']
+    char: Union[_str, 'types.StringFilter']
+    v_char: Union[_str, 'types.StringFilter']
+    text: Union[_str, 'types.StringFilter']
+    bit: Union[_str, 'types.StringFilter']
+    v_bit: Union[_str, 'types.StringFilter']
+    uuid: Union[_str, 'types.StringFilter']
 
 
 
@@ -13087,12 +13091,12 @@ class CWhereInputRecursive2(TypedDict, total=False):
 
 class CScalarWhereWithAggregatesInput(TypedDict, total=False):
     """C arguments for searching"""
-    char: Union[str, 'types.StringWithAggregatesFilter']
-    v_char: Union[str, 'types.StringWithAggregatesFilter']
-    text: Union[str, 'types.StringWithAggregatesFilter']
-    bit: Union[str, 'types.StringWithAggregatesFilter']
-    v_bit: Union[str, 'types.StringWithAggregatesFilter']
-    uuid: Union[str, 'types.StringWithAggregatesFilter']
+    char: Union[_str, 'types.StringWithAggregatesFilter']
+    v_char: Union[_str, 'types.StringWithAggregatesFilter']
+    text: Union[_str, 'types.StringWithAggregatesFilter']
+    bit: Union[_str, 'types.StringWithAggregatesFilter']
+    v_bit: Union[_str, 'types.StringWithAggregatesFilter']
+    uuid: Union[_str, 'types.StringWithAggregatesFilter']
 
     AND: List['CScalarWhereWithAggregatesInputRecursive1']
     OR: List['CScalarWhereWithAggregatesInputRecursive1']
@@ -13101,12 +13105,12 @@ class CScalarWhereWithAggregatesInput(TypedDict, total=False):
 
 class CScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     """C arguments for searching"""
-    char: Union[str, 'types.StringWithAggregatesFilter']
-    v_char: Union[str, 'types.StringWithAggregatesFilter']
-    text: Union[str, 'types.StringWithAggregatesFilter']
-    bit: Union[str, 'types.StringWithAggregatesFilter']
-    v_bit: Union[str, 'types.StringWithAggregatesFilter']
-    uuid: Union[str, 'types.StringWithAggregatesFilter']
+    char: Union[_str, 'types.StringWithAggregatesFilter']
+    v_char: Union[_str, 'types.StringWithAggregatesFilter']
+    text: Union[_str, 'types.StringWithAggregatesFilter']
+    bit: Union[_str, 'types.StringWithAggregatesFilter']
+    v_bit: Union[_str, 'types.StringWithAggregatesFilter']
+    uuid: Union[_str, 'types.StringWithAggregatesFilter']
 
     AND: List['CScalarWhereWithAggregatesInputRecursive2']
     OR: List['CScalarWhereWithAggregatesInputRecursive2']
@@ -13115,22 +13119,22 @@ class CScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
 
 class CScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     """C arguments for searching"""
-    char: Union[str, 'types.StringWithAggregatesFilter']
-    v_char: Union[str, 'types.StringWithAggregatesFilter']
-    text: Union[str, 'types.StringWithAggregatesFilter']
-    bit: Union[str, 'types.StringWithAggregatesFilter']
-    v_bit: Union[str, 'types.StringWithAggregatesFilter']
-    uuid: Union[str, 'types.StringWithAggregatesFilter']
+    char: Union[_str, 'types.StringWithAggregatesFilter']
+    v_char: Union[_str, 'types.StringWithAggregatesFilter']
+    text: Union[_str, 'types.StringWithAggregatesFilter']
+    bit: Union[_str, 'types.StringWithAggregatesFilter']
+    v_bit: Union[_str, 'types.StringWithAggregatesFilter']
+    uuid: Union[_str, 'types.StringWithAggregatesFilter']
 
 
 
 class CGroupByOutput(TypedDict, total=False):
-    char: str
-    v_char: str
-    text: str
-    bit: str
-    v_bit: str
-    uuid: str
+    char: _str
+    v_char: _str
+    text: _str
+    bit: _str
+    v_bit: _str
+    uuid: _str
     _sum: 'CSumAggregateOutput'
     _avg: 'CAvgAggregateOutput'
     _min: 'CMinAggregateOutput'
@@ -13148,12 +13152,12 @@ class CSumAggregateOutput(TypedDict, total=False):
 
 class CScalarAggregateOutput(TypedDict, total=False):
     """C output including scalar fields"""
-    char: str
-    v_char: str
-    text: str
-    bit: str
-    v_bit: str
-    uuid: str
+    char: _str
+    v_char: _str
+    text: _str
+    bit: _str
+    v_bit: _str
+    uuid: _str
 
 
 CMinAggregateOutput = CScalarAggregateOutput
@@ -13241,13 +13245,13 @@ CRelationalFieldKeys = _NoneType
 
 class DOptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the D create method"""
-    id: str
+    id: _str
 
 
 class DCreateInput(DOptionalCreateInput):
     """Required arguments to the D create method"""
-    bool: bool
-    xml: str
+    bool: _bool
+    xml: _str
     json_: 'fields.Json'
     jsonb: 'fields.Json'
     binary: 'fields.Base64'
@@ -13258,13 +13262,13 @@ class DCreateInput(DOptionalCreateInput):
 
 class DOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the D create method, without relations"""
-    id: str
+    id: _str
 
 
 class DCreateWithoutRelationsInput(DOptionalCreateWithoutRelationsInput):
     """Required arguments to the D create method, without relations"""
-    bool: bool
-    xml: str
+    bool: _bool
+    xml: _str
     json_: 'fields.Json'
     jsonb: 'fields.Json'
     binary: 'fields.Base64'
@@ -13283,7 +13287,7 @@ class DCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
 _DWhereUnique_id_Input = TypedDict(
     '_DWhereUnique_id_Input',
     {
-        'id': 'str',
+        'id': '_str',
     },
     total=True
 )
@@ -13293,9 +13297,9 @@ DWhereUniqueInput = _DWhereUnique_id_Input
 
 class DUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
-    id: str
-    bool: bool
-    xml: str
+    id: _str
+    bool: _bool
+    xml: _str
     json_: 'fields.Json'
     jsonb: 'fields.Json'
     binary: 'fields.Base64'
@@ -13303,9 +13307,9 @@ class DUpdateInput(TypedDict, total=False):
 
 class DUpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
-    id: str
-    bool: bool
-    xml: str
+    id: _str
+    bool: _bool
+    xml: _str
     json_: 'fields.Json'
     jsonb: 'fields.Json'
     binary: 'fields.Base64'
@@ -14148,9 +14152,9 @@ FindFirstDArgs = FindManyDArgsFromD
 
 class DWhereInput(TypedDict, total=False):
     """D arguments for searching"""
-    id: Union[str, 'types.StringFilter']
-    bool: Union[bool, 'types.BooleanFilter']
-    xml: Union[str, 'types.StringFilter']
+    id: Union[_str, 'types.StringFilter']
+    bool: Union[_bool, 'types.BooleanFilter']
+    xml: Union[_str, 'types.StringFilter']
     json_: Union['fields.Json', 'types.JsonFilter']
     jsonb: Union['fields.Json', 'types.JsonFilter']
     binary: Union['fields.Base64', 'types.BytesFilter']
@@ -14164,9 +14168,9 @@ class DWhereInput(TypedDict, total=False):
 
 class DWhereInputRecursive1(TypedDict, total=False):
     """D arguments for searching"""
-    id: Union[str, 'types.StringFilter']
-    bool: Union[bool, 'types.BooleanFilter']
-    xml: Union[str, 'types.StringFilter']
+    id: Union[_str, 'types.StringFilter']
+    bool: Union[_bool, 'types.BooleanFilter']
+    xml: Union[_str, 'types.StringFilter']
     json_: Union['fields.Json', 'types.JsonFilter']
     jsonb: Union['fields.Json', 'types.JsonFilter']
     binary: Union['fields.Base64', 'types.BytesFilter']
@@ -14180,9 +14184,9 @@ class DWhereInputRecursive1(TypedDict, total=False):
 
 class DWhereInputRecursive2(TypedDict, total=False):
     """D arguments for searching"""
-    id: Union[str, 'types.StringFilter']
-    bool: Union[bool, 'types.BooleanFilter']
-    xml: Union[str, 'types.StringFilter']
+    id: Union[_str, 'types.StringFilter']
+    bool: Union[_bool, 'types.BooleanFilter']
+    xml: Union[_str, 'types.StringFilter']
     json_: Union['fields.Json', 'types.JsonFilter']
     jsonb: Union['fields.Json', 'types.JsonFilter']
     binary: Union['fields.Base64', 'types.BytesFilter']
@@ -14196,9 +14200,9 @@ class DWhereInputRecursive2(TypedDict, total=False):
 
 class DScalarWhereWithAggregatesInput(TypedDict, total=False):
     """D arguments for searching"""
-    id: Union[str, 'types.StringWithAggregatesFilter']
-    bool: Union[bool, 'types.BooleanWithAggregatesFilter']
-    xml: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    bool: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    xml: Union[_str, 'types.StringWithAggregatesFilter']
     json_: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     jsonb: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     binary: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
@@ -14210,9 +14214,9 @@ class DScalarWhereWithAggregatesInput(TypedDict, total=False):
 
 class DScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     """D arguments for searching"""
-    id: Union[str, 'types.StringWithAggregatesFilter']
-    bool: Union[bool, 'types.BooleanWithAggregatesFilter']
-    xml: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    bool: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    xml: Union[_str, 'types.StringWithAggregatesFilter']
     json_: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     jsonb: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     binary: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
@@ -14224,9 +14228,9 @@ class DScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
 
 class DScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     """D arguments for searching"""
-    id: Union[str, 'types.StringWithAggregatesFilter']
-    bool: Union[bool, 'types.BooleanWithAggregatesFilter']
-    xml: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_str, 'types.StringWithAggregatesFilter']
+    bool: Union[_bool, 'types.BooleanWithAggregatesFilter']
+    xml: Union[_str, 'types.StringWithAggregatesFilter']
     json_: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     jsonb: Union['fields.Json', 'types.JsonWithAggregatesFilter']
     binary: Union['fields.Base64', 'types.BytesWithAggregatesFilter']
@@ -14234,9 +14238,9 @@ class DScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
 
 
 class DGroupByOutput(TypedDict, total=False):
-    id: str
-    bool: bool
-    xml: str
+    id: _str
+    bool: _bool
+    xml: _str
     json_: 'fields.Json'
     jsonb: 'fields.Json'
     binary: 'fields.Base64'
@@ -14257,9 +14261,9 @@ class DSumAggregateOutput(TypedDict, total=False):
 
 class DScalarAggregateOutput(TypedDict, total=False):
     """D output including scalar fields"""
-    id: str
-    bool: bool
-    xml: str
+    id: _str
+    bool: _bool
+    xml: _str
     json_: 'fields.Json'
     jsonb: 'fields.Json'
     binary: 'fields.Base64'
@@ -14350,7 +14354,7 @@ DRelationalFieldKeys = _NoneType
 
 class EOptionalCreateInput(TypedDict, total=False):
     """Optional arguments to the E create method"""
-    id: str
+    id: _str
 
 
 class ECreateInput(EOptionalCreateInput):
@@ -14365,7 +14369,7 @@ class ECreateInput(EOptionalCreateInput):
 
 class EOptionalCreateWithoutRelationsInput(TypedDict, total=False):
     """Optional arguments to the E create method, without relations"""
-    id: str
+    id: _str
 
 
 class ECreateWithoutRelationsInput(EOptionalCreateWithoutRelationsInput):
@@ -14388,7 +14392,7 @@ class ECreateManyNestedWithoutRelationsInput(TypedDict, total=False):
 _EWhereUnique_id_Input = TypedDict(
     '_EWhereUnique_id_Input',
     {
-        'id': 'str',
+        'id': '_str',
     },
     total=True
 )
@@ -14398,7 +14402,7 @@ EWhereUniqueInput = _EWhereUnique_id_Input
 
 class EUpdateInput(TypedDict, total=False):
     """Optional arguments for updating a record"""
-    id: str
+    id: _str
     date: datetime.datetime
     time: datetime.datetime
     ts: datetime.datetime
@@ -14406,7 +14410,7 @@ class EUpdateInput(TypedDict, total=False):
 
 class EUpdateManyMutationInput(TypedDict, total=False):
     """Arguments for updating many records"""
-    id: str
+    id: _str
     date: datetime.datetime
     time: datetime.datetime
     ts: datetime.datetime
@@ -15231,7 +15235,7 @@ FindFirstEArgs = FindManyEArgsFromE
 
 class EWhereInput(TypedDict, total=False):
     """E arguments for searching"""
-    id: Union[str, 'types.StringFilter']
+    id: Union[_str, 'types.StringFilter']
     date: Union[datetime.datetime, 'types.DateTimeFilter']
     time: Union[datetime.datetime, 'types.DateTimeFilter']
     ts: Union[datetime.datetime, 'types.DateTimeFilter']
@@ -15245,7 +15249,7 @@ class EWhereInput(TypedDict, total=False):
 
 class EWhereInputRecursive1(TypedDict, total=False):
     """E arguments for searching"""
-    id: Union[str, 'types.StringFilter']
+    id: Union[_str, 'types.StringFilter']
     date: Union[datetime.datetime, 'types.DateTimeFilter']
     time: Union[datetime.datetime, 'types.DateTimeFilter']
     ts: Union[datetime.datetime, 'types.DateTimeFilter']
@@ -15259,7 +15263,7 @@ class EWhereInputRecursive1(TypedDict, total=False):
 
 class EWhereInputRecursive2(TypedDict, total=False):
     """E arguments for searching"""
-    id: Union[str, 'types.StringFilter']
+    id: Union[_str, 'types.StringFilter']
     date: Union[datetime.datetime, 'types.DateTimeFilter']
     time: Union[datetime.datetime, 'types.DateTimeFilter']
     ts: Union[datetime.datetime, 'types.DateTimeFilter']
@@ -15273,7 +15277,7 @@ class EWhereInputRecursive2(TypedDict, total=False):
 
 class EScalarWhereWithAggregatesInput(TypedDict, total=False):
     """E arguments for searching"""
-    id: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_str, 'types.StringWithAggregatesFilter']
     date: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
     time: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
     ts: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
@@ -15285,7 +15289,7 @@ class EScalarWhereWithAggregatesInput(TypedDict, total=False):
 
 class EScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
     """E arguments for searching"""
-    id: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_str, 'types.StringWithAggregatesFilter']
     date: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
     time: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
     ts: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
@@ -15297,7 +15301,7 @@ class EScalarWhereWithAggregatesInputRecursive1(TypedDict, total=False):
 
 class EScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
     """E arguments for searching"""
-    id: Union[str, 'types.StringWithAggregatesFilter']
+    id: Union[_str, 'types.StringWithAggregatesFilter']
     date: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
     time: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
     ts: Union[datetime.datetime, 'types.DateTimeWithAggregatesFilter']
@@ -15305,7 +15309,7 @@ class EScalarWhereWithAggregatesInputRecursive2(TypedDict, total=False):
 
 
 class EGroupByOutput(TypedDict, total=False):
-    id: str
+    id: _str
     date: datetime.datetime
     time: datetime.datetime
     ts: datetime.datetime
@@ -15326,7 +15330,7 @@ class ESumAggregateOutput(TypedDict, total=False):
 
 class EScalarAggregateOutput(TypedDict, total=False):
     """E output including scalar fields"""
-    id: str
+    id: _str
     date: datetime.datetime
     time: datetime.datetime
     ts: datetime.datetime
