@@ -8,7 +8,6 @@ from typing import Optional, Type, TypeVar, Iterator, Any, cast
 from pydantic import BaseModel, Extra, create_model_from_typeddict
 from pydantic.decorator import validate_arguments
 from pydantic.typing import is_typeddict
-from jinja2.debug import tb_set_next
 
 from ._types import Protocol, CallableT, runtime_checkable
 
@@ -155,4 +154,4 @@ def _maybe_rewrite_tb() -> None:
     """Remove all of the traceback frames after the current frame"""
     _, _, tb = sys.exc_info()
     if tb is not None:
-        tb_set_next(tb, None)
+        tb.tb_next = None
