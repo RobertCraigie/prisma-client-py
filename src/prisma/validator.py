@@ -4,6 +4,7 @@ from types import ModuleType
 from contextvars import ContextVar
 from functools import lru_cache, wraps
 from typing import Optional, Type, TypeVar, Iterator, Any, cast
+from typing_extensions import TypedDict
 
 from pydantic import BaseModel, Extra, create_model_from_typeddict
 from pydantic.decorator import validate_arguments
@@ -58,7 +59,8 @@ def _patch_pydantic() -> None:
     # would disregard Config changes
     @lru_cache(maxsize=None)
     def patched_create_model(
-        typeddict_cls: Type[Any], **kwargs: Any
+        typeddict_cls: Type[TypedDict],
+        **kwargs: Any,
     ) -> Type[BaseModel]:
         kwargs.setdefault('__module__', typeddict_cls.__module__)
         return create_model(typeddict_cls, **kwargs)
