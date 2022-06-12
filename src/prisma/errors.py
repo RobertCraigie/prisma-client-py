@@ -5,6 +5,7 @@ __all__ = (
     'PrismaError',
     'DataError',
     'UniqueViolationError',
+    'ForeignKeyViolationError',
     'MissingRequiredValueError',
     'RawQueryError',
     'TableNotFoundError',
@@ -23,7 +24,7 @@ class PrismaError(Exception):
 class ClientNotRegisteredError(PrismaError):
     def __init__(self) -> None:
         super().__init__(
-            'No client instance registered; You must call prisma.register(prisma.Client())'
+            'No client instance registered; You must call prisma.register(prisma.Prisma())'
         )
 
 
@@ -75,6 +76,10 @@ class UniqueViolationError(DataError):
     pass
 
 
+class ForeignKeyViolationError(DataError):
+    pass
+
+
 class MissingRequiredValueError(DataError):
     pass
 
@@ -82,7 +87,9 @@ class MissingRequiredValueError(DataError):
 class RawQueryError(DataError):
     def __init__(self, data: Any):
         try:
-            super().__init__(data, message=data['user_facing_error']['meta']['message'])
+            super().__init__(
+                data, message=data['user_facing_error']['meta']['message']
+            )
         except KeyError:
             super().__init__(data)
 
@@ -93,7 +100,18 @@ class TableNotFoundError(DataError):
         self.table = self.meta.get('table')  # type: Optional[str]
 
 
+class FieldNotFoundError(DataError):
+    # currently we cannot easilt resolve the erroneous field as Prisma
+    # returns different results for unknown fields in different situations
+    # e.g. root query, nested query and mutation queries
+    ...
+
+
 class RecordNotFoundError(DataError):
+    pass
+
+
+class InputError(DataError):
     pass
 
 

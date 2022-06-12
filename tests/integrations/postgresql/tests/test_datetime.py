@@ -2,14 +2,14 @@ import datetime
 
 import pytest
 
-from prisma import Client
+from prisma import Prisma
 
 
 # TODO: add tests for every database provider we support
 
 
 @pytest.mark.asyncio
-async def test_precision_loss(client: Client) -> None:
+async def test_precision_loss(client: Prisma) -> None:
     """https://github.com/RobertCraigie/prisma-client-py/issues/129"""
     date = datetime.datetime.utcnow()
     post = await client.post.create(

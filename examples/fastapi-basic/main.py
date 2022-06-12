@@ -1,42 +1,42 @@
 """Basic FastAPI app for CRUD operations on users and posts using Prisma Client Python"""
-from typing import Optional, List, cast
+from typing import Optional, List
 
-from fastapi import FastAPI, Request, Depends
-from prisma import Client
+from fastapi import FastAPI
+from prisma import Prisma
 from prisma.models import User, Post
 from prisma.types import UserUpdateInput
 from prisma.partials import UserWithoutRelations, PostWithoutRelations
 
 
 app = FastAPI()
-
-
-def get_client(request: Request) -> Client:
-    return cast(Client, request.app.state.db)
+prisma = Prisma(auto_register=True)
 
 
 @app.on_event('startup')  # type: ignore
 async def startup() -> None:
-    app.state.db = db = Client()
-    await db.connect()
+    await prisma.connect()
+
+
+@app.on_event('shutdown')  # type: ignore
+async def shutdown() -> None:
+    if prisma.is_connected():
+        await prisma.disconnect()
 
 
 @app.get(
     '/users',
     response_model=List[UserWithoutRelations],
 )
-async def list_users(take: int = 10, db: Client = Depends(get_client)) -> List[User]:
-    return await db.user.find_many(take=take)
+async def list_users(take: int = 10) -> List[User]:
+    return await User.prisma().find_many(take=take)
 
 
 @app.post(
     '/users',
     response_model=UserWithoutRelations,
 )
-async def create_user(
-    name: str, email: Optional[str] = None, db: Client = Depends(get_client)
-) -> User:
-    return await db.user.create({'name': name, 'email': email})
+async def create_user(name: str, email: Optional[str] = None) -> User:
+    return await User.prisma().create({'name': name, 'email': email})
 
 
 @app.put(
@@ -47,7 +47,6 @@ async def update_user(
     user_id: str,
     name: Optional[str] = None,
     email: Optional[str] = None,
-    db: Client = Depends(get_client),
 ) -> Optional[User]:
     data: UserUpdateInput = {}
 
@@ -57,7 +56,7 @@ async def update_user(
     if email is not None:
         data['email'] = email
 
-    return await db.user.update(
+    return await User.prisma().update(
         where={
             'id': user_id,
         },
@@ -69,8 +68,8 @@ async def update_user(
     '/users/{user_id}',
     response_model=User,
 )
-async def delete_user(user_id: str, db: Client = Depends(get_client)) -> Optional[User]:
-    return await db.user.delete(
+async def delete_user(user_id: str) -> Optional[User]:
+    return await User.prisma().delete(
         where={
             'id': user_id,
         },
@@ -84,8 +83,8 @@ async def delete_user(user_id: str, db: Client = Depends(get_client)) -> Optiona
     '/users/{user_id}',
     response_model=UserWithoutRelations,
 )
-async def get_user(user_id: str, db: Client = Depends(get_client)) -> Optional[User]:
-    return await db.user.find_unique(
+async def get_user(user_id: str) -> Optional[User]:
+    return await User.prisma().find_unique(
         where={
             'id': user_id,
         },
@@ -96,8 +95,8 @@ async def get_user(user_id: str, db: Client = Depends(get_client)) -> Optional[U
     '/users/{user_id}/posts',
     response_model=List[PostWithoutRelations],
 )
-async def get_user_posts(user_id: str, db: Client = Depends(get_client)) -> List[Post]:
-    user = await db.user.find_unique(
+async def get_user_posts(user_id: str) -> List[Post]:
+    user = await User.prisma().find_unique(
         where={
             'id': user_id,
         },
@@ -116,10 +115,8 @@ async def get_user_posts(user_id: str, db: Client = Depends(get_client)) -> List
     '/users/{user_id}/posts',
     response_model=PostWithoutRelations,
 )
-async def create_post(
-    user_id: str, title: str, published: bool, db: Client = Depends(get_client)
-) -> Post:
-    return await db.post.create(
+async def create_post(user_id: str, title: str, published: bool) -> Post:
+    return await Post.prisma().create(
         data={
             'title': title,
             'published': published,
@@ -136,16 +133,16 @@ async def create_post(
     '/posts',
     response_model=List[PostWithoutRelations],
 )
-async def list_posts(take: int = 10, db: Client = Depends(get_client)) -> List[Post]:
-    return await db.post.find_many(take=take)
+async def list_posts(take: int = 10) -> List[Post]:
+    return await Post.prisma().find_many(take=take)
 
 
 @app.get(
     '/posts/{post_id}',
     response_model=Post,
 )
-async def get_post(post_id: str, db: Client = Depends(get_client)) -> Optional[Post]:
-    return await db.post.find_unique(
+async def get_post(post_id: str) -> Optional[Post]:
+    return await Post.prisma().find_unique(
         where={
             'id': post_id,
         },
@@ -159,8 +156,8 @@ async def get_post(post_id: str, db: Client = Depends(get_client)) -> Optional[P
     '/posts/{post_id}',
     response_model=Post,
 )
-async def delete_post(post_id: str, db: Client = Depends(get_client)) -> Optional[Post]:
-    return await db.post.delete(
+async def delete_post(post_id: str) -> Optional[Post]:
+    return await Post.prisma().delete(
         where={
             'id': post_id,
         },

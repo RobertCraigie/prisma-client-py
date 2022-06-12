@@ -18,7 +18,7 @@ __all__ = (
 # TODO: if this version changes but the engine version
 #       doesn't change then the CLI is incorrectly cached
 # hardcoded CLI version version
-PRISMA_VERSION = '3.7.0'
+PRISMA_VERSION = '3.13.0'
 
 # CLI binaries are stored here
 PRISMA_URL = os.environ.get(
@@ -28,21 +28,26 @@ PRISMA_URL = os.environ.get(
 
 # engine binaries are stored here
 ENGINE_URL = os.environ.get(
-    'PRISMA_ENGINE_URL', 'https://binaries.prisma.sh/all_commits/{0}/{1}/{2}.gz'
+    'PRISMA_ENGINE_URL',
+    'https://binaries.prisma.sh/all_commits/{0}/{1}/{2}.gz',
 )
 
-# versions can be found under https://github.com/prisma/prisma-engine/commits/master
+# versions can be found under https://github.com/prisma/prisma-engine/commits/main
 ENGINE_VERSION = os.environ.get(
-    'PRISMA_ENGINE_VERSION', '8746e055198f517658c08a0c426c7eec87f5a85f'
+    'PRISMA_ENGINE_VERSION', 'efdf9b1183dddfd4258cd181a72125755215ab7b'
 )
 
 # where the binaries live
 GLOBAL_TEMP_DIR = (
-    Path(tempfile.gettempdir()) / 'prisma' / 'binaries' / 'engines' / ENGINE_VERSION
+    Path(tempfile.gettempdir())
+    / 'prisma'
+    / 'binaries'
+    / 'engines'
+    / ENGINE_VERSION
 )
 
 # local file path for the prisma CLI
-if platform.name() == 'windows':  # pyright: reportConstantRedefinition=false
+if platform.name() == 'windows':
     PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}.exe'
 else:
-    PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}'
+    PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}'  # pyright: ignore[reportConstantRedefinition]

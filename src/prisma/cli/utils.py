@@ -2,7 +2,17 @@ import sys
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Optional, List, Union, NoReturn, Mapping, Any, Type, overload, cast
+from typing import (
+    Optional,
+    List,
+    Union,
+    NoReturn,
+    Mapping,
+    Any,
+    Type,
+    overload,
+    cast,
+)
 
 import click
 
@@ -35,7 +45,9 @@ class PrismaCLI(click.MultiCommand):
         commands.sort()
         return commands
 
-    def get_command(self, ctx: click.Context, cmd_name: str) -> Optional[click.Command]:
+    def get_command(
+        self, ctx: click.Context, cmd_name: str
+    ) -> Optional[click.Command]:
         name = f'{self.base_package}.{cmd_name}'
         if not module_exists(name):
             # command not found
@@ -58,7 +70,10 @@ class PathlibPath(click.Path):
     """A Click path argument that returns a pathlib Path, not a string"""
 
     def convert(
-        self, value: str, param: Optional[click.Parameter], ctx: Optional[click.Context]
+        self,
+        value: str,
+        param: Optional[click.Parameter],
+        ctx: Optional[click.Context],
     ) -> Path:
         return Path(str(super().convert(value, param, ctx)))
 
@@ -82,9 +97,14 @@ class EnumChoice(click.Choice):
         super().__init__([item.value for item in enum.__members__.values()])
 
     def convert(
-        self, value: str, param: Optional[click.Parameter], ctx: Optional[click.Context]
+        self,
+        value: str,
+        param: Optional[click.Parameter],
+        ctx: Optional[click.Context],
     ) -> str:
-        return str(cast(Any, self.__enum(super().convert(value, param, ctx)).value))
+        return str(
+            cast(Any, self.__enum(super().convert(value, param, ctx)).value)
+        )
 
 
 def is_module(path: Path) -> bool:
@@ -97,7 +117,9 @@ def maybe_exit(retcode: int) -> None:
         sys.exit(retcode)
 
 
-def generate_client(schema: Optional[str] = None, *, reload: bool = False) -> None:
+def generate_client(
+    schema: Optional[str] = None, *, reload: bool = False
+) -> None:
     """Run `prisma generate` and update sys.modules"""
     args = ['generate']
     if schema is not None:
@@ -113,7 +135,8 @@ def generate_client(schema: Optional[str] = None, *, reload: bool = False) -> No
 
 def warning(message: str) -> None:
     click.echo(
-        click.style('WARNING: ', fg='bright_yellow') + click.style(message, bold=True)
+        click.style('WARNING: ', fg='bright_yellow')
+        + click.style(message, bold=True)
     )
 
 

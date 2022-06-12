@@ -1,7 +1,7 @@
-from prisma import Client
+from prisma import Prisma
 
 
-async def filtering(client: Client) -> None:
+async def filtering(client: Prisma) -> None:
     # case: all valid filter fields
     await client.types.find_first(
         where={
@@ -106,14 +106,14 @@ async def filtering(client: Client) -> None:
         },
     )
     await client.types.find_first(
-        where={  # E: Argument of type "dict[str, dict[str, Any]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
+        where={  # E: Argument of type "dict[str, dict[str, list[Unknown]]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
             'string': {
                 'gt': list(),
             },
         },
     )
     await client.types.find_first(
-        where={  # E: Argument of type "dict[str, dict[str, Client]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
+        where={  # E: Argument of type "dict[str, dict[str, Prisma]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
             'string': {
                 'gte': client,
             },
@@ -149,7 +149,7 @@ async def filtering(client: Client) -> None:
     )
 
 
-async def updating(client: Client) -> None:
+async def updating(client: Prisma) -> None:
     # case: setting
     await client.types.update(
         where={

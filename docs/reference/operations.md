@@ -15,7 +15,7 @@ The examples use the following prisma schema models:
 ### Single Record
 
 ```py
-user = await client.user.create(
+user = await db.user.create(
     data={
         'name': 'Robert',
     },
@@ -28,7 +28,7 @@ user = await client.user.create(
     `create_many` is not available for SQLite
 
 ```py
-users = await client.user.create_many(
+users = await db.user.create_many(
     data=[
         {'name': 'Tegan'},
         {'name': 'Alfie'},
@@ -37,7 +37,7 @@ users = await client.user.create_many(
 )
 ```
 ```py
-users = await client.user.create_many(
+users = await db.user.create_many(
     data=[
         {'id': 'abc', 'name': 'Tegan'},
         {'id': 'def', 'name': 'Alfie'},
@@ -50,7 +50,7 @@ users = await client.user.create_many(
 ### Relational Records
 
 ```py
-user = await client.user.create(
+user = await db.user.create(
     data={
         'name': 'Robert',
         'profile': {
@@ -62,7 +62,7 @@ user = await client.user.create(
 )
 ```
 ```py
-user = await client.user.create(
+user = await db.user.create(
     data={
         'name': 'Robert',
         'posts': {
@@ -86,14 +86,14 @@ user = await client.user.create(
 ### Unique Records
 
 ```py
-user = await client.user.find_unique(
+user = await db.user.find_unique(
     where={
         'id': '1',
     }
 )
 ```
 ```py
-user = await client.user.find_unique(
+user = await db.user.find_unique(
     where={
         'id': '2',
     },
@@ -106,14 +106,14 @@ user = await client.user.find_unique(
 ### A Single Record
 
 ```py
-post = await client.post.find_first(
+post = await db.post.find_first(
     where={
         'title': {'contains': 'Post'},
     },
 )
 ```
 ```py
-post = await client.post.find_first(
+post = await db.post.find_first(
     skip=2,
     where={
         'title': {
@@ -135,14 +135,14 @@ post = await client.post.find_first(
 ### Multiple Records
 
 ```py
-posts = await client.post.find_many(
+posts = await db.post.find_many(
     where={
         'published': True,
     },
 )
 ```
 ```py
-posts = await client.post.find_many(
+posts = await db.post.find_many(
     take=5,
     skip=1,
     where={
@@ -165,7 +165,7 @@ posts = await client.post.find_many(
 Within the filter you can query for everything you would normally query for, like it was a `find_first()` call on the relational field, for example:
 
 ```py
-post = await client.post.find_first(
+post = await db.post.find_first(
     where={
         'author': {
             'is': {
@@ -174,7 +174,7 @@ post = await client.post.find_first(
         },
     },
 )
-user = await client.user.find_first(
+user = await db.user.find_first(
     where={
         'name': 'Robert',
     },
@@ -184,7 +184,7 @@ user = await client.user.find_first(
 #### One to One
 
 ```py
-post = await client.post.find_first(
+post = await db.post.find_first(
     where={
         'author': {
             'is': {
@@ -203,7 +203,7 @@ post = await client.post.find_first(
 ##### Excluding
 
 ```py
-post = await client.post.find_first(
+post = await db.post.find_first(
     where={
         'categories': {
             'none': {
@@ -217,7 +217,7 @@ post = await client.post.find_first(
 ##### At Least One
 
 ```py
-post = await client.post.find_first(
+post = await db.post.find_first(
     where={
         'categories': {
             'some': {
@@ -233,7 +233,7 @@ post = await client.post.find_first(
 ##### Every
 
 ```py
-post = await client.post.find_first(
+post = await db.post.find_first(
     where={
         'categories': {
             'every': {
@@ -258,11 +258,11 @@ post = await client.post.find_first(
     Case insensitive filtering is only available on PostgreSQL and MongoDB
 
 ```py
-post = await client.post.find_first(
+post = await db.post.find_first(
     where={
-        'desc': 'Must be exact match',
+        'description': 'Must be exact match',
         # or
-        'desc': {
+        'description': {
             'equals': 'example_string',
             'not_in': ['ignore_string_1', 'ignore_string_2'],
             'lt': 'z',
@@ -288,7 +288,7 @@ post = await client.post.find_first(
 #### Integer Fields
 
 ```py
-post = await client.post.find_first(
+post = await db.post.find_first(
     where={
         'views': 10,
         # or
@@ -313,7 +313,7 @@ post = await client.post.find_first(
 #### Float Fields
 
 ```py
-user = await client.user.find_first(
+user = await db.user.find_first(
     where={
         'points': 10.0,
         # or
@@ -340,7 +340,7 @@ user = await client.user.find_first(
 ```py
 from datetime import datetime
 
-post = await client.post.find_first(
+post = await db.post.find_first(
     where={
         'updated_at': datetime.now(),
         # or
@@ -365,7 +365,7 @@ post = await client.post.find_first(
 #### Boolean Fields
 
 ```py
-post = await client.post.find_first(
+post = await db.post.find_first(
     where={
         'published': True,
         # or
@@ -388,7 +388,7 @@ post = await client.post.find_first(
 ```py
 from prisma import Json
 
-user = await client.user.find_first(
+user = await db.user.find_first(
     where={
         'meta': Json({'country': 'Scotland'})
         # or
@@ -408,13 +408,43 @@ user = await client.user.find_first(
 ```py
 from prisma import Base64
 
-profile = await client.profile.find_first(
+profile = await db.profile.find_first(
     where={
         'image': Base64.encode(b'my binary data'),
         # or
         'image': {
             'equals': Base64.encode(b'my binary data'),
+            'in': [Base64.encode(b'my binary data')],
+            'not_in': [Base64.encode(b'my other binary data')],
             'not': Base64(b'WW91IGZvdW5kIGFuIGVhc3RlciBlZ2chIExldCBAUm9iZXJ0Q3JhaWdpZSBrbm93IDop'),
+        },
+    },
+)
+```
+
+#### Decimal Fields
+
+```py
+from decimal import Decimal
+
+user = await db.user.find_first(
+    where={
+        'number': Decimal(1),
+        # or
+        'number': {
+            'equals': Decimal('1.23823923283'),
+            'in': [Decimal('1.3'), Decimal('5.6')],
+            'not_in': [Decimal(10), Decimal(20)],
+            'gte': Decimal(5),
+            'gt': Decimal(11),
+            'lt': Decimal(4),
+            'lte': Decimal(3),
+            'not': Decimal('123456.28'),
+            # or
+            'not': {
+                # recursive type
+                ...
+            }
         },
     },
 )
@@ -428,7 +458,7 @@ profile = await client.profile.find_first(
 Every scalar type can also be defined as a list, for example:
 
 ```py
-user = await client.user.find_first(
+user = await db.user.find_first(
     where={
         'emails': {
             # only one of the following fields is allowed at the same time
@@ -450,7 +480,7 @@ All of the above mentioned filters can be combined with other filters using `AND
 The following query will return the first post where the title contains the words `prisma` and `test`.
 
 ```py
-post = await client.post.find_first(
+post = await db.post.find_first(
     where={
         'AND': [
             {
@@ -473,7 +503,7 @@ post = await client.post.find_first(
 The following query will return the first post where the title contains the word `prisma` or is published.
 
 ```py
-post = await client.post.find_first(
+post = await db.post.find_first(
     where={
         'OR': [
             {
@@ -494,7 +524,7 @@ post = await client.post.find_first(
 The following query will return the first post where the title is not `My test post`
 
 ```py
-post = await client.post.find_first(
+post = await db.post.find_first(
     where={
         'NOT' [
             {
@@ -510,14 +540,14 @@ post = await client.post.find_first(
 ### Unique Record
 
 ```py
-post = await client.post.delete(
+post = await db.post.delete(
     where={
         'id': 'cksc9m7un0028f08zwycxtjr1',
     },
 )
 ```
 ```py
-post = await client.post.delete(
+post = await db.post.delete(
     where={
         'id': 'cksc9m1vu0021f08zq0066pnz',
     },
@@ -530,7 +560,7 @@ post = await client.post.delete(
 ### Multiple Records
 
 ```py
-total = await client.post.delete_many(
+total = await db.post.delete_many(
     where={
         'published': False,
     }
@@ -542,7 +572,7 @@ total = await client.post.delete_many(
 ### Unique Record
 
 ```py
-post = await client.post.update(
+post = await db.post.update(
     where={
         'id': 'cksc9lp7w0014f08zdkz0mdnn',
     },
@@ -560,7 +590,7 @@ post = await client.post.update(
 ### Multiple Records
 
 ```py
-total = await client.post.update_many(
+total = await db.post.update_many(
     where={
         'published': False
     },
@@ -573,7 +603,7 @@ total = await client.post.update_many(
 ### Creating On Not Found
 
 ```py
-post = await client.post.upsert(
+post = await db.post.upsert(
     where={
         'id': 'cksc9ld4z0007f08z7obo806s',
     },
@@ -600,7 +630,7 @@ If a field is an `int` or `float` type then it can be atomically updated, i.e. m
 #### Integer Fields
 
 ```py
-post = await client.post.update(
+post = await db.post.update(
     where={
         'id': 'abc',
     },
@@ -621,7 +651,7 @@ post = await client.post.update(
 #### Float Fields
 
 ```py
-user = await client.user.update(
+user = await db.user.update(
     where={
         'id': 'abc',
     },
@@ -645,7 +675,7 @@ user = await client.user.update(
     Scalar list fields are only supported on PostgreSQL and MongoDB
 
 ```py
-user = await client.user.update(
+user = await db.user.update(
     where={
         'id': 'cksc9lp7w0014f08zdkz0mdnn',
     },
@@ -664,14 +694,14 @@ user = await client.user.update(
 ### Counting Records
 
 ```py
-total = await client.post.count(
+total = await db.post.count(
     where={
         'published': True,
     },
 )
 ```
 ```py
-total = await client.post.count(
+total = await db.post.count(
     take=10,
     skip=1,
     where={
@@ -680,16 +710,74 @@ total = await client.post.count(
     cursor={
         'id': 'cksca3xm80035f08zjonuubik',
     },
+)
+```
+
+### Grouping Records
+
+!!! warning
+    You can only order by one field at a time however this is [not possible
+    to represent with python types](./limitations.md#grouping-records)
+
+```py
+results = await db.profile.group_by(['country'])
+# [
+#   {'country': 'Denmark'},
+#   {'country': 'Scotland'},
+# ]
+
+results = await db.profile.group_by(['country'], count=True)
+# [
+#   {'country': 'Denmark', '_count': {'_all': 20}},
+#   {'country': 'Scotland', '_count': {'_all': 1}},
+# ]
+
+results = await db.profile.group_by(
+    by=['country', 'city'],
+    count={
+        '_all': True,
+        'city': True,
+    },
+    sum={
+        'views': True,
+    },
     order={
-        'created_at': 'asc',
+        'country': 'desc',
+    },
+    having={
+        'views': {
+            '_avg': {
+                'gt': 200,
+            },
+        },
     },
 )
+# [
+#   {
+#       'country': 'Scotland',
+#       'city': 'Edinburgh',
+#       '_sum': {'views': 250},
+#       '_count': {'_all': 1, 'city': 1}
+#   },
+#   {
+#       'country': 'Denmark',
+#       'city': None,
+#       '_sum': {'views': 6000},
+#       '_count': {'_all': 12, 'city': 0}
+#   },
+#   {
+#       'country': 'Denmark',
+#       'city': 'Copenhagen',
+#       '_sum': {'views': 8000},
+#       '_count': {'_all': 8, 'city': 8}
+#   },
+# ]
 ```
 
 ## Batching Write Queries
 
 ```py
-async with client.batch_() as batcher:
+async with db.batch_() as batcher:
     batcher.user.create({'name': 'Robert'})
     batcher.user.create({'name': 'Tegan'})
 ```
@@ -705,7 +793,7 @@ async with client.batch_() as batcher:
 ### Write Queries
 
 ```py
-total = await client.execute_raw(
+total = await db.execute_raw(
     '''
     SELECT *
     FROM User
@@ -718,7 +806,7 @@ total = await client.execute_raw(
 ### Selecting Multiple Records
 
 ```py
-posts = await client.query_raw(
+posts = await db.query_raw(
     '''
     SELECT *
     FROM Post
@@ -732,7 +820,7 @@ posts = await client.query_raw(
 ```py
 from prisma.models import Post
 
-posts = await client.query_raw(
+posts = await db.query_raw(
     '''
     SELECT *
     FROM Post
@@ -745,7 +833,7 @@ posts = await client.query_raw(
 ### Selecting a Single Record
 
 ```py
-post = await client.query_first(
+post = await db.query_first(
     '''
     SELECT *
     FROM Post
@@ -760,7 +848,7 @@ post = await client.query_first(
 ```py
 from prisma.models import Post
 
-post = await client.query_first(
+post = await db.query_first(
     '''
     SELECT *
     FROM Post

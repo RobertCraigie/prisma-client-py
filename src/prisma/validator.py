@@ -20,7 +20,9 @@ __all__ = (
 
 # NOTE: we should use bound=TypedDict but mypy does not support this
 T = TypeVar('T')
-_validation_enabled: ContextVar[bool] = ContextVar('_validation_enabled', default=True)
+_validation_enabled: ContextVar[bool] = ContextVar(
+    '_validation_enabled', default=True
+)
 
 
 class Config:
@@ -68,19 +70,22 @@ def _patch_pydantic() -> None:
 _patch_pydantic()
 
 
-def validate(type: Type[T], data: Any) -> T:  # pylint: disable=redefined-builtin
+def validate(type: Type[T], data: Any) -> T:
     """Validate untrusted data matches a given TypedDict
 
     For example:
 
     from prisma import validate, types
+    from prisma.models import User
 
     def user_create_handler(data: Any) -> None:
         validated = validate(types.UserCreateInput, data)
-        user = await client.user.create(data=validated)
+        user = await User.prisma().create(data=validated)
     """
     if not is_typeddict(type):
-        raise TypeError(f'Only TypedDict types are supported, got: {type} instead.')
+        raise TypeError(
+            f'Only TypedDict types are supported, got: {type} instead.'
+        )
 
     # we cannot use pydantic's builtin type -> model resolver
     # as we need to be able to update forward references
@@ -93,7 +98,7 @@ def validate(type: Type[T], data: Any) -> T:  # pylint: disable=redefined-builti
         # incorrectly inferred type as we have verified that the given type
         # is indeed a TypedDict
         model = create_model_from_typeddict(
-            type, __config__=Config  # pyright: reportGeneralTypeIssues=false
+            type, __config__=Config  # pyright: ignore[reportGeneralTypeIssues]
         )
         model.update_forward_refs(**vars(_get_module(type)))
         type.__pydantic_model__ = model  # type: ignore

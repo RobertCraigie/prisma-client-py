@@ -12,16 +12,16 @@ from pydantic import BaseModel
 
 from . import jsonrpc
 from .jsonrpc import Manifest
-from .models import Data
+from .models import DefaultData, PythonData
 from .types import PartialModelFields
 from .utils import (
     copy_tree,
     is_same_path,
     resolve_template_path,
-    resolve_original_file,
 )
 from .. import __version__
 from ..utils import DEBUG_GENERATOR
+from .._compat import cached_property
 from .._types import BaseModelT, InheritsGeneric, get_args
 
 
@@ -41,9 +41,6 @@ GENERIC_GENERATOR_NAME = 'prisma.generator.generator.GenericGenerator'
 
 # set of templates that should be rendered after every other template
 DEFERRED_TEMPLATES = {'partials.py.jinja'}
-
-# set of templates that override existing modules
-OVERRIDING_TEMPLATES = {'http.py.jinja'}
 
 DEFAULT_ENV = Environment(
     trim_blocks=True,
@@ -111,10 +108,14 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
                 )
             elif request.method == 'generate':
                 if request.params is None:  # pragma: no cover
-                    raise RuntimeError('Prisma JSONRPC did not send data to generate.')
+                    raise RuntimeError(
+                        'Prisma JSONRPC did not send data to generate.'
+                    )
 
                 if DEBUG_GENERATOR:
-                    _write_debug_data('params', json.dumps(request.params, indent=2))
+                    _write_debug_data(
+                        'params', json.dumps(request.params, indent=2)
+                    )
 
                 data = self.data_class.parse_obj(request.params)
 
@@ -131,19 +132,9 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
             if response is not None:
                 jsonrpc.reply(response)
 
-    @property
+    @cached_property
     def data_class(self) -> Type[BaseModelT]:
-        """Return the BaseModel used to parse the Prisma DMMF
-
-        This must be implemented by subclasses to support python3.6 so
-        that generic type arguments cannot be resolved.
-        """
-        if sys.version_info[:2] == (3, 6):
-            raise RuntimeError(
-                'Generic arguments cannot be resolved on Python 3.6;\n'
-                'This can be resolved by overriding the `data_class` property '
-                'on the generator.'
-            )
+        """Return the BaseModel used to parse the Prisma DMMF"""
 
         # we need to cast to object as otherwise pyright correctly marks the code as unreachable,
         # this is because __orig_bases__ is not present in the typeshed stubs as it is
@@ -169,7 +160,9 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
 
         args = get_args(typ)
         if not args:
-            raise RuntimeError(f'Could not resolve generic arguments from type: {typ}')
+            raise RuntimeError(
+                f'Could not resolve generic arguments from type: {typ}'
+            )
 
         model = args[0]
         if not issubclass(model, BaseModel):
@@ -183,23 +176,23 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
         return cast(Type[BaseModelT], model)
 
 
-class BaseGenerator(GenericGenerator[Data]):
+class BaseGenerator(GenericGenerator[DefaultData]):
     pass
 
 
-class Generator(BaseGenerator):
+class Generator(GenericGenerator[PythonData]):
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
         raise TypeError(
             f'{Generator} cannot be subclassed, maybe you meant {BaseGenerator}?'
         )
 
-    def get_manifest(self) -> Manifest:  # pylint: disable=no-self-use
+    def get_manifest(self) -> Manifest:
         return Manifest(
             name=f'Prisma Client Python (v{__version__})',
             default_output=BASE_PACKAGE_DIR,
         )
 
-    def generate(self, data: Data) -> None:  # pylint: disable=no-self-use
+    def generate(self, data: PythonData) -> None:
         config = data.generator.config
         rootdir = Path(data.generator.output.value)
         if not rootdir.exists():
@@ -232,32 +225,19 @@ class Generator(BaseGenerator):
             cleanup_templates(rootdir, env=DEFAULT_ENV)
             raise
 
-        log.debug('Finished generating the prisma python client')
-
-    if sys.version_info[:2] == (3, 6):
-        # only explicitly specify the Data class at runtime on Python 3.6
-        # so that our generic type resolver can be easily tested
-        @property
-        def data_class(self) -> Type[Data]:
-            return Data
+        log.debug('Finished generating Prisma Client Python')
 
 
-def cleanup_templates(rootdir: Path, *, env: Optional[Environment] = None) -> None:
+def cleanup_templates(
+    rootdir: Path, *, env: Optional[Environment] = None
+) -> None:
     """Revert module to pre-generation state"""
     if env is None:
         env = DEFAULT_ENV
 
     for name in env.list_templates():
         file = resolve_template_path(rootdir=rootdir, name=name)
-        original = resolve_original_file(file)
-        if original.exists():
-            if file.exists():
-                log.debug('Removing overridden template at %s', file)
-                file.unlink()
-
-            log.debug('Renaming file at %s to %s', original, file)
-            original.rename(file)
-        elif file.exists() and name not in OVERRIDING_TEMPLATES:
+        if file.exists():
             log.debug('Removing rendered template at %s', file)
             file.unlink()
 
@@ -278,12 +258,6 @@ def render_template(
     file = resolve_template_path(rootdir=rootdir, name=name)
     if not file.parent.exists():
         file.parent.mkdir(parents=True, exist_ok=True)
-
-    if name in OVERRIDING_TEMPLATES and file.exists():
-        original = resolve_original_file(file)
-        if not original.exists():
-            log.debug('Making backup of %s', file)
-            file.rename(original)
 
     file.write_bytes(output.encode(sys.getdefaultencoding()))
     log.debug('Rendered template to %s', file.absolute())

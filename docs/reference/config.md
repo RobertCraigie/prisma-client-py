@@ -27,18 +27,18 @@ Valid values are:
 If `asyncio` is used then the generated client will be asynchronous and code must be ran using asyncio, e.g.
 
 ```py
-user = await client.user.find_unique(where={'id': 'user_id'})
+user = await db.user.find_unique(where={'id': 'user_id'})
 ```
 
 And if `sync` is used then the generated client will be synchronous, e.g.
 
 ```py
-user = client.user.find_unique(where={'id': 'user_id'})
+user = db.user.find_unique(where={'id': 'user_id'})
 ```
 
 ## Partial Type Generator
 
-Custom partial models can be generated along with the prisma client, see [partial types](partial-types.md) for what this means and how to make use of them.
+Custom partial models can be generated along with the prisma client, see [partial types](../getting_started/partial-types.md) for how to make use of partial types.
 
 The script that generates the partial types can be configured using the `partial_type_generator` option which defaults to `prisma/partial_types.py`
 
@@ -97,7 +97,7 @@ These examples use the following `schema.prisma` models
 The default for this option is 5. This allows for recursive types up to the following depth.
 
 ```py
-user = await client.user.find_unique(
+user = await db.user.find_unique(
     where={'id': user_id},
     include={
         'profile': True,
@@ -142,7 +142,7 @@ generator db {
 Recursive types are now only valid up to the following depth.
 
 ```py
-user = await client.user.find_unique(
+user = await db.user.find_unique(
     where={'id': user_id},
     include={
         'profile': True,
@@ -168,7 +168,7 @@ generator db {
 Recursive types are now only valid up to the following depth.
 
 ```py
-user = await client.user.find_unique(
+user = await db.user.find_unique(
     where={'id': user_id},
     include={
         'profile': True,

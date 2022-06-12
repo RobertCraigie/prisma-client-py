@@ -63,7 +63,9 @@ def test_missing_values(snapshot: SnapshotAssertion) -> None:
 
 def test_optional_values() -> None:
     """Fields that can be None are still included in the validated data"""
-    validated = validate(types.PostCreateInput, dict(title='My Title', published=True))
+    validated = validate(
+        types.PostCreateInput, dict(title='My Title', published=True)
+    )
     assert validated == {'title': 'My Title', 'published': True}  # type: ignore[comparison-overlap]
 
     validated = validate(
@@ -128,7 +130,10 @@ def test_patch_respects_arguments(snapshot: SnapshotAssertion) -> None:
 
 
 @pytest.mark.asyncio
-async def test_validate_arguments(client: Client, snapshot: SnapshotAssertion) -> None:
+async def test_validate_arguments(
+    client: Client,
+    snapshot: SnapshotAssertion,
+) -> None:
     """Ensure that passing incorrect arguments to an action method will raise a ValidationError"""
     with pytest.raises(ValidationError) as exc:
         await client.user.create({})  # type: ignore

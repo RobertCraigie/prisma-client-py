@@ -52,12 +52,14 @@ nav:
       - Type Safety: getting_started/type-safety.md
       - Quick Start: getting_started/quickstart.md
       - Advanced Usage: getting_started/advanced.md
+      - Partial Types: getting_started/partial-types.md
   - Reference:
       - Query Operations: reference/operations.md
       - Client: reference/client.md
       - Model Based Access: reference/model-actions.md
       - Batching Queries: reference/batching.md
       - Partial Types: reference/partials.md
+      - Troubleshooting: reference/troubleshooting.md
       - Type Checkers:
           - Pyright: reference/type_checkers/pyright.md
           - Mypy: reference/type_checkers/mypy.md
@@ -66,7 +68,7 @@ nav:
       - Command Line: reference/command-line.md
       - Custom Generators: reference/custom-generators.md
       - Logging: reference/logging.md
-      - Partial Types: reference/partial-types.md
+      - Binaries: reference/binaries.md
   - Contributing:
       - How to Contribute: contributing/contributing.md
       - Architecture: contributing/architecture.md

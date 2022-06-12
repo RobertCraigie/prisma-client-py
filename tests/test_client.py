@@ -1,19 +1,20 @@
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Mapping, Optional, Tuple, cast
+from typing import TYPE_CHECKING, Any, Mapping
 
 import httpx
 import pytest
 from mock import AsyncMock
 from pytest_mock import MockerFixture
-from prisma import ENGINE_TYPE, Client, get_client, errors
+
+from prisma import ENGINE_TYPE, SCHEMA_PATH, Prisma, get_client, errors
+from prisma.http_abstract import DEFAULT_CONFIG
 from prisma.engine.http import HTTPEngine
 from prisma.engine.errors import AlreadyConnectedError
 from prisma.testing import reset_client
 from prisma.cli.prisma import run
 from prisma.types import HttpConfig
 
-from .utils import Testdir
-
+from .utils import Testdir, patch_method
 
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
 @pytest.mark.asyncio
 async def test_catches_not_connected() -> None:
     """Trying to make a query before connecting raises an error"""
-    client = Client()
+    client = Prisma()
     with pytest.raises(errors.ClientNotConnectedError) as exc:
         await client.post.delete_many()
 
@@ -30,7 +31,7 @@ async def test_catches_not_connected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_create_many_invalid_provider(client: Client) -> None:
+async def test_create_many_invalid_provider(client: Prisma) -> None:
     """Trying to call create_many() fails as SQLite does not support it"""
     with pytest.raises(errors.UnsupportedDatabaseError) as exc:
         await client.user.create_many([{'name': 'Robert'}])
@@ -39,7 +40,9 @@ async def test_create_many_invalid_provider(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_datasource_overwriting(testdir: Testdir, client: Client) -> None:
+async def test_datasource_overwriting(
+    testdir: Testdir, client: Prisma
+) -> None:
     """Ensure the client can connect and query to a custom datasource"""
     # we have to do this messing with the schema so that we can run db push on the new database
     schema = Path(__file__).parent / 'data' / 'schema.prisma'
@@ -48,7 +51,7 @@ async def test_datasource_overwriting(testdir: Testdir, client: Client) -> None:
     )
     run(['db', 'push', '--skip-generate'], env={'_PY_DB': 'file:./tmp.db'})
 
-    other = Client(
+    other = Prisma(
         datasource={'url': 'file:./tmp.db'},
     )
     await other.connect(timeout=1)
@@ -62,7 +65,7 @@ async def test_datasource_overwriting(testdir: Testdir, client: Client) -> None:
 @pytest.mark.asyncio
 async def test_context_manager() -> None:
     """Client can be used as a context manager to connect and disconnect from the database"""
-    client = Client()
+    client = Prisma()
     assert not client.is_connected()
 
     async with client:
@@ -83,7 +86,7 @@ def test_auto_register() -> None:
         with pytest.raises(errors.ClientNotRegisteredError):
             get_client()
 
-        client = Client(auto_register=True)
+        client = Prisma(auto_register=True)
         assert get_client() == client
 
 
@@ -95,46 +98,44 @@ def test_engine_type() -> None:
 @pytest.mark.asyncio
 async def test_connect_timeout(mocker: MockerFixture) -> None:
     """Setting the timeout on a client and a per-call basis works"""
-    client = Client(connect_timeout=7)
+    client = Prisma(connect_timeout=7)
     mocked = mocker.patch.object(
-        client._engine_class,  # pylint: disable=protected-access
+        client._engine_class,
         'connect',
         new=AsyncMock(),
     )
 
     await client.connect()
-    mocked.assert_called_once_with(timeout=7, datasources=None)
+    mocked.assert_called_once_with(
+        timeout=7,
+        datasources=[client._make_sqlite_datasource()],
+    )
     mocked.reset_mock()
 
     await client.connect(timeout=5)
-    mocked.assert_called_once_with(timeout=5, datasources=None)
+    mocked.assert_called_once_with(
+        timeout=5,
+        datasources=[client._make_sqlite_datasource()],
+    )
 
 
 @pytest.mark.asyncio
 async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
     """Custom http options are passed to the HTTPX Client"""
 
-    # work around for a bug in pyright: https://github.com/microsoft/pyright/issues/2757
-    captured = cast(Optional[Tuple[Tuple[object, ...], Mapping[str, object]]], None)
-
-    # TODO: extract this
-    # can't use mocker as init methods must return None and mocker requires returning a value
-    def mock___init__(self: httpx.AsyncClient, *args: Any, **kwargs: Any) -> None:
-        nonlocal captured
-        captured = (args, kwargs)
-
+    def mock___init__(real__init__: Any, *args: Any, **kwargs: Any) -> None:
         # pass to real __init__ method to ensure types passed will actually work at runtime
-        # TODO: ensure passed types match type hints
-        real___init__(self, *args, **kwargs)
+        real__init__(*args, **kwargs)
 
-    real___init__ = httpx.AsyncClient.__init__
-    monkeypatch.setattr(httpx.AsyncClient, '__init__', mock___init__, raising=True)
+    getter = patch_method(
+        monkeypatch, httpx.AsyncClient, '__init__', mock___init__
+    )
 
     def mock_app(args: Mapping[str, object], data: object) -> object:
         ...
 
     async def _test(config: HttpConfig) -> None:
-        client = Client(
+        client = Prisma(
             http=config,
         )
         engine = client._create_engine()  # pylint: disable=protected-access
@@ -142,8 +143,9 @@ async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
         engine.session.open()
         await engine.session.close()
 
+        captured = getter()
         assert captured is not None
-        assert captured == ((), config)
+        assert captured == ((), {**DEFAULT_CONFIG, **config})
 
     await _test({'timeout': 1})
     await _test({'timeout': httpx.Timeout(5, connect=10, read=30)})
@@ -160,3 +162,38 @@ async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
             'trust_env': False,
         },
     )
+
+
+def test_old_client_alias() -> None:
+    """Ensure that Prisma can be imported from the root package under the Client alias"""
+    from prisma import Client, Prisma
+
+    assert Client == Prisma
+
+
+def test_sqlite_url(client: Prisma) -> None:
+    """Ensure that the default overriden SQLite URL uses the correct relative path
+
+    https://github.com/RobertCraigie/prisma-client-py/issues/409
+    """
+    rootdir = Path(__file__).parent
+
+    url = client._make_sqlite_url('file:dev.db')
+    assert url == f'file:{SCHEMA_PATH.parent.joinpath("dev.db")}'
+
+    url = client._make_sqlite_url('file:dev.db', relative_to=rootdir)
+    assert url == f'file:{rootdir.joinpath("dev.db")}'
+
+    url = client._make_sqlite_url('sqlite:../dev.db', relative_to=rootdir)
+    assert url == f'file:{rootdir.parent.joinpath("dev.db")}'
+
+    # already absolute paths are not updated
+    url = client._make_sqlite_url(
+        f'sqlite:{rootdir.parent.joinpath("foo.db").absolute()}',
+        relative_to=rootdir,
+    )
+    assert url == f'sqlite:{rootdir.parent.joinpath("foo.db").absolute()}'
+
+    # unknown prefixes are not updated
+    url = client._make_sqlite_url('unknown:dev.db', relative_to=rootdir)
+    assert url == 'unknown:dev.db'

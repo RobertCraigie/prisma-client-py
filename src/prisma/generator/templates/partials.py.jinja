@@ -13,6 +13,10 @@ class {{ name }}(BaseModel):
             {% else -%}
                 {{ ' ' }}{{ field.type }}
             {% endif %}
+    {% if not field.documentation is none %}
+    """{{ format_documentation(field.documentation) }}"""
+
+    {% endif %}
     {% endfor %}
 
     Config = models.Config

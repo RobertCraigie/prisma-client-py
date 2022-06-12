@@ -22,17 +22,11 @@ class MyGenerator2(
 
 
 # case: custom config
-class MyData(models.Data):
-    generator: 'MyGeneratorWrapper'
-
-
-class MyGeneratorWrapper(models.Generator):
-    # TODO: this should be possible without a type: ignore
-    config: 'MyConfig'  # type: ignore
-
-
 class MyConfig(BaseModel):
     value: int
+
+
+MyData = models.GenericData[MyConfig]
 
 
 class MyGenerator3(GenericGenerator[MyData]):
@@ -44,8 +38,16 @@ MyGenerator3.invoke()
 
 
 # case: unimplemented methods
-class MyGenerator4(GenericGenerator[models.Data]):
+class MyGenerator4(GenericGenerator[models.DefaultData]):
     pass
 
 
 MyGenerator4().run()  # E: Cannot instantiate abstract class "MyGenerator4"
+
+
+# case: mismatched type annotation
+class MyGenerator5(GenericGenerator[models.DefaultData]):
+    def generate(  # E: Method "generate" overrides class "GenericGenerator" in an incompatible manner
+        self, data: MyConfig
+    ) -> None:
+        pass

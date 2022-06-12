@@ -1,11 +1,11 @@
 import pytest
 
 import prisma
-from prisma import errors, Client
+from prisma import Prisma, errors
 
 
 @pytest.mark.asyncio
-async def test_find_unique_id_field(client: Client) -> None:
+async def test_find_unique_id_field(client: Prisma) -> None:
     """Finding a record by an ID field"""
     post = await client.post.create(
         {
@@ -21,7 +21,7 @@ async def test_find_unique_id_field(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_find_unique_missing_required_args(client: Client) -> None:
+async def test_find_unique_missing_required_args(client: Prisma) -> None:
     """Missing field raises an error"""
     with prisma.disable_validation():
         with pytest.raises(TypeError):
@@ -37,14 +37,14 @@ async def test_find_unique_missing_required_args(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_find_unique_no_match(client: Client) -> None:
+async def test_find_unique_no_match(client: Prisma) -> None:
     """Looking for non-existent record does not error"""
     found = await client.post.find_unique(where={'id': 'sjbsjahs'})
     assert found is None
 
 
 @pytest.mark.asyncio
-async def test_find_unique_by_unique_field(client: Client) -> None:
+async def test_find_unique_by_unique_field(client: Prisma) -> None:
     """Finding a record by a unique field"""
     user = await client.user.create(
         data={
@@ -76,7 +76,7 @@ async def test_find_unique_by_unique_field(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_multiple_fields_are_not_allowed(client: Client) -> None:
+async def test_multiple_fields_are_not_allowed(client: Prisma) -> None:
     """Multiple fields cannot be passed at once"""
     with pytest.raises(errors.DataError):
         await client.user.find_unique(

@@ -1,6 +1,7 @@
 import os
 import sys
 import enum
+import textwrap
 import importlib
 from pathlib import Path
 from keyword import iskeyword
@@ -9,17 +10,19 @@ from importlib import machinery, util as importlib_util
 from importlib.abc import InspectLoader
 from contextvars import ContextVar
 from typing import (
+    TYPE_CHECKING,
     Any,
+    Generic,
     Iterable,
     NoReturn,
     Optional,
     List,
     Tuple,
+    TypeVar,
     Union,
     Iterator,
     Dict,
     Type,
-    TYPE_CHECKING,
     cast,
 )
 
@@ -31,6 +34,7 @@ from pydantic import (
     Field as FieldInfo,
 )
 from pydantic.fields import PrivateAttr
+from pydantic.generics import GenericModel as PydanticGenericModel
 
 try:
     from pydantic.env_settings import SettingsSourceCallable
@@ -40,27 +44,33 @@ except ImportError:
 
 from .utils import Faker, Sampler, clean_multiline
 from ..utils import DEBUG_GENERATOR, assert_never
-from .._compat import validator, root_validator
+from .._compat import validator, root_validator, cached_property
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
 from ..binaries.constants import ENGINE_VERSION, PRISMA_VERSION
 
 
-__all__ = ('Data',)
+__all__ = (
+    'AnyData',
+    'PythonData',
+    'DefaultData',
+    'GenericData',
+)
 
 # NOTE: this does not represent all the data that is passed by prisma
 
 ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float']
 
 TYPE_MAPPING = {
-    'String': 'str',
-    'Bytes': '\'fields.Base64\'',
+    'String': '_str',
+    'Bytes': "'fields.Base64'",
     'DateTime': 'datetime.datetime',
-    'Boolean': 'bool',
-    'Int': 'int',
-    'Float': 'float',
-    'BigInt': 'int',
-    'Json': '\'fields.Json\'',
+    'Boolean': '_bool',
+    'Int': '_int',
+    'Float': '_float',
+    'BigInt': '_int',
+    'Json': "'fields.Json'",
+    'Decimal': 'decimal.Decimal',
 }
 FILTER_TYPES = [
     'String',
@@ -71,26 +81,60 @@ FILTER_TYPES = [
     'BigInt',
     'Float',
     'Json',
+    'Decimal',
 ]
+RECURSIVE_TYPE_DEPTH_WARNING = """Some types are disabled by default due to being incompatible with Mypy, it is highly recommended
+to use Pyright instead and configure Prisma Python to use recursive types. To re-enable certain types:"""
+
+RECURSIVE_TYPE_DEPTH_WARNING_DESC = """
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = -1
+}
+
+If you need to use Mypy, you can also disable this message by explicitly setting the default value:
+
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = 5
+}
+
+For more information see: https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/#default-type-limitations
+"""
 
 FAKER: Faker = Faker()
 
-data_ctx: ContextVar['Data'] = ContextVar('data_ctx')
 
+ConfigT = TypeVar('ConfigT', bound=PydanticBaseModel)
 
-def get_config() -> 'Config':
-    return data_ctx.get().generator.config
+# Although we should just be able to access the config from the datamodel
+# we have to do some validation that requires access to the config, this is difficult
+# with heavily nested models as our current workaround only sets the datamodel context
+# post-validation meaning we cannot access it in validators. To get around this we have
+# a separate config context.
+# TODO: better solution
+data_ctx: ContextVar['AnyData'] = ContextVar('data_ctx')
+config_ctx: ContextVar['Config'] = ContextVar('config_ctx')
 
 
 def get_datamodel() -> 'Datamodel':
     return data_ctx.get().dmmf.datamodel
 
 
+# typed to ensure the caller has to handle the case where
+# a custom generator config is being used
+def get_config() -> Union[PydanticBaseModel, 'Config']:
+    return config_ctx.get()
+
+
 def get_list_types() -> Iterable[Tuple[str, str]]:
     # WARNING: do not edit this function without also editing Field.is_supported_scalar_list_type()
     return chain(
         ((t, TYPE_MAPPING[t]) for t in FILTER_TYPES),
-        ((enum.name, f'\'enums.{enum.name}\'') for enum in get_datamodel().enums),
+        (
+            (enum.name, f"'enums.{enum.name}'")
+            for enum in get_datamodel().enums
+        ),
     )
 
 
@@ -118,9 +162,36 @@ def type_as_string(typ: str) -> str:
     enums.Role -> 'enums.Role'
     """
     # TODO: use this function internally in this module
-    if not typ.startswith('\'') and not typ.startswith('"'):
-        return f'\'{typ}\''
+    if not typ.startswith("'") and not typ.startswith('"'):
+        return f"'{typ}'"
     return typ
+
+
+def format_documentation(doc: str, indent: int = 4) -> str:
+    """Format a schema comment by indenting nested lines, e.g.
+
+        '''Foo
+    Bar'''
+
+    Becomes
+
+        '''Foo
+        Bar
+        '''
+    """
+    if not doc:
+        # empty string, nothing to do
+        return doc
+
+    prefix = ' ' * indent
+    first, *rest = doc.splitlines()
+    return '\n'.join(
+        [
+            first,
+            *[textwrap.indent(line, prefix) for line in rest],
+            prefix,
+        ]
+    )
 
 
 def _module_spec_serializer(spec: machinery.ModuleSpec) -> str:
@@ -132,6 +203,17 @@ def _pathlib_serializer(path: Path) -> str:
     return str(path.absolute())
 
 
+def _recursive_type_depth_factory() -> int:
+    click.echo(
+        click.style(
+            f'\n{RECURSIVE_TYPE_DEPTH_WARNING}',
+            fg='yellow',
+        )
+    )
+    click.echo(f'{RECURSIVE_TYPE_DEPTH_WARNING_DESC}\n')
+    return 5
+
+
 class BaseModel(PydanticBaseModel):
     class Config:
         arbitrary_types_allowed: bool = True
@@ -139,6 +221,11 @@ class BaseModel(PydanticBaseModel):
             Path: _pathlib_serializer,
             machinery.ModuleSpec: _module_spec_serializer,
         }
+        keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
+
+
+class GenericModel(PydanticGenericModel, BaseModel):
+    pass
 
 
 class InterfaceChoices(str, enum.Enum):
@@ -182,7 +269,9 @@ class Module(BaseModel):
                 spec = None
 
         if spec is None:
-            raise ValueError(f'Could not find a python file or module at {value}')
+            raise ValueError(
+                f'Could not find a python file or module at {value}'
+            )
 
         return spec
 
@@ -198,11 +287,13 @@ class Module(BaseModel):
         try:
             loader.exec_module(mod)
         except:
-            print('An exception ocurred while running the partial type generator')
+            print(
+                'An exception ocurred while running the partial type generator'
+            )
             raise
 
 
-class Data(BaseModel):
+class GenericData(GenericModel, Generic[ConfigT]):
     """Root model for the data that prisma provides to the generator.
 
     WARNING: only one instance of this class may exist at any given time and
@@ -211,16 +302,16 @@ class Data(BaseModel):
 
     datamodel: str
     version: str
-    generator: 'Generator'
+    generator: 'Generator[ConfigT]'
     dmmf: 'DMMF' = FieldInfo(alias='dmmf')
-    schema_path: str = FieldInfo(alias='schemaPath')
+    schema_path: Path = FieldInfo(alias='schemaPath')
     datasources: List['Datasource'] = FieldInfo(alias='datasources')
-
-    # TODO
-    other_generators: List[Any] = FieldInfo(alias='otherGenerators')
+    other_generators: List['Generator[_ModelAllowAll]'] = FieldInfo(
+        alias='otherGenerators'
+    )
 
     @classmethod
-    def parse_obj(cls, obj: Any) -> 'Data':
+    def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
         data = super().parse_obj(obj)
         data_ctx.set(data)
         return data
@@ -232,11 +323,12 @@ class Data(BaseModel):
 
         # add utility functions
         for func in [
-            get_list_types,
             sql_param,
-            clean_multiline,
             raise_err,
             type_as_string,
+            get_list_types,
+            clean_multiline,
+            format_documentation,
         ]:
             params[func.__name__] = func
 
@@ -268,11 +360,11 @@ class Datasource(BaseModel):
     url: 'OptionalValueFromEnvVar'
 
 
-class Generator(BaseModel):
+class Generator(GenericModel, Generic[ConfigT]):
     name: str
     output: 'ValueFromEnvVar'
     provider: 'OptionalValueFromEnvVar'
-    config: 'Config'
+    config: ConfigT
     binary_targets: List['ValueFromEnvVar'] = FieldInfo(alias='binaryTargets')
     preview_features: List[str] = FieldInfo(alias='previewFeatures')
 
@@ -303,15 +395,45 @@ class OptionalValueFromEnvVar(BaseModel):
     value: Optional[str]
     from_env_var: Optional[str] = FieldInfo(alias='fromEnvVar')
 
+    def resolve(self) -> str:
+        value = self.value
+        if value is not None:
+            return value
+
+        env_var = self.from_env_var
+        assert env_var is not None, 'from_env_var should not be None'
+        value = os.environ.get(env_var)
+        if value is None:
+            raise RuntimeError(f'Environment variable not found: {env_var}')
+
+        return value
+
 
 class Config(BaseSettings):
     """Custom generator config options."""
 
     interface: InterfaceChoices = InterfaceChoices.asyncio
     partial_type_generator: Optional[Module] = None
-    recursive_type_depth: int = FieldInfo(default=5)
+    recursive_type_depth: int = FieldInfo(
+        default_factory=_recursive_type_depth_factory
+    )
     validate_arguments: bool = True
     engine_type: EngineType = FieldInfo(default=EngineType.binary)
+
+    # this should be a list of experimental features
+    # https://github.com/prisma/prisma/issues/12442
+    enable_experimental_decimal: bool = FieldInfo(default=False)
+
+    # this seems to be the only good method for setting the contextvar as
+    # we don't control the actual construction of the object like we do for
+    # the Data model.
+    # we do not expose this to type checkers so that the generated __init__
+    # signature is preserved.
+    if not TYPE_CHECKING:
+
+        def __init__(self, **kwargs: object) -> None:
+            super().__init__(**kwargs)
+            config_ctx.set(self)
 
     class Config(BaseSettings.Config):
         extra: Extra = Extra.forbid
@@ -346,7 +468,9 @@ class Config(BaseSettings):
 
     @root_validator(pre=True)
     @classmethod
-    def removed_http_option_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+    def removed_http_option_validator(
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
         http = values.get('http')
         if http is not None:
             if http in {'aiohttp', 'httpx-async'}:
@@ -364,11 +488,17 @@ class Config(BaseSettings):
             )
         return values
 
-    @validator('partial_type_generator', pre=True, always=True, allow_reuse=True)
+    @validator(
+        'partial_type_generator', pre=True, always=True, allow_reuse=True
+    )
     @classmethod
-    def partial_type_generator_converter(cls, value: Optional[str]) -> Optional[Module]:
+    def partial_type_generator_converter(
+        cls, value: Optional[str]
+    ) -> Optional[Module]:
         try:
-            return Module(spec=value)  # pyright: reportGeneralTypeIssues=false
+            return Module(
+                spec=value  # pyright: ignore[reportGeneralTypeIssues]
+            )
         except ValueError:
             if value is None:
                 # no config value passed and the default location was not found
@@ -384,9 +514,7 @@ class Config(BaseSettings):
 
     @validator('engine_type', always=True, allow_reuse=True)
     @classmethod
-    def engine_type_validator(  # pylint: disable=no-else-raise,inconsistent-return-statements,no-else-return
-        cls, value: EngineType
-    ) -> EngineType:
+    def engine_type_validator(cls, value: EngineType) -> EngineType:
         if value == EngineType.binary:
             return value
         elif value == EngineType.dataproxy:  # pragma: no cover
@@ -427,19 +555,18 @@ class EnumValue(BaseModel):
 
 class Model(BaseModel):
     name: str
+    documentation: Optional[str] = None
     db_name: Optional[str] = FieldInfo(alias='dbName')
     is_generated: bool = FieldInfo(alias='isGenerated')
-    compound_primary_key: Optional['PrimaryKey'] = FieldInfo(alias='primaryKey')
+    compound_primary_key: Optional['PrimaryKey'] = FieldInfo(
+        alias='primaryKey'
+    )
     unique_indexes: List['UniqueIndex'] = FieldInfo(alias='uniqueIndexes')
+    all_fields: List['Field'] = FieldInfo(alias='fields')
+
     _sampler: Sampler = PrivateAttr()
 
-    if TYPE_CHECKING:
-        # pylint thinks all_fields is not an iterable
-        all_fields: List['Field']
-    else:
-        all_fields: List['Field'] = FieldInfo(alias='fields')
-
-    # no idea why mypy throws this error
+    # mypy throws an error here - probbaly because of the pydantic plugin
     def __init__(self, **data: Any) -> None:  # type: ignore[no-redef]
         super().__init__(**data)
         self._sampler = Sampler(self)
@@ -492,7 +619,7 @@ class Model(BaseModel):
                 yield field
 
     # TODO: support combined unique constraints
-    @property
+    @cached_property
     def id_field(self) -> Optional['Field']:
         """Find a field that can be passed to the model's `WhereUnique` filter"""
         for field in self.scalar_fields:  # pragma: no branch
@@ -557,6 +684,7 @@ class UniqueIndex(Constraint):
 
 class Field(BaseModel):
     name: str
+    documentation: Optional[str] = None
 
     # TODO: switch to enums
     kind: str
@@ -575,8 +703,12 @@ class Field(BaseModel):
 
     relation_name: Optional[str] = FieldInfo(alias='relationName')
     relation_on_delete: Optional[str] = FieldInfo(alias='relationOnDelete')
-    relation_to_fields: Optional[List[str]] = FieldInfo(alias='relationToFields')
-    relation_from_fields: Optional[List[str]] = FieldInfo(alias='relationFromFields')
+    relation_to_fields: Optional[List[str]] = FieldInfo(
+        alias='relationToFields'
+    )
+    relation_from_fields: Optional[List[str]] = FieldInfo(
+        alias='relationFromFields'
+    )
 
     _last_sampled: Optional[str] = PrivateAttr()
 
@@ -591,6 +723,26 @@ class Field(BaseModel):
                 raise ValueError(f'Unsupported scalar field type: {type_}')
 
         return values
+
+    @validator('type')
+    @classmethod
+    def experimental_decimal_validator(cls, typ: str) -> str:
+        if typ == 'Decimal':
+            config = get_config()
+
+            # skip validating the experimental flag if we are
+            # being called from a custom generator
+            if (
+                isinstance(config, Config)
+                and not config.enable_experimental_decimal
+            ):
+                raise ValueError(
+                    'Support for the Decimal type is experimental\n'
+                    '  As such you must set the `enable_experimental_decimal` config flag to true\n'
+                    '  for more information see: https://github.com/RobertCraigie/prisma-client-py/issues/106'
+                )
+
+        return typ
 
     @validator('name')
     @classmethod
@@ -633,21 +785,21 @@ class Field(BaseModel):
     def python_type_as_string(self) -> str:
         type_ = self._actual_python_type
         if self.is_list:
-            type_ = type_.replace('\'', '\\\'')
-            return f'\'List[{type_}]\''
+            type_ = type_.replace("'", "\\'")
+            return f"'List[{type_}]'"
 
-        if not type_.startswith('\''):
-            type_ = f'\'{type_}\''
+        if not type_.startswith("'"):
+            type_ = f"'{type_}'"
 
         return type_
 
     @property
     def _actual_python_type(self) -> str:
         if self.kind == 'enum':
-            return f'\'enums.{self.type}\''
+            return f"'enums.{self.type}'"
 
         if self.kind == 'object':
-            return f'\'models.{self.type}\''
+            return f"'models.{self.type}'"
 
         try:
             return TYPE_MAPPING[self.type]
@@ -663,25 +815,37 @@ class Field(BaseModel):
             return self.python_type
 
         if self.is_list:
-            return f'\'{self.type}CreateManyNestedWithoutRelationsInput\''
+            return f"'{self.type}CreateManyNestedWithoutRelationsInput'"
 
-        return f'\'{self.type}CreateNestedWithoutRelationsInput\''
+        return f"'{self.type}CreateNestedWithoutRelationsInput'"
 
     @property
     def where_input_type(self) -> str:
         typ = self.type
         if self.is_relational:
             if self.is_list:
-                return f'\'{typ}ListRelationFilter\''
-            return f'\'{typ}RelationFilter\''
+                return f"'{typ}ListRelationFilter'"
+            return f"'{typ}RelationFilter'"
 
         if self.is_list:
             self.check_supported_scalar_list_type()
-            return f'\'types.{typ}ListFilter\''
+            return f"'types.{typ}ListFilter'"
 
         if typ in FILTER_TYPES:
-            return f'Union[{self._actual_python_type}, \'types.{typ}Filter\']'
+            if self.is_optional:
+                return f"Union[None, {self._actual_python_type}, 'types.{typ}Filter']"
+            return f"Union[{self._actual_python_type}, 'types.{typ}Filter']"
 
+        return self.python_type
+
+    @property
+    def where_aggregates_input_type(self) -> str:
+        if self.is_relational:  # pragma: no cover
+            raise RuntimeError('This type is not valid for relational fields')
+
+        typ = self.type
+        if typ in FILTER_TYPES:
+            return f"Union[{self._actual_python_type}, 'types.{typ}WithAggregatesFilter']"
         return self.python_type
 
     @property
@@ -712,6 +876,10 @@ class Field(BaseModel):
     def is_atomic(self) -> bool:
         return self.type in ATOMIC_FIELD_TYPES
 
+    @property
+    def is_number(self) -> bool:
+        return self.type in {'Int', 'BigInt', 'Float'}
+
     def maybe_optional(self, typ: str) -> str:
         """Wrap the given type string within `Optional` if applicable"""
         if self.is_required or self.is_relational:
@@ -721,12 +889,12 @@ class Field(BaseModel):
     def get_update_input_type(self) -> str:
         if self.kind == 'object':
             if self.is_list:
-                return f'\'{self.type}UpdateManyWithoutRelationsInput\''
-            return f'\'{self.type}UpdateOneWithoutRelationsInput\''
+                return f"'{self.type}UpdateManyWithoutRelationsInput'"
+            return f"'{self.type}UpdateOneWithoutRelationsInput'"
 
         if self.is_list:
             self.check_supported_scalar_list_type()
-            return f'\'types.{self.type}ListUpdate\''
+            return f"'types.{self.type}ListUpdate'"
 
         if self.is_atomic:
             return f'Union[Atomic{self.type}Input, {self.python_type}]'
@@ -734,7 +902,9 @@ class Field(BaseModel):
         return self.python_type
 
     def check_supported_scalar_list_type(self) -> None:
-        if not self.type in FILTER_TYPES and self.kind != 'enum':
+        if (
+            self.type not in FILTER_TYPES and self.kind != 'enum'
+        ):  # pragma: no branch
             raise UnsupportedListTypeError(self.type)
 
     def get_relational_model(self) -> Optional['Model']:
@@ -768,9 +938,10 @@ class Field(BaseModel):
         return sampled
 
     def _get_sample_data(self) -> str:
-        # pylint: disable=no-else-return,too-many-return-statements
         if self.is_relational:  # pragma: no cover
-            raise RuntimeError('Data sampling for relational fields not supported yet')
+            raise RuntimeError(
+                'Data sampling for relational fields not supported yet'
+            )
 
         if self.kind == 'enum':
             enum = self.get_corresponding_enum()
@@ -783,7 +954,7 @@ class Field(BaseModel):
         elif typ == 'Int':
             return str(FAKER.integer())
         elif typ == 'String':
-            return f'\'{FAKER.string()}\''
+            return f"'{FAKER.string()}'"
         elif typ == 'Float':
             return f'{FAKER.integer()}.{FAKER.integer() // 10000}'
         elif typ == 'BigInt':  # pragma: no cover
@@ -792,9 +963,11 @@ class Field(BaseModel):
             # TODO: random dates
             return 'datetime.datetime.utcnow()'
         elif typ == 'Json':
-            return f'Json({{\'{FAKER.string()}\': True}})'
+            return f"Json({{'{FAKER.string()}': True}})"
         elif typ == 'Bytes':
-            return f'Base64.encode(b\'{FAKER.string()}\')'
+            return f"Base64.encode(b'{FAKER.string()}')"
+        elif typ == 'Decimal':
+            return f"Decimal('{FAKER.integer()}.{FAKER.integer() // 10000}')"
         else:  # pragma: no cover
             raise RuntimeError(f'Sample data not supported for {typ} yet')
 
@@ -804,9 +977,31 @@ class DefaultValue(BaseModel):
     name: str
 
 
+class _EmptyModel(BaseModel):
+    class Config(BaseModel.Config):
+        extra: Extra = Extra.forbid
+
+
+class _ModelAllowAll(BaseModel):
+    class Config(BaseModel.Config):
+        extra: Extra = Extra.allow
+
+
+class PythonData(GenericData[Config]):
+    """Data class including the default Prisma Client Python config"""
+
+
+class DefaultData(GenericData[_EmptyModel]):
+    """Data class without any config options"""
+
+
+# this has to be defined as a type alias instead of a class
+# as its purpose is to signify that the data is config agnostic
+AnyData = GenericData[Any]
+
 Enum.update_forward_refs()
 DMMF.update_forward_refs()
-Data.update_forward_refs()
+GenericData.update_forward_refs()
 Field.update_forward_refs()
 Model.update_forward_refs()
 Datamodel.update_forward_refs()

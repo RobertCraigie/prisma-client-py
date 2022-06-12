@@ -1,0 +1,22 @@
+version: 2
+updates:
+
+  # Github actions
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    reviewers:
+      - RobertCraigie
+    rebase-strategy: auto
+    target-branch: main
+
+  # Python packages
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: daily
+    reviewers:
+      - RobertCraigie
+    rebase-strategy: auto
+    target-branch: main

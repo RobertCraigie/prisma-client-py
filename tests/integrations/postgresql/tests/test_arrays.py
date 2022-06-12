@@ -1,8 +1,9 @@
-from datetime import datetime, timedelta
+from decimal import Decimal
 from typing import Any, List
+from datetime import datetime, timedelta
 
 import pytest
-from prisma import Client, Json, Base64
+from prisma import Prisma, Json, Base64
 from prisma.enums import Role
 from prisma.models import Lists
 
@@ -13,14 +14,16 @@ def _utcnow() -> datetime:
     return now.replace(microsecond=int(now.microsecond / 1000) * 1000)
 
 
-def _assert_datelist_equal(actual: List[datetime], expected: List[datetime]) -> None:
+def _assert_datelist_equal(
+    actual: List[datetime], expected: List[datetime]
+) -> None:
     actual = [dt.replace(tzinfo=None) for dt in actual]
     expected = [dt.replace(tzinfo=None) for dt in expected]
     assert actual == expected
 
 
 @pytest.mark.asyncio
-async def test_order_by(client: Client) -> None:
+async def test_order_by(client: Prisma) -> None:
     """Results can be ordered by a String[] field"""
     total = await client.lists.create_many(
         [
@@ -42,7 +45,7 @@ async def test_order_by(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_update_many(client: Client) -> None:
+async def test_update_many(client: Prisma) -> None:
     """Updating many String[] values"""
     result = await client.lists.create_many(
         [
@@ -78,7 +81,7 @@ async def test_update_many(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_strings(client: Client) -> None:
+async def test_updating_strings(client: Prisma) -> None:
     """Updating a String[] value"""
     models = [
         await client.lists.create({}),
@@ -141,7 +144,7 @@ async def test_updating_strings(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_bytes(client: Client) -> None:
+async def test_updating_bytes(client: Prisma) -> None:
     """Updating a Bytes[] value"""
     models = [
         await client.lists.create({}),
@@ -208,7 +211,7 @@ async def test_updating_bytes(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_datetime(client: Client) -> None:
+async def test_updating_datetime(client: Prisma) -> None:
     """Updating a DateTime[] value"""
     now = _utcnow()
     models = [
@@ -274,7 +277,7 @@ async def test_updating_datetime(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_boolean(client: Client) -> None:
+async def test_updating_boolean(client: Prisma) -> None:
     """Updating a Boolean[] value"""
     models = [
         await client.lists.create({}),
@@ -337,7 +340,7 @@ async def test_updating_boolean(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_ints(client: Client) -> None:
+async def test_updating_ints(client: Prisma) -> None:
     """Updating a Int[] value"""
     models = [
         await client.lists.create({}),
@@ -400,7 +403,7 @@ async def test_updating_ints(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_bigints(client: Client) -> None:
+async def test_updating_bigints(client: Prisma) -> None:
     """Updating a BigInt[] value"""
     models = [
         await client.lists.create({}),
@@ -435,7 +438,11 @@ async def test_updating_bigints(client: Client) -> None:
         },
     )
     assert model is not None
-    assert model.bigints == [539506179039297536, 281454500584095754, 186214420957888512]
+    assert model.bigints == [
+        539506179039297536,
+        281454500584095754,
+        186214420957888512,
+    ]
 
     model = await client.lists.update(
         where={
@@ -463,7 +470,7 @@ async def test_updating_bigints(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_floats(client: Client) -> None:
+async def test_updating_floats(client: Prisma) -> None:
     """Updating a Float[] value"""
     models = [
         await client.lists.create({}),
@@ -526,7 +533,7 @@ async def test_updating_floats(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_json(client: Client) -> None:
+async def test_updating_json(client: Prisma) -> None:
     """Updating a Json[] value"""
     models = [
         await client.lists.create({}),
@@ -589,7 +596,7 @@ async def test_updating_json(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_updating_enum(client: Client) -> None:
+async def test_updating_enum(client: Prisma) -> None:
     """Updating a Role[] enum value"""
     models = [
         await client.lists.create({}),
@@ -652,7 +659,70 @@ async def test_updating_enum(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_strings(client: Client) -> None:
+async def test_updating_decimal(client: Prisma) -> None:
+    """Updating a Decimal[] value"""
+    models = [
+        await client.lists.create({}),
+        await client.lists.create(
+            data={
+                'decimals': [Decimal('22.99'), Decimal('30.01')],
+            },
+        ),
+    ]
+
+    model = await client.lists.update(
+        where={
+            'id': models[0].id,
+        },
+        data={
+            'decimals': {
+                'push': [Decimal('22.99'), Decimal('31')],
+            },
+        },
+    )
+    assert model is not None
+    assert model.decimals == [Decimal('22.99'), Decimal('31')]
+
+    model = await client.lists.update(
+        where={
+            'id': models[1].id,
+        },
+        data={
+            'decimals': {
+                'push': [Decimal('5')],
+            },
+        },
+    )
+    assert model is not None
+    assert model.decimals == [Decimal('22.99'), Decimal('30.01'), Decimal('5')]
+
+    model = await client.lists.update(
+        where={
+            'id': models[1].id,
+        },
+        data={
+            'decimals': {
+                'set': [Decimal('3')],
+            },
+        },
+    )
+    assert model is not None
+    assert model.decimals == [Decimal('3')]
+
+    model = await client.lists.update(
+        where={
+            'id': models[1].id,
+        },
+        data={
+            'decimals': [Decimal('7')],
+        },
+    )
+    assert model is not None
+    assert model.decimals == [Decimal('7')]
+
+
+@pytest.mark.asyncio
+async def test_filtering_strings(client: Prisma) -> None:
     """Searching for records by a String[] value"""
     async with client.batch_() as batcher:
         batcher.lists.create({})
@@ -746,7 +816,7 @@ async def test_filtering_strings(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_bools(client: Client) -> None:
+async def test_filtering_bools(client: Prisma) -> None:
     """Searching for records by a Boolean[] value"""
     async with client.batch_() as batcher:
         batcher.lists.create({})
@@ -842,7 +912,7 @@ async def test_filtering_bools(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_ints(client: Client) -> None:
+async def test_filtering_ints(client: Prisma) -> None:
     """Searching for records by a Int[] value"""
     async with client.batch_() as batcher:
         batcher.lists.create({})
@@ -936,7 +1006,7 @@ async def test_filtering_ints(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_floats(client: Client) -> None:
+async def test_filtering_floats(client: Prisma) -> None:
     """Searching for records by a Float[] value"""
     async with client.batch_() as batcher:
         batcher.lists.create({})
@@ -1030,7 +1100,7 @@ async def test_filtering_floats(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_bigints(client: Client) -> None:
+async def test_filtering_bigints(client: Prisma) -> None:
     """Searching for records by a BigInt[] value"""
     async with client.batch_() as batcher:
         batcher.lists.create({})
@@ -1124,7 +1194,7 @@ async def test_filtering_bigints(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_json(client: Client) -> None:
+async def test_filtering_json(client: Prisma) -> None:
     """Searching for records by a Json[] value"""
     expected_raw: List[Any] = [[], {'country': 'Scotland'}]
     expected_objects = [Json([]), Json.keys(country='Scotland')]
@@ -1221,7 +1291,7 @@ async def test_filtering_json(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_datetime(client: Client) -> None:
+async def test_filtering_datetime(client: Prisma) -> None:
     """Searching for records by a DateTime[] value"""
     now = _utcnow()
     expected_objects = [now, now + timedelta(hours=1)]
@@ -1317,7 +1387,7 @@ async def test_filtering_datetime(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_bytes(client: Client) -> None:
+async def test_filtering_bytes(client: Prisma) -> None:
     """Searching for records by a Bytes[] value"""
     expected_objects = [Base64.encode(b'foo'), Base64.encode(b'bar')]
     async with client.batch_() as batcher:
@@ -1412,7 +1482,7 @@ async def test_filtering_bytes(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_filtering_enums(client: Client) -> None:
+async def test_filtering_enums(client: Prisma) -> None:
     """Searching for records by a Role[] enum value"""
     async with client.batch_() as batcher:
         batcher.lists.create({})
@@ -1506,7 +1576,101 @@ async def test_filtering_enums(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_bytes_constructing(client: Client) -> None:
+async def test_filtering_decimal(client: Prisma) -> None:
+    """Searching for records by a Decimal[] value"""
+    async with client.batch_() as batcher:
+        batcher.lists.create({})
+        batcher.lists.create(
+            data={
+                'decimals': [],
+            },
+        )
+        batcher.lists.create(
+            data={
+                'decimals': [Decimal('1'), Decimal('2')],
+            },
+        )
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'equals': None,
+            },
+        },
+    )
+    assert model is not None
+    assert model.decimals == []
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'equals': [Decimal('1'), Decimal('2')],
+            },
+        },
+    )
+    assert model is not None
+    assert model.decimals == [Decimal(1), Decimal(2)]
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'has': Decimal('1'),
+            },
+        },
+    )
+    assert model is not None
+    assert model.decimals == [Decimal(1), Decimal(2)]
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'has': Decimal(3),
+            },
+        },
+    )
+    assert model is None
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'has_some': [Decimal(1), Decimal(3)],
+            },
+        },
+    )
+    assert model is not None
+    assert model.decimals == [Decimal(1), Decimal(2)]
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'has_every': [Decimal(1), Decimal(2), Decimal(3)],
+            },
+        },
+    )
+    assert model is None
+
+    model = await client.lists.find_first(
+        where={
+            'decimals': {
+                'has_every': [Decimal(1)],
+            },
+        },
+    )
+    assert model is not None
+    assert model.decimals == [Decimal(1), Decimal(2)]
+
+    count = await client.lists.count(
+        where={
+            'decimals': {
+                'is_empty': True,
+            },
+        },
+    )
+    assert count == 1
+
+
+@pytest.mark.asyncio
+async def test_bytes_constructing(client: Prisma) -> None:
     """A list of Base64 fields can be passed to the model constructor"""
     record = await client.lists.create({})
     model = Lists.parse_obj(
