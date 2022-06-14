@@ -62,13 +62,13 @@ __all__ = (
 ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float']
 
 TYPE_MAPPING = {
-    'String': 'str',
+    'String': '_str',
     'Bytes': "'fields.Base64'",
     'DateTime': 'datetime.datetime',
-    'Boolean': 'bool',
-    'Int': 'int',
-    'Float': 'float',
-    'BigInt': 'int',
+    'Boolean': '_bool',
+    'Int': '_int',
+    'Float': '_float',
+    'BigInt': '_int',
     'Json': "'fields.Json'",
     'Decimal': 'decimal.Decimal',
 }
@@ -83,6 +83,24 @@ FILTER_TYPES = [
     'Json',
     'Decimal',
 ]
+RECURSIVE_TYPE_DEPTH_WARNING = """Some types are disabled by default due to being incompatible with Mypy, it is highly recommended
+to use Pyright instead and configure Prisma Python to use recursive types. To re-enable certain types:"""
+
+RECURSIVE_TYPE_DEPTH_WARNING_DESC = """
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = -1
+}
+
+If you need to use Mypy, you can also disable this message by explicitly setting the default value:
+
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = 5
+}
+
+For more information see: https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/#default-type-limitations
+"""
 
 FAKER: Faker = Faker()
 
@@ -185,6 +203,17 @@ def _pathlib_serializer(path: Path) -> str:
     return str(path.absolute())
 
 
+def _recursive_type_depth_factory() -> int:
+    click.echo(
+        click.style(
+            f'\n{RECURSIVE_TYPE_DEPTH_WARNING}',
+            fg='yellow',
+        )
+    )
+    click.echo(f'{RECURSIVE_TYPE_DEPTH_WARNING_DESC}\n')
+    return 5
+
+
 class BaseModel(PydanticBaseModel):
     class Config:
         arbitrary_types_allowed: bool = True
@@ -275,7 +304,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
     version: str
     generator: 'Generator[ConfigT]'
     dmmf: 'DMMF' = FieldInfo(alias='dmmf')
-    schema_path: str = FieldInfo(alias='schemaPath')
+    schema_path: Path = FieldInfo(alias='schemaPath')
     datasources: List['Datasource'] = FieldInfo(alias='datasources')
     other_generators: List['Generator[_ModelAllowAll]'] = FieldInfo(
         alias='otherGenerators'
@@ -366,13 +395,28 @@ class OptionalValueFromEnvVar(BaseModel):
     value: Optional[str]
     from_env_var: Optional[str] = FieldInfo(alias='fromEnvVar')
 
+    def resolve(self) -> str:
+        value = self.value
+        if value is not None:
+            return value
+
+        env_var = self.from_env_var
+        assert env_var is not None, 'from_env_var should not be None'
+        value = os.environ.get(env_var)
+        if value is None:
+            raise RuntimeError(f'Environment variable not found: {env_var}')
+
+        return value
+
 
 class Config(BaseSettings):
     """Custom generator config options."""
 
     interface: InterfaceChoices = InterfaceChoices.asyncio
     partial_type_generator: Optional[Module] = None
-    recursive_type_depth: int = FieldInfo(default=5)
+    recursive_type_depth: int = FieldInfo(
+        default_factory=_recursive_type_depth_factory
+    )
     engine_type: EngineType = FieldInfo(default=EngineType.binary)
 
     # this should be a list of experimental features

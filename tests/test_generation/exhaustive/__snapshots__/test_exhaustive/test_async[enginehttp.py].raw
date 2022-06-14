@@ -5,11 +5,16 @@
 # fmt: off
 
 # global imports for type checking
+from builtins import bool as _bool
+from builtins import int as _int
+from builtins import float as _float
+from builtins import str as _str
 import sys
 import decimal
 import datetime
 from typing import (
     TYPE_CHECKING,
+    NoReturn,
     Optional,
     Iterable,
     Iterator,
@@ -76,7 +81,14 @@ class HTTPEngine(AbstractEngine):
         if self.session and not self.session.closed:
             await self.session.close()
 
-    async def request(self, method: Method, path: str, *, content: Any = None) -> Any:
+    async def request(
+        self,
+        method: Method,
+        path: str,
+        *,
+        content: Any = None,
+        headers: Optional[Dict[str, str]] = None,
+    ) -> Any:
         if self.url is None:
             raise errors.NotConnectedError('Not connected to the query engine')
 
@@ -87,6 +99,9 @@ class HTTPEngine(AbstractEngine):
                 **self.headers,
             }
         }
+
+        if headers is not None:
+            kwargs['headers'].update(headers)
 
         if content is not None:
             kwargs['content'] = content

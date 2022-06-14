@@ -5,11 +5,16 @@
 # fmt: off
 
 # global imports for type checking
+from builtins import bool as _bool
+from builtins import int as _int
+from builtins import float as _float
+from builtins import str as _str
 import sys
 import decimal
 import datetime
 from typing import (
     TYPE_CHECKING,
+    NoReturn,
     Optional,
     Iterable,
     Iterator,
@@ -182,8 +187,21 @@ class QueryEngine(HTTPEngine):
                 'Could not connect to the query engine'
             ) from last_exc
 
-    async def query(self, content: str) -> Any:
-        return await self.request('POST', '/', content=content)
+    async def query(
+        self,
+        content: str,
+        tx_id: Optional[str] = None
+    ) -> Any:
+        headers: Dict[str, str] = {}
+        if tx_id is not None:
+            headers['X-transaction-id'] = tx_id
+
+        return await self.request(
+            'POST',
+            '/',
+            content=content,
+            headers=headers,
+        )
 
 
 # black does not respect the fmt: off comment without this
