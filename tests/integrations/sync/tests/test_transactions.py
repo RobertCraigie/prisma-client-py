@@ -14,9 +14,13 @@ def test_context_manager(client: Client) -> None:
         # ensure not commited outside transaction
         assert client.user.count() == 0
 
-        transaction.profile.create({'bio': 'Hello, there!', 'user_id': user.id})
+        transaction.profile.create(
+            {'bio': 'Hello, there!', 'user_id': user.id}
+        )
 
-    found = client.user.find_unique(where={'id': user.id}, include={'profile': True})
+    found = client.user.find_unique(
+        where={'id': user.id}, include={'profile': True}
+    )
     assert found is not None
     assert found.name == 'Robert'
     assert found.profile is not None
