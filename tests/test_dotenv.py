@@ -1,4 +1,5 @@
 import os
+from typing import Iterator
 
 import pytest
 from prisma import Prisma, load_env
@@ -20,14 +21,17 @@ def make_env_file(testdir: Testdir, name: str = '.env') -> None:
 
 
 @pytest.fixture(autouse=True)
-def clear_env(testdir: Testdir) -> None:
+def clear_env(testdir: Testdir) -> Iterator[None]:
     os.environ.pop(ENV_KEY, None)
+
+    yield
+
     paths = [
         testdir.path.joinpath('.env'),
         testdir.path.joinpath('prisma/.env'),
     ]
     for path in paths:
-        if path.exists():
+        if path.exists():  # pragma: no branch
             path.unlink(missing_ok=True)
 
 
