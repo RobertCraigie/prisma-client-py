@@ -273,7 +273,7 @@ class UseClientDefault:
 _USE_CLIENT_DEFAULT = UseClientDefault()
 
 
-def load_env(*, override: bool = True, **kwargs: Any) -> None:
+def load_env(*, override: bool = False, **kwargs: Any) -> None:
     """Load environemntal variables from dotenv files
 
     Loads from the following files relative to the current
