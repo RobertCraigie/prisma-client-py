@@ -22,8 +22,13 @@ def make_env_file(testdir: Testdir, name: str = '.env') -> None:
 @pytest.fixture(autouse=True)
 def clear_env(testdir: Testdir) -> None:
     os.environ.pop(ENV_KEY, None)
-    testdir.path.joinpath('.env').unlink(missing_ok=True)
-    testdir.path.joinpath('prisma/.env').unlink(missing_ok=True)
+    paths = [
+        testdir.path.joinpath('.env'),
+        testdir.path.joinpath('prisma/.env'),
+    ]
+    for path in paths:
+        if path.exists():
+            path.unlink(missing_ok=True)
 
 
 @pytest.mark.parametrize('name', ['.env', 'prisma/.env'])
