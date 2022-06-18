@@ -32,7 +32,7 @@ def clear_env(testdir: Testdir) -> Iterator[None]:
     ]
     for path in paths:
         if path.exists():  # pragma: no branch
-            path.unlink(missing_ok=True)
+            path.unlink()
 
 
 @pytest.mark.parametrize('name', ['.env', 'prisma/.env'])
