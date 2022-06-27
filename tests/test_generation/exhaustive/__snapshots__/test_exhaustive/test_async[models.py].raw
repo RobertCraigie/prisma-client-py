@@ -151,8 +151,11 @@ class Post(BaseModel):
         if name in _created_partial_types:
             raise ValueError(f'Partial type "{name}" has already been created.')
 
-        if include is not None and exclude is not None:
-            raise TypeError(f'Exclude and include are mutually exclusive.')
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
 
         if required and optional:
             shared = set(required) & set(optional)
@@ -196,7 +199,7 @@ class Post(BaseModel):
             if exclude_relational_fields:
                 fields = {
                     key: data
-                    for key, data in _Post_fields.items()
+                    for key, data in fields.items()
                     if key not in _Post_relational_fields
                 }
 
@@ -291,8 +294,11 @@ class User(BaseModel):
         if name in _created_partial_types:
             raise ValueError(f'Partial type "{name}" has already been created.')
 
-        if include is not None and exclude is not None:
-            raise TypeError(f'Exclude and include are mutually exclusive.')
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
 
         if required and optional:
             shared = set(required) & set(optional)
@@ -336,7 +342,7 @@ class User(BaseModel):
             if exclude_relational_fields:
                 fields = {
                     key: data
-                    for key, data in _User_fields.items()
+                    for key, data in fields.items()
                     if key not in _User_relational_fields
                 }
 
@@ -427,8 +433,11 @@ class M(BaseModel):
         if name in _created_partial_types:
             raise ValueError(f'Partial type "{name}" has already been created.')
 
-        if include is not None and exclude is not None:
-            raise TypeError(f'Exclude and include are mutually exclusive.')
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
 
         if required and optional:
             shared = set(required) & set(optional)
@@ -472,7 +481,7 @@ class M(BaseModel):
             if exclude_relational_fields:
                 fields = {
                     key: data
-                    for key, data in _M_fields.items()
+                    for key, data in fields.items()
                     if key not in _M_relational_fields
                 }
 
@@ -565,8 +574,11 @@ class N(BaseModel):
         if name in _created_partial_types:
             raise ValueError(f'Partial type "{name}" has already been created.')
 
-        if include is not None and exclude is not None:
-            raise TypeError(f'Exclude and include are mutually exclusive.')
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
 
         if required and optional:
             shared = set(required) & set(optional)
@@ -610,7 +622,7 @@ class N(BaseModel):
             if exclude_relational_fields:
                 fields = {
                     key: data
-                    for key, data in _N_fields.items()
+                    for key, data in fields.items()
                     if key not in _N_relational_fields
                 }
 
@@ -701,8 +713,11 @@ class OneOptional(BaseModel):
         if name in _created_partial_types:
             raise ValueError(f'Partial type "{name}" has already been created.')
 
-        if include is not None and exclude is not None:
-            raise TypeError(f'Exclude and include are mutually exclusive.')
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
 
         if required and optional:
             shared = set(required) & set(optional)
@@ -746,7 +761,7 @@ class OneOptional(BaseModel):
             if exclude_relational_fields:
                 fields = {
                     key: data
-                    for key, data in _OneOptional_fields.items()
+                    for key, data in fields.items()
                     if key not in _OneOptional_relational_fields
                 }
 
@@ -838,8 +853,11 @@ class ManyRequired(BaseModel):
         if name in _created_partial_types:
             raise ValueError(f'Partial type "{name}" has already been created.')
 
-        if include is not None and exclude is not None:
-            raise TypeError(f'Exclude and include are mutually exclusive.')
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
 
         if required and optional:
             shared = set(required) & set(optional)
@@ -883,7 +901,7 @@ class ManyRequired(BaseModel):
             if exclude_relational_fields:
                 fields = {
                     key: data
-                    for key, data in _ManyRequired_fields.items()
+                    for key, data in fields.items()
                     if key not in _ManyRequired_relational_fields
                 }
 
@@ -972,8 +990,11 @@ class Lists(BaseModel):
         if name in _created_partial_types:
             raise ValueError(f'Partial type "{name}" has already been created.')
 
-        if include is not None and exclude is not None:
-            raise TypeError(f'Exclude and include are mutually exclusive.')
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
 
         if required and optional:
             shared = set(required) & set(optional)
@@ -1085,8 +1106,11 @@ class A(BaseModel):
         if name in _created_partial_types:
             raise ValueError(f'Partial type "{name}" has already been created.')
 
-        if include is not None and exclude is not None:
-            raise TypeError(f'Exclude and include are mutually exclusive.')
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
 
         if required and optional:
             shared = set(required) & set(optional)
@@ -1190,8 +1214,11 @@ class B(BaseModel):
         if name in _created_partial_types:
             raise ValueError(f'Partial type "{name}" has already been created.')
 
-        if include is not None and exclude is not None:
-            raise TypeError(f'Exclude and include are mutually exclusive.')
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
 
         if required and optional:
             shared = set(required) & set(optional)
@@ -1296,8 +1323,11 @@ class C(BaseModel):
         if name in _created_partial_types:
             raise ValueError(f'Partial type "{name}" has already been created.')
 
-        if include is not None and exclude is not None:
-            raise TypeError(f'Exclude and include are mutually exclusive.')
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
 
         if required and optional:
             shared = set(required) & set(optional)
@@ -1402,8 +1432,11 @@ class D(BaseModel):
         if name in _created_partial_types:
             raise ValueError(f'Partial type "{name}" has already been created.')
 
-        if include is not None and exclude is not None:
-            raise TypeError(f'Exclude and include are mutually exclusive.')
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
 
         if required and optional:
             shared = set(required) & set(optional)
@@ -1510,8 +1543,11 @@ class E(BaseModel):
         if name in _created_partial_types:
             raise ValueError(f'Partial type "{name}" has already been created.')
 
-        if include is not None and exclude is not None:
-            raise TypeError(f'Exclude and include are mutually exclusive.')
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
 
         if required and optional:
             shared = set(required) & set(optional)
