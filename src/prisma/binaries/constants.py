@@ -2,8 +2,6 @@ import os
 import tempfile
 from pathlib import Path
 
-from . import platform
-
 
 __all__ = (
     'PRISMA_URL',
@@ -11,7 +9,6 @@ __all__ = (
     'ENGINE_URL',
     'ENGINE_VERSION',
     'GLOBAL_TEMP_DIR',
-    'PRISMA_CLI_NAME',
 )
 
 
@@ -45,9 +42,3 @@ GLOBAL_TEMP_DIR = (
     / 'engines'
     / ENGINE_VERSION
 )
-
-# local file path for the prisma CLI
-if platform.name() == 'windows':
-    PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}.exe'
-else:
-    PRISMA_CLI_NAME = f'prisma-cli-{platform.name()}'  # pyright: ignore[reportConstantRedefinition]

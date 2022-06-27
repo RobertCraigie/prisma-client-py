@@ -36,11 +36,6 @@ from pydantic import (
 from pydantic.fields import PrivateAttr
 from pydantic.generics import GenericModel as PydanticGenericModel
 
-try:
-    from pydantic.env_settings import SettingsSourceCallable
-except ImportError:
-    SettingsSourceCallable = Any  # type: ignore
-
 
 from .utils import Faker, Sampler, clean_multiline
 from ..utils import DEBUG_GENERATOR, assert_never
@@ -48,6 +43,9 @@ from .._compat import validator, root_validator, cached_property
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
 from ..binaries.constants import ENGINE_VERSION, PRISMA_VERSION
+
+if TYPE_CHECKING:
+    from pydantic.env_settings import SettingsSourceCallable
 
 
 __all__ = (
@@ -309,6 +307,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
     other_generators: List['Generator[_ModelAllowAll]'] = FieldInfo(
         alias='otherGenerators'
     )
+    binary_paths: 'BinaryPaths' = FieldInfo(alias='binaryPaths')
 
     @classmethod
     def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
@@ -350,6 +349,15 @@ class GenericData(GenericModel, Generic[ConfigT]):
                 '  or generate the client using the Python CLI, e.g. python3 -m prisma generate'
             )
         return values
+
+
+class BinaryPaths(BaseModel):
+    # TODO: use Path ?
+    query_engine: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='queryEngine',
+    )
+    # TODO: does this discard other options?
 
 
 class Datasource(BaseModel):
@@ -443,10 +451,10 @@ class Config(BaseSettings):
         @classmethod
         def customise_sources(
             cls,
-            init_settings: SettingsSourceCallable,
-            env_settings: SettingsSourceCallable,
-            file_secret_settings: SettingsSourceCallable,
-        ) -> Tuple[SettingsSourceCallable, ...]:
+            init_settings: 'SettingsSourceCallable',
+            env_settings: 'SettingsSourceCallable',
+            file_secret_settings: 'SettingsSourceCallable',
+        ) -> Tuple['SettingsSourceCallable', ...]:
             # prioritise env settings over init settings
             return env_settings, init_settings, file_secret_settings
 

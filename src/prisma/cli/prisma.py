@@ -1,16 +1,28 @@
+from asyncio import subprocess
 import os
+from subprocess import CompletedProcess
 import sys
 import logging
-import subprocess
-from textwrap import indent
+from pathlib import Path
 from typing import List, Optional, Dict
 
 import click
-
-from .. import binaries
+from nodejs import npm, node
 
 
 log: logging.Logger = logging.getLogger(__name__)
+
+from ..binaries import PRISMA_VERSION, ENGINE_VERSION
+
+
+CACHE_DIR = (
+    Path.home()
+    / '.cache'
+    / 'prisma-binaries'
+    / PRISMA_VERSION
+    / ENGINE_VERSION
+)
+CLI_ENTRYPOINT = CACHE_DIR / 'node_modules' / 'prisma' / 'build' / 'index.js'
 
 
 def run(
@@ -18,14 +30,6 @@ def run(
     check: bool = False,
     env: Optional[Dict[str, str]] = None,
 ) -> int:
-    directory = binaries.ensure_cached()
-    path = directory.joinpath(binaries.PRISMA_CLI_NAME)
-    if not path.exists():
-        raise RuntimeError(
-            f'The Prisma CLI is not downloaded, expected {path} to exist.'
-        )
-
-    log.debug('Using Prisma CLI at %s', path)
     log.debug('Running prisma command with args: %s', args)
 
     default_env = {
@@ -34,47 +38,31 @@ def run(
         'PRISMA_CLI_QUERY_ENGINE_TYPE': 'binary',
     }
     env = {**default_env, **env} if env is not None else default_env
-    # ensure the client uses our engine binaries
-    for engine in binaries.ENGINES:
-        env[engine.env] = str(engine.path.absolute())
 
-    if args and args[0] == 'studio':
-        click.echo(
-            click.style(
-                'ERROR: Prisma Studio does not work natively with Prisma Client Python',
-                fg='red',
-            ),
-        )
-        click.echo(
-            '\nThere are two other possible ways to use Prisma Studio:\n'
-        )
-        click.echo(
-            click.style('1. Download the Prisma Studio app\n', bold=True)
-        )
-        click.echo(
-            indent(
-                'Prisma Studio can be downloaded from: '
-                + click.style(
-                    'https://github.com/prisma/studio/releases', underline=True
-                ),
-                ' ' * 3,
-            )
-        )
-        click.echo(
-            click.style('\n2. Use the Node based Prisma CLI:\n', bold=True)
-        )
-        click.echo(
-            indent(
-                'If you have Node / NPX installed you can launch Prisma Studio by running the command: ',
-                ' ' * 3,
-            ),
-            nl=False,
-        )
-        click.echo(click.style('npx prisma studio', bold=True))
-        return 1
+    # TODO: test studio
+    # TODO: graceful termination
 
-    process = subprocess.run(
-        [str(path.absolute()), *args],
+    if not CACHE_DIR.exists():
+        CACHE_DIR.mkdir(parents=True)
+
+    entrypoint = CLI_ENTRYPOINT
+    if not entrypoint.exists():
+        # TODO: output that installing CLI is happening?
+        proc: CompletedProcess[bytes] = npm.run(
+            ['install', f'prisma@{PRISMA_VERSION}f'],
+            cwd=str(CACHE_DIR),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        if proc.returncode != 0:
+            print('npm install log: ', proc.stdout)
+            proc.check_returncode()
+
+    if not entrypoint.exists():
+        raise RuntimeError('TODO: better error message and class')
+
+    process = node.run(
+        [str(entrypoint), *args],
         env=env,
         check=check,
         stdout=sys.stdout,
@@ -82,11 +70,10 @@ def run(
     )
 
     if args and args[0] in {'--help', '-h'}:
-        prefix = ' '
-        click.echo(click.style(prefix + 'Python Commands\n', bold=True))
+        click.echo(click.style('Python Commands\n', bold=True))
         click.echo(
-            prefix
-            + 'For Prisma Client Python commands see '
+            '  '
+            + 'For Prisma Client Python commands run '
             + click.style('prisma py --help', bold=True)
         )
 

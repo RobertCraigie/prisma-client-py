@@ -77,7 +77,17 @@ class QueryEngine(HTTPEngine):
             raise errors.AlreadyConnectedError('Already connected to the query engine')
 
         start = time.monotonic()
-        self.file = file = utils.ensure()
+
+        # TODO
+        # circular imports
+        from ..client import BINARY_PATHS
+
+
+        # TODO: actually detect the local platform
+        print(BINARY_PATHS)
+        p_values = BINARY_PATHS.query_engine.values()
+        print(p_values)
+        self.file = file = Path(list(p_values)[0])
 
         try:
             {{ maybe_await }}self.spawn(file, timeout=timeout, datasources=datasources)
