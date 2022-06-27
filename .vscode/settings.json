@@ -1,5 +1,9 @@
 {
   "python.formatting.provider": "black",
+  "python.formatting.blackPath": "blue",
+  "[javascript]": {
+      "editor.tabSize": 2
+  },
   "rust-analyzer.linkedProjects": [
     "src/query-engine/Cargo.toml"
   ]

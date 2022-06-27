@@ -16,7 +16,9 @@ with open('README.md', 'r') as f:
 
 version = ''
 with open('src/prisma/__init__.py') as f:
-    match = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE)
+    match = re.search(
+        r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE
+    )
     if not match:
         raise RuntimeError('version is not set')
 
@@ -44,15 +46,20 @@ setup(
     install_requires=requirements('base.txt'),
     long_description=readme,
     long_description_content_type='text/markdown',
-    packages=find_packages(where='src', include=['prisma', 'prisma.*']),
+    packages=find_packages(
+        where='src',
+        include=['prisma', 'prisma.*', 'prisma_cleanup'],
+    ),
     package_dir={'': 'src'},
-    python_requires='>=3',
+    python_requires='>=3.7.0',
     package_data={'': ['generator/templates/**/*.py.jinja', 'py.typed']},
     include_package_data=True,
     zip_safe=False,
     extras_require={
         **extras,
-        'all': [req for requirements in extras.values() for req in requirements],
+        'all': [
+            req for requirements in extras.values() for req in requirements
+        ],
     },
     entry_points={
         'console_scripts': [
@@ -76,13 +83,13 @@ setup(
         'postgresql',
     ],
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Typing :: Typed',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Database :: Database Engines/Servers',
+        'Topic :: Database :: Front-Ends',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',

@@ -1,13 +1,15 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types with context %}
+{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider with context %}
 # -- template client.py.jinja --
+from pathlib import Path
 from types import TracebackType
 
 from . import types, models, errors, actions
+from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT
 from .builder import QueryBuilder
-from .engine import AbstractEngine
-from .generator.models import EngineType
+from .engine import AbstractEngine, LibraryEngine, QueryEngine
+from .generator.models import EngineType, OptionalValueFromEnvVar
 {% if generator.config.engine_type == 'library' %}
 from .engine import LibraryEngine as DefaultEngine
 {% elif generator.config.engine_type == 'binary' %}
@@ -18,6 +20,9 @@ from .engine import QueryEngine as DefaultEngine
 
 __all__ = (
     'ENGINE_TYPE',
+    'SCHEMA_PATH',
+    'Batch',
+    'Prisma',
     'Client',
     'load_env',
     'register',
@@ -27,10 +32,11 @@ __all__ = (
 SCHEMA = '''
 {{ datamodel }}
 '''
+SCHEMA_PATH = Path('{{ schema_path }}')
 
 ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
 
-RegisteredClient = Union['Client', Callable[[], 'Client']]
+RegisteredClient = Union['Prisma', Callable[[], 'Prisma']]
 _registered_client: Optional[RegisteredClient] = None
 
 
@@ -56,7 +62,7 @@ class UseClientDefault:
 _USE_CLIENT_DEFAULT = UseClientDefault()
 
 
-def load_env(*, override: bool = True, **kwargs: Any) -> None:
+def load_env(*, override: bool = False, **kwargs: Any) -> None:
     """Load environemntal variables from dotenv files
 
     Loads from the following files relative to the current
@@ -82,15 +88,15 @@ def register(client: RegisteredClient) -> None:
     if _registered_client is not None:
         raise errors.ClientAlreadyRegisteredError()
 
-    if not isinstance(client, Client) and not callable(client):
+    if not isinstance(client, Prisma) and not callable(client):
         raise TypeError(
-            f'Expected either a {Client} instance or a function that returns a {Client} but got {client} instead.'
+            f'Expected either a {Prisma} instance or a function that returns a {Prisma} but got {client} instead.'
         )
 
     _registered_client = client
 
 
-def get_client() -> 'Client':
+def get_client() -> 'Prisma':
     """Get the registered client instance
 
     Raises errors.ClientNotRegisteredError() if no client instance has been registered.
@@ -99,19 +105,19 @@ def get_client() -> 'Client':
     if registered is None:
         raise errors.ClientNotRegisteredError() from None
 
-    if isinstance(registered, Client):
+    if isinstance(registered, Prisma):
         return registered
 
     client = registered()
-    if not isinstance(client, Client):  # pyright: reportUnnecessaryIsInstance=false
+    if not isinstance(client, Prisma):  # pyright: ignore[reportUnnecessaryIsInstance]
         raise TypeError(
-            f'Registered function returned {client} instead of a {Client} instance.'
+            f'Registered function returned {client} instead of a {Prisma} instance.'
         )
 
     return client
 
 
-class Client:
+class Prisma:
     {% for model in dmmf.datamodel.models %}
     {% if recursive_types %}
     {{ model.name.lower() }}: 'actions.{{ model.name }}Actions[models.{{ model.name }}]'
@@ -120,15 +126,27 @@ class Client:
     {% endif %}
     {% endfor %}
 
+    __slots__ = (
+        {% for model in dmmf.datamodel.models %}
+        '{{ model.name.lower() }}',
+        {% endfor %}
+        '__engine',
+        '_active_provider',
+        '_log_queries',
+        '_datasource',
+        '_connect_timeout',
+        '_http_config',
+    )
+
     def __init__(
         self,
         *,
         use_dotenv: bool = True,
         log_queries: bool = False,
         auto_register: bool = False,
-        # no idea why this type ignore is required, pyright works correctly, mypy does not
-        datasource: Optional[types.DatasourceOverride] = None,  # type: ignore[name-defined]
+        datasource: Optional[DatasourceOverride] = None,
         connect_timeout: int = 10,
+        http: Optional[HttpConfig] = None,
     ) -> None:
         {% for model in dmmf.datamodel.models %}
         {% if recursive_types %}
@@ -138,10 +156,11 @@ class Client:
         {% endif %}
         {% endfor %}
         self.__engine: Optional[AbstractEngine] = None
-        self._active_provider = '{{ datasources[0].active_provider }}'
+        self._active_provider = '{{ active_provider }}'
         self._log_queries = log_queries
         self._datasource = datasource
         self._connect_timeout = connect_timeout
+        self._http_config: HttpConfig = http or {}
 
         if use_dotenv:
             load_env()
@@ -154,8 +173,9 @@ class Client:
             self.__engine.stop()
             self.__engine = None
 
+
     {% if is_async %}
-    async def __aenter__(self) -> 'Client':
+    async def __aenter__(self) -> 'Prisma':
         await self.connect()
         return self
 
@@ -168,7 +188,7 @@ class Client:
         if self.is_connected():
             await self.disconnect()
     {% else %}
-    def __enter__(self) -> 'Client':
+    def __enter__(self) -> 'Prisma':
         self.connect()
         return self
 
@@ -198,13 +218,19 @@ class Client:
             timeout = self._connect_timeout
 
         if self.__engine is None:
-            self.__engine = self._engine_class(dml=SCHEMA, log_queries=self._log_queries)
+            self.__engine = self._create_engine(dml=SCHEMA)
 
         datasources: Optional[List[types.DatasourceOverride]] = None
         if self._datasource is not None:
             ds = self._datasource.copy()
             ds.setdefault('name', '{{ datasources[0].name }}')
             datasources = [ds]
+        {% if active_provider == 'sqlite' %}
+        else:
+            # Override the default SQLite path to protect against
+            # https://github.com/RobertCraigie/prisma-client-py/issues/409
+            datasources = [self._make_sqlite_datasource()]
+        {% endif %}
 
         {{ maybe_await }}self.__engine.connect(
             timeout=timeout,
@@ -224,7 +250,8 @@ class Client:
             {% endif %}
             self.__engine = None
 
-    {{ maybe_async_def }}execute_raw(self, query: str, *args: Any) -> int:
+    {% if active_provider != 'mongodb' %}
+    {{ maybe_async_def }}execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = {{ maybe_await }}self._execute(
             operation='{{ operations.execute_raw }}',
             method='{{ methods.execute_raw }}',
@@ -236,15 +263,15 @@ class Client:
         return int(resp['data']['result'])
 
     @overload
-    {{ maybe_async_def }}query_first(self, query: str, *args: Any) -> Any:
+    {{ maybe_async_def }}query_first(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    {{ maybe_async_def }}query_first(self, query: str, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
+    {{ maybe_async_def }}query_first(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
         ...
 
     {{ maybe_async_def }}query_first(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[Optional[BaseModelT], Any]:
         if model is not None:
             results = {{ maybe_await }}self.query_raw(query, *args, model=model)
@@ -257,15 +284,15 @@ class Client:
         return results[0]
 
     @overload
-    {{ maybe_async_def }}query_raw(self, query: str, *args: Any) -> Any:
+    {{ maybe_async_def }}query_raw(self, query: LiteralString, *args: Any) -> Any:
         ...
 
     @overload
-    {{ maybe_async_def }}query_raw(self, query: str, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
+    {{ maybe_async_def }}query_raw(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
         ...
 
     {{ maybe_async_def }}query_raw(
-        self, query: str, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
     ) -> Union[List[BaseModelT], Any]:
         resp = {{ maybe_await }}self._execute(
             operation='{{ operations.query_raw }}',
@@ -279,6 +306,7 @@ class Client:
         if model is not None:
             return [model.parse_obj(r) for r in result]
         return result
+    {% endif %}
 
     def batch_(self) -> 'Batch':
         """Returns a context manager for grouping write queries into a single transaction."""
@@ -302,12 +330,46 @@ class Client:
         )
         return {{ maybe_await }}self._engine.query(builder.build())
 
+    def _create_engine(self, dml: str = SCHEMA) -> AbstractEngine:
+        if ENGINE_TYPE == EngineType.binary:
+            return QueryEngine(dml=dml, log_queries=self._log_queries, **self._http_config)
+
+        if ENGINE_TYPE == EngineType.library:
+            if LibraryEngine is None:
+                raise RuntimeError('Attempted to use library engine when the library engine is not installed')
+            return LibraryEngine(dml=dml, log_queries=self._log_queries)
+
+        raise NotImplementedError(f'Unsupported engine type: {ENGINE_TYPE}')
+
     @property
     def _engine(self) -> AbstractEngine:
         engine = self.__engine
         if engine is None:
             raise errors.ClientNotConnectedError()
         return engine
+
+    def _make_sqlite_datasource(self) -> DatasourceOverride:
+        return {
+            'name': '{{ datasources[0].name }}',
+            'url': self._make_sqlite_url(self._default_datasource['url']),
+        }
+
+    def _make_sqlite_url(self, url: str, *, relative_to: Path = SCHEMA_PATH.parent) -> str:
+        url_path = url.lstrip('file:').lstrip('sqlite:')
+        if url_path == url:
+            return url
+
+        if Path(url_path).is_absolute():
+            return url
+
+        return f'file:{relative_to.joinpath(url_path).resolve()}'
+
+    @property
+    def _default_datasource(self) -> DatasourceOverride:
+        return {
+            'name': '{{ datasources[0].name }}',
+            'url': OptionalValueFromEnvVar(**{{ datasources[0].url.dict(by_alias=True) }}).resolve(),
+        }
 
     @property
     def _engine_class(self) -> Type[AbstractEngine]:
@@ -321,7 +383,7 @@ class Batch:
     {{ model.name.lower() }}: '{{ model.name }}BatchActions'
     {% endfor %}
 
-    def __init__(self, client: Client) -> None:
+    def __init__(self, client: Prisma) -> None:
         self.__client = client
         self.__queries: List[str] = []
         self._active_provider = client._active_provider
@@ -499,3 +561,5 @@ class {{ model.name }}BatchActions:
 
 
 {% endfor %}
+
+Client = Prisma

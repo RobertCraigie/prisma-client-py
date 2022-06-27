@@ -7,8 +7,10 @@ from prisma.generator.models import Module, Config
 
 def test_module_serialization() -> None:
     """Python module serialization to json"""
-    path = Path(__file__).parent.parent.joinpath('scripts/partial_type_generator.py')
-    module = Module(spec=str(path))
+    path = Path(__file__).parent.parent.joinpath(
+        'scripts/partial_type_generator.py'
+    )
+    module = Module.parse_obj({'spec': str(path)})
     assert Module.parse_raw(module.json()).spec.name == module.spec.name
 
 
@@ -21,10 +23,47 @@ def test_recursive_type_depth() -> None:
         assert exc.match('Value must equal -1 or be greater than 1.')
 
     with pytest.raises(ValidationError) as exc:
-        Config(recursive_type_depth='a')
+        Config(
+            recursive_type_depth='a'  # pyright: ignore[reportGeneralTypeIssues]
+        )
 
     assert exc.match('value is not a valid integer')
 
     for value in [-1, 2, 3, 10, 99]:
         config = Config(recursive_type_depth=value)
         assert config.recursive_type_depth == value
+
+
+def test_default_recursive_type_depth(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Warn when recursive type depth is not set:
+
+    https://github.com/RobertCraigie/prisma-client-py/issues/252
+
+    Ensure that we provide advice on what value to use and that it defaults to 5.
+
+    Also validate that when a type depth is provided, no warning is shown.
+    """
+    c = Config()
+    captured = capsys.readouterr()
+    assert 'it is highly recommended to use Pyright' in captured.out.replace(
+        '\n', ' '
+    )
+    assert c.recursive_type_depth == 5
+
+    c = Config(recursive_type_depth=5)
+    captured = capsys.readouterr()
+    assert (
+        'it is highly recommended to use Pyright'
+        not in captured.out.replace('\n', ' ')
+    )
+    assert c.recursive_type_depth == 5
+
+    c = Config(recursive_type_depth=2)
+    captured = capsys.readouterr()
+    assert (
+        'it is highly recommended to use Pyright'
+        not in captured.out.replace('\n', ' ')
+    )
+    assert c.recursive_type_depth == 2

@@ -9,12 +9,14 @@ from typing import List
 
 import pytest
 
-from prisma import Client
+from prisma import Prisma
 from prisma.models import Post
 
+from .utils import async_fixture
 
-@pytest.fixture(scope='module', name='user_id')
-async def user_id_fixture(client: Client) -> str:
+
+@async_fixture(scope='module', name='user_id')
+async def user_id_fixture(client: Prisma) -> str:
     user = await client.user.create({'name': 'Robert'})
     posts = await create_or_get_posts(client, user.id)
     await client.category.create(
@@ -26,13 +28,15 @@ async def user_id_fixture(client: Client) -> str:
     return user.id
 
 
-@pytest.fixture(scope='module', name='posts')
-async def posts_fixture(client: Client, user_id: str) -> List[Post]:
+@async_fixture(scope='module', name='posts')
+async def posts_fixture(client: Prisma, user_id: str) -> List[Post]:
     return await create_or_get_posts(client, user_id)
 
 
-async def create_or_get_posts(client: Client, user_id: str) -> List[Post]:
-    user = await client.user.find_unique(where={'id': user_id}, include={'posts': True})
+async def create_or_get_posts(client: Prisma, user_id: str) -> List[Post]:
+    user = await client.user.find_unique(
+        where={'id': user_id}, include={'posts': True}
+    )
     assert user is not None
 
     if user.posts:
@@ -72,14 +76,19 @@ async def create_or_get_posts(client: Client, user_id: str) -> List[Post]:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_find_unique_include(client: Client, user_id: str) -> None:
+async def test_find_unique_include(client: Prisma, user_id: str) -> None:
     """Including a one-to-many relationship returns all records as a list of models"""
-    user = await client.user.find_unique(where={'id': user_id}, include={'posts': True})
+    user = await client.user.find_unique(
+        where={'id': user_id}, include={'posts': True}
+    )
     assert user is not None
     assert user.name == 'Robert'
-    assert len(user.posts) == 4  # pyright: reportGeneralTypeIssues=false
+    assert len(user.posts) == 4  # pyright: ignore[reportGeneralTypeIssues]
 
-    for i, post in enumerate(user.posts, start=1):
+    for i, post in enumerate(
+        user.posts,  # pyright: ignore[reportGeneralTypeIssues]
+        start=1,
+    ):
         assert post.author is None
         assert post.author_id == user.id
         assert post.title == f'Post {i}'
@@ -87,19 +96,26 @@ async def test_find_unique_include(client: Client, user_id: str) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_find_unique_include_take(client: Client, user_id: str) -> None:
+async def test_find_unique_include_take(client: Prisma, user_id: str) -> None:
     """Including a one-to-many relationship with take limits amount of returned models"""
     user = await client.user.find_unique(
-        where={'id': user_id}, include={'posts': {'take': 1}}
+        where={
+            'id': user_id,
+        },
+        include={
+            'posts': {
+                'take': 1,
+            },
+        },
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: reportGeneralTypeIssues=false
+    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
 async def test_find_unique_include_where(
-    client: Client, user_id: str, posts: List[Post]
+    client: Prisma, user_id: str, posts: List[Post]
 ) -> None:
     """Including a one-to-many relationship with a where argument filters results"""
     user = await client.user.find_unique(
@@ -107,49 +123,55 @@ async def test_find_unique_include_where(
         include={'posts': {'where': {'created_at': posts[0].created_at}}},
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: reportGeneralTypeIssues=false
+    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
     assert user.posts[0].id == posts[0].id
 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
 async def test_find_unique_include_pagination(
-    client: Client, user_id: str, posts: List[Post]
+    client: Prisma, user_id: str, posts: List[Post]
 ) -> None:
     """Pagination by cursor id works forwards and backwards"""
     user = await client.user.find_unique(
         where={'id': user_id},
-        include={'posts': {'cursor': {'id': posts[0].id}, 'take': 1, 'skip': 1}},
+        include={
+            'posts': {'cursor': {'id': posts[0].id}, 'take': 1, 'skip': 1}
+        },
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: reportGeneralTypeIssues=false
+    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
     assert user.posts[0].id == posts[1].id
 
     user = await client.user.find_unique(
         where={'id': user_id},
-        include={'posts': {'cursor': {'id': posts[1].id}, 'take': -1, 'skip': 1}},
+        include={
+            'posts': {'cursor': {'id': posts[1].id}, 'take': -1, 'skip': 1}
+        },
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: reportGeneralTypeIssues=false
+    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
     assert user.posts[0].id == posts[0].id
 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
 async def test_find_unique_include_nested_where_or(
-    client: Client, user_id: str, posts: List[Post]
+    client: Prisma, user_id: str, posts: List[Post]
 ) -> None:
     """Include with nested or argument"""
     user = await client.user.find_unique(
         where={'id': user_id},
         include={
-            'posts': {'where': {'OR': [{'published': True}, {'id': posts[0].id}]}}
+            'posts': {
+                'where': {'OR': [{'published': True}, {'id': posts[0].id}]}
+            }
         },
     )
     assert user is not None
 
     assert posts[0].published is False
-    assert len(user.posts) == 3  # pyright: reportGeneralTypeIssues=false
+    assert len(user.posts) == 3  # pyright: ignore[reportGeneralTypeIssues]
 
     assert user.posts[0].id == posts[0].id
     assert user.posts[1].id == posts[1].id
@@ -162,7 +184,9 @@ async def test_find_unique_include_nested_where_or(
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_find_unique_include_nested_include(client: Client, user_id: str) -> None:
+async def test_find_unique_include_nested_include(
+    client: Prisma, user_id: str
+) -> None:
     """Multiple nested include arguments returns all models"""
     user = await client.user.find_unique(
         where={'id': user_id},
@@ -180,7 +204,7 @@ async def test_find_unique_include_nested_include(client: Client, user_id: str) 
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_create_include(client: Client) -> None:
+async def test_create_include(client: Prisma) -> None:
     """Creating a record and including it at the same time"""
     post = await client.post.create(
         {

@@ -1,5 +1,11 @@
 import pytest
+from fastapi import FastAPI
+
 from prisma.models import User
+from prisma.errors import UnsupportedSubclassWarning
+
+
+# pyright: reportUnusedClass=false
 
 
 async def create_user() -> User:
@@ -242,7 +248,7 @@ async def test_query_raw() -> None:
         await User.prisma().create({'name': 'Tegan'}),
     ]
     results = await User.prisma().query_raw(
-        'SELECT id, name FROM User WHERE id = ?', users[1].id
+        'SELECT id, name, created_at FROM User WHERE id = ?', users[1].id
     )
     assert len(results) == 1
     assert results[0].name == 'Tegan'
@@ -263,13 +269,37 @@ async def test_query_first() -> None:
     assert user.name == 'Tegan'
 
 
-def test_subclassing_disallowed() -> None:
-    """Subclassing a prisma model without using recursive types is not allowed,
-    this is because generic classes create a massive performance hit on mypy.
+def test_subclassing_warns() -> None:
+    """Subclassing a prisma model without using recursive types should raise a
+    warning as it will cause unexpected behaviour when static type checking as
+    action methods will be typed to return the base class, not the sub class.
     """
-    with pytest.raises(RuntimeError) as exc:
+    with pytest.warns(UnsupportedSubclassWarning):
 
-        class MyUser(User):  # pyright: reportUnusedClass=false
+        class MyUser(User):
             pass
 
-    assert 'pseudo-recursive types' in exc.value.args[0]
+    class MyUser2(User, warn_subclass=False):
+        pass
+
+    # ensure other arguments can be passed to support multiple inheritance
+    class MyUser3(User, warn_subclass=False, foo=1):
+        pass
+
+
+# NOTE: we only include a FastAPI test here as it is a small dependency
+# if we need to ignore warnings for other packages, we do not need unit tests
+
+
+def test_subclass_ignores_fastapi_response_model() -> None:
+    """FastAPI implicitly creates new types from the model passed to response_model.
+    This calls __init_subclass__ which will raise warnings that users cannot do anything about.
+    """
+    # this test may look like it does not test anything but as we turn
+    # warnings into errors when running pytest, this will catch any
+    # warnings we raise
+    app = FastAPI()
+
+    @app.get('/', response_model=User)
+    async def _() -> None:  # pragma: no cover
+        ...

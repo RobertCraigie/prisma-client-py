@@ -1,0 +1,15 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.db"
+}
+
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "sync"
+  recursive_type_depth = 5
+}
+
+model Customer {
+  id   Int    @id @default(autoincrement())
+  name String
+}

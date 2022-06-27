@@ -1,5 +1,5 @@
 from datetime import datetime
-from prisma import Client, Base64, Json
+from prisma import Prisma, Base64, Json
 from prisma.enums import Role
 
 
@@ -7,7 +7,7 @@ from prisma.enums import Role
 # for valid cases in `tests/integrations/postgresql/tests/test_arrays.py`
 
 
-async def filtering(client: Client) -> None:
+async def filtering(client: Prisma) -> None:
     # case: multiple arguments not allowed
     await client.lists.find_first(
         where={  # E: Argument of type "dict[str, dict[str, str | None]]" cannot be assigned to parameter "where" of type "ListsWhereInput | None" in function "find_first"
@@ -136,7 +136,7 @@ async def filtering(client: Client) -> None:
     )
 
 
-async def updating(client: Client) -> None:
+async def updating(client: Prisma) -> None:
     # case: invalid set
     await client.lists.update(
         where={
@@ -170,7 +170,7 @@ async def updating(client: Client) -> None:
     )
 
 
-async def models(client: Client) -> None:
+async def models(client: Prisma) -> None:
     model = await client.lists.find_first()
     assert model is not None
     reveal_type(model.ints)  # T: List[int]

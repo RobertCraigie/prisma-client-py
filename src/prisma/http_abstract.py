@@ -1,5 +1,17 @@
 from abc import abstractmethod, ABC
-from typing import Any, Union, Coroutine, Type, TypeVar, Generic, Optional, cast
+from typing import (
+    Any,
+    Union,
+    Coroutine,
+    Type,
+    Dict,
+    TypeVar,
+    Generic,
+    Optional,
+    cast,
+)
+
+from httpx import Limits, Timeout
 
 from ._types import Method
 from .utils import _NoneType
@@ -11,13 +23,33 @@ Response = TypeVar('Response')
 ReturnType = TypeVar('ReturnType')
 MaybeCoroutine = Union[Coroutine[Any, Any, ReturnType], ReturnType]
 
+DEFAULT_CONFIG: Dict[str, Any] = {
+    'limits': Limits(max_connections=1000),
+    'timeout': Timeout(30),
+}
+
 
 class AbstractHTTP(ABC, Generic[Session, Response]):
-    def __init__(self) -> None:
+    session_kwargs: Dict[str, Any]
+
+    __slots__ = (
+        '_session',
+        'session_kwargs',
+    )
+
+    # NOTE: ParamSpec wouldn't be valid here:
+    # https://github.com/microsoft/pyright/issues/2667
+    def __init__(self, **kwargs: Any) -> None:
         # NoneType = not used yet
         # None = closed
         # Session = open
-        self._session = _NoneType  # type: Optional[Union[Session, Type[_NoneType]]]
+        self._session = (
+            _NoneType
+        )  # type: Optional[Union[Session, Type[_NoneType]]]
+        self.session_kwargs = {
+            **DEFAULT_CONFIG,
+            **kwargs,
+        }
 
     @abstractmethod
     def download(self, url: str, dest: str) -> MaybeCoroutine[None]:
@@ -48,6 +80,7 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
             self.open()
             return cast(Session, self._session)
 
+        # TODO: make this not strict, just open a new session
         if session is None:
             raise HTTPClientClosedError()
 
@@ -56,8 +89,11 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
     @session.setter
     def session(
         self, value: Optional[Session]
-    ) -> None:  # pyright: reportPropertyTypeMismatch=false
+    ) -> None:  # pyright: ignore[reportPropertyTypeMismatch]
         self._session = value
+
+    def should_close(self) -> bool:
+        return self._session is not _NoneType and not self.closed
 
     def __repr__(self) -> str:
         return str(self)
@@ -68,6 +104,8 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
 
 class AbstractResponse(ABC, Generic[Response]):
     original: Response
+
+    __slots__ = ('original',)
 
     def __init__(self, original: Response) -> None:
         self.original = original

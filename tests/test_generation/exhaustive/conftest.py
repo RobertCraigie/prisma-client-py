@@ -30,4 +30,6 @@ def generate_clients() -> None:
     remove_generated_clients()
     base = Path(__file__).parent
     for schema in ['sync.schema.prisma', 'async.schema.prisma']:
-        maybe_exit(prisma.run(['generate', f'--schema={base.joinpath(schema)}']))
+        maybe_exit(
+            prisma.run(['generate', f'--schema={base.joinpath(schema)}'])
+        )

@@ -1,5 +1,5 @@
-[tool.black]
-skip-string-normalization = true
+[tool.blue]
+line-length = 100
 
 [tool.pyright]
 include = [

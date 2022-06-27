@@ -4,6 +4,3 @@ include = [
 ]
 pythonVersion = "3.9"
 typeCheckingMode = "strict"
-
-[tool.black]
-skip-string-normalization = true

@@ -202,7 +202,7 @@ def test_custom_serialization(snapshot: SnapshotAssertion) -> None:
             self.arg = arg
 
     @serializer.register(Foo)
-    def custom_serializer(inst: Foo) -> int:  # pyright: reportUnusedFunction=false
+    def custom_serializer(inst: Foo) -> int:  # pyright: ignore[reportUnusedFunction]
         return inst.arg
 
     query = QueryBuilder(

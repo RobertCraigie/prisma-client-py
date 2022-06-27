@@ -5,7 +5,7 @@ This is useful in situations where only certain fields of a model are available 
 
 Partial models are generated to `prisma.partials`.
 
-See [config](config.md#partial-type-generator) for configuration details and the [reference](partials.md) for API documentation.
+See [config](../reference/config.md#partial-type-generator) for configuration details and the [reference](../reference/partials.md) for API documentation.
 
 ## Example
 
@@ -39,6 +39,9 @@ User.create_partial('UserWithProfile', required={'profile'})
 
 # user with an optional name
 User.create_partial('UserWithOptionalName', optional={'name'})
+
+# user without any relational fields (in this case without the profile and posts fields)
+User.create_partial('UserWithoutRelations', exclude_relational_fields=True)
 ```
 Would generate the following partial types
 ```py
@@ -72,6 +75,11 @@ class UserWithOptionalName(BaseModel):
     email: Optional[str]
     posts: Optional[List[models.Post]]
     profile: Optional[models.Profile]
+
+class UserWithoutRelations(BaseModel):
+    id: str
+    name: str
+    email: Optional[str]
 ```
 
 ### Example Usage
@@ -82,7 +90,7 @@ One situation where partial types are particularly useful is in FastAPI endpoint
 
 ```py
 from typing import Optional
-from prisma.client import Client
+from prisma import Prisma
 from prisma.partials import UserWithoutRelations
 from fastapi import FastAPI, Depends
 from .utils import get_db
@@ -93,7 +101,7 @@ app = FastAPI()
     '/users/{user_id}',
     response_model=UserWithoutRelations,
 )
-async def get_user(user_id: str, db: Client = Depends(get_db)) -> Optional[User]:
+async def get_user(user_id: str, db: Prisma = Depends(get_db)) -> Optional[User]:
     return await db.user.find_unique(where={'id': user_id})
 ```
 
@@ -102,7 +110,7 @@ or for making raw queries type safe
 ```py
 from prisma.partials import UserInLogin
 
-user = await client.query_first(
+user = await db.query_first(
     'SELECT name, email FROM User WHERE id = ?',
     'abc',
     model=UserInLogin,

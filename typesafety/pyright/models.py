@@ -1,4 +1,4 @@
-from prisma.models import User
+from prisma.models import Types, User
 
 
 class MyUser(User):
@@ -27,6 +27,13 @@ async def create() -> None:
         },
     )
     reveal_type(user)  # T: User
+
+    type_ = await Types.prisma().create(data={})
+    reveal_type(type_.bool)  # T: bool
+    reveal_type(type_.string)  # T: str
+    reveal_type(type_.bigint)  # T: int
+    reveal_type(type_.integer)  # T: int
+    reveal_type(type_.float_)  # T: float
 
     # case: subclassing
     user2 = await MyUser.prisma().create(

@@ -1,5 +1,6 @@
 .PHONY: bootstrap
 bootstrap:
+	pip install -U wheel
 	pip install -U -e .[all]
 	prisma db push --schema=tests/data/schema.prisma
 	cp tests/data/dev.db dev.db
@@ -10,26 +11,13 @@ database:
 	prisma db push --schema=tests/data/schema.prisma
 	cp tests/data/dev.db dev.db
 
-. PHONY: package
-package:
-	python scripts/cleanup.py
-	rm -rf dist/*
-	python setup.py sdist
-	python setup.py sdist bdist_wheel
-	sh scripts/check_pkg.sh
-
-. PHONE: release
-release:
-	sh scripts/check_pkg.sh
-	twine upload dist/*
-
 .PHONY: test
 test:
 	tox $(ARGS)
 
 .PHONY: format
 format:
-	black .
+	blue .
 	for schema in `find . -name '*.schema.prisma'` ; do \
         prisma format --schema=$$schema ; \
     done
@@ -63,7 +51,7 @@ docs-serve:
 
 .PHONY: clean
 clean:
-	python scripts/cleanup.py
+	python -m prisma_cleanup
 	rm -rf /tmp/tox/prisma-client-py
 	rm -rf `find . -name __pycache__`
 	rm -rf `find examples -name '.venv' `

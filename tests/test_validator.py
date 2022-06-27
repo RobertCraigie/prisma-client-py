@@ -60,7 +60,9 @@ def test_missing_values(snapshot: SnapshotAssertion) -> None:
 
 def test_optional_values() -> None:
     """Fields that can be None are still included in the validated data"""
-    validated = validate(types.PostCreateInput, dict(title='My Title', published=True))
+    validated = validate(
+        types.PostCreateInput, dict(title='My Title', published=True)
+    )
     assert validated == {'title': 'My Title', 'published': True}  # type: ignore[comparison-overlap]
 
     validated = validate(

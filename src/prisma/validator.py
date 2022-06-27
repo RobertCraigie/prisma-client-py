@@ -38,30 +38,35 @@ def patch_pydantic() -> None:
 
     create_model = annotated_types.create_model_from_typeddict
 
-    def patched_create_model(typeddict_cls: Any, **kwargs: Any) -> Type[BaseModel]:
+    def patched_create_model(
+        typeddict_cls: Any, **kwargs: Any
+    ) -> Type[BaseModel]:
         kwargs.setdefault('__module__', typeddict_cls.__module__)
         return create_model(typeddict_cls, **kwargs)
 
     annotated_types.create_model_from_typeddict = patched_create_model
 
 
-def validate(type: Type[T], data: Any) -> T:  # pylint: disable=redefined-builtin
+def validate(type: Type[T], data: Any) -> T:
     """Validate untrusted data matches a given TypedDict
 
     For example:
 
     from prisma import validate, types
+    from prisma.models import User
 
     def user_create_handler(data: Any) -> None:
         validated = validate(types.UserCreateInput, data)
-        user = await client.user.create(data=validated)
+        user = await User.prisma().create(data=validated)
     """
     # avoid patching pydantic until we know we need to in case our
     # monkey patching fails
     patch_pydantic()
 
     if not is_typeddict(type):
-        raise TypeError(f'Only TypedDict types are supported, got: {type} instead.')
+        raise TypeError(
+            f'Only TypedDict types are supported, got: {type} instead.'
+        )
 
     # we cannot use pydantic's builtin type -> model resolver
     # as we need to be able to update forward references
@@ -70,9 +75,12 @@ def validate(type: Type[T], data: Any) -> T:  # pylint: disable=redefined-builti
         # mypy thinks this is unreachable, we know it isn't, just ignore
         model = type.__pydantic_model__  # type: ignore[unreachable]
     else:
-        # type ignore required as pydantic is typed with a custom
-        # TypedDict type instead of the standard library version
-        model = create_model_from_typeddict(type, __config__=Config)  # type: ignore
+        # pyright is more strict than mypy here, we also don't care about the
+        # incorrectly inferred type as we have verified that the given type
+        # is indeed a TypedDict
+        model = create_model_from_typeddict(
+            type, __config__=Config  # pyright: ignore[reportGeneralTypeIssues]
+        )
         model.update_forward_refs(**vars(_get_module(type)))
         type.__pydantic_model__ = model  # type: ignore
 

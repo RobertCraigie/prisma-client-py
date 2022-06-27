@@ -1,10 +1,10 @@
 from enum import Enum
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Tuple, Type, Union
 
 from pydantic import BaseModel
 
-from .models import Data, Model as ModelInfo, PrimaryKey
-from .._compat import root_validator
+from .models import AnyData, Model as ModelInfo, PrimaryKey
+from .._compat import root_validator, cached_property
 
 
 class Kind(str, Enum):
@@ -56,7 +56,7 @@ class Schema(BaseModel):
     models: List['Model']
 
     @classmethod
-    def from_data(cls, data: Data) -> 'Schema':
+    def from_data(cls, data: AnyData) -> 'Schema':
         models = [Model(info=model) for model in data.dmmf.datamodel.models]
         return cls(models=models)
 
@@ -71,7 +71,10 @@ class Schema(BaseModel):
 class Model(BaseModel):
     info: ModelInfo
 
-    @property
+    class Config:
+        keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
+
+    @cached_property
     def where_unique(self) -> PrismaType:
         info = self.info
         model = info.name
@@ -109,14 +112,33 @@ class Model(BaseModel):
                             name=f'{name}Inner',
                             fields={
                                 field.name: field.python_type
-                                for field in map(info.resolve_field, key.fields)
+                                for field in map(
+                                    info.resolve_field, key.fields
+                                )
                             },
                         )
                     ],
                 )
             )
 
-        return PrismaType.from_subtypes(subtypes, name=f'{model}WhereUniqueInput')
+        return PrismaType.from_subtypes(
+            subtypes, name=f'{model}WhereUniqueInput'
+        )
+
+    @cached_property
+    def order_by(self) -> PrismaType:
+        model = self.info.name
+        subtypes: List[PrismaType] = [
+            PrismaDict(
+                name=f'_{model}_{field.name}_OrderByInput',
+                total=True,
+                fields={
+                    field.name: 'SortOrder',
+                },
+            )
+            for field in self.info.scalar_fields
+        ]
+        return PrismaType.from_subtypes(subtypes, name=f'{model}OrderByInput')
 
 
 Schema.update_forward_refs()

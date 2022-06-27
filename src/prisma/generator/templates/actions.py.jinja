@@ -1,5 +1,5 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types with context %}
+{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider with context %}
 # -- template actions.py.jinja --
 import warnings
 
@@ -42,13 +42,19 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
 {% set ModelType = "'models.%s'" % model.name %}
 class {{ model.name }}Actions:
 {% endif %}
+    __slots__ = (
+        '_client',
+        '_model',
+    )
+
     def __init__(self, client: 'Client', model: Type[{{ ModelType }}]) -> None:
         self._client = client
         self._model = model
 
+    {% if active_provider != 'mongodb' %}
     {{ maybe_async_def }}query_raw(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> List[{{ ModelType }}]:
         """Execute a raw SQL query
@@ -86,7 +92,7 @@ class {{ model.name }}Actions:
 
     {{ maybe_async_def }}query_first(
         self,
-        query: str,
+        query: LiteralString,
         *args: Any,
     ) -> Optional[{{ ModelType }}]:
         """Execute a raw SQL query, returning the first result
@@ -123,6 +129,7 @@ class {{ model.name }}Actions:
         ```
         """
         return {{ maybe_await }}self._client.query_first(query, *args, model=self._model)
+    {% endif %}
 
     {{ maybe_async_def }}create(
         self,
@@ -668,7 +675,6 @@ class {{ model.name }}Actions:
         skip: Optional[int] = None,
         where: Optional[types.{{ model.name }}WhereInput] = None,
         cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
-        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> int:
         {# We add the docstring here as Pylance / VSCode picks up docstrings
            from the overloads of a function.
@@ -733,7 +739,6 @@ class {{ model.name }}Actions:
         skip: Optional[int] = None,
         where: Optional[types.{{ model.name }}WhereInput] = None,
         cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
-        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> types.{{ model.name }}CountAggregateOutput:
         ...
 
@@ -744,7 +749,6 @@ class {{ model.name }}Actions:
         skip: Optional[int] = None,
         where: Optional[types.{{ model.name }}WhereInput] = None,
         cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
-        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
     ) -> Union[int, types.{{ model.name }}CountAggregateOutput]:
         {{ count_doc() }}
         # TODO: this selection building should be moved to the QueryBuilder
@@ -761,13 +765,6 @@ class {{ model.name }}Actions:
             ]
             {% endraw %}
 
-        if order is not None:
-            warnings.warn(
-                'The `order` argument is redundant and will be removed in the next release',
-                DeprecationWarning,
-                stacklevel=2,
-            )
-
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.count }}',
             method='{{ methods.count }}',
@@ -776,7 +773,6 @@ class {{ model.name }}Actions:
                 'take': take,
                 'skip': skip,
                 'where': where,
-                'order_by': order,
                 'cursor': cursor,
             },
             root_selection=root_selection,
@@ -823,7 +819,144 @@ class {{ model.name }}Actions:
         )
         return int(resp['data']['result']['count'])
 
+    # TODO: make this easier to work with safely, currently output fields are typed as
+    #       not required, we should refactor the return type
+    # TODO: consider returning a Dict where the keys are a Tuple of the `by` selection
+    # TODO: statically type that the order argument is required when take or skip are present
+    {{ maybe_async_def }}group_by(
+        self,
+        {% if recursive_types %}
+        by: List['types.{{ model.name }}ScalarFieldKeysT'],
+        {% else %}
+        by: List['types.{{ model.name }}ScalarFieldKeys'],
+        {% endif %}
+        *,
+        where: Optional['types.{{ model.name }}WhereInput'] = None,
+        take: Optional[int] = None,
+        skip: Optional[int] = None,
+        avg: Optional['types.{{ model.name }}AvgAggregateInput'] = None,
+        sum: Optional['types.{{ model.name }}SumAggregateInput'] = None,
+        min: Optional['types.{{ model.name }}MinAggregateInput'] = None,
+        max: Optional['types.{{ model.name }}MaxAggregateInput'] = None,
+        having: Optional['types.{{ model.name }}ScalarWhereWithAggregatesInput'] = None,
+        count: Optional[Union[bool, 'types.{{ model.name }}CountAggregateInput']] = None,
+        {% if recursive_types %}
+        order: Optional[Union[Mapping['types.{{ model.name }}ScalarFieldKeysT', 'types.SortOrder'], List[Mapping['types.{{ model.name }}ScalarFieldKeysT', 'types.SortOrder']]]] = None,
+        {% else %}
+        order: Optional[Union[Mapping['types.{{ model.name }}ScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.{{ model.name }}ScalarFieldKeys', 'types.SortOrder']]]] = None,
+        {% endif %}
+    ) -> List['types.{{ model.name }}GroupByOutput']:
+        """Group {{ model.name }} records by one or more field values and perform aggregations
+        each group such as finding the average.
+
+        Parameters
+        ----------
+        by
+            List of scalar {{ model.name }} fields to group records by
+        where
+            {{ model.name }} filter to select records
+        take
+            Limit the maximum number of {{ model.name }} records returned
+        skip
+            Ignore the first N records
+        avg
+            Adds the average of all values of the specified fields to the `_avg` field
+            in the returned data.
+        sum
+            Adds the sum of all values of the specified fields to the `_sum` field
+            in the returned data.
+        min
+            Adds the smallest available value for the specified fields to the `_min` field
+            in the returned data.
+        max
+            Adds the largest available value for the specified fields to the `_max` field
+            in the returned data.
+        count
+            Adds a count of non-fields to the `_count` field in the returned data.
+        having
+            Allows you to filter groups by an aggregate value - for example only return
+            groups having an average age less than 50.
+        order
+            Lets you order the returned list by any property that is also present in `by`.
+            Only **one** field is allowed at a time.
+
+        Returns
+        -------
+        List[prisma.types.{{ model.name }}GroupByOutput]
+            A list of dictionaries representing the {{ model.name }} record,
+            this will also have additional fields present if aggregation arguments
+            are used (see the above parameters)
+
+        Raises
+        ------
+        {{ base_error_doc }}
+
+        Example
+        -------
+        ```py
+        {% set field = model.sampler().get_field().name %}
+        # group {{ model.name }} records by {{ field }} values
+        # and count how many records are in each group
+        results = {{ maybe_await }}{{ model.name }}.prisma().group_by(
+            ['{{ field }}'],
+            count=True,
+        )
+        ```
+        """
+        if order is None:
+            if take is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
+
+            if skip is not None:
+                raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
+
+        root_selection: List[str] = [*by]
+        if avg is not None:
+            root_selection.append(_select_fields('_avg', avg))
+
+        if min is not None:
+            root_selection.append(_select_fields('_min', min))
+
+        if sum is not None:
+            root_selection.append(_select_fields('_sum', sum))
+
+        if max is not None:
+            root_selection.append(_select_fields('_max', max))
+
+        if count is not None:
+            if count is True:
+                root_selection.append('_count { _all }')
+            elif isinstance(count, dict):
+                root_selection.append(_select_fields('_count', count))
+
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.group_by }}',
+            method='{{ methods.group_by }}',
+            model='{{ model.name }}',
+            arguments={
+                'by': by,
+                'take': take,
+                'skip': skip,
+                'where': where,
+                'having': having,
+                'orderBy': order,
+            },
+            root_selection=root_selection,
+        )
+        return resp['data']['result']  # type: ignore[no-any-return]
+
 {% endfor %}
+
+
+def _select_fields(root: str, select: Mapping[str, Any]) -> str:
+    """Helper to build a GraphQL selection string
+
+    This is a work around until field selection is added to the query builder.
+    """
+    {% raw %}
+    return root + ' {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
+    {% endraw %}
+
 
 from . import models
 

@@ -1,36 +1,38 @@
 import datetime
 import pytest
-from prisma import Client
+from prisma import Prisma
 
 from ..utils import assert_similar_time
 
 
 @pytest.mark.asyncio
-async def test_filtering(client: Client) -> None:
+async def test_filtering(client: Prisma) -> None:
     """Finding records by a DateTime value"""
     now = datetime.datetime.now(datetime.timezone.utc)
     async with client.batch_() as batcher:
         for i in range(10):
-            batcher.types.create({'datetime': now + datetime.timedelta(hours=i)})
+            batcher.types.create(
+                {'datetime_': now + datetime.timedelta(hours=i)}
+            )
 
     total = await client.types.count(
-        where={'datetime': {'gte': now + datetime.timedelta(hours=5)}}
+        where={'datetime_': {'gte': now + datetime.timedelta(hours=5)}}
     )
     assert total == 5
 
     found = await client.types.find_first(
         where={
-            'datetime': {
+            'datetime_': {
                 'equals': now,
             },
         },
     )
     assert found is not None
-    assert_similar_time(found.datetime, now)
+    assert_similar_time(found.datetime_, now)
 
     results = await client.types.find_many(
         where={
-            'datetime': {
+            'datetime_': {
                 'in': [
                     now + datetime.timedelta(hours=1),
                     now + datetime.timedelta(hours=4),
@@ -39,16 +41,20 @@ async def test_filtering(client: Client) -> None:
             },
         },
         order={
-            'datetime': 'asc',
+            'datetime_': 'asc',
         },
     )
     assert len(results) == 2
-    assert_similar_time(results[0].datetime, now + datetime.timedelta(hours=1))
-    assert_similar_time(results[1].datetime, now + datetime.timedelta(hours=4))
+    assert_similar_time(
+        results[0].datetime_, now + datetime.timedelta(hours=1)
+    )
+    assert_similar_time(
+        results[1].datetime_, now + datetime.timedelta(hours=4)
+    )
 
     found = await client.types.find_first(
         where={
-            'datetime': {
+            'datetime_': {
                 'not_in': [
                     now,
                     now + datetime.timedelta(hours=1),
@@ -57,101 +63,101 @@ async def test_filtering(client: Client) -> None:
             },
         },
         order={
-            'datetime': 'asc',
+            'datetime_': 'asc',
         },
     )
     assert found is not None
-    assert_similar_time(found.datetime, now + datetime.timedelta(hours=3))
+    assert_similar_time(found.datetime_, now + datetime.timedelta(hours=3))
 
     found = await client.types.find_first(
         where={
-            'datetime': {
+            'datetime_': {
                 'lt': now + datetime.timedelta(hours=1),
             },
         },
         order={
-            'datetime': 'desc',
+            'datetime_': 'desc',
         },
     )
     assert found is not None
-    assert_similar_time(found.datetime, now)
+    assert_similar_time(found.datetime_, now)
 
     found = await client.types.find_first(
         where={
-            'datetime': {
+            'datetime_': {
                 'lte': now + datetime.timedelta(hours=1),
             },
         },
         order={
-            'datetime': 'desc',
+            'datetime_': 'desc',
         },
     )
     assert found is not None
-    assert_similar_time(found.datetime, now + datetime.timedelta(hours=1))
+    assert_similar_time(found.datetime_, now + datetime.timedelta(hours=1))
 
     found = await client.types.find_first(
         where={
-            'datetime': {
+            'datetime_': {
                 'gt': now,
             },
         },
         order={
-            'datetime': 'asc',
+            'datetime_': 'asc',
         },
     )
     assert found is not None
-    assert_similar_time(found.datetime, now + datetime.timedelta(hours=1))
+    assert_similar_time(found.datetime_, now + datetime.timedelta(hours=1))
 
     found = await client.types.find_first(
         where={
-            'datetime': {
+            'datetime_': {
                 'gte': now,
             },
         },
         order={
-            'datetime': 'asc',
+            'datetime_': 'asc',
         },
     )
     assert found is not None
-    assert_similar_time(found.datetime, now)
+    assert_similar_time(found.datetime_, now)
 
     found = await client.types.find_first(
         where={
-            'datetime': {
+            'datetime_': {
                 'not': now,
             },
         },
         order={
-            'datetime': 'asc',
+            'datetime_': 'asc',
         },
     )
     assert found is not None
-    assert_similar_time(found.datetime, now + datetime.timedelta(hours=1))
+    assert_similar_time(found.datetime_, now + datetime.timedelta(hours=1))
 
     found = await client.types.find_first(
         where={
-            'datetime': {
+            'datetime_': {
                 'not': {
                     'equals': now,
                 },
             },
         },
         order={
-            'datetime': 'asc',
+            'datetime_': 'asc',
         },
     )
     assert found is not None
-    assert_similar_time(now + datetime.timedelta(hours=1), found.datetime)
+    assert_similar_time(now + datetime.timedelta(hours=1), found.datetime_)
 
 
 @pytest.mark.asyncio
-async def test_finds(client: Client) -> None:
+async def test_finds(client: Prisma) -> None:
     """Adding 1 second timedelta finds the record"""
     record = await client.types.create(data={})
     found = await client.types.find_first(
         where={
-            'datetime': {
-                'lt': record.datetime + datetime.timedelta(seconds=1),
+            'datetime_': {
+                'lt': record.datetime_ + datetime.timedelta(seconds=1),
             },
         },
     )
@@ -160,17 +166,76 @@ async def test_finds(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_tz_aware(client: Client) -> None:
+async def test_tz_aware(client: Prisma) -> None:
     """Modifying timezone still finds the record"""
     record = await client.types.create(data={})
     found = await client.types.find_first(
         where={
-            'datetime': {
-                'lt': (record.datetime + datetime.timedelta(hours=1)).astimezone(
-                    datetime.timezone.max
-                )
+            'datetime_': {
+                'lt': (
+                    record.datetime_ + datetime.timedelta(hours=1)
+                ).astimezone(datetime.timezone.max)
             }
         }
     )
     assert found is not None
     assert found.id == record.id
+
+
+@pytest.mark.asyncio
+async def test_filtering_nulls(client: Prisma) -> None:
+    """None is a valid filter for nullable DateTime fields"""
+    now = datetime.datetime.now(datetime.timezone.utc)
+    await client.types.create(
+        {
+            'string': 'a',
+            'optional_datetime': None,
+        },
+    )
+    await client.types.create(
+        {
+            'string': 'b',
+            'optional_datetime': now,
+        },
+    )
+    await client.types.create(
+        {
+            'string': 'c',
+            'optional_datetime': now + datetime.timedelta(days=1),
+        },
+    )
+
+    found = await client.types.find_first(
+        where={
+            'NOT': [
+                {
+                    'optional_datetime': None,
+                },
+            ],
+        },
+        order={
+            'string': 'asc',
+        },
+    )
+    assert found is not None
+    assert found.string == 'b'
+    assert found.optional_datetime is not None
+    assert_similar_time(now, found.optional_datetime)
+
+    count = await client.types.count(
+        where={
+            'optional_datetime': None,
+        },
+    )
+    assert count == 1
+
+    count = await client.types.count(
+        where={
+            'NOT': [
+                {
+                    'optional_datetime': None,
+                },
+            ],
+        },
+    )
+    assert count == 2

@@ -5,7 +5,10 @@ from pathlib import Path
 
 def main(*args: str) -> None:
     rootdir = Path(__file__).parent
-    subprocess.check_call(['maturin', 'develop', *args], cwd=str(rootdir.absolute()))
+    subprocess.check_call(
+        ['maturin', 'develop', *args],
+        cwd=str(rootdir.absolute()),
+    )
 
 
 if __name__ == '__main__':

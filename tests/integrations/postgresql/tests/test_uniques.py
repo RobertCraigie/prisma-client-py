@@ -1,9 +1,10 @@
 import pytest
-from prisma import Client
+from prisma import Prisma
+from prisma.enums import Role
 
 
 @pytest.mark.asyncio
-async def test_unique1(client: Client) -> None:
+async def test_unique1(client: Prisma) -> None:
     """Standard combined unique constraint"""
     model = await client.unique1.create(
         data={
@@ -25,7 +26,7 @@ async def test_unique1(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_unique2(client: Client) -> None:
+async def test_unique2(client: Prisma) -> None:
     """Combined unique constraint with an aditional unique field"""
     model = await client.unique2.create(
         data={
@@ -57,7 +58,7 @@ async def test_unique2(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_unique3(client: Client) -> None:
+async def test_unique3(client: Prisma) -> None:
     """Combined unique constraint with an ID field and a unique field"""
     model = await client.unique3.create(
         data={
@@ -95,7 +96,7 @@ async def test_unique3(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_unique4(client: Client) -> None:
+async def test_unique4(client: Prisma) -> None:
     """Explicitly named unique constraint"""
     model = await client.unique4.create(
         data={
@@ -118,7 +119,7 @@ async def test_unique4(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_unique5(client: Client) -> None:
+async def test_unique5(client: Prisma) -> None:
     """Combined unique constraint with 3 fields"""
     model = await client.unique5.create(
         data={
@@ -144,7 +145,40 @@ async def test_unique5(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_id1(client: Client) -> None:
+async def test_unique6(client: Prisma) -> None:
+    """Combined unique constraint with an Enum field"""
+    model = await client.unique6.create(
+        data={
+            'name': 'Robert',
+            'role': Role.ADMIN,
+        },
+    )
+
+    found = await client.unique6.find_unique(
+        where={
+            'name_role': {
+                'name': 'Robert',
+                'role': Role.ADMIN,
+            },
+        },
+    )
+    assert found is not None
+    assert found.name == model.name
+    assert found.role == Role.ADMIN
+
+    found = await client.unique6.find_unique(
+        where={
+            'name_role': {
+                'name': 'Robert',
+                'role': Role.USER,
+            },
+        },
+    )
+    assert found is None
+
+
+@pytest.mark.asyncio
+async def test_id1(client: Prisma) -> None:
     """Standard combined ID constraint"""
     model = await client.id1.create(
         data={
@@ -166,7 +200,7 @@ async def test_id1(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_id2(client: Client) -> None:
+async def test_id2(client: Prisma) -> None:
     """Combined ID constraint with a unique field"""
     model = await client.id2.create(
         data={
@@ -198,7 +232,7 @@ async def test_id2(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_id3(client: Client) -> None:
+async def test_id3(client: Prisma) -> None:
     """Explicitly named combined ID constraint"""
     model = await client.id3.create(
         data={
@@ -221,7 +255,7 @@ async def test_id3(client: Client) -> None:
 
 
 @pytest.mark.asyncio
-async def test_id4(client: Client) -> None:
+async def test_id4(client: Prisma) -> None:
     """Combined ID constraint with 3 fields"""
     model = await client.id4.create(
         data={
@@ -244,3 +278,36 @@ async def test_id4(client: Client) -> None:
     assert found.name == model.name
     assert found.middlename == model.middlename
     assert found.surname == model.surname
+
+
+@pytest.mark.asyncio
+async def test_id5(client: Prisma) -> None:
+    """Combined ID constraint with an Enum field"""
+    model = await client.id5.create(
+        data={
+            'name': 'Robert',
+            'role': Role.ADMIN,
+        },
+    )
+
+    found = await client.id5.find_unique(
+        where={
+            'name_role': {
+                'name': 'Robert',
+                'role': Role.ADMIN,
+            },
+        },
+    )
+    assert found is not None
+    assert found.name == model.name
+    assert found.role == Role.ADMIN
+
+    found = await client.id5.find_unique(
+        where={
+            'name_role': {
+                'name': 'Robert',
+                'role': Role.USER,
+            },
+        },
+    )
+    assert found is None

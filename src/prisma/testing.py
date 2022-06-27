@@ -7,12 +7,13 @@ from .errors import ClientNotRegisteredError
 
 
 @contextlib.contextmanager
-def reset_client(new_client: Optional[RegisteredClient] = None) -> Iterator[None]:
+def reset_client(
+    new_client: Optional[RegisteredClient] = None,
+) -> Iterator[None]:
     """Context manager to unregister the current client
 
     Once the context manager exits, the registered client is set back to it's original state
     """
-    # pylint: disable=protected-access
     client = _client._registered_client
     if client is None:
         raise ClientNotRegisteredError()
@@ -22,3 +23,11 @@ def reset_client(new_client: Optional[RegisteredClient] = None) -> Iterator[None
         yield
     finally:
         _client._registered_client = client
+
+
+def unregister_client() -> None:
+    """Unregister the current client."""
+    if _client._registered_client is None:
+        raise ClientNotRegisteredError()
+
+    _client._registered_client = None

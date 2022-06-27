@@ -3,8 +3,7 @@ import gzip
 import shutil
 from pathlib import Path
 
-from ..http import client
-from ..utils import maybe_async_run
+from .._sync_http import client
 
 
 def download(url: str, to: str) -> None:
@@ -12,7 +11,7 @@ def download(url: str, to: str) -> None:
 
     tmp = to + '.tmp'
     tar = to + '.gz.tmp'
-    maybe_async_run(client.download, url, tar)
+    client.download(url, tar)
 
     # decompress to a tmp file before replacing the original
     with gzip.open(tar, 'rb') as f_in:

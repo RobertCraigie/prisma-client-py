@@ -6,9 +6,12 @@ import logging
 import warnings
 import contextlib
 from importlib.util import find_spec
-from typing import Any, Union, Dict, Iterator, Coroutine, NoReturn
+from typing import Any, TypeVar, Union, Dict, Iterator, Coroutine, NoReturn
 
-from ._types import FuncType, CoroType
+from ._types import FuncType, CoroType, TypeGuard
+
+
+_T = TypeVar('_T')
 
 
 def _env_bool(key: str) -> bool:
@@ -19,7 +22,7 @@ DEBUG = _env_bool('PRISMA_PY_DEBUG')
 DEBUG_GENERATOR = _env_bool('PRISMA_PY_DEBUG_GENERATOR')
 
 
-class _NoneType:  # pyright: reportUnusedClass=false
+class _NoneType:  # pyright: ignore[reportUnusedClass]
     def __bool__(self) -> bool:
         return False
 
@@ -35,19 +38,22 @@ def setup_logging() -> None:
         logging.getLogger('prisma').setLevel(logging.DEBUG)
 
 
-def maybe_async_run(func: Union[FuncType, CoroType], *args: Any, **kwargs: Any) -> Any:
+def maybe_async_run(
+    func: Union[FuncType, CoroType],
+    *args: Any,
+    **kwargs: Any,
+) -> object:
     if is_coroutine(func):
         return async_run(func(*args, **kwargs))
     return func(*args, **kwargs)
 
 
-# TODO: TypeVar return
-def async_run(coro: Coroutine[Any, Any, Any]) -> Any:
+def async_run(coro: Coroutine[Any, Any, _T]) -> _T:
     """Execute the coroutine and return the result."""
     return get_or_create_event_loop().run_until_complete(coro)
 
 
-def is_coroutine(obj: Any) -> bool:
+def is_coroutine(obj: Any) -> TypeGuard[CoroType]:
     return asyncio.iscoroutinefunction(obj) or inspect.isgeneratorfunction(obj)
 
 
@@ -63,7 +69,7 @@ def temp_env_update(env: Dict[str, str]) -> Iterator[None]:
         os.environ.update(env)
         yield
     finally:
-        for key in env.keys():
+        for key in env:
             os.environ.pop(key, None)
 
         os.environ.update(old)
@@ -115,4 +121,6 @@ def assert_never(value: NoReturn) -> NoReturn:
 
     https://github.com/microsoft/pyright/issues/767
     """
-    assert False, "Unhandled type: {}".format(type(value).__name__)  # pragma: no cover
+    assert False, 'Unhandled type: {}'.format(
+        type(value).__name__
+    )  # pragma: no cover

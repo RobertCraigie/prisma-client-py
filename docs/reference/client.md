@@ -3,11 +3,11 @@
 In order to make *any* Prisma Client Python queries you need to create and connect to a `Client` instance, for example:
 
 ```py
-from prisma import Client
+from prisma import Prisma
 
-client = Client()
-await client.connect()
-await client.user.create(
+db = Prisma()
+await db.connect()
+await db.user.create(
     data={
         'name': 'Robert',
     },
@@ -31,7 +31,7 @@ user = await User.prisma().create(
 It is possible to override the default URL used to connect to the database:
 
 ```py
-client = Client(
+db = Prisma(
     datasource={
         'url': 'file:./tmp.db',
     },
@@ -45,10 +45,10 @@ To make running small scripts as easy as possible, Prisma Client Python supports
 For example:
 
 ```py
-from prisma import Client
+from prisma import Prisma
 
-async with Client() as client:
-    await client.user.create(
+async with Prisma() as db:
+    await db.user.create(
         data={
             'name': 'Robert',
         },
@@ -58,18 +58,59 @@ async with Client() as client:
 Which is functionally equivalent to:
 
 ```py
-from prisma import Client
+from prisma import Prisma
 
-client = Client()
+db = Prisma()
 
 try:
-    await client.connect()
-    await client.user.create(
+    await db.connect()
+    await db.user.create(
         data={
             'name': 'Robert',
         },
     )
 finally:
-    if client.is_connected():
-        await client.disconnect()
+    if db.is_connected():
+        await db.disconnect()
 ```
+
+## HTTP Options
+
+Some of the methods that Prisma Client Python uses to communicate with the underlying Prisma binaries make use of [HTTPX](https://github.com/encode/httpx/) to communicate over HTTP. As such, some [HTTPX Client options](https://www.python-httpx.org/api/#client) are configurable on a per-client basis.
+
+The HTTPX options can be passed to client using the `http` parameter, for example:
+
+```py
+db = Prisma(
+    http={
+        'timeout': 10,
+    },
+)
+```
+
+Will then use a 10 second timeout for all http operations.
+
+You can also remove the timeout by passing None, for example:
+
+```py
+db = Prisma(
+    http={
+        'timeout': None,
+    },
+)
+```
+
+Not all options that HTTPX support are supported by Prisma Client Python, a full list can be found below:
+
+```py
+class HttpConfig(TypedDict, total=False):
+    app: Callable[[Mapping[str, Any], Any], Any]
+    http1: bool
+    http2: bool
+    limits: httpx.Limits
+    timeout: Union[None, float, httpx.Timeout]
+    trust_env: bool
+    max_redirects: int
+```
+
+The documentation behind these options can be found [here](https://www.python-httpx.org/api/#client)

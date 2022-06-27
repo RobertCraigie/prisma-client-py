@@ -1,3 +1,4 @@
+import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel
@@ -14,6 +15,7 @@ log: logging.Logger = logging.getLogger(__name__)
 
 class Binary(BaseModel):
     name: str
+    env: str
 
     def download(self) -> None:
         # TODO: respect schema binary options
@@ -36,4 +38,15 @@ class Binary(BaseModel):
 
     @property
     def path(self) -> Path:
-        return GLOBAL_TEMP_DIR.joinpath(platform.check_for_extension(self.name))
+        env = os.environ.get(self.env)
+        if env is not None:
+            log.debug(
+                'Using environment variable location: %s for %s',
+                env,
+                self.name,
+            )
+            return Path(env)
+
+        return GLOBAL_TEMP_DIR.joinpath(
+            platform.check_for_extension(self.name)
+        )

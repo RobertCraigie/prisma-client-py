@@ -2,6 +2,7 @@ include README.md
 include requirements/*.txt
 
 include src/prisma/py.typed
+include src/prisma_cleanup/py.typed
 recursive-include src/prisma/generator/templates/ *.py.jinja
 
 # include the backups of templates that replace modules

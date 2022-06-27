@@ -3,11 +3,12 @@ datasource db {
   url      = env("PRISMA_PY_POSTGRES_URL")
 }
 
-generator db {
-  provider             = "coverage run -m prisma"
-  interface            = "asyncio"
-  recursive_type_depth = -1
-  engineType           = "binary"
+generator client {
+  provider                    = "coverage run -m prisma"
+  interface                   = "asyncio"
+  recursive_type_depth        = -1
+  engineType                  = "binary"
+  enable_experimental_decimal = true
 }
 
 model User {
@@ -17,6 +18,14 @@ model User {
   name       String
   role       Role     @default(USER)
   posts      Post[]
+  profile    Profile?
+}
+
+model Profile {
+  id          String @default(cuid())
+  description String
+  user        User   @relation(fields: [user_id], references: [id])
+  user_id     String @unique
 }
 
 model Post {
@@ -46,6 +55,7 @@ model Lists {
   bigints      BigInt[]
   json_objects Json[]
   roles        Role[]
+  decimals     Decimal[]
 }
 
 // these models are here for testing different combinations of unique constraints
@@ -89,6 +99,13 @@ model Unique5 {
   @@unique([name, middlename, surname])
 }
 
+model Unique6 {
+  name String
+  role Role
+
+  @@unique([name, role])
+}
+
 model Id1 {
   name    String
   surname String
@@ -116,6 +133,13 @@ model Id4 {
   surname    String
 
   @@id([name, middlename, surname])
+}
+
+model Id5 {
+  name String
+  role Role
+
+  @@unique([name, role])
 }
 
 enum Role {
