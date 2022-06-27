@@ -5,13 +5,13 @@ import socket
 import logging
 import subprocess
 from pathlib import Path
-from typing import NoReturn, Dict, Type, Any
+from typing import NoReturn, Dict, Optional, Type, Any
 
 from . import errors
 from .. import errors as prisma_errors
 
 from ..http_abstract import AbstractResponse
-from ..utils import time_since
+from ..utils import time_since, module_exists
 from ..binaries import GLOBAL_TEMP_DIR, ENGINE_VERSION, platform
 
 
@@ -99,7 +99,10 @@ def get_open_port() -> int:
     return int(port)
 
 
-def handle_response_errors(resp: AbstractResponse[Any], data: Any) -> NoReturn:
+def handle_response_errors(
+    data: Any,
+    resp: Optional[AbstractResponse[Any]] = None,
+) -> NoReturn:
     for error in data:
         try:
             user_facing = error.get('user_facing_error', {})
@@ -129,5 +132,10 @@ def handle_response_errors(resp: AbstractResponse[Any], data: Any) -> NoReturn:
         pass
 
     raise errors.EngineRequestError(
-        resp, f'Could not process erroneous response: {data}'
+        f'Could not process erroneous response: {data}',
+        response=resp,
     )
+
+
+def is_library_available() -> bool:
+    return module_exists('_prisma_query_engine')

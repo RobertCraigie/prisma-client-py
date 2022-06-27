@@ -514,16 +514,23 @@ class Config(BaseSettings):
     @validator('engine_type', always=True, allow_reuse=True)
     @classmethod
     def engine_type_validator(cls, value: EngineType) -> EngineType:
+        # import here due to circular reference
+        # TODO: fix
+        from ..engine.utils import is_library_available
+
         if value == EngineType.binary:
             return value
         elif value == EngineType.dataproxy:  # pragma: no cover
             raise ValueError(
                 'Prisma Client Python does not support the Prisma Data Proxy yet.'
             )
-        elif value == EngineType.library:  # pragma: no cover
-            raise ValueError(
-                'Prisma Client Python does not support native engine bindings yet.'
-            )
+        elif value == EngineType.library:
+            if not is_library_available():
+                raise ValueError(
+                    'The _prisma_query_engine package must be installed to use the library engine.'
+                )
+
+            return value
         else:  # pragma: no cover
             # NOTE: the exhaustiveness check is broken for mypy
             assert_never(value)  # type: ignore

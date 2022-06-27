@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Mapping
 
@@ -90,9 +91,18 @@ def test_auto_register() -> None:
         assert get_client() == client
 
 
-def test_engine_type() -> None:
-    """The exported ENGINE_TYPE enum matches the actual engine type"""
-    assert ENGINE_TYPE.value == 'binary'
+def test_engine_type(client: Prisma) -> None:
+    """Client engine matches the PRISMA_CLIENT_ENGINE_TYPE environment variable"""
+    engine_name = client._engine.__class__.__name__
+    env_value = os.environ.get('PRISMA_CLIENT_ENGINE_TYPE')
+    if env_value is None or env_value == 'binary':
+        assert ENGINE_TYPE.value == 'binary'
+        assert engine_name == 'QueryEngine'
+    elif env_value == 'library':
+        assert ENGINE_TYPE.value == 'library'
+        assert engine_name == 'LibraryEngine'
+    else:  # pragma: no cover
+        raise RuntimeError(f'Unhandled env value: {env_value}')
 
 
 @pytest.mark.asyncio

@@ -7,10 +7,16 @@ from types import TracebackType
 from . import types, models, errors, actions
 from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT
-from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
+from .engine import AbstractEngine, LibraryEngine, QueryEngine
 from .generator.models import EngineType, OptionalValueFromEnvVar
-
+{% if generator.config.engine_type == 'library' %}
+from .engine import LibraryEngine as DefaultEngine
+{% elif generator.config.engine_type == 'binary' %}
+from .engine import QueryEngine as DefaultEngine
+{% else %}
+    {{ raise_err('Unsupported engine type' % generator.config.engine_type) }}
+{% endif %}
 
 __all__ = (
     'ENGINE_TYPE',
@@ -235,8 +241,10 @@ class Prisma:
         """Disconnect the Prisma query engine."""
         if self.__engine is not None:
             {% if is_async %}
-            self.__engine.close()
+            # NOTE: the order here is important
+            # TODO: refactor interface so that it isn't
             {{ maybe_await }}self.__engine.aclose()
+            self.__engine.close()
             {% else %}
             self.__engine.stop()
             {% endif %}
@@ -326,14 +334,12 @@ class Prisma:
         if ENGINE_TYPE == EngineType.binary:
             return QueryEngine(dml=dml, log_queries=self._log_queries, **self._http_config)
 
-        raise NotImplementedError(f'Unsupported engine type: {ENGINE_TYPE}')
+        if ENGINE_TYPE == EngineType.library:
+            if LibraryEngine is None:
+                raise RuntimeError('Attempted to use library engine when the library engine is not installed')
+            return LibraryEngine(dml=dml, log_queries=self._log_queries)
 
-    @property
-    def _engine_class(self) -> Type[AbstractEngine]:
-        if ENGINE_TYPE == EngineType.binary:
-            return QueryEngine
-        else:  # pragma: no cover
-            raise RuntimeError(f'Unhandled engine type: {ENGINE_TYPE}')
+        raise NotImplementedError(f'Unsupported engine type: {ENGINE_TYPE}')
 
     @property
     def _engine(self) -> AbstractEngine:
@@ -364,6 +370,10 @@ class Prisma:
             'name': '{{ datasources[0].name }}',
             'url': OptionalValueFromEnvVar(**{{ datasources[0].url.dict(by_alias=True) }}).resolve(),
         }
+
+    @property
+    def _engine_class(self) -> Type[AbstractEngine]:
+        return DefaultEngine
 
 
 # TODO: this should return the results as well

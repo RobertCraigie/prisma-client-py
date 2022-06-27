@@ -9,7 +9,7 @@ from typing import List
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
-from prisma.http import client
+from prisma._async_http import client
 from prisma.utils import temp_env_update
 from prisma.cli.commands import dev
 from ..utils import Testdir, Runner
@@ -34,6 +34,7 @@ def test_playground_skip_generate_no_client(
     )
 
 
+# TODO: support using this command with the native engine
 @pytest.mark.asyncio
 @pytest.mark.skip(
     reason='Test is currently broken and the feature is not intended for users anyway',

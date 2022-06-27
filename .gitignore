@@ -133,6 +133,7 @@ src/prisma/builder.py
 src/prisma/partials.py
 src/prisma/engine/http.py
 src/prisma/engine/query.py
+src/prisma/engine/library.py
 src/prisma/engine/abstract.py
 
 # debug files

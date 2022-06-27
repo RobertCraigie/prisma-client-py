@@ -80,7 +80,7 @@ class HTTPEngine(AbstractEngine):
 
             errors_data = response.get('errors')
             if errors_data:
-                return utils.handle_response_errors(resp, errors_data)
+                return utils.handle_response_errors(errors_data, resp)
 
             return response
 
@@ -88,7 +88,7 @@ class HTTPEngine(AbstractEngine):
             raise errors.UnprocessableEntityError(resp)
 
         # TODO: handle errors better
-        raise errors.EngineRequestError(resp, {{ maybe_await }}resp.text())
+        raise errors.EngineRequestError({{ maybe_await }}resp.text(), resp)
 
 
 # black does not respect the fmt: off comment without this
