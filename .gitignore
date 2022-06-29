@@ -148,3 +148,6 @@ src/prisma/generator/debug-params.json
 
 # Direnv
 .envrc
+
+# Prisma Py
+__prisma__
