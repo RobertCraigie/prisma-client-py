@@ -10,7 +10,7 @@ from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
 from .generator.models import EngineType, OptionalValueFromEnvVar
-
+from .raw import parse_raw_list
 
 __all__ = (
     'ENGINE_TYPE',
@@ -295,9 +295,10 @@ class Prisma:
             }
         )
         result = resp['data']['result']
-        if model is not None:
-            return [model.parse_obj(r) for r in result]
-        return result
+        print(result)
+        rsp = parse_raw_list(result, model)
+        print(rsp)
+        return rsp
     {% endif %}
 
     def batch_(self) -> 'Batch':

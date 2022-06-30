@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 import logging
 from pathlib import Path
 from typing import Optional, List
@@ -47,6 +48,10 @@ def ensure_cached() -> Path:
 
     if not binaries:
         log.debug('All binaries are cached')
+        return GLOBAL_TEMP_DIR
+
+    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
+        log.debug('Using custom binaries')
         return GLOBAL_TEMP_DIR
 
     def show_item(item: Optional[Binary]) -> str:

@@ -181,9 +181,11 @@ def test_compound_id_implicit_field_shaddowing(testdir: Testdir) -> None:
         testdir.generate(schema=schema)
 
     assert (
-        'Compound constraint with name: name_surname is already used as a name for a field; '
-        'Please choose a different name. For example: \n'
-        '  @@id([name, surname], name: "my_custom_primary_key")'
+        #'Compound constraint with name: name_surname is already used as a name for a field; '
+        #'Please choose a different name. For example: \n'
+        #'  @@id([name, surname], name: "my_custom_primary_key")'
+        "The field `name_surname` clashes with the `@@id` attribute's name. "
+        'Please resolve the conflict by providing a custom id name: `@@id([...], name: "custom_name")`'
     ) in str(exc.value.output, 'utf-8')
 
 
@@ -210,9 +212,11 @@ def test_compound_unique_constraint_implicit_field_shaddowing(
         testdir.generate(schema=schema)
 
     assert (
-        'Compound constraint with name: name_surname is already used as a name for a field; '
-        'Please choose a different name. For example: \n'
-        '  @@unique([name, surname], name: "my_custom_primary_key")'
+        #'Compound constraint with name: name_surname is already used as a name for a field; '
+        #'Please choose a different name. For example: \n'
+        #'  @@unique([name, surname], name: "my_custom_primary_key")'
+        'The field `name_surname` clashes with the `@@unique` name. '
+        'Please resolve the conflict by providing a custom id name: `@@unique([...], name: "custom_name")`'
     ) in str(exc.value.output, 'utf-8')
 
 

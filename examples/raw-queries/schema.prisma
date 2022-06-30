@@ -1,15 +1,13 @@
 datasource db {
-  // could be postgresql or mysql
   provider = "sqlite"
   url      = "file:dev.db"
 }
 
-generator db {
+generator client {
   provider                    = "prisma-client-py"
   interface                   = "asyncio"
-  //output = "__prisma__"
   recursive_type_depth        = 5
-  //partial_type_generator      = "tests/scripts/partial_type_generator.py"
+  partial_type_generator      = "../../tests/scripts/partial_type_generator.py"
   enable_experimental_decimal = true
 }
 

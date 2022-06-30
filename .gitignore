@@ -151,3 +151,6 @@ src/prisma/generator/debug-params.json
 
 # Prisma Py
 __prisma__
+
+# Node
+node_modules
