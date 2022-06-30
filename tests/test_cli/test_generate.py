@@ -103,8 +103,10 @@ def test_prisma_error_non_zero_exit_code(
     """Exits non-zero when the prisma process exits non-zero"""
     path = testdir.make_schema(schema=testdir.default_schema + 'foo')
     result = runner.invoke(['py', 'generate', f'--schema={path}'])
+    print(result.output)
     assert result.exit_code != 0
-    assert 'Error: Get config: Schema Parsing P1012' in result.output
+    # assert 'Error: Get config: Schema Parsing P1012' in result.output
+    assert 'Error code: P1012' in result.output
 
 
 def test_schema_not_found(runner: Runner) -> None:

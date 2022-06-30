@@ -1,6 +1,7 @@
+import os
 import random
 import shutil
-
+import pytest
 from click.testing import Result
 
 from prisma import binaries
@@ -12,6 +13,10 @@ from tests.utils import Runner
 
 
 def assert_success(result: Result) -> None:
+
+    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
+        pytest.skip('unsupported configuration')
+
     assert result.exit_code == 0
     assert result.output.endswith(
         f'Downloaded binaries to {binaries.GLOBAL_TEMP_DIR}\n'
@@ -23,11 +28,19 @@ def assert_success(result: Result) -> None:
 
 def test_fetch(runner: Runner) -> None:
     """Basic usage, binaries are already cached"""
+
+    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
+        pytest.skip('unsupported configuration')
+
     assert_success(runner.invoke(['py', 'fetch']))
 
 
 def test_fetch_one_binary_missing(runner: Runner) -> None:
     """Downloads a binary if it is missing"""
+
+    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
+        pytest.skip('unsupported configuration')
+
     binary = random.choice(binaries.BINARIES)
     assert binary.path.exists()
     binary.path.unlink()
@@ -38,6 +51,10 @@ def test_fetch_one_binary_missing(runner: Runner) -> None:
 
 def test_fetch_force(runner: Runner) -> None:
     """Passing --force re-downloads an already existing binary"""
+
+    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
+        pytest.skip('unsupported configuration')
+
     binary = random.choice(binaries.BINARIES)
     assert binary.path.exists()
     old_stat = binary.path.stat()
@@ -55,6 +72,10 @@ def test_fetch_force(runner: Runner) -> None:
 
 def test_fetch_force_no_dir(runner: Runner) -> None:
     """Passing --force when the base directory does not exist"""
+
+    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
+        pytest.skip('unsupported configuration')
+
     binaries.remove_all()
     shutil.rmtree(str(binaries.GLOBAL_TEMP_DIR))
 

@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 import logging
 import subprocess
 from textwrap import indent
@@ -18,12 +19,17 @@ def run(
     check: bool = False,
     env: Optional[Dict[str, str]] = None,
 ) -> int:
-    directory = binaries.ensure_cached()
-    path = directory.joinpath(binaries.PRISMA_CLI_NAME)
-    if not path.exists():
-        raise RuntimeError(
-            f'The Prisma CLI is not downloaded, expected {path} to exist.'
-        )
+
+    if os.getenv('PRISMA_CLI_BINARY'):
+        strpath = str(os.getenv('PRISMA_CLI_BINARY'))
+        path = Path(strpath)
+    else:
+        directory = binaries.ensure_cached()
+        path = directory.joinpath(binaries.PRISMA_CLI_NAME)
+        if not path.exists():
+            raise RuntimeError(
+                f'The Prisma CLI is not downloaded, expected {path} to exist.'
+            )
 
     log.debug('Using Prisma CLI at %s', path)
     log.debug('Running prisma command with args: %s', args)

@@ -154,3 +154,6 @@ __prisma__
 
 # Node
 node_modules
+
+# Binaries
+binaries
