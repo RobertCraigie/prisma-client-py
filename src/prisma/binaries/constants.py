@@ -34,6 +34,7 @@ ENGINE_VERSION = os.environ.get(
     'PRISMA_ENGINE_VERSION', 'efdf9b1183dddfd4258cd181a72125755215ab7b'
 )
 
+# TODO: remove
 # where the binaries live
 GLOBAL_TEMP_DIR = (
     Path(tempfile.gettempdir())
