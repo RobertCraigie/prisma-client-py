@@ -126,8 +126,11 @@ class {{ model.name }}(BaseModel):
         if name in _created_partial_types:
             raise ValueError(f'Partial type "{name}" has already been created.')
 
-        if include is not None and exclude is not None:
-            raise TypeError(f'Exclude and include are mutually exclusive.')
+        if include is not None:
+            if exclude is not None:
+                raise TypeError('Exclude and include are mutually exclusive.')
+            if exclude_relational_fields is True:
+                raise TypeError('Include and exclude_relational_fields=True are mutually exclusive.')
 
         if required and optional:
             shared = set(required) & set(optional)
@@ -172,7 +175,7 @@ class {{ model.name }}(BaseModel):
             if exclude_relational_fields:
                 fields = {
                     key: data
-                    for key, data in _{{ model.name }}_fields.items()
+                    for key, data in fields.items()
                     if key not in _{{ model.name }}_relational_fields
                 }
             {% endif %}

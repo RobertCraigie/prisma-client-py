@@ -85,7 +85,7 @@ class Runner:
     def __init__(self, patcher: 'MonkeyPatch') -> None:
         self._runner = CliRunner()
         self._patcher = patcher
-        self.default_cli = None  # type: Optional[click.Command]
+        self.default_cli: Optional[click.Command] = None
         self.patch_subprocess()
 
     def invoke(
