@@ -7,7 +7,7 @@ on:
     branches:
       - main
       - feat/rust-bindings
-      - ci/rust-lint
+      - ci/cibuildwheel
 
 env:
   SRC_DIR: ./src/query-engine
@@ -35,3 +35,81 @@ jobs:
         working-directory: ${{ env.SRC_DIR }}
         run: |
           cargo clippy --all
+
+  build:
+    name: Build wheels on ${{ matrix.os }}/${{ matrix.vers }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - vers: i686
+            os: ubuntu-20.04
+          # TODO
+          # - vers: aarch64
+          #   os: ubuntu-20.04
+          - vers: auto64
+            os: ubuntu-20.04
+          - vers: arm64
+            os: macos-10.15
+          - vers: auto64
+            os: macos-10.15
+          - vers: auto64
+            os: windows-2019
+    env:
+      # SCCACHE_VERSION: 0.2.13
+      CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y"
+      CIBW_BEFORE_ALL_MACOS: "rustup target add aarch64-apple-darwin x86_64-apple-darwin"
+      CIBW_BEFORE_ALL_WINDOWS: "rustup target add x86_64-pc-windows-msvc i686-pc-windows-msvc"
+      CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
+      # TODO: verify this
+      CIBW_SKIP: "cp27-* cp34-* cp35-* pp*-win* *-win32 *-win_arm64 *-musllinux_*"
+      CIBW_ARCHS: ${{ matrix.vers }}
+      CIBW_BUILD_VERBOSITY: 1
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v2
+      with:
+        python-version: "3.10"
+
+    - name: Install Dependencies
+      run: |
+        pip install --upgrade --upgrade-strategy eager wheel setuptools maturin
+
+    - name: Build wheels
+      uses: pypa/cibuildwheel@v2.3.1
+      with:
+        package-dir: ${{ env.SRC_DIR }}
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v2
+      with:
+        path: wheelhouse/*.whl
+        name: wheels
+
+  pypi:
+    # NOTE: expression is split between two `contains` checks due to parsing bug
+    if: ${{ github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, 'query-engine') && contains(github.event.head_commit.message, 'bump version') }}
+    name: Publish PyPi wheels
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download wheels
+        id: download
+        uses: actions/download-artifact@v2
+        with:
+          name: wheels
+          path: wheelhouse
+
+      # TODO: build a source tarball??
+
+      - name: Publish distribution to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.TESTPYPI_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
+          packages_dir: ${{ steps.download.outputs.download-path }}

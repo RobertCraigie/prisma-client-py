@@ -9,6 +9,11 @@ name = "_prisma_query_engine"
 path = "src/lib.rs"
 crate-type = ["cdylib"]
 
+[features]
+# I don't like having to set this as default
+default = ["vendored-openssl"]
+vendored-openssl = ["sql-connector/vendored-openssl"]
+
 [dependencies]
 query-core = { git = "https://github.com/prisma/prisma-engines", rev = "33838b0" }
 pyo3-asyncio = { git = "https://github.com/awestlake87/pyo3-asyncio", features = ["attributes", "tokio-runtime"] }
