@@ -7,10 +7,10 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from pytest_subprocess import FakeProcess
 
-from prisma import Prisma
+from prisma import Prisma, config
 from prisma.utils import temp_env_update
 from prisma.binaries import platform
-from prisma.binaries import BINARIES, ENGINE_VERSION
+from prisma.binaries import BINARIES
 from prisma.engine import errors, utils
 from prisma.engine.query import QueryEngine
 from prisma._compat import get_running_loop
@@ -88,7 +88,7 @@ def test_mismatched_version_error(fake_process: FakeProcess) -> None:
         utils.ensure()
 
     assert exc.match(
-        f'Expected query engine version `{ENGINE_VERSION}` but got `unexpected-hash`'
+        f'Expected query engine version `{config.engine_version}` but got `unexpected-hash`'
     )
 
 
@@ -110,7 +110,7 @@ def test_ensure_local_path(
 
     fake_process.register_subprocess(
         [fake_engine, '--version'],  # type: ignore[list-item]
-        stdout=f'query-engine {ENGINE_VERSION}',
+        stdout=f'query-engine {config.engine_version}',
     )
     path = utils.ensure()
     assert path == fake_engine

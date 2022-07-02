@@ -8,7 +8,8 @@ import click
 
 from .binary import Binary
 from .engine import Engine
-from .constants import GLOBAL_TEMP_DIR, PRISMA_CLI_NAME
+from .constants import PRISMA_CLI_NAME
+from .. import config
 
 
 __all__ = (
@@ -47,7 +48,7 @@ def ensure_cached() -> Path:
 
     if not binaries:
         log.debug('All binaries are cached')
-        return GLOBAL_TEMP_DIR
+        return config.binary_cache_dir
 
     def show_item(item: Optional[Binary]) -> str:
         if item is not None:
@@ -63,7 +64,7 @@ def ensure_cached() -> Path:
         for binary in iterator:
             binary.download()
 
-    return GLOBAL_TEMP_DIR
+    return config.binary_cache_dir
 
 
 def remove_all() -> None:
