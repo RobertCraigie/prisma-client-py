@@ -3,11 +3,10 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Union
+from functools import lru_cache
 
 import tomlkit
 from pydantic import BaseSettings, Extra, Field
-
-from ._compat import cached_property
 
 if TYPE_CHECKING:
     from pydantic.env_settings import SettingsSourceCallable
@@ -93,14 +92,14 @@ class Config(DefaultConfig):
 # TODO: ensure things like __name__, __dir__ are proxied correctly
 class LazyConfigProxy:
     def __getattr__(self, attr: str) -> object:
-        return getattr(self.__proxied, attr)
+        return getattr(self.__get_proxied(), attr)
 
-    @cached_property
-    def __proxied(self) -> Config:
+    @lru_cache(maxsize=None)
+    def __get_proxied(self) -> Config:
         return Config.load()
 
     def __repr__(self) -> str:
-        return repr(self.__proxied)
+        return repr(self.__get_proxied())
 
     def __str__(self) -> str:
-        return str(self.__proxied)
+        return str(self.__get_proxied())
