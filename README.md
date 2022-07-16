@@ -184,7 +184,7 @@ async def main() -> None:
     user = await prisma.user.create(
         data={
             'name': 'Robert',
-        }.
+        },
     )
 
     await prisma.disconnect()
@@ -208,7 +208,7 @@ async def main() -> None:
     user = await User.prisma().create(
         data={
             'name': 'Robert',
-        }.
+        },
     )
 
     await db.disconnect()
