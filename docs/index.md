@@ -184,6 +184,7 @@ async def main() -> None:
     user = await prisma.user.create(
         data={
             'name': 'Robert',
+            'email': 'robert@craigie.dev'
         },
     )
 
@@ -208,6 +209,7 @@ async def main() -> None:
     user = await User.prisma().create(
         data={
             'name': 'Robert',
+            'email': 'robert@craigie.dev'
         },
     )
 
