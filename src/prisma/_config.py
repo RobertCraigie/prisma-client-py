@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Union
-from functools import lru_cache
+from typing import TYPE_CHECKING, Union, cast
 
 import tomlkit
 from pydantic import BaseSettings, Extra, Field
+
+from ._proxy import LazyProxy
 
 if TYPE_CHECKING:
     from pydantic.env_settings import SettingsSourceCallable
@@ -89,17 +90,9 @@ class Config(DefaultConfig):
         return cls.from_base(DefaultConfig.parse_obj(config))
 
 
-# TODO: ensure things like __name__, __dir__ are proxied correctly
-class LazyConfigProxy:
-    def __getattr__(self, attr: str) -> object:
-        return getattr(self.__get_proxied(), attr)
-
-    @lru_cache(maxsize=None)
-    def __get_proxied(self) -> Config:
+class LazyConfigProxy(LazyProxy[Config]):
+    def __load__(self) -> Config:
         return Config.load()
 
-    def __repr__(self) -> str:
-        return repr(self.__get_proxied())
 
-    def __str__(self) -> str:
-        return str(self.__get_proxied())
+config: Config = cast(Config, LazyConfigProxy())
