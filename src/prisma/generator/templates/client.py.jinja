@@ -27,7 +27,7 @@ __all__ = (
 SCHEMA = '''
 {{ datamodel }}
 '''
-SCHEMA_PATH = Path('{{ schema_path }}')
+SCHEMA_PATH = Path('{{ schema_path.as_posix() }}')
 ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
 BINARY_PATHS = BinaryPaths.parse_obj({{ binary_paths.dict(by_alias=True) }})
 
