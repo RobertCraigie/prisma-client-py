@@ -89,20 +89,26 @@ class NodeBinaryStrategy(Strategy):
     @classmethod
     def from_nodeenv(cls, target: Target) -> NodeBinaryStrategy:
         path = config.nodeenv_cache_dir.absolute()
-        log.debug('Installing nodeenv to %s', path)
+        if path.exists():
+            log.debug(
+                'Skipping nodeenv installation as it already exists at %s',
+                path,
+            )
+        else:
+            log.debug('Installing nodeenv to %s', path)
+            subprocess.run(
+                [
+                    sys.executable,
+                    '-m',
+                    'nodeenv',
+                    str(path),
+                    *config.nodeenv_extra_args,
+                ],
+                check=True,
+                stdout=sys.stdout,
+                stderr=sys.stderr,
+            )
 
-        subprocess.run(
-            [
-                sys.executable,
-                '-m',
-                'nodeenv',
-                str(path),
-                *config.nodeenv_extra_args,
-            ],
-            check=True,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-        )
         if not path.exists():
             raise RuntimeError(
                 'Could not install nodeenv to the expected directory; See the output above for more details.'
