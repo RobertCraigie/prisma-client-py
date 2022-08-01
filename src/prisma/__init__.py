@@ -6,12 +6,9 @@ __license__ = 'APACHE'
 __copyright__ = 'Copyright 2020-2021 RobertCraigie'
 __version__ = '0.6.7a'
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
-from ._config import Config as _Config, LazyConfigProxy as _LazyConfigProxy
-
-config: _Config = cast(_Config, _LazyConfigProxy())
-
+from ._config import config as config
 from .utils import setup_logging
 from . import errors as errors
 from .validator import *

@@ -41,7 +41,9 @@ class MismatchedVersionsError(EngineError):
 
     def __init__(self, *, expected: str, got: str):
         super().__init__(
-            f'Expected query engine version `{expected}` but got `{got}`'
+            f'Expected query engine version `{expected}` but got `{got}`.\n'
+            + 'If this is intentional then please set the PRISMA_PY_DEBUG_GENERATOR environment '
+            + 'variable to 1 and try again.'
         )
         self.expected = expected
         self.got = got

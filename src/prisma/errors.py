@@ -61,7 +61,7 @@ class DataError(PrismaError):
     code: Any
     meta: Any
 
-    def __init__(self, data: Any, *, message: Optional[str] = None):
+    def __init__(self, data: Any, *, message: Optional[str] = None) -> None:
         self.data = data
 
         user_facing_error = data.get('user_facing_error', {})
@@ -85,7 +85,7 @@ class MissingRequiredValueError(DataError):
 
 
 class RawQueryError(DataError):
-    def __init__(self, data: Any):
+    def __init__(self, data: Any) -> None:
         try:
             super().__init__(
                 data, message=data['user_facing_error']['meta']['message']
@@ -95,13 +95,13 @@ class RawQueryError(DataError):
 
 
 class TableNotFoundError(DataError):
-    def __init__(self, data: Any):
+    def __init__(self, data: Any) -> None:
         super().__init__(data)
-        self.table = self.meta.get('table')  # type: Optional[str]
+        self.table: Optional[str] = self.meta.get('table')
 
 
 class FieldNotFoundError(DataError):
-    # currently we cannot easilt resolve the erroneous field as Prisma
+    # currently we cannot easily resolve the erroneous field as Prisma
     # returns different results for unknown fields in different situations
     # e.g. root query, nested query and mutation queries
     ...

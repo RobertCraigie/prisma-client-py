@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Union
-from functools import lru_cache
+from typing import TYPE_CHECKING, Union, List, Optional, cast
 
 import tomlkit
 from pydantic import BaseSettings, Extra, Field
+
+from ._proxy import LazyProxy
 
 if TYPE_CHECKING:
     from pydantic.env_settings import SettingsSourceCallable
@@ -19,27 +19,36 @@ class DefaultConfig(BaseSettings):
     prisma_version: str = '3.13.0'
 
     # Engine binary versions can be found under https://github.com/prisma/prisma-engine/commits/main
-    engine_version: str = Field(
-        env='PRISMA_ENGINE_VERSION',
+    expected_engine_version: str = Field(
+        env='PRISMA_EXPECTED_ENGINE_VERSION',
         default='efdf9b1183dddfd4258cd181a72125755215ab7b',
-    )
-
-    # CLI binaries are stored here
-    prisma_url: str = Field(
-        env='PRISMA_CLI_URL',
-        default='https://prisma-photongo.s3-eu-west-1.amazonaws.com/prisma-cli-{version}-{platform}.gz',
-    )
-
-    # Engine binaries are stored here
-    engine_url: str = Field(
-        env='PRISMA_ENGINE_URL',
-        default='https://binaries.prisma.sh/all_commits/{0}/{1}/{2}.gz',
     )
 
     # Where to store the downloaded binaries
     binary_cache_dir: Union[Path, None] = Field(
         env='PRISMA_BINARY_CACHE_DIR',
         default=None,
+    )
+
+    # Temporary workaround to support setting the binary platform until it can be properly implemented
+    binary_platform: Optional[str] = Field(env='PRISMA_BINARY_PLATFORM')
+
+    # Whether or not to use the global node installation (if available)
+    use_global_node: bool = Field(env='PRISMA_USE_GLOBAL_NODE', default=True)
+
+    # Whether or not to use the `nodejs-bin` package (if installed)
+    use_nodejs_bin: bool = Field(env='PRISMA_USE_NODEJS_BIN', default=True)
+
+    # Extra arguments to pass to nodeenv, arguments are passed after the path, e.g. python -m nodeenv <path> <extra args>
+    nodeenv_extra_args: List[str] = Field(
+        env='PRISMA_NODEENV_EXTRA_ARGS',
+        default_factory=list,
+    )
+
+    # Where to download nodeenv to, defaults to ~/.cache/prisma-nodeenv
+    nodeenv_cache_dir: Path = Field(
+        env='PRISMA_NODEENV_CACHE_DIR',
+        default_factory=lambda: Path.home() / '.cache' / 'prisma-nodeenv',
     )
 
     class Config(BaseSettings.Config):
@@ -63,11 +72,11 @@ class Config(DefaultConfig):
     def from_base(cls, config: DefaultConfig) -> Config:
         if config.binary_cache_dir is None:
             config.binary_cache_dir = (
-                Path(tempfile.gettempdir())
-                / 'prisma'
-                / 'binaries'
-                / 'engines'
-                / config.engine_version
+                Path.home()
+                / '.cache'
+                / 'prisma-binaries'
+                / config.prisma_version
+                / config.expected_engine_version
             )
 
         return cls.parse_obj(config.dict())
@@ -89,17 +98,9 @@ class Config(DefaultConfig):
         return cls.from_base(DefaultConfig.parse_obj(config))
 
 
-# TODO: ensure things like __name__, __dir__ are proxied correctly
-class LazyConfigProxy:
-    def __getattr__(self, attr: str) -> object:
-        return getattr(self.__get_proxied(), attr)
-
-    @lru_cache(maxsize=None)
-    def __get_proxied(self) -> Config:
+class LazyConfigProxy(LazyProxy[Config]):
+    def __load__(self) -> Config:
         return Config.load()
 
-    def __repr__(self) -> str:
-        return repr(self.__get_proxied())
 
-    def __str__(self) -> str:
-        return str(self.__get_proxied())
+config: Config = cast(Config, LazyConfigProxy())

@@ -17,7 +17,7 @@ def test_lazy_proxy(mocker: MockerFixture) -> None:
     mocked.assert_called_once()
 
     for _ in range(10):
-        print(proxy.prisma_url)
+        print(proxy.expected_engine_version)
 
     mocked.assert_called_once()
 
@@ -39,7 +39,6 @@ def test_loading(testdir: Testdir) -> None:
             """
             [tool.prisma]
             prisma_version = '0.1.2.3'
-            engine_version = 'foo'
             """
         ),
     )
@@ -47,7 +46,7 @@ def test_loading(testdir: Testdir) -> None:
     assert config.prisma_version == '0.1.2.3'
 
     # updated options are used in computed options
-    assert 'foo' in str(config.binary_cache_dir)
+    assert '0.1.2.3' in str(config.binary_cache_dir)
 
 
 def test_allows_extra_keys(testdir: Testdir) -> None:
