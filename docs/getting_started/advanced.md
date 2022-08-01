@@ -96,21 +96,25 @@ Now that a post and comments have been created, you can query for them as follow
 
 ```py
 # find all comments on a post
-comments = await db.comments.find_many({
-    'where': {
+comments = await db.comment.find_many(
+    where={
         'post_id': post.id
     }
-})
-print(f'comments of post with id {post.id}: {json.dumps(comments, indent=2)}')
+)
+print(f'comments of post with id {post.id}')
+for comment in comments:
+    print(comment.json(indent=2))
 
 # find at most 3 comments on a post
-filtered = await db.comments.find_many({
-    'where': {
+filtered = await db.comment.find_many(
+    where={
         'post_id': post.id
     },
-    'take': 3,
-})
-print(f'filtered comments of post with id {post.id}: {json.dumps(comments, indent=2)}')
+    take=3
+)
+print(f'filtered comments of post with id {post.id}')
+for comment in filtered:
+    print(comment.json(indent=2))
 ```
 
 Prisma also allows you to fetch multiple things at once. Instead of doing complicated joins, you can fetch a post and a
