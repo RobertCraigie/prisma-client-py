@@ -6,8 +6,10 @@ import logging
 import subprocess
 from pathlib import Path
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, IO, Union, Any, Mapping, cast, get_args
+from typing import TYPE_CHECKING, IO, Union, Any, Mapping, cast
 from typing_extensions import Literal
+
+from pydantic.typing import get_args
 
 from .. import config
 from .._proxy import LazyProxy
@@ -33,7 +35,7 @@ Target = Literal['node', 'npm']
 class UnknownTargetError(PrismaError):
     def __init__(self, *, target: str) -> None:
         super().__init__(
-            f'Unknown target: {target}; Valid choices are: {", ".join(get_args(Target))}'
+            f'Unknown target: {target}; Valid choices are: {", ".join(get_args(cast(type, Target)))}'
         )
 
 
