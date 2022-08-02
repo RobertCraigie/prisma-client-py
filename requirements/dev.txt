@@ -1,6 +1,6 @@
 tox==3.25.1
 wheel==0.37.1
-blue==0.9.0
+blue==0.9.1
 pre-commit==2.20.0
 twine==4.0.1
 flake8<=4.0.0
