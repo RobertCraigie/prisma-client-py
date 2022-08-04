@@ -47,7 +47,7 @@ def test_outputs_custom_commands_info(runner: Runner, args: List[str]) -> None:
     result = runner.invoke(args)
     assert 'Python Commands' in result.output
     assert (
-        'For Prisma Client Python commands see prisma py --help'
+        'For Prisma Client Python commands run prisma py --help'
         in result.output
     )
 
