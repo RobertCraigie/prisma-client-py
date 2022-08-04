@@ -17,9 +17,10 @@ from ..binaries import platform
 from ..errors import PrismaError
 
 if TYPE_CHECKING:
-    import nodejs
-    import nodejs.node
-    import nodejs.npm
+    # TODO
+    import nodejs  # type: ignore
+    import nodejs.node  # type: ignore
+    import nodejs.npm  # type: ignore
 else:
     try:
         import nodejs
@@ -154,7 +155,8 @@ class NodeJSPythonStrategy(Strategy):
         else:
             raise UnknownTargetError(target=self.target)
 
-        return func(
+        # TODO
+        return func(  #  type: ignore
             args,
             check=check,
             cwd=cwd,

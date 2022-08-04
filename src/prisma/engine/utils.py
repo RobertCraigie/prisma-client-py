@@ -47,6 +47,7 @@ def _resolve_from_binary_paths(binary_paths: dict[str, str]) -> Path | None:
         path = Path(raw_path)
         if path.exists():
             return path
+    return None
 
 
 def ensure(binary_paths: dict[str, str]) -> Path:

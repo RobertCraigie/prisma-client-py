@@ -75,7 +75,7 @@ def ensure_cached() -> CLICache:
         if proc.returncode != 0:
             # TODO: test
             click.echo(
-                f'An error ocurred while installing the Prisma CLI; npm install log: {proc.stdout}'
+                f'An error ocurred while installing the Prisma CLI; npm install log: {proc.stdout.decode("utf-8")}'
             )
             proc.check_returncode()
 
