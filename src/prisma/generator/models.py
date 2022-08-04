@@ -306,7 +306,9 @@ class GenericData(GenericModel, Generic[ConfigT]):
     other_generators: List['Generator[_ModelAllowAll]'] = FieldInfo(
         alias='otherGenerators'
     )
-    binary_paths: 'BinaryPaths' = FieldInfo(alias='binaryPaths')
+    binary_paths: 'BinaryPaths' = FieldInfo(
+        alias='binaryPaths', default_factory=lambda: BinaryPaths()
+    )
 
     @classmethod
     def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
