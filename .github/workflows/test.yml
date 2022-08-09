@@ -74,7 +74,7 @@ jobs:
 
       - name: Run tests
         run: |
-          tox -e setup,${{ matrix.tox-env }},report -- --ignore=tests/integrations/postgresql
+          tox -e setup,${{ matrix.tox-env }},report -- --ignore=tests/integrations/postgresql --ignore=tests/test_generation/exhaustive
 
       - name: Upload coverage
         run: |
