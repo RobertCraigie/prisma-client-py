@@ -384,7 +384,8 @@ class Generator(GenericModel, Generic[ConfigT]):
     def warn_binary_targets(
         cls, targets: List['ValueFromEnvVar']
     ) -> List['ValueFromEnvVar']:
-        if targets and any(target.value != 'native' for target in targets):
+        # Prisma by default sends one binary target which is the current platform.
+        if len(targets) > 1:
             click.echo(
                 click.style(
                     'Warning: '
