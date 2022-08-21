@@ -24,6 +24,14 @@ class DefaultConfig(BaseSettings):
         default='efdf9b1183dddfd4258cd181a72125755215ab7b',
     )
 
+    # Home directory, used to build the `binary_cache_dir` option by default, useful in multi-user
+    # or testing environments so that the binaries can be easily cached without having to worry
+    # about versioning them.
+    home_dir: Path = Field(
+        env='PRISMA_HOME_DIR',
+        default=Path.home(),
+    )
+
     # Where to store the downloaded binaries
     binary_cache_dir: Union[Path, None] = Field(
         env='PRISMA_BINARY_CACHE_DIR',
@@ -72,7 +80,7 @@ class Config(DefaultConfig):
     def from_base(cls, config: DefaultConfig) -> Config:
         if config.binary_cache_dir is None:
             config.binary_cache_dir = (
-                Path.home()
+                config.home_dir
                 / '.cache'
                 / 'prisma-binaries'
                 / config.prisma_version
