@@ -36,6 +36,7 @@ def query_engine_name() -> str:
     return f'prisma-query-engine-{platform.check_for_extension(platform.binary_platform())}'
 
 
+# TODO: detect this smarter, search for the current platform name?
 def _resolve_from_binary_paths(binary_paths: dict[str, str]) -> Path | None:
     # TODO: actually detect the local platform
     if config.binary_platform is not None:
