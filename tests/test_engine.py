@@ -77,7 +77,7 @@ def test_mismatched_version_error(fake_process: FakeProcess) -> None:
         cast(
             List[str],
             [
-                config.binary_cache_dir.joinpath(utils.query_engine_name()),
+                utils._resolve_from_binary_paths(BINARY_PATHS.query_engine),
                 '--version',
             ],
         ),
