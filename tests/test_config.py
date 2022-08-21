@@ -51,7 +51,7 @@ def test_loading(testdir: Testdir) -> None:
 
 
 def test_allows_extra_keys(testdir: Testdir) -> None:
-    """Config loading works with no pyproject.toml present"""
+    """Config loading allows unknown options to be present in the config file"""
     testdir.makefile(
         '.toml',
         pyproject=dedent(
@@ -84,3 +84,13 @@ def test_env_var_takes_priority(testdir: Testdir) -> None:
     with temp_env_update({'PRISMA_VERSION': '1.5'}):
         config = Config.load()
         assert config.prisma_version == '1.5'
+
+
+def test_every_option_loads_from_the_environment() -> None:
+    """Every config option must explicitly specify an  environment variable to load from
+    to ensure that it can be easily set dynamically
+    """
+    for name, field in Config.__fields__.items():
+        assert (
+            'env' in field.field_info.extra
+        ), f'The {name} option does not specify an environment variable to load from'
