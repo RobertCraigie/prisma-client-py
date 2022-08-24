@@ -18,7 +18,7 @@ from .utils import Runner, Testdir, async_fixture
 
 if TYPE_CHECKING:
     from _pytest.config import Config
-    from _pytest.node import Item
+    from _pytest.nodes import Item
     from _pytest.fixtures import FixtureRequest
     from _pytest.monkeypatch import MonkeyPatch
     from _pytest.pytester import Testdir as PytestTestdir
@@ -137,5 +137,8 @@ def pytest_configure(config: 'Config'):
 
 
 def pytest_runtest_setup(item: 'Item'):
-    for mark in item.iter_markers(name='skip_if_custom_binaries'):
+    if (
+        item.get_closest_marker('skip_if_custom_binaries')
+        and uses_custom_binaries()
+    ):
         pytest.skip('Test skipped because using custom binaries')

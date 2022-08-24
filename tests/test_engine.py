@@ -1,4 +1,3 @@
-import os
 import asyncio
 import contextlib
 from pathlib import Path
