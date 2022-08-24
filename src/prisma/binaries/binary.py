@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from . import platform
 from .utils import download
-from .constants import GLOBAL_TEMP_DIR, PRISMA_URL, PRISMA_VERSION
+from .. import config
 
 
 __all__ = ('Binary',)
@@ -32,8 +32,8 @@ class Binary(BaseModel):
 
     @property
     def url(self) -> str:
-        return platform.check_for_extension(PRISMA_URL).format(
-            version=PRISMA_VERSION, platform=platform.name()
+        return platform.check_for_extension(config.prisma_url).format(
+            version=config.prisma_version, platform=platform.name()
         )
 
     @property
@@ -47,6 +47,6 @@ class Binary(BaseModel):
             )
             return Path(env)
 
-        return GLOBAL_TEMP_DIR.joinpath(
+        return config.binary_cache_dir.joinpath(
             platform.check_for_extension(self.name)
         )

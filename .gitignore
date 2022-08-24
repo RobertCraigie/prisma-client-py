@@ -118,6 +118,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# Environment variables
+.envrc
+
 # local testing files
 tmp/
 

@@ -8,6 +8,7 @@ __version__ = '0.6.7a'
 
 from typing import TYPE_CHECKING
 
+from ._config import config as config
 from .utils import setup_logging
 from . import errors as errors
 from .validator import *

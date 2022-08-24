@@ -4,7 +4,7 @@ import shutil
 import pytest
 from click.testing import Result
 
-from prisma import binaries
+from prisma import binaries, config
 from tests.utils import Runner
 
 
@@ -19,7 +19,7 @@ def assert_success(result: Result) -> None:
 
     assert result.exit_code == 0
     assert result.output.endswith(
-        f'Downloaded binaries to {binaries.GLOBAL_TEMP_DIR}\n'
+        f'Downloaded binaries to {config.binary_cache_dir}\n'
     )
 
     for binary in binaries.BINARIES:
@@ -77,7 +77,7 @@ def test_fetch_force_no_dir(runner: Runner) -> None:
         pytest.skip('unsupported configuration')
 
     binaries.remove_all()
-    shutil.rmtree(str(binaries.GLOBAL_TEMP_DIR))
+    shutil.rmtree(str(config.binary_cache_dir))
 
     binary = binaries.BINARIES[0]
     assert not binary.path.exists()
