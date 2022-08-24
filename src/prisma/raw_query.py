@@ -1,4 +1,3 @@
-from array import array
 import binascii
 from datetime import datetime
 from ._types import BaseModelT

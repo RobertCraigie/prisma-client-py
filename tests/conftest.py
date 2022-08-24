@@ -125,3 +125,11 @@ async def cleanup_client(client: Prisma) -> None:
         for _, item in inspect.getmembers(batcher):
             if item.__class__.__name__.endswith('Actions'):
                 item.delete_many()
+
+
+@pytest.fixture(autouse=True)
+def skip_if_custom_binaries():
+    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
+        yield
+    else:
+        pytest.skip('Custom binaries.')

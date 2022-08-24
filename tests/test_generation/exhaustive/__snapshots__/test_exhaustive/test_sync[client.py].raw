@@ -44,7 +44,7 @@ from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
 from .generator.models import EngineType, OptionalValueFromEnvVar
-from .raw import parse_raw_list
+from .raw_query import deserialize_raw_results
 
 __all__ = (
     'ENGINE_TYPE',
@@ -505,7 +505,7 @@ class Prisma:
         )
         result = resp['data']['result']
         print(result)
-        rsp = parse_raw_list(result, model)
+        rsp = deserialize_raw_results(result, model)
         print(rsp)
         return rsp
 
