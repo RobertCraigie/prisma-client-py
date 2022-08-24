@@ -12,10 +12,8 @@ from tests.utils import Runner
 # tests fails mid run, as the global binaries are deleted
 
 
+@pytest.mark.skip_if_custom_binaries
 def assert_success(result: Result) -> None:
-
-    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
-        pytest.skip('unsupported configuration')
 
     assert result.exit_code == 0
     assert result.output.endswith(
@@ -26,20 +24,16 @@ def assert_success(result: Result) -> None:
         assert binary.path.exists()
 
 
+@pytest.mark.skip_if_custom_binaries
 def test_fetch(runner: Runner) -> None:
     """Basic usage, binaries are already cached"""
-
-    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
-        pytest.skip('unsupported configuration')
 
     assert_success(runner.invoke(['py', 'fetch']))
 
 
+@pytest.mark.skip_if_custom_binaries
 def test_fetch_one_binary_missing(runner: Runner) -> None:
     """Downloads a binary if it is missing"""
-
-    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
-        pytest.skip('unsupported configuration')
 
     binary = random.choice(binaries.BINARIES)
     assert binary.path.exists()
@@ -49,11 +43,9 @@ def test_fetch_one_binary_missing(runner: Runner) -> None:
     assert_success(runner.invoke(['py', 'fetch']))
 
 
+@pytest.mark.skip_if_custom_binaries
 def test_fetch_force(runner: Runner) -> None:
     """Passing --force re-downloads an already existing binary"""
-
-    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
-        pytest.skip('unsupported configuration')
 
     binary = random.choice(binaries.BINARIES)
     assert binary.path.exists()
@@ -70,11 +62,9 @@ def test_fetch_force(runner: Runner) -> None:
     assert old_stat.st_size == new_stat.st_size
 
 
+@pytest.mark.skip_if_custom_binaries
 def test_fetch_force_no_dir(runner: Runner) -> None:
     """Passing --force when the base directory does not exist"""
-
-    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
-        pytest.skip('unsupported configuration')
 
     binaries.remove_all()
     shutil.rmtree(str(config.binary_cache_dir))

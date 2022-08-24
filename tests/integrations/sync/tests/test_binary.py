@@ -4,11 +4,9 @@ import pytest
 from prisma.binaries import BINARIES
 
 
+@pytest.mark.skip_if_custom_binaries
 def test_download() -> None:
     """Binary can be downloaded"""
-
-    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
-        pytest.skip('unsupported configuration')
 
     binary = random.choice(BINARIES)
     assert binary.path.exists()

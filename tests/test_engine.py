@@ -62,11 +62,9 @@ def test_stopping_engine_on_closed_loop() -> None:
         engine.stop()
 
 
+@pytest.mark.skip_if_custom_binaries
 def test_engine_binary_does_not_exist(monkeypatch: MonkeyPatch) -> None:
     """No query engine binary found raises an error"""
-
-    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
-        pytest.skip('unsupported configuration')
 
     def mock_exists(path: Path) -> bool:
         return False
@@ -81,11 +79,9 @@ def test_engine_binary_does_not_exist(monkeypatch: MonkeyPatch) -> None:
     )
 
 
+@pytest.mark.skip_if_custom_binaries
 def test_mismatched_version_error(fake_process: FakeProcess) -> None:
     """Mismatched query engine versions raises an error"""
-
-    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
-        pytest.skip('unsupported configuration')
 
     fake_process.register_subprocess(
         [QUERY_ENGINE.path, '--version'],  # type: ignore[list-item]
@@ -100,13 +96,11 @@ def test_mismatched_version_error(fake_process: FakeProcess) -> None:
     )
 
 
+@pytest.mark.skip_if_custom_binaries
 def test_ensure_local_path(
     testdir: Testdir, fake_process: FakeProcess
 ) -> None:
     """Query engine in current directory required to be the expected version"""
-
-    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
-        pytest.skip('unsupported configuration')
 
     fake_engine = testdir.path / platform.check_for_extension(
         f'prisma-query-engine-{platform.binary_platform()}'

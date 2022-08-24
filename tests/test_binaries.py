@@ -9,11 +9,9 @@ from prisma.binaries import BINARIES, ENGINES, Engine
 from prisma.binaries.constants import PRISMA_CLI_NAME
 
 
+@pytest.mark.skip_if_custom_binaries
 def test_skips_cached_binary(caplog: LogCaptureFixture) -> None:
     """Downloading an already existing binary does not actually do anything"""
-
-    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
-        pytest.skip('unsupported configuration')
 
     # NOTE: this is not a great way to test this
     binary = BINARIES[0]

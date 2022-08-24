@@ -37,6 +37,18 @@ BINARIES: List[Binary] = [
 ]
 
 
+def uses_custom_binaries() -> bool:
+    if (
+        os.environ.get('PRISMA_QUERY_ENGINE_BINARY')
+        and os.environ.get('PRISMA_MIGRATION_ENGINE_BINARY')
+        and os.environ.get('PRISMA_INTROSPECTION_ENGINE_BINARY')
+        and os.environ.get('PRISMA_FMT_BINARY')
+    ):
+        return True
+    else:
+        return False
+
+
 def ensure_cached() -> Path:
     binaries: List[Binary] = []
     for binary in BINARIES:
@@ -47,13 +59,9 @@ def ensure_cached() -> Path:
             log.debug('%s not cached at %s', binary.name, path)
             binaries.append(binary)
 
-    if not binaries:
+    if not binaries or uses_custom_binaries():
         log.debug('All binaries are cached')
         return config.binary_cache_dir
-
-    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
-        log.debug('Using custom binaries')
-        return GLOBAL_TEMP_DIR
 
     def show_item(item: Optional[Binary]) -> str:
         if item is not None:

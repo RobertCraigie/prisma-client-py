@@ -11,12 +11,14 @@ from prisma import Prisma
 from prisma.cli import setup_logging
 from prisma.testing import reset_client
 from prisma.utils import get_or_create_event_loop
+from prisma.binaries.binaries import uses_custom_binaries
 
 from .utils import Runner, Testdir, async_fixture
 
 
 if TYPE_CHECKING:
     from _pytest.config import Config
+    from _pytest.node import Item
     from _pytest.fixtures import FixtureRequest
     from _pytest.monkeypatch import MonkeyPatch
     from _pytest.pytester import Testdir as PytestTestdir
@@ -127,9 +129,13 @@ async def cleanup_client(client: Prisma) -> None:
                 item.delete_many()
 
 
-@pytest.fixture(autouse=True)
-def skip_if_custom_binaries():
-    if os.environ.get('PRISMA_CUSTOM_BINARIES'):
-        yield
-    else:
-        pytest.skip('Custom binaries.')
+def pytest_configure(config: 'Config'):
+    config.addinivalue_line(
+        'markers',
+        'skip_if_custom_binaries(): this mark skips tests if we are using custom binaries',
+    )
+
+
+def pytest_runtest_setup(item: 'Item'):
+    for mark in item.iter_markers(name='skip_if_custom_binaries'):
+        pytest.skip('Test skipped because using custom binaries')
