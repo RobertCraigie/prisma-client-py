@@ -129,14 +129,14 @@ async def cleanup_client(client: Prisma) -> None:
                 item.delete_many()
 
 
-def pytest_configure(config: 'Config'):
+def pytest_configure(config: 'Config') -> None:
     config.addinivalue_line(
         'markers',
         'skip_if_custom_binaries(): this mark skips tests if we are using custom binaries',
     )
 
 
-def pytest_runtest_setup(item: 'Item'):
+def pytest_runtest_setup(item: 'Item') -> None:
     if (
         item.get_closest_marker('skip_if_custom_binaries')
         and uses_custom_binaries()

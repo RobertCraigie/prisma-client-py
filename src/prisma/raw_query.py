@@ -2,7 +2,7 @@ import binascii
 from datetime import datetime
 from ._types import BaseModelT
 
-from typing import Any, Dict, Optional, Type, Union, List
+from typing import Any, Callable, Dict, Optional, Type, Union, List
 
 # From: https://github.com/prisma/prisma/blob/main/packages/client/src/runtime/utils/deserializeRawResults.ts
 """
@@ -52,23 +52,23 @@ def deserialize_value(
     return obj
 
 
-def _deserialize_datetime(value: str):
+def _deserialize_datetime(value: str) -> datetime:
     return datetime.fromisoformat(value)
 
 
-def _deserialize_bigint(value: str):
+def _deserialize_bigint(value: str) -> int:
     return int(value)
 
 
-def _deserialize_bytes(value: str):
+def _deserialize_bytes(value: str) -> bytes:
     return binascii.a2b_base64(value)
 
 
-def _deserialize_decimal(value: str):
+def _deserialize_decimal(value: str) -> float:
     return float(value)
 
 
-def _deserialize_time(value: str):
+def _deserialize_time(value: str) -> datetime:
     return datetime.fromisoformat(f'1970-01-01T${value}Z')
 
 
@@ -76,7 +76,7 @@ def _deserialize_array(value: list[Any]) -> Union[list[Any], Any]:
     return map(deserialize_value, value)
 
 
-_deserializers = {
+_deserializers: Dict[str, Callable[..., Any]] = {
     'bigint': _deserialize_bigint,
     'bytes': _deserialize_bytes,
     'decimal': _deserialize_decimal,
