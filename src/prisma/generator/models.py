@@ -414,6 +414,7 @@ class Config(BaseSettings):
     recursive_type_depth: int = FieldInfo(
         default_factory=_recursive_type_depth_factory
     )
+    validate_arguments: bool = True
     engine_type: EngineType = FieldInfo(default=EngineType.binary)
 
     # this should be a list of experimental features

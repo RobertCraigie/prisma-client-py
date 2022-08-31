@@ -44,6 +44,7 @@ from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
 from .generator.models import EngineType, OptionalValueFromEnvVar
+from .validator import lazy_validate_arguments
 
 
 __all__ = (
@@ -650,6 +651,7 @@ class PostBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.PostCreateInput,
@@ -665,6 +667,7 @@ class PostBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.PostCreateWithoutRelationsInput],
@@ -685,6 +688,7 @@ class PostBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.PostWhereUniqueInput,
@@ -700,6 +704,7 @@ class PostBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.PostUpdateInput,
@@ -717,6 +722,7 @@ class PostBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.PostWhereUniqueInput,
@@ -735,6 +741,7 @@ class PostBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.PostUpdateManyMutationInput,
@@ -748,6 +755,7 @@ class PostBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.PostWhereInput] = None,
@@ -768,6 +776,7 @@ class UserBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.UserCreateInput,
@@ -783,6 +792,7 @@ class UserBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.UserCreateWithoutRelationsInput],
@@ -803,6 +813,7 @@ class UserBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.UserWhereUniqueInput,
@@ -818,6 +829,7 @@ class UserBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.UserUpdateInput,
@@ -835,6 +847,7 @@ class UserBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.UserWhereUniqueInput,
@@ -853,6 +866,7 @@ class UserBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.UserUpdateManyMutationInput,
@@ -866,6 +880,7 @@ class UserBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.UserWhereInput] = None,
@@ -886,6 +901,7 @@ class MBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.MCreateInput,
@@ -901,6 +917,7 @@ class MBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.MCreateWithoutRelationsInput],
@@ -921,6 +938,7 @@ class MBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.MWhereUniqueInput,
@@ -936,6 +954,7 @@ class MBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.MUpdateInput,
@@ -953,6 +972,7 @@ class MBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.MWhereUniqueInput,
@@ -971,6 +991,7 @@ class MBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.MUpdateManyMutationInput,
@@ -984,6 +1005,7 @@ class MBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.MWhereInput] = None,
@@ -1004,6 +1026,7 @@ class NBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.NCreateInput,
@@ -1019,6 +1042,7 @@ class NBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.NCreateWithoutRelationsInput],
@@ -1039,6 +1063,7 @@ class NBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.NWhereUniqueInput,
@@ -1054,6 +1079,7 @@ class NBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.NUpdateInput,
@@ -1071,6 +1097,7 @@ class NBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.NWhereUniqueInput,
@@ -1089,6 +1116,7 @@ class NBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.NUpdateManyMutationInput,
@@ -1102,6 +1130,7 @@ class NBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.NWhereInput] = None,
@@ -1122,6 +1151,7 @@ class OneOptionalBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.OneOptionalCreateInput,
@@ -1137,6 +1167,7 @@ class OneOptionalBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.OneOptionalCreateWithoutRelationsInput],
@@ -1157,6 +1188,7 @@ class OneOptionalBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.OneOptionalWhereUniqueInput,
@@ -1172,6 +1204,7 @@ class OneOptionalBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.OneOptionalUpdateInput,
@@ -1189,6 +1222,7 @@ class OneOptionalBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.OneOptionalWhereUniqueInput,
@@ -1207,6 +1241,7 @@ class OneOptionalBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.OneOptionalUpdateManyMutationInput,
@@ -1220,6 +1255,7 @@ class OneOptionalBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.OneOptionalWhereInput] = None,
@@ -1240,6 +1276,7 @@ class ManyRequiredBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.ManyRequiredCreateInput,
@@ -1255,6 +1292,7 @@ class ManyRequiredBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.ManyRequiredCreateWithoutRelationsInput],
@@ -1275,6 +1313,7 @@ class ManyRequiredBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.ManyRequiredWhereUniqueInput,
@@ -1290,6 +1329,7 @@ class ManyRequiredBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.ManyRequiredUpdateInput,
@@ -1307,6 +1347,7 @@ class ManyRequiredBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.ManyRequiredWhereUniqueInput,
@@ -1325,6 +1366,7 @@ class ManyRequiredBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.ManyRequiredUpdateManyMutationInput,
@@ -1338,6 +1380,7 @@ class ManyRequiredBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.ManyRequiredWhereInput] = None,
@@ -1358,6 +1401,7 @@ class ListsBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.ListsCreateInput,
@@ -1373,6 +1417,7 @@ class ListsBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.ListsCreateWithoutRelationsInput],
@@ -1393,6 +1438,7 @@ class ListsBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.ListsWhereUniqueInput,
@@ -1408,6 +1454,7 @@ class ListsBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.ListsUpdateInput,
@@ -1425,6 +1472,7 @@ class ListsBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.ListsWhereUniqueInput,
@@ -1443,6 +1491,7 @@ class ListsBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.ListsUpdateManyMutationInput,
@@ -1456,6 +1505,7 @@ class ListsBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.ListsWhereInput] = None,
@@ -1476,6 +1526,7 @@ class ABatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.ACreateInput,
@@ -1491,6 +1542,7 @@ class ABatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.ACreateWithoutRelationsInput],
@@ -1511,6 +1563,7 @@ class ABatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.AWhereUniqueInput,
@@ -1526,6 +1579,7 @@ class ABatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.AUpdateInput,
@@ -1543,6 +1597,7 @@ class ABatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.AWhereUniqueInput,
@@ -1561,6 +1616,7 @@ class ABatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.AUpdateManyMutationInput,
@@ -1574,6 +1630,7 @@ class ABatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.AWhereInput] = None,
@@ -1594,6 +1651,7 @@ class BBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.BCreateInput,
@@ -1609,6 +1667,7 @@ class BBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.BCreateWithoutRelationsInput],
@@ -1629,6 +1688,7 @@ class BBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.BWhereUniqueInput,
@@ -1644,6 +1704,7 @@ class BBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.BUpdateInput,
@@ -1661,6 +1722,7 @@ class BBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.BWhereUniqueInput,
@@ -1679,6 +1741,7 @@ class BBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.BUpdateManyMutationInput,
@@ -1692,6 +1755,7 @@ class BBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.BWhereInput] = None,
@@ -1712,6 +1776,7 @@ class CBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.CCreateInput,
@@ -1727,6 +1792,7 @@ class CBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.CCreateWithoutRelationsInput],
@@ -1747,6 +1813,7 @@ class CBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.CWhereUniqueInput,
@@ -1762,6 +1829,7 @@ class CBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.CUpdateInput,
@@ -1779,6 +1847,7 @@ class CBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.CWhereUniqueInput,
@@ -1797,6 +1866,7 @@ class CBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.CUpdateManyMutationInput,
@@ -1810,6 +1880,7 @@ class CBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.CWhereInput] = None,
@@ -1830,6 +1901,7 @@ class DBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.DCreateInput,
@@ -1845,6 +1917,7 @@ class DBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.DCreateWithoutRelationsInput],
@@ -1865,6 +1938,7 @@ class DBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.DWhereUniqueInput,
@@ -1880,6 +1954,7 @@ class DBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.DUpdateInput,
@@ -1897,6 +1972,7 @@ class DBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.DWhereUniqueInput,
@@ -1915,6 +1991,7 @@ class DBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.DUpdateManyMutationInput,
@@ -1928,6 +2005,7 @@ class DBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.DWhereInput] = None,
@@ -1948,6 +2026,7 @@ class EBatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.ECreateInput,
@@ -1963,6 +2042,7 @@ class EBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.ECreateWithoutRelationsInput],
@@ -1983,6 +2063,7 @@ class EBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.EWhereUniqueInput,
@@ -1998,6 +2079,7 @@ class EBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.EUpdateInput,
@@ -2015,6 +2097,7 @@ class EBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.EWhereUniqueInput,
@@ -2033,6 +2116,7 @@ class EBatchActions:
             },
         )
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.EUpdateManyMutationInput,
@@ -2046,6 +2130,7 @@ class EBatchActions:
             root_selection=['count'],
         )
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.EWhereInput] = None,

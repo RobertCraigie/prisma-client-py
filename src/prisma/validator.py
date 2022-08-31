@@ -1,18 +1,28 @@
 import sys
+import contextlib
 from types import ModuleType
-from functools import lru_cache
-from typing import Type, TypeVar, Any, cast
+from contextvars import ContextVar
+from functools import lru_cache, wraps
+from typing import Optional, Type, TypeVar, Iterator, Any, cast
+from typing_extensions import TypedDict
 
 from pydantic import BaseModel, Extra, create_model_from_typeddict
+from pydantic.decorator import validate_arguments
 from pydantic.typing import is_typeddict
 
-from ._types import Protocol, runtime_checkable
+from ._types import Protocol, CallableT, runtime_checkable
 
 
-__all__ = ('validate',)
+__all__ = (
+    'validate',
+    'disable_validation',
+)
 
 # NOTE: we should use bound=TypedDict but mypy does not support this
 T = TypeVar('T')
+_validation_enabled: ContextVar[bool] = ContextVar(
+    '_validation_enabled', default=True
+)
 
 
 class Config:
@@ -24,12 +34,17 @@ class CachedModel(Protocol):
     __pydantic_model__: BaseModel
 
 
+class FunctionValidator(Protocol):
+    def validate(self, *args: Any, **kwargs: Any) -> BaseModel:
+        ...
+
+
 def _get_module(typ: Type[Any]) -> ModuleType:
     return sys.modules[typ.__module__]
 
 
 @lru_cache(maxsize=None)
-def patch_pydantic() -> None:
+def _patch_pydantic() -> None:
     """Pydantic does not resolve forward references for TypedDict types properly yet
 
     see https://github.com/samuelcolvin/pydantic/pull/2761
@@ -38,13 +53,22 @@ def patch_pydantic() -> None:
 
     create_model = annotated_types.create_model_from_typeddict
 
+    # cache the created models so that recursive references can be resolved correctly.
+    # should be noted that pydantic caches models differently, using a __pydantic_model__
+    # attribute on the type, however this does not work for our use case as this cache
+    # would disregard Config changes
+    @lru_cache(maxsize=None)
     def patched_create_model(
-        typeddict_cls: Any, **kwargs: Any
+        typeddict_cls: Type[TypedDict],
+        **kwargs: Any,
     ) -> Type[BaseModel]:
         kwargs.setdefault('__module__', typeddict_cls.__module__)
         return create_model(typeddict_cls, **kwargs)
 
     annotated_types.create_model_from_typeddict = patched_create_model
+
+
+_patch_pydantic()
 
 
 def validate(type: Type[T], data: Any) -> T:
@@ -59,10 +83,6 @@ def validate(type: Type[T], data: Any) -> T:
         validated = validate(types.UserCreateInput, data)
         user = await User.prisma().create(data=validated)
     """
-    # avoid patching pydantic until we know we need to in case our
-    # monkey patching fails
-    patch_pydantic()
-
     if not is_typeddict(type):
         raise TypeError(
             f'Only TypedDict types are supported, got: {type} instead.'
@@ -86,3 +106,54 @@ def validate(type: Type[T], data: Any) -> T:
 
     instance = model.parse_obj(data)
     return cast(T, instance.dict(exclude_unset=True))
+
+
+@contextlib.contextmanager
+def disable_validation() -> Iterator[None]:
+    """Disable runtime validation of query arguments"""
+    enabled = _validation_enabled.get()
+
+    try:
+        _validation_enabled.set(False)
+        yield
+    finally:
+        _validation_enabled.set(enabled)
+
+
+def lazy_validate_arguments(func: CallableT) -> CallableT:
+    """Wrapper over pydantic's `@validate_arguments` decorator with some modifications.
+
+    - internal BaseModel is only built when needed
+    - validation can be disabled with `disable_validation()`
+    """
+
+    validator: Optional[FunctionValidator] = None
+
+    @wraps(func)
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
+        nonlocal validator
+
+        if not _validation_enabled.get():
+            return func(*args, **kwargs)
+
+        if validator is None:
+            validator = cast(FunctionValidator, validate_arguments(func))
+
+        # validate the arguments using pydantic and call the function ourselves so that
+        # we can remove some noise from the error traceback if a validation error ocurrs
+        try:
+            validator.validate(*args, **kwargs)
+        finally:
+            # remove some redundant traceback frames from pydantic
+            _maybe_rewrite_tb()
+
+        return func(*args, **kwargs)
+
+    return cast(CallableT, wrapper)
+
+
+def _maybe_rewrite_tb() -> None:
+    """Remove all of the traceback frames after the current frame"""
+    _, _, tb = sys.exc_info()
+    if tb is not None:
+        tb.tb_next = None

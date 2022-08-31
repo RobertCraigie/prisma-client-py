@@ -1,6 +1,7 @@
 import pytest
 
-from prisma import errors, Prisma
+import prisma
+from prisma import Prisma, errors
 from .utils import assert_time_like_now
 
 
@@ -54,15 +55,16 @@ async def test_create_with_relationship(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_create_missing_required_args(client: Prisma) -> None:
     """Trying to create a record with a missing required field raises an error"""
-    with pytest.raises(TypeError):
-        await client.post.create()  # type: ignore[call-arg]
+    with prisma.disable_validation():
+        with pytest.raises(TypeError):
+            await client.post.create()  # type: ignore[call-arg]
 
-    with pytest.raises(errors.MissingRequiredValueError):
-        await client.post.create(
-            {  # type: ignore[typeddict-item]
-                'title': 'Hi from Prisma!',
-            }
-        )
+        with pytest.raises(errors.MissingRequiredValueError):
+            await client.post.create(
+                {  # type: ignore[typeddict-item]
+                    'title': 'Hi from Prisma!',
+                }
+            )
 
 
 @pytest.mark.asyncio
@@ -92,13 +94,14 @@ async def test_setting_field_to_null(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_setting_non_nullable_field_to_null(client: Prisma) -> None:
     """Attempting to create a record with a non-nullable field set to null raises an error"""
-    with pytest.raises(errors.MissingRequiredValueError) as exc:
-        await client.post.create(
-            data={
-                'title': 'Post',
-                'published': None,  # type: ignore
-            },
-        )
+    with prisma.disable_validation():
+        with pytest.raises(errors.MissingRequiredValueError) as exc:
+            await client.post.create(
+                data={
+                    'title': 'Post',
+                    'published': None,  # type: ignore
+                },
+            )
 
     assert exc.match(r'published')
 

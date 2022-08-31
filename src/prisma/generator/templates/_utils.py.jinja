@@ -57,3 +57,9 @@ time.sleep({{ duration }})
 %}
 
 {% set active_provider = datasources[0].active_provider %}
+
+{% if generator.config.validate_arguments %}
+{% set maybe_validate_arguments = '@lazy_validate_arguments' %}
+{% else %}
+{% set maybe_validate_arguments = '' %}
+{% endif %}

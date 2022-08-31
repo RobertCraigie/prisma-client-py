@@ -39,6 +39,7 @@ import warnings
 
 from . import types, errors
 from ._types import BaseModelT
+from .validator import lazy_validate_arguments
 
 
 if TYPE_CHECKING:
@@ -55,6 +56,7 @@ class PostActions:
         self._client = client
         self._model = model
 
+    @lazy_validate_arguments
     def query_raw(
         self,
         query: LiteralString,
@@ -93,6 +95,7 @@ class PostActions:
         """
         return self._client.query_raw(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def query_first(
         self,
         query: LiteralString,
@@ -133,6 +136,7 @@ class PostActions:
         """
         return self._client.query_first(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.PostCreateInput,
@@ -183,6 +187,7 @@ class PostActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.PostCreateWithoutRelationsInput],
@@ -251,6 +256,7 @@ class PostActions:
         )
         return int(resp['data']['result']['count'])
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.PostWhereUniqueInput,
@@ -304,6 +310,7 @@ class PostActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def find_unique(
         self,
         where: types.PostWhereUniqueInput,
@@ -356,6 +363,7 @@ class PostActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def find_many(
         self,
         take: Optional[int] = None,
@@ -424,6 +432,7 @@ class PostActions:
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
 
+    @lazy_validate_arguments
     def find_first(
         self,
         skip: Optional[int] = None,
@@ -488,6 +497,7 @@ class PostActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.PostUpdateInput,
@@ -546,6 +556,7 @@ class PostActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.PostWhereUniqueInput,
@@ -609,6 +620,7 @@ class PostActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.PostUpdateManyMutationInput,
@@ -722,6 +734,7 @@ class PostActions:
     ) -> types.PostCountAggregateOutput:
         ...
 
+    @lazy_validate_arguments
     def count(
         self,
         select: Optional[types.PostCountAggregateInput] = None,
@@ -808,6 +821,7 @@ class PostActions:
         else:
             return cast(types.PostCountAggregateOutput, resp['data']['result']['_count'])
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.PostWhereInput] = None
@@ -974,6 +988,7 @@ class UserActions:
         self._client = client
         self._model = model
 
+    @lazy_validate_arguments
     def query_raw(
         self,
         query: LiteralString,
@@ -1012,6 +1027,7 @@ class UserActions:
         """
         return self._client.query_raw(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def query_first(
         self,
         query: LiteralString,
@@ -1052,6 +1068,7 @@ class UserActions:
         """
         return self._client.query_first(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.UserCreateInput,
@@ -1106,6 +1123,7 @@ class UserActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.UserCreateWithoutRelationsInput],
@@ -1182,6 +1200,7 @@ class UserActions:
         )
         return int(resp['data']['result']['count'])
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.UserWhereUniqueInput,
@@ -1235,6 +1254,7 @@ class UserActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def find_unique(
         self,
         where: types.UserWhereUniqueInput,
@@ -1287,6 +1307,7 @@ class UserActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def find_many(
         self,
         take: Optional[int] = None,
@@ -1355,6 +1376,7 @@ class UserActions:
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
 
+    @lazy_validate_arguments
     def find_first(
         self,
         skip: Optional[int] = None,
@@ -1419,6 +1441,7 @@ class UserActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.UserUpdateInput,
@@ -1477,6 +1500,7 @@ class UserActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.UserWhereUniqueInput,
@@ -1548,6 +1572,7 @@ class UserActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.UserUpdateManyMutationInput,
@@ -1661,6 +1686,7 @@ class UserActions:
     ) -> types.UserCountAggregateOutput:
         ...
 
+    @lazy_validate_arguments
     def count(
         self,
         select: Optional[types.UserCountAggregateInput] = None,
@@ -1747,6 +1773,7 @@ class UserActions:
         else:
             return cast(types.UserCountAggregateOutput, resp['data']['result']['_count'])
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.UserWhereInput] = None
@@ -1913,6 +1940,7 @@ class MActions:
         self._client = client
         self._model = model
 
+    @lazy_validate_arguments
     def query_raw(
         self,
         query: LiteralString,
@@ -1951,6 +1979,7 @@ class MActions:
         """
         return self._client.query_raw(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def query_first(
         self,
         query: LiteralString,
@@ -1991,6 +2020,7 @@ class MActions:
         """
         return self._client.query_first(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.MCreateInput,
@@ -2044,6 +2074,7 @@ class MActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.MCreateWithoutRelationsInput],
@@ -2118,6 +2149,7 @@ class MActions:
         )
         return int(resp['data']['result']['count'])
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.MWhereUniqueInput,
@@ -2171,6 +2203,7 @@ class MActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def find_unique(
         self,
         where: types.MWhereUniqueInput,
@@ -2223,6 +2256,7 @@ class MActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def find_many(
         self,
         take: Optional[int] = None,
@@ -2291,6 +2325,7 @@ class MActions:
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
 
+    @lazy_validate_arguments
     def find_first(
         self,
         skip: Optional[int] = None,
@@ -2355,6 +2390,7 @@ class MActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.MUpdateInput,
@@ -2413,6 +2449,7 @@ class MActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.MWhereUniqueInput,
@@ -2482,6 +2519,7 @@ class MActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.MUpdateManyMutationInput,
@@ -2595,6 +2633,7 @@ class MActions:
     ) -> types.MCountAggregateOutput:
         ...
 
+    @lazy_validate_arguments
     def count(
         self,
         select: Optional[types.MCountAggregateInput] = None,
@@ -2681,6 +2720,7 @@ class MActions:
         else:
             return cast(types.MCountAggregateOutput, resp['data']['result']['_count'])
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.MWhereInput] = None
@@ -2847,6 +2887,7 @@ class NActions:
         self._client = client
         self._model = model
 
+    @lazy_validate_arguments
     def query_raw(
         self,
         query: LiteralString,
@@ -2885,6 +2926,7 @@ class NActions:
         """
         return self._client.query_raw(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def query_first(
         self,
         query: LiteralString,
@@ -2925,6 +2967,7 @@ class NActions:
         """
         return self._client.query_first(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.NCreateInput,
@@ -2979,6 +3022,7 @@ class NActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.NCreateWithoutRelationsInput],
@@ -3055,6 +3099,7 @@ class NActions:
         )
         return int(resp['data']['result']['count'])
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.NWhereUniqueInput,
@@ -3108,6 +3153,7 @@ class NActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def find_unique(
         self,
         where: types.NWhereUniqueInput,
@@ -3160,6 +3206,7 @@ class NActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def find_many(
         self,
         take: Optional[int] = None,
@@ -3228,6 +3275,7 @@ class NActions:
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
 
+    @lazy_validate_arguments
     def find_first(
         self,
         skip: Optional[int] = None,
@@ -3292,6 +3340,7 @@ class NActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.NUpdateInput,
@@ -3350,6 +3399,7 @@ class NActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.NWhereUniqueInput,
@@ -3421,6 +3471,7 @@ class NActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.NUpdateManyMutationInput,
@@ -3534,6 +3585,7 @@ class NActions:
     ) -> types.NCountAggregateOutput:
         ...
 
+    @lazy_validate_arguments
     def count(
         self,
         select: Optional[types.NCountAggregateInput] = None,
@@ -3620,6 +3672,7 @@ class NActions:
         else:
             return cast(types.NCountAggregateOutput, resp['data']['result']['_count'])
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.NWhereInput] = None
@@ -3786,6 +3839,7 @@ class OneOptionalActions:
         self._client = client
         self._model = model
 
+    @lazy_validate_arguments
     def query_raw(
         self,
         query: LiteralString,
@@ -3824,6 +3878,7 @@ class OneOptionalActions:
         """
         return self._client.query_raw(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def query_first(
         self,
         query: LiteralString,
@@ -3864,6 +3919,7 @@ class OneOptionalActions:
         """
         return self._client.query_first(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.OneOptionalCreateInput,
@@ -3917,6 +3973,7 @@ class OneOptionalActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.OneOptionalCreateWithoutRelationsInput],
@@ -3991,6 +4048,7 @@ class OneOptionalActions:
         )
         return int(resp['data']['result']['count'])
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.OneOptionalWhereUniqueInput,
@@ -4044,6 +4102,7 @@ class OneOptionalActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def find_unique(
         self,
         where: types.OneOptionalWhereUniqueInput,
@@ -4096,6 +4155,7 @@ class OneOptionalActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def find_many(
         self,
         take: Optional[int] = None,
@@ -4164,6 +4224,7 @@ class OneOptionalActions:
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
 
+    @lazy_validate_arguments
     def find_first(
         self,
         skip: Optional[int] = None,
@@ -4228,6 +4289,7 @@ class OneOptionalActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.OneOptionalUpdateInput,
@@ -4286,6 +4348,7 @@ class OneOptionalActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.OneOptionalWhereUniqueInput,
@@ -4355,6 +4418,7 @@ class OneOptionalActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.OneOptionalUpdateManyMutationInput,
@@ -4468,6 +4532,7 @@ class OneOptionalActions:
     ) -> types.OneOptionalCountAggregateOutput:
         ...
 
+    @lazy_validate_arguments
     def count(
         self,
         select: Optional[types.OneOptionalCountAggregateInput] = None,
@@ -4554,6 +4619,7 @@ class OneOptionalActions:
         else:
             return cast(types.OneOptionalCountAggregateOutput, resp['data']['result']['_count'])
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.OneOptionalWhereInput] = None
@@ -4720,6 +4786,7 @@ class ManyRequiredActions:
         self._client = client
         self._model = model
 
+    @lazy_validate_arguments
     def query_raw(
         self,
         query: LiteralString,
@@ -4758,6 +4825,7 @@ class ManyRequiredActions:
         """
         return self._client.query_raw(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def query_first(
         self,
         query: LiteralString,
@@ -4798,6 +4866,7 @@ class ManyRequiredActions:
         """
         return self._client.query_first(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.ManyRequiredCreateInput,
@@ -4851,6 +4920,7 @@ class ManyRequiredActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.ManyRequiredCreateWithoutRelationsInput],
@@ -4925,6 +4995,7 @@ class ManyRequiredActions:
         )
         return int(resp['data']['result']['count'])
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.ManyRequiredWhereUniqueInput,
@@ -4978,6 +5049,7 @@ class ManyRequiredActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def find_unique(
         self,
         where: types.ManyRequiredWhereUniqueInput,
@@ -5030,6 +5102,7 @@ class ManyRequiredActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def find_many(
         self,
         take: Optional[int] = None,
@@ -5098,6 +5171,7 @@ class ManyRequiredActions:
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
 
+    @lazy_validate_arguments
     def find_first(
         self,
         skip: Optional[int] = None,
@@ -5162,6 +5236,7 @@ class ManyRequiredActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.ManyRequiredUpdateInput,
@@ -5220,6 +5295,7 @@ class ManyRequiredActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.ManyRequiredWhereUniqueInput,
@@ -5289,6 +5365,7 @@ class ManyRequiredActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.ManyRequiredUpdateManyMutationInput,
@@ -5402,6 +5479,7 @@ class ManyRequiredActions:
     ) -> types.ManyRequiredCountAggregateOutput:
         ...
 
+    @lazy_validate_arguments
     def count(
         self,
         select: Optional[types.ManyRequiredCountAggregateInput] = None,
@@ -5488,6 +5566,7 @@ class ManyRequiredActions:
         else:
             return cast(types.ManyRequiredCountAggregateOutput, resp['data']['result']['_count'])
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.ManyRequiredWhereInput] = None
@@ -5654,6 +5733,7 @@ class ListsActions:
         self._client = client
         self._model = model
 
+    @lazy_validate_arguments
     def query_raw(
         self,
         query: LiteralString,
@@ -5692,6 +5772,7 @@ class ListsActions:
         """
         return self._client.query_raw(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def query_first(
         self,
         query: LiteralString,
@@ -5732,6 +5813,7 @@ class ListsActions:
         """
         return self._client.query_first(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.ListsCreateInput,
@@ -5780,6 +5862,7 @@ class ListsActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.ListsCreateWithoutRelationsInput],
@@ -5844,6 +5927,7 @@ class ListsActions:
         )
         return int(resp['data']['result']['count'])
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.ListsWhereUniqueInput,
@@ -5897,6 +5981,7 @@ class ListsActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def find_unique(
         self,
         where: types.ListsWhereUniqueInput,
@@ -5949,6 +6034,7 @@ class ListsActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def find_many(
         self,
         take: Optional[int] = None,
@@ -6017,6 +6103,7 @@ class ListsActions:
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
 
+    @lazy_validate_arguments
     def find_first(
         self,
         skip: Optional[int] = None,
@@ -6081,6 +6168,7 @@ class ListsActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.ListsUpdateInput,
@@ -6139,6 +6227,7 @@ class ListsActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.ListsWhereUniqueInput,
@@ -6198,6 +6287,7 @@ class ListsActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.ListsUpdateManyMutationInput,
@@ -6311,6 +6401,7 @@ class ListsActions:
     ) -> types.ListsCountAggregateOutput:
         ...
 
+    @lazy_validate_arguments
     def count(
         self,
         select: Optional[types.ListsCountAggregateInput] = None,
@@ -6397,6 +6488,7 @@ class ListsActions:
         else:
             return cast(types.ListsCountAggregateOutput, resp['data']['result']['_count'])
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.ListsWhereInput] = None
@@ -6563,6 +6655,7 @@ class AActions:
         self._client = client
         self._model = model
 
+    @lazy_validate_arguments
     def query_raw(
         self,
         query: LiteralString,
@@ -6601,6 +6694,7 @@ class AActions:
         """
         return self._client.query_raw(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def query_first(
         self,
         query: LiteralString,
@@ -6641,6 +6735,7 @@ class AActions:
         """
         return self._client.query_first(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.ACreateInput,
@@ -6693,6 +6788,7 @@ class AActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.ACreateWithoutRelationsInput],
@@ -6765,6 +6861,7 @@ class AActions:
         )
         return int(resp['data']['result']['count'])
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.AWhereUniqueInput,
@@ -6818,6 +6915,7 @@ class AActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def find_unique(
         self,
         where: types.AWhereUniqueInput,
@@ -6870,6 +6968,7 @@ class AActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def find_many(
         self,
         take: Optional[int] = None,
@@ -6938,6 +7037,7 @@ class AActions:
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
 
+    @lazy_validate_arguments
     def find_first(
         self,
         skip: Optional[int] = None,
@@ -7002,6 +7102,7 @@ class AActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.AUpdateInput,
@@ -7060,6 +7161,7 @@ class AActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.AWhereUniqueInput,
@@ -7125,6 +7227,7 @@ class AActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.AUpdateManyMutationInput,
@@ -7238,6 +7341,7 @@ class AActions:
     ) -> types.ACountAggregateOutput:
         ...
 
+    @lazy_validate_arguments
     def count(
         self,
         select: Optional[types.ACountAggregateInput] = None,
@@ -7324,6 +7428,7 @@ class AActions:
         else:
             return cast(types.ACountAggregateOutput, resp['data']['result']['_count'])
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.AWhereInput] = None
@@ -7490,6 +7595,7 @@ class BActions:
         self._client = client
         self._model = model
 
+    @lazy_validate_arguments
     def query_raw(
         self,
         query: LiteralString,
@@ -7528,6 +7634,7 @@ class BActions:
         """
         return self._client.query_raw(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def query_first(
         self,
         query: LiteralString,
@@ -7568,6 +7675,7 @@ class BActions:
         """
         return self._client.query_first(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.BCreateInput,
@@ -7620,6 +7728,7 @@ class BActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.BCreateWithoutRelationsInput],
@@ -7692,6 +7801,7 @@ class BActions:
         )
         return int(resp['data']['result']['count'])
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.BWhereUniqueInput,
@@ -7745,6 +7855,7 @@ class BActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def find_unique(
         self,
         where: types.BWhereUniqueInput,
@@ -7797,6 +7908,7 @@ class BActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def find_many(
         self,
         take: Optional[int] = None,
@@ -7865,6 +7977,7 @@ class BActions:
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
 
+    @lazy_validate_arguments
     def find_first(
         self,
         skip: Optional[int] = None,
@@ -7929,6 +8042,7 @@ class BActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.BUpdateInput,
@@ -7987,6 +8101,7 @@ class BActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.BWhereUniqueInput,
@@ -8054,6 +8169,7 @@ class BActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.BUpdateManyMutationInput,
@@ -8167,6 +8283,7 @@ class BActions:
     ) -> types.BCountAggregateOutput:
         ...
 
+    @lazy_validate_arguments
     def count(
         self,
         select: Optional[types.BCountAggregateInput] = None,
@@ -8253,6 +8370,7 @@ class BActions:
         else:
             return cast(types.BCountAggregateOutput, resp['data']['result']['_count'])
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.BWhereInput] = None
@@ -8419,6 +8537,7 @@ class CActions:
         self._client = client
         self._model = model
 
+    @lazy_validate_arguments
     def query_raw(
         self,
         query: LiteralString,
@@ -8457,6 +8576,7 @@ class CActions:
         """
         return self._client.query_raw(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def query_first(
         self,
         query: LiteralString,
@@ -8497,6 +8617,7 @@ class CActions:
         """
         return self._client.query_first(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.CCreateInput,
@@ -8551,6 +8672,7 @@ class CActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.CCreateWithoutRelationsInput],
@@ -8627,6 +8749,7 @@ class CActions:
         )
         return int(resp['data']['result']['count'])
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.CWhereUniqueInput,
@@ -8681,6 +8804,7 @@ class CActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def find_unique(
         self,
         where: types.CWhereUniqueInput,
@@ -8734,6 +8858,7 @@ class CActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def find_many(
         self,
         take: Optional[int] = None,
@@ -8802,6 +8927,7 @@ class CActions:
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
 
+    @lazy_validate_arguments
     def find_first(
         self,
         skip: Optional[int] = None,
@@ -8866,6 +8992,7 @@ class CActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.CUpdateInput,
@@ -8925,6 +9052,7 @@ class CActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.CWhereUniqueInput,
@@ -8985,6 +9113,7 @@ class CActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.CUpdateManyMutationInput,
@@ -9098,6 +9227,7 @@ class CActions:
     ) -> types.CCountAggregateOutput:
         ...
 
+    @lazy_validate_arguments
     def count(
         self,
         select: Optional[types.CCountAggregateInput] = None,
@@ -9184,6 +9314,7 @@ class CActions:
         else:
             return cast(types.CCountAggregateOutput, resp['data']['result']['_count'])
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.CWhereInput] = None
@@ -9350,6 +9481,7 @@ class DActions:
         self._client = client
         self._model = model
 
+    @lazy_validate_arguments
     def query_raw(
         self,
         query: LiteralString,
@@ -9388,6 +9520,7 @@ class DActions:
         """
         return self._client.query_raw(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def query_first(
         self,
         query: LiteralString,
@@ -9428,6 +9561,7 @@ class DActions:
         """
         return self._client.query_first(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.DCreateInput,
@@ -9481,6 +9615,7 @@ class DActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.DCreateWithoutRelationsInput],
@@ -9555,6 +9690,7 @@ class DActions:
         )
         return int(resp['data']['result']['count'])
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.DWhereUniqueInput,
@@ -9608,6 +9744,7 @@ class DActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def find_unique(
         self,
         where: types.DWhereUniqueInput,
@@ -9660,6 +9797,7 @@ class DActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def find_many(
         self,
         take: Optional[int] = None,
@@ -9728,6 +9866,7 @@ class DActions:
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
 
+    @lazy_validate_arguments
     def find_first(
         self,
         skip: Optional[int] = None,
@@ -9792,6 +9931,7 @@ class DActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.DUpdateInput,
@@ -9850,6 +9990,7 @@ class DActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.DWhereUniqueInput,
@@ -9919,6 +10060,7 @@ class DActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.DUpdateManyMutationInput,
@@ -10032,6 +10174,7 @@ class DActions:
     ) -> types.DCountAggregateOutput:
         ...
 
+    @lazy_validate_arguments
     def count(
         self,
         select: Optional[types.DCountAggregateInput] = None,
@@ -10118,6 +10261,7 @@ class DActions:
         else:
             return cast(types.DCountAggregateOutput, resp['data']['result']['_count'])
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.DWhereInput] = None
@@ -10284,6 +10428,7 @@ class EActions:
         self._client = client
         self._model = model
 
+    @lazy_validate_arguments
     def query_raw(
         self,
         query: LiteralString,
@@ -10322,6 +10467,7 @@ class EActions:
         """
         return self._client.query_raw(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def query_first(
         self,
         query: LiteralString,
@@ -10362,6 +10508,7 @@ class EActions:
         """
         return self._client.query_first(query, *args, model=self._model)
 
+    @lazy_validate_arguments
     def create(
         self,
         data: types.ECreateInput,
@@ -10413,6 +10560,7 @@ class EActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def create_many(
         self,
         data: List[types.ECreateWithoutRelationsInput],
@@ -10483,6 +10631,7 @@ class EActions:
         )
         return int(resp['data']['result']['count'])
 
+    @lazy_validate_arguments
     def delete(
         self,
         where: types.EWhereUniqueInput,
@@ -10536,6 +10685,7 @@ class EActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def find_unique(
         self,
         where: types.EWhereUniqueInput,
@@ -10588,6 +10738,7 @@ class EActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def find_many(
         self,
         take: Optional[int] = None,
@@ -10656,6 +10807,7 @@ class EActions:
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
 
+    @lazy_validate_arguments
     def find_first(
         self,
         skip: Optional[int] = None,
@@ -10720,6 +10872,7 @@ class EActions:
             return None
         return self._model.parse_obj(result)
 
+    @lazy_validate_arguments
     def update(
         self,
         data: types.EUpdateInput,
@@ -10778,6 +10931,7 @@ class EActions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def upsert(
         self,
         where: types.EWhereUniqueInput,
@@ -10843,6 +10997,7 @@ class EActions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    @lazy_validate_arguments
     def update_many(
         self,
         data: types.EUpdateManyMutationInput,
@@ -10956,6 +11111,7 @@ class EActions:
     ) -> types.ECountAggregateOutput:
         ...
 
+    @lazy_validate_arguments
     def count(
         self,
         select: Optional[types.ECountAggregateInput] = None,
@@ -11042,6 +11198,7 @@ class EActions:
         else:
             return cast(types.ECountAggregateOutput, resp['data']['result']['_count'])
 
+    @lazy_validate_arguments
     def delete_many(
         self,
         where: Optional[types.EWhereInput] = None

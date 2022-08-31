@@ -1,5 +1,5 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider with context %}
+{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, maybe_validate_arguments, methods, operations, recursive_types, active_provider with context %}
 # -- template client.py.jinja --
 from pathlib import Path
 from types import TracebackType
@@ -10,6 +10,7 @@ from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
 from .generator.models import EngineType, OptionalValueFromEnvVar
+from .validator import lazy_validate_arguments
 
 
 __all__ = (
@@ -439,6 +440,7 @@ class {{ model.name }}BatchActions:
     def __init__(self, batcher: Batch) -> None:
         self._batcher = batcher
 
+    {{ maybe_validate_arguments }}
     def create(
         self,
         data: types.{{ model.name }}CreateInput,
@@ -454,6 +456,7 @@ class {{ model.name }}BatchActions:
             },
         )
 
+    {{ maybe_validate_arguments }}
     def create_many(
         self,
         data: List[types.{{ model.name }}CreateWithoutRelationsInput],
@@ -474,6 +477,7 @@ class {{ model.name }}BatchActions:
             root_selection=['count'],
         )
 
+    {{ maybe_validate_arguments }}
     def delete(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
@@ -489,6 +493,7 @@ class {{ model.name }}BatchActions:
             },
         )
 
+    {{ maybe_validate_arguments }}
     def update(
         self,
         data: types.{{ model.name }}UpdateInput,
@@ -506,6 +511,7 @@ class {{ model.name }}BatchActions:
             },
         )
 
+    {{ maybe_validate_arguments }}
     def upsert(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
@@ -524,6 +530,7 @@ class {{ model.name }}BatchActions:
             },
         )
 
+    {{ maybe_validate_arguments }}
     def update_many(
         self,
         data: types.{{ model.name }}UpdateManyMutationInput,
@@ -537,6 +544,7 @@ class {{ model.name }}BatchActions:
             root_selection=['count'],
         )
 
+    {{ maybe_validate_arguments }}
     def delete_many(
         self,
         where: Optional[types.{{ model.name }}WhereInput] = None,

@@ -1,10 +1,11 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider with context %}
+{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider, maybe_validate_arguments with context %}
 # -- template actions.py.jinja --
 import warnings
 
 from . import types, errors
 from ._types import BaseModelT
+from .validator import lazy_validate_arguments
 
 
 if TYPE_CHECKING:
@@ -52,6 +53,7 @@ class {{ model.name }}Actions:
         self._model = model
 
     {% if active_provider != 'mongodb' %}
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}query_raw(
         self,
         query: LiteralString,
@@ -90,6 +92,7 @@ class {{ model.name }}Actions:
         """
         return {{ maybe_await }}self._client.query_raw(query, *args, model=self._model)
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}query_first(
         self,
         query: LiteralString,
@@ -131,6 +134,7 @@ class {{ model.name }}Actions:
         return {{ maybe_await }}self._client.query_first(query, *args, model=self._model)
     {% endif %}
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}create(
         self,
         data: types.{{ model.name }}CreateInput,
@@ -182,6 +186,7 @@ class {{ model.name }}Actions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}create_many(
         self,
         data: List[types.{{ model.name }}CreateWithoutRelationsInput],
@@ -248,6 +253,7 @@ class {{ model.name }}Actions:
         )
         return int(resp['data']['result']['count'])
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}delete(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
@@ -299,6 +305,7 @@ class {{ model.name }}Actions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}find_unique(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
@@ -349,6 +356,7 @@ class {{ model.name }}Actions:
             return None
         return self._model.parse_obj(result)
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}find_many(
         self,
         take: Optional[int] = None,
@@ -417,6 +425,7 @@ class {{ model.name }}Actions:
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}find_first(
         self,
         skip: Optional[int] = None,
@@ -481,6 +490,7 @@ class {{ model.name }}Actions:
             return None
         return self._model.parse_obj(result)
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}update(
         self,
         data: types.{{ model.name }}UpdateInput,
@@ -538,6 +548,7 @@ class {{ model.name }}Actions:
 
         return self._model.parse_obj(resp['data']['result'])
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}upsert(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
@@ -622,6 +633,7 @@ class {{ model.name }}Actions:
         )
         return self._model.parse_obj(resp['data']['result'])
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}update_many(
         self,
         data: types.{{ model.name }}UpdateManyMutationInput,
@@ -742,6 +754,7 @@ class {{ model.name }}Actions:
     ) -> types.{{ model.name }}CountAggregateOutput:
         ...
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}count(
         self,
         select: Optional[types.{{ model.name }}CountAggregateInput] = None,
@@ -783,6 +796,7 @@ class {{ model.name }}Actions:
         else:
             return cast(types.{{ model.name }}CountAggregateOutput, resp['data']['result']['_count'])
 
+    {{ maybe_validate_arguments }}
     {{ maybe_async_def }}delete_many(
         self,
         where: Optional[types.{{ model.name }}WhereInput] = None

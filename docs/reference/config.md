@@ -3,12 +3,14 @@
 Options are passed to Prisma Client Python using the `generator` block in the `schema.prisma` file
 
 For example:
+
 ```prisma
 generator db {
   provider = "prisma-client-py"
   config_option = "value"
 }
 ```
+
 See the [official docs](https://www.prisma.io/docs/concepts/components/prisma-schema/generators) for options that are not specific to Prisma Client Python.
 
 ## Interface
@@ -19,8 +21,8 @@ This option configures the method you will use to interface with the client.
 
 Valid values are:
 
-* asyncio
-* sync
+- asyncio
+- sync
 
 If `asyncio` is used then the generated client will be asynchronous and code must be ran using asyncio, e.g.
 
@@ -29,6 +31,7 @@ user = await db.user.find_unique(where={'id': 'user_id'})
 ```
 
 And if `sync` is used then the generated client will be synchronous, e.g.
+
 ```py
 user = db.user.find_unique(where={'id': 'user_id'})
 ```
@@ -59,6 +62,19 @@ generator db {
 }
 ```
 
+## Validate Arguments
+
+Prisma Client Python automatically verifies the arguments you pass to action methods such as `create()` using [pydantic](https://pydantic-docs.helpmanual.io/usage/validation_decorator/). This does runtime type checking which will decrease the performance of your queries but will significantly improve certain error messages.
+
+As you _should_ be using a static type checker along with Prisma Client Python, this runtime type checking won't actually provide any value and would only used for improved error messages during development. You can then disable this feature for a slight performance boost.
+
+```prisma
+generator client {
+  provider           = "prisma-client-py"
+  validate_arguments = false
+}
+```
+
 ## Recursive Type Depth
 
 !!! warning
@@ -66,7 +82,7 @@ generator db {
 
 As some python static type checkers do not support recursive types, Prisma Client Python can generate recursive and psuedo-recursive types to an arbitrary depth.
 
-This depth can be controlled with the `recursive_type_depth` option, if `-1` is given then recursive types will be generated and if a value greater than or equal to  `2` is given then psuedo-recursive types will be generated to the given depth.
+This depth can be controlled with the `recursive_type_depth` option, if `-1` is given then recursive types will be generated and if a value greater than or equal to `2` is given then psuedo-recursive types will be generated to the given depth.
 
 ### Examples
 
