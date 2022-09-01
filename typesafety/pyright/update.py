@@ -21,8 +21,8 @@ async def main(client: Prisma) -> None:
         where={
             'id': 'abc',
         },
-        data={  # E: Argument of type "dict[str, None]" cannot be assigned to parameter "data" of type "PostUpdateInput" in function "update"
-            'published': None,
+        data={
+            'published': None,  # E: Argument of type "dict[str, None]" cannot be assigned to parameter "data" of type "PostUpdateInput" in function "update"
         },
     )
 
@@ -41,8 +41,8 @@ async def main(client: Prisma) -> None:
         where={
             'id': 'abc',
         },
-        data={  # E: Argument of type "dict[str, None]" cannot be assigned to parameter "data" of type "PostUpdateInput" in function "update"
-            'author': None
+        data={
+            'author': None  # E: Argument of type "dict[str, None]" cannot be assigned to parameter "data" of type "PostUpdateInput" in function "update"
         },
     )
 
@@ -51,7 +51,7 @@ async def main(client: Prisma) -> None:
         where={
             'id': 'abc',
         },
-        data={  # E: Argument of type "dict[str, None]" cannot be assigned to parameter "data" of type "PostUpdateInput" in function "update"
-            'categories': None
+        data={
+            'categories': None  # E: Argument of type "dict[str, None]" cannot be assigned to parameter "data" of type "PostUpdateInput" in function "update"
         },
     )

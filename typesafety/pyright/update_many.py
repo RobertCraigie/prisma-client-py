@@ -19,8 +19,8 @@ async def main(client: Prisma) -> None:
         where={
             'id': 'abc',
         },
-        data={  # E: Argument of type "dict[str, None]" cannot be assigned to parameter "data" of type "PostUpdateManyMutationInput" in function "update_many"
-            'published': None,
+        data={
+            'published': None,  # E: Argument of type "dict[str, None]" cannot be assigned to parameter "data" of type "PostUpdateManyMutationInput" in function "update_many"
         },
     )
 
@@ -39,8 +39,8 @@ async def main(client: Prisma) -> None:
         where={
             'id': 'abc',
         },
-        data={  # E: Argument of type "dict[str, dict[str, dict[str, str]]]" cannot be assigned to parameter "data" of type "PostUpdateManyMutationInput" in function "update_many"
-            'author': {
+        data={
+            'author': {  # E: Argument of type "dict[str, dict[str, dict[str, str]]]" cannot be assigned to parameter "data" of type "PostUpdateManyMutationInput" in function "update_many"
                 'connect': {
                     'id': 'a',
                 },
@@ -53,8 +53,8 @@ async def main(client: Prisma) -> None:
         where={
             'id': 'abc',
         },
-        data={  # E: Argument of type "dict[str, dict[str, list[int]]]" cannot be assigned to parameter "data" of type "PostUpdateManyMutationInput" in function "update_many"
-            'categories': {
+        data={
+            'categories': {  # E: Argument of type "dict[str, dict[str, list[int]]]" cannot be assigned to parameter "data" of type "PostUpdateManyMutationInput" in function "update_many"
                 'connect': [1],
             },
         },

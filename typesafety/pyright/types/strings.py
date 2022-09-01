@@ -99,7 +99,7 @@ async def filtering(client: Prisma) -> None:
         },
     )
     await client.types.find_first(
-        where={  # E: Argument of type "dict[str, dict[str, tuple[_T_co@tuple]]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
+        where={  # E: Argument of type "dict[str, dict[str, tuple[Unknown, ...]]]" cannot be assigned to parameter "where" of type "TypesWhereInput | None" in function "find_first"
             'string': {
                 'lte': tuple(),
             },
@@ -173,16 +173,16 @@ async def updating(client: Prisma) -> None:
         where={
             'id': 1,
         },
-        data={  # E: Argument of type "dict[str, list[Any]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
-            'string': [],
+        data={
+            'string': [],  # E: Argument of type "dict[str, list[Any]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
         },
     )
     await client.types.update(
         where={
             'id': 1,
         },
-        data={  # E: Argument of type "dict[str, dict[str, bool]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
-            'string': {
+        data={
+            'string': {  # E: Argument of type "dict[str, dict[str, bool]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
                 'decrement': True,
             },
         },
