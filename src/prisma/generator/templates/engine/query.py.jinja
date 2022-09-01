@@ -1,6 +1,7 @@
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import sleep, is_async, maybe_async_def, maybe_await with context %}
 # -- template engine/query.py.jinja --
+from __future__ import annotations
 
 import os
 import time
