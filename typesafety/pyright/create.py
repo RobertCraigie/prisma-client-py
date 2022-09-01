@@ -32,45 +32,45 @@ async def main(client: Prisma) -> None:
 
     # case: setting non-null field to null
     await client.post.create(
-        data={  # E: Argument of type "dict[str, str | None]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
+        data={
             'title': 'foo',
-            'published': None,
+            'published': None,  # E: Argument of type "dict[str, str | None]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
         }
     )
 
     # case: one-one relations are non nullable
     await client.post.create(
-        data={  # E: Argument of type "dict[str, str | bool | None]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
+        data={
             'title': 'foo',
             'published': False,
-            'author': None,
+            'author': None,  # E: Argument of type "dict[str, str | bool | None]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
         },
     )
     await client.post.create(
-        data={  # E: Argument of type "dict[str, str | bool | dict[str, None]]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
+        data={
             'title': 'foo',
             'published': False,
             'author': {
-                'create': None,
+                'create': None,  # E: Argument of type "dict[str, str | bool | dict[str, None]]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
             },
         }
     )
     await client.post.create(
-        data={  # E: Argument of type "dict[str, str | bool | dict[str, None]]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
+        data={
             'title': 'foo',
             'published': False,
             'author': {
-                'connect': None,
+                'connect': None,  # E: Argument of type "dict[str, str | bool | dict[str, None]]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
             },
         }
     )
 
     # case: one-many relations are non nullable
     await client.post.create(
-        data={  # E: Argument of type "dict[str, str | bool | None]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
+        data={
             'title': 'foo',
             'published': False,
-            'categories': None,
+            'categories': None,  # E: Argument of type "dict[str, str | bool | None]" cannot be assigned to parameter "data" of type "PostCreateInput" in function "create"
         },
     )
 
