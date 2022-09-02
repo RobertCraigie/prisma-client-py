@@ -89,7 +89,12 @@ def remove_suffix(path: Union[str, Path], suf: str) -> str:
 
 
 def copy_tree(src: Path, dst: Path) -> None:
-    """Recursively copy the contents of a directory from src to dst"""
+    """Recursively copy the contents of a directory from src to dst.
+
+    This function will ignore certain compiled / cache files for convenience:
+    - *.pyc
+    - __pycache__
+    """
     # we have to do this horrible monkeypatching as
     # shutil makes an arbitrary call to os.makedirs
     # which will fail if the directory already exists.
@@ -97,12 +102,19 @@ def copy_tree(src: Path, dst: Path) -> None:
     # added in python 3.8 so we cannot use that :(
 
     def _patched_makedirs(
-        makedirs: Any, name: str, mode: int = 511, exist_ok: bool = True
+        makedirs: Any,
+        name: str,
+        mode: int = 511,
+        exist_ok: bool = True,
     ) -> None:
         makedirs(name, mode, exist_ok=True)
 
     with monkeypatch(os, 'makedirs', _patched_makedirs):
-        shutil.copytree(str(src), str(dst))
+        shutil.copytree(
+            str(src),
+            str(dst),
+            ignore=shutil.ignore_patterns('*.pyc', '__pycache__'),
+        )
 
 
 def clean_multiline(string: str) -> str:
