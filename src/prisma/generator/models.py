@@ -562,8 +562,7 @@ class Model(BaseModel):
 
     _sampler: Sampler = PrivateAttr()
 
-    # mypy throws an error here - probbaly because of the pydantic plugin
-    def __init__(self, **data: Any) -> None:  # type: ignore[no-redef]
+    def __init__(self, **data: Any) -> None:
         super().__init__(**data)
         self._sampler = Sampler(self)
 

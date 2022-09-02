@@ -11,6 +11,11 @@ __all__ = (
 )
 
 
+if TYPE_CHECKING:
+    BaseJson = str
+else:
+    BaseJson = _PydanticJson
+
 _JsonKeys = Union[
     None,
     bool,
@@ -26,7 +31,7 @@ BASE64_ENCODING = 'ascii'
 
 # inherit from _PydanticJson so that pydantic will automatically
 # transform the json string into python objects.
-class Json(_PydanticJson):
+class Json(BaseJson):
     data: 'Serializable'
 
     def __init__(self, data: 'Serializable') -> None:
