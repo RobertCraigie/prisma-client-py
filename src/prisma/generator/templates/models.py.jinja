@@ -217,6 +217,7 @@ class {{ model.name }}(BaseModel):
         partial_models_ctx.set(models)
         _created_partial_types.add(name)
 
+
 {% endfor %}
 
 {% for model in dmmf.datamodel.models %}
