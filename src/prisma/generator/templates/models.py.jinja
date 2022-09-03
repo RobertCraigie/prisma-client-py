@@ -217,14 +217,6 @@ class {{ model.name }}(BaseModel):
         partial_models_ctx.set(models)
         _created_partial_types.add(name)
 
-    {# TODO: this should be one validator for all bytes types #}
-    {% for field in model.get_fields_of_type('Bytes') %}
-    @validator('{{ field.name }}', pre=True, allow_reuse=True)
-    @classmethod
-    def _prisma_{{ field.name }}_bytes_validator(cls, value: Any) -> Union[None, fields.Base64, List[fields.Base64]]:
-        return fields.Base64._internal_from_prisma(value)
-    {% endfor %}
-
 {% endfor %}
 
 {% for model in dmmf.datamodel.models %}
