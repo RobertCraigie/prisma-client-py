@@ -66,9 +66,17 @@ jobs:
           python -m prisma db push --schema=tests/data/schema.prisma --skip-generate
           cp tests/data/dev.db dev.db
 
+      - name: Setup coverage
+        run: |
+          nox -s setup
+
       - name: Run tests
         run: |
-          nox -s setup test report -- --ignore=tests/integrations/postgresql
+          nox -s test -p ${{ matrix.python-version }} -- --ignore=tests/integrations/postgresql
+
+      - name: Combine coverage
+        run: |
+          nox -s report
 
       - name: Upload coverage
         run: |
