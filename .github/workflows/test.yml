@@ -213,7 +213,7 @@ jobs:
 
       - name: Run tests
         run: |
-          nox -s setup test report -- --confcutdir . tests/integrations/postgresql
+          nox -s setup test report --no-error-on-missing-interpreters -- --confcutdir . tests/integrations/postgresql
         env:
           PRISMA_PY_POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/postgres
 
