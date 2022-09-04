@@ -52,7 +52,9 @@ docs-serve:
 .PHONY: clean
 clean:
 	python -m prisma_cleanup
+	pip cache remove prisma
 	rm -rf .nox
+	rm -rf .cache
 	rm -rf `find . -name __pycache__`
 	rm -rf `find examples -name '.venv' `
 	rm -rf `find tests/integrations -name '.venv' `

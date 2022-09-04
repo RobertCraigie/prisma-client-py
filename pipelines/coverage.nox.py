@@ -1,19 +1,19 @@
 import nox
 
-from pipelines.utils import setup_env
+from pipelines.utils import setup_env, CACHE_DIR
 
 
 @nox.session
 def setup(session: nox.Session) -> None:
     setup_env(session)
-    session.install('coverage==5.3.1')
+    session.install('-r', 'pipelines/requirements/coverage.txt')
     session.run('coverage', 'erase')
 
 
 @nox.session
 def report(session: nox.Session) -> None:
-    setup_env(session)
-    session.install('coverage==5.3.1')
+    session.env['COVERAGE_FILE'] = str(CACHE_DIR / '.coverage')
+    session.install('-r', 'pipelines/requirements/coverage.txt')
     session.run('coverage', 'combine')
     session.run('coverage', 'html', '-i')
     session.run('coverage', 'xml', '-i')
