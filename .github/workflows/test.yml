@@ -135,7 +135,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements/dev.txt codecov==2.1.11
+          pip install -r requirements/dev.txt
 
       - uses: actions/cache@v3
         with:
@@ -151,23 +151,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mypy
 
+      # TODO: add codecov for our mypy plugin
       - name: Check linters
         run: |
           nox -s lint
-
-      - name: Check mypy
-        run: |
-          nox -s mypy
-
-      - name: Create coverage report
-        run: |
-          nox -s report
-
-      - name: Upload coverage
-        run: |
-          codecov --file coverage.xml
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   postgres:
     name: postgres
