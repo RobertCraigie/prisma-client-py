@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import TYPE_CHECKING
 from pydantic import BaseModel
 from prisma.generator import GenericGenerator, GenericData, Manifest
 
@@ -9,11 +8,6 @@ class Config(BaseModel):
 
 
 Data = GenericData[Config]
-
-
-if TYPE_CHECKING:
-    reveal_type(Manifest)
-    reveal_type(Manifest.__init__)
 
 
 class MyGenerator(GenericGenerator[Data]):
