@@ -4,8 +4,7 @@ from pipelines.utils import setup_env
 from pipelines.utils.prisma import generate
 
 
-# TODO: 3.11 too
-@nox.session(python=['3.7', '3.8', '3.9', '3.10'])
+@nox.session(python=['3.7', '3.8', '3.9', '3.10', '3.11'])
 def test(session: nox.Session) -> None:
     setup_env(session)
     session.install('-r', 'pipelines/requirements/test.txt')
