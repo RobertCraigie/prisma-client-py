@@ -1,0 +1,96 @@
+# name: test_json_schema_compatible
+  <class 'dict'> {
+    'description': 'Represents a Types record',
+    'properties': <class 'dict'> {
+      'bigint': <class 'dict'> {
+        'title': 'Bigint',
+        'type': 'integer',
+      },
+      'bool_': <class 'dict'> {
+        'title': 'Bool ',
+        'type': 'boolean',
+      },
+      'bytes': <class 'dict'> {
+        'format': 'byte',
+        'title': 'Bytes',
+        'type': 'string',
+      },
+      'datetime_': <class 'dict'> {
+        'format': 'date-time',
+        'title': 'Datetime ',
+        'type': 'string',
+      },
+      'decimal_': <class 'dict'> {
+        'title': 'Decimal ',
+        'type': 'number',
+      },
+      'float_': <class 'dict'> {
+        'title': 'Float ',
+        'type': 'number',
+      },
+      'id': <class 'dict'> {
+        'title': 'Id',
+        'type': 'integer',
+      },
+      'integer': <class 'dict'> {
+        'title': 'Integer',
+        'type': 'integer',
+      },
+      'optional_bigint': <class 'dict'> {
+        'title': 'Optional Bigint',
+        'type': 'integer',
+      },
+      'optional_bool': <class 'dict'> {
+        'title': 'Optional Bool',
+        'type': 'boolean',
+      },
+      'optional_bytes': <class 'dict'> {
+        'format': 'byte',
+        'title': 'Optional Bytes',
+        'type': 'string',
+      },
+      'optional_datetime': <class 'dict'> {
+        'format': 'date-time',
+        'title': 'Optional Datetime',
+        'type': 'string',
+      },
+      'optional_decimal': <class 'dict'> {
+        'title': 'Optional Decimal',
+        'type': 'number',
+      },
+      'optional_float': <class 'dict'> {
+        'title': 'Optional Float',
+        'type': 'number',
+      },
+      'optional_int': <class 'dict'> {
+        'title': 'Optional Int',
+        'type': 'integer',
+      },
+      'optional_integer': <class 'dict'> {
+        'title': 'Optional Integer',
+        'type': 'integer',
+      },
+      'optional_string': <class 'dict'> {
+        'title': 'Optional String',
+        'type': 'string',
+      },
+      'string': <class 'dict'> {
+        'title': 'String',
+        'type': 'string',
+      },
+    },
+    'required': <class 'list'> [
+      'id',
+      'bool_',
+      'string',
+      'bytes',
+      'bigint',
+      'integer',
+      'float_',
+      'datetime_',
+      'decimal_',
+    ],
+    'title': 'Types',
+    'type': 'object',
+  }
+---

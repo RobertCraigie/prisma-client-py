@@ -46,18 +46,18 @@ async def create() -> None:
 
     # case: invalid field
     await User.prisma().create(
-        data={  # E: Argument of type "dict[str, str]" cannot be assigned to parameter "data" of type "UserCreateInput" in function "create"
-            'foo': 'Robert',
+        data={
+            'foo': 'Robert',  # E: Argument of type "dict[str, str]" cannot be assigned to parameter "data" of type "UserCreateInput" in function "create"
         },
     )
 
     # case: invalid nested field
     await User.prisma().create(
-        data={  # E: Argument of type "dict[str, str | dict[str, dict[str, str]]]" cannot be assigned to parameter "data" of type "UserCreateInput" in function "create"
+        data={
             'name': 'Robert',
             'profile': {
                 'create': {
-                    'foo': 'bar',
+                    'foo': 'bar',  # E: Argument of type "dict[str, str | dict[str, dict[str, str]]]" cannot be assigned to parameter "data" of type "UserCreateInput" in function "create"
                 },
             },
         },

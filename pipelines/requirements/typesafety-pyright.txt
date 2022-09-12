@@ -1,0 +1,3 @@
+-r test.txt
+-r pyright.txt
+pytest-pyright

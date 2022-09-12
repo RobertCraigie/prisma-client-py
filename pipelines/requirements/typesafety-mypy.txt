@@ -1,0 +1,8 @@
+-r test.txt
+
+# we have to install setuptools and pytest-mypy-plugins here to be able to
+# pin the setuptools version and testenv.requires not working.
+# we need a specific version of setuptools due to pystache and
+# https://github.com/pypa/setuptools/issues/1120
+setuptools<58
+pytest-mypy-plugins==1.6.1

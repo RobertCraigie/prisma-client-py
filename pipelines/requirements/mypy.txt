@@ -1,0 +1,3 @@
+-r test.txt
+mypy==0.950
+types-mock

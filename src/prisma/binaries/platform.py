@@ -40,10 +40,10 @@ def _get_linux_distro_details() -> Tuple[str, str]:
     output = str(process.stdout, sys.getdefaultencoding())
 
     match = re.search(r'ID="?([^"\n]*)"?', output)
-    distro_id = match.group(1) if match else ''  # type: str
+    distro_id = match.group(1) if match else ''
 
     match = re.search(r'ID_LIKE="?([^"\n]*)"?', output)
-    distro_id_like = match.group(1) if match else ''  # type: str
+    distro_id_like = match.group(1) if match else ''
     return distro_id, distro_id_like
 
 

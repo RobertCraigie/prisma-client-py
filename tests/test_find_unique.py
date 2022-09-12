@@ -29,7 +29,7 @@ async def test_find_unique_missing_required_args(client: Prisma) -> None:
     with pytest.raises(errors.DataError):
         await client.post.find_unique(
             {  # type: ignore[typeddict-item]
-                'title': 'Hi from Prisma!',
+                'title': 'Hi from Prisma!',  # pyright: ignore
             }
         )
 

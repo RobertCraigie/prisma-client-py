@@ -92,16 +92,16 @@ async def updating(client: Prisma) -> None:
         where={
             'id': 1,
         },
-        data={  # E: Argument of type "dict[str, list[Any]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
-            'bool': [],
+        data={
+            'bool': [],  # E: Argument of type "dict[str, list[Any]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
         },
     )
     await client.types.update(
         where={
             'id': 1,
         },
-        data={  # E: Argument of type "dict[str, dict[str, bool]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
-            'bool': {
+        data={
+            'bool': {  # E: Argument of type "dict[str, dict[str, bool]]" cannot be assigned to parameter "data" of type "TypesUpdateInput" in function "update"
                 'decrement': True,
             },
         },

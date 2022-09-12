@@ -17,7 +17,10 @@ class DefaultConfig(BaseSettings):
     # CLI version
     # TODO: if this version changes but the engine version
     #       doesn't change then the CLI is incorrectly cached
-    prisma_version: str = '3.13.0'
+    prisma_version: str = Field(
+        env='PRISMA_VERSION',
+        default='3.13.0',
+    )
 
     # Engine binary versions can be found under https://github.com/prisma/prisma-engine/commits/main
     engine_version: str = Field(
@@ -58,7 +61,7 @@ class DefaultConfig(BaseSettings):
 
 
 class Config(DefaultConfig):
-    binary_cache_dir: Path
+    binary_cache_dir: Path = Field(env='PRISMA_BINARY_CACHE_DIR')
 
     @classmethod
     def from_base(cls, config: DefaultConfig) -> Config:

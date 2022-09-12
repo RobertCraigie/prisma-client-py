@@ -1,4 +1,8 @@
+from typing import List
+
 import pytest
+from pydantic import BaseModel
+
 from prisma import Prisma
 from prisma.fields import Base64
 from prisma.models import Types
@@ -161,3 +165,29 @@ async def test_filtering_nulls(client: Prisma) -> None:
         },
     )
     assert count == 2
+
+
+class Base64Model(BaseModel):
+    value: Base64
+    array: List[Base64]
+
+
+def test_pydantic_conversion() -> None:
+    """Raw inputs are converted to Base64 objects at the Pydantic level"""
+    record = Base64Model.parse_obj({'value': 'foo', 'array': []})
+    assert isinstance(record.value, Base64)
+    assert record.value._raw == b'foo'
+    assert record.array == []
+
+    record = Base64Model.parse_obj(
+        {
+            'value': Base64.encode(b'foo'),
+            'array': ['foo', b'bar', Base64.encode(b'baz')],
+        }
+    )
+    assert isinstance(record.value, Base64)
+    assert record.value.decode() == b'foo'
+    assert len(record.array) == 3
+    assert record.array[0]._raw == b'foo'
+    assert record.array[1]._raw == b'bar'
+    assert record.array[2].decode_str() == 'baz'
