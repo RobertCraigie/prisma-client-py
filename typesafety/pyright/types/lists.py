@@ -142,16 +142,16 @@ async def updating(client: Prisma) -> None:
         where={
             'id': '',
         },
-        data={  # E: Argument of type "dict[str, str]" cannot be assigned to parameter "data" of type "ListsUpdateInput" in function "update"
-            'strings': 'foo',
+        data={
+            'strings': 'foo',  # E: Argument of type "dict[str, str]" cannot be assigned to parameter "data" of type "ListsUpdateInput" in function "update"
         },
     )
     await client.lists.update(
         where={
             'id': '',
         },
-        data={  # E: Argument of type "dict[str, dict[str, tuple[Literal['foo'], Literal['bar']]]]" cannot be assigned to parameter "data" of type "ListsUpdateInput" in function "update"
-            'strings': {
+        data={
+            'strings': {  # E: Argument of type "dict[str, dict[str, tuple[Literal['foo'], Literal['bar']]]]" cannot be assigned to parameter "data" of type "ListsUpdateInput" in function "update"
                 'set': ('foo', 'bar'),
             },
         },
@@ -162,8 +162,8 @@ async def updating(client: Prisma) -> None:
         where={
             'id': '',
         },
-        data={  # E: Argument of type "dict[str, dict[str, tuple[Literal['foo'], Literal['bar']]]]" cannot be assigned to parameter "data" of type "ListsUpdateInput" in function "update"
-            'strings': {
+        data={
+            'strings': {  # E: Argument of type "dict[str, dict[str, tuple[Literal['foo'], Literal['bar']]]]" cannot be assigned to parameter "data" of type "ListsUpdateInput" in function "update"
                 'push': ('foo', 'bar'),
             },
         },

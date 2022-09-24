@@ -1,9 +1,9 @@
 # pyright: reportUnusedFunction=false
 
 import subprocess
+from typing_extensions import Literal
 
 import pytest
-from prisma._types import Literal
 from ..utils import Testdir
 
 

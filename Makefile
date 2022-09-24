@@ -13,7 +13,7 @@ database:
 
 .PHONY: test
 test:
-	tox $(ARGS)
+	nox -s test $(ARGS)
 
 .PHONY: format
 format:
@@ -24,11 +24,11 @@ format:
 
 .PHONY: lint
 lint:
-	tox -e lint
+	nox -s lint
 
 .PHONY: mypy
 mypy:
-	tox -e mypy
+	nox -s mypy
 
 .PHONY: pyright
 pyright:
@@ -37,7 +37,7 @@ pyright:
 
 .PHONY: typesafety
 typesafety:
-	tox -e typesafety-pyright,typesafety-mypy
+	nox -s typesafety-pyright typesafety-mypy
 
 .PHONY: docs
 docs:
@@ -52,7 +52,9 @@ docs-serve:
 .PHONY: clean
 clean:
 	python -m prisma_cleanup
-	rm -rf /tmp/tox/prisma-client-py
+	pip cache remove prisma
+	rm -rf .nox
+	rm -rf .cache
 	rm -rf `find . -name __pycache__`
 	rm -rf `find examples -name '.venv' `
 	rm -rf `find tests/integrations -name '.venv' `

@@ -17,7 +17,7 @@ async def test_field_not_found_error(client: Prisma) -> None:
             data={  # type: ignore
                 'title': 'foo',
                 'published': True,
-                'foo': 'bar',
+                'foo': 'bar',  # pyright: ignore
             }
         )
 

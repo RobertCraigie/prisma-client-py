@@ -22,7 +22,7 @@ from ...binaries.platform import binary_platform
 def cli(output_json: bool) -> None:
     """Display Prisma Client Python version information."""
     extras = {
-        'dev': 'tox',
+        'dev': 'nox',
         'docs': 'mkdocs',
     }
     installed: List[str] = []

@@ -51,7 +51,7 @@ class Config(BaseConfig):
     use_enum_values: bool = True
     arbitrary_types_allowed: bool = True
     allow_population_by_field_name: bool = True
-    json_encoders: Dict[Union[Type[Any], str], FuncType] = {
+    json_encoders: Dict[Any, FuncType] = {
         fields.Base64: serialize_base64,
     }
 
@@ -1050,10 +1050,6 @@ class Lists(BaseModel):
         partial_models_ctx.set(models)
         _created_partial_types.add(name)
 
-    @validator('bytes', pre=True, allow_reuse=True)
-    @classmethod
-    def _prisma_bytes_bytes_validator(cls, value: Any) -> Union[None, fields.Base64, List[fields.Base64]]:
-        return fields.Base64._internal_from_prisma(value)
 
 class A(BaseModel):
     """Represents a A record"""
@@ -1492,10 +1488,6 @@ class D(BaseModel):
         partial_models_ctx.set(models)
         _created_partial_types.add(name)
 
-    @validator('binary', pre=True, allow_reuse=True)
-    @classmethod
-    def _prisma_binary_bytes_validator(cls, value: Any) -> Union[None, fields.Base64, List[fields.Base64]]:
-        return fields.Base64._internal_from_prisma(value)
 
 class E(BaseModel):
     """Represents a E record"""
