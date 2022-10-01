@@ -79,7 +79,7 @@ jobs:
 
       - name: Run tests
         run: |
-          nox -s test -p ${{ matrix.nox-python }} -- --ignore=tests/integrations/postgresql
+          nox -s test -p ${{ matrix.nox-python }} -- --ignore=tests/integrations/postgresql -x
 
       - name: Combine coverage
         run: |
