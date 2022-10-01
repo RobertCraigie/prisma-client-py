@@ -23,11 +23,13 @@ from typing import (
 
 import py
 import click
+import pytest
 import pytest_asyncio  # type: ignore
 from click.testing import CliRunner, Result
 
 from prisma.cli import main
 from prisma._types import FuncType
+from prisma.binaries import platform
 from prisma.generator.utils import copy_tree
 from prisma.generator.generator import BASE_PACKAGE_DIR
 
@@ -316,6 +318,7 @@ def assert_time_like_now(dt: datetime, threshold: int = 10) -> None:
     # and we cannot subtract a timezone aware datetime from a non timezone aware datetime
     dt = dt.replace(tzinfo=None)
     delta = datetime.utcnow() - dt
+    print(f'd={delta}')
     assert delta.days == 0
     assert delta.total_seconds() < threshold
 
@@ -376,3 +379,8 @@ def async_fixture(
             name=name,
         ),
     )
+
+
+skipif_windows = pytest.mark.skipif(
+    platform.name() == 'windows', reason='Test is disabled on windows'
+)
