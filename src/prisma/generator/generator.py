@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import shutil
 import logging
 from pathlib import Path
 from abc import ABC, abstractmethod
@@ -200,6 +201,10 @@ class Generator(GenericGenerator[PythonData]):
 
         if not is_same_path(BASE_PACKAGE_DIR, rootdir):
             copy_tree(BASE_PACKAGE_DIR, rootdir)
+
+        # copy the Prisma Schema file used to generate the client to the
+        # package so we can use it to instantiate the query engine
+        shutil.copy(data.schema_path, rootdir / 'schema.prisma')
 
         params = data.to_params()
 
