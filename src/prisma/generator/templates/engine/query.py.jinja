@@ -124,6 +124,10 @@ class QueryEngine(HTTPEngine):
             env.update(RUST_LOG='info')
             args.append('--enable-playground')
 
+        for key, value in env.items():
+            if not isinstance(value, str):
+                print(f'{key} contains a non-string value, {value} of type {type(value)}')
+
         log.debug('Starting query engine...')
         self.process = subprocess.Popen(
             args,
