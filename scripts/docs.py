@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from prisma.binaries.constants import PRISMA_VERSION
+from prisma import config
 
 
 ROOTDIR = Path(__file__).parent.parent
@@ -29,7 +29,7 @@ def main() -> None:
     content = binaries_doc.read_text()
     content = re.sub(
         r'(git clone https://github.com/prisma/prisma-engines --branch)=(\d+\.\d+\.\d+)',
-        r'\1' + '=' + PRISMA_VERSION,
+        r'\1' + '=' + config.prisma_version,
         content,
     )
     binaries_doc.write_text(content)
