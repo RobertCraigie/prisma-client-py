@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 import sys
 import json
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional, Union, Type, Any
+from typing import Dict, List, Optional, TypedDict, Union, Type, Any
+from typing_extensions import TypedDict
+
 from pydantic import Field
 
 from .models import BaseModel
@@ -28,10 +32,25 @@ class Request(BaseModel):
     params: Optional[Dict[str, Any]]
 
 
-class Response(BaseModel):
+class SuccessResponse(BaseModel):
     id: int
     jsonrpc: str = '2.0'
     result: Optional[Dict[str, Any]]
+
+
+class ErrorData(TypedDict):
+    code: int
+    message: str
+    data: object
+
+
+class ErrorResponse(BaseModel):
+    id: int
+    error: ErrorData
+    jsonrpc: str = '2.0'
+
+
+Response = Union[SuccessResponse, ErrorResponse]
 
 
 class Manifest(BaseModel):
