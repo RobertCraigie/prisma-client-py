@@ -103,7 +103,7 @@ class QueryEngine(HTTPEngine):
 
         env = os.environ.copy()
         env.update(
-            PRISMA_DML_PATH=self.dml_path,
+            PRISMA_DML_PATH=str(self.dml_path.absolute()),
             RUST_LOG='error',
             RUST_LOG_FORMAT='json',
             PRISMA_CLIENT_ENGINE_TYPE='binary',
@@ -123,10 +123,6 @@ class QueryEngine(HTTPEngine):
         if _env_bool('__PRISMA_PY_PLAYGROUND'):
             env.update(RUST_LOG='info')
             args.append('--enable-playground')
-
-        for key, value in env.items():
-            if not isinstance(value, str):
-                print(f'{key} contains a non-string value, {value} of type {type(value)}')
 
         log.debug('Starting query engine...')
         self.process = subprocess.Popen(
