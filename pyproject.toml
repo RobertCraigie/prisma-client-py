@@ -2,6 +2,7 @@
 include = [
     "src",
     "tests",
+    "scripts"
 ]
 ignore = [
     # TODO: this should not ignore tests/integrations/conftest.py
