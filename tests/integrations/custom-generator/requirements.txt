@@ -1,4 +1,4 @@
-pyright>=1.1.225
+pyright>=1.1.269
 pytest==6.2.4
 
 # TODO: this should not be required
