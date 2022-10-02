@@ -103,7 +103,7 @@ class QueryEngine(HTTPEngine):
 
         env = os.environ.copy()
         env.update(
-            PRISMA_DML_PATH=self.dml_path,
+            PRISMA_DML_PATH=str(self.dml_path.absolute()),
             RUST_LOG='error',
             RUST_LOG_FORMAT='json',
             PRISMA_CLIENT_ENGINE_TYPE='binary',
