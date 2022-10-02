@@ -84,7 +84,7 @@ jobs:
       # TODO: remove --snapshot-update
       - uses: actions/upload-artifact@v3
         with:
-          name: snapshots
+          name: snapshots-${{ matrix.os }}
           path: tests/test_generation/exhaustive/__snapshots__
 
       - name: Combine coverage
