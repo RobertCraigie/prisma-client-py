@@ -23,6 +23,8 @@ jobs:
     name: test
     runs-on: ${{ matrix.os }}
     strategy:
+      # TODO: remove
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: [3.7, 3.8, 3.9, '3.10', '3.11.0-rc.1']
@@ -53,6 +55,10 @@ jobs:
           key: ${{ runner.os }}-mypy
           restore-keys: |
             ${{ runner.os }}-mypy
+
+      - name: Debug
+        run: |
+          python scripts/ci.py
 
       # TODO: cache prisma engines
 
