@@ -79,17 +79,7 @@ jobs:
 
       - name: Run tests
         run: |
-          nox -s test -p ${{ matrix.nox-python }} -- --ignore=tests/integrations/postgresql --snapshot-update
-
-      - name: Check diff
-        run: |
-          git diff
-
-      # TODO: remove --snapshot-update
-      - uses: actions/upload-artifact@v3
-        with:
-          name: snapshots-${{ matrix.os }}
-          path: tests/test_generation/exhaustive/__snapshots__
+          nox -s test -p ${{ matrix.nox-python }} -- --ignore=tests/integrations/postgresql
 
       - name: Combine coverage
         run: |
