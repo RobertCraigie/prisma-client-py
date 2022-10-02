@@ -70,7 +70,7 @@ def ensure() -> Path:
 
     start_version = time.monotonic()
     process = subprocess.run(
-        [file.absolute(), '--version'], stdout=subprocess.PIPE, check=True
+        [str(file.absolute()), '--version'], stdout=subprocess.PIPE, check=True
     )
     log.debug('Version check took %s', time_since(start_version))
 

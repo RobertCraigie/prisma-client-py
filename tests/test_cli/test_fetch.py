@@ -4,7 +4,7 @@ import shutil
 from click.testing import Result
 
 from prisma import binaries, config
-from tests.utils import Runner
+from tests.utils import Runner, skipif_windows
 
 
 # TODO: this could probably mess up other tests if one of these
@@ -26,6 +26,10 @@ def test_fetch(runner: Runner) -> None:
     assert_success(runner.invoke(['py', 'fetch']))
 
 
+# it seems like we can't use `.unlink()` on binary paths on windows due to permissions errors
+
+
+@skipif_windows
 def test_fetch_one_binary_missing(runner: Runner) -> None:
     """Downloads a binary if it is missing"""
     binary = random.choice(binaries.BINARIES)
@@ -36,6 +40,7 @@ def test_fetch_one_binary_missing(runner: Runner) -> None:
     assert_success(runner.invoke(['py', 'fetch']))
 
 
+@skipif_windows
 def test_fetch_force(runner: Runner) -> None:
     """Passing --force re-downloads an already existing binary"""
     binary = random.choice(binaries.BINARIES)
@@ -53,6 +58,7 @@ def test_fetch_force(runner: Runner) -> None:
     assert old_stat.st_size == new_stat.st_size
 
 
+@skipif_windows
 def test_fetch_force_no_dir(runner: Runner) -> None:
     """Passing --force when the base directory does not exist"""
     binaries.remove_all()
