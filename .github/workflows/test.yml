@@ -69,7 +69,7 @@ jobs:
 
       - name: Run tests
         run: |
-          nox -s test -- --ignore=tests/integrations/postgresql
+          nox -s test --no-error-on-missing-interpreters -- --ignore=tests/integrations/postgresql
 
       - name: Combine coverage
         run: |
