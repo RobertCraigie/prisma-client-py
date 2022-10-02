@@ -1,7 +1,7 @@
 import asyncio
 import contextlib
 from pathlib import Path
-from typing import Iterator, Optional, List, cast
+from typing import Iterator, Optional
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
@@ -74,13 +74,10 @@ def test_engine_binary_does_not_exist(monkeypatch: MonkeyPatch) -> None:
 def test_mismatched_version_error(fake_process: FakeProcess) -> None:
     """Mismatched query engine versions raises an error"""
     fake_process.register_subprocess(
-        cast(
-            List[str],
-            [
-                utils._resolve_from_binary_paths(BINARY_PATHS.query_engine),
-                '--version',
-            ],
-        ),
+        [
+            str(utils._resolve_from_binary_paths(BINARY_PATHS.query_engine)),
+            '--version',
+        ],
         stdout='query-engine unexpected-hash',
     )
 
@@ -102,14 +99,14 @@ def test_ensure_local_path(
     fake_engine.touch()
 
     fake_process.register_subprocess(
-        [fake_engine, '--version'],  # type: ignore[list-item]
+        [str(fake_engine), '--version'],
         stdout='query-engine a-different-hash',
     )
     with pytest.raises(errors.MismatchedVersionsError):
         path = utils.ensure(BINARY_PATHS.query_engine)
 
     fake_process.register_subprocess(
-        [fake_engine, '--version'],  # type: ignore[list-item]
+        [str(fake_engine), '--version'],
         stdout=f'query-engine {config.expected_engine_version}',
     )
     path = utils.ensure(BINARY_PATHS.query_engine)
@@ -124,7 +121,7 @@ def test_ensure_env_override(
     fake_engine.touch()
 
     fake_process.register_subprocess(
-        [fake_engine, '--version'],  # type: ignore[list-item]
+        [str(fake_engine), '--version'],
         stdout='query-engine a-different-hash',
     )
 
