@@ -79,7 +79,13 @@ jobs:
 
       - name: Run tests
         run: |
-          nox -s test -p ${{ matrix.nox-python }} -- --ignore=tests/integrations/postgresql --ignore=tests/test_generation/exhaustive
+          nox -s test -p ${{ matrix.nox-python }} -- --ignore=tests/integrations/postgresql --snapshot-update
+
+      # TODO: remove --snapshot-update
+      - uses: actions/upload-artifact@v3
+        with:
+          name: snapshots
+          path: tests/test_generation/exhaustive/__snapshots__
 
       - name: Combine coverage
         run: |
