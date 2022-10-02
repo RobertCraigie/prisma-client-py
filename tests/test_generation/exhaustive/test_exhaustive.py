@@ -76,7 +76,7 @@ def schema_path_matcher(
             )
 
         return data.replace(
-            f"Path('{schema_path.absolute()}')",
+            f"Path('{schema_path.absolute().as_posix()}')",
             "Path('<absolute-schema-path>')",
         )
 
