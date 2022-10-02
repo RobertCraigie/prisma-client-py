@@ -81,6 +81,10 @@ jobs:
         run: |
           nox -s test -p ${{ matrix.nox-python }} -- --ignore=tests/integrations/postgresql --snapshot-update
 
+      - name: Check diff
+        run: |
+          git diff
+
       # TODO: remove --snapshot-update
       - uses: actions/upload-artifact@v3
         with:
