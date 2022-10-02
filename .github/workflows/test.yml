@@ -25,17 +25,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        include:
-          - python-version: 3.7
-            nox-python: 3.7
-          - python-version: 3.8
-            nox-python: 3.8
-          - python-version: 3.9
-            nox-python: 3.9
-          - python-version: "3.10"
-            nox-python: '3.10'
-          - python-version: "3.11.0-rc.1"
-            nox-python: 3.11
+        python-version: [3.7, 3.8, 3.9, '3.10', '3.11.0-rc.1']
 
     steps:
       - uses: actions/checkout@v3
@@ -79,7 +69,7 @@ jobs:
 
       - name: Run tests
         run: |
-          nox -s test -p ${{ matrix.nox-python }} -- --ignore=tests/integrations/postgresql
+          nox -s test -- --ignore=tests/integrations/postgresql
 
       - name: Combine coverage
         run: |
