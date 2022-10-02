@@ -56,10 +56,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mypy
 
-      - name: Debug
-        run: |
-          python scripts/ci.py
-
       # TODO: cache prisma engines
 
       - name: Setup database
@@ -75,7 +71,9 @@ jobs:
 
       - name: Run tests
         run: |
-          nox -s test --no-error-on-missing-interpreters -- --ignore=tests/integrations/postgresql
+          python scripts/ci.py -s test --no-error-on-missing-interpreters -- --ignore=tests/integrations/postgresql
+        env:
+          TARGET_PYTHON: ${{ matrix.python-version }}
 
       - name: Combine coverage
         run: |
