@@ -4,7 +4,7 @@ from pathlib import Path
 
 from . import platform
 from .binary import Binary
-from .constants import ENGINE_URL, ENGINE_VERSION, GLOBAL_TEMP_DIR
+from .. import config
 
 
 __all__ = ('Engine',)
@@ -19,8 +19,8 @@ class Engine(Binary):
     @property
     def url(self) -> str:
         return platform.check_for_extension(
-            ENGINE_URL.format(
-                ENGINE_VERSION, platform.binary_platform(), self.name
+            config.engine_url.format(
+                config.engine_version, platform.binary_platform(), self.name
             )
         )
 
@@ -39,7 +39,7 @@ class Engine(Binary):
         return Path(
             platform.check_for_extension(
                 str(
-                    GLOBAL_TEMP_DIR.joinpath(
+                    config.binary_cache_dir.joinpath(
                         f'prisma-{self.name}-{binary_name}'
                     )
                 )

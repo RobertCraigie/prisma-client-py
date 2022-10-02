@@ -46,6 +46,11 @@ __all__ = (
 )
 
 
+if TYPE_CHECKING:
+    BaseJson = str
+else:
+    BaseJson = _PydanticJson
+
 _JsonKeys = Union[
     None,
     bool,
@@ -61,7 +66,7 @@ BASE64_ENCODING = 'ascii'
 
 # inherit from _PydanticJson so that pydantic will automatically
 # transform the json string into python objects.
-class Json(_PydanticJson):
+class Json(BaseJson):
     data: 'Serializable'
 
     def __init__(self, data: 'Serializable') -> None:
@@ -136,6 +141,33 @@ class Base64:
         """
         return self.decode().decode(encoding)
 
+    # Support OpenAPI schema generation
+    @classmethod
+    def __modify_schema__(cls, field_schema: Dict[str, object]) -> None:
+        field_schema['type'] = 'string'
+        field_schema['format'] = 'byte'
+
+    # Support converting objects into Base64 at the Pydantic level
+    @classmethod
+    def __get_validators__(cls) -> Iterator[object]:
+        yield cls._validate
+
+    @classmethod
+    def _validate(cls, value: object) -> 'Base64':
+        if isinstance(value, Base64):
+            return value
+
+        # TODO: validate that the structure of the input is valid too?
+        if isinstance(value, str):
+            return cls(bytes(value, BASE64_ENCODING))
+
+        if isinstance(value, bytes):
+            return cls(value)
+
+        raise ValueError(
+            f'Could not convert type: {type(value)} to a Base64 object; Expected a string or bytes object'
+        )
+
     def __str__(self) -> str:
         return self._raw.decode(BASE64_ENCODING)
 
@@ -147,28 +179,6 @@ class Base64:
             return self._raw == other._raw
 
         return False
-
-    @classmethod
-    def _internal_from_prisma(
-        cls,
-        value: Union[None, str, 'Base64', List[Union[str, 'Base64']]]
-    ) -> Union[None, 'Base64', List['Base64']]:
-        if value is None:
-            return None
-
-        if isinstance(value, Base64):
-            return value
-
-        if isinstance(value, list):
-            return [
-                item
-                if isinstance(item, Base64)
-                else
-                cls(bytes(item, BASE64_ENCODING))
-                for item in value
-            ]
-
-        return cls(bytes(value, BASE64_ENCODING))
 
 
 from .types import Serializable

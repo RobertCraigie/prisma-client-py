@@ -23,11 +23,13 @@ from typing import (
 
 import py
 import click
+import pytest
 import pytest_asyncio  # type: ignore
 from click.testing import CliRunner, Result
 
 from prisma.cli import main
 from prisma._types import FuncType
+from prisma.binaries import platform
 from prisma.generator.utils import copy_tree
 from prisma.generator.generator import BASE_PACKAGE_DIR
 
@@ -85,7 +87,7 @@ class Runner:
     def __init__(self, patcher: 'MonkeyPatch') -> None:
         self._runner = CliRunner()
         self._patcher = patcher
-        self.default_cli = None  # type: Optional[click.Command]
+        self.default_cli: Optional[click.Command] = None
         self.patch_subprocess()
 
     def invoke(
@@ -289,7 +291,9 @@ def get_source_from_function(function: FuncType, **env: Any) -> str:
 
 
 def assert_similar_time(
-    dt1: datetime, dt2: datetime, threshold: float = 0.5
+    dt1: datetime,
+    dt2: datetime,
+    threshold: float = 0.5,
 ) -> None:
     """Assert the delta between the two datetimes is less than the given threshold (in seconds).
 
@@ -315,9 +319,7 @@ def assert_time_like_now(dt: datetime, threshold: int = 10) -> None:
     # have to remove the timezone details as utcnow() is not timezone aware
     # and we cannot subtract a timezone aware datetime from a non timezone aware datetime
     dt = dt.replace(tzinfo=None)
-    delta = datetime.utcnow() - dt
-    assert delta.days == 0
-    assert delta.total_seconds() < threshold
+    assert_similar_time(dt, datetime.utcnow(), threshold=threshold)
 
 
 def escape_path(path: Union[str, Path]) -> str:
@@ -376,3 +378,8 @@ def async_fixture(
             name=name,
         ),
     )
+
+
+skipif_windows = pytest.mark.skipif(
+    platform.name() == 'windows', reason='Test is disabled on windows'
+)

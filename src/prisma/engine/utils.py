@@ -10,9 +10,10 @@ from typing import NoReturn, Dict, Type, Any
 from . import errors
 from .. import errors as prisma_errors
 
+from .. import config
 from ..http_abstract import AbstractResponse
 from ..utils import time_since
-from ..binaries import GLOBAL_TEMP_DIR, ENGINE_VERSION, platform
+from ..binaries import platform
 
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -36,7 +37,7 @@ def ensure() -> Path:
 
     name = f'prisma-query-engine-{binary_name}'
     local_path = Path.cwd().joinpath(name)
-    global_path = GLOBAL_TEMP_DIR.joinpath(name)
+    global_path = config.binary_cache_dir.joinpath(name)
 
     log.debug('Expecting local query engine %s', local_path)
     log.debug('Expecting global query engine %s', global_path)
@@ -69,7 +70,7 @@ def ensure() -> Path:
 
     start_version = time.monotonic()
     process = subprocess.run(
-        [file.absolute(), '--version'], stdout=subprocess.PIPE, check=True
+        [str(file.absolute()), '--version'], stdout=subprocess.PIPE, check=True
     )
     log.debug('Version check took %s', time_since(start_version))
 
@@ -80,9 +81,9 @@ def ensure() -> Path:
     )
     log.debug('Using query engine version %s', version)
 
-    if force_version and version != ENGINE_VERSION:
+    if force_version and version != config.engine_version:
         raise errors.MismatchedVersionsError(
-            expected=ENGINE_VERSION, got=version
+            expected=config.engine_version, got=version
         )
 
     log.debug('Using query engine at %s', file)

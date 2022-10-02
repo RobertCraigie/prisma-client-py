@@ -21,18 +21,11 @@ on:
 jobs:
   test:
     name: test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        include:
-          - python-version: 3.7
-            tox-env: py37
-          - python-version: 3.8
-            tox-env: py38
-          - python-version: 3.9
-            tox-env: py39
-          - python-version: "3.10"
-            tox-env: py310
+        os: [ubuntu-latest, windows-latest]
+        python-version: [3.7, 3.8, 3.9, '3.10', '3.11.0-rc.1']
 
     steps:
       - uses: actions/checkout@v3
@@ -70,9 +63,19 @@ jobs:
           python -m prisma db push --schema=tests/data/schema.prisma --skip-generate
           cp tests/data/dev.db dev.db
 
+      - name: Setup coverage
+        run: |
+          nox -s setup
+
       - name: Run tests
         run: |
-          tox -e setup,${{ matrix.tox-env }},report -- --ignore=tests/integrations/postgresql
+          python scripts/ci.py -s test --no-error-on-missing-interpreters -- --ignore=tests/integrations/postgresql
+        env:
+          TARGET_PYTHON: ${{ matrix.python-version }}
+
+      - name: Combine coverage
+        run: |
+          nox -s report
 
       - name: Upload coverage
         run: |
@@ -109,8 +112,9 @@ jobs:
             ${{ runner.os }}-pip-
 
       - name: Run tests
+        # TODO: run mypy too
         run: |
-          tox -e typesafety-pyright,typesafety-mypy
+          nox -s typesafety-pyright
 
   lint:
     name: lint
@@ -130,7 +134,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements/dev.txt codecov==2.1.11
+          pip install -r requirements/dev.txt
 
       - uses: actions/cache@v3
         with:
@@ -146,23 +150,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mypy
 
+      # TODO: add codecov for our mypy plugin
       - name: Check linters
         run: |
-          tox -e lint
-
-      - name: Check mypy
-        run: |
-          tox -e mypy
-
-      - name: Create coverage report
-        run: |
-          tox -e report
-
-      - name: Upload coverage
-        run: |
-          codecov --file coverage.xml
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          nox -s lint
 
   postgres:
     name: postgres
@@ -171,7 +162,6 @@ jobs:
       matrix:
         include:
           - python-version: 3.9
-            tox-env: py39
 
     services:
       postgres:
@@ -217,7 +207,7 @@ jobs:
 
       - name: Run tests
         run: |
-          tox -e setup,${{ matrix.tox-env }},report -- --confcutdir . tests/integrations/postgresql
+          nox -s setup test report --no-error-on-missing-interpreters -- --confcutdir . tests/integrations/postgresql
         env:
           PRISMA_PY_POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/postgres
 

@@ -32,14 +32,14 @@ async def select(client: Prisma) -> None:
 
     # case: invalid field
     await client.post.count(
-        select={  # E: Argument of type "dict[str, bool]" cannot be assigned to parameter "select" of type "PostCountAggregateInput" in function "count"
-            'foo': True,
+        select={
+            'foo': True,  # E: Argument of type "dict[str, bool]" cannot be assigned to parameter "select" of type "PostCountAggregateInput" in function "count"
         },
     )
 
     # case: invalid type
     await client.post.count(
-        select={  # E: Argument of type "dict[str, int]" cannot be assigned to parameter "select" of type "PostCountAggregateInput" in function "count"
-            'author_id': 1,
+        select={
+            'author_id': 1,  # E: Argument of type "dict[str, int]" cannot be assigned to parameter "select" of type "PostCountAggregateInput" in function "count"
         },
     )

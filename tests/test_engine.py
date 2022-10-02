@@ -7,10 +7,10 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from pytest_subprocess import FakeProcess
 
-from prisma import Prisma
+from prisma import Prisma, config
 from prisma.utils import temp_env_update
 from prisma.binaries import platform
-from prisma.binaries import BINARIES, ENGINE_VERSION
+from prisma.binaries import BINARIES
 from prisma.engine import errors, utils
 from prisma.engine.query import QueryEngine
 from prisma._compat import get_running_loop
@@ -57,7 +57,7 @@ async def test_engine_connects() -> None:
 def test_stopping_engine_on_closed_loop() -> None:
     """Stopping the engine with no event loop available does not raise an error"""
     with no_event_loop():
-        engine = QueryEngine(dml='')
+        engine = QueryEngine(dml_path=Path.cwd())
         engine.stop()
 
 
@@ -80,7 +80,7 @@ def test_engine_binary_does_not_exist(monkeypatch: MonkeyPatch) -> None:
 def test_mismatched_version_error(fake_process: FakeProcess) -> None:
     """Mismatched query engine versions raises an error"""
     fake_process.register_subprocess(
-        [QUERY_ENGINE.path, '--version'],  # type: ignore[list-item]
+        [str(QUERY_ENGINE.path), '--version'],
         stdout='query-engine unexpected-hash',
     )
 
@@ -88,7 +88,7 @@ def test_mismatched_version_error(fake_process: FakeProcess) -> None:
         utils.ensure()
 
     assert exc.match(
-        f'Expected query engine version `{ENGINE_VERSION}` but got `unexpected-hash`'
+        f'Expected query engine version `{config.engine_version}` but got `unexpected-hash`'
     )
 
 
@@ -102,15 +102,15 @@ def test_ensure_local_path(
     fake_engine.touch()
 
     fake_process.register_subprocess(
-        [fake_engine, '--version'],  # type: ignore[list-item]
+        [str(fake_engine), '--version'],
         stdout='query-engine a-different-hash',
     )
     with pytest.raises(errors.MismatchedVersionsError):
         path = utils.ensure()
 
     fake_process.register_subprocess(
-        [fake_engine, '--version'],  # type: ignore[list-item]
-        stdout=f'query-engine {ENGINE_VERSION}',
+        [str(fake_engine), '--version'],
+        stdout=f'query-engine {config.engine_version}',
     )
     path = utils.ensure()
     assert path == fake_engine
@@ -124,7 +124,7 @@ def test_ensure_env_override(
     fake_engine.touch()
 
     fake_process.register_subprocess(
-        [fake_engine, '--version'],  # type: ignore[list-item]
+        [str(fake_engine), '--version'],
         stdout='query-engine a-different-hash',
     )
 

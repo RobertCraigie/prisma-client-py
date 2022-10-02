@@ -21,4 +21,8 @@ class CompoundConstraintError(ValueError):
         )
 
 
+class PartialTypeGeneratorError(PrismaError):
+    pass
+
+
 from .models import PrimaryKey, UniqueIndex

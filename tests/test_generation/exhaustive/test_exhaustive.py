@@ -11,6 +11,7 @@ from syrupy.extensions.single_file import SingleFileSnapshotExtension
 from prisma.generator import BASE_PACKAGE_DIR
 from prisma.generator.utils import remove_suffix
 from .utils import ROOTDIR
+from ...utils import skipif_windows
 
 
 class OSAgnosticSingleFileExtension(SingleFileSnapshotExtension):
@@ -76,13 +77,17 @@ def schema_path_matcher(
             )
 
         return data.replace(
-            f"Path('{schema_path.absolute()}')",
+            f"Path('{schema_path.absolute().as_posix()}')",
             "Path('<absolute-schema-path>')",
         )
 
     return pathlib_matcher
 
 
+# TODO: support running snapshot tests on windows
+
+
+@skipif_windows
 @pytest.mark.parametrize('file', FILES)
 def test_sync(snapshot: SnapshotAssertion, file: str) -> None:
     """Ensure synchronous client files match"""
@@ -91,6 +96,7 @@ def test_sync(snapshot: SnapshotAssertion, file: str) -> None:
     )
 
 
+@skipif_windows
 @pytest.mark.parametrize('file', FILES)
 def test_async(snapshot: SnapshotAssertion, file: str) -> None:
     """Ensure asynchronous client files match"""

@@ -184,7 +184,8 @@ async def main() -> None:
     user = await prisma.user.create(
         data={
             'name': 'Robert',
-        }.
+            'email': 'robert@craigie.dev'
+        },
     )
 
     await prisma.disconnect()
@@ -208,7 +209,8 @@ async def main() -> None:
     user = await User.prisma().create(
         data={
             'name': 'Robert',
-        }.
+            'email': 'robert@craigie.dev'
+        },
     )
 
     await db.disconnect()
@@ -340,9 +342,7 @@ Performance is something that will be worked on in the future and there is room 
 
 ### Supported platforms
 
-Only MacOS and Linux are officially supported.
-
-Windows is unofficially supported as tests are not currently ran on windows.
+Windows, MacOS and Linux are all officially supported.
 
 ## Version guarantees
 

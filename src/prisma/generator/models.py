@@ -36,18 +36,15 @@ from pydantic import (
 from pydantic.fields import PrivateAttr
 from pydantic.generics import GenericModel as PydanticGenericModel
 
-try:
-    from pydantic.env_settings import SettingsSourceCallable
-except ImportError:
-    SettingsSourceCallable = Any  # type: ignore
-
-
 from .utils import Faker, Sampler, clean_multiline
+from .. import config
 from ..utils import DEBUG_GENERATOR, assert_never
 from .._compat import validator, root_validator, cached_property
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
-from ..binaries.constants import ENGINE_VERSION, PRISMA_VERSION
+
+if TYPE_CHECKING:
+    from pydantic.env_settings import SettingsSourceCallable
 
 
 __all__ = (
@@ -121,10 +118,11 @@ def get_datamodel() -> 'Datamodel':
     return data_ctx.get().dmmf.datamodel
 
 
-# typed to ensure the caller has to handle the case where
-# a custom generator config is being used
-def get_config() -> Union[PydanticBaseModel, 'Config']:
-    return config_ctx.get()
+# typed to ensure the caller has to handle the cases where:
+# - a custom generator config is being used
+# - the config is invalid and therefore could not be set
+def get_config() -> Union[None, PydanticBaseModel, 'Config']:
+    return config_ctx.get(None)
 
 
 def get_list_types() -> Iterable[Tuple[str, str]]:
@@ -286,11 +284,8 @@ class Module(BaseModel):
 
         try:
             loader.exec_module(mod)
-        except:
-            print(
-                'An exception ocurred while running the partial type generator'
-            )
-            raise
+        except Exception as exc:
+            raise PartialTypeGeneratorError() from exc
 
 
 class GenericData(GenericModel, Generic[ConfigT]):
@@ -339,14 +334,14 @@ class GenericData(GenericModel, Generic[ConfigT]):
     def validate_version(cls, values: Dict[Any, Any]) -> Dict[Any, Any]:
         # TODO: test this
         version = values.get('version')
-        if not DEBUG_GENERATOR and version != ENGINE_VERSION:
+        if not DEBUG_GENERATOR and version != config.engine_version:
             raise ValueError(
-                f'Prisma Client Python expected Prisma version: {ENGINE_VERSION} '
+                f'Prisma Client Python expected Prisma version: {config.engine_version} '
                 f'but got: {version}\n'
                 '  If this is intentional, set the PRISMA_PY_DEBUG_GENERATOR environment '
                 'variable to 1 and try again.\n'
-                f'  If you are using the Node CLI then you must switch to v{PRISMA_VERSION}, e.g. '
-                f'npx prisma@{PRISMA_VERSION} generate\n'
+                f'  If you are using the Node CLI then you must switch to v{config.prisma_version}, e.g. '
+                f'npx prisma@{config.prisma_version} generate\n'
                 '  or generate the client using the Python CLI, e.g. python3 -m prisma generate'
             )
         return values
@@ -443,10 +438,10 @@ class Config(BaseSettings):
         @classmethod
         def customise_sources(
             cls,
-            init_settings: SettingsSourceCallable,
-            env_settings: SettingsSourceCallable,
-            file_secret_settings: SettingsSourceCallable,
-        ) -> Tuple[SettingsSourceCallable, ...]:
+            init_settings: 'SettingsSourceCallable',
+            env_settings: 'SettingsSourceCallable',
+            file_secret_settings: 'SettingsSourceCallable',
+        ) -> Tuple['SettingsSourceCallable', ...]:
             # prioritise env settings over init settings
             return env_settings, init_settings, file_secret_settings
 
@@ -565,8 +560,7 @@ class Model(BaseModel):
 
     _sampler: Sampler = PrivateAttr()
 
-    # mypy throws an error here - probbaly because of the pydantic plugin
-    def __init__(self, **data: Any) -> None:  # type: ignore[no-redef]
+    def __init__(self, **data: Any) -> None:
         super().__init__(**data)
         self._sampler = Sampler(self)
 
@@ -1009,4 +1003,8 @@ Datasource.update_forward_refs()
 
 
 from .schema import Schema
-from .errors import CompoundConstraintError, TemplateError
+from .errors import (
+    CompoundConstraintError,
+    PartialTypeGeneratorError,
+    TemplateError,
+)

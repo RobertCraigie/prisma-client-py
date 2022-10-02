@@ -43,9 +43,7 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         # NoneType = not used yet
         # None = closed
         # Session = open
-        self._session = (
-            _NoneType
-        )  # type: Optional[Union[Session, Type[_NoneType]]]
+        self._session: Optional[Union[Session, Type[_NoneType]]] = _NoneType
         self.session_kwargs = {
             **DEFAULT_CONFIG,
             **kwargs,
