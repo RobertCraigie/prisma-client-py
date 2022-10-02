@@ -137,6 +137,7 @@ src/prisma/partials.py
 src/prisma/engine/http.py
 src/prisma/engine/query.py
 src/prisma/engine/abstract.py
+src/prisma/schema.prisma
 
 # debug files
 src/prisma/generator/debug-data.json

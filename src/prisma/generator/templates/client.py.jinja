@@ -24,10 +24,8 @@ __all__ = (
     'get_client',
 )
 
-SCHEMA = '''
-{{ datamodel }}
-'''
 SCHEMA_PATH = Path('{{ schema_path.as_posix() }}')
+PACKAGED_SCHEMA_PATH = Path(__file__).parent.joinpath('schema.prisma')
 ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
 BINARY_PATHS = BinaryPaths.parse_obj({{ binary_paths.dict(by_alias=True) }})
 
@@ -213,7 +211,7 @@ class Prisma:
             timeout = self._connect_timeout
 
         if self.__engine is None:
-            self.__engine = self._create_engine(dml=SCHEMA)
+            self.__engine = self._create_engine(dml_path=PACKAGED_SCHEMA_PATH)
 
         datasources: Optional[List[types.DatasourceOverride]] = None
         if self._datasource is not None:
@@ -323,9 +321,9 @@ class Prisma:
         )
         return {{ maybe_await }}self._engine.query(builder.build())
 
-    def _create_engine(self, dml: str = SCHEMA) -> AbstractEngine:
+    def _create_engine(self, dml_path: Path = PACKAGED_SCHEMA_PATH) -> AbstractEngine:
         if ENGINE_TYPE == EngineType.binary:
-            return QueryEngine(dml=dml, log_queries=self._log_queries, **self._http_config)
+            return QueryEngine(dml_path=dml_path, log_queries=self._log_queries, **self._http_config)
 
         raise NotImplementedError(f'Unsupported engine type: {ENGINE_TYPE}')
 
