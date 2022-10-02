@@ -26,6 +26,10 @@ def test_fetch(runner: Runner) -> None:
     assert_success(runner.invoke(['py', 'fetch']))
 
 
+# it seems like we can't use `.unlink()` on binary paths on windows due to permissions errors
+
+
+@skipif_windows
 def test_fetch_one_binary_missing(runner: Runner) -> None:
     """Downloads a binary if it is missing"""
     binary = random.choice(binaries.BINARIES)
@@ -34,9 +38,6 @@ def test_fetch_one_binary_missing(runner: Runner) -> None:
     assert not binary.path.exists()
 
     assert_success(runner.invoke(['py', 'fetch']))
-
-
-# the `fetch --force`` command seems to be broken on windows due to permissions errors
 
 
 @skipif_windows
