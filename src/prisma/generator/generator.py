@@ -3,13 +3,14 @@ import sys
 import json
 import shutil
 import logging
+import traceback
 from pathlib import Path
 from abc import ABC, abstractmethod
 from contextvars import ContextVar
 from typing import Generic, Dict, Type, Any, Optional, cast
 
 from jinja2 import Environment, FileSystemLoader
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from . import jsonrpc
 from .jsonrpc import Manifest
@@ -20,8 +21,9 @@ from .utils import (
     is_same_path,
     resolve_template_path,
 )
+from .errors import PartialTypeGeneratorError
 from .. import __version__
-from ..utils import DEBUG_GENERATOR
+from ..utils import DEBUG, DEBUG_GENERATOR
 from .._compat import cached_property
 from .._types import BaseModelT, InheritsGeneric, get_args
 
@@ -90,48 +92,82 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
                 'Attempted to invoke a generator outside of Prisma generation'
             )
 
-        while True:
-            line = jsonrpc.readline()
-            if line is None:
-                log.debug('Prisma invocation ending')
-                break
+        request = None
+        try:
+            while True:
+                line = jsonrpc.readline()
+                if line is None:
+                    log.debug('Prisma invocation ending')
+                    break
 
-            request = jsonrpc.parse(line)
+                request = jsonrpc.parse(line)
+                self._on_request(request)
+        except Exception as exc:
+            if request is None:
+                raise exc from None
 
-            # TODO: this can hang the prisma process if an error occurs
-            response = None
-            if request.method == 'getManifest':
-                response = jsonrpc.Response(
-                    id=request.id,
-                    result=dict(
-                        manifest=self.get_manifest(),
-                    ),
+            # We don't care about being overly verbose or printing potentially redundant data here
+            if DEBUG or DEBUG_GENERATOR:
+                traceback.print_exc()
+
+            # Do not include the full stack trace for pydantic validation errors as they are typically
+            # the fault of the user.
+            if isinstance(exc, ValidationError):
+                message = str(exc)
+            elif isinstance(exc, PartialTypeGeneratorError):
+                # TODO: remove our internal frame from this stack trace
+                message = (
+                    'An exception ocurred while running the partial type generator\n'
+                    + traceback.format_exc().strip()
                 )
-            elif request.method == 'generate':
-                if request.params is None:  # pragma: no cover
-                    raise RuntimeError(
-                        'Prisma JSONRPC did not send data to generate.'
-                    )
+            else:
+                message = traceback.format_exc().strip()
 
-                if DEBUG_GENERATOR:
-                    _write_debug_data(
-                        'params', json.dumps(request.params, indent=2)
-                    )
+            response = jsonrpc.ErrorResponse(
+                id=request.id,
+                error={
+                    # code copied from https://github.com/prisma/prisma/blob/main/packages/generator-helper/src/generatorHandler.ts
+                    'code': -32000,
+                    'message': message,
+                    'data': {},
+                },
+            )
+            jsonrpc.reply(response)
 
-                data = self.data_class.parse_obj(request.params)
-
-                if DEBUG_GENERATOR:
-                    _write_debug_data('data', data.json(indent=2))
-
-                self.generate(data)
-                response = jsonrpc.Response(id=request.id, result=None)
-            else:  # pragma: no cover
+    def _on_request(self, request: jsonrpc.Request) -> None:
+        response = None
+        if request.method == 'getManifest':
+            response = jsonrpc.SuccessResponse(
+                id=request.id,
+                result=dict(
+                    manifest=self.get_manifest(),
+                ),
+            )
+        elif request.method == 'generate':
+            if request.params is None:  # pragma: no cover
                 raise RuntimeError(
-                    f'JSON RPC received unexpected method: {request.method}'
+                    'Prisma JSONRPC did not send data to generate.'
                 )
 
-            if response is not None:
-                jsonrpc.reply(response)
+            if DEBUG_GENERATOR:
+                _write_debug_data(
+                    'params', json.dumps(request.params, indent=2)
+                )
+
+            data = self.data_class.parse_obj(request.params)
+
+            if DEBUG_GENERATOR:
+                _write_debug_data('data', data.json(indent=2))
+
+            self.generate(data)
+            response = jsonrpc.SuccessResponse(id=request.id, result=None)
+        else:  # pragma: no cover
+            raise RuntimeError(
+                f'JSON RPC received unexpected method: {request.method}'
+            )
+
+        if response is not None:
+            jsonrpc.reply(response)
 
     @cached_property
     def data_class(self) -> Type[BaseModelT]:

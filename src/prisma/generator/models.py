@@ -118,10 +118,11 @@ def get_datamodel() -> 'Datamodel':
     return data_ctx.get().dmmf.datamodel
 
 
-# typed to ensure the caller has to handle the case where
-# a custom generator config is being used
-def get_config() -> Union[PydanticBaseModel, 'Config']:
-    return config_ctx.get()
+# typed to ensure the caller has to handle the cases where:
+# - a custom generator config is being used
+# - the config is invalid and therefore could not be set
+def get_config() -> Union[None, PydanticBaseModel, 'Config']:
+    return config_ctx.get(None)
 
 
 def get_list_types() -> Iterable[Tuple[str, str]]:
@@ -283,11 +284,8 @@ class Module(BaseModel):
 
         try:
             loader.exec_module(mod)
-        except:
-            print(
-                'An exception ocurred while running the partial type generator'
-            )
-            raise
+        except Exception as exc:
+            raise PartialTypeGeneratorError() from exc
 
 
 class GenericData(GenericModel, Generic[ConfigT]):
@@ -1005,4 +1003,8 @@ Datasource.update_forward_refs()
 
 
 from .schema import Schema
-from .errors import CompoundConstraintError, TemplateError
+from .errors import (
+    CompoundConstraintError,
+    PartialTypeGeneratorError,
+    TemplateError,
+)

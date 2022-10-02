@@ -1,6 +1,7 @@
 import sys
 import subprocess
 from pathlib import Path
+from typing import cast
 
 import pytest
 from jinja2 import Environment, FileSystemLoader
@@ -136,3 +137,17 @@ def test_generator_subclass_mismatch() -> None:
     message = exc.value.args[0]
     assert 'cannot be subclassed, maybe you meant' in message
     assert 'BaseGenerator' in message
+
+
+def test_error_handling(testdir: Testdir) -> None:
+    """Config validation errors are returned through JSONRPC without a stack trace"""
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(options='partial_type_generator = "foo"')
+
+    output = cast(bytes, exc.value.output).decode('utf-8').strip()
+    assert output.endswith(
+        '\nError: \n'
+        '1 validation error for PythonData\n'
+        'generator -> config -> partial_type_generator -> spec\n'
+        '  Could not find a python file or module at foo (type=value_error)'
+    )
