@@ -20,7 +20,6 @@ async def test_create(client: Prisma) -> None:
         post.desc == 'Prisma is a database toolkit that makes databases easy.'
     )
     assert post.published is True
-    print(post.created_at)
     assert_time_like_now(post.created_at)
     assert_time_like_now(post.updated_at)
 

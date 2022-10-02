@@ -291,7 +291,9 @@ def get_source_from_function(function: FuncType, **env: Any) -> str:
 
 
 def assert_similar_time(
-    dt1: datetime, dt2: datetime, threshold: float = 0.5
+    dt1: datetime,
+    dt2: datetime,
+    threshold: float = 0.5,
 ) -> None:
     """Assert the delta between the two datetimes is less than the given threshold (in seconds).
 
@@ -318,7 +320,6 @@ def assert_time_like_now(dt: datetime, threshold: int = 10) -> None:
     # and we cannot subtract a timezone aware datetime from a non timezone aware datetime
     dt = dt.replace(tzinfo=None)
     delta = datetime.utcnow() - dt
-    print(f'd={delta}')
     assert delta.days == 0
     assert delta.total_seconds() < threshold
 
