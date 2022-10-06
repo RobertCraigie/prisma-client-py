@@ -10,6 +10,7 @@ from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
 from .generator.models import EngineType, OptionalValueFromEnvVar
+from ._compat import removeprefix
 
 
 __all__ = (
@@ -347,7 +348,7 @@ class Prisma:
         }
 
     def _make_sqlite_url(self, url: str, *, relative_to: Path = SCHEMA_PATH.parent) -> str:
-        url_path = url.lstrip('file').lstrip('sqlite')[1:]
+        url_path = removeprefix(removeprefix(url, 'file:'), 'sqlite:')
         if url_path == url:
             return url
 
