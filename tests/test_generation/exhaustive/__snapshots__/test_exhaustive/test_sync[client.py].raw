@@ -372,7 +372,7 @@ class Prisma:
         }
 
     def _make_sqlite_url(self, url: str, *, relative_to: Path = SCHEMA_PATH.parent) -> str:
-        url_path = url.lstrip('file:').lstrip('sqlite:')
+        url_path = url.lstrip('file').lstrip('sqlite')[1:]
         if url_path == url:
             return url
 
