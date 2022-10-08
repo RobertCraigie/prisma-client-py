@@ -304,6 +304,9 @@ class GenericData(GenericModel, Generic[ConfigT]):
     other_generators: List['Generator[_ModelAllowAll]'] = FieldInfo(
         alias='otherGenerators'
     )
+    binary_paths: 'BinaryPaths' = FieldInfo(
+        alias='binaryPaths', default_factory=lambda: BinaryPaths()
+    )
 
     @classmethod
     def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
@@ -334,9 +337,9 @@ class GenericData(GenericModel, Generic[ConfigT]):
     def validate_version(cls, values: Dict[Any, Any]) -> Dict[Any, Any]:
         # TODO: test this
         version = values.get('version')
-        if not DEBUG_GENERATOR and version != config.engine_version:
+        if not DEBUG_GENERATOR and version != config.expected_engine_version:
             raise ValueError(
-                f'Prisma Client Python expected Prisma version: {config.engine_version} '
+                f'Prisma Client Python expected Prisma version: {config.expected_engine_version} '
                 f'but got: {version}\n'
                 '  If this is intentional, set the PRISMA_PY_DEBUG_GENERATOR environment '
                 'variable to 1 and try again.\n'
@@ -345,6 +348,17 @@ class GenericData(GenericModel, Generic[ConfigT]):
                 '  or generate the client using the Python CLI, e.g. python3 -m prisma generate'
             )
         return values
+
+
+class BinaryPaths(BaseModel):
+    query_engine: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='queryEngine',
+    )
+
+    class Config(BaseModel.Config):
+        # TODO: add definitions for all other fields
+        extra: Extra = Extra.ignore
 
 
 class Datasource(BaseModel):
@@ -368,7 +382,8 @@ class Generator(GenericModel, Generic[ConfigT]):
     def warn_binary_targets(
         cls, targets: List['ValueFromEnvVar']
     ) -> List['ValueFromEnvVar']:
-        if targets and any(target.value != 'native' for target in targets):
+        # Prisma by default sends one binary target which is the current platform.
+        if len(targets) > 1:
             click.echo(
                 click.style(
                     'Warning: '

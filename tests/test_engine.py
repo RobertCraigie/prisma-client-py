@@ -7,20 +7,14 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from pytest_subprocess import FakeProcess
 
-from prisma import Prisma, config
+from prisma import Prisma, config, BINARY_PATHS
 from prisma.utils import temp_env_update
 from prisma.binaries import platform
-from prisma.binaries import BINARIES
 from prisma.engine import errors, utils
 from prisma.engine.query import QueryEngine
 from prisma._compat import get_running_loop
 
 from .utils import Testdir
-
-
-QUERY_ENGINE = next(  # pragma: no branch
-    b for b in BINARIES if b.name == 'query-engine'
-)
 
 
 @contextlib.contextmanager
@@ -70,7 +64,7 @@ def test_engine_binary_does_not_exist(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setattr(Path, 'exists', mock_exists, raising=True)
 
     with pytest.raises(errors.BinaryNotFoundError) as exc:
-        utils.ensure()
+        utils.ensure(BINARY_PATHS.query_engine)
 
     assert exc.match(
         r'Expected .* or .* but neither were found\.\nTry running prisma py fetch'
@@ -80,15 +74,18 @@ def test_engine_binary_does_not_exist(monkeypatch: MonkeyPatch) -> None:
 def test_mismatched_version_error(fake_process: FakeProcess) -> None:
     """Mismatched query engine versions raises an error"""
     fake_process.register_subprocess(
-        [str(QUERY_ENGINE.path), '--version'],
+        [
+            str(utils._resolve_from_binary_paths(BINARY_PATHS.query_engine)),
+            '--version',
+        ],
         stdout='query-engine unexpected-hash',
     )
 
     with pytest.raises(errors.MismatchedVersionsError) as exc:
-        utils.ensure()
+        utils.ensure(BINARY_PATHS.query_engine)
 
     assert exc.match(
-        f'Expected query engine version `{config.engine_version}` but got `unexpected-hash`'
+        f'Expected query engine version `{config.expected_engine_version}` but got `unexpected-hash`'
     )
 
 
@@ -106,13 +103,13 @@ def test_ensure_local_path(
         stdout='query-engine a-different-hash',
     )
     with pytest.raises(errors.MismatchedVersionsError):
-        path = utils.ensure()
+        path = utils.ensure(BINARY_PATHS.query_engine)
 
     fake_process.register_subprocess(
         [str(fake_engine), '--version'],
-        stdout=f'query-engine {config.engine_version}',
+        stdout=f'query-engine {config.expected_engine_version}',
     )
-    path = utils.ensure()
+    path = utils.ensure(BINARY_PATHS.query_engine)
     assert path == fake_engine
 
 
@@ -129,7 +126,7 @@ def test_ensure_env_override(
     )
 
     with temp_env_update({'PRISMA_QUERY_ENGINE_BINARY': str(fake_engine)}):
-        path = utils.ensure()
+        path = utils.ensure(BINARY_PATHS.query_engine)
 
     assert path == fake_engine
 
@@ -138,7 +135,7 @@ def test_ensure_env_override_does_not_exist() -> None:
     """Query engine path in environment variable not found raises an error"""
     with temp_env_update({'PRISMA_QUERY_ENGINE_BINARY': 'foo'}):
         with pytest.raises(errors.BinaryNotFoundError) as exc:
-            utils.ensure()
+            utils.ensure(BINARY_PATHS.query_engine)
 
     assert exc.match(
         r'PRISMA_QUERY_ENGINE_BINARY was provided, but no query engine was found at foo'

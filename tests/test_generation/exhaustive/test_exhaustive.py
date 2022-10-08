@@ -1,3 +1,4 @@
+import re
 import sys
 import subprocess
 from pathlib import Path
@@ -65,9 +66,10 @@ SYNC_ROOTDIR = ROOTDIR / '__prisma_sync_output__' / 'prisma'
 ASYNC_ROOTDIR = ROOTDIR / '__prisma_async_output__' / 'prisma'
 FILES = get_files_from_templates(BASE_PACKAGE_DIR / 'generator' / 'templates')
 THIS_DIR = Path(__file__).parent
+BINARY_PATH_RE = re.compile(r'BINARY_PATHS = (.*)')
 
 
-def schema_path_matcher(
+def path_replacer(
     schema_path: Path,
 ) -> Callable[[object, object], Optional[object]]:
     def pathlib_matcher(data: object, path: object) -> Optional[object]:
@@ -76,10 +78,14 @@ def schema_path_matcher(
                 f'schema_path_matcher expected data to be a `str` but received {type(data)} instead.'
             )
 
-        return data.replace(
+        data = data.replace(
             f"Path('{schema_path.absolute().as_posix()}')",
             "Path('<absolute-schema-path>')",
         )
+        data = BINARY_PATH_RE.sub(
+            "BINARY_PATHS = '<binary-paths-removed>'", data
+        )
+        return data
 
     return pathlib_matcher
 
@@ -92,7 +98,7 @@ def schema_path_matcher(
 def test_sync(snapshot: SnapshotAssertion, file: str) -> None:
     """Ensure synchronous client files match"""
     assert SYNC_ROOTDIR.joinpath(file).absolute().read_text() == snapshot(
-        matcher=schema_path_matcher(THIS_DIR / 'sync.schema.prisma')  # type: ignore
+        matcher=path_replacer(THIS_DIR / 'sync.schema.prisma')  # type: ignore
     )
 
 
@@ -101,7 +107,7 @@ def test_sync(snapshot: SnapshotAssertion, file: str) -> None:
 def test_async(snapshot: SnapshotAssertion, file: str) -> None:
     """Ensure asynchronous client files match"""
     assert ASYNC_ROOTDIR.joinpath(file).absolute().read_text() == snapshot(
-        matcher=schema_path_matcher(THIS_DIR / 'async.schema.prisma')  # type: ignore
+        matcher=path_replacer(THIS_DIR / 'async.schema.prisma')  # type: ignore
     )
 
 

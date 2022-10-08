@@ -2,6 +2,7 @@ import os
 import sys
 import asyncio
 import inspect
+from pathlib import Path
 from typing import List, Iterator, TYPE_CHECKING
 
 import pytest
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
 
 
 pytest_plugins = ['pytester']
+HOME_DIR = Path.home()
 LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
 
 
@@ -37,6 +39,14 @@ async def client_fixture() -> Prisma:
 
     await cleanup_client(client)
     return client
+
+
+@pytest.fixture(autouse=True)
+def setup_env(monkeypatch: 'MonkeyPatch') -> None:
+    # Set a custom home directory to use for caching binaries so that
+    # when we make use of pytest's temporary directory functionality the binaries
+    # don't have to be downloaded again.
+    monkeypatch.setenv('PRISMA_HOME_DIR', str(HOME_DIR))
 
 
 @pytest.fixture(scope='session')
