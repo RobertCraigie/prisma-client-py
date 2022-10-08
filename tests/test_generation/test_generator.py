@@ -151,3 +151,13 @@ def test_error_handling(testdir: Testdir) -> None:
         'generator -> config -> partial_type_generator -> spec\n'
         '  Could not find a python file or module at foo (type=value_error)'
     )
+
+
+def test_schema_path_same_path(testdir: Testdir) -> None:
+    """Generating to the same directory does not cause any errors due to schema copying
+
+    https://github.com/RobertCraigie/prisma-client-py/issues/513
+    """
+    proc = testdir.generate(output='.')
+    assert proc.returncode == 0
+    assert 'Generated Prisma Client Python' in proc.stdout.decode('utf-8')
