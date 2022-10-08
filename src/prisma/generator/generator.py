@@ -240,7 +240,9 @@ class Generator(GenericGenerator[PythonData]):
 
         # copy the Prisma Schema file used to generate the client to the
         # package so we can use it to instantiate the query engine
-        shutil.copy(data.schema_path, rootdir / 'schema.prisma')
+        packaged_schema = rootdir / 'schema.prisma'
+        if not is_same_path(data.schema_path, packaged_schema):
+            shutil.copy(data.schema_path, packaged_schema)
 
         params = data.to_params()
 
