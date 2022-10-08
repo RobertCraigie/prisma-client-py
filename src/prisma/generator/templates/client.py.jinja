@@ -11,6 +11,7 @@ from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix
+from .raw_query import deserialize_raw_results
 
 
 __all__ = (
@@ -295,9 +296,7 @@ class Prisma:
             }
         )
         result = resp['data']['result']
-        if model is not None:
-            return [model.parse_obj(r) for r in result]
-        return result
+        return deserialize_raw_results(result, model)
     {% endif %}
 
     def batch_(self) -> 'Batch':

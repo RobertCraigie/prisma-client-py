@@ -149,3 +149,15 @@ src/prisma/generator/debug-params.json
 
 # OS files
 .DS_Store
+
+# Direnv
+.envrc
+
+# Prisma Py
+__prisma__
+
+# Node
+node_modules
+
+# Binaries
+binaries

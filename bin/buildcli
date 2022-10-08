@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -eux
+
+v="4.0.0"
+
+mkdir -p build
+cd build
+npm init --yes
+npm i "pkg" --dev
+npm i "prisma@$v" --dev
+npm i "@prisma/client@$v"
+npx prisma version
+
+mkdir -p node_modules/prisma/node_modules/@prisma/engines
+cp -R node_modules/@prisma/engines/* node_modules/prisma/node_modules/@prisma/engines
+
+npx pkg -t node12-linux node_modules/prisma
+
+cp prisma ../binaries
