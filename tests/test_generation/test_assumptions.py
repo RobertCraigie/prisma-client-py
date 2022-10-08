@@ -134,4 +134,4 @@ def test_multiple_compund_ids_disallowed(testdir: Testdir) -> None:
         testdir.generate(schema=schema)
 
     output = exc.value.output.decode('utf-8')
-    assert 'Attribute "@id" is defined twice.' in output
+    assert 'Attribute "@id" can only be defined once.' in output
