@@ -143,6 +143,38 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
+      # TODO: add codecov for our mypy plugin
+      - name: Check linters
+        run: |
+          nox -s lint
+
+  mypy:
+    name: mypy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/dev.txt
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - uses: actions/cache@v3
         with:
           path: .mypy_cache
@@ -151,9 +183,9 @@ jobs:
             ${{ runner.os }}-mypy
 
       # TODO: add codecov for our mypy plugin
-      - name: Check linters
+      - name: Check Mypy
         run: |
-          nox -s lint
+          nox -s mypy
 
   postgres:
     name: postgres
