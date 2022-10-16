@@ -49,6 +49,10 @@ docs-serve:
 	python scripts/docs.py
 	mkdocs serve
 
+.PHONY: docker
+docker:
+	docker build -t prisma-client-py --load .
+
 .PHONY: clean
 clean:
 	python -m prisma_cleanup
