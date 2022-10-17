@@ -51,7 +51,9 @@ docs-serve:
 
 .PHONY: docker
 docker:
-	docker build -t prisma-client-py --load .
+	# Note: the below will fail on linux/arm64 systems until
+	# we fix it in the upstream project
+	docker build -f tests/Dockerfile -t prisma-client-py --load .
 
 .PHONY: clean
 clean:

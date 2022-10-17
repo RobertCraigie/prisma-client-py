@@ -1,3 +1,6 @@
+# NOTE: This dockerfile should only be used for internal testing purposes
+# and should not form the basis of an official image pushed out
+# to a registry
 ARG PYTHON_VERSION=3.10
 ARG OS_DISTRO=slim-bullseye
 
