@@ -276,3 +276,13 @@ jobs:
           file: tests/Dockerfile
           platforms: "${{ matrix.docker-platform }}"
           build-args: "${{ matrix.python-os-distro }}"
+
+  docker-windows:
+    name: docker (windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Docker Build
+        run: |
+          docker build -f tests/windows.Dockerfile -t prisma-client-py .
