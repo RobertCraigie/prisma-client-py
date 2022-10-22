@@ -288,4 +288,4 @@ jobs:
 
       - name: Docker Build
         run: |
-          docker build -f tests/Dockerfile -t prisma-client-py --load .
+          docker build -f tests/Dockerfile -t prisma-client-py .
