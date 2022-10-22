@@ -283,9 +283,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
       - name: Docker Build
         run: |
-          docker build -f tests/Dockerfile -t prisma-client-py .
+          docker build -f tests/Dockerfile.windows -t prisma-client-py .
