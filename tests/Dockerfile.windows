@@ -2,18 +2,12 @@
 # and should not form the basis of an official image pushed out
 # to a registry
 
-# TODO: merge this with the other Dockerfile?
+FROM winamd64/python:3.10
 
-FROM python:3.10-windowsservercore-ltsc2022
-
-USER prisma
 WORKDIR /home/prisma/prisma-client-py
-ENV PATH="/home/prisma/.local/bin:${PATH}"
 
 COPY . .
 
-RUN python -m venv .venv
-RUN .\.venv\Scripts\activate.bat
 RUN pip install .
 
 # This has the side-effect of downing the prisma binaries
