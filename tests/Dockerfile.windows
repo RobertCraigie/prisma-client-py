@@ -12,6 +12,8 @@ ENV PATH="/home/prisma/.local/bin:${PATH}"
 
 COPY . .
 
+RUN python -m venv .venv
+RUN .\.venv\Scripts\activate.bat
 RUN pip install .
 
 # This has the side-effect of downing the prisma binaries
