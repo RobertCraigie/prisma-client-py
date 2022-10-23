@@ -42,7 +42,9 @@ class DefaultConfig(BaseSettings):
     )
 
     # Temporary workaround to support setting the binary platform until it can be properly implemented
-    binary_platform: Optional[str] = Field(env='PRISMA_BINARY_PLATFORM')
+    binary_platform: Optional[str] = Field(
+        env='PRISMA_BINARY_PLATFORM', default=None
+    )
 
     # Whether or not to use the global node installation (if available)
     use_global_node: bool = Field(env='PRISMA_USE_GLOBAL_NODE', default=True)
@@ -106,7 +108,11 @@ class Config(DefaultConfig):
         else:
             config = {}
 
-        return cls.from_base(DefaultConfig.parse_obj(config))
+        return cls.parse(**config)
+
+    @classmethod
+    def parse(cls, **kwargs: object) -> Config:
+        return cls.from_base(DefaultConfig.parse_obj(kwargs))
 
 
 class LazyConfigProxy(LazyProxy[Config]):

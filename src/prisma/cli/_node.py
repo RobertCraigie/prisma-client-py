@@ -41,6 +41,8 @@ class UnknownTargetError(PrismaError):
 
 
 class Strategy(ABC):
+    resolver: Literal['nodejs-bin', 'global', 'nodeenv']
+
     # TODO: support more options
     @abstractmethod
     def run(
@@ -56,8 +58,16 @@ class Strategy(ABC):
 
 
 class NodeBinaryStrategy(Strategy):
-    def __init__(self, *, path: Path) -> None:
+    resolver: Literal['global', 'nodeenv']
+
+    def __init__(
+        self,
+        *,
+        path: Path,
+        resolver: Literal['global', 'nodeenv'],
+    ) -> None:
         self.path = path
+        self.resolver = resolver
 
     def run(
         self,
@@ -85,7 +95,7 @@ class NodeBinaryStrategy(Strategy):
             path = _get_global_binary(target)
 
         if path is not None:
-            return NodeBinaryStrategy(path=path)
+            return NodeBinaryStrategy(path=path, resolver='global')
 
         return NodeBinaryStrategy.from_nodeenv(target)
 
@@ -125,18 +135,20 @@ class NodeBinaryStrategy(Strategy):
             bin_dir = path / 'bin'
 
         if target == 'npm':
-            return cls(path=bin_dir / 'npm')
+            return cls(path=bin_dir / 'npm', resolver='nodeenv')
         elif target == 'node':
-            return cls(path=bin_dir / 'node')
+            return cls(path=bin_dir / 'node', resolver='nodeenv')
         else:
             raise UnknownTargetError(target=target)
 
 
 class NodeJSPythonStrategy(Strategy):
     target: Target
+    resolver: Literal['nodejs-bin']
 
     def __init__(self, *, target: Target) -> None:
         self.target = target
+        self.resolver = 'nodejs-bin'
 
     def run(
         self,

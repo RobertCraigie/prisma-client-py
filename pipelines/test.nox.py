@@ -8,7 +8,7 @@ from pipelines.utils.prisma import generate
 def test(session: nox.Session) -> None:
     setup_env(session)
     session.install('-r', 'pipelines/requirements/test.txt')
-    session.install('.')
+    session.install('.[node]')
 
     generate(session)
 
