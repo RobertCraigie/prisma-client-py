@@ -96,25 +96,18 @@ Integration tests can be found in the `tests/integrations` directory. The entry 
 You can do whatever you need to within this file, however, every `test.sh` should start with:
 
 ```sh
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -eux
 
-python3 -m venv .venv
+CURRENT_DIRECTORY=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+INTEGRATIONS_DIR=$(cd "${CURRENT_DIRECTORY}/.." && pwd)
 
-set +x
-source .venv/bin/activate
-set -x
+source "${INTEGRATIONS_DIR}/common.sh"
+setup_env
 ```
 
-To install the prisma package in your integration test you can add the following commands, replacing `<EXTRA>` with whatever extra you need to be installed.
-
-```sh
-pip install -U -r ../../../requirements/<EXTRA>.txt
-pip install -U --force-reinstall ../../../.tests_cache/dist/*.whl
-```
-
-You can now add whatever integration specific commands you need.
+This allows us to simplify common setup into a single place. To add or update a new testing dependency, modify the `pipelines/requirements/test.txt` file. (NOTE: This requirement will be installed into each integration test virtualenv)
 
 You can run the integration tests only with the following command:
 
