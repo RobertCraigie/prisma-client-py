@@ -5,9 +5,12 @@
 function setup_env() {
     set -eux
 
+    # This is relative to THIS file
     CURRENT_DIRECTORY=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
     PROJECT_ROOT=$(cd "${CURRENT_DIRECTORY}/../.." && pwd)
 
+    # NOTE: the $PWD here is not where this script lives -- its where it gets
+    # invoked from
     echo "Setting up python virtuan environment in ${PWD}"
 
     python3 -m venv "${PWD}/.venv"
