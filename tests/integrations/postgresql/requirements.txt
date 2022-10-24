@@ -1,4 +1,0 @@
-pytest==6.2.4
-pytest-asyncio==0.17.0
-pyright
-coverage==6.1.1
