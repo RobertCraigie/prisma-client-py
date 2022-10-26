@@ -32,17 +32,27 @@ _implicit_subclass_packages: Set[str] = {
     'fastapi',
 }
 
+def _module_to_parent_package(frame):
+    try:
+        module_name = inspect.getmodule(frame).__name__
+        parent_package, *_ = module_name.split(".")
+        return parent_package
+    except:
+        return None
 
-def _maybe_warn_subclassing(new_model: str, base_model: str, *, stacklevel: int = 3) -> None:
+def _maybe_warn_subclassing(new_model: str, base_model: str, *, max_call_stack_depth_to_inspect: int = 5) -> None:
     # at least 3 frames are guaranteed to exist if we are being called from __init_subclass__
     # stack: 1 = __init_subclass__, 2 = abc, 3 = <caller>
+    # however, we look at a few extra as we are dealing with internal implementaiton details
+    # of external libraries. there is a performance penalty each time we do this, so we should
+    # be careful here and probably run some performance tests to see what the penalty is
+    # for this checking
     try:
-        frame = inspect.stack()[stacklevel]
-        module = inspect.getmodule(frame[0])
-        if module is not None:
-            name, *_ = module.__name__.split('.')
-            if name in _implicit_subclass_packages:
-                return
+        frames_to_inspect = inspect.stack()[:max_call_stack_depth_to_inspect+1]
+        parent_packages = set([_module_to_parent_package(subframe[0]) for subframe in frames_to_inspect])
+        package_to_ignore_overlap = parent_packages & _implicit_subclass_packages
+        if package_to_ignore_overlap:
+            return
     except Exception as exc:
         # disabling subclass warnings depending on the caller module is not a mission critical
         # feature, users can disable these warnings themselves
@@ -105,7 +115,7 @@ class {{ model.name }}(BaseModel):
     ) -> None:
         super().__init_subclass__()
         if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, '{{ model.name }}', stacklevel=3)
+            _maybe_warn_subclassing(cls.__name__, '{{ model.name }}')
     {% endif %}
 
     @staticmethod
