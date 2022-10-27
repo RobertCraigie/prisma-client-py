@@ -112,6 +112,8 @@ setuptools = "<58"
 pytest-mypy-plugins = "^1.6.1"
 pytest-pyright = "*"
 nox-poetry = "*"
+codecov = "*"
+typing-extensions = { version = "*", markers = "python_version < '3.10'" }
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.0"
