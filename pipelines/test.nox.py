@@ -12,4 +12,13 @@ def test(session: nox.Session) -> None:
 
     generate(session)
 
-    session.run('coverage', 'run', '-m', 'pytest', *session.posargs)
+    # https://coverage.readthedocs.io/en/6.4.4/contexts.html
+    session.run(
+        'coverage',
+        'run',
+        '--context',
+        f'{session.python}',
+        '-m',
+        'pytest',
+        *session.posargs,
+    )
