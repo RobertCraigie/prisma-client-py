@@ -5,6 +5,9 @@ import os
 import logging
 import inspect
 import warnings
+from types import FrameType
+from typing import Optional
+
 from pydantic import BaseConfig, BaseModel, Field, validator
 
 from . import types, enums, errors, fields
@@ -32,9 +35,12 @@ _implicit_subclass_packages: Set[str] = {
     'fastapi',
 }
 
-def _module_to_parent_package(frame):
+def _module_to_parent_package(frame: FrameType) -> Optional[str]:
     try:
-        module_name = inspect.getmodule(frame).__name__
+        found_module = inspect.getmodule(frame)
+        if not found_module:
+            return None
+        module_name = found_module.__name__
         parent_package, *_ = module_name.split(".")
         return parent_package
     except:
