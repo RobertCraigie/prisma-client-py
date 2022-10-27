@@ -13,8 +13,8 @@ def generate(
         session.run('python', '-m', 'prisma_cleanup')
 
     if schema:
-        args = (f'--schema={schema}',)
+        args = [f'--schema={schema}']
     else:
-        args = ()
+        args = []
 
     session.run('prisma', 'generate', *args)

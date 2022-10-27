@@ -33,7 +33,7 @@ mypy:
 .PHONY: pyright
 pyright:
 	prisma generate --schema=tests/data/schema.prisma
-	pyright
+	nox -s pyright
 
 .PHONY: typesafety
 typesafety:
@@ -73,3 +73,13 @@ clean:
 	rm -rf build
 	rm -rf dist
 	rm -f coverage.xml
+
+.PHONY: poetry-create-venvs
+poetry-create-venvs:
+	poetry env use python3.10
+	poetry env use python3.9
+	poetry env use python3.8
+	poetry env use python3.7
+	poetry env list
+	@echo "\n\n"
+	poetry env list --full-path

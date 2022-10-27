@@ -1,14 +1,19 @@
-import nox
+from nox_poetry import session
+from nox import Session
 
-from pipelines.utils import get_pkg_location, setup_env
+from pipelines.utils import (
+    get_pkg_location,
+    setup_env,
+    install_group_dependencies,
+)
 from pipelines.utils.prisma import generate
 
 
-@nox.session
-def lint(session: nox.Session) -> None:
+@session
+def lint(session: Session) -> None:
     setup_env(session)
-    session.install('-r', 'pipelines/requirements/lint.txt')
     session.install('.')
+    session.install('pyright', 'blue', 'interrogate')
 
     generate(session)
 
@@ -34,11 +39,11 @@ def lint(session: nox.Session) -> None:
     session.run('slotscheck', '-m', 'prisma')
 
 
-@nox.session
-def mypy(session: nox.Session) -> None:
+@session
+def mypy(session: Session) -> None:
     setup_env(session)
-    session.install('-r', 'pipelines/requirements/mypy.txt')
     session.install('.')
+    session.install('coverage', 'mypy')
 
     generate(session)
 
