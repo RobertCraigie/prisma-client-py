@@ -1,19 +1,19 @@
-import nox
+from nox_poetry import session
+from nox import Session
 
-from pipelines.utils import setup_env, CACHE_DIR
+from pipelines.utils import setup_env
 
 
-@nox.session
-def setup(session: nox.Session) -> None:
+@session(reuse_venv=True)
+def setup(session: Session) -> None:
     setup_env(session)
-    session.install('-r', 'pipelines/requirements/coverage.txt')
-    session.run('coverage', 'erase')
+    session.install('coverage')
 
 
-@nox.session
-def report(session: nox.Session) -> None:
-    session.env['COVERAGE_FILE'] = str(CACHE_DIR / '.coverage')
-    session.install('-r', 'pipelines/requirements/coverage.txt')
+@session(reuse_venv=True)
+def report(session: Session) -> None:
+    setup_env(session)
+    session.install('coverage')
     session.run('coverage', 'combine')
     session.run('coverage', 'html', '-i')
     session.run('coverage', 'xml', '-i')

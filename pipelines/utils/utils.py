@@ -1,9 +1,19 @@
 from pathlib import Path
+from typing import Literal
+
+import subprocess
 
 import nox
 
 
-CACHE_DIR = Path.cwd() / '.cache'
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+
+assert (
+    PROJECT_ROOT / 'pyproject.toml'
+).exists(), f'Project root is not correct: {PROJECT_ROOT}'
+
+
+CACHE_DIR = PROJECT_ROOT / '.cache'
 
 
 def get_pkg_location(session: nox.Session, pkg: str) -> str:
@@ -32,3 +42,22 @@ def setup_env(session: nox.Session) -> None:
             ]
         ]
     )
+
+
+GROUP = Literal['dev']
+
+
+def install_group_dependencies(session: nox.Session, group: GROUP) -> None:
+    """
+    This is a utility function that works around the fact that the
+
+    """
+    deps_text: str = subprocess.getoutput(
+        f'poetry export --only {group} --without-urls --without-hashes'
+    )
+    # Get only the package name
+    dependencies_for_group = [
+        line.split(';')[0].strip() for line in deps_text.splitlines()
+    ]
+
+    session.install(*dependencies_for_group)

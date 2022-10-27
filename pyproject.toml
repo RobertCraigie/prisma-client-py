@@ -1,9 +1,5 @@
 [tool.pyright]
-include = [
-    "src",
-    "tests",
-    "scripts"
-]
+include = ["src", "tests", "scripts"]
 ignore = [
     # TODO: this should not ignore tests/integrations/conftest.py
     "tests/integrations/**/*",
@@ -31,3 +27,99 @@ reportUnknownArgumentType = false
 reportUnusedCallResult = false
 reportImplicitStringConcatenation = false
 reportCallInDefaultInitializer = true
+
+[tool.poetry]
+name = "prisma"
+version = "0.8.0a"
+description = "Prisma Client Python is an auto-generated and fully type-safe database client"
+authors = ["Robert Craigie <robert@craigie.dev>"]
+license = "Apache-2.0"
+readme = "README.md"
+homepage = "https://prisma-client-py.readthedocs.io/en/stable/"
+repository = "https://github.com/RobertCraigie/prisma-client-py"
+documentation = "https://prisma-client-py.readthedocs.io/en/stable/"
+keywords = [
+    'orm',
+    'mysql',
+    'typing',
+    'prisma',
+    'sqlite',
+    'database',
+    'postgresql',
+]
+classifiers = [
+    'Development Status :: 4 - Beta',
+    'Intended Audience :: Developers',
+    'Typing :: Typed',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Database :: Database Engines/Servers',
+    'Topic :: Database :: Front-Ends',
+    'License :: OSI Approved :: Apache Software License',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Operating System :: POSIX',
+    'Operating System :: MacOS',
+    'Operating System :: POSIX :: Linux',
+    'Operating System :: Microsoft :: Windows',
+]
+
+packages = [
+    { include = "prisma", from = "src" },
+    { include = "prisma_cleanup", from = "src" },
+]
+
+[tool.poetry.scripts]
+prisma = "prisma.cli:main"
+prisma-client-py = "prisma.cli:main"
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/RobertCraigie/prisma-client-py/issues"
+
+[tool.poetry.dependencies]
+cached-property = { version = "*", markers = "python_version < '3.8'" }
+click = ">=7.1.2"
+httpx = ">=0.19.0"
+jinja2 = ">=2.11.2"
+pydantic = ">=1.8.0"
+python = "^3.7"
+python-dotenv = ">=0.12.0"
+typing-extensions = ">=3.7"
+tomlkit = "*"
+
+[tool.poetry.group.dev.dependencies]
+coverage = "^6.5.0"
+mock = "^4.0.3"
+pytest-mock = "^3.10.0"
+pytest-asyncio = "^0.17.0"
+pytest-subprocess = "^1.1.2"
+syrupy = "^1.5.0"
+fastapi = "^0.73.0"
+pyright = "^1.1.269"
+blue = "^0.9.1"
+mypy = "^0.982"
+slotscheck = "^0.14.0"
+nox = "^2022.8.7"
+wheel = "0.37.1"
+pre-commit = "^2.20.0"
+twine = "^4.0.1"
+interrogate = "^1.5.0"
+pytest = "^6.2.4"
+pytest-sugar = "*"
+setuptools = "<58"
+pytest-mypy-plugins = "^1.6.1"
+pytest-pyright = "*"
+nox-poetry = "*"
+codecov = "*"
+typing-extensions = { version = "*", markers = "python_version < '3.10'" }
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.4.0"
+mkdocs-material = "^8.5.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

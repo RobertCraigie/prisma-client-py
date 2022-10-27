@@ -29,6 +29,13 @@ exclude_lines =
     \.\.\.
 
 [paths]
+# https://coverage.readthedocs.io/en/6.4.4/config.html#paths
 prisma =
     src/prisma
     */**/prisma
+
+[html]
+show_contexts = True
+
+[json]
+show_contexts = True

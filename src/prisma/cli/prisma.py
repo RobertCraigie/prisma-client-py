@@ -28,15 +28,26 @@ def run(
     log.debug('Using Prisma CLI at %s', path)
     log.debug('Running prisma command with args: %s', args)
 
-    default_env = {
-        **os.environ,
+    # ensure the client uses our engine binaries
+    engine_env = {x.env: str(x.path.absolute()) for x in binaries.ENGINES}
+
+    prisma_internal_options_env = {
         'PRISMA_HIDE_UPDATE_MESSAGE': 'true',
         'PRISMA_CLI_QUERY_ENGINE_TYPE': 'binary',
     }
+
+    added_env = {
+        **engine_env,
+        **prisma_internal_options_env,
+    }
+
+    # Should user environment should take precedence?
+    default_env = {
+        **os.environ,
+        **added_env,
+    }
+
     env = {**default_env, **env} if env is not None else default_env
-    # ensure the client uses our engine binaries
-    for engine in binaries.ENGINES:
-        env[engine.env] = str(engine.path.absolute())
 
     if args and args[0] == 'studio':
         click.echo(
@@ -73,6 +84,9 @@ def run(
         click.echo(click.style('npx prisma studio', bold=True))
         return 1
 
+    log.debug(
+        f'Will invoke {str(path.absolute())} with args: {args} (added_env={added_env})'
+    )
     process = subprocess.run(
         [str(path.absolute()), *args],
         env=env,

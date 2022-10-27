@@ -24,7 +24,7 @@ from typing import (
 import py
 import click
 import pytest
-import pytest_asyncio  # type: ignore
+import pytest_asyncio
 from click.testing import CliRunner, Result
 
 from prisma.cli import main
