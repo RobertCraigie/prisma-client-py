@@ -1,4 +1,3 @@
-import json
 import shutil
 import subprocess
 from typing import cast
