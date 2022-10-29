@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 import shutil
 import logging
@@ -41,8 +42,9 @@ class UnknownTargetError(PrismaError):
 
 
 class Strategy(ABC):
+    resolver: Literal['nodejs-bin', 'global', 'nodeenv']
+
     # TODO: support more options
-    @abstractmethod
     def run(
         self,
         *args: str,
@@ -52,14 +54,66 @@ class Strategy(ABC):
         stderr: File | None = None,
         env: Mapping[str, str] | None = None,
     ) -> subprocess.CompletedProcess[bytes]:
+        """Call the underlying Node.js binary.
+
+        The interface for this function is very similar to `subprocess.run()`.
+        """
+        return self.__run__(
+            *args,
+            check=check,
+            cwd=cwd,
+            stdout=stdout,
+            stderr=stderr,
+            env=_update_path_env(
+                env=env,
+                target_bin=self.target_bin,
+            ),
+        )
+
+    @abstractmethod
+    def __run__(
+        self,
+        *args: str,
+        check: bool = False,
+        cwd: Path | None = None,
+        stdout: File | None = None,
+        stderr: File | None = None,
+        env: Mapping[str, str] | None = None,
+    ) -> subprocess.CompletedProcess[bytes]:
+        """Call the underlying Node.js binary.
+
+        This should not be directly accessed, the `run()` function should be used instead.
+        """
+
+    @property
+    @abstractmethod
+    def target_bin(self) -> Path:
+        """Property containing the location of the `bin` directory for the resolved node installation.
+
+        This is used to dynamically alter the `PATH` environment variable to give the appearance that Node
+        is installed globally on the machine as this is a requirement of Prisma's installation step, see this
+        comment for more context: https://github.com/RobertCraigie/prisma-client-py/pull/454#issuecomment-1280059779
+        """
         ...
 
 
 class NodeBinaryStrategy(Strategy):
-    def __init__(self, *, path: Path) -> None:
-        self.path = path
+    resolver: Literal['global', 'nodeenv']
 
-    def run(
+    def __init__(
+        self,
+        *,
+        path: Path,
+        resolver: Literal['global', 'nodeenv'],
+    ) -> None:
+        self.path = path
+        self.resolver = resolver
+
+    @property
+    def target_bin(self) -> Path:
+        return self.path.parent
+
+    def __run__(
         self,
         *args: str,
         check: bool = False,
@@ -85,7 +139,7 @@ class NodeBinaryStrategy(Strategy):
             path = _get_global_binary(target)
 
         if path is not None:
-            return NodeBinaryStrategy(path=path)
+            return NodeBinaryStrategy(path=path, resolver='global')
 
         return NodeBinaryStrategy.from_nodeenv(target)
 
@@ -125,20 +179,22 @@ class NodeBinaryStrategy(Strategy):
             bin_dir = path / 'bin'
 
         if target == 'npm':
-            return cls(path=bin_dir / 'npm')
+            return cls(path=bin_dir / 'npm', resolver='nodeenv')
         elif target == 'node':
-            return cls(path=bin_dir / 'node')
+            return cls(path=bin_dir / 'node', resolver='nodeenv')
         else:
             raise UnknownTargetError(target=target)
 
 
 class NodeJSPythonStrategy(Strategy):
     target: Target
+    resolver: Literal['nodejs-bin']
 
     def __init__(self, *, target: Target) -> None:
         self.target = target
+        self.resolver = 'nodejs-bin'
 
-    def run(
+    def __run__(
         self,
         *args: str,
         check: bool = False,
@@ -165,6 +221,10 @@ class NodeJSPythonStrategy(Strategy):
             stderr=stderr,
         )
 
+    @property
+    def target_bin(self) -> Path:
+        return Path(nodejs.node.path).parent
+
 
 Node = Union[NodeJSPythonStrategy, NodeBinaryStrategy]
 
@@ -180,6 +240,33 @@ def resolve(target: Target) -> Node:
             return NodeJSPythonStrategy(target=target)
 
     return NodeBinaryStrategy.resolve(target)
+
+
+def _update_path_env(
+    *,
+    env: Mapping[str, str] | None,
+    target_bin: Path,
+) -> dict[str, str]:
+    """Returns a modified version of `os.environ` with the `PATH` environment variable updated
+    to include the location of the downloaded Node binaries.
+    """
+    if env is None:
+        env = dict(os.environ)
+
+    assert target_bin.exists(), 'Target `bin` directory does not exist'
+
+    path = env.get('PATH', '') or os.environ.get('PATH', '')
+    if path:
+        # handle the case where the PATH already ends with the `:` separator (this probably shouldn't happen)
+        if path.endswith(':'):
+            path = f'{path}{target_bin.absolute()}'
+        else:
+            path = f'{path}:{target_bin.absolute()}'
+    else:
+        # handle the case where there is no PATH set (unlikely / impossible to actually happen?)
+        path = str(target_bin.absolute())
+
+    return {**env, 'PATH': path}
 
 
 def _get_global_binary(target: Target) -> Path | None:

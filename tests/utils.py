@@ -27,7 +27,9 @@ import pytest
 import pytest_asyncio  # type: ignore
 from click.testing import CliRunner, Result
 
+from prisma import _config
 from prisma.cli import main
+from prisma._proxy import LazyProxy
 from prisma._types import FuncType
 from prisma.binaries import platform
 from prisma.generator.utils import copy_tree
@@ -35,7 +37,7 @@ from prisma.generator.generator import BASE_PACKAGE_DIR
 
 
 if TYPE_CHECKING:
-    from _pytest.config import Config
+    from _pytest.config import Config as PytestConfig
     from _pytest.fixtures import FixtureFunctionMarker, _Scope
     from _pytest.monkeypatch import MonkeyPatch
     from _pytest.pytester import RunResult, Testdir as PytestTestdir
@@ -354,8 +356,20 @@ def patch_method(
     return lambda: captured
 
 
+@contextlib.contextmanager
+def set_config(config: _config.Config) -> Iterator[_config.Config]:
+    proxy = cast(LazyProxy[_config.Config], _config.config)
+    old = proxy.__get_proxied__()
+
+    try:
+        proxy.__set_proxied__(config)
+        yield config
+    finally:
+        proxy.__set_proxied__(old)
+
+
 def async_fixture(
-    scope: 'Union[_Scope, Callable[[str, Config], _Scope]]' = 'function',
+    scope: 'Union[_Scope, Callable[[str, PytestConfig], _Scope]]' = 'function',
     params: Optional[Iterable[object]] = None,
     autouse: bool = False,
     ids: Optional[

@@ -217,3 +217,11 @@ tox -e typesafety-mypy
 ```
 
 See the [pytest-mypy-plugins documentation](https://github.com/TypedDjango/pytest-mypy-plugins) for more information.
+
+## Docker Testing + Multi-Platform (CPU Architecture) Support
+
+Since Github Actions (CI) does not allow for running code on multiple CPU architectures (and uses the amd64 aka x86_64 instruction set), we use a docker build process that uses its QEMU support to emulate multiple CPU platforms. The `make docker` command can be used to perform such a build locally. In CI this is enforced via the `docker` job in the test workflow.
+
+We also use a docker build arg for the `OS_DISTRO` so that we can try and test against several of the official upstream [Python docker image flavors](https://hub.docker.com/_/python).
+
+**NOTE:** The docker setup should only be used internally for testing and not for re-distribution via a remote registry.
