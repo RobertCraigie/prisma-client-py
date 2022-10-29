@@ -1,85 +1,85 @@
 # name: test_json_schema_compatible
-  <class 'dict'> {
+  dict({
     'description': 'Represents a Types record',
-    'properties': <class 'dict'> {
-      'bigint': <class 'dict'> {
+    'properties': dict({
+      'bigint': dict({
         'title': 'Bigint',
         'type': 'integer',
-      },
-      'bool_': <class 'dict'> {
+      }),
+      'bool_': dict({
         'title': 'Bool ',
         'type': 'boolean',
-      },
-      'bytes': <class 'dict'> {
+      }),
+      'bytes': dict({
         'format': 'byte',
         'title': 'Bytes',
         'type': 'string',
-      },
-      'datetime_': <class 'dict'> {
+      }),
+      'datetime_': dict({
         'format': 'date-time',
         'title': 'Datetime ',
         'type': 'string',
-      },
-      'decimal_': <class 'dict'> {
+      }),
+      'decimal_': dict({
         'title': 'Decimal ',
         'type': 'number',
-      },
-      'float_': <class 'dict'> {
+      }),
+      'float_': dict({
         'title': 'Float ',
         'type': 'number',
-      },
-      'id': <class 'dict'> {
+      }),
+      'id': dict({
         'title': 'Id',
         'type': 'integer',
-      },
-      'integer': <class 'dict'> {
+      }),
+      'integer': dict({
         'title': 'Integer',
         'type': 'integer',
-      },
-      'optional_bigint': <class 'dict'> {
+      }),
+      'optional_bigint': dict({
         'title': 'Optional Bigint',
         'type': 'integer',
-      },
-      'optional_bool': <class 'dict'> {
+      }),
+      'optional_bool': dict({
         'title': 'Optional Bool',
         'type': 'boolean',
-      },
-      'optional_bytes': <class 'dict'> {
+      }),
+      'optional_bytes': dict({
         'format': 'byte',
         'title': 'Optional Bytes',
         'type': 'string',
-      },
-      'optional_datetime': <class 'dict'> {
+      }),
+      'optional_datetime': dict({
         'format': 'date-time',
         'title': 'Optional Datetime',
         'type': 'string',
-      },
-      'optional_decimal': <class 'dict'> {
+      }),
+      'optional_decimal': dict({
         'title': 'Optional Decimal',
         'type': 'number',
-      },
-      'optional_float': <class 'dict'> {
+      }),
+      'optional_float': dict({
         'title': 'Optional Float',
         'type': 'number',
-      },
-      'optional_int': <class 'dict'> {
+      }),
+      'optional_int': dict({
         'title': 'Optional Int',
         'type': 'integer',
-      },
-      'optional_integer': <class 'dict'> {
+      }),
+      'optional_integer': dict({
         'title': 'Optional Integer',
         'type': 'integer',
-      },
-      'optional_string': <class 'dict'> {
+      }),
+      'optional_string': dict({
         'title': 'Optional String',
         'type': 'string',
-      },
-      'string': <class 'dict'> {
+      }),
+      'string': dict({
         'title': 'String',
         'type': 'string',
-      },
-    },
-    'required': <class 'list'> [
+      }),
+    }),
+    'required': list([
       'id',
       'bool_',
       'string',
@@ -89,8 +89,8 @@
       'float_',
       'datetime_',
       'decimal_',
-    ],
+    ]),
     'title': 'Types',
     'type': 'object',
-  }
----
+  })
+# ---
