@@ -10,6 +10,9 @@ COPY . .
 
 RUN pip install .[dev]
 
+# TODO: necessary
+RUN pip install python-certifi-win32
+
 # This has the side-effect of downing the prisma binaries
 # and will fail if the CLI cannot get run
 RUN prisma -v
