@@ -1,3 +1,4 @@
+import json
 import shutil
 import subprocess
 from typing import cast
@@ -10,9 +11,12 @@ from prisma._config import Config
 from ..utils import set_config
 
 
+THIS_DIR = Path(__file__).parent
+
+
 def assert_can_run_js(strategy: node.Node) -> None:
     proc = strategy.run(
-        str(Path(__file__).parent.joinpath('test.js')),
+        str(THIS_DIR.joinpath('test.js')),
         stdout=subprocess.PIPE,
     )
     output = proc.stdout.decode('utf-8')
@@ -42,7 +46,7 @@ def test_nodejs_bin() -> None:
 
 
 @pytest.mark.skipif(
-    shutil.which('node') is not None,
+    shutil.which('node') is None,
     reason='Node is not installed globally',
 )
 def test_resolves_binary_node() -> None:
@@ -79,3 +83,50 @@ def test_nodeenv() -> None:
         strategy = node.resolve('node')
         assert strategy.resolver == 'nodeenv'
         assert_can_run_js(strategy)
+
+
+def test_update_path_env() -> None:
+    """The _update_path_env() function correctly appends the target binary path to the PATH environment variable"""
+    target = THIS_DIR / 'bin'
+    if not target.exists():
+        target.mkdir()
+
+    # no env
+    env = node._update_path_env(env=None, target_bin=target)
+    assert env['PATH'].endswith(f':{target.absolute()}')
+
+    # env without PATH
+    env = node._update_path_env(
+        env={'FOO': 'bar'},
+        target_bin=target,
+    )
+    assert env['PATH'].endswith(f':{target.absolute()}')
+
+    # env with empty PATH
+    env = node._update_path_env(
+        env={'PATH': ''},
+        target_bin=target,
+    )
+    assert env['PATH'].endswith(f':{target.absolute()}')
+
+    # env with set PATH without a `:` postfix
+    env = node._update_path_env(
+        env={'PATH': '/foo'},
+        target_bin=target,
+    )
+    assert env['PATH'] == f'/foo:{target.absolute()}'
+
+    # env with set PATH with a `:` postfix
+    env = node._update_path_env(
+        env={'PATH': '/foo:'},
+        target_bin=target,
+    )
+    assert env['PATH'] == f'/foo:{target.absolute()}'
+
+    # returned env included non PATH environment variables
+    env = node._update_path_env(
+        env={'PATH': '/foo', 'FOO': 'bar'},
+        target_bin=target,
+    )
+    assert env['FOO'] == 'bar'
+    assert env['PATH'] == f'/foo:{target.absolute()}'

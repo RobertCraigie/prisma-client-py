@@ -14,7 +14,7 @@ ENV PATH="/home/prisma/.local/bin:${PATH}"
 
 COPY --chown=prisma:prisma . .
 
-RUN pip install .
+RUN pip install .[dev]
 
 # This has the side-effect of downing the prisma binaries
 # and will fail if the CLI cannot get run
@@ -22,3 +22,6 @@ RUN prisma -v
 
 # Very light-weight test that CLI generation works
 RUN prisma generate --schema ./tests/data/schema.prisma
+
+# Ensure all combinations of non-global Node resolvers work
+RUN nox -s test -p 3.10 -- tests/test_node

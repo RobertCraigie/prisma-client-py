@@ -4,3 +4,7 @@
 !src/
 !tests
 !requirements/
+!noxfile.py
+!pipelines/
+!pytest.ini
+!MANIFEST.in
