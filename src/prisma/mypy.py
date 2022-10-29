@@ -30,7 +30,6 @@ from mypy.nodes import (
     NameExpr,
     Var,
     BytesExpr,
-    UnicodeExpr,
     CallExpr,
     IntExpr,
     Context,
@@ -362,7 +361,7 @@ class PrismaPlugin(Plugin):
         return parsed
 
     def _resolve_expression(self, expression: Expression) -> Any:
-        if isinstance(expression, (StrExpr, BytesExpr, UnicodeExpr, IntExpr)):
+        if isinstance(expression, (StrExpr, BytesExpr, IntExpr)):
             return expression.value
 
         if isinstance(expression, NameExpr):

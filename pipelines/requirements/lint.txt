@@ -3,4 +3,4 @@
 interrogate==1.5.0
 blue==0.9.1
 mypy==0.950
-slotscheck==0.14.0
+slotscheck==0.15.0
