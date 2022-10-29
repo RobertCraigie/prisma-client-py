@@ -4,5 +4,5 @@
 # pin the setuptools version and testenv.requires not working.
 # we need a specific version of setuptools due to pystache and
 # https://github.com/pypa/setuptools/issues/1120
-setuptools<58
+setuptools<66
 pytest-mypy-plugins==1.6.1
