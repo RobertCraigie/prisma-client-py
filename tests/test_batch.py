@@ -232,6 +232,51 @@ async def test_delete_many(client: Prisma) -> None:
 
 
 @pytest.mark.asyncio
+async def test_execute_raw(client: Prisma) -> None:
+    """execute_raw action can be used to execute raw SQL queries"""
+    post1 = await client.post.create(
+        {
+            'title': 'My first post!',
+            'published': False,
+        }
+    )
+    post2 = await client.post.create(
+        {
+            'title': 'My 2nd post.',
+            'published': False,
+        }
+    )
+
+    async with client.batch_() as batcher:
+        batcher.execute_raw(
+            """
+            UPDATE Post
+            SET title = 'My edited title'
+            WHERE id = $1
+            """,
+            post1.id,
+        )
+        batcher.execute_raw(
+            """
+            UPDATE Post
+            SET title = 'My new title'
+            WHERE id = $1
+            """,
+            post2.id,
+        )
+
+    found = await client.post.find_unique(where={'id': post1.id})
+    assert found is not None
+    assert found.id == post1.id
+    assert found.title == 'My edited title'
+
+    found = await client.post.find_unique(where={'id': post2.id})
+    assert found is not None
+    assert found.id == post2.id
+    assert found.title == 'My new title'
+
+
+@pytest.mark.asyncio
 async def test_create_many_unsupported(client: Prisma) -> None:
     """Cannot call create_many as SQLite does not support it"""
     with pytest.raises(prisma.errors.UnsupportedDatabaseError) as exc:
