@@ -447,6 +447,16 @@ class Batch:
         }
         self.__client._engine.query(dumps(payload))
 
+    def execute_raw(self, query: LiteralString, *args: Any) -> None:
+        self._add(
+            operation='mutation',
+            method='executeRaw',
+            arguments={
+                'query': query,
+                'parameters': args,
+            }
+        )
+
     def __enter__(self) -> 'Batch':
         return self
 
