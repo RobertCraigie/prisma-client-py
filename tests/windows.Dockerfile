@@ -4,14 +4,26 @@
 
 FROM winamd64/python:3.10
 
+ENV PRISMA_PY_DEBUG=1
+
 WORKDIR /home/prisma/prisma-client-py
+
+RUN pip install certifi
+
+# Santity check of powershell invocation
+RUN python -c \"import certifi; certifi.where()\"
+
+# https://learn.microsoft.com/en-us/powershell/module/pki/import-certificate?view=windowsserver2022-ps
+# Import to the system root -- this should be enough?
+RUN Set-PSDebug -Trace 2; \
+    $CERTIFI_LOCATION = python -c \"import certifi; print(certifi.where())\"; \
+    Import-Certificate \
+    -FilePath $CERTIFI_LOCATION \
+    -CertStoreLocation Cert:\LocalMachine\Root\;
 
 COPY . .
 
 RUN pip install .[dev]
-
-# TODO: necessary
-RUN pip install python-certifi-win32
 
 # This has the side-effect of downing the prisma binaries
 # and will fail if the CLI cannot get run

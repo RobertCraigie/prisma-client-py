@@ -10,8 +10,6 @@ on:
       - "LICENSE"
       - "mkdocs.yml"
   pull_request:
-    branches:
-      - main
     paths-ignore:
       - "*.md"
       - ".vscode/**"
@@ -256,11 +254,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        docker-platform: ["linux/amd64"]
+        docker-platform: [linux/amd64]
         # TODO: Uncomment this to add testing support for arm64 and delete
         # the above
         # docker-platform: ["linux/amd64", "linux/arm64"]
-        python-os-distro: ["slim-bullseye", "alpine"]
+        # TODO: Uncomment this later, Go-based CLI does not run on Alpine
+        # https://github.com/prisma/prisma-client-go/issues/357
+        # python-os-distro: [slim-bullseye, alpine]
+        python-os-distro: [slim-bullseye]
     steps:
       - uses: actions/checkout@v3
       # https://github.com/docker/build-push-action/
@@ -276,14 +277,21 @@ jobs:
           context: .
           file: tests/Dockerfile
           platforms: "${{ matrix.docker-platform }}"
-          build-args: "${{ matrix.python-os-distro }}"
+          build-args: OS_DISTRO=${{ matrix.python-os-distro }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
+  # Note: Windows does not play well with the standard GH Docker + buildx
+  # actions
   docker-windows:
     name: docker (windows)
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-
       - name: Docker Build
+        # Use --% to allow double hyphen
+        # Caching not currently working since we don't use buildx yet, windows
+        # support seems poor because of interactions with --prvileged
+        # --cache-from=type=gha --cache-to=type=gha,mode=max
         run: |
-          docker build -f tests/windows.Dockerfile -t prisma-client-py .
+          docker build --% -f tests/windows.Dockerfile -t prisma-client-py .
