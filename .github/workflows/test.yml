@@ -287,6 +287,8 @@ jobs:
       - name: Run tests
         run: |
           nox -s databases -- --databases=sqlite
+        env:
+          SQLITE_URL: file:dev.db
 
       - name: Upload coverage
         run: |
