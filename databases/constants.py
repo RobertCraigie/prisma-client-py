@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import List, cast, get_args
+from typing import List, cast
+from typing_extensions import get_args
 
 from lib import pyright
 from ._types import SupportedDatabase
