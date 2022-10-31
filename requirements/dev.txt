@@ -7,3 +7,4 @@ typer==0.4.1
 rtoml==0.8
 # leave unpinned to avoid any potential conflicts with base.txt
 jinja2
+cached-property; python_version < '3.8'
