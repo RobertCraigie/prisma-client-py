@@ -22,10 +22,11 @@ RUN Set-PSDebug -Trace 2; \
     -CertStoreLocation Cert:\LocalMachine\Root\;
 
 # Imports the cert into the "local" trust store, whatever that means (user specific?)
-RUN Set-PSDebug -Trace 2; \
-    $CERTIFI_LOCATION = python -c \"import certifi; print(certifi.where())\"; \
-    Import-Certificate \
-    -FilePath $CERTIFI_LOCATION;
+# This is currently not working
+# RUN Set-PSDebug -Trace 2; \
+#     $CERTIFI_LOCATION = python -c \"import certifi; print(certifi.where())\"; \
+#     Import-Certificate \
+#     -FilePath $CERTIFI_LOCATION;
 
 COPY . .
 
