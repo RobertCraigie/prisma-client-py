@@ -5,6 +5,3 @@ pre-commit==2.20.0
 twine==4.0.1
 typer==0.4.1
 rtoml==0.8
-# leave unpinned to avoid any potential conflicts with base.txt
-jinja2
-cached-property; python_version < '3.8'
