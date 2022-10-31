@@ -21,7 +21,7 @@ import typer
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from lib.utils import flatten
-from prisma._compat import cached_property
+from lib.compat import cached_property
 
 from .utils import DatabaseConfig
 from ._types import SupportedDatabase
