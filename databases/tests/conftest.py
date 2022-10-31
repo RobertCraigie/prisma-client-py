@@ -1,31 +1,25 @@
 import os
-import sys
 import asyncio
 import inspect
-from typing import List, Iterator, TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator
 
 import pytest
 
 import prisma
 from prisma import Prisma
-from prisma.cli import setup_logging
 from prisma.testing import reset_client
 from prisma.utils import get_or_create_event_loop
 
 from lib.testing import async_fixture
-from .utils import Runner, Testdir
+from .utils import RAW_QUERIES_MAPPING, RawQueries
+from ..utils import DatabaseConfig
 
 
 if TYPE_CHECKING:
-    from _pytest.config import Config
     from _pytest.fixtures import FixtureRequest
-    from _pytest.monkeypatch import MonkeyPatch
-    from _pytest.pytester import Testdir as PytestTestdir
 
 
-pytest_plugins = ['pytester']
-LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
-
+# TODO: a lot of this is copied from `tests/conftest.py`, figure out a good way to share
 
 prisma.register(Prisma())
 
@@ -43,42 +37,6 @@ async def client_fixture() -> Prisma:
 @pytest.fixture(scope='session')
 def event_loop() -> asyncio.AbstractEventLoop:
     return get_or_create_event_loop()
-
-
-@pytest.fixture()
-def runner(monkeypatch: 'MonkeyPatch') -> Runner:
-    """Fixture for running cli tests"""
-    return Runner(patcher=monkeypatch)
-
-
-@pytest.fixture(name='testdir')
-def testdir_fixture(testdir: 'PytestTestdir') -> Iterator[Testdir]:
-    cwd = os.getcwd()
-    os.chdir(testdir.tmpdir)
-    sys.path.insert(0, str(testdir.tmpdir))
-
-    yield Testdir(testdir)
-
-    os.chdir(cwd)
-    sys.path.remove(str(testdir.tmpdir))
-
-
-# TODO: don't emulate the with statement
-def pytest_sessionstart(session: pytest.Session) -> None:
-    LOGGING_CONTEXT_MANAGER.__enter__()
-
-
-def pytest_sessionfinish(session: pytest.Session) -> None:
-    if LOGGING_CONTEXT_MANAGER is not None:  # pragma: no branch
-        LOGGING_CONTEXT_MANAGER.__exit__(None, None, None)
-
-
-def pytest_collection_modifyitems(
-    session: pytest.Session, config: 'Config', items: List[pytest.Item]
-) -> None:
-    items.sort(
-        key=lambda item: item.__class__.__name__ == 'IntegrationTestItem'
-    )
 
 
 @pytest.fixture(name='patch_prisma', autouse=True)
@@ -102,8 +60,7 @@ async def setup_client_fixture(request: 'FixtureRequest') -> None:
     if not request_has_client(request):
         return
 
-    item = request.node
-    if item.get_closest_marker('persist_data') is not None:
+    if request.node.get_closest_marker('persist_data') is not None:
         return
 
     client = prisma.get_client()
@@ -111,6 +68,22 @@ async def setup_client_fixture(request: 'FixtureRequest') -> None:
         await client.connect()
 
     await cleanup_client(client)
+
+
+# TODO: better error messages for invalid state
+@pytest.fixture(name='datasource')
+def datasource_fixture() -> str:
+    return os.environ['PRISMA_DATABASE']
+
+
+@pytest.fixture(name='raw_queries')
+def raw_queries_fixture(datasource: str) -> RawQueries:
+    return RAW_QUERIES_MAPPING[datasource]
+
+
+@pytest.fixture(name='config', scope='session')
+def config_fixture() -> DatabaseConfig:
+    return DatabaseConfig.parse_raw(os.environ['DATABASE_CONFIG'])
 
 
 def request_has_client(request: 'FixtureRequest') -> bool:

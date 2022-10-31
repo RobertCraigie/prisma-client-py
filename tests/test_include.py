@@ -12,7 +12,7 @@ import pytest
 from prisma import Prisma
 from prisma.models import Post
 
-from .utils import async_fixture
+from lib.testing import async_fixture
 
 
 @async_fixture(scope='module', name='user_id')

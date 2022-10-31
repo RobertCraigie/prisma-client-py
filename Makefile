@@ -64,6 +64,7 @@ clean:
 	rm -rf `find . -name __pycache__`
 	rm -rf `find examples -name '.venv' `
 	rm -rf `find tests/integrations -name '.venv' `
+	rm `find databases -name *pyrightconfig.json`
 	rm -rf .tests_cache
 	rm -rf .mypy_cache
 	rm -rf htmlcov

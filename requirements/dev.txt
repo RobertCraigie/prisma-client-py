@@ -3,3 +3,5 @@ wheel==0.37.1
 blue==0.9.1
 pre-commit==2.20.0
 twine==4.0.1
+typer==0.4.1
+rtoml==0.8

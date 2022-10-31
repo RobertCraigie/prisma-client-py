@@ -188,7 +188,7 @@ jobs:
           nox -s mypy
 
   postgres:
-    name: postgres
+    name: PostgreSQL
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -237,11 +237,56 @@ jobs:
 
       # TODO: cache prisma engines
 
+
+      # TODO: RUN THIS WITH COVERAGE
+
       - name: Run tests
         run: |
-          nox -s setup test report --no-error-on-missing-interpreters -- --confcutdir . tests/integrations/postgresql
+          nox -s databases -- --databases=postgresql
         env:
-          PRISMA_PY_POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/postgres
+          POSTGRESQL_URL: postgresql://postgres:postgres@localhost:5432/postgres
+
+      - name: Upload coverage
+        run: |
+          codecov --file coverage.xml
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  sqlite:
+    name: SQLite
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install codecov==2.1.11 .[dev]
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # TODO: cache prisma engines
+
+
+      # TODO: RUN THIS WITH COVERAGE
+
+      - name: Run tests
+        run: |
+          nox -s databases -- --databases=sqlite
 
       - name: Upload coverage
         run: |
