@@ -1,5 +1,5 @@
-from typing import Set, get_args
-from typing_extensions import Literal
+from typing import Set
+from typing_extensions import Literal, get_args
 
 from pydantic import BaseModel
 
