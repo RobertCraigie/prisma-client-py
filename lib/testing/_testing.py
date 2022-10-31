@@ -11,7 +11,8 @@ from typing import (
 )
 from datetime import datetime, timezone
 
-import pytest_asyncio
+# TODO: bump version and remove this
+import pytest_asyncio  # type: ignore
 
 
 if TYPE_CHECKING:
