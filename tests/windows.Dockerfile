@@ -4,6 +4,8 @@
 
 FROM winamd64/python:3.10
 
+ENV PRISMA_PY_DEBUG=1
+
 WORKDIR /home/prisma/prisma-client-py
 
 RUN pip install certifi

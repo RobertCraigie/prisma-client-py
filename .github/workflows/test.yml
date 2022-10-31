@@ -257,7 +257,10 @@ jobs:
         # TODO: Uncomment this to add testing support for arm64 and delete
         # the above
         # docker-platform: ["linux/amd64", "linux/arm64"]
-        python-os-distro: [slim-bullseye, alpine]
+        # TODO: Uncomment this later, Go-based CLI does not run on Alpine
+        # https://github.com/prisma/prisma-client-go/issues/357
+        # python-os-distro: [slim-bullseye, alpine]
+        python-os-distro: [slim-bullseye]
     steps:
       - uses: actions/checkout@v3
       # https://github.com/docker/build-push-action/
@@ -285,10 +288,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Docker Build
+        # Use --% to allow double hyphen
         run: |
-          docker build \
-            -f tests/windows.Dockerfile \
-            -t prisma-client-py \
-            --cache-from=type=gha \
-            --cache-to=type=gha,mode=max \
-            .
+          docker build --% -f tests/windows.Dockerfile -t prisma-client-py --cache-from=type=gha --cache-to=type=gha,mode=max .
