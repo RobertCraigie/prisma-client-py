@@ -21,6 +21,10 @@ RUN Set-PSDebug -Trace 2; \
     -FilePath $CERTIFI_LOCATION \
     -CertStoreLocation Cert:\LocalMachine\Root\;
 
+# Use the host system certificates
+# https://gitlab.com/alelec/pip-system-certs
+RUN pip install pip_system_certs
+
 COPY . .
 
 RUN pip install .[dev]
