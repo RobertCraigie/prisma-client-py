@@ -24,7 +24,7 @@ from lib.utils import flatten
 from prisma._compat import cached_property
 
 from .utils import DatabaseConfig
-from .types import SupportedDatabase
+from ._types import SupportedDatabase
 from .constants import (
     SUPPORTED_DATABASES,
     DATABASES_DIR,
