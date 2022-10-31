@@ -13,6 +13,7 @@ from typing_extensions import Literal
 from pydantic.typing import get_args
 
 from .. import config
+from ..utils import DEBUG
 from .._proxy import LazyProxy
 from ..binaries import platform
 from ..errors import PrismaError
@@ -152,6 +153,11 @@ class NodeBinaryStrategy(Strategy):
                 path,
             )
         else:
+            nodeenv_args = (
+                ['--verbose', *config.nodeenv_extra_args]
+                if DEBUG
+                else config.nodeenv_extra_args
+            )
             log.debug('Installing nodeenv to %s', path)
             subprocess.run(
                 [
@@ -159,7 +165,7 @@ class NodeBinaryStrategy(Strategy):
                     '-m',
                     'nodeenv',
                     str(path),
-                    *config.nodeenv_extra_args,
+                    *nodeenv_args,
                 ],
                 check=True,
                 stdout=sys.stdout,
