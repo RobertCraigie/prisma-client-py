@@ -8,22 +8,21 @@ ENV PRISMA_PY_DEBUG=1
 
 WORKDIR /home/prisma/prisma-client-py
 
-RUN pip install certifi
+# RUN pip install certifi
 
-# Santity check of powershell invocation
-RUN python -c \"import certifi; certifi.where()\"
+# # Santity check of powershell invocation
+# RUN python -c \"import certifi; certifi.where()\"
 
-# https://learn.microsoft.com/en-us/powershell/module/pki/import-certificate?view=windowsserver2022-ps
-# Import to the system root -- this should be enough?
-RUN Set-PSDebug -Trace 2; \
-    $CERTIFI_LOCATION = python -c \"import certifi; print(certifi.where())\"; \
-    Import-Certificate \
-    -FilePath $CERTIFI_LOCATION \
-    -CertStoreLocation Cert:\LocalMachine\Root\;
+# # https://learn.microsoft.com/en-us/powershell/module/pki/import-certificate?view=windowsserver2022-ps
+# # Import to the system root -- this should be enough?
+# RUN Set-PSDebug -Trace 2; \
+#     $CERTIFI_LOCATION = python -c \"import certifi; print(certifi.where())\"; \
+#     Import-Certificate \
+#     -FilePath $CERTIFI_LOCATION \
+#     -CertStoreLocation Cert:\LocalMachine\Root\;
 
-# Use the host system certificates
-# https://gitlab.com/alelec/pip-system-certs
-RUN pip install pip_system_certs
+# https://github.com/docker-library/python/issues/359
+RUN certutil -generateSSTFromWU roots.sst; certutil -addstore -f root roots.sst; del roots.sst
 
 COPY . .
 
