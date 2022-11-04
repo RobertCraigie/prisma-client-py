@@ -8,25 +8,8 @@ ENV PRISMA_PY_DEBUG=1
 
 WORKDIR /home/prisma/prisma-client-py
 
-RUN pip install certifi
-
-# Santity check of powershell invocation
-RUN python -c \"import certifi; certifi.where()\"
-
-# https://learn.microsoft.com/en-us/powershell/module/pki/import-certificate?view=windowsserver2022-ps
-# Import to the system root -- this should be enough?
-RUN Set-PSDebug -Trace 2; \
-    $CERTIFI_LOCATION = python -c \"import certifi; print(certifi.where())\"; \
-    Import-Certificate \
-    -FilePath $CERTIFI_LOCATION \
-    -CertStoreLocation Cert:\LocalMachine\Root\;
-
-# Imports the cert into the "local" trust store, whatever that means (user specific?)
-# This is currently not working
-# RUN Set-PSDebug -Trace 2; \
-#     $CERTIFI_LOCATION = python -c \"import certifi; print(certifi.where())\"; \
-#     Import-Certificate \
-#     -FilePath $CERTIFI_LOCATION;
+# https://github.com/docker-library/python/issues/359
+RUN certutil -generateSSTFromWU roots.sst; certutil -addstore -f root roots.sst;  del roots.sst
 
 COPY . .
 
