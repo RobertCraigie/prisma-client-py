@@ -239,7 +239,7 @@ jobs:
 
       - name: Run tests
         run: |
-          nox -s databases -- --databases=postgresql
+          nox -s databases -- --coverage --databases=postgresql
         env:
           POSTGRESQL_URL: postgresql://postgres:postgres@localhost:5432/postgres
 
@@ -284,7 +284,7 @@ jobs:
 
       - name: Run tests
         run: |
-          nox -s databases -- --databases=sqlite
+          nox -s databases -- --coverage --databases=sqlite
         env:
           SQLITE_URL: file:dev.db
 
