@@ -122,19 +122,6 @@ class NodeBinaryStrategy(Strategy):
         stderr: File | None = None,
         env: Mapping[str, str] | None = None,
     ) -> subprocess.CompletedProcess[bytes]:
-        print('--- debug ---')
-        if platform.name() == 'windows':
-            for p in self.path.parent.rglob('*'):
-                if 'node_modules' in str(p):
-                    continue
-
-                print(p)
-        print('--- end ---')
-        print('-- list dir --')
-        for p in self.path.parent.iterdir():
-            print(p)
-        print('-- end --')
-
         path = str(self.path.absolute())
         log.debug('Executing binary at %s with args: %s', path, args)
         return subprocess.run(
