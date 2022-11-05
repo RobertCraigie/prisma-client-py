@@ -266,6 +266,7 @@ def _update_path_env(
     *,
     env: Mapping[str, str] | None,
     target_bin: Path,
+    sep: str = os.pathsep,
 ) -> dict[str, str]:
     """Returns a modified version of `os.environ` with the `PATH` environment variable updated
     to include the location of the downloaded Node binaries.
@@ -278,10 +279,10 @@ def _update_path_env(
     path = env.get('PATH', '') or os.environ.get('PATH', '')
     if path:
         # handle the case where the PATH already ends with the `:` separator (this probably shouldn't happen)
-        if path.endswith(':'):
+        if path.endswith(sep):
             path = f'{path}{target_bin.absolute()}'
         else:
-            path = f'{path}:{target_bin.absolute()}'
+            path = f'{path}{sep}{target_bin.absolute()}'
     else:
         # handle the case where there is no PATH set (unlikely / impossible to actually happen?)
         path = str(target_bin.absolute())

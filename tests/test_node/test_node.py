@@ -1,3 +1,4 @@
+import os
 import shutil
 import subprocess
 from typing import cast
@@ -93,37 +94,42 @@ def test_update_path_env() -> None:
     if not target.exists():
         target.mkdir()
 
+    sep = os.pathsep
+
+    # known PATH separators - please update if need be
+    assert sep in {':', ';'}
+
     # no env
     env = node._update_path_env(env=None, target_bin=target)
-    assert env['PATH'].endswith(f':{target.absolute()}')
+    assert env['PATH'].endswith(f'{sep}{target.absolute()}')
 
     # env without PATH
     env = node._update_path_env(
         env={'FOO': 'bar'},
         target_bin=target,
     )
-    assert env['PATH'].endswith(f':{target.absolute()}')
+    assert env['PATH'].endswith(f'{sep}{target.absolute()}')
 
     # env with empty PATH
     env = node._update_path_env(
         env={'PATH': ''},
         target_bin=target,
     )
-    assert env['PATH'].endswith(f':{target.absolute()}')
+    assert env['PATH'].endswith(f'{sep}{target.absolute()}')
 
     # env with set PATH without a `:` postfix
     env = node._update_path_env(
         env={'PATH': '/foo'},
         target_bin=target,
     )
-    assert env['PATH'] == f'/foo:{target.absolute()}'
+    assert env['PATH'] == f'/foo{sep}{target.absolute()}'
 
     # env with set PATH with a `:` postfix
     env = node._update_path_env(
         env={'PATH': '/foo:'},
         target_bin=target,
     )
-    assert env['PATH'] == f'/foo:{target.absolute()}'
+    assert env['PATH'] == f'/foo{sep}{target.absolute()}'
 
     # returned env included non PATH environment variables
     env = node._update_path_env(
@@ -131,4 +137,12 @@ def test_update_path_env() -> None:
         target_bin=target,
     )
     assert env['FOO'] == 'bar'
-    assert env['PATH'] == f'/foo:{target.absolute()}'
+    assert env['PATH'] == f'/foo{sep}{target.absolute()}'
+
+    # accepts a custom path separator
+    env = node._update_path_env(
+        env={'PATH': '/foo'},
+        target_bin=target,
+        sep='---',
+    )
+    assert env['PATH'] == f'/foo---{target.absolute()}'
