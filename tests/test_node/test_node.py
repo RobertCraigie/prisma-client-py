@@ -10,6 +10,9 @@ from prisma._config import Config
 from ..utils import set_config
 
 
+# TODO: test npm usage too
+
+
 THIS_DIR = Path(__file__).parent
 
 

@@ -160,20 +160,20 @@ class NodeBinaryStrategy(Strategy):
 
     @classmethod
     def from_nodeenv(cls, target: Target) -> NodeBinaryStrategy:
-        path = config.nodeenv_cache_dir.absolute()
-        if path.exists():
+        cache_dir = config.nodeenv_cache_dir.absolute()
+        if cache_dir.exists():
             log.debug(
                 'Skipping nodeenv installation as it already exists at %s',
-                path,
+                cache_dir,
             )
         else:
-            log.debug('Installing nodeenv to %s', path)
+            log.debug('Installing nodeenv to %s', cache_dir)
             subprocess.run(
                 [
                     sys.executable,
                     '-m',
                     'nodeenv',
-                    str(path),
+                    str(cache_dir),
                     *config.nodeenv_extra_args,
                 ],
                 check=True,
@@ -181,22 +181,25 @@ class NodeBinaryStrategy(Strategy):
                 stderr=sys.stderr,
             )
 
-        if not path.exists():
+        if not cache_dir.exists():
             raise RuntimeError(
                 'Could not install nodeenv to the expected directory; See the output above for more details.'
             )
 
         # TODO: what hapens on cygwin?
-        # TODO: needs .exe postfix?
         if platform.name() == 'windows':
-            bin_dir = path / 'Scripts'
+            bin_dir = cache_dir / 'Scripts'
+            if target == 'node':
+                path = bin_dir / 'node.exe'
+            else:
+                path = bin_dir / f'{target}.cmd'
         else:
-            bin_dir = path / 'bin'
+            path = cache_dir / 'bin' / target
 
         if target == 'npm':
-            return cls(path=bin_dir / 'npm', resolver='nodeenv')
+            return cls(path=path, resolver='nodeenv')
         elif target == 'node':
-            return cls(path=bin_dir / 'node', resolver='nodeenv')
+            return cls(path=path, resolver='nodeenv')
         else:
             raise UnknownTargetError(target=target)
 
