@@ -226,7 +226,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install codecov==2.1.11 .[dev]
+          pip install -U -r pipelines/requirements/ci.txt .[dev]
 
       - uses: actions/cache@v3
         with:
@@ -239,8 +239,9 @@ jobs:
 
       - name: Run tests
         run: |
-          nox -s databases -- --coverage --databases=postgresql
+          coverage run -m nox -s databases -- --coverage --databases=postgresql
         env:
+          COVERAGE_FILE: .cache/.coverage
           POSTGRESQL_URL: postgresql://postgres:postgres@localhost:5432/postgres
 
       - name: Combine coverage
@@ -271,7 +272,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install codecov==2.1.11 .[dev]
+          pip install -U -r pipelines/requirements/ci.txt .[dev]
 
       - uses: actions/cache@v3
         with:
@@ -284,9 +285,10 @@ jobs:
 
       - name: Run tests
         run: |
-          nox -s databases -- --coverage --databases=sqlite
+          coverage run -m nox -s databases -- --coverage --databases=sqlite
         env:
           SQLITE_URL: file:dev.db
+          COVERAGE_FILE: .cache/.coverage
 
       - name: Combine coverage
         run: |
