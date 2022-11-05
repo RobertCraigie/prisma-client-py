@@ -17,9 +17,16 @@ def get_pkg_location(session: nox.Session, pkg: str) -> str:
     return str(Path(location).parent)
 
 
-def setup_env(session: nox.Session) -> None:
-    coverage_file = f'.coverage.{session.name}{session.python if isinstance(session.python, str) else ""}'
+def setup_coverage(session: nox.Session, identifier: str) -> None:
+    coverage_file = f'.coverage.{session.name}{identifier}'
     session.env['COVERAGE_FILE'] = str(CACHE_DIR / coverage_file)
+
+
+def setup_env(session: nox.Session) -> None:
+    setup_coverage(
+        session,
+        identifier=session.python if isinstance(session.python, str) else '',
+    )
     session.env['PRISMA_PY_DEBUG'] = '1'
     session.env['PYTEST_ADDOPTS'] = ' '.join(
         [

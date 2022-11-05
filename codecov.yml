@@ -9,9 +9,16 @@ coverage:
           - "tests/"
         branches:
           - main
+      databases:
+        target: 100%
+        paths:
+          - "databases/"
+        branches:
+          - main
       prisma:
         paths:
           - "!tests/"
+          - "!databases/"
         target: auto
         threshold: 10%
         branches:

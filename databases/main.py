@@ -21,6 +21,7 @@ import typer
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from lib.utils import flatten
+from pipelines.utils import setup_coverage
 from prisma._compat import cached_property
 
 from .utils import DatabaseConfig
@@ -57,6 +58,7 @@ def main(
     pytest_args: Optional[str] = None,
     lint: bool = True,
     test: bool = True,
+    coverage: bool = False,
 ) -> None:
     """Run unit tests and Pyright"""
     session = session_ctx.get()
@@ -75,7 +77,13 @@ def main(
 
         for database in databases:
             print(title(CONFIG_MAPPING[database].name))
-            runner = Runner(database=database)
+
+            # point coverage to store data in a database specific location
+            # as to not overwrite any existing data from other database tests
+            if coverage:
+                setup_coverage(session, identifier=database)
+
+            runner = Runner(database=database, track_coverage=coverage)
             runner.setup()
 
             if test:
@@ -90,10 +98,17 @@ class Runner:
     session: nox.Session
     config: DatabaseConfig
     cache_dir: Path
+    track_coverage: bool
 
-    def __init__(self, *, database: SupportedDatabase) -> None:
+    def __init__(
+        self,
+        *,
+        database: SupportedDatabase,
+        track_coverage: bool,
+    ) -> None:
         self.database = database
         self.session = session_ctx.get()
+        self.track_coverage = track_coverage
         self.config = CONFIG_MAPPING[database]
         self.cache_dir = ROOT_DIR / '.tests_cache' / 'databases' / database
 
@@ -142,8 +157,7 @@ class Runner:
 
         # generate the client
         self.session.run(
-            'python',
-            '-m',
+            *self.python_args,
             'prisma',
             'generate',
             f'--schema={self.schema}',
@@ -152,8 +166,7 @@ class Runner:
     def test(self, *, pytest_args: str | None) -> None:
         # ensure DB is in correct state
         self.session.run(
-            'python',
-            '-m',
+            *self.python_args,
             'prisma',
             'db',
             'push',
@@ -169,6 +182,7 @@ class Runner:
 
         # TODO: use PYTEST_ADDOPTS instead
         self.session.run(
+            *self.python_args,
             'pytest',
             *args,
             *map(
@@ -184,6 +198,12 @@ class Runner:
 
     def lint(self) -> None:
         self.session.run('pyright', '-p', str(self.pyright_config.absolute()))
+
+    @cached_property
+    def python_args(self) -> list[str]:
+        return shlex.split(
+            'coverage run -m' if self.track_coverage else 'python -m'
+        )
 
     @property
     def pyright_config(self) -> Path:

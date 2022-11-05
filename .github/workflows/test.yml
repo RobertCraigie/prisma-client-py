@@ -237,14 +237,15 @@ jobs:
 
       # TODO: cache prisma engines
 
-
-      # TODO: RUN THIS WITH COVERAGE
-
       - name: Run tests
         run: |
           nox -s databases -- --databases=postgresql
         env:
           POSTGRESQL_URL: postgresql://postgres:postgres@localhost:5432/postgres
+
+      - name: Combine coverage
+        run: |
+          nox -s report
 
       - name: Upload coverage
         run: |
@@ -281,14 +282,15 @@ jobs:
 
       # TODO: cache prisma engines
 
-
-      # TODO: RUN THIS WITH COVERAGE
-
       - name: Run tests
         run: |
           nox -s databases -- --databases=sqlite
         env:
           SQLITE_URL: file:dev.db
+
+      - name: Combine coverage
+        run: |
+          nox -s report
 
       - name: Upload coverage
         run: |

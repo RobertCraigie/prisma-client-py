@@ -20,7 +20,10 @@ class DatabaseConfig(BaseModel):
     env_var: str
     unsupported_features: Set[DatabaseFeature]
 
-    def supports_feature(self, feature: DatabaseFeature) -> bool:
+    # TODO: run this under coverage
+    def supports_feature(
+        self, feature: DatabaseFeature
+    ) -> bool:  # pragma: no cover
         if feature not in get_args(DatabaseFeature):
             raise RuntimeError(f'Unknown feature: {feature}')
 
