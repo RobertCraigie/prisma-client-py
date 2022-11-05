@@ -1,5 +1,5 @@
 # name: test_basic_building
-  '
+  '''
   query {
     result: findUniqueUser
     (
@@ -14,10 +14,10 @@
       created_at
     }
   }
-  '
----
+  '''
+# ---
 # name: test_basic_building.1
-  '
+  '''
   mutation {
     result: queryRaw
     (
@@ -26,10 +26,10 @@
       }
     )
   }
-  '
----
+  '''
+# ---
 # name: test_custom_serialization
-  '
+  '''
   query {
     result: findUniquePost
     (
@@ -48,10 +48,10 @@
       author_id
     }
   }
-  '
----
+  '''
+# ---
 # name: test_datetime_serialization_tz_aware
-  '
+  '''
   query {
     result: findUniquePost
     (
@@ -70,10 +70,10 @@
       author_id
     }
   }
-  '
----
+  '''
+# ---
 # name: test_datetime_serialization_tz_unaware
-  '
+  '''
   query {
     result: findUniquePost
     (
@@ -92,10 +92,10 @@
       author_id
     }
   }
-  '
----
+  '''
+# ---
 # name: test_include_with_arguments
-  '
+  '''
   query {
     result: findUniqueUser
     (
@@ -125,10 +125,10 @@
       }
     }
   }
-  '
----
+  '''
+# ---
 # name: test_raw_queries
-  '
+  '''
   mutation {
     result: queryRaw
     (
@@ -136,10 +136,10 @@
       parameters: "[\"1263526\"]"
     )
   }
-  '
----
+  '''
+# ---
 # name: test_unicode
-  '
+  '''
   query {
     result: findUniqueUser
     (
@@ -154,5 +154,5 @@
       created_at
     }
   }
-  '
----
+  '''
+# ---

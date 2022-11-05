@@ -6,7 +6,41 @@ ARG OS_DISTRO=slim-bullseye
 
 FROM python:${PYTHON_VERSION}-${OS_DISTRO}
 
-RUN useradd --create-home --uid 9999 --shell /bin/bash prisma
+# These are are own build args recorded as env variables
+ARG OS_DISTRO
+ENV OS_DISTRO=${OS_DISTRO}
+ENV PRISMA_USER_ID=9999
+
+# These are provided by Docker
+ARG BUILDPLATFORM
+ARG BUILDOS
+ARG BUILDARCH
+ARG BUILDVARIANT
+ARG TARGETPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
+
+ENV DOCKER_BUILDPLATFORM=${BUILDPLATFORM}
+ENV DOCKER_BUILDOS=${BUILDOS}
+ENV DOCKER_BUILDARCH=${BUILDARCH}
+ENV DOCKER_BUILDVARIANT=${BUILDVARIANT}
+ENV DOCKER_TARGETPLATFORM=${TARGETPLATFORM}
+ENV DOCKER_TARGETOS=${TARGETOS}
+ENV DOCKER_TARGETARCH=${TARGETARCH}
+
+# TODO: Using the slim variant is a bit hackier. Better to
+# cat and grep /etc/*release*. Also, the [[ ]] command
+# is a bash thing so thats why we subshell for the test
+RUN \
+    if [[ $OS_DISTRO =~ alpine ]]; then \
+      adduser -u ${PRISMA_USER_ID} -D prisma; \
+      apk add gcc musl-dev yaml-dev yaml libffi-dev; \
+    elif bash -c "[[ ${OS_DISTRO} =~ slim ]]"; then \
+      useradd --create-home --uid ${PRISMA_USER_ID} --shell /bin/bash prisma; \
+    else \
+      echo "Unrecognized distro $OS_DISTRO"; \
+      exit 99; \
+    fi
 
 USER prisma
 WORKDIR /home/prisma/prisma-client-py
@@ -14,7 +48,8 @@ ENV PATH="/home/prisma/.local/bin:${PATH}"
 
 COPY --chown=prisma:prisma . .
 
-RUN pip install .[dev]
+RUN pip install --upgrade pip && \
+    pip install .[dev]
 
 # This has the side-effect of downing the prisma binaries
 # and will fail if the CLI cannot get run

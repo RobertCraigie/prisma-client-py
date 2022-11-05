@@ -405,6 +405,18 @@ class Batch:
         }
         {{ maybe_await }}self.__client._engine.query(dumps(payload))
 
+    {% if active_provider != 'mongodb' %}
+    def execute_raw(self, query: LiteralString, *args: Any) -> None:
+        self._add(
+            operation='{{ operations.execute_raw }}',
+            method='{{ methods.execute_raw }}',
+            arguments={
+                'query': query,
+                'parameters': args,
+            }
+        )
+    {% endif %}
+
     {% if is_async %}
     async def __aenter__(self) -> 'Batch':
         return self
