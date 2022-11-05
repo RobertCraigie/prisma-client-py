@@ -101,35 +101,35 @@ def test_update_path_env() -> None:
 
     # no env
     env = node._update_path_env(env=None, target_bin=target)
-    assert env['PATH'].endswith(f'{sep}{target.absolute()}')
+    assert env['PATH'].startswith(f'{target.absolute()}{sep}')
 
     # env without PATH
     env = node._update_path_env(
         env={'FOO': 'bar'},
         target_bin=target,
     )
-    assert env['PATH'].endswith(f'{sep}{target.absolute()}')
+    assert env['PATH'].startswith(f'{target.absolute()}{sep}')
 
     # env with empty PATH
     env = node._update_path_env(
         env={'PATH': ''},
         target_bin=target,
     )
-    assert env['PATH'].endswith(f'{sep}{target.absolute()}')
+    assert env['PATH'].startswith(f'{target.absolute()}{sep}')
 
     # env with set PATH without the separator postfix
     env = node._update_path_env(
         env={'PATH': '/foo'},
         target_bin=target,
     )
-    assert env['PATH'] == f'/foo{sep}{target.absolute()}'
+    assert env['PATH'] == f'{target.absolute()}{sep}/foo'
 
-    # env with set PATH with the separator as a postfix
+    # env with set PATH with the separator as a prefix
     env = node._update_path_env(
-        env={'PATH': f'/foo{sep}'},
+        env={'PATH': f'{sep}/foo'},
         target_bin=target,
     )
-    assert env['PATH'] == f'/foo{sep}{target.absolute()}'
+    assert env['PATH'] == f'{target.absolute()}{sep}/foo'
 
     # returned env included non PATH environment variables
     env = node._update_path_env(
@@ -137,7 +137,7 @@ def test_update_path_env() -> None:
         target_bin=target,
     )
     assert env['FOO'] == 'bar'
-    assert env['PATH'] == f'/foo{sep}{target.absolute()}'
+    assert env['PATH'] == f'{target.absolute()}{sep}/foo'
 
     # accepts a custom path separator
     env = node._update_path_env(
@@ -145,4 +145,4 @@ def test_update_path_env() -> None:
         target_bin=target,
         sep='---',
     )
-    assert env['PATH'] == f'/foo---{target.absolute()}'
+    assert env['PATH'] == f'{target.absolute()}---/foo'

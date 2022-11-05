@@ -281,11 +281,11 @@ def _update_path_env(
     if path:
         log.debug('Found PATH contents: %s', path)
 
-        # handle the case where the PATH already ends with the `:` separator (this probably shouldn't happen)
-        if path.endswith(sep):
-            path = f'{path}{target_bin.absolute()}'
+        # handle the case where the PATH already starts with the separator (this probably shouldn't happen)
+        if path.startswith(sep):
+            path = f'{target_bin.absolute()}{path}'
         else:
-            path = f'{path}{sep}{target_bin.absolute()}'
+            path = f'{target_bin.absolute()}{sep}{path}'
     else:
         # handle the case where there is no PATH set (unlikely / impossible to actually happen?)
         path = str(target_bin.absolute())
