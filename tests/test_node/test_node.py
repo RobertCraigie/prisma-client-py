@@ -117,16 +117,16 @@ def test_update_path_env() -> None:
     )
     assert env['PATH'].endswith(f'{sep}{target.absolute()}')
 
-    # env with set PATH without a `:` postfix
+    # env with set PATH without the separator postfix
     env = node._update_path_env(
         env={'PATH': '/foo'},
         target_bin=target,
     )
     assert env['PATH'] == f'/foo{sep}{target.absolute()}'
 
-    # env with set PATH with a `:` postfix
+    # env with set PATH with the separator as a postfix
     env = node._update_path_env(
-        env={'PATH': '/foo:'},
+        env={'PATH': f'/foo{sep}'},
         target_bin=target,
     )
     assert env['PATH'] == f'/foo{sep}{target.absolute()}'
