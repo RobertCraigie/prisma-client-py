@@ -122,8 +122,10 @@ class NodeBinaryStrategy(Strategy):
         stderr: File | None = None,
         env: Mapping[str, str] | None = None,
     ) -> subprocess.CompletedProcess[bytes]:
+        path = str(self.path.absolute())
+        log.debug('Executing binary at %s with args: %s', path, args)
         return subprocess.run(
-            [str(self.path.absolute()), *args],
+            [path, *args],
             check=check,
             cwd=cwd,
             env=env,
