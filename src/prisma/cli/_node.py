@@ -274,10 +274,13 @@ def _update_path_env(
     if env is None:
         env = dict(os.environ)
 
+    log.debug('Attempting to preprend %s to the PATH', target_bin)
     assert target_bin.exists(), 'Target `bin` directory does not exist'
 
     path = env.get('PATH', '') or os.environ.get('PATH', '')
     if path:
+        log.debug('Found PATH contents: %s', path)
+
         # handle the case where the PATH already ends with the `:` separator (this probably shouldn't happen)
         if path.endswith(sep):
             path = f'{path}{target_bin.absolute()}'
@@ -287,6 +290,7 @@ def _update_path_env(
         # handle the case where there is no PATH set (unlikely / impossible to actually happen?)
         path = str(target_bin.absolute())
 
+    log.debug('Using PATH environment variable: %s', path)
     return {**env, 'PATH': path}
 
 
