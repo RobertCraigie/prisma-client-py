@@ -33,13 +33,13 @@ ENV DOCKER_TARGETARCH=${TARGETARCH}
 # is a bash thing so thats why we subshell for the test
 RUN \
     if [[ $OS_DISTRO =~ alpine ]]; then \
-    adduser -u ${PRISMA_USER_ID} -D prisma; \
-    apk add gcc musl-dev yaml-dev yaml libffi-dev; \
+      adduser -u ${PRISMA_USER_ID} -D prisma; \
+      apk add gcc musl-dev yaml-dev yaml libffi-dev; \
     elif bash -c "[[ ${OS_DISTRO} =~ slim ]]"; then \
-    useradd --create-home --uid ${PRISMA_USER_ID} --shell /bin/bash prisma; \
+      useradd --create-home --uid ${PRISMA_USER_ID} --shell /bin/bash prisma; \
     else \
-    echo "Unrecognized distro $OS_DISTRO"; \
-    exit 99; \
+      echo "Unrecognized distro $OS_DISTRO"; \
+      exit 99; \
     fi
 
 USER prisma
