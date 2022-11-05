@@ -10,8 +10,8 @@ COPY . .
 
 RUN pip install .[dev]
 
-# TODO: necessary
-RUN pip install python-certifi-win32
+# https://github.com/docker-library/python/issues/359
+RUN certutil -generateSSTFromWU roots.sst; certutil -addstore -f root roots.sst; del roots.sst
 
 # This has the side-effect of downing the prisma binaries
 # and will fail if the CLI cannot get run
