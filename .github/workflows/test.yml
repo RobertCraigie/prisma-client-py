@@ -241,7 +241,7 @@ jobs:
         run: |
           coverage run -m nox -s databases -- --coverage --databases=postgresql
         env:
-          COVERAGE_FILE: .cache/.coverage
+          COVERAGE_FILE: .cache/.coverage.databases
           POSTGRESQL_URL: postgresql://postgres:postgres@localhost:5432/postgres
 
       - name: Combine coverage
@@ -288,7 +288,7 @@ jobs:
           coverage run -m nox -s databases -- --coverage --databases=sqlite
         env:
           SQLITE_URL: file:dev.db
-          COVERAGE_FILE: .cache/.coverage
+          COVERAGE_FILE: .cache/.coverage.databases
 
       - name: Combine coverage
         run: |
