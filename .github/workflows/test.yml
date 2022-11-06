@@ -320,19 +320,14 @@ jobs:
             ${{ runner.os }}-pip-
 
       - name: Setup MySQL
-        uses: shogo82148/actions-setup-mysql@v1
-        with:
-          mysql-version: '8.0'
-          user: 'prismo'
-          password: 'prismo_password'
-
-      - run: mysql -uroot -h127.0.0.1 -e 'SELECT version()'
+        run: |
+          make start-mysql
 
       - name: Run tests
         run: |
           coverage run -m nox -s databases -- --coverage --databases=mysql
         env:
-          MYSQL_URL: mysql://prismo:prismo_password@localhost:3306/prismadb
+          MYSQL_URL: mysql://mysql:prisma@localhost:3306/prisma
           COVERAGE_FILE: .cache/.coverage.databases
 
       - name: Combine coverage

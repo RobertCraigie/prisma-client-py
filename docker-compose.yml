@@ -1,0 +1,20 @@
+# copied from https://github.com/prisma/prisma-engines/blob/main/docker-compose.yml
+version: "3"
+services:
+
+  mysql-8-0:
+    image: mysql:8.0.28
+    command: mysqld
+    restart: always
+    platform: linux/x86_64
+    environment:
+      MYSQL_ROOT_PASSWORD: prisma
+      MYSQL_DATABASE: prisma
+    ports:
+      - "3307:3306"
+    networks:
+      - databases
+    tmpfs: /var/lib/mysql8
+
+networks:
+  databases: null
