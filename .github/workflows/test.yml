@@ -327,7 +327,7 @@ jobs:
         run: |
           coverage run -m nox -s databases -- --coverage --databases=mysql
         env:
-          MYSQL_URL: mysql://mysql:prisma@localhost:3307/prisma
+          MYSQL_URL: mysql://prisma:prisma@localhost:3307/prisma
           COVERAGE_FILE: .cache/.coverage.databases
 
       - name: Combine coverage

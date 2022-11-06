@@ -9,6 +9,8 @@ services:
     platform: linux/x86_64
     environment:
       MYSQL_ROOT_PASSWORD: prisma
+      MYSQL_USER: prisma
+      MYSQL_PASSWORD: prisma
       MYSQL_DATABASE: prisma
     ports:
       - "3307:3306"
