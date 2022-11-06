@@ -7,6 +7,8 @@ site_author: Robert Craigie
 repo_name: RobertCraigie/prisma-client-py
 repo_url: https://github.com/RobertCraigie/prisma-client-py
 
+strict: true
+
 theme:
   name: material
   palette:
