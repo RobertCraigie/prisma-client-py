@@ -238,7 +238,8 @@ def validate_databases(databases: list[str]) -> list[SupportedDatabase]:
     #
     # I couldn't quickly find an option to support this with Typer so
     # it is handled manually here.
-    for database in flatten([d.split(',') for d in databases]):
+    databases = flatten([d.split(',') for d in databases])
+    for database in databases:
         if database not in SUPPORTED_DATABASES:
             raise ValueError(f'Unknown database: {database}')
 
