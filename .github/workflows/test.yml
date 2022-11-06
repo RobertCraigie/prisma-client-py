@@ -319,23 +319,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Shutdown Ubuntu MySQL (SUDO)
-        run: sudo service mysql stop
-
       - name: Setup MySQL
-        uses: mirromutth/mysql-action@v1.1
+        uses: shogo82148/actions-setup-mysql@v1
         with:
-          host port: 3800
-          container port: 3307
-          mysql database: 'prismadb'
-          mysql user: 'prismo'
-          mysql password: 'prismo_password'
+          mysql-version: '8.0'
+          user: 'prismo'
+          password: 'prismo_password'
+
+      - run: mysql -uroot -h127.0.0.1 -e 'SELECT version()'
 
       - name: Run tests
         run: |
           coverage run -m nox -s databases -- --coverage --databases=mysql
         env:
-          MYSQL_URL: mysql://prismo:prismo_password@localhost:3307/prismadb
+          MYSQL_URL: mysql://prismo:prismo_password@localhost:3306/prismadb
           COVERAGE_FILE: .cache/.coverage.databases
 
       - name: Combine coverage
