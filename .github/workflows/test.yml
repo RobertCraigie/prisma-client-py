@@ -54,8 +54,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mypy
 
-      # TODO: cache prisma engines
-
       - name: Setup database
         # for some reason prisma creates the database where the schema is stored
         # but when using the prisma query engine it uses the root directory
@@ -235,8 +233,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # TODO: cache prisma engines
-
       - name: Run tests
         run: |
           coverage run -m nox -s databases -- --coverage --databases=postgresql
@@ -280,8 +276,6 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-
-      # TODO: cache prisma engines
 
       - name: Run tests
         run: |
