@@ -68,7 +68,17 @@ PYRIGHT_CONFIG: pyright.Config = {
     'extraPaths': ['../'],
     'typeCheckingMode': 'strict',
     'reportPrivateUsage': False,
-    'reportUnnecessaryTypeIgnoreComment': True,
+    # copied from `pyproject.toml`
+    'reportUnusedImport': True,
+    'reportPrivateUsage': False,
+    'reportImportCycles': False,
+    'reportUnknownMemberType': False,
+    'reportUnknownVariableType': False,
+    'reportUnknownArgumentType': False,
+    # very strict errors
+    'reportUnusedCallResult': False,
+    'reportImplicitStringConcatenation': False,
+    'reportCallInDefaultInitializer': True,
 }
 PYTEST_CONFIG = {
     '[tool.pytest.ini_options]': {

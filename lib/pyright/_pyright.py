@@ -6,6 +6,15 @@ from typing_extensions import TypedDict, Literal
 class PyrightDiagnostics(TypedDict, total=False):
     # NOTE: not exhaustive
     reportPrivateUsage: bool
+    reportUnusedImport: bool
+    reportPrivateUsage: bool
+    reportImportCycles: bool
+    reportUnusedCallResult: bool
+    reportUnknownMemberType: bool
+    reportUnknownVariableType: bool
+    reportUnknownArgumentType: bool
+    reportCallInDefaultInitializer: bool
+    reportImplicitStringConcatenation: bool
     reportUnnecessaryTypeIgnoreComment: bool
 
 

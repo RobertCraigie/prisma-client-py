@@ -10,6 +10,7 @@ ignore = [
 ]
 pythonVersion = "3.9"
 
+# NOTE: whenever you update any of these values you will most likely also have to update `databases/constants.py::PYRIGHT_CONFIG`
 typeCheckingMode = "strict"
 reportUnusedImport = true
 reportPrivateUsage = false

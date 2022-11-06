@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import json
 import shlex
 import shutil
@@ -21,7 +22,7 @@ import typer
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from lib.utils import flatten
-from pipelines.utils import setup_coverage
+from pipelines.utils import setup_coverage, get_pkg_location
 from prisma._compat import cached_property
 
 from .utils import DatabaseConfig
@@ -66,7 +67,7 @@ def main(
 
     with session.chdir(DATABASES_DIR):
         # setup env
-        session.install('pyright', '-r', 'requirements.txt')
+        session.install('-r', 'requirements.txt')
         if inplace:
             # useful for updating the generated code so that Pylance picks it up
             session.install('-U', '-e', '..')
@@ -156,6 +157,7 @@ class Runner:
         )
 
         # generate the client
+        self.session.run(*self.python_args, 'prisma_cleanup')
         self.session.run(
             *self.python_args,
             'prisma',
@@ -257,8 +259,22 @@ def title(text: str) -> str:
 
 
 def create_pyright_config(file: Path, exclude: Iterable[str]) -> None:
+    pkg_location = os.path.relpath(
+        get_pkg_location(session_ctx.get(), 'prisma'), DATABASES_DIR
+    )
+
     pyright_config = deepcopy(PYRIGHT_CONFIG)
     pyright_config['exclude'].extend(exclude)
+
+    # exclude the mypy plugin so that we don't have to install `mypy`, it is also
+    # not dynamically generated which means it will stay the same across database providers
+    pyright_config['exclude'].append(
+        str(Path(pkg_location).joinpath('mypy.py'))
+    )
+
+    # add the generated client code to Pyright too
+    pyright_config['include'].append(pkg_location)
+
     file.write_text(json.dumps(pyright_config, indent=2))
 
 
