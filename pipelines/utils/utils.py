@@ -18,6 +18,9 @@ def get_pkg_location(session: nox.Session, pkg: str) -> str:
 
 
 def setup_coverage(session: nox.Session, identifier: str) -> None:
+    if identifier:
+        identifier = f'.{identifier}'
+
     coverage_file = f'.coverage.{session.name}{identifier}'
     session.env['COVERAGE_FILE'] = str(CACHE_DIR / coverage_file)
 

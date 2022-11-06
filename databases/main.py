@@ -204,7 +204,9 @@ class Runner:
     @cached_property
     def python_args(self) -> list[str]:
         return shlex.split(
-            'coverage run -m' if self.track_coverage else 'python -m'
+            'coverage run --rcfile=../.coveragerc -m'
+            if self.track_coverage
+            else 'python -m'
         )
 
     @property
