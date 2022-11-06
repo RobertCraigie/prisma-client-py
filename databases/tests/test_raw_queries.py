@@ -107,8 +107,14 @@ async def test_query_raw_no_result(
 async def test_query_raw_incorrect_params(
     client: Prisma,
     raw_queries: RawQueries,
+    config: DatabaseConfig,
 ) -> None:
     """Passings too many parameters raises an error"""
+    if config.id == 'mysql':
+        pytest.skip(
+            'Passing the incorrect number of query parameters breaks subsequent queries',
+        )
+
     results = await client.query_raw(raw_queries.count_posts)
     assert len(results) == 1
     assert results[0]['count'] == 0
@@ -117,6 +123,11 @@ async def test_query_raw_incorrect_params(
     # PostgreSQL raises DataError
     with pytest.raises((errors.RawQueryError, errors.DataError)):
         await client.query_raw(raw_queries.count_posts, 1)
+
+    # subsequent queries can still be made
+    results = await client.query_raw(raw_queries.count_posts)
+    assert len(results) == 1
+    assert results[0]['count'] == 0
 
 
 @pytest.mark.asyncio
