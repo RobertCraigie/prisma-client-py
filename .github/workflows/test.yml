@@ -52,8 +52,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mypy
 
-      # TODO: cache prisma engines
-
       - name: Setup database
         # for some reason prisma creates the database where the schema is stored
         # but when using the prisma query engine it uses the root directory
@@ -132,7 +130,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements/dev.txt
+          pip install -U .[dev]
 
       - uses: actions/cache@v3
         with:
@@ -164,7 +162,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements/dev.txt
+          pip install -U .[dev]
 
       - uses: actions/cache@v3
         with:
@@ -186,7 +184,7 @@ jobs:
           nox -s mypy
 
   postgres:
-    name: postgres
+    name: PostgreSQL
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -224,7 +222,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install codecov==2.1.11 .[dev]
+          pip install -U -r pipelines/requirements/ci.txt .[dev]
 
       - uses: actions/cache@v3
         with:
@@ -233,13 +231,60 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # TODO: cache prisma engines
+      - name: Run tests
+        run: |
+          coverage run -m nox -s databases -- --coverage --databases=postgresql
+        env:
+          COVERAGE_FILE: .cache/.coverage.databases
+          POSTGRESQL_URL: postgresql://postgres:postgres@localhost:5432/postgres
+
+      - name: Combine coverage
+        run: |
+          nox -s report
+
+      - name: Upload coverage
+        run: |
+          codecov --file coverage.xml
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  sqlite:
+    name: SQLite
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U -r pipelines/requirements/ci.txt .[dev]
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
       - name: Run tests
         run: |
-          nox -s setup test report --no-error-on-missing-interpreters -- --confcutdir . tests/integrations/postgresql
+          coverage run -m nox -s databases -- --coverage --databases=sqlite
         env:
-          PRISMA_PY_POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/postgres
+          SQLITE_URL: file:dev.db
+          COVERAGE_FILE: .cache/.coverage.databases
+
+      - name: Combine coverage
+        run: |
+          nox -s report
 
       - name: Upload coverage
         run: |

@@ -1,0 +1,3 @@
+-r coverage.txt
+
+codecov==2.1.12

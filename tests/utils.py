@@ -6,11 +6,9 @@ import textwrap
 import subprocess
 import contextlib
 from pathlib import Path
-from datetime import datetime
 from typing import (
     Any,
     Callable,
-    Iterable,
     Mapping,
     Optional,
     List,
@@ -24,7 +22,6 @@ from typing import (
 import py
 import click
 import pytest
-import pytest_asyncio  # type: ignore
 from click.testing import CliRunner, Result
 
 from prisma.cli import main
@@ -35,8 +32,6 @@ from prisma.generator.generator import BASE_PACKAGE_DIR
 
 
 if TYPE_CHECKING:
-    from _pytest.config import Config
-    from _pytest.fixtures import FixtureFunctionMarker, _Scope
     from _pytest.monkeypatch import MonkeyPatch
     from _pytest.pytester import RunResult, Testdir as PytestTestdir
 
@@ -290,38 +285,6 @@ def get_source_from_function(function: FuncType, **env: Any) -> str:
     return IMPORT_RELOADER + '\n'.join(lines)
 
 
-def assert_similar_time(
-    dt1: datetime,
-    dt2: datetime,
-    threshold: float = 0.5,
-) -> None:
-    """Assert the delta between the two datetimes is less than the given threshold (in seconds).
-
-    This is required as there seems to be small data loss when marshalling and unmarshalling
-    datetimes, for example:
-
-    2021-09-26T15:00:18.708000+00:00 -> 2021-09-26T15:00:18.708776+00:00
-
-    This issue does not appear to be solvable by us, please create an issue if you know of a solution.
-    """
-    if dt1 > dt2:
-        delta = dt1 - dt2
-    else:
-        delta = dt2 - dt1
-
-    assert delta.days == 0
-    assert delta.total_seconds() < threshold
-
-
-def assert_time_like_now(dt: datetime, threshold: int = 10) -> None:
-    # NOTE: I do not know if prisma datetimes are always in UTC
-    #
-    # have to remove the timezone details as utcnow() is not timezone aware
-    # and we cannot subtract a timezone aware datetime from a non timezone aware datetime
-    dt = dt.replace(tzinfo=None)
-    assert_similar_time(dt, datetime.utcnow(), threshold=threshold)
-
-
 def escape_path(path: Union[str, Path]) -> str:
     if isinstance(path, Path):  # pragma: no branch
         path = str(path.absolute())
@@ -352,32 +315,6 @@ def patch_method(
     real_meth = getattr(obj, attr)
     patcher.setattr(obj, attr, wrapper, raising=True)
     return lambda: captured
-
-
-def async_fixture(
-    scope: 'Union[_Scope, Callable[[str, Config], _Scope]]' = 'function',
-    params: Optional[Iterable[object]] = None,
-    autouse: bool = False,
-    ids: Optional[
-        Union[
-            Iterable[Union[None, str, float, int, bool]],
-            Callable[[Any], Optional[object]],
-        ]
-    ] = None,
-    name: Optional[str] = None,
-) -> 'FixtureFunctionMarker':
-    """Wrapper over pytest_asyncio.fixture providing type hints"""
-    return cast(
-        'FixtureFunctionMarker',
-        pytest_asyncio.fixture(
-            None,
-            scope=scope,
-            params=params,
-            autouse=autouse,
-            ids=ids,
-            name=name,
-        ),
-    )
 
 
 skipif_windows = pytest.mark.skipif(

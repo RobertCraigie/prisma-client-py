@@ -28,3 +28,11 @@ updates:
       - RobertCraigie
     rebase-strategy: auto
     target-branch: main
+  - package-ecosystem: pip
+    directory: /databases/
+    schedule:
+      interval: daily
+    reviewers:
+      - RobertCraigie
+    rebase-strategy: auto
+    target-branch: main
