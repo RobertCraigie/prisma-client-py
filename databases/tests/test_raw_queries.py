@@ -5,10 +5,15 @@ from prisma.models import Post, User
 from prisma.partials import PostOnlyPublished
 
 from .utils import RawQueries
+from ..utils import DatabaseConfig
 
 
 @pytest.mark.asyncio
-async def test_query_raw(client: Prisma, raw_queries: RawQueries) -> None:
+async def test_query_raw(
+    client: Prisma,
+    raw_queries: RawQueries,
+    config: DatabaseConfig,
+) -> None:
     """Standard usage, erroneous query and correct queries"""
     with pytest.raises(errors.RawQueryError):
         await client.query_raw(raw_queries.select_unknown_table)
@@ -27,7 +32,10 @@ async def test_query_raw(client: Prisma, raw_queries: RawQueries) -> None:
     results = await client.query_raw(raw_queries.find_post_by_id, post.id)
     assert len(results) == 1
     assert results[0]['id'] == post.id
-    assert results[0]['published'] is False
+    if config.bools_are_ints:
+        assert results[0]['published'] == 0
+    else:
+        assert results[0]['published'] is False
 
 
 @pytest.mark.asyncio

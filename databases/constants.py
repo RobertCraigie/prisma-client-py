@@ -24,12 +24,14 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         id='postgresql',
         name='PostgreSQL',
         env_var='POSTGRESQL_URL',
+        bools_are_ints=False,
         unsupported_features=set(),
     ),
     'sqlite': DatabaseConfig(
         id='sqlite',
         name='SQLite',
         env_var='SQLITE_URL',
+        bools_are_ints=False,
         unsupported_features={
             'enum',
             'json',
@@ -42,8 +44,10 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         id='mysql',
         name='MySQL',
         env_var='MYSQL_URL',
+        bools_are_ints=True,
         unsupported_features={
             'arrays',
+            'case_sensitivity',
         },
     ),
 }
