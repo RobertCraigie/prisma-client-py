@@ -38,6 +38,14 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
             'case_sensitivity',
         },
     ),
+    'mysql': DatabaseConfig(
+        id='mysql',
+        name='MySQL',
+        env_var='MYSQL_URL',
+        unsupported_features={
+            'arrays',
+        },
+    ),
 }
 SUPPORTED_DATABASES = cast(
     List[SupportedDatabase], list(get_args(SupportedDatabase))

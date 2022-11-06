@@ -292,6 +292,59 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+  mysql:
+    name: MySQL
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U -r pipelines/requirements/ci.txt .[dev]
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Setup MySQL
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          host port: 3800
+          container port: 3306
+          mysql database: 'prismadb'
+          mysql user: 'prismo'
+          mysql password: 'prismo_password'
+
+      - name: Run tests
+        run: |
+          coverage run -m nox -s databases -- --coverage --databases=mysql
+        env:
+          MYSQL_URL: mysql://prismo:prismo_password@localhost:3306/prismadb
+          COVERAGE_FILE: .cache/.coverage.databases
+
+      - name: Combine coverage
+        run: |
+          nox -s report
+
+      - name: Upload coverage
+        run: |
+          codecov --file coverage.xml
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
   docker:
     name: docker
     runs-on: ubuntu-latest
