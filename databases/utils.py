@@ -18,6 +18,7 @@ class DatabaseConfig(BaseModel):
     id: str
     name: str
     env_var: str
+    bools_are_ints: bool
     unsupported_features: Set[DatabaseFeature]
 
     # TODO: run this under coverage

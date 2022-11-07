@@ -48,7 +48,7 @@ async def test_batch_error(client: Prisma) -> None:
         batcher.user.create({'id': 'abc', 'name': 'Robert 2'})
         await batcher.commit()
 
-    assert exc.match(r'Unique constraint failed on the fields: \(`id`\)')
+    assert exc.match(r'Unique constraint failed')
     assert await client.user.count() == 0
 
 
@@ -60,7 +60,7 @@ async def test_context_manager_error(client: Prisma) -> None:
             batcher.user.create({'id': 'abc', 'name': 'Robert'})
             batcher.user.create({'id': 'abc', 'name': 'Robert 2'})
 
-    assert exc.match(r'Unique constraint failed on the fields: \(`id`\)')
+    assert exc.match(r'Unique constraint failed')
     assert await client.user.count() == 0
 
 

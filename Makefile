@@ -44,6 +44,10 @@ docs:
 	python scripts/docs.py
 	mkdocs build
 
+.PHONY: start-mysql
+start-mysql:
+	docker compose -f databases/docker-compose.yml up -d --remove-orphans mysql-8-0
+
 .PHONY: docs-serve
 docs-serve:
 	python scripts/docs.py

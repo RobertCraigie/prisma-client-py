@@ -29,7 +29,7 @@ async def test_skip_duplicates(client: Prisma) -> None:
     with pytest.raises(prisma.errors.UniqueViolationError) as exc:
         await client.user.create_many([{'id': user.id, 'name': 'Robert 2'}])
 
-    assert exc.match(r'Unique constraint failed on the fields: \(`id`\)')
+    assert exc.match(r'Unique constraint failed')
 
     count = await client.user.create_many(
         [{'id': user.id, 'name': 'Robert 2'}, {'name': 'Tegan'}],
