@@ -46,7 +46,7 @@ docs:
 
 .PHONY: start-mysql
 start-mysql:
-	docker compose -f docker-compose.yml up -d --remove-orphans mysql-8-0
+	docker compose -f databases/docker-compose.yml up -d --remove-orphans mysql-8-0
 
 .PHONY: docs-serve
 docs-serve:
