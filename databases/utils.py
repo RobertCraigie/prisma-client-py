@@ -1,5 +1,5 @@
 from typing import Set
-from typing_extensions import Literal, get_args
+from typing_extensions import Literal, TypedDict, get_args
 
 from pydantic import BaseModel
 
@@ -8,10 +8,17 @@ DatabaseFeature = Literal[
     'enum',
     'json',
     'arrays',
+    'decimal',
     'raw_queries',
     'create_many',
+    'composite_keys',
     'case_sensitivity',
 ]
+
+
+class IDDeclarations(TypedDict):
+    cuid: str
+    autoincrement: str
 
 
 class DatabaseConfig(BaseModel):
@@ -19,6 +26,7 @@ class DatabaseConfig(BaseModel):
     name: str
     env_var: str
     bools_are_ints: bool
+    id_declarations: IDDeclarations
     unsupported_features: Set[DatabaseFeature]
 
     # TODO: run this under coverage

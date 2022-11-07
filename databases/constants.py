@@ -26,6 +26,10 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         env_var='POSTGRESQL_URL',
         bools_are_ints=False,
         unsupported_features=set(),
+        id_declarations={
+            'cuid': '@id @default(cuid())',
+            'autoincrement': '@id @default(autoincrement())',
+        },
     ),
     'sqlite': DatabaseConfig(
         id='sqlite',
@@ -39,6 +43,10 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
             'create_many',
             'case_sensitivity',
         },
+        id_declarations={
+            'cuid': '@id @default(cuid())',
+            'autoincrement': '@id @default(autoincrement())',
+        },
     ),
     'mysql': DatabaseConfig(
         id='mysql',
@@ -48,6 +56,24 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         unsupported_features={
             'arrays',
             'case_sensitivity',
+        },
+        id_declarations={
+            'cuid': '@id @default(cuid())',
+            'autoincrement': '@id @default(autoincrement())',
+        },
+    ),
+    'mongodb': DatabaseConfig(
+        id='mongodb',
+        name='MongoDB',
+        env_var='MONGODB_URL',
+        bools_are_ints=False,
+        unsupported_features={
+            'decimal',
+            'composite_keys',
+        },
+        id_declarations={
+            'cuid': '@id @default(cuid()) @map("_id")',
+            'autoincrement': '@id @default(auto()) @map("_id")',
         },
     ),
 }
@@ -62,12 +88,16 @@ DATABASES_DIR = Path(__file__).parent
 # database features
 FEATURES_DIR = DATABASES_DIR / 'tests' / 'features'
 FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
+    # TODO: do not require the "features" split?
     'enum': ['test_enum.py', 'test_arrays/test_enum.py'],
-    'json': ['test_json.py', 'test_arrays/test_json.py'],
+    'json': ['types/test_json.py', 'test_arrays/test_json.py'],
+    'decimal': ['types/test_decimal.py'],
     'arrays': _fromdir('test_arrays'),
     'create_many': ['test_create_many.py'],
     'raw_queries': ['test_raw_queries.py'],
     'case_sensitivity': ['test_case_sensitivity.py'],
+    # TODO
+    'composite_keys': [],
 }
 
 # config files

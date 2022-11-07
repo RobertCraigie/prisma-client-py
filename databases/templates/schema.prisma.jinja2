@@ -13,7 +13,7 @@ generator client {
 }
 
 model User {
-  id         String   @id @default(cuid())
+  id         String   {{ id_declarations.cuid }}
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   name       String
@@ -25,7 +25,7 @@ model User {
 }
 
 model Profile {
-  id          String  @default(cuid())
+  id          String  {{ id_declarations.cuid }}
   description String
   country     String
   city        String?
@@ -35,7 +35,7 @@ model Profile {
 }
 
 model Post {
-  id          String   @id @default(uuid())
+  id          String   {{ id_declarations.cuid }}
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
   title       String
@@ -47,7 +47,7 @@ model Post {
 }
 
 model Types {
-  id        Int  @id @default(autoincrement())
+  id        Int      {{ id_declarations.autoincrement }}
   bool_     Boolean  @default(false)
   string    String   @default("")
   bytes     Bytes    @default("")
@@ -55,7 +55,9 @@ model Types {
   integer   Int      @default(0)
   float_    Float    @default(0)
   datetime_ DateTime @default(now())
+  {% if config.supports_feature('decimal') %}
   decimal_  Decimal  @default(1)
+  {% endif %}
 
   optional_int      Int?      @default(0)
   optional_bool     Boolean?  @default(false)
@@ -65,7 +67,9 @@ model Types {
   optional_integer  Int?      @default(0)
   optional_float    Float?    @default(0)
   optional_datetime DateTime? @default(now())
+  {% if config.supports_feature('decimal') %}
   optional_decimal  Decimal?  @default(1)
+  {% endif %}
 
   // TODO: optional for these too
   {% if config.supports_feature('enum') %}
@@ -78,7 +82,7 @@ model Types {
 
 {% if config.supports_feature('arrays') %}
 model Lists {
-  id           String     @id @default(cuid())
+  id           String   {{ id_declarations.cuid }}
   strings      String[]
   bytes        Bytes[]
   dates        DateTime[]
@@ -86,7 +90,9 @@ model Lists {
   ints         Int[]
   floats       Float[]
   bigints      BigInt[]
+  {% if config.supports_feature('decimal') %}
   decimals     Decimal[]
+  {% endif %}
   {% if config.supports_feature('json') %}
   json_objects Json[]
   {% endif %}
@@ -100,6 +106,7 @@ model Lists {
 // we test these models here as testing them in the root tests would increase mypy
 // type checking time
 
+{% if config.supports_feature('composite_keys') %}
 model Unique1 {
   name    String
   surname String
@@ -182,6 +189,7 @@ model Id5 {
 
   @@unique([name, role])
 }
+{% endif %}
 {% endif %}
 
 {% if config.supports_feature('enum') %}
