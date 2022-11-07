@@ -151,6 +151,9 @@ async def test_find_first(client: Prisma) -> None:
                 },
             ],
         },
+        order={
+            'created_at': 'asc',
+        },
     )
     assert post is not None
     assert post.title == 'Test post 4'
