@@ -12,6 +12,7 @@ DatabaseFeature = Literal[
     'raw_queries',
     'create_many',
     'composite_keys',
+    'sql_raw_queries',
     'case_sensitivity',
 ]
 

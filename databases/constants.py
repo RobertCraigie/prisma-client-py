@@ -71,6 +71,7 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         bools_are_ints=False,
         unsupported_features={
             'decimal',
+            'sql_raw_queries',
             'composite_keys',
         },
         id_declarations={
@@ -94,10 +95,10 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     # TODO: do not require the "features" split?
     'enum': ['test_enum.py', 'test_arrays/test_enum.py'],
     'json': ['types/test_json.py', 'test_arrays/test_json.py'],
-    'decimal': ['types/test_decimal.py'],
+    'decimal': ['types/test_decimal.py', 'arrays/test_decimal.py'],
     'arrays': _fromdir('arrays'),
     'create_many': ['test_create_many.py'],
-    'raw_queries': ['test_raw_queries.py'],
+    'sql_raw_queries': ['test_raw_queries.py', 'models/test_raw_queries.py'],
     'case_sensitivity': ['test_case_sensitivity.py'],
     # TODO
     'composite_keys': [],
