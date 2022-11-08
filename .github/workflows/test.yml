@@ -340,6 +340,66 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+  mongodb:
+    name: MongoDB
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # - name: Use Node.js 18.x
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 18.x
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U -r pipelines/requirements/ci.txt .[dev]
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Setup MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: 6.0
+          mongodb-replica-set: test-rs
+          mongodb-port: 42069
+          # mongodb-username: prisma
+          # mongodb-password: prisma
+          mongodb-db: prisma_py
+
+      - name: Run tests
+        run: |
+          coverage run -m nox -s databases -- --coverage --databases=mongodb
+        env:
+          MONGODB_URL: mongodb://127.0.0.1:42069/prisma_py
+          COVERAGE_FILE: .cache/.coverage.databases
+
+      - name: Combine coverage
+        run: |
+          nox -s report
+
+      - name: Upload coverage
+        run: |
+          codecov --file coverage.xml
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+
   docker:
     name: docker
     runs-on: ubuntu-latest
