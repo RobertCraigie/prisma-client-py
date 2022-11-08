@@ -10,11 +10,10 @@ from .utils import DatabaseConfig, DatabaseFeature
 
 
 def _fromdir(path: str) -> list[str]:
-    """Get the contents of a subdirectory within the `features` directory"""
+    """Get the contents of a subdirectory within the `` directory"""
     # TODO: recurse subdirs
     return [
-        str(f.relative_to(FEATURES_DIR))
-        for f in (FEATURES_DIR / path).iterdir()
+        str(f.relative_to(TESTS_DIR)) for f in (TESTS_DIR / path).iterdir()
     ]
 
 
@@ -90,13 +89,13 @@ ROOT_DIR = Path(__file__).parent.parent
 DATABASES_DIR = Path(__file__).parent
 
 # database features
-FEATURES_DIR = DATABASES_DIR / 'tests' / 'features'
+TESTS_DIR = DATABASES_DIR / 'tests'
 FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     # TODO: do not require the "features" split?
     'enum': ['test_enum.py', 'test_arrays/test_enum.py'],
     'json': ['types/test_json.py', 'test_arrays/test_json.py'],
     'decimal': ['types/test_decimal.py'],
-    'arrays': _fromdir('test_arrays'),
+    'arrays': _fromdir('arrays'),
     'create_many': ['test_create_many.py'],
     'raw_queries': ['test_raw_queries.py'],
     'case_sensitivity': ['test_case_sensitivity.py'],
