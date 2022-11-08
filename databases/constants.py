@@ -93,15 +93,18 @@ DATABASES_DIR = Path(__file__).parent
 TESTS_DIR = DATABASES_DIR / 'tests'
 FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     # TODO: do not require the "features" split?
-    'enum': ['test_enum.py', 'test_arrays/test_enum.py'],
-    'json': ['types/test_json.py', 'test_arrays/test_json.py'],
+    'enum': [
+        'test_enum.py',
+        'arrays/test_enum.py',
+        'composite_keys/test_enum.py',
+    ],
+    'json': ['types/test_json.py', 'arrays/test_json.py'],
     'decimal': ['types/test_decimal.py', 'arrays/test_decimal.py'],
     'arrays': _fromdir('arrays'),
     'create_many': ['test_create_many.py'],
     'sql_raw_queries': ['test_raw_queries.py', 'models/test_raw_queries.py'],
     'case_sensitivity': ['test_case_sensitivity.py'],
-    # TODO
-    'composite_keys': [],
+    'composite_keys': _fromdir('composite_keys'),
 }
 
 # config files
