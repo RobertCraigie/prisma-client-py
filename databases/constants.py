@@ -27,6 +27,7 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         bools_are_ints=False,
         unsupported_features=set(),
         id_declarations={
+            'base': '@id',
             'cuid': '@id @default(cuid())',
             'autoincrement': '@id @default(autoincrement())',
         },
@@ -44,6 +45,7 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
             'case_sensitivity',
         },
         id_declarations={
+            'base': '@id',
             'cuid': '@id @default(cuid())',
             'autoincrement': '@id @default(autoincrement())',
         },
@@ -58,6 +60,7 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
             'case_sensitivity',
         },
         id_declarations={
+            'base': '@id',
             'cuid': '@id @default(cuid())',
             'autoincrement': '@id @default(autoincrement())',
         },
@@ -73,7 +76,8 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         },
         id_declarations={
             'cuid': '@id @default(cuid()) @map("_id")',
-            'autoincrement': '@id @default(auto()) @map("_id")',
+            'autoincrement': '@id @map("_id")',
+            'base': '@id @map("_id")',
         },
     ),
 }

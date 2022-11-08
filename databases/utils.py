@@ -17,8 +17,10 @@ DatabaseFeature = Literal[
 
 
 class IDDeclarations(TypedDict):
+    # TODO: refactor this
     cuid: str
     autoincrement: str
+    base: str
 
 
 class DatabaseConfig(BaseModel):

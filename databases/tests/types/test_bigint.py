@@ -119,12 +119,12 @@ async def test_filtering(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_atomic_update(client: Prisma) -> None:
     """Atomically updating a BigInt value"""
-    model = await client.types.create({'id': 1, 'bigint': 1})
+    model = await client.types.create({'id': 'abc', 'bigint': 1})
     assert model.bigint == 1
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'bigint': {'increment': 5},
@@ -135,7 +135,7 @@ async def test_atomic_update(client: Prisma) -> None:
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'bigint': {
@@ -148,7 +148,7 @@ async def test_atomic_update(client: Prisma) -> None:
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'bigint': {
@@ -161,7 +161,7 @@ async def test_atomic_update(client: Prisma) -> None:
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'bigint': {
@@ -174,7 +174,7 @@ async def test_atomic_update(client: Prisma) -> None:
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'bigint': {
@@ -192,7 +192,7 @@ async def test_atomic_update_invalid_input(client: Prisma) -> None:
     with pytest.raises(DataError) as exc:
         await client.types.update(
             where={
-                'id': 1,
+                'id': 'abc',
             },
             data={
                 'bigint': {  # type: ignore

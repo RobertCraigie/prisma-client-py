@@ -47,7 +47,8 @@ model Post {
 }
 
 model Types {
-  id        Int      {{ id_declarations.autoincrement }}
+  // TODO: test autoincrement separately
+  id        String   {{ id_declarations.cuid }}
   bool_     Boolean  @default(false)
   string    String   @default("")
   bytes     Bytes    @default("")
@@ -101,6 +102,10 @@ model Lists {
   {% endif %}
 }
 {% endif %}
+
+model IntegerID {
+  id Int {{ id_declarations.base }}
+}
 
 // these models are here for testing different combinations of unique constraints
 // we test these models here as testing them in the root tests would increase mypy

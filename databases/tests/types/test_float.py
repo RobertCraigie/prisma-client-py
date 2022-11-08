@@ -119,12 +119,12 @@ async def test_filtering(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_atomic_update(client: Prisma) -> None:
     """Atomically updating a float value"""
-    model = await client.types.create({'id': 1, 'float_': 1})
+    model = await client.types.create({'id': 'abc', 'float_': 1})
     assert model.float_ == 1
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'float_': {'increment': 5},
@@ -135,7 +135,7 @@ async def test_atomic_update(client: Prisma) -> None:
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'float_': {
@@ -148,7 +148,7 @@ async def test_atomic_update(client: Prisma) -> None:
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'float_': {
@@ -161,7 +161,7 @@ async def test_atomic_update(client: Prisma) -> None:
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'float_': {
@@ -174,7 +174,7 @@ async def test_atomic_update(client: Prisma) -> None:
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'float_': {
@@ -192,7 +192,7 @@ async def test_atomic_update_invalid_input(client: Prisma) -> None:
     with pytest.raises(DataError) as exc:
         await client.types.update(
             where={
-                'id': 1,
+                'id': 'abc',
             },
             data={
                 'float_': {  # type: ignore

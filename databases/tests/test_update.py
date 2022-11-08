@@ -1,7 +1,7 @@
 import pytest
 import prisma
 from prisma import Prisma
-from prisma.models import Unique2, User, Types
+from prisma.models import IntegerID, Unique2, User
 
 from lib.testing import async_fixture
 
@@ -196,8 +196,12 @@ async def test_update_id_field() -> None:
 @pytest.mark.asyncio
 async def test_update_id_field_atomic() -> None:
     """Setting an ID field atomically"""
-    record = await Types.prisma().create({})
-    updated = await Types.prisma().update(
+    record = await IntegerID.prisma().create(
+        {
+            'id': 1,
+        },
+    )
+    updated = await IntegerID.prisma().update(
         where={
             'id': record.id,
         },
@@ -208,7 +212,7 @@ async def test_update_id_field_atomic() -> None:
         },
     )
     assert updated is not None
-    assert updated.id == record.id + 500
+    assert updated.id == 501
 
 
 @pytest.mark.prisma
