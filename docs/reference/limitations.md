@@ -62,7 +62,7 @@ class MyUser(User, warn_subclass=False):
 ### Filtering by Relational Fields
 
 Prisma supports searching for records based off of relational record values.
-However, type checking this feature with mypy casued mypy to hang and eventually crash.
+However, type checking this feature with mypy caused mypy to hang and eventually crash.
 
 As such these types have been broadened, this means that mypy will not catch errors when
 filtering by a relational field, for example, the following will not raise any mypy errors,
