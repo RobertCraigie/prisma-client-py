@@ -292,20 +292,25 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  mysql:
-    name: MySQL
+  databases:
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.9]
+        include:
+          - name: MySQL
+            version: 8.0
+            env: MYSQL_URL
+            url: mysql://prisma:prisma@localhost:3307/prisma
+            python-version: 3.9
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.10'
 
       - name: Install dependencies
         run: |
@@ -319,15 +324,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Setup MySQL
+      - name: Start ${{ matrix.name }}
         run: |
-          make start-mysql
+          coverage run -m nox -s databases -- serve ${{ matrix.name }}
 
       - name: Run tests
         run: |
           coverage run -m nox -s databases -- --coverage --databases=mysql
         env:
-          MYSQL_URL: mysql://prisma:prisma@localhost:3307/prisma
+          ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases
 
       - name: Combine coverage
