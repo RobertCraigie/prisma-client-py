@@ -2,27 +2,33 @@ from __future__ import annotations
 
 import shlex
 import subprocess
+from pathlib import Path
+
+import nox
 
 from ._types import SupportedDatabase
+
+
+DOCKER_COMPOSE_FILE = Path(__file__).parent / 'docker-compose.yml'
 
 
 def start_database(
     database: SupportedDatabase,
     *,
-    version: str | None = None,
+    version: str | None,
+    session: nox.Session,
 ) -> None:
     """Start a docker-compose database service"""
     if database == 'sqlite':
         raise ValueError('Cannot start a server for SQLite.')
 
     args = shlex.split(
-        'docker compose -f databases/docker-compose.yml up -d --remove-orphans'
+        f'docker compose -f {DOCKER_COMPOSE_FILE} up -d --remove-orphans'
     )
-    subprocess.check_call(
-        [
-            *args,
-            f'{database}{_format_version(version)}',
-        ]
+    session.run_always(
+        *args,
+        f'{database}{_format_version(version)}',
+        external=True,
     )
 
 

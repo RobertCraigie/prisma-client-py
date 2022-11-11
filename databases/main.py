@@ -9,7 +9,6 @@ from copy import deepcopy
 from contextvars import ContextVar, copy_context
 from typing import (
     Iterable,
-    List,
     Optional,
     cast,
 )
@@ -101,7 +100,7 @@ def serve(database: str, *, version: Optional[str] = None) -> None:
     # We convert the input to lowercase so that we don't have to define
     # two separate names in the CI matrix.
     database = validate_database(database.lower())
-    start_database(database, version=version)
+    start_database(database, version=version, session=session_ctx.get())
 
 
 class Runner:
