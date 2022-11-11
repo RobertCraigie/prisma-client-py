@@ -96,7 +96,7 @@ def main(
 
 
 @cli.command()
-def serve(database: str, *, version: str | None = None) -> None:
+def serve(database: str, *, version: Optional[str] = None) -> None:
     """Start a database server using docker-compose"""
     # We convert the input to lowercase so that we don't have to define
     # two separate names in the CI matrix.
