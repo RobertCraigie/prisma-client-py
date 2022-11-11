@@ -299,7 +299,7 @@ jobs:
       matrix:
         include:
           - name: MySQL
-            version: 8.0
+            version: '8.0'
             env: MYSQL_URL
             url: mysql://prisma:prisma@localhost:3307/prisma
             python-version: 3.9
