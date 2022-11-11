@@ -97,9 +97,7 @@ def test(
 @cli.command()
 def serve(database: str, *, version: Optional[str] = None) -> None:
     """Start a database server using docker-compose"""
-    # We convert the input to lowercase so that we don't have to define
-    # two separate names in the CI matrix.
-    database = validate_database(database.lower())
+    database = validate_database(database)
     start_database(database, version=version, session=session_ctx.get())
 
 
@@ -256,6 +254,9 @@ def validate_databases(databases: list[str]) -> list[SupportedDatabase]:
 
 
 def validate_database(database: str) -> SupportedDatabase:
+    # We convert the input to lowercase so that we don't have to define
+    # two separate names in the CI matrix.
+    database = database.lower()
     if database not in SUPPORTED_DATABASES:
         raise ValueError(f'Unknown database: {database}')
 

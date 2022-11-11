@@ -65,7 +65,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python scripts/ci.py -s test --no-error-on-missing-interpreters -- --ignore=tests/integrations/postgresql
+          python scripts/ci.py -s test --no-error-on-missing-interpreters
         env:
           TARGET_PYTHON: ${{ matrix.python-version }}
 
@@ -183,71 +183,6 @@ jobs:
         run: |
           nox -s mypy
 
-  postgres:
-    name: PostgreSQL
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - python-version: 3.9
-
-    services:
-      postgres:
-        # Docker Hub image
-        image: postgres
-
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -U -r pipelines/requirements/ci.txt .[dev]
-
-      - uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Run tests
-        run: |
-          coverage run -m nox -s databases -- test --coverage --databases=postgresql
-        env:
-          COVERAGE_FILE: .cache/.coverage.databases
-          POSTGRESQL_URL: postgresql://postgres:postgres@localhost:5432/postgres
-
-      - name: Combine coverage
-        run: |
-          nox -s report
-
-      - name: Upload coverage
-        run: |
-          codecov --file coverage.xml
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
   sqlite:
     name: SQLite
     runs-on: ubuntu-latest
@@ -303,6 +238,11 @@ jobs:
             env: MYSQL_URL
             url: mysql://prisma:prisma@localhost:3307/prisma
             python-version: 3.9
+          - name: PostgreSQL
+            version: '10'
+            env: POSTGRESQL_URL
+            url: postgresql://postgres:prisma@localhost:5432/postgres
+            python-version: 3.9
 
     steps:
       - uses: actions/checkout@v3
@@ -330,7 +270,7 @@ jobs:
 
       - name: Run tests
         run: |
-          coverage run -m nox -s databases -- test --coverage --databases=mysql
+          coverage run -m nox -s databases -- test --coverage --databases=${{ matrix.name }}
         env:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases
