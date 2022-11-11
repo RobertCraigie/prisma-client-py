@@ -1,22 +1,19 @@
 import pytest
 import prisma
 from prisma import Prisma
-from prisma.enums import Role
 
 
 @pytest.mark.asyncio
 async def test_create_many(client: Prisma) -> None:
     """Standard usage"""
-    # TODO: this should work without Role
     total = await client.user.create_many(
-        [{'name': 'Robert', 'role': Role.ADMIN}, {'name': 'Tegan'}]
+        [{'name': 'Robert'}, {'name': 'Tegan'}]
     )
     assert total == 2
 
     user = await client.user.find_first(where={'name': 'Robert'})
     assert user is not None
     assert user.name == 'Robert'
-    assert user.role == Role.ADMIN
 
     assert await client.user.count() == 2
 
