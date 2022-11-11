@@ -9,7 +9,6 @@ from copy import deepcopy
 from contextvars import ContextVar, copy_context
 from typing import (
     Iterable,
-    List,
     Optional,
     cast,
 )
@@ -27,6 +26,7 @@ from prisma._compat import cached_property
 
 from .utils import DatabaseConfig
 from ._types import SupportedDatabase
+from ._serve import start_database
 from .constants import (
     SUPPORTED_DATABASES,
     DATABASES_DIR,
@@ -52,7 +52,7 @@ cli = typer.Typer(
 
 
 @cli.command()
-def main(
+def test(
     *,
     databases: list[str] = SUPPORTED_DATABASES,
     inplace: bool = False,
@@ -92,6 +92,13 @@ def main(
 
             if lint:
                 runner.lint()
+
+
+@cli.command()
+def serve(database: str, *, version: Optional[str] = None) -> None:
+    """Start a database server using docker-compose"""
+    database = validate_database(database)
+    start_database(database, version=version, session=session_ctx.get())
 
 
 class Runner:
@@ -243,11 +250,17 @@ def validate_databases(databases: list[str]) -> list[SupportedDatabase]:
     # I couldn't quickly find an option to support this with Typer so
     # it is handled manually here.
     databases = flatten([d.split(',') for d in databases])
-    for database in databases:
-        if database not in SUPPORTED_DATABASES:
-            raise ValueError(f'Unknown database: {database}')
+    return list(map(validate_database, databases))
 
-    return cast(List[SupportedDatabase], databases)
+
+def validate_database(database: str) -> SupportedDatabase:
+    # We convert the input to lowercase so that we don't have to define
+    # two separate names in the CI matrix.
+    database = database.lower()
+    if database not in SUPPORTED_DATABASES:
+        raise ValueError(f'Unknown database: {database}')
+
+    return cast(SupportedDatabase, database)
 
 
 def feature_relpath(path: str) -> str:
