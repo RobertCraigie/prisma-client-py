@@ -209,6 +209,11 @@ jobs:
             env: POSTGRESQL_URL
             url: postgresql://postgres:prisma@localhost:5438/postgres
 
+          - name: SQL Server
+            version: '2022'
+            env: SQLSERVER_URL
+            url: sqlserver://localhost:1435;password=<YourStrong@Passw0rd>;encrypt=true
+
     steps:
       - uses: actions/checkout@v3
 
@@ -232,11 +237,11 @@ jobs:
       - name: Start ${{ matrix.name }}
         if: matrix.name != 'SQLite'
         run: |
-          coverage run -m nox -s databases -- serve ${{ matrix.name }} --version=${{ matrix.version }}
+          coverage run -m nox -s databases -- serve '${{ matrix.name }}' --version=${{ matrix.version }}
 
       - name: Run tests
         run: |
-          coverage run -m nox -s databases -- test --coverage --databases=${{ matrix.name }}
+          coverage run -m nox -s databases -- test --coverage --databases='${{ matrix.name }}'
         env:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases

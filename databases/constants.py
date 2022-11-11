@@ -50,7 +50,15 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
             'case_sensitivity',
         },
     ),
+    'sqlserver': DatabaseConfig(
+        id='sqlserver',
+        name='SQL Server',
+        env_var='SQLSERVER_URL',
+        bools_are_ints=False,
+        unsupported_features=set(),
+    ),
 }
+NAME_TO_ID = {config.name: config.id for config in CONFIG_MAPPING.values()}
 SUPPORTED_DATABASES = cast(
     List[SupportedDatabase], list(get_args(SupportedDatabase))
 )
