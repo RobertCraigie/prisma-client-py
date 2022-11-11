@@ -193,25 +193,21 @@ jobs:
             version: '8.0'
             env: MYSQL_URL
             url: mysql://prisma:prisma@localhost:3307/prisma
-            python-version: 3.9
 
           - name: SQLite
             version: ''
             env: SQLITE_URL
             url: file:dev.db
-            python-version: 3.9
 
           - name: PostgreSQL
             version: '10'
             env: POSTGRESQL_URL
             url: postgresql://postgres:prisma@localhost:5432/postgres
-            python-version: 3.9
 
           - name: PostgreSQL
             version: '15'
             env: POSTGRESQL_URL
             url: postgresql://postgres:prisma@localhost:5438/postgres
-            python-version: 3.9
 
     steps:
       - uses: actions/checkout@v3
