@@ -29,7 +29,7 @@ services:
     networks:
       - databases
 
-  postgres11:
+  postgresql-11:
     image: postgres:11
     restart: always
     command: postgres -c 'max_connections=1000'

@@ -228,7 +228,7 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   databases:
-    name: ${{ matrix.name }}
+    name: ${{ matrix.name }} ${{ matrix.version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
