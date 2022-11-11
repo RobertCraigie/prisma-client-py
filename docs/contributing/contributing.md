@@ -102,13 +102,13 @@ To be able run these tests you will need to have certain environment variables d
 You can run these tests with:
 
 ```
-nox -s databases
+nox -s databases -- test
 ```
 
 Or you can explicitly specify the databases to run tests against:
 
 ```
-nox -s databases -- --databases=postgresql
+nox -s databases -- test --databases=postgresql
 ```
 
 This will generate the client for each given database and do the following:

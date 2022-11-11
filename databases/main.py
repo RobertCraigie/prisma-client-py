@@ -53,7 +53,7 @@ cli = typer.Typer(
 
 
 @cli.command()
-def main(
+def test(
     *,
     databases: list[str] = SUPPORTED_DATABASES,
     inplace: bool = False,

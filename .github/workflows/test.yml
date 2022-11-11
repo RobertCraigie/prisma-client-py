@@ -233,7 +233,7 @@ jobs:
 
       - name: Run tests
         run: |
-          coverage run -m nox -s databases -- --coverage --databases=postgresql
+          coverage run -m nox -s databases -- test --coverage --databases=postgresql
         env:
           COVERAGE_FILE: .cache/.coverage.databases
           POSTGRESQL_URL: postgresql://postgres:postgres@localhost:5432/postgres
@@ -277,7 +277,7 @@ jobs:
 
       - name: Run tests
         run: |
-          coverage run -m nox -s databases -- --coverage --databases=sqlite
+          coverage run -m nox -s databases -- test --coverage --databases=sqlite
         env:
           SQLITE_URL: file:dev.db
           COVERAGE_FILE: .cache/.coverage.databases
@@ -330,7 +330,7 @@ jobs:
 
       - name: Run tests
         run: |
-          coverage run -m nox -s databases -- --coverage --databases=mysql
+          coverage run -m nox -s databases -- test --coverage --databases=mysql
         env:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases
