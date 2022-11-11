@@ -205,9 +205,9 @@ jobs:
             url: postgresql://postgres:prisma@localhost:5432/postgres
             python-version: 3.9
           - name: PostgreSQL
-            version: '11'
+            version: '15'
             env: POSTGRESQL_URL
-            url: postgresql://postgres:prisma@localhost:5433/postgres
+            url: postgresql://postgres:prisma@localhost:5438/postgres
             python-version: 3.9
 
     steps:
