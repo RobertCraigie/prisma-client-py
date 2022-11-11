@@ -55,7 +55,11 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         name='SQL Server',
         env_var='SQLSERVER_URL',
         bools_are_ints=False,
-        unsupported_features=set(),
+        unsupported_features={
+            'enum',
+            'json',
+            'arrays',
+        },
     ),
 }
 NAME_TO_ID = {config.name: config.id for config in CONFIG_MAPPING.values()}
