@@ -326,7 +326,7 @@ jobs:
 
       - name: Start ${{ matrix.name }}
         run: |
-          coverage run -m nox -s databases -- serve ${{ matrix.name }}
+          coverage run -m nox -s databases -- serve ${{ matrix.name }} --version=${{ matrix.version }}
 
       - name: Run tests
         run: |
