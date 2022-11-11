@@ -212,7 +212,7 @@ jobs:
           - name: SQL Server
             version: '2022'
             env: SQLSERVER_URL
-            url: sqlserver://localhost:1435;password=<YourStrong@Passw0rd>;encrypt=true
+            url: sqlserver://localhost:1435;password=<YourStrong@Passw0rd>;encrypt=true;trustServerCertificate=true
 
     steps:
       - uses: actions/checkout@v3
