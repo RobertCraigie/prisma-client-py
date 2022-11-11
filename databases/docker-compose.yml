@@ -18,7 +18,7 @@ services:
       - databases
     tmpfs: /var/lib/mysql8
 
-  postgres-10:
+  postgresql-10:
     image: postgres:10
     restart: always
     command: postgres -c 'max_connections=1000'
