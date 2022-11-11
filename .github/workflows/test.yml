@@ -231,7 +231,7 @@ jobs:
             ${{ runner.os }}-pip-
 
       - name: Start ${{ matrix.name }}
-        if: ${{ matrix.name }} != 'SQLite'
+        if: matrix.name != 'SQLite'
         run: |
           coverage run -m nox -s databases -- serve ${{ matrix.name }} --version=${{ matrix.version }}
 
