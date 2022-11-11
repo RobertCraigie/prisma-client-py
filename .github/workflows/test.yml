@@ -243,6 +243,11 @@ jobs:
             env: POSTGRESQL_URL
             url: postgresql://postgres:prisma@localhost:5432/postgres
             python-version: 3.9
+          - name: PostgreSQL
+            version: '11'
+            env: POSTGRESQL_URL
+            url: postgresql://postgres:prisma@localhost:5432/postgres
+            python-version: 3.9
 
     steps:
       - uses: actions/checkout@v3

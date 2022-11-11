@@ -29,5 +29,15 @@ services:
     networks:
       - databases
 
+  postgres11:
+    image: postgres:11
+    restart: always
+    command: postgres -c 'max_connections=1000'
+    environment:
+      POSTGRES_PASSWORD: "prisma"
+    ports:
+      - "5433:5432"
+    networks:
+      - databases
 networks:
   databases: null
