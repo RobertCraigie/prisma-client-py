@@ -5,6 +5,7 @@ concurrency = multiprocessing
 source =
     tests
     prisma
+    databases
 
 omit =
     *.py.jinja

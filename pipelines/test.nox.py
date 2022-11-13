@@ -13,4 +13,11 @@ def test(session: nox.Session) -> None:
 
     generate(session)
 
-    session.run('coverage', 'run', '-m', 'pytest', *session.posargs)
+    session.run(
+        'coverage',
+        'run',
+        '-m',
+        'pytest',
+        '--ignore=databases',
+        *session.posargs
+    )
