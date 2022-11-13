@@ -32,6 +32,8 @@ from prisma.binaries import platform
 from prisma.generator.utils import copy_tree
 from prisma.generator.generator import BASE_PACKAGE_DIR
 
+from lib.utils import escape_path
+
 
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
@@ -285,13 +287,6 @@ def get_source_from_function(function: FuncType, **env: Any) -> str:
         lines.insert(start, f'{name} = {value}')
 
     return IMPORT_RELOADER + '\n'.join(lines)
-
-
-def escape_path(path: Union[str, Path]) -> str:
-    if isinstance(path, Path):  # pragma: no branch
-        path = str(path.absolute())
-
-    return path.replace('\\', '\\\\')
 
 
 @contextlib.contextmanager
