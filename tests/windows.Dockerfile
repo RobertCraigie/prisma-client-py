@@ -24,3 +24,6 @@ RUN prisma generate --schema ./tests/data/schema.prisma
 
 # Ensure all combinations of non-global Node resolvers work
 RUN nox -s test -p 3.10 -- tests/test_node
+
+# Ensure database access using SQLite works
+RUN nox -s databases -- test --databases=sqlite
