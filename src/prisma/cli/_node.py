@@ -165,8 +165,6 @@ class NodeBinaryStrategy(Strategy):
                 stdout=sys.stdout,
                 stderr=sys.stderr,
             )
-            if platform.name() == 'windows':
-                cache_dir.joinpath('node').symlink_to('node.exe')
 
         if not cache_dir.exists():
             raise RuntimeError(
