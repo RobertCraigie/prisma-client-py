@@ -1,7 +1,6 @@
 import nox
-import distro
 
-from pipelines.utils import setup_env
+from pipelines.utils import setup_env, maybe_install_nodejs_bin
 from pipelines.utils.prisma import generate
 
 
@@ -10,11 +9,7 @@ def test(session: nox.Session) -> None:
     setup_env(session)
     session.install('-r', 'pipelines/requirements/test.txt')
     session.install('.')
-
-    # nodejs-bin is not available on alpine yet, we need to wait until this fix is released:
-    # https://github.com/samwillis/nodejs-pypi/issues/11
-    if distro.id() != 'alpine':
-        session.install('-r', 'pipelines/requirements/node.txt')
+    maybe_install_nodejs_bin(session)
 
     generate(session)
 

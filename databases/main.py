@@ -21,7 +21,11 @@ import typer
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from lib.utils import flatten, escape_path
-from pipelines.utils import setup_coverage, get_pkg_location
+from pipelines.utils import (
+    setup_coverage,
+    get_pkg_location,
+    maybe_install_nodejs_bin,
+)
 from prisma._compat import cached_property
 
 from .utils import DatabaseConfig
@@ -68,6 +72,8 @@ def test(
     with session.chdir(DATABASES_DIR):
         # setup env
         session.install('-r', 'requirements.txt')
+        maybe_install_nodejs_bin(session)
+
         if inplace:
             # useful for updating the generated code so that Pylance picks it up
             session.install('-U', '-e', '..')
