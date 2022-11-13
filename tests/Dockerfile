@@ -34,7 +34,9 @@ ENV DOCKER_TARGETARCH=${TARGETARCH}
 RUN \
     if [[ $OS_DISTRO =~ alpine ]]; then \
       adduser -u ${PRISMA_USER_ID} -D prisma; \
-      apk add gcc musl-dev yaml-dev yaml libffi-dev glibc; \
+      # glibc required because of https://stackoverflow.com/a/69607834
+      # libstdc=+ required because of https://github.com/kohlschutter/junixsocket/issues/33#issuecomment-273255073
+      apk add gcc musl-dev yaml-dev yaml libffi-dev glibc libstdc++; \
       # https://stackoverflow.com/a/73711302
       apk add libc6-compat; \
     elif bash -c "[[ ${OS_DISTRO} =~ slim ]]"; then \
