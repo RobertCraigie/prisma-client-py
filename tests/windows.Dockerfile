@@ -27,4 +27,7 @@ RUN nox -s test -p 3.10 -- tests/test_node
 
 # Ensure database access using SQLite works
 ENV SQLITE_URL="file:sqlite.db"
-RUN nox -s databases -- test --databases=sqlite
+
+# We don't run linters here because pyright-python is currently broken in certain docker images
+# TODO: lint when fixed
+RUN nox -s databases -- test --databases=sqlite --no-lint
