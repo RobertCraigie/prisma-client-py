@@ -5,6 +5,7 @@ import distro
 
 
 CACHE_DIR = Path.cwd() / '.cache'
+PIPELINES_DIR = Path(__file__).parent.parent
 
 
 def get_pkg_location(session: nox.Session, pkg: str) -> str:
@@ -51,5 +52,5 @@ def maybe_install_nodejs_bin(session: nox.Session) -> bool:
     if distro.id() == 'alpine':
         return False
 
-    session.install('-r', 'pipelines/requirements/node.txt')
+    session.install('-r', str(PIPELINES_DIR / 'requirements/node.txt'))
     return True
