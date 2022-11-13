@@ -34,7 +34,7 @@ ENV DOCKER_TARGETARCH=${TARGETARCH}
 RUN \
     if [[ $OS_DISTRO =~ alpine ]]; then \
       adduser -u ${PRISMA_USER_ID} -D prisma; \
-      apk add gcc musl-dev yaml-dev yaml libffi-dev; \
+      apk add gcc musl-dev yaml-dev yaml libffi-dev glibc; \
       # https://stackoverflow.com/a/73711302
       apk add libc6-compat; \
     elif bash -c "[[ ${OS_DISTRO} =~ slim ]]"; then \
