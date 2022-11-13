@@ -260,6 +260,11 @@ jobs:
       matrix:
         docker-platform: [linux/amd64, linux/arm64]
         python-os-distro: [slim-bullseye, alpine]
+        exclude:
+          # Dockerfile is currently broken for alpine / arm64
+          # https://github.com/RobertCraigie/prisma-client-py/issues/581
+          - docker-platform: linux/arm64
+            python-os-distro: alpine
     steps:
       - uses: actions/checkout@v3
 
