@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 from prisma.cli import _node as node
 from prisma._config import Config
+from prisma._compat import nodejs
 
 from ..utils import set_config
 
@@ -35,6 +36,7 @@ def test_resolve_bad_target() -> None:
         node.resolve(cast(node.Target, 'foo'))
 
 
+@pytest.mark.skipif(nodejs is None, reason='nodejs-bin is not installed')
 def test_nodejs_bin() -> None:
     """When `nodejs-bin` is installed, it is resolved to and can be successfully used"""
     with set_config(

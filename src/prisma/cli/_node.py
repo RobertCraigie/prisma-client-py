@@ -7,7 +7,7 @@ import logging
 import subprocess
 from pathlib import Path
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, IO, Union, Any, Mapping, cast
+from typing import IO, Union, Any, Mapping, cast
 from typing_extensions import Literal
 
 from pydantic.typing import get_args
@@ -16,17 +16,7 @@ from .. import config
 from .._proxy import LazyProxy
 from ..binaries import platform
 from ..errors import PrismaError
-
-if TYPE_CHECKING:
-    # TODO
-    import nodejs  # type: ignore
-    import nodejs.node  # type: ignore
-    import nodejs.npm  # type: ignore
-else:
-    try:
-        import nodejs
-    except ImportError:
-        nodejs = None
+from .._compat import nodejs
 
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -38,6 +28,14 @@ class UnknownTargetError(PrismaError):
     def __init__(self, *, target: str) -> None:
         super().__init__(
             f'Unknown target: {target}; Valid choices are: {", ".join(get_args(cast(type, Target)))}'
+        )
+
+
+# TODO: add tests for this error
+class MissingNodejsBinError(PrismaError):
+    def __init__(self) -> None:
+        super().__init__(
+            'Attempted to access a function that requires the `nodejs-bin` package to be installed but it is not.'
         )
 
 
@@ -210,6 +208,9 @@ class NodeJSPythonStrategy(Strategy):
         stderr: File | None = None,
         env: Mapping[str, str] | None = None,
     ) -> subprocess.CompletedProcess[bytes]:
+        if nodejs is None:
+            raise MissingNodejsBinError()
+
         func = None
         if self.target == 'node':
             func = nodejs.node.run
@@ -230,6 +231,9 @@ class NodeJSPythonStrategy(Strategy):
 
     @property
     def target_bin(self) -> Path:
+        if nodejs is None:
+            raise MissingNodejsBinError()
+
         return Path(nodejs.node.path).parent
 
 

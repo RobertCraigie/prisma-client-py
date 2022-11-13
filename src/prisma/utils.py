@@ -124,3 +124,12 @@ def assert_never(value: NoReturn) -> NoReturn:
     assert False, 'Unhandled type: {}'.format(
         type(value).__name__
     )  # pragma: no cover
+
+
+def make_optional(value: _T) -> _T | None:
+    """Helper function for type checkers to change the given type to include None.
+
+    This is useful in cases where you do not have an explicit type for a symbol (e.g. modules)
+    but want to mark it as potentially None.
+    """
+    return value
