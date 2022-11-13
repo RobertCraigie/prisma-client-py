@@ -35,15 +35,14 @@ RUN \
     if [[ $OS_DISTRO =~ alpine ]]; then \
       adduser -u ${PRISMA_USER_ID} -D prisma; \
       apk add gcc musl-dev yaml-dev yaml libffi-dev; \
+      # https://stackoverflow.com/a/73711302
+      apk add libc6-compat; \
     elif bash -c "[[ ${OS_DISTRO} =~ slim ]]"; then \
       useradd --create-home --uid ${PRISMA_USER_ID} --shell /bin/bash prisma; \
     else \
       echo "Unrecognized distro $OS_DISTRO"; \
       exit 99; \
     fi
-
-# https://stackoverflow.com/a/73711302
-RUN apk add libc6-compat
 
 USER prisma
 WORKDIR /home/prisma/prisma-client-py
