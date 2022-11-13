@@ -62,4 +62,5 @@ RUN prisma generate --schema ./tests/data/schema.prisma
 RUN nox -s test -p 3.10 -- tests/test_node
 
 # Ensure database access using SQLite works
+ENV SQLITE_URL="file:sqlite.db"
 RUN nox -s databases -- test --databases=sqlite
