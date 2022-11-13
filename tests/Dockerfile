@@ -42,6 +42,9 @@ RUN \
       exit 99; \
     fi
 
+# https://stackoverflow.com/a/73711302
+RUN apk add libc6-compat
+
 USER prisma
 WORKDIR /home/prisma/prisma-client-py
 ENV PATH="/home/prisma/.local/bin:${PATH}"
