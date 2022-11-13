@@ -4,6 +4,7 @@
 !src/
 !tests
 !requirements/
+!databases/
 !noxfile.py
 !pipelines/
 !pytest.ini
