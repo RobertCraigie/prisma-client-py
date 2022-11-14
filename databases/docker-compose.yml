@@ -18,6 +18,19 @@ services:
       - databases
     tmpfs: /var/lib/mysql8
 
+  mariadb-10-0:
+    image: mariadb:10
+    restart: always
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: prisma
+      MYSQL_DATABASE: prisma
+    ports:
+      - "3308:3306"
+    networks:
+      - databases
+    tmpfs: /var/lib/mariadb
+
   postgresql-10:
     image: postgres:10
     restart: always
