@@ -209,6 +209,11 @@ jobs:
             env: POSTGRESQL_URL
             url: postgresql://postgres:prisma@localhost:5438/postgres
 
+          - name: MariaDB
+            version: '10.0'
+            env: MARIADB_URL
+            url: mysql://root:prisma@localhost:3308/prisma?connect_timeout=20&socket_timeout=60
+
     steps:
       - uses: actions/checkout@v3
 

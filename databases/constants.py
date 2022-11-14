@@ -50,6 +50,16 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
             'case_sensitivity',
         },
     ),
+    'mariadb': DatabaseConfig(
+        id='mysql',
+        name='MariaDB',
+        env_var='MARIADB_URL',
+        bools_are_ints=True,
+        unsupported_features={
+            'arrays',
+            'case_sensitivity',
+        },
+    ),
 }
 SUPPORTED_DATABASES = cast(
     List[SupportedDatabase], list(get_args(SupportedDatabase))
