@@ -35,7 +35,7 @@ from .constants import (
     PYTEST_CONFIG,
     FEATURES_MAPPING,
     PYRIGHT_CONFIG,
-    FEATURES_DIR,
+    TESTS_DIR,
 )
 
 
@@ -229,7 +229,7 @@ class Runner:
     @cached_property
     def exclude_files(self) -> set[str]:
         files = [
-            feature_relpath(path)
+            tests_relpath(path)
             for path in flatten(
                 [
                     FEATURES_MAPPING[feature]
@@ -263,8 +263,8 @@ def validate_database(database: str) -> SupportedDatabase:
     return cast(SupportedDatabase, database)
 
 
-def feature_relpath(path: str) -> str:
-    return str((FEATURES_DIR / path).relative_to(DATABASES_DIR))
+def tests_relpath(path: str) -> str:
+    return str((TESTS_DIR / path).relative_to(DATABASES_DIR))
 
 
 def title(text: str) -> str:
