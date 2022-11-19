@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import sys
 import subprocess
 from pathlib import Path
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Iterator, List, Optional
 
 import pytest
 from syrupy.assertion import SnapshotAssertion
@@ -30,6 +32,18 @@ class OSAgnosticSingleFileExtension(SingleFileSnapshotExtension):
             data, exclude=exclude, matcher=matcher
         )
         return bytes(serialized, 'utf-8')
+
+    # we disable diffs as we don't really care what the diff is
+    # we just care that there is a diff and it can take a very
+    # long time for syrupy to calculate the diff
+    # https://github.com/tophat/syrupy/issues/581
+    def diff_snapshots(self, serialized_data: Any, snapshot_data: Any) -> str:
+        return 'diff-is-disabled'
+
+    def diff_lines(
+        self, serialized_data: Any, snapshot_data: Any
+    ) -> Iterator[str]:
+        yield 'diff-is-disabled'
 
 
 @pytest.fixture
