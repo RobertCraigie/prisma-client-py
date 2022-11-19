@@ -20,7 +20,7 @@ import rtoml
 import typer
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
-from lib.utils import flatten
+from lib.utils import flatten, escape_path
 from pipelines.utils import setup_coverage, get_pkg_location
 from prisma._compat import cached_property
 
@@ -159,7 +159,7 @@ class Runner:
             template.render(
                 # template variables
                 config=self.config,
-                partial_generator=(DATABASES_DIR / 'partials.py').absolute(),
+                partial_generator=escape_path(DATABASES_DIR / 'partials.py'),
             )
         )
 
