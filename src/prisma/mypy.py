@@ -154,6 +154,9 @@ class PrismaPlugin(Plugin):
             include = self.parse_expression_to_dict(include_expr)
             new_model = self.modify_model_from_include(model_type, include)
         except Exception as exc:
+            # we just raise the exception here for debugging purposes
+            raise
+
             log.debug(
                 'Ignoring %s exception while parsing include: %s',
                 type(exc).__name__,
