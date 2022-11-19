@@ -6,25 +6,45 @@ from pathlib import Path
 
 import pytest
 from prisma.cli import _node as node
+from prisma.cli._node import Target
 from prisma._config import Config
 from prisma._compat import nodejs
 
 from ..utils import set_config
 
 
-# TODO: test npm usage too
-
-
 THIS_DIR = Path(__file__).parent
 
+parametrize_target = pytest.mark.parametrize('target', ['node', 'npm'])
 
-def assert_can_run_js(strategy: node.Node) -> None:
+
+def _assert_can_run_js(strategy: node.Node) -> None:
     proc = strategy.run(
         str(THIS_DIR.joinpath('test.js')),
         stdout=subprocess.PIPE,
     )
     output = proc.stdout.decode('utf-8')
     assert output == 'Hello world!\n'
+
+
+def _assert_can_run_npm(strategy: node.Node) -> None:
+    assert strategy.target == 'npm'
+
+    proc = strategy.run('help', stdout=subprocess.PIPE)
+    output = proc.stdout.decode('utf-8')
+
+    assert 'npm' in output
+
+
+def assert_strategy(strategy: node.Node) -> None:
+    if strategy.target == 'node':
+        _assert_can_run_js(strategy)
+    elif strategy.target == 'npm':
+        _assert_can_run_npm(strategy)
+    else:  # pragma: no cover
+        raise ValueError(
+            f'No tests implemented for strategy target: {strategy.target}'
+        )
 
 
 def test_resolve_bad_target() -> None:
@@ -36,8 +56,9 @@ def test_resolve_bad_target() -> None:
         node.resolve(cast(node.Target, 'foo'))
 
 
+@parametrize_target
 @pytest.mark.skipif(nodejs is None, reason='nodejs-bin is not installed')
-def test_nodejs_bin() -> None:
+def test_nodejs_bin(target: Target) -> None:
     """When `nodejs-bin` is installed, it is resolved to and can be successfully used"""
     with set_config(
         Config.parse(
@@ -45,16 +66,17 @@ def test_nodejs_bin() -> None:
             use_global_node=False,
         )
     ):
-        strategy = node.resolve('node')
+        strategy = node.resolve(target)
         assert strategy.resolver == 'nodejs-bin'
-        assert_can_run_js(strategy)
+        assert_strategy(strategy)
 
 
+@parametrize_target
 @pytest.mark.skipif(
     shutil.which('node') is None,
     reason='Node is not installed globally',
 )
-def test_resolves_binary_node() -> None:
+def test_resolves_binary_node(target: Target) -> None:
     """When `node` is installed globally, it is resolved to and can be successfully used"""
     with set_config(
         Config.parse(
@@ -62,9 +84,9 @@ def test_resolves_binary_node() -> None:
             use_global_node=True,
         )
     ):
-        strategy = node.resolve('node')
+        strategy = node.resolve(target)
         assert strategy.resolver == 'global'
-        assert_can_run_js(strategy)
+        assert_strategy(strategy)
 
     with set_config(
         Config.parse(
@@ -72,12 +94,13 @@ def test_resolves_binary_node() -> None:
             use_global_node=False,
         )
     ):
-        strategy = node.resolve('node')
+        strategy = node.resolve(target)
         assert strategy.resolver == 'nodeenv'
-        assert_can_run_js(strategy)
+        assert_strategy(strategy)
 
 
-def test_nodeenv() -> None:
+@parametrize_target
+def test_nodeenv(target: Target) -> None:
     """When `nodejs-bin` and global `node` is not installed / configured to use, `nodeenv` is resolved to and can be successfully used"""
     with set_config(
         Config.parse(
@@ -85,9 +108,9 @@ def test_nodeenv() -> None:
             use_global_node=False,
         )
     ):
-        strategy = node.resolve('node')
+        strategy = node.resolve(target)
         assert strategy.resolver == 'nodeenv'
-        assert_can_run_js(strategy)
+        assert_strategy(strategy)
 
 
 def test_update_path_env() -> None:

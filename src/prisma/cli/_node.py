@@ -96,15 +96,18 @@ class Strategy(ABC):
 
 
 class NodeBinaryStrategy(Strategy):
+    target: Target
     resolver: Literal['global', 'nodeenv']
 
     def __init__(
         self,
         *,
         path: Path,
+        target: Target,
         resolver: Literal['global', 'nodeenv'],
     ) -> None:
         self.path = path
+        self.target = target
         self.resolver = resolver
 
     @property
@@ -139,7 +142,11 @@ class NodeBinaryStrategy(Strategy):
             path = _get_global_binary(target)
 
         if path is not None:
-            return NodeBinaryStrategy(path=path, resolver='global')
+            return NodeBinaryStrategy(
+                path=path,
+                target=target,
+                resolver='global',
+            )
 
         return NodeBinaryStrategy.from_nodeenv(target)
 
@@ -182,9 +189,9 @@ class NodeBinaryStrategy(Strategy):
             path = cache_dir / 'bin' / target
 
         if target == 'npm':
-            return cls(path=path, resolver='nodeenv')
+            return cls(path=path, resolver='nodeenv', target=target)
         elif target == 'node':
-            return cls(path=path, resolver='nodeenv')
+            return cls(path=path, resolver='nodeenv', target=target)
         else:
             raise UnknownTargetError(target=target)
 
