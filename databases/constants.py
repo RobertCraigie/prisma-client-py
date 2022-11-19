@@ -10,11 +10,10 @@ from .utils import DatabaseConfig, DatabaseFeature
 
 
 def _fromdir(path: str) -> list[str]:
-    """Get the contents of a subdirectory within the `features` directory"""
+    """Get the contents of a subdirectory within the `` directory"""
     # TODO: recurse subdirs
     return [
-        str(f.relative_to(FEATURES_DIR))
-        for f in (FEATURES_DIR / path).iterdir()
+        str(f.relative_to(TESTS_DIR)) for f in (TESTS_DIR / path).iterdir()
     ]
 
 
@@ -50,6 +49,16 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
             'case_sensitivity',
         },
     ),
+    'mariadb': DatabaseConfig(
+        id='mysql',
+        name='MariaDB',
+        env_var='MARIADB_URL',
+        bools_are_ints=True,
+        unsupported_features={
+            'arrays',
+            'case_sensitivity',
+        },
+    ),
 }
 SUPPORTED_DATABASES = cast(
     List[SupportedDatabase], list(get_args(SupportedDatabase))
@@ -60,11 +69,11 @@ ROOT_DIR = Path(__file__).parent.parent
 DATABASES_DIR = Path(__file__).parent
 
 # database features
-FEATURES_DIR = DATABASES_DIR / 'tests' / 'features'
+TESTS_DIR = DATABASES_DIR / 'tests'
 FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     'enum': ['test_enum.py', 'test_arrays/test_enum.py'],
-    'json': ['test_json.py', 'test_arrays/test_json.py'],
-    'arrays': _fromdir('test_arrays'),
+    'json': ['types/test_json.py', 'test_arrays/test_json.py'],
+    'arrays': _fromdir('arrays'),
     'create_many': ['test_create_many.py'],
     'raw_queries': ['test_raw_queries.py'],
     'case_sensitivity': ['test_case_sensitivity.py'],

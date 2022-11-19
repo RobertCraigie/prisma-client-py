@@ -609,6 +609,23 @@ class Model(BaseModel):
         super().__init__(**data)
         self._sampler = Sampler(self)
 
+    @validator('name')
+    @classmethod
+    def name_validator(cls, name: str) -> str:
+        if iskeyword(name):
+            raise ValueError(
+                f'Model name "{name}" shadows a Python keyword; '
+                f'use a different model name with \'@@map("{name}")\'.'
+            )
+
+        if iskeyword(name.lower()):
+            raise ValueError(
+                f'Model name "{name}" results in a client property that shadows a Python keyword; '
+                f'use a different model name with \'@@map("{name}")\'.'
+            )
+
+        return name
+
     @root_validator(allow_reuse=True)
     @classmethod
     def validate_compound_constraints_are_unique(
