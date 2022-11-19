@@ -38,12 +38,12 @@ class OSAgnosticSingleFileExtension(SingleFileSnapshotExtension):
     # long time for syrupy to calculate the diff
     # https://github.com/tophat/syrupy/issues/581
     def diff_snapshots(self, serialized_data: Any, snapshot_data: Any) -> str:
-        return 'diff-is-disabled'
+        return 'diff-is-disabled'  # pragma: no cover
 
     def diff_lines(
         self, serialized_data: Any, snapshot_data: Any
     ) -> Iterator[str]:
-        yield 'diff-is-disabled'
+        yield 'diff-is-disabled'  # pragma: no cover
 
 
 @pytest.fixture
