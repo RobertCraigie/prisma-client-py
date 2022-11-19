@@ -405,7 +405,7 @@ class OptionalValueFromEnvVar(BaseModel):
         return value
 
 
-class BaseConfig(BaseSettings):
+class BaseConfig(PydanticBaseModel):
     # this seems to be the only good method for setting the contextvar as
     # we don't control the actual construction of the object like we do for
     # the Data model.
@@ -418,7 +418,7 @@ class BaseConfig(BaseSettings):
             config_ctx.set(self)
 
 
-class Config(BaseConfig):
+class Config(BaseConfig, BaseSettings):
     """Custom generator config options."""
 
     interface: InterfaceChoices = InterfaceChoices.asyncio
