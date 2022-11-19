@@ -1,9 +1,9 @@
 # pyright: reportUnusedFunction=false
 
 import subprocess
+from typing_extensions import Literal
 
 import pytest
-from prisma._types import Literal
 from ..utils import Testdir
 
 
@@ -94,6 +94,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             PostModifiedAuthor,
             UserModifiedPosts,
             UserBytesList,
+            PostNoRelationsAndExclude,
         )
 
         base_fields = {
@@ -217,6 +218,18 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
                 },
             )
 
+        def test_exclude_relations_and_others() -> None:
+            """Removing all relational fields using `exclude_relations` in combination with `exclude`"""
+            assert_expected(
+                PostNoRelationsAndExclude,
+                base_fields,
+                removed={
+                    'title',
+                    'author',
+                    'comments',
+                },
+            )
+
         def test_modified_relational_list_type() -> None:
             """Changing one-to-many relation field type"""
             UserModifiedPosts(
@@ -272,6 +285,11 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             'PostModifiedAuthor', relations={'author': 'UserOnlyName'}
         )
         Post.create_partial('PostNoRelations', exclude_relational_fields=True)
+        Post.create_partial(
+            'PostNoRelationsAndExclude',
+            exclude={'title'},
+            exclude_relational_fields=True,
+        )
 
         User.create_partial(
             'UserModifiedPosts',
@@ -283,7 +301,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
     testdir.make_from_function(generator, name=location)
     testdir.generate(SCHEMA, options)
     testdir.make_from_function(tests)
-    testdir.runpytest().assert_outcomes(passed=10)
+    testdir.runpytest().assert_outcomes(passed=11)
 
 
 @pytest.mark.parametrize(
@@ -554,5 +572,37 @@ def test_exclude_relational_fields_and_relations_exclusive(
     )
     assert (
         'exclude_relational_fields and relations are mutually exclusive'
+        in output
+    )
+
+
+def test_exclude_relational_fields_and_include_exclusive(
+    testdir: Testdir,
+) -> None:
+    """exclude_relational_fields and include cannot be passed at the same time"""
+
+    def generator() -> None:  # mark: filedef
+        from prisma.models import Post
+
+        Post.create_partial(
+            'Placeholder',
+            include={'author'},
+            exclude_relational_fields=True,
+        )
+
+    testdir.make_from_function(generator, name='prisma/partial_types.py')
+
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(SCHEMA)
+
+    output = exc.value.output.decode('utf-8')
+    assert 'prisma/partial_types.py' in output
+    assert 'TypeError' in output
+    assert (
+        'An exception ocurred while running the partial type generator'
+        in output
+    )
+    assert (
+        'Include and exclude_relational_fields=True are mutually exclusive.'
         in output
     )

@@ -1,7 +1,5 @@
 import os
 import sys
-import asyncio
-import inspect
 from typing import List, Iterator, TYPE_CHECKING
 
 import pytest
@@ -9,15 +7,13 @@ import pytest
 import prisma
 from prisma import Prisma
 from prisma.cli import setup_logging
-from prisma.testing import reset_client
-from prisma.utils import get_or_create_event_loop
 
-from .utils import Runner, Testdir, async_fixture
+from lib.testing.shared_conftest import *
+from .utils import Runner, Testdir
 
 
 if TYPE_CHECKING:
     from _pytest.config import Config
-    from _pytest.fixtures import FixtureRequest
     from _pytest.monkeypatch import MonkeyPatch
     from _pytest.pytester import Testdir as PytestTestdir
 
@@ -27,21 +23,6 @@ LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
 
 
 prisma.register(Prisma())
-
-
-@async_fixture(name='client', scope='session')
-async def client_fixture() -> Prisma:
-    client = prisma.get_client()
-    if not client.is_connected():  # pragma: no cover
-        await client.connect()
-
-    await cleanup_client(client)
-    return client
-
-
-@pytest.fixture(scope='session')
-def event_loop() -> asyncio.AbstractEventLoop:
-    return get_or_create_event_loop()
 
 
 @pytest.fixture()
@@ -78,50 +59,3 @@ def pytest_collection_modifyitems(
     items.sort(
         key=lambda item: item.__class__.__name__ == 'IntegrationTestItem'
     )
-
-
-@pytest.fixture(name='patch_prisma', autouse=True)
-def patch_prisma_fixture(request: 'FixtureRequest') -> Iterator[None]:
-    if request_has_client(request):
-        yield
-    else:
-
-        def _disable_access() -> None:
-            raise RuntimeError(
-                'Tests that access the prisma client must be decorated with: '
-                '@pytest.mark.prisma'
-            )
-
-        with reset_client(_disable_access):  # type: ignore
-            yield
-
-
-@async_fixture(name='setup_client', autouse=True)
-async def setup_client_fixture(request: 'FixtureRequest') -> None:
-    if not request_has_client(request):
-        return
-
-    item = request.node
-    if item.get_closest_marker('persist_data') is not None:
-        return
-
-    client = prisma.get_client()
-    if not client.is_connected():  # pragma: no cover
-        await client.connect()
-
-    await cleanup_client(client)
-
-
-def request_has_client(request: 'FixtureRequest') -> bool:
-    """Return whether or not the current request uses the prisma client"""
-    return (
-        request.node.get_closest_marker('prisma') is not None
-        or 'client' in request.fixturenames
-    )
-
-
-async def cleanup_client(client: Prisma) -> None:
-    async with client.batch_() as batcher:
-        for _, item in inspect.getmembers(batcher):
-            if item.__class__.__name__.endswith('Actions'):
-                item.delete_many()

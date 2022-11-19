@@ -1,7 +1,7 @@
 import os
 import shutil
 from textwrap import dedent
-from typing import Any, List, TypeVar, Union, TYPE_CHECKING
+from typing import Any, List, Dict, Iterator, TypeVar, Union, TYPE_CHECKING
 from pathlib import Path
 
 from ..utils import monkeypatch
@@ -11,6 +11,10 @@ if TYPE_CHECKING:
 
 
 T = TypeVar('T')
+
+# we have to use a mapping outside of the `Sampler` class
+# to avoid https://github.com/RobertCraigie/prisma-client-py/issues/402
+SAMPLER_ITER_MAPPING: 'Dict[str, Iterator[Field]]' = {}
 
 
 class Faker:
@@ -51,14 +55,16 @@ class Sampler:
 
     def __init__(self, model: 'Model') -> None:
         self.model = model
-        self._field_iter = model.scalar_fields
+        SAMPLER_ITER_MAPPING[model.name] = model.scalar_fields
 
     def get_field(self) -> 'Field':
+        mapping = SAMPLER_ITER_MAPPING
+
         try:
-            field = next(self._field_iter)
+            field = next(mapping[self.model.name])
         except StopIteration:
-            self._field_iter = self.model.scalar_fields
-            field = next(self._field_iter)
+            mapping[self.model.name] = field_iter = self.model.scalar_fields
+            field = next(field_iter)
 
         return field
 
@@ -83,7 +89,12 @@ def remove_suffix(path: Union[str, Path], suf: str) -> str:
 
 
 def copy_tree(src: Path, dst: Path) -> None:
-    """Recursively copy the contents of a directory from src to dst"""
+    """Recursively copy the contents of a directory from src to dst.
+
+    This function will ignore certain compiled / cache files for convenience:
+    - *.pyc
+    - __pycache__
+    """
     # we have to do this horrible monkeypatching as
     # shutil makes an arbitrary call to os.makedirs
     # which will fail if the directory already exists.
@@ -91,12 +102,19 @@ def copy_tree(src: Path, dst: Path) -> None:
     # added in python 3.8 so we cannot use that :(
 
     def _patched_makedirs(
-        makedirs: Any, name: str, mode: int = 511, exist_ok: bool = True
+        makedirs: Any,
+        name: str,
+        mode: int = 511,
+        exist_ok: bool = True,
     ) -> None:
         makedirs(name, mode, exist_ok=True)
 
     with monkeypatch(os, 'makedirs', _patched_makedirs):
-        shutil.copytree(str(src), str(dst))
+        shutil.copytree(
+            str(src),
+            str(dst),
+            ignore=shutil.ignore_patterns('*.pyc', '__pycache__'),
+        )
 
 
 def clean_multiline(string: str) -> str:

@@ -13,7 +13,7 @@ database:
 
 .PHONY: test
 test:
-	tox $(ARGS)
+	nox -s test $(ARGS)
 
 .PHONY: format
 format:
@@ -24,11 +24,11 @@ format:
 
 .PHONY: lint
 lint:
-	tox -e lint
+	nox -s lint
 
 .PHONY: mypy
 mypy:
-	tox -e mypy
+	nox -s mypy
 
 .PHONY: pyright
 pyright:
@@ -37,25 +37,38 @@ pyright:
 
 .PHONY: typesafety
 typesafety:
-	tox -e typesafety-pyright,typesafety-mypy
+	nox -s typesafety-pyright typesafety-mypy
 
 .PHONY: docs
 docs:
 	python scripts/docs.py
 	mkdocs build
 
+.PHONY: start-mysql
+start-mysql:
+	docker compose -f databases/docker-compose.yml up -d --remove-orphans mysql-8-0
+
 .PHONY: docs-serve
 docs-serve:
 	python scripts/docs.py
 	mkdocs serve
 
+.PHONY: docker
+docker:
+	# Note: the below will fail on linux/arm64 systems until
+	# we fix it in the upstream project
+	docker build -f tests/Dockerfile -t prisma-client-py --load .
+
 .PHONY: clean
 clean:
 	python -m prisma_cleanup
-	rm -rf /tmp/tox/prisma-client-py
+	pip cache remove prisma
+	rm -rf .nox
+	rm -rf .cache
 	rm -rf `find . -name __pycache__`
 	rm -rf `find examples -name '.venv' `
 	rm -rf `find tests/integrations -name '.venv' `
+	rm `find databases -name *pyrightconfig.json`
 	rm -rf .tests_cache
 	rm -rf .mypy_cache
 	rm -rf htmlcov

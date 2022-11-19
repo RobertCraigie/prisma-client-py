@@ -36,18 +36,15 @@ from pydantic import (
 from pydantic.fields import PrivateAttr
 from pydantic.generics import GenericModel as PydanticGenericModel
 
-try:
-    from pydantic.env_settings import SettingsSourceCallable
-except ImportError:
-    SettingsSourceCallable = Any  # type: ignore
-
-
 from .utils import Faker, Sampler, clean_multiline
+from .. import config
 from ..utils import DEBUG_GENERATOR, assert_never
 from .._compat import validator, root_validator, cached_property
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
-from ..binaries.constants import ENGINE_VERSION, PRISMA_VERSION
+
+if TYPE_CHECKING:
+    from pydantic.env_settings import SettingsSourceCallable
 
 
 __all__ = (
@@ -63,13 +60,13 @@ __all__ = (
 ATOMIC_FIELD_TYPES = ['Int', 'BigInt', 'Float']
 
 TYPE_MAPPING = {
-    'String': 'str',
+    'String': '_str',
     'Bytes': "'fields.Base64'",
     'DateTime': 'datetime.datetime',
-    'Boolean': 'bool',
-    'Int': 'int',
-    'Float': 'float',
-    'BigInt': 'int',
+    'Boolean': '_bool',
+    'Int': '_int',
+    'Float': '_float',
+    'BigInt': '_int',
     'Json': "'fields.Json'",
     'Decimal': 'decimal.Decimal',
 }
@@ -84,6 +81,24 @@ FILTER_TYPES = [
     'Json',
     'Decimal',
 ]
+RECURSIVE_TYPE_DEPTH_WARNING = """Some types are disabled by default due to being incompatible with Mypy, it is highly recommended
+to use Pyright instead and configure Prisma Python to use recursive types. To re-enable certain types:"""
+
+RECURSIVE_TYPE_DEPTH_WARNING_DESC = """
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = -1
+}
+
+If you need to use Mypy, you can also disable this message by explicitly setting the default value:
+
+generator client {
+  provider             = "prisma-client-py"
+  recursive_type_depth = 5
+}
+
+For more information see: https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/#default-type-limitations
+"""
 
 FAKER: Faker = Faker()
 
@@ -104,10 +119,11 @@ def get_datamodel() -> 'Datamodel':
     return data_ctx.get().dmmf.datamodel
 
 
-# typed to ensure the caller has to handle the case where
-# a custom generator config is being used
-def get_config() -> Union[PydanticBaseModel, 'Config']:
-    return config_ctx.get()
+# typed to ensure the caller has to handle the cases where:
+# - a custom generator config is being used
+# - the config is invalid and therefore could not be set
+def get_config() -> Union[None, PydanticBaseModel, 'Config']:
+    return config_ctx.get(None)
 
 
 def get_list_types() -> Iterable[Tuple[str, str]]:
@@ -186,6 +202,17 @@ def _pathlib_serializer(path: Path) -> str:
     return str(path.absolute())
 
 
+def _recursive_type_depth_factory() -> int:
+    click.echo(
+        click.style(
+            f'\n{RECURSIVE_TYPE_DEPTH_WARNING}',
+            fg='yellow',
+        )
+    )
+    click.echo(f'{RECURSIVE_TYPE_DEPTH_WARNING_DESC}\n')
+    return 5
+
+
 class BaseModel(PydanticBaseModel):
     class Config:
         arbitrary_types_allowed: bool = True
@@ -258,11 +285,8 @@ class Module(BaseModel):
 
         try:
             loader.exec_module(mod)
-        except:
-            print(
-                'An exception ocurred while running the partial type generator'
-            )
-            raise
+        except Exception as exc:
+            raise PartialTypeGeneratorError() from exc
 
 
 class GenericData(GenericModel, Generic[ConfigT]):
@@ -276,7 +300,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
     version: str
     generator: 'Generator[ConfigT]'
     dmmf: 'DMMF' = FieldInfo(alias='dmmf')
-    schema_path: str = FieldInfo(alias='schemaPath')
+    schema_path: Path = FieldInfo(alias='schemaPath')
     datasources: List['Datasource'] = FieldInfo(alias='datasources')
     other_generators: List['Generator[_AnyConfig]'] = FieldInfo(
         alias='otherGenerators'
@@ -311,14 +335,14 @@ class GenericData(GenericModel, Generic[ConfigT]):
     def validate_version(cls, values: Dict[Any, Any]) -> Dict[Any, Any]:
         # TODO: test this
         version = values.get('version')
-        if not DEBUG_GENERATOR and version != ENGINE_VERSION:
+        if not DEBUG_GENERATOR and version != config.engine_version:
             raise ValueError(
-                f'Prisma Client Python expected Prisma version: {ENGINE_VERSION} '
+                f'Prisma Client Python expected Prisma version: {config.engine_version} '
                 f'but got: {version}\n'
                 '  If this is intentional, set the PRISMA_PY_DEBUG_GENERATOR environment '
                 'variable to 1 and try again.\n'
-                f'  If you are using the Node CLI then you must switch to v{PRISMA_VERSION}, e.g. '
-                f'npx prisma@{PRISMA_VERSION} generate\n'
+                f'  If you are using the Node CLI then you must switch to v{config.prisma_version}, e.g. '
+                f'npx prisma@{config.prisma_version} generate\n'
                 '  or generate the client using the Python CLI, e.g. python3 -m prisma generate'
             )
         return values
@@ -367,6 +391,19 @@ class OptionalValueFromEnvVar(BaseModel):
     value: Optional[str]
     from_env_var: Optional[str] = FieldInfo(alias='fromEnvVar')
 
+    def resolve(self) -> str:
+        value = self.value
+        if value is not None:
+            return value
+
+        env_var = self.from_env_var
+        assert env_var is not None, 'from_env_var should not be None'
+        value = os.environ.get(env_var)
+        if value is None:
+            raise RuntimeError(f'Environment variable not found: {env_var}')
+
+        return value
+
 
 class BaseConfig(BaseSettings):
     # this seems to be the only good method for setting the contextvar as
@@ -386,7 +423,9 @@ class Config(BaseConfig):
 
     interface: InterfaceChoices = InterfaceChoices.asyncio
     partial_type_generator: Optional[Module] = None
-    recursive_type_depth: int = FieldInfo(default=5)
+    recursive_type_depth: int = FieldInfo(
+        default_factory=_recursive_type_depth_factory
+    )
     engine_type: EngineType = FieldInfo(default=EngineType.binary)
 
     # this should be a list of experimental features
@@ -402,10 +441,10 @@ class Config(BaseConfig):
         @classmethod
         def customise_sources(
             cls,
-            init_settings: SettingsSourceCallable,
-            env_settings: SettingsSourceCallable,
-            file_secret_settings: SettingsSourceCallable,
-        ) -> Tuple[SettingsSourceCallable, ...]:
+            init_settings: 'SettingsSourceCallable',
+            env_settings: 'SettingsSourceCallable',
+            file_secret_settings: 'SettingsSourceCallable',
+        ) -> Tuple['SettingsSourceCallable', ...]:
             # prioritise env settings over init settings
             return env_settings, init_settings, file_secret_settings
 
@@ -524,8 +563,7 @@ class Model(BaseModel):
 
     _sampler: Sampler = PrivateAttr()
 
-    # mypy throws an error here - probbaly because of the pydantic plugin
-    def __init__(self, **data: Any) -> None:  # type: ignore[no-redef]
+    def __init__(self, **data: Any) -> None:
         super().__init__(**data)
         self._sampler = Sampler(self)
 
@@ -968,4 +1006,8 @@ Datasource.update_forward_refs()
 
 
 from .schema import Schema
-from .errors import CompoundConstraintError, TemplateError
+from .errors import (
+    CompoundConstraintError,
+    PartialTypeGeneratorError,
+    TemplateError,
+)

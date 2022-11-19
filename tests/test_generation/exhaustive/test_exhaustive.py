@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import sys
 import subprocess
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, Callable, Iterator, List, Optional
 
 import pytest
 from syrupy.assertion import SnapshotAssertion
@@ -11,6 +13,7 @@ from syrupy.extensions.single_file import SingleFileSnapshotExtension
 from prisma.generator import BASE_PACKAGE_DIR
 from prisma.generator.utils import remove_suffix
 from .utils import ROOTDIR
+from ...utils import skipif_windows
 
 
 class OSAgnosticSingleFileExtension(SingleFileSnapshotExtension):
@@ -29,6 +32,18 @@ class OSAgnosticSingleFileExtension(SingleFileSnapshotExtension):
             data, exclude=exclude, matcher=matcher
         )
         return bytes(serialized, 'utf-8')
+
+    # we disable diffs as we don't really care what the diff is
+    # we just care that there is a diff and it can take a very
+    # long time for syrupy to calculate the diff
+    # https://github.com/tophat/syrupy/issues/581
+    def diff_snapshots(self, serialized_data: Any, snapshot_data: Any) -> str:
+        return 'diff-is-disabled'  # pragma: no cover
+
+    def diff_lines(
+        self, serialized_data: Any, snapshot_data: Any
+    ) -> Iterator[str]:
+        yield 'diff-is-disabled'  # pragma: no cover
 
 
 @pytest.fixture
@@ -63,18 +78,45 @@ def get_files_from_templates(directory: Path) -> List[str]:
 SYNC_ROOTDIR = ROOTDIR / '__prisma_sync_output__' / 'prisma'
 ASYNC_ROOTDIR = ROOTDIR / '__prisma_async_output__' / 'prisma'
 FILES = get_files_from_templates(BASE_PACKAGE_DIR / 'generator' / 'templates')
+THIS_DIR = Path(__file__).parent
 
 
+def schema_path_matcher(
+    schema_path: Path,
+) -> Callable[[object, object], Optional[object]]:
+    def pathlib_matcher(data: object, path: object) -> Optional[object]:
+        if not isinstance(data, str):  # pragma: no cover
+            raise RuntimeError(
+                f'schema_path_matcher expected data to be a `str` but received {type(data)} instead.'
+            )
+
+        return data.replace(
+            f"Path('{schema_path.absolute().as_posix()}')",
+            "Path('<absolute-schema-path>')",
+        )
+
+    return pathlib_matcher
+
+
+# TODO: support running snapshot tests on windows
+
+
+@skipif_windows
 @pytest.mark.parametrize('file', FILES)
 def test_sync(snapshot: SnapshotAssertion, file: str) -> None:
     """Ensure synchronous client files match"""
-    assert SYNC_ROOTDIR.joinpath(file).absolute().read_text() == snapshot
+    assert SYNC_ROOTDIR.joinpath(file).absolute().read_text() == snapshot(
+        matcher=schema_path_matcher(THIS_DIR / 'sync.schema.prisma')  # type: ignore
+    )
 
 
+@skipif_windows
 @pytest.mark.parametrize('file', FILES)
 def test_async(snapshot: SnapshotAssertion, file: str) -> None:
     """Ensure asynchronous client files match"""
-    assert ASYNC_ROOTDIR.joinpath(file).absolute().read_text() == snapshot
+    assert ASYNC_ROOTDIR.joinpath(file).absolute().read_text() == snapshot(
+        matcher=schema_path_matcher(THIS_DIR / 'async.schema.prisma')  # type: ignore
+    )
 
 
 def test_sync_client_can_be_imported() -> None:

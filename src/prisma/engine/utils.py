@@ -10,14 +10,17 @@ from typing import NoReturn, Dict, Type, Any
 from . import errors
 from .. import errors as prisma_errors
 
+from .. import config
 from ..http_abstract import AbstractResponse
 from ..utils import time_since
-from ..binaries import GLOBAL_TEMP_DIR, ENGINE_VERSION, platform
+from ..binaries import platform
 
 
 log: logging.Logger = logging.getLogger(__name__)
 ERROR_MAPPING: Dict[str, Type[Exception]] = {
     'P2002': prisma_errors.UniqueViolationError,
+    'P2003': prisma_errors.ForeignKeyViolationError,
+    'P2009': prisma_errors.FieldNotFoundError,
     'P2010': prisma_errors.RawQueryError,
     'P2012': prisma_errors.MissingRequiredValueError,
     'P2019': prisma_errors.InputError,
@@ -34,7 +37,7 @@ def ensure() -> Path:
 
     name = f'prisma-query-engine-{binary_name}'
     local_path = Path.cwd().joinpath(name)
-    global_path = GLOBAL_TEMP_DIR.joinpath(name)
+    global_path = config.binary_cache_dir.joinpath(name)
 
     log.debug('Expecting local query engine %s', local_path)
     log.debug('Expecting global query engine %s', global_path)
@@ -67,7 +70,7 @@ def ensure() -> Path:
 
     start_version = time.monotonic()
     process = subprocess.run(
-        [file.absolute(), '--version'], stdout=subprocess.PIPE, check=True
+        [str(file.absolute()), '--version'], stdout=subprocess.PIPE, check=True
     )
     log.debug('Version check took %s', time_since(start_version))
 
@@ -78,9 +81,9 @@ def ensure() -> Path:
     )
     log.debug('Using query engine version %s', version)
 
-    if force_version and version != ENGINE_VERSION:
+    if force_version and version != config.engine_version:
         raise errors.MismatchedVersionsError(
-            expected=ENGINE_VERSION, got=version
+            expected=config.engine_version, got=version
         )
 
     log.debug('Using query engine at %s', file)
@@ -105,13 +108,19 @@ def handle_response_errors(resp: AbstractResponse[Any], data: Any) -> NoReturn:
             if code is None:
                 continue
 
-            exc = ERROR_MAPPING.get(code)
-            if exc is not None:
-                raise exc(error)
-
+            # TODO: the order of these if statements is important because
+            # the P2009 code can be returned for both: missing a required value
+            # and an unknown field error. As we want to explicitly handle
+            # the missing a required value error then we need to check for that first.
+            # As we can only check for this error by searching the message then this
+            # comes with performance concerns.
             message = user_facing.get('message', '')
             if 'A value is required but not set' in message:
                 raise prisma_errors.MissingRequiredValueError(error)
+
+            exc = ERROR_MAPPING.get(code)
+            if exc is not None:
+                raise exc(error)
         except (KeyError, TypeError):
             continue
 

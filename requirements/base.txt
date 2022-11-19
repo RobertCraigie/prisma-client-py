@@ -4,4 +4,5 @@ pydantic>=1.8.0
 click>=7.1.2
 python-dotenv>=0.12.0
 typing-extensions>=3.7
+tomlkit
 cached-property; python_version < '3.8'

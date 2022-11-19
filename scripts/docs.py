@@ -1,12 +1,15 @@
 import re
 from pathlib import Path
-from prisma.binaries.constants import PRISMA_VERSION
+from prisma import config
 
 
 ROOTDIR = Path(__file__).parent.parent
 DOCS_DIR = ROOTDIR / 'docs'
 
 SHOWCASE_GIF = 'https://raw.githubusercontent.com/RobertCraigie/prisma-client-py/main/docs/showcase.gif'
+
+
+# TODO: make this nicer
 
 
 def main() -> None:
@@ -29,10 +32,36 @@ def main() -> None:
     content = binaries_doc.read_text()
     content = re.sub(
         r'(git clone https://github.com/prisma/prisma-engines --branch)=(\d+\.\d+\.\d+)',
-        r'\1' + '=' + PRISMA_VERSION,
+        r'\1' + '=' + config.prisma_version,
         content,
     )
     binaries_doc.write_text(content)
+
+    # ensure all config defaults are up to date
+    config_doc = DOCS_DIR / 'reference' / 'config.md'
+    assert config_doc.exists()
+    content = config_doc.read_text()
+    content = re.sub(
+        r'(`PRISMA_VERSION`      \| )`(.*)`',
+        r'\1' + '`' + config.prisma_version + '`',
+        content,
+    )
+    content = re.sub(
+        r'(`PRISMA_ENGINE_VERSION` \| )`(.*)`',
+        r'\1' + '`' + config.engine_version + '`',
+        content,
+    )
+    content = re.sub(
+        r'(`PRISMA_CLI_URL`     \| )`(.*)`',
+        r'\1' + '`' + config.prisma_url + '`',
+        content,
+    )
+    content = re.sub(
+        r'(`PRISMA_ENGINE_URL`  \| )`(.*)`',
+        r'\1' + '`' + config.engine_url + '`',
+        content,
+    )
+    config_doc.write_text(content)
 
 
 if __name__ == '__main__':

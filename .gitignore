@@ -15,7 +15,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -118,6 +117,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# Environment variables
+.envrc
+
 # local testing files
 tmp/
 
@@ -134,14 +136,16 @@ src/prisma/partials.py
 src/prisma/engine/http.py
 src/prisma/engine/query.py
 src/prisma/engine/abstract.py
+src/prisma/schema.prisma
 
 # debug files
 src/prisma/generator/debug-data.json
 src/prisma/generator/debug-params.json
 
 # test cache files
-.tests_cache/
 *.db
+.tests_cache/
+databases/*pyrightconfig.json
 
 # OS files
 .DS_Store

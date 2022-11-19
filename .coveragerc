@@ -1,0 +1,35 @@
+[run]
+branch = True
+concurrency = multiprocessing
+
+source =
+    tests
+    prisma
+    databases
+
+omit =
+    *.py.jinja
+    prisma/partial_types.py
+    # generated code
+    */prisma/types.py
+    */prisma/enums.py
+    */prisma/client.py
+    */prisma/models.py
+    */prisma/partials.py
+    # we still want to include these
+    # */prisma/builder.py
+    # */prisma/engine/query.py
+
+
+[report]
+exclude_lines =
+    pragma: no cover
+    mark: filedef
+    @pytest.mark.skip\(?
+    if TYPE_CHECKING
+    \.\.\.
+
+[paths]
+prisma =
+    src/prisma
+    */**/prisma

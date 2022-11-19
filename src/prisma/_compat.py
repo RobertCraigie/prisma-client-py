@@ -31,7 +31,6 @@ if TYPE_CHECKING:
     ) -> Callable[[CallableT], CallableT]:
         ...
 
-
 else:
     from pydantic import (
         validator as validator,
@@ -48,3 +47,9 @@ if sys.version_info[:2] < (3, 8):
         from cached_property import cached_property as cached_property
 else:
     from functools import cached_property as cached_property
+
+
+def removeprefix(string: str, prefix: str) -> str:
+    if string.startswith(prefix):
+        return string[len(prefix) :]
+    return string

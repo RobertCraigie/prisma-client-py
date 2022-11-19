@@ -1,0 +1,96 @@
+# name: test_json_schema_compatible
+  dict({
+    'description': 'Represents a Types record',
+    'properties': dict({
+      'bigint': dict({
+        'title': 'Bigint',
+        'type': 'integer',
+      }),
+      'bool_': dict({
+        'title': 'Bool ',
+        'type': 'boolean',
+      }),
+      'bytes': dict({
+        'format': 'byte',
+        'title': 'Bytes',
+        'type': 'string',
+      }),
+      'datetime_': dict({
+        'format': 'date-time',
+        'title': 'Datetime ',
+        'type': 'string',
+      }),
+      'decimal_': dict({
+        'title': 'Decimal ',
+        'type': 'number',
+      }),
+      'float_': dict({
+        'title': 'Float ',
+        'type': 'number',
+      }),
+      'id': dict({
+        'title': 'Id',
+        'type': 'integer',
+      }),
+      'integer': dict({
+        'title': 'Integer',
+        'type': 'integer',
+      }),
+      'optional_bigint': dict({
+        'title': 'Optional Bigint',
+        'type': 'integer',
+      }),
+      'optional_bool': dict({
+        'title': 'Optional Bool',
+        'type': 'boolean',
+      }),
+      'optional_bytes': dict({
+        'format': 'byte',
+        'title': 'Optional Bytes',
+        'type': 'string',
+      }),
+      'optional_datetime': dict({
+        'format': 'date-time',
+        'title': 'Optional Datetime',
+        'type': 'string',
+      }),
+      'optional_decimal': dict({
+        'title': 'Optional Decimal',
+        'type': 'number',
+      }),
+      'optional_float': dict({
+        'title': 'Optional Float',
+        'type': 'number',
+      }),
+      'optional_int': dict({
+        'title': 'Optional Int',
+        'type': 'integer',
+      }),
+      'optional_integer': dict({
+        'title': 'Optional Integer',
+        'type': 'integer',
+      }),
+      'optional_string': dict({
+        'title': 'Optional String',
+        'type': 'string',
+      }),
+      'string': dict({
+        'title': 'String',
+        'type': 'string',
+      }),
+    }),
+    'required': list([
+      'id',
+      'bool_',
+      'string',
+      'bytes',
+      'bigint',
+      'integer',
+      'float_',
+      'datetime_',
+      'decimal_',
+    ]),
+    'title': 'Types',
+    'type': 'object',
+  })
+# ---

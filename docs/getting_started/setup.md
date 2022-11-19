@@ -16,8 +16,9 @@ pip install prisma
 
 ```prisma
 generator client {
-  provider  = "prisma-client-py"
-  interface = "asyncio"
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
 }
 ```
 
@@ -47,8 +48,9 @@ if __name__ == '__main__':
 
 ```prisma
 generator client {
-  provider  = "prisma-client-py"
-  interface = "sync"
+  provider             = "prisma-client-py"
+  interface            = "sync"
+  recursive_type_depth = 5
 }
 ```
 
