@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import sys
 import uuid
@@ -19,7 +21,6 @@ from typing import (
     cast,
 )
 
-import py
 import click
 import pytest
 from click.testing import CliRunner, Result
@@ -35,7 +36,7 @@ from lib.utils import escape_path
 
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
-    from _pytest.pytester import RunResult, Testdir as PytestTestdir
+    from _pytest.pytester import RunResult, Pytester
 
 
 CapturedArgs = Tuple[Tuple[object, ...], Mapping[str, object]]
@@ -149,8 +150,8 @@ class Testdir:
     SCHEMA_HEADER = SCHEMA_HEADER
     default_schema = DEFAULT_SCHEMA
 
-    def __init__(self, testdir: 'PytestTestdir') -> None:
-        self.testdir = testdir
+    def __init__(self, pytester: Pytester) -> None:
+        self.pytester = pytester
 
     def _make_relative(
         self, path: Union[str, Path]
@@ -230,16 +231,16 @@ class Testdir:
         return path
 
     def makefile(self, ext: str, *args: str, **kwargs: str) -> None:
-        self.testdir.makefile(ext, *args, **kwargs)
+        self.pytester.makefile(ext, *args, **kwargs)
 
     def runpytest(
         self, *args: Union[str, 'os.PathLike[str]'], **kwargs: Any
     ) -> 'RunResult':
         # pytest-sugar breaks result parsing
-        return self.testdir.runpytest('-p', 'no:sugar', *args, **kwargs)
+        return self.pytester.runpytest('-p', 'no:sugar', *args, **kwargs)
 
     def runpython_c(self, command: str) -> 'RunResult':
-        return self.testdir.runpython_c(command)  # type: ignore
+        return self.pytester.runpython_c(command)
 
     @contextlib.contextmanager
     def redirect_stdout_to_file(
@@ -252,18 +253,14 @@ class Testdir:
                 yield path
 
     @property
-    def tmpdir(self) -> py.path.local:
-        return self.testdir.tmpdir
-
-    @property
     def path(self) -> Path:
-        return Path(self.tmpdir)
+        return Path(self.pytester.path)
 
     def __repr__(self) -> str:  # pragma: no cover
         return str(self)
 
     def __str__(self) -> str:  # pragma: no cover
-        return f'<Testdir {self.tmpdir} >'
+        return f'<Testdir {self.path} >'
 
 
 def get_source_from_function(function: FuncType, **env: Any) -> str:

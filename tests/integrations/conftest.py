@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 import shutil
 import subprocess
@@ -6,7 +8,6 @@ from functools import lru_cache
 from typing import Optional, Union, Iterator, cast, Any, TYPE_CHECKING
 
 import pytest
-from py._path.local import LocalPath
 
 from _pytest.nodes import Node
 from _pytest.config import Config
@@ -32,12 +33,11 @@ class IntegrationError(AssertionError):
         return self.message
 
 
-def resolve_path(path: LocalPath) -> Path:
-    return Path(path).relative_to(Path.cwd())
+def resolve_path(path: Path) -> Path:
+    return path.relative_to(Path.cwd())
 
 
-def is_integration_test_file(local_path: LocalPath) -> bool:
-    path = resolve_path(local_path)
+def is_integration_test_file(path: Path) -> bool:
     if len(path.parts) != 4:  # pragma: no cover
         return False
 
@@ -47,7 +47,9 @@ def is_integration_test_file(local_path: LocalPath) -> bool:
     )
 
 
-def pytest_ignore_collect(path: LocalPath, config: Config) -> Optional[bool]:
+def pytest_ignore_collect(
+    collection_path: Path, config: Config
+) -> Optional[bool]:
     """We need to ignore any integration test sub-paths
 
     For example we need to include
@@ -62,27 +64,27 @@ def pytest_ignore_collect(path: LocalPath, config: Config) -> Optional[bool]:
     tests/integrations/basic/conftest.py
     tests/integrations/basic/tests/test_foo.py
     """
-    pathlib_path = resolve_path(path)
-    if pathlib_path.parts[:2] != ('tests', 'integrations'):  # pragma: no cover
+    path = resolve_path(collection_path)
+    if path.parts[:2] != ('tests', 'integrations'):  # pragma: no cover
         # not an integration test
         return None
 
-    if len(pathlib_path.parts) <= 3:
+    if len(path.parts) <= 3:
         # integration root dir, leave handling to pytest
         return None
 
-    return pathlib_path.parts[-1] != 'test.sh'
+    return path.parts[-1] != 'test.sh'
 
 
 def pytest_collect_file(
-    path: LocalPath, parent: Node
+    file_path: Path, parent: Node
 ) -> Optional['IntegrationTestFile']:
     if (
-        path.ext == '.sh'
-        and is_integration_test_file(path)
+        file_path.suffix == '.sh'
+        and is_integration_test_file(file_path)
         and sys.platform != 'win32'
     ):
-        return IntegrationTestFile.from_parent(parent, fspath=path)
+        return IntegrationTestFile.from_parent(parent, fspath=file_path)
 
     return None
 

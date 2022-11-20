@@ -16,12 +16,13 @@ import pytest_asyncio
 
 if TYPE_CHECKING:
     from _pytest.config import Config
-    from _pytest.fixtures import FixtureFunctionMarker, _Scope
+    from _pytest.scope import _ScopeName
+    from _pytest.fixtures import FixtureFunctionMarker
 
 
 # TODO: report pyright error to pytest-asyncio
 def async_fixture(
-    scope: Union[_Scope, Callable[[str, Config], _Scope]] = 'function',
+    scope: Union[_ScopeName, Callable[[str, Config], _ScopeName]] = 'function',
     params: Optional[Iterable[object]] = None,
     autouse: bool = False,
     ids: Optional[

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import sys
 from typing import List, Iterator, TYPE_CHECKING
@@ -15,7 +17,7 @@ from .utils import Runner, Testdir
 if TYPE_CHECKING:
     from _pytest.config import Config
     from _pytest.monkeypatch import MonkeyPatch
-    from _pytest.pytester import Testdir as PytestTestdir
+    from _pytest.pytester import Pytester
 
 
 pytest_plugins = ['pytester']
@@ -32,15 +34,15 @@ def runner(monkeypatch: 'MonkeyPatch') -> Runner:
 
 
 @pytest.fixture(name='testdir')
-def testdir_fixture(testdir: 'PytestTestdir') -> Iterator[Testdir]:
+def testdir_fixture(pytester: Pytester) -> Iterator[Testdir]:
     cwd = os.getcwd()
-    os.chdir(testdir.tmpdir)
-    sys.path.insert(0, str(testdir.tmpdir))
+    os.chdir(pytester.path)
+    sys.path.insert(0, str(pytester.path))
 
-    yield Testdir(testdir)
+    yield Testdir(pytester)
 
     os.chdir(cwd)
-    sys.path.remove(str(testdir.tmpdir))
+    sys.path.remove(str(pytester.path))
 
 
 # TODO: don't emulate the with statement
@@ -54,7 +56,7 @@ def pytest_sessionfinish(session: pytest.Session) -> None:
 
 
 def pytest_collection_modifyitems(
-    session: pytest.Session, config: 'Config', items: List[pytest.Item]
+    session: pytest.Session, config: Config, items: List[pytest.Item]
 ) -> None:
     items.sort(
         key=lambda item: item.__class__.__name__ == 'IntegrationTestItem'
