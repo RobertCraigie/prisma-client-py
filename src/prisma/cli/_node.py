@@ -384,7 +384,7 @@ def _get_binary_version(target: Target, path: Path) -> tuple[int, ...] | None:
 
     version = tuple(int(value) for value in match.groups())
     log.debug('%s version check returning %s', target, version)
-    return None
+    return version
 
 
 class LazyBinaryProxy(LazyProxy[Node]):
