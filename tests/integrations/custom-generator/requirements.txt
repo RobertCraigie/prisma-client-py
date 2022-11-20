@@ -1,6 +1,6 @@
 pytest==6.2.4
 
 # TODO: this should not be required
-pytest-asyncio==0.17.0
+-r ../../../pipelines/requirements/pytest-asyncio.txt
 
 -r ../../../pipelines/requirements/pyright.txt
