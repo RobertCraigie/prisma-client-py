@@ -1,6 +1,5 @@
-pytest==6.2.4
-
 # TODO: this should not be required
--r ../../../pipelines/requirements/pytest-asyncio.txt
+-r ../../../pipelines/requirements/deps/pytest-asyncio.txt
 
 -r ../../../pipelines/requirements/pyright.txt
+-r ../../../pipelines/requirements/pytest.txt
