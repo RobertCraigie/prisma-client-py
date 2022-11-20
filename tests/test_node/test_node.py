@@ -180,6 +180,8 @@ def test_update_path_env() -> None:
     reason='Node is not installed globally',
 )
 def test_node_version(target: Target, fake_process: FakeProcess) -> None:
+    """The node version can be detected properly and correctly constrained to our minimum required version"""
+
     def _register_process(stdout: str) -> None:
         # register the same process twice as we will call it twice
         # in our assertions and fake_process consumes called processes
@@ -220,6 +222,7 @@ def test_node_version(target: Target, fake_process: FakeProcess) -> None:
 
 
 def test_should_use_binary_unknown_target() -> None:
+    """The UnknownTargetError() is raised by the _should_use_binary() function given an invalid target"""
     with pytest.raises(node.UnknownTargetError):
         node._should_use_binary(
             target='foo',  # type: ignore
