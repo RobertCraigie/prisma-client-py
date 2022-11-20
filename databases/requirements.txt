@@ -1,5 +1,5 @@
 # TODO: merge with other dev requirements
-pytest==6.2.4
+pytest==7.2.0
 click==8.1.3
 coverage==6.5.0
 syrupy==3.0.5
