@@ -11,8 +11,7 @@ from typing import (
 )
 from datetime import datetime, timezone
 
-# TODO: bump version and remove this
-import pytest_asyncio  # type: ignore
+import pytest_asyncio
 
 
 if TYPE_CHECKING:
@@ -20,7 +19,7 @@ if TYPE_CHECKING:
     from _pytest.fixtures import FixtureFunctionMarker, _Scope
 
 
-# TODO: is this still necessary?
+# TODO: report pyright error to pytest-asyncio
 def async_fixture(
     scope: Union[_Scope, Callable[[str, Config], _Scope]] = 'function',
     params: Optional[Iterable[object]] = None,
