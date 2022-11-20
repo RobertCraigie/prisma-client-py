@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import os
 import sys
 import shutil
@@ -22,6 +23,18 @@ from .._compat import nodejs
 log: logging.Logger = logging.getLogger(__name__)
 File = Union[int, IO[Any]]
 Target = Literal['node', 'npm']
+
+# taken from https://github.com/prisma/prisma/blob/main/package.json
+MIN_NODE_VERSION = (14, 17)
+
+# mapped the node version above from https://nodejs.org/en/download/releases/
+MIN_NPM_VERSION = (6, 14)
+
+# we only care about the first two entries in the version number
+VERSION_RE = re.compile(r'v?(\d+)(?:\.?(\d+))')
+
+
+# TODO: remove the possibility to get mismatched paths for `node` and `npm`
 
 
 class UnknownTargetError(PrismaError):
@@ -235,11 +248,16 @@ class NodeJSPythonStrategy(Strategy):
         )
 
     @property
-    def target_bin(self) -> Path:
+    def node_path(self) -> Path:
+        """Returns the path to the `node` binary"""
         if nodejs is None:
             raise MissingNodejsBinError()
 
-        return Path(nodejs.node.path).parent
+        return Path(nodejs.node.path)
+
+    @property
+    def target_bin(self) -> Path:
+        return Path(self.node_path).parent
 
 
 Node = Union[NodeJSPythonStrategy, NodeBinaryStrategy]
@@ -294,15 +312,78 @@ def _get_global_binary(target: Target) -> Path | None:
     log.debug('Checking for global target binary: %s', target)
 
     which = shutil.which(target)
-    if which is not None:
-        log.debug('Found global binary at: %s', which)
+    if which is None:
+        log.debug('Global target binary: %s not found', target)
+        return None
 
-        path = Path(which)
-        if path.exists():
-            log.debug('Global binary exists at: %s', which)
-            return path
+    log.debug('Found global binary at: %s', which)
 
-    log.debug('Global target binary: %s not found', target)
+    path = Path(which)
+    if not path.exists():
+        log.debug('Global binary does not exist at: %s', which)
+        return None
+
+    if not _should_use_binary(target=target, path=path):
+        return None
+
+    log.debug('Using global %s binary at %s', target, path)
+    return path
+
+
+def _should_use_binary(target: Target, path: Path) -> bool:
+    """Call the binary at `path` with a `--version` flag to check if it matches our minimum version requirements.
+
+    This only applies to the global node installation as:
+
+    - the minimum version of `nodejs-bin` is higher than our requirement
+    - `nodeenv` defaults to the latest stable version of node
+    """
+    if target == 'node':
+        min_version = MIN_NODE_VERSION
+    elif target == 'npm':
+        min_version = MIN_NPM_VERSION
+    else:
+        raise UnknownTargetError(target=target)
+
+    version = _get_binary_version(target, path)
+    if version is None:
+        log.debug(
+            'Could not resolve %s version, ignoring global %s installation',
+            target,
+            target,
+        )
+        return False
+
+    if version < min_version:
+        log.debug(
+            'Global %s version (%s) is lower than the minimum required version (%s), ignoring',
+            target,
+            version,
+            min_version,
+        )
+        return False
+
+    return True
+
+
+def _get_binary_version(target: Target, path: Path) -> tuple[int, ...] | None:
+    proc = subprocess.run(
+        [str(path), '--version'],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+    log.debug('%s version check exited with code %s', target, proc.returncode)
+
+    output = proc.stdout.decode('utf-8').rstrip('\n')
+    log.debug('%s version check output: %s', target, output)
+
+    match = VERSION_RE.search(output)
+    if not match:
+        return None
+
+    version = tuple(int(value) for value in match.groups())
+    log.debug('%s version check returning %s', target, version)
     return None
 
 

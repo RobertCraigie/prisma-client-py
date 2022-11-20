@@ -5,6 +5,7 @@ from typing import cast
 from pathlib import Path
 
 import pytest
+from pytest_subprocess import FakeProcess
 from prisma.cli import _node as node
 from prisma.cli._node import Target
 from prisma._config import Config
@@ -171,3 +172,56 @@ def test_update_path_env() -> None:
         sep='---',
     )
     assert env['PATH'] == f'{target.absolute()}---/foo'
+
+
+@parametrize_target
+@pytest.mark.skipif(
+    shutil.which('node') is None,
+    reason='Node is not installed globally',
+)
+def test_node_version(target: Target, fake_process: FakeProcess) -> None:
+    def _register_process(stdout: str) -> None:
+        # register the same process twice as we will call it twice
+        # in our assertions and fake_process consumes called processes
+        for _ in range(2):
+            fake_process.register_subprocess(
+                [str(path), '--version'], stdout=stdout
+            )
+
+    which = shutil.which(target)
+    assert which is not None
+
+    path = Path(which)
+
+    _register_process('v1.3.4')
+    version = node._get_binary_version(target, path)
+    assert version == (1, 3)
+    assert node._should_use_binary(target, path) is False
+
+    _register_process('v1.32433')
+    version = node._get_binary_version(target, path)
+    assert version == (1, 32433)
+    assert node._should_use_binary(target, path) is False
+
+    _register_process('v16.15.a4')
+    version = node._get_binary_version(target, path)
+    assert version == (16, 15)
+    assert node._should_use_binary(target, path) is True
+
+    _register_process('v14.17.1')
+    version = node._get_binary_version(target, path)
+    assert version == (14, 17)
+    assert node._should_use_binary(target, path) is True
+
+    _register_process('14.17.1')
+    version = node._get_binary_version(target, path)
+    assert version == (14, 17)
+    assert node._should_use_binary(target, path) is True
+
+
+def test_should_use_binary_unknown_target() -> None:
+    with pytest.raises(node.UnknownTargetError):
+        node._should_use_binary(
+            target='foo',  # type: ignore
+            path=Path.cwd(),
+        )
