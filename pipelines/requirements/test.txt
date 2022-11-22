@@ -6,4 +6,4 @@ mock==4.0.3
 pytest-mock==3.10.0
 pytest-subprocess==1.4.2
 syrupy==3.0.2
-fastapi==0.85.1
+fastapi==0.87.0
