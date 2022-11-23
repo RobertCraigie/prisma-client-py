@@ -28,8 +28,11 @@ async def order(client: Prisma) -> None:
         },
     )
     await client.post.find_first(
-        order=[  # E: Argument of type "list[dict[str, str]]" cannot be assigned to parameter "order" of type "PostOrderByInput | List[PostOrderByInput] | None" in function "find_first"
-            {'desc': 'asc', 'title': 'asc'},
+        order=[
+            {  # E: Argument of type "list[dict[str, str] | _Post_title_OrderByInput]" cannot be assigned to parameter "order" of type "PostOrderByInput | List[PostOrderByInput] | None" in function "find_first"
+                'desc': 'asc',
+                'title': 'asc',
+            },
             {'title': 'asc'},
         ],
     )

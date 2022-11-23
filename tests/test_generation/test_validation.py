@@ -23,6 +23,46 @@ def assert_no_generator_output(output: str) -> None:
     assert 'prisma:GeneratorProcess' not in _remove_coverage_warnings(output)
 
 
+def test_model_name_python_keyword(testdir: Testdir) -> None:
+    """Model name shadowing a python keyword is not allowed"""
+    schema = (
+        testdir.SCHEMA_HEADER
+        + """
+        model from {{
+            id   String @id
+            name String
+        }}
+    """
+    )
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    assert (
+        'Model name "from" shadows a Python keyword; use a different model name with \'@@map("from")\''
+        in str(exc.value.output, 'utf-8')
+    )
+
+
+def test_model_name_lowercase_python_keyword(testdir: Testdir) -> None:
+    """Model name that when transformed to lowercase a python keyword is not allowed"""
+    schema = (
+        testdir.SCHEMA_HEADER
+        + """
+        model Class {{
+            id   String @id
+            name String
+        }}
+    """
+    )
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    assert (
+        'Model name "Class" results in a client property that shadows a Python keyword; use a different model name with \'@@map("Class")\''
+        in str(exc.value.output, 'utf-8')
+    )
+
+
 def test_field_name_basemodel_attribute(testdir: Testdir) -> None:
     """Field name shadowing a basemodel attribute is not allowed"""
     schema = (

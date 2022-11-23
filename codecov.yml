@@ -9,9 +9,20 @@ coverage:
           - "tests/"
         branches:
           - main
+      databases:
+        # TODO: this should really be 100% but codecov just isn't picking up the coverage for some reason.
+        # One file that it thinks has 0% coverage is `databases/tests/test_models.py`, we know for definite
+        # that this is being run under coverage in CI as it is included in the report that `coverage` generates
+        target: 85%
+        threshold: "5%"
+        paths:
+          - "databases/tests/"
+        branches:
+          - main
       prisma:
         paths:
           - "!tests/"
+          - "!databases/tests/"
         target: auto
         threshold: 10%
         branches:

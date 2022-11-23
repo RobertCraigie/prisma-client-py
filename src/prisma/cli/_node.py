@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import os
 import sys
 import shutil
@@ -7,7 +8,7 @@ import logging
 import subprocess
 from pathlib import Path
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, IO, Union, Any, Mapping, cast
+from typing import IO, Union, Any, Mapping, cast
 from typing_extensions import Literal
 
 from pydantic.typing import get_args
@@ -16,28 +17,38 @@ from .. import config
 from .._proxy import LazyProxy
 from ..binaries import platform
 from ..errors import PrismaError
-
-if TYPE_CHECKING:
-    # TODO
-    import nodejs  # type: ignore
-    import nodejs.node  # type: ignore
-    import nodejs.npm  # type: ignore
-else:
-    try:
-        import nodejs
-    except ImportError:
-        nodejs = None
+from .._compat import nodejs
 
 
 log: logging.Logger = logging.getLogger(__name__)
 File = Union[int, IO[Any]]
 Target = Literal['node', 'npm']
 
+# taken from https://github.com/prisma/prisma/blob/main/package.json
+MIN_NODE_VERSION = (14, 17)
+
+# mapped the node version above from https://nodejs.org/en/download/releases/
+MIN_NPM_VERSION = (6, 14)
+
+# we only care about the first two entries in the version number
+VERSION_RE = re.compile(r'v?(\d+)(?:\.?(\d+))')
+
+
+# TODO: remove the possibility to get mismatched paths for `node` and `npm`
+
 
 class UnknownTargetError(PrismaError):
     def __init__(self, *, target: str) -> None:
         super().__init__(
             f'Unknown target: {target}; Valid choices are: {", ".join(get_args(cast(type, Target)))}'
+        )
+
+
+# TODO: add tests for this error
+class MissingNodejsBinError(PrismaError):
+    def __init__(self) -> None:
+        super().__init__(
+            'Attempted to access a function that requires the `nodejs-bin` package to be installed but it is not.'
         )
 
 
@@ -98,15 +109,18 @@ class Strategy(ABC):
 
 
 class NodeBinaryStrategy(Strategy):
+    target: Target
     resolver: Literal['global', 'nodeenv']
 
     def __init__(
         self,
         *,
         path: Path,
+        target: Target,
         resolver: Literal['global', 'nodeenv'],
     ) -> None:
         self.path = path
+        self.target = target
         self.resolver = resolver
 
     @property
@@ -122,8 +136,10 @@ class NodeBinaryStrategy(Strategy):
         stderr: File | None = None,
         env: Mapping[str, str] | None = None,
     ) -> subprocess.CompletedProcess[bytes]:
+        path = str(self.path.absolute())
+        log.debug('Executing binary at %s with args: %s', path, args)
         return subprocess.run(
-            [str(self.path.absolute()), *args],
+            [path, *args],
             check=check,
             cwd=cwd,
             env=env,
@@ -139,26 +155,30 @@ class NodeBinaryStrategy(Strategy):
             path = _get_global_binary(target)
 
         if path is not None:
-            return NodeBinaryStrategy(path=path, resolver='global')
+            return NodeBinaryStrategy(
+                path=path,
+                target=target,
+                resolver='global',
+            )
 
         return NodeBinaryStrategy.from_nodeenv(target)
 
     @classmethod
     def from_nodeenv(cls, target: Target) -> NodeBinaryStrategy:
-        path = config.nodeenv_cache_dir.absolute()
-        if path.exists():
+        cache_dir = config.nodeenv_cache_dir.absolute()
+        if cache_dir.exists():
             log.debug(
                 'Skipping nodeenv installation as it already exists at %s',
-                path,
+                cache_dir,
             )
         else:
-            log.debug('Installing nodeenv to %s', path)
+            log.debug('Installing nodeenv to %s', cache_dir)
             subprocess.run(
                 [
                     sys.executable,
                     '-m',
                     'nodeenv',
-                    str(path),
+                    str(cache_dir),
                     *config.nodeenv_extra_args,
                 ],
                 check=True,
@@ -166,22 +186,25 @@ class NodeBinaryStrategy(Strategy):
                 stderr=sys.stderr,
             )
 
-        if not path.exists():
+        if not cache_dir.exists():
             raise RuntimeError(
                 'Could not install nodeenv to the expected directory; See the output above for more details.'
             )
 
         # TODO: what hapens on cygwin?
-        # TODO: needs .exe postfix?
         if platform.name() == 'windows':
-            bin_dir = path / 'Scripts'
+            bin_dir = cache_dir / 'Scripts'
+            if target == 'node':
+                path = bin_dir / 'node.exe'
+            else:
+                path = bin_dir / f'{target}.cmd'
         else:
-            bin_dir = path / 'bin'
+            path = cache_dir / 'bin' / target
 
         if target == 'npm':
-            return cls(path=bin_dir / 'npm', resolver='nodeenv')
+            return cls(path=path, resolver='nodeenv', target=target)
         elif target == 'node':
-            return cls(path=bin_dir / 'node', resolver='nodeenv')
+            return cls(path=path, resolver='nodeenv', target=target)
         else:
             raise UnknownTargetError(target=target)
 
@@ -203,6 +226,9 @@ class NodeJSPythonStrategy(Strategy):
         stderr: File | None = None,
         env: Mapping[str, str] | None = None,
     ) -> subprocess.CompletedProcess[bytes]:
+        if nodejs is None:
+            raise MissingNodejsBinError()
+
         func = None
         if self.target == 'node':
             func = nodejs.node.run
@@ -222,8 +248,16 @@ class NodeJSPythonStrategy(Strategy):
         )
 
     @property
+    def node_path(self) -> Path:
+        """Returns the path to the `node` binary"""
+        if nodejs is None:
+            raise MissingNodejsBinError()
+
+        return Path(nodejs.node.path)
+
+    @property
     def target_bin(self) -> Path:
-        return Path(nodejs.node.path).parent
+        return Path(self.node_path).parent
 
 
 Node = Union[NodeJSPythonStrategy, NodeBinaryStrategy]
@@ -246,6 +280,7 @@ def _update_path_env(
     *,
     env: Mapping[str, str] | None,
     target_bin: Path,
+    sep: str = os.pathsep,
 ) -> dict[str, str]:
     """Returns a modified version of `os.environ` with the `PATH` environment variable updated
     to include the location of the downloaded Node binaries.
@@ -253,19 +288,23 @@ def _update_path_env(
     if env is None:
         env = dict(os.environ)
 
+    log.debug('Attempting to preprend %s to the PATH', target_bin)
     assert target_bin.exists(), 'Target `bin` directory does not exist'
 
     path = env.get('PATH', '') or os.environ.get('PATH', '')
     if path:
-        # handle the case where the PATH already ends with the `:` separator (this probably shouldn't happen)
-        if path.endswith(':'):
-            path = f'{path}{target_bin.absolute()}'
+        log.debug('Found PATH contents: %s', path)
+
+        # handle the case where the PATH already starts with the separator (this probably shouldn't happen)
+        if path.startswith(sep):
+            path = f'{target_bin.absolute()}{path}'
         else:
-            path = f'{path}:{target_bin.absolute()}'
+            path = f'{target_bin.absolute()}{sep}{path}'
     else:
         # handle the case where there is no PATH set (unlikely / impossible to actually happen?)
         path = str(target_bin.absolute())
 
+    log.debug('Using PATH environment variable: %s', path)
     return {**env, 'PATH': path}
 
 
@@ -273,16 +312,79 @@ def _get_global_binary(target: Target) -> Path | None:
     log.debug('Checking for global target binary: %s', target)
 
     which = shutil.which(target)
-    if which is not None:
-        log.debug('Found global binary at: %s', which)
+    if which is None:
+        log.debug('Global target binary: %s not found', target)
+        return None
 
-        path = Path(which)
-        if path.exists():
-            log.debug('Global binary exists at: %s', which)
-            return path
+    log.debug('Found global binary at: %s', which)
 
-    log.debug('Global target binary: %s not found', target)
-    return None
+    path = Path(which)
+    if not path.exists():
+        log.debug('Global binary does not exist at: %s', which)
+        return None
+
+    if not _should_use_binary(target=target, path=path):
+        return None
+
+    log.debug('Using global %s binary at %s', target, path)
+    return path
+
+
+def _should_use_binary(target: Target, path: Path) -> bool:
+    """Call the binary at `path` with a `--version` flag to check if it matches our minimum version requirements.
+
+    This only applies to the global node installation as:
+
+    - the minimum version of `nodejs-bin` is higher than our requirement
+    - `nodeenv` defaults to the latest stable version of node
+    """
+    if target == 'node':
+        min_version = MIN_NODE_VERSION
+    elif target == 'npm':
+        min_version = MIN_NPM_VERSION
+    else:
+        raise UnknownTargetError(target=target)
+
+    version = _get_binary_version(target, path)
+    if version is None:
+        log.debug(
+            'Could not resolve %s version, ignoring global %s installation',
+            target,
+            target,
+        )
+        return False
+
+    if version < min_version:
+        log.debug(
+            'Global %s version (%s) is lower than the minimum required version (%s), ignoring',
+            target,
+            version,
+            min_version,
+        )
+        return False
+
+    return True
+
+
+def _get_binary_version(target: Target, path: Path) -> tuple[int, ...] | None:
+    proc = subprocess.run(
+        [str(path), '--version'],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        check=False,
+    )
+    log.debug('%s version check exited with code %s', target, proc.returncode)
+
+    output = proc.stdout.decode('utf-8').rstrip('\n')
+    log.debug('%s version check output: %s', target, output)
+
+    match = VERSION_RE.search(output)
+    if not match:
+        return None
+
+    version = tuple(int(value) for value in match.groups())
+    log.debug('%s version check returning %s', target, version)
+    return version
 
 
 class LazyBinaryProxy(LazyProxy[Node]):

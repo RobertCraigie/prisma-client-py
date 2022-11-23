@@ -227,7 +227,9 @@ class Generator(GenericGenerator[PythonData]):
         return Manifest(
             name=f'Prisma Client Python (v{__version__})',
             default_output=BASE_PACKAGE_DIR,
-            requires_engines=['queryEngine'],
+            requires_engines=[
+                'queryEngine',
+            ],
         )
 
     def generate(self, data: PythonData) -> None:

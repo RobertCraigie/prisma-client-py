@@ -351,9 +351,39 @@ class GenericData(GenericModel, Generic[ConfigT]):
 
 
 class BinaryPaths(BaseModel):
+    """This class represents the paths to engine binaries.
+
+    Each property in this class is a mapping of platform name to absolute path, for example:
+
+    ```py
+    # This is what will be set on an M1 chip if there are no other `binaryTargets` set
+    binary_paths.query_engine == {
+        'darwin-arm64': '/Users/robert/.cache/prisma-binaries/3.13.0/efdf9b1183dddfd4258cd181a72125755215ab7b/node_modules/prisma/query-engine-darwin-arm64'
+    }
+    ```
+
+    This is only available if the generator explicitly requests them using the `requires_engines` manifest property.
+    """
+
     query_engine: Dict[str, str] = FieldInfo(
         default_factory=dict,
         alias='queryEngine',
+    )
+    introspection_engine: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='introspectionEngine',
+    )
+    migration_engine: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='migrationEngine',
+    )
+    libquery_engine: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='libqueryEngine',
+    )
+    prisma_format: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='prismaFmt',
     )
 
     class Config(BaseModel.Config):
@@ -578,6 +608,23 @@ class Model(BaseModel):
     def __init__(self, **data: Any) -> None:
         super().__init__(**data)
         self._sampler = Sampler(self)
+
+    @validator('name')
+    @classmethod
+    def name_validator(cls, name: str) -> str:
+        if iskeyword(name):
+            raise ValueError(
+                f'Model name "{name}" shadows a Python keyword; '
+                f'use a different model name with \'@@map("{name}")\'.'
+            )
+
+        if iskeyword(name.lower()):
+            raise ValueError(
+                f'Model name "{name}" results in a client property that shadows a Python keyword; '
+                f'use a different model name with \'@@map("{name}")\'.'
+            )
+
+        return name
 
     @root_validator(allow_reuse=True)
     @classmethod
