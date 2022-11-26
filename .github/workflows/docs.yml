@@ -33,3 +33,7 @@ jobs:
       - name: Build documentation
         run: |
           make docs
+
+      - name: Ensure no changes
+        run: |
+          git diff --exit-code
