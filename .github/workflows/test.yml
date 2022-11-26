@@ -270,15 +270,16 @@ jobs:
         with:
           name: coverage-data
 
-      - name: Combine coverage data
+      - name: Check coverage requirements
         run: |
-          nox -s report
+          nox -s report-strict
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: htmlcov
+          path: htmlcov
 
   docker:
     name: docker
