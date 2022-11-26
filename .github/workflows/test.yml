@@ -69,10 +69,6 @@ jobs:
         env:
           TARGET_PYTHON: ${{ matrix.python-version }}
 
-      - name: Debug
-        run: |
-          python -c 'import pathlib, json; print(json.dumps([str(p) for p in pathlib.Path(".cache").iterdir()], indent=2))'
-
       - name: Upload coverage
         uses: actions/upload-artifact@v3
         with:
@@ -245,10 +241,6 @@ jobs:
         env:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases
-
-      - name: Debug
-        run: |
-          python -c 'import pathlib, json; print(json.dumps([str(p) for p in pathlib.Path(".cache").iterdir()], indent=2))'
 
       - name: Upload coverage
         uses: actions/upload-artifact@v3
