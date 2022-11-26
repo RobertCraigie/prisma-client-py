@@ -26,6 +26,7 @@ def push_coverage(session: nox.Session) -> None:
         )
 
     git = repo.git
+    git.fetch('--all')
     git.checkout(f'origin/{BADGE_BRANCH}', b=BADGE_BRANCH)
 
     with session.chdir(CACHE_DIR):
