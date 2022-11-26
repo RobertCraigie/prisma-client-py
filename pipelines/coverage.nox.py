@@ -6,6 +6,7 @@ from pathlib import Path
 import nox
 from git.repo import Repo
 
+from lib.utils import maybe_decode
 from pipelines.utils import setup_env, CACHE_DIR, TMP_DIR
 
 
@@ -25,11 +26,6 @@ def push_coverage(session: nox.Session) -> None:
     svg_path = TMP_DIR / 'coverage.svg'
 
     with session.chdir(CACHE_DIR):
-        print('--- debug ---')
-        for p in Path.cwd().iterdir():
-            print(p)
-        print('--- debug ---')
-
         session.run(
             'coverage-badge', '-o', str(svg_path), '--cov-ignore-errors'
         )
@@ -40,10 +36,10 @@ def push_coverage(session: nox.Session) -> None:
             f'Expected repo to not be dirty; Untracked files: {repo.untracked_files}'
         )
 
+    head_summary = maybe_decode(repo.head.commit.summary)
+
     git = repo.git
     git.fetch('--all')
-    # TODO: work if branch already exists
-    # git branch -d static/coverage
     git.checkout(f'origin/{BADGE_BRANCH}', b=BADGE_BRANCH)
 
     if not repo.is_dirty(untracked_files=True):
@@ -61,7 +57,7 @@ def push_coverage(session: nox.Session) -> None:
 
     git.add('coverage.svg')
     git.commit(
-        m='Update coverage.svg',
+        m=head_summary,
         env={
             'PRE_COMMIT_ALLOW_NO_CONFIG': '1',
         },
