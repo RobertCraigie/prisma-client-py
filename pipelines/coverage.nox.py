@@ -74,15 +74,18 @@ def setup(session: nox.Session) -> None:
 
 
 def _setup_report(session: nox.Session) -> None:
-    # TODO: generate in place for coverage parsing?
     session.env['COVERAGE_FILE'] = str(CACHE_DIR / '.coverage')
     session.install('-r', 'pipelines/requirements/coverage.txt')
+
+    # generate in place so that coverage can parse the generated files
+    session.install('-e', '.')
+    session.run('prisma', 'generate', '--schema=tests/data/schema.prisma')
 
     if '--no-combine' not in session.posargs:
         session.run('coverage', 'combine')
 
-    session.run('coverage', 'html', '-i')
-    session.run('coverage', 'xml', '-i')
+    session.run('coverage', 'html')
+    session.run('coverage', 'xml')
 
     if '--open' in session.posargs:
         url = f'file://{Path.cwd() / "htmlcov" / "index.html"}'
@@ -106,7 +109,6 @@ def report_strict(session: nox.Session) -> None:
     session.run(
         'coverage',
         'report',
-        '-i',
         '--skip-covered',
         '--include=tests/**',
         # integration tests are broken
@@ -118,7 +120,6 @@ def report_strict(session: nox.Session) -> None:
     session.run(
         'coverage',
         'report',
-        '-i',
         '--skip-covered',
         '--include=databases/tests/**',
         '--fail-under=100',
