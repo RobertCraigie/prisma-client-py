@@ -1,3 +1,4 @@
+import os
 import shutil
 import webbrowser
 from pathlib import Path
@@ -49,12 +50,17 @@ def push_coverage(session: nox.Session) -> None:
         print('No changes!')
         return
 
+    if os.environ.get('CI'):
+        git.config('user.name', 'github-actions[bot]')
+        git.config(
+            'user.email',
+            '41898282+github-actions[bot]@users.noreply.github.com',
+        )
+
     shutil.copy(svg_path, 'coverage.svg')
 
     git.add('coverage.svg')
     git.commit(
-        '-c user.name=github-actions[bot]',
-        '-c user.email=41898282+github-actions[bot]@users.noreply.github.com',
         m='Update coverage.svg',
         env={
             'PRE_COMMIT_ALLOW_NO_CONFIG': '1',
