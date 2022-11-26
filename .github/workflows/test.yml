@@ -286,6 +286,11 @@ jobs:
           name: htmlcov
           path: htmlcov
 
+      # delete the temporary coverage artifacts to save on unnecessary cloud storage usage
+      - uses: geekyeggo/delete-artifact@v2
+        with:
+          name: coverage-data
+
   docker:
     name: docker
     runs-on: ubuntu-latest
