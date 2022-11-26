@@ -79,12 +79,13 @@ def pytest_ignore_collect(
 def pytest_collect_file(
     file_path: Path, parent: Node
 ) -> Optional['IntegrationTestFile']:
+    path = resolve_path(file_path)
     if (
-        file_path.suffix == '.sh'
-        and is_integration_test_file(file_path)
+        path.suffix == '.sh'
+        and is_integration_test_file(path)
         and sys.platform != 'win32'
     ):
-        return IntegrationTestFile.from_parent(parent, fspath=file_path)
+        return IntegrationTestFile.from_parent(parent, path=path)
 
     return None
 
