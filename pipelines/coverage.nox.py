@@ -18,6 +18,11 @@ def _setup_report(session: nox.Session) -> None:
     session.env['COVERAGE_FILE'] = str(CACHE_DIR / '.coverage')
     session.install('-r', 'pipelines/requirements/coverage.txt')
 
+    print('--- debug ---')
+    for p in CACHE_DIR.iterdir():
+        print(p)
+    print('--- debug ---')
+
     if '--no-combine' not in session.posargs:
         session.run('coverage', 'combine')
 
