@@ -70,7 +70,7 @@ jobs:
           TARGET_PYTHON: ${{ matrix.python-version }}
 
       - name: Debug
-        if: matrix.os.name === 'ubuntu-latest'
+        if: matrix.os.name == 'ubuntu-latest'
         run: |
           ls -a -r .cache
 
@@ -248,7 +248,7 @@ jobs:
           COVERAGE_FILE: .cache/.coverage.databases
 
       - name: Debug
-        if: matrix.os.name === 'ubuntu-latest'
+        if: matrix.os.name == 'ubuntu-latest'
         run: |
           ls -a -r .cache
 
