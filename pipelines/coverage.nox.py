@@ -34,7 +34,7 @@ def push_coverage(session: nox.Session) -> None:
             'coverage-badge', '-o', '../coverage.svg', '--cov-ignore-errors'
         )
 
-    if not repo.is_dirty():
+    if not repo.is_dirty(untracked_files=True):
         print('No changes!')
         return
 
