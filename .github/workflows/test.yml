@@ -70,9 +70,8 @@ jobs:
           TARGET_PYTHON: ${{ matrix.python-version }}
 
       - name: Debug
-        if: matrix.os.name == 'ubuntu-latest'
         run: |
-          ls -a -r .cache
+          python -c 'import pathlib, json; print(json.dumps([str(p) for p in pathlib.Path(".cache").iterdir()], indent=2))'
 
       - name: Upload coverage
         uses: actions/upload-artifact@v3
@@ -248,9 +247,8 @@ jobs:
           COVERAGE_FILE: .cache/.coverage.databases
 
       - name: Debug
-        if: matrix.os.name == 'ubuntu-latest'
         run: |
-          ls -a -r .cache
+          python -c 'import pathlib, json; print(json.dumps([str(p) for p in pathlib.Path(".cache").iterdir()], indent=2))'
 
       - name: Upload coverage
         uses: actions/upload-artifact@v3
