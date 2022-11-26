@@ -15,6 +15,7 @@ omit =
     */prisma/enums.py
     */prisma/client.py
     */prisma/models.py
+    */prisma/actions.py
     */prisma/partials.py
     # we still want to include these
     # */prisma/builder.py
