@@ -271,10 +271,6 @@ jobs:
           name: coverage-data
           path: .cache/
 
-      - name: Debug
-        run: |
-          ls -a -R .cache
-
       - name: Check coverage requirements
         run: |
           nox -s report-strict
@@ -286,13 +282,8 @@ jobs:
           name: htmlcov
           path: htmlcov
 
-      - name: Debug
-        run: |
-          ls -a -R .cache
-
       - name: Update static coverage
-        # TODO: if main and if not fork
-        if: always()
+        if: (success() || failure()) && github.ref == 'refs/heads/ci/custom-coverage' && github.repository == 'RobertCraigie/prisma-client-py'
         run: |
           nox -s push-coverage
 
