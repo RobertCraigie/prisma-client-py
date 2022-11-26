@@ -54,6 +54,7 @@ def push_coverage(session: nox.Session) -> None:
     git.add('coverage.svg')
     git.commit(
         m='Update coverage.svg',
+        author='github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>',
         env={
             'PRE_COMMIT_ALLOW_NO_CONFIG': '1',
         },
