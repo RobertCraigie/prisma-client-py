@@ -69,15 +69,11 @@ jobs:
         env:
           TARGET_PYTHON: ${{ matrix.python-version }}
 
-      - name: Combine coverage
-        run: |
-          nox -s report
-
       - name: Upload coverage
         uses: actions/upload-artifact@v3
         with:
           name: coverage-data
-          path: ".cache/.coverage"
+          path: ".cache/.coverage.*"
 
   typesafety:
     name: typesafety
@@ -246,15 +242,11 @@ jobs:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases
 
-      - name: Combine coverage
-        run: |
-          nox -s report
-
       - name: Upload coverage
         uses: actions/upload-artifact@v3
         with:
           name: coverage-data
-          path: ".cache/.coverage"
+          path: ".cache/.coverage*"
 
   coverage:
     name: coverage
