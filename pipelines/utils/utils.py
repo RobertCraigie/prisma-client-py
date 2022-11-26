@@ -1,9 +1,11 @@
+import tempfile
 from pathlib import Path
 
 import nox
 
 
 CACHE_DIR = Path.cwd() / '.cache'
+TMP_DIR = Path(tempfile.gettempdir())
 
 
 def get_pkg_location(session: nox.Session, pkg: str) -> str:

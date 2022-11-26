@@ -1,10 +1,11 @@
+import shutil
 import webbrowser
 from pathlib import Path
 
 import nox
 from git.repo import Repo
 
-from pipelines.utils import setup_env, CACHE_DIR
+from pipelines.utils import setup_env, CACHE_DIR, TMP_DIR
 
 
 BADGE_BRANCH = 'static/coverage'
@@ -20,6 +21,18 @@ def push_coverage(session: nox.Session) -> None:
         'pipelines/requirements/deps/coverage-badge.txt',
     )
 
+    svg_path = TMP_DIR / 'coverage.svg'
+
+    with session.chdir(CACHE_DIR):
+        print('--- debug ---')
+        for p in Path.cwd().iterdir():
+            print(p)
+        print('--- debug ---')
+
+        session.run(
+            'coverage-badge', '-o', str(svg_path), '--cov-ignore-errors'
+        )
+
     repo = Repo(Path.cwd())
     if repo.is_dirty():
         raise ValueError(
@@ -32,19 +45,11 @@ def push_coverage(session: nox.Session) -> None:
     # git branch -d static/coverage
     git.checkout(f'origin/{BADGE_BRANCH}', b=BADGE_BRANCH)
 
-    print('--- debug ---')
-    for p in CACHE_DIR.iterdir():
-        print(p)
-    print('--- debug ---')
-
-    with session.chdir(CACHE_DIR):
-        session.run(
-            'coverage-badge', '-o', '../coverage.svg', '--cov-ignore-errors'
-        )
-
     if not repo.is_dirty(untracked_files=True):
         print('No changes!')
         return
+
+    shutil.copy(svg_path, 'coverage.svg')
 
     git.add('coverage.svg')
     git.commit(
