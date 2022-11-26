@@ -27,6 +27,8 @@ def push_coverage(session: nox.Session) -> None:
 
     git = repo.git
     git.fetch('--all')
+    # TODO: work if branch already exists
+    # git branch -d static/coverage
     git.checkout(f'origin/{BADGE_BRANCH}', b=BADGE_BRANCH)
 
     with session.chdir(CACHE_DIR):
@@ -39,7 +41,12 @@ def push_coverage(session: nox.Session) -> None:
         return
 
     git.add('coverage.svg')
-    git.commit(m='Update coverage.svg')
+    git.commit(
+        m='Update coverage.svg',
+        env={
+            'PRE_COMMIT_ALLOW_NO_CONFIG': '1',
+        },
+    )
     git.push('origin', BADGE_BRANCH)
     print('Pushed new coverage badge!')
 
