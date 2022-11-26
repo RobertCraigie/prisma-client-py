@@ -47,6 +47,7 @@ def report_strict(session: nox.Session) -> None:
     """Like `report` but will error if coverage doesn't meet certain requirements"""
     _setup_report(session)
 
+    # core tests
     session.run(
         'coverage',
         'report',
@@ -55,5 +56,15 @@ def report_strict(session: nox.Session) -> None:
         '--include=tests/**',
         # integration tests are broken
         '--omit=tests/integrations/conftest.py',
+        '--fail-under=100',
+    )
+
+    # database tests
+    session.run(
+        'coverage',
+        'report',
+        '-i',
+        '--skip-covered',
+        '--include=databases/tests/**',
         '--fail-under=100',
     )
