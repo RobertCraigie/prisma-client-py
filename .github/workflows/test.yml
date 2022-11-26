@@ -266,9 +266,14 @@ jobs:
           pip install -U -r pipelines/requirements/ci.txt .[dev]
 
       - name: Download coverage data.
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: coverage-data
+          path: .cache/
+
+      - name: Debug
+        run: |
+          ls -a -R .cache
 
       - name: Check coverage requirements
         run: |
