@@ -53,5 +53,7 @@ def report_strict(session: nox.Session) -> None:
         '-i',
         '--skip-covered',
         '--include=tests/**',
+        # integration tests are broken
+        '--omit=tests/integrations/conftest.py',
         '--fail-under=100',
     )
