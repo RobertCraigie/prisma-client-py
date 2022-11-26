@@ -32,6 +32,11 @@ def push_coverage(session: nox.Session) -> None:
     # git branch -d static/coverage
     git.checkout(f'origin/{BADGE_BRANCH}', b=BADGE_BRANCH)
 
+    print('--- debug ---')
+    for p in CACHE_DIR.iterdir():
+        print(p)
+    print('--- debug ---')
+
     with session.chdir(CACHE_DIR):
         session.run(
             'coverage-badge', '-o', '../coverage.svg', '--cov-ignore-errors'
@@ -63,11 +68,6 @@ def _setup_report(session: nox.Session) -> None:
     # TODO: generate in place for coverage parsing?
     session.env['COVERAGE_FILE'] = str(CACHE_DIR / '.coverage')
     session.install('-r', 'pipelines/requirements/coverage.txt')
-
-    print('--- debug ---')
-    for p in CACHE_DIR.iterdir():
-        print(p)
-    print('--- debug ---')
 
     if '--no-combine' not in session.posargs:
         session.run('coverage', 'combine')
