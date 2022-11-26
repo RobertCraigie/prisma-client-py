@@ -84,8 +84,8 @@ def _setup_report(session: nox.Session) -> None:
     if '--no-combine' not in session.posargs:
         session.run('coverage', 'combine')
 
-    session.run('coverage', 'html')
-    session.run('coverage', 'xml')
+    session.run('coverage', 'html', '-i')
+    session.run('coverage', 'xml', '-i')
 
     if '--open' in session.posargs:
         url = f'file://{Path.cwd() / "htmlcov" / "index.html"}'
@@ -109,6 +109,7 @@ def report_strict(session: nox.Session) -> None:
     session.run(
         'coverage',
         'report',
+        '-i',
         '--skip-covered',
         '--include=tests/**',
         # integration tests are broken
@@ -120,6 +121,7 @@ def report_strict(session: nox.Session) -> None:
     session.run(
         'coverage',
         'report',
+        '-i',
         '--skip-covered',
         '--include=databases/tests/**',
         '--fail-under=100',
