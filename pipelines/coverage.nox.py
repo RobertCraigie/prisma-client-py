@@ -2,8 +2,45 @@ import webbrowser
 from pathlib import Path
 
 import nox
+from git.repo import Repo
 
 from pipelines.utils import setup_env, CACHE_DIR
+
+
+BADGE_BRANCH = 'static/coverage'
+
+
+@nox.session(name='push-coverage')
+def push_coverage(session: nox.Session) -> None:
+    session.install(
+        '-r',
+        'pipelines/requirements/coverage.txt',
+        '-r',
+        'pipelines/requirements/deps/coverage-badge.txt',
+    )
+
+    repo = Repo(Path.cwd())
+    if repo.is_dirty():
+        raise ValueError(
+            f'Expected repo to not be dirty; Untracked files: {repo.untracked_files}'
+        )
+
+    git = repo.git
+    git.checkout(f'origin/{BADGE_BRANCH}', b=BADGE_BRANCH)
+
+    with session.chdir(CACHE_DIR):
+        session.run(
+            'coverage-badge', '-o', '../coverage.svg', '--cov-ignore-errors'
+        )
+
+    if not repo.is_dirty():
+        print('No changes!')
+        return
+
+    git.add('coverage.svg')
+    git.commit(m='Update coverage.svg')
+    git.push('origin', BADGE_BRANCH)
+    print('Pushed new coverage badge!')
 
 
 @nox.session

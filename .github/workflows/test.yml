@@ -286,6 +286,12 @@ jobs:
           name: htmlcov
           path: htmlcov
 
+      - name: Update static coverage
+        # TODO: if main and if not fork
+        if: always()
+        run: |
+          nox -s push-coverage
+
       # delete the temporary coverage artifacts to save on unnecessary cloud storage usage
       - uses: geekyeggo/delete-artifact@v2
         with:
