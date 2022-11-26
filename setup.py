@@ -28,12 +28,6 @@ if not version:
     raise RuntimeError('version is not set')
 
 
-extras = {
-    'dev': requirements('dev.txt'),
-    'docs': requirements('docs.txt'),
-}
-
-
 setup(
     name='prisma',
     version=version,
@@ -56,10 +50,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     extras_require={
-        **extras,
-        'all': [
-            req for requirements in extras.values() for req in requirements
-        ],
+        # we define `all` even though it's empty so that we can add to it in the future
+        'all': [],
     },
     entry_points={
         'console_scripts': [

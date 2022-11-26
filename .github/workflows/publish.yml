@@ -15,7 +15,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -U -r requirements/dev.txt
+          pip install -U -r pipelines/requirements/dev.txt
 
       - name: Build Package
         run: |

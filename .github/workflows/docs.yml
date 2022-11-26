@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install .[docs]
+          pip install . -r pipelines/requirements/docs.txt
 
       # this is a basic test to ensure there are no warnings are generated
       # TODO: upload built docs
