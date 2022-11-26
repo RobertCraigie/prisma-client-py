@@ -12,6 +12,7 @@ BADGE_BRANCH = 'static/coverage'
 
 @nox.session(name='push-coverage')
 def push_coverage(session: nox.Session) -> None:
+    session.env['COVERAGE_FILE'] = str(CACHE_DIR / '.coverage')
     session.install(
         '-r',
         'pipelines/requirements/coverage.txt',
