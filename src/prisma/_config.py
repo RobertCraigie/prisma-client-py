@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Union, cast
+from typing import TYPE_CHECKING, Union
 
 import tomlkit
 from pydantic import BaseSettings, Extra, Field
@@ -98,4 +98,4 @@ class LazyConfigProxy(LazyProxy[Config]):
         return Config.load()
 
 
-config: Config = cast(Config, LazyConfigProxy())
+config: Config = LazyConfigProxy().__as_proxied__()
