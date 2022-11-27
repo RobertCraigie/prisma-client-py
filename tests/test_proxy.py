@@ -1,4 +1,4 @@
-from typing import final
+from typing_extensions import final
 
 from pytest_mock import MockerFixture
 
