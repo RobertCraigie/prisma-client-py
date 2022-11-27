@@ -59,7 +59,7 @@ def push_coverage(session: nox.Session) -> None:
 
     print(git.status())
 
-    git.add('htmlcov/*')
+    git.add('htmlcov/')
     git.add('coverage.svg')
 
     if not repo.is_dirty():
