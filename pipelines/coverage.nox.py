@@ -130,3 +130,6 @@ def report_strict(session: nox.Session) -> None:
         '--include=databases/tests/**',
         '--fail-under=100',
     )
+
+    # output overall coverage
+    session.run('coverage', 'report', '-i', '--skip-covered')
