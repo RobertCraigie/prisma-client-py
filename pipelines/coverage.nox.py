@@ -59,6 +59,9 @@ def push_coverage(session: nox.Session) -> None:
 
     print(git.status())
 
+    git.add('htmlcov/*')
+    git.add('coverage.svg')
+
     if not repo.is_dirty():
         print('No changes!')
         return
@@ -70,8 +73,6 @@ def push_coverage(session: nox.Session) -> None:
             '41898282+github-actions[bot]@users.noreply.github.com',
         )
 
-    git.add('htmlcov/*')
-    git.add('coverage.svg')
     git.commit(
         m=head_summary,
         env={
