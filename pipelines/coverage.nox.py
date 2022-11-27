@@ -24,11 +24,13 @@ def push_coverage(session: nox.Session) -> None:
     )
 
     svg_path = TMP_DIR / 'coverage.svg'
-
     with session.chdir(CACHE_DIR):
         session.run(
             'coverage-badge', '-o', str(svg_path), '--cov-ignore-errors'
         )
+
+    htmlcov_path = TMP_DIR / 'htmlcov'
+    shutil.copytree('htmlcov', htmlcov_path)
 
     repo = Repo(Path.cwd())
     if repo.is_dirty():
@@ -42,6 +44,9 @@ def push_coverage(session: nox.Session) -> None:
     git.fetch('--all')
     git.checkout(f'origin/{BADGE_BRANCH}', b=BADGE_BRANCH)
 
+    shutil.copy(svg_path, 'coverage.svg')
+    shutil.copy(htmlcov_path, 'htmlcov')
+
     if not repo.is_dirty(untracked_files=True):
         print('No changes!')
         return
@@ -53,8 +58,7 @@ def push_coverage(session: nox.Session) -> None:
             '41898282+github-actions[bot]@users.noreply.github.com',
         )
 
-    shutil.copy(svg_path, 'coverage.svg')
-
+    git.add('htmlcov')
     git.add('coverage.svg')
     git.commit(
         m=head_summary,
