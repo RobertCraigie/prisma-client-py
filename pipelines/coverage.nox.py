@@ -52,6 +52,8 @@ def push_coverage(session: nox.Session) -> None:
 
     shutil.copytree(TMP_HTMLCOV_PATH, htmlcov)
 
+    print(git.status())
+
     if not repo.is_dirty(untracked_files=True):
         print('No changes!')
         return
