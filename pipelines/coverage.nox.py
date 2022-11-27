@@ -45,7 +45,7 @@ def push_coverage(session: nox.Session) -> None:
     git.checkout(f'origin/{BADGE_BRANCH}', b=BADGE_BRANCH)
 
     shutil.copy(svg_path, 'coverage.svg')
-    shutil.copy(htmlcov_path, 'htmlcov')
+    shutil.copytree(htmlcov_path, 'htmlcov')
 
     if not repo.is_dirty(untracked_files=True):
         print('No changes!')
