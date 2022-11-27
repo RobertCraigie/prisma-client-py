@@ -11,6 +11,8 @@ from pipelines.utils import setup_env, CACHE_DIR, TMP_DIR
 
 
 BADGE_BRANCH = 'static/coverage'
+TMP_SVG_PATH = TMP_DIR / 'coverage.svg'
+TMP_HTMLCOV_PATH = TMP_DIR / 'htmlcov'
 
 
 @nox.session(name='push-coverage')
@@ -23,14 +25,12 @@ def push_coverage(session: nox.Session) -> None:
         'pipelines/requirements/deps/coverage-badge.txt',
     )
 
-    svg_path = TMP_DIR / 'coverage.svg'
     with session.chdir(CACHE_DIR):
         session.run(
-            'coverage-badge', '-o', str(svg_path), '--cov-ignore-errors'
+            'coverage-badge', '-o', str(TMP_SVG_PATH), '--cov-ignore-errors'
         )
 
-    htmlcov_path = TMP_DIR / 'htmlcov'
-    shutil.copytree('htmlcov', htmlcov_path)
+    shutil.copytree('htmlcov', TMP_HTMLCOV_PATH)
 
     repo = Repo(Path.cwd())
     if repo.is_dirty():
@@ -44,8 +44,13 @@ def push_coverage(session: nox.Session) -> None:
     git.fetch('--all')
     git.checkout(f'origin/{BADGE_BRANCH}', b=BADGE_BRANCH)
 
-    shutil.copy(svg_path, 'coverage.svg')
-    shutil.copytree(htmlcov_path, 'htmlcov')
+    shutil.copy(TMP_SVG_PATH, 'coverage.svg')
+
+    htmlcov = Path.cwd() / 'htmlcov'
+    if htmlcov.exists():
+        shutil.rmtree(htmlcov)
+
+    shutil.copytree(TMP_HTMLCOV_PATH, htmlcov)
 
     if not repo.is_dirty(untracked_files=True):
         print('No changes!')
