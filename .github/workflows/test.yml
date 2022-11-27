@@ -178,6 +178,10 @@ jobs:
         run: |
           nox -s mypy
 
+      - name: Debug
+        run: |
+          ls -a -R .cache
+
       - name: Upload coverage
         uses: actions/upload-artifact@v3
         with:
