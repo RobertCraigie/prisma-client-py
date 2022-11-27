@@ -70,7 +70,7 @@ def push_coverage(session: nox.Session) -> None:
             '41898282+github-actions[bot]@users.noreply.github.com',
         )
 
-    git.add('htmlcov')
+    git.add('htmlcov/*')
     git.add('coverage.svg')
     git.commit(
         m=head_summary,
