@@ -98,4 +98,4 @@ class LazyConfigProxy(LazyProxy[Config]):
         return Config.load()
 
 
-config: Config = cast(Config, LazyConfigProxy())
+config = LazyConfigProxy().__as_proxied__()
