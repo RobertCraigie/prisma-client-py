@@ -61,11 +61,6 @@ def push_coverage(session: nox.Session) -> None:
 
     shutil.copytree(TMP_HTMLCOV_PATH, htmlcov)
 
-    print('-----')
-    for p in Path.cwd().iterdir():
-        print(p)
-    print('-----')
-
     # stage potential changes
     git.add('-f', 'htmlcov/*')
     git.add('coverage.svg')
