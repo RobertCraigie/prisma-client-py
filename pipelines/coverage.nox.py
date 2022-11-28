@@ -44,6 +44,9 @@ def push_coverage(session: nox.Session) -> None:
     git.fetch('--all')
     git.checkout(f'origin/{BADGE_BRANCH}', b=BADGE_BRANCH)
 
+    # ensure only the files relevant to the static branch will be present
+    git.rm('-rf')
+
     shutil.copy(TMP_SVG_PATH, 'coverage.svg')
 
     htmlcov = Path.cwd() / 'htmlcov'
@@ -59,7 +62,7 @@ def push_coverage(session: nox.Session) -> None:
 
     print(git.status())
 
-    git.add('htmlcov/')
+    git.add('-f', 'htmlcov/*')
     git.add('coverage.svg')
 
     if not repo.is_dirty():
