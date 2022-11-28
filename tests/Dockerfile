@@ -49,7 +49,8 @@ ENV PATH="/home/prisma/.local/bin:${PATH}"
 COPY --chown=prisma:prisma . .
 
 RUN pip install --upgrade pip && \
-    pip install .[dev]
+    pip install . && \
+    pip install -U -r pipelines/requirements/dev.txt
 
 # This has the side-effect of downing the prisma binaries
 # and will fail if the CLI cannot get run
