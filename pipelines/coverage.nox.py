@@ -11,6 +11,8 @@ from pipelines.utils import setup_env, CACHE_DIR, TMP_DIR
 
 
 BADGE_BRANCH = 'static/coverage'
+TMP_SVG_PATH = TMP_DIR / 'coverage.svg'
+TMP_HTMLCOV_PATH = TMP_DIR / 'htmlcov'
 
 
 @nox.session(name='push-coverage')
@@ -23,12 +25,12 @@ def push_coverage(session: nox.Session) -> None:
         'pipelines/requirements/deps/coverage-badge.txt',
     )
 
-    svg_path = TMP_DIR / 'coverage.svg'
-
     with session.chdir(CACHE_DIR):
         session.run(
-            'coverage-badge', '-o', str(svg_path), '--cov-ignore-errors'
+            'coverage-badge', '-o', str(TMP_SVG_PATH), '--cov-ignore-errors'
         )
+
+    shutil.copytree('htmlcov', TMP_HTMLCOV_PATH)
 
     repo = Repo(Path.cwd())
     if repo.is_dirty():
@@ -42,7 +44,24 @@ def push_coverage(session: nox.Session) -> None:
     git.fetch('--all')
     git.checkout(f'origin/{BADGE_BRANCH}', b=BADGE_BRANCH)
 
-    if not repo.is_dirty(untracked_files=True):
+    # ensure only the files relevant to the static branch will be present
+    git.rm('-rf', '.')
+
+    shutil.copy(TMP_SVG_PATH, 'coverage.svg')
+
+    htmlcov = Path.cwd() / 'htmlcov'
+    if htmlcov.exists():
+        # remove the `htmlcov` directory in case it exists so that we
+        # don't include now redundant files.
+        shutil.rmtree(htmlcov)
+
+    shutil.copytree(TMP_HTMLCOV_PATH, htmlcov)
+
+    # stage potential changes
+    git.add('-f', 'htmlcov/*')
+    git.add('coverage.svg')
+
+    if not repo.is_dirty():
         print('No changes!')
         return
 
@@ -53,9 +72,6 @@ def push_coverage(session: nox.Session) -> None:
             '41898282+github-actions[bot]@users.noreply.github.com',
         )
 
-    shutil.copy(svg_path, 'coverage.svg')
-
-    git.add('coverage.svg')
     git.commit(
         m=head_summary,
         env={
@@ -126,3 +142,6 @@ def report_strict(session: nox.Session) -> None:
         '--include=databases/tests/**',
         '--fail-under=100',
     )
+
+    # output overall coverage
+    session.run('coverage', 'report', '-i', '--skip-covered')

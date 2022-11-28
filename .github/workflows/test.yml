@@ -174,7 +174,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mypy
 
-      # TODO: add codecov for our mypy plugin
+      # TODO: figure out how to get coverage for the mypy plugin
       - name: Check Mypy
         run: |
           nox -s mypy

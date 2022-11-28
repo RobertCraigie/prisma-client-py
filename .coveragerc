@@ -30,6 +30,10 @@ exclude_lines =
     if TYPE_CHECKING
     \.\.\.
 
+partial_branches =
+    pragma: no branch
+    if not TYPE_CHECKING:
+
 [paths]
 prisma =
     src/prisma

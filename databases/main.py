@@ -68,7 +68,7 @@ def test(
     with session.chdir(DATABASES_DIR):
         # setup env
         session.install('-r', 'requirements.txt')
-        if inplace:
+        if inplace:  # pragma: no cover
             # useful for updating the generated code so that Pylance picks it up
             session.install('-U', '-e', '..')
         else:
@@ -81,16 +81,16 @@ def test(
 
             # point coverage to store data in a database specific location
             # as to not overwrite any existing data from other database tests
-            if coverage:
+            if coverage:  # pragma: no branch
                 setup_coverage(session, identifier=database)
 
             runner = Runner(database=database, track_coverage=coverage)
             runner.setup()
 
-            if test:
+            if test:  # pragma: no branch
                 runner.test(pytest_args=pytest_args)
 
-            if lint:
+            if lint:  # pragma: no branch
                 runner.lint()
 
 
@@ -122,7 +122,7 @@ class Runner:
 
     def _create_cache_dir(self) -> None:
         cache_dir = self.cache_dir
-        if cache_dir.exists():
+        if cache_dir.exists():  # pragma: no cover
             shutil.rmtree(cache_dir)
 
         cache_dir.mkdir(parents=True, exist_ok=True)
@@ -186,7 +186,7 @@ class Runner:
         )
 
         args = []
-        if pytest_args is not None:
+        if pytest_args is not None:  # pragma: no cover
             args = shlex.split(pytest_args)
 
         # TODO: use PYTEST_ADDOPTS instead
@@ -257,7 +257,7 @@ def validate_database(database: str) -> SupportedDatabase:
     # We convert the input to lowercase so that we don't have to define
     # two separate names in the CI matrix.
     database = database.lower()
-    if database not in SUPPORTED_DATABASES:
+    if database not in SUPPORTED_DATABASES:  # pragma: no cover
         raise ValueError(f'Unknown database: {database}')
 
     return cast(SupportedDatabase, database)
@@ -303,7 +303,3 @@ def entrypoint(session: nox.Session) -> None:
     # copy the current context so that the session object is not leaked
     ctx = copy_context()
     return ctx.run(wrapper)
-
-
-if __name__ == '__main__':
-    cli()
