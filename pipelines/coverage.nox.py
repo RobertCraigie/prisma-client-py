@@ -13,6 +13,7 @@ from pipelines.utils import setup_env, CACHE_DIR, TMP_DIR
 BADGE_BRANCH = 'static/coverage'
 TMP_SVG_PATH = TMP_DIR / 'coverage.svg'
 TMP_HTMLCOV_PATH = TMP_DIR / 'htmlcov'
+TMP_README_PATH = TMP_DIR / 'README.md'
 
 
 @nox.session(name='push-coverage')
@@ -44,10 +45,13 @@ def push_coverage(session: nox.Session) -> None:
     git.fetch('--all')
     git.checkout(f'origin/{BADGE_BRANCH}', b=BADGE_BRANCH)
 
+    shutil.copy('README.md', TMP_README_PATH)
+
     # ensure only the files relevant to the static branch will be present
     git.rm('-rf', '.')
 
     shutil.copy(TMP_SVG_PATH, 'coverage.svg')
+    shutil.copy(TMP_README_PATH, 'README.md')
 
     htmlcov = Path.cwd() / 'htmlcov'
     if htmlcov.exists():
