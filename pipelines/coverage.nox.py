@@ -51,17 +51,13 @@ def push_coverage(session: nox.Session) -> None:
 
     htmlcov = Path.cwd() / 'htmlcov'
     if htmlcov.exists():
+        # remove the `htmlcov` directory in case it exists so that we
+        # don't include now redundant files.
         shutil.rmtree(htmlcov)
 
     shutil.copytree(TMP_HTMLCOV_PATH, htmlcov)
 
-    print('\n----- debug ----')
-    for p in htmlcov.iterdir():
-        print(p)
-    print('----- debug ----\n')
-
-    print(git.status())
-
+    # stage potential changes
     git.add('-f', 'htmlcov/*')
     git.add('coverage.svg')
 

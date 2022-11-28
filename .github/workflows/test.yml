@@ -174,19 +174,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mypy
 
+      # TODO: figure out how to get coverage for the mypy plugin
       - name: Check Mypy
         run: |
           nox -s mypy
-
-      - name: Debug
-        run: |
-          ls -a -R .cache
-
-      - name: Upload coverage
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-data
-          path: ".cache/.coverage*"
 
   databases:
     name: ${{ matrix.name }} ${{ matrix.version }}
@@ -260,7 +251,7 @@ jobs:
   coverage:
     name: coverage
     runs-on: ubuntu-latest
-    needs: [databases, test, mypy]
+    needs: [databases, test]
     steps:
       - uses: actions/checkout@v3
 
@@ -292,7 +283,7 @@ jobs:
           path: htmlcov
 
       - name: Update static coverage
-        if: (success() || failure()) && github.repository == 'RobertCraigie/prisma-client-py'
+        if: (success() || failure()) && github.ref == 'refs/heads/main' && github.repository == 'RobertCraigie/prisma-client-py'
         run: |
           nox -s push-coverage
 
