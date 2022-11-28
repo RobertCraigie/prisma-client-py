@@ -32,8 +32,7 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         env_var='COCKROACHDB_URL',
         bools_are_ints=False,
         unsupported_features={
-            # TODO: this should just be JSON arrays
-            'arrays',
+            'json_arrays',
         },
     ),
     'sqlite': DatabaseConfig(
@@ -84,6 +83,7 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     'enum': ['test_enum.py', 'test_arrays/test_enum.py'],
     'json': ['types/test_json.py', 'test_arrays/test_json.py'],
     'arrays': _fromdir('arrays'),
+    'json_arrays': ['arrays/test_json.py'],
     'create_many': ['test_create_many.py'],
     'raw_queries': ['test_raw_queries.py'],
     'case_sensitivity': ['test_case_sensitivity.py'],

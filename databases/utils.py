@@ -8,6 +8,7 @@ DatabaseFeature = Literal[
     'enum',
     'json',
     'arrays',
+    'json_arrays',
     'raw_queries',
     'create_many',
     'case_sensitivity',
