@@ -60,6 +60,7 @@ def push_coverage(session: nox.Session) -> None:
     # stage potential changes
     git.add('-f', 'htmlcov/*')
     git.add('coverage.svg')
+    git.add('README.md')
 
     if not repo.is_dirty():
         print('No changes!')
