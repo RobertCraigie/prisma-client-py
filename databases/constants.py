@@ -31,7 +31,10 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         name='CockroachDB',
         env_var='COCKROACHDB_URL',
         bools_are_ints=False,
-        unsupported_features=set(),
+        unsupported_features={
+            # TODO: this should just be JSON arrays
+            'arrays',
+        },
     ),
     'sqlite': DatabaseConfig(
         id='sqlite',
