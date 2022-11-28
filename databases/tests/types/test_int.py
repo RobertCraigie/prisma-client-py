@@ -2,6 +2,8 @@ import pytest
 from prisma import Prisma
 from prisma.errors import DataError
 
+from ..utils import CURRENT_DATABASE
+
 
 @pytest.mark.asyncio
 async def test_filtering(client: Prisma) -> None:
@@ -172,6 +174,14 @@ async def test_atomic_update(client: Prisma) -> None:
     assert updated is not None
     assert updated.integer == 30
 
+
+@pytest.mark.asyncio
+@pytest.mark.skipif(
+    CURRENT_DATABASE == 'cockroachdb',
+    reason='https://github.com/prisma/prisma/issues/16511',
+)
+async def test_atomic_update_divide(client: Prisma) -> None:
+    """Atomically dividing an integer value"""
     updated = await client.types.update(
         where={
             'id': 1,

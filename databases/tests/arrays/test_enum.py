@@ -2,6 +2,8 @@ import pytest
 from prisma import Prisma
 from prisma.enums import Role
 
+from ..utils import CURRENT_DATABASE
+
 
 @pytest.mark.asyncio
 async def test_filtering_enums(client: Prisma) -> None:
@@ -98,6 +100,10 @@ async def test_filtering_enums(client: Prisma) -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.skipif(
+    CURRENT_DATABASE == 'cockroachdb',
+    reason='https://github.com/prisma/prisma/issues/16511',
+)
 async def test_updating_enum(client: Prisma) -> None:
     """Updating a Role[] enum value"""
     models = [

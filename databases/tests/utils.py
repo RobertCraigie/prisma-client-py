@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
 from pydantic import BaseModel
 
@@ -8,6 +9,9 @@ if TYPE_CHECKING:
 else:
     # for pydantic support
     LiteralString = str
+
+
+CURRENT_DATABASE = os.environ['PRISMA_DATABASE']
 
 
 class RawQueries(BaseModel):
