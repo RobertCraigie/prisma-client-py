@@ -54,6 +54,7 @@ Supported database providers:
 - PostgreSQL
 - MySQL
 - SQLite
+- CockroachDB
 - MongoDB (experimental)
 - SQL Server (experimental)
 

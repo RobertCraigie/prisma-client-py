@@ -26,6 +26,13 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         bools_are_ints=False,
         unsupported_features=set(),
     ),
+    'cockroachdb': DatabaseConfig(
+        id='postgresql',
+        name='CockroachDB',
+        env_var='COCKROACHDB_URL',
+        bools_are_ints=False,
+        unsupported_features=set(),
+    ),
     'sqlite': DatabaseConfig(
         id='sqlite',
         name='SQLite',
