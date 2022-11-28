@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for src/prisma/engine/query.py: 85%</title>
+    <title>Coverage for src/prisma/engine/query.py: 90%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>src/prisma/engine/query.py</b>:
-            <span class="pc_cov">85%</span>
+            <span class="pc_cov">90%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -56,10 +56,10 @@
         </aside>
         <h2>
             <span class="text">100 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">89<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">11<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">91<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">9<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">4<span class="text"> excluded</span></button>
-            <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">6<span class="text"> partial</span></button>
+            <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">3<span class="text"> partial</span></button>
         </h2>
         <p class="text">
             <a id="prevFileLink" class="nav" href="d_b22d2f7038698a23_http_py.html">&#xab; prev</a> &nbsp; &nbsp;
@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="d_b22d2f7038698a23_utils_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2022-11-27 13:22 +0000
+            created at 2022-11-28 01:43 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -166,8 +166,8 @@
     <p class="exc show_exc"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t">        <span class="nam">log</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="str">'Disconnecting query engine...'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t">        <span class="key">if</span> <span class="nam">self</span><span class="op">.</span><span class="nam">process</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="par run show_par"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t">            <span class="key">if</span> <span class="nam">platform</span><span class="op">.</span><span class="nam">name</span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="str">'windows'</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">85&#x202F;&#x219B;&#x202F;86</span><span class="annotate long">line 85 didn't jump to line 86, because the condition on line 85 was never true</span></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t">                <span class="nam">self</span><span class="op">.</span><span class="nam">process</span><span class="op">.</span><span class="nam">kill</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t">            <span class="key">if</span> <span class="nam">platform</span><span class="op">.</span><span class="nam">name</span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="str">'windows'</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t">                <span class="nam">self</span><span class="op">.</span><span class="nam">process</span><span class="op">.</span><span class="nam">kill</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t">            <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t">                <span class="nam">self</span><span class="op">.</span><span class="nam">process</span><span class="op">.</span><span class="nam">send_signal</span><span class="op">(</span><span class="nam">signal</span><span class="op">.</span><span class="nam">SIGINT</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -190,8 +190,8 @@
     <p class="pln"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t">        <span class="nam">datasources</span><span class="op">:</span> <span class="nam">Optional</span><span class="op">[</span><span class="nam">List</span><span class="op">[</span><span class="nam">DatasourceOverride</span><span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="key">None</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t">    <span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t108" href="#t108">108</a></span><span class="t">        <span class="nam">log</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="str">'Connecting to query engine'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="par run show_par"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t">        <span class="key">if</span> <span class="nam">self</span><span class="op">.</span><span class="nam">process</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">109&#x202F;&#x219B;&#x202F;110</span><span class="annotate long">line 109 didn't jump to line 110, because the condition on line 109 was never true</span></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t">            <span class="key">raise</span> <span class="nam">errors</span><span class="op">.</span><span class="nam">AlreadyConnectedError</span><span class="op">(</span><span class="str">'Already connected to the query engine'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t">        <span class="key">if</span> <span class="nam">self</span><span class="op">.</span><span class="nam">process</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t">            <span class="key">raise</span> <span class="nam">errors</span><span class="op">.</span><span class="nam">AlreadyConnectedError</span><span class="op">(</span><span class="str">'Already connected to the query engine'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t111" href="#t111">111</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t112" href="#t112">112</a></span><span class="t">        <span class="nam">start</span> <span class="op">=</span> <span class="nam">time</span><span class="op">.</span><span class="nam">monotonic</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t113" href="#t113">113</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">file</span> <span class="op">=</span> <span class="nam">file</span> <span class="op">=</span> <span class="nam">utils</span><span class="op">.</span><span class="nam">ensure</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -226,7 +226,7 @@
     <p class="par run show_par"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t">        <span class="key">if</span> <span class="nam">DEBUG</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">142&#x202F;&#x219B;&#x202F;145</span><span class="annotate long">line 142 didn't jump to line 145, because the condition on line 142 was never false</span></span></p>
     <p class="run"><span class="n"><a id="t143" href="#t143">143</a></span><span class="t">            <span class="nam">env</span><span class="op">.</span><span class="nam">update</span><span class="op">(</span><span class="nam">RUST_LOG</span><span class="op">=</span><span class="str">'info'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="par run show_par"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t">        <span class="key">if</span> <span class="nam">datasources</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">145&#x202F;&#x219B;&#x202F;149</span><span class="annotate long">line 145 didn't jump to line 149, because the condition on line 145 was never false</span></span></p>
+    <p class="run"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t">        <span class="key">if</span> <span class="nam">datasources</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t146" href="#t146">146</a></span><span class="t">            <span class="nam">env</span><span class="op">.</span><span class="nam">update</span><span class="op">(</span><span class="nam">OVERWRITE_DATASOURCES</span><span class="op">=</span><span class="nam">dumps</span><span class="op">(</span><span class="nam">datasources</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t147" href="#t147">147</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t148" href="#t148">148</a></span><span class="t">        <span class="com"># TODO: remove the noise from these query logs</span>&nbsp;</span><span class="r"></span></p>
@@ -287,7 +287,7 @@
             <a id="nextFileLink" class="nav" href="d_b22d2f7038698a23_utils_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2022-11-27 13:22 +0000
+            created at 2022-11-28 01:43 +0000
         </p>
     </div>
 </footer>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for tests/test_misc.py: 92%</title>
+    <title>Coverage for tests/test_misc.py: 100%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>tests/test_misc.py</b>:
-            <span class="pc_cov">92%</span>
+            <span class="pc_cov">100%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -59,7 +59,7 @@
             <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">33<span class="text"> run</span></button>
             <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">0<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
-            <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">3<span class="text"> partial</span></button>
+            <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">0<span class="text"> partial</span></button>
         </h2>
         <p class="text">
             <a id="prevFileLink" class="nav" href="d_a44f0ac069e85531_test_include_py.html">&#xab; prev</a> &nbsp; &nbsp;
@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="d_a44f0ac069e85531_test_models_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2022-11-27 13:22 +0000
+            created at 2022-11-28 01:43 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -93,7 +93,7 @@
     <p class="pln"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t"><span class="key">def</span> <span class="nam">test_create_partial_raises_outside_generation</span><span class="op">(</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t">    <span class="str">"""Trying to create a partial type outside of client generation raises an error"""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="par run show_par"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t">    <span class="key">with</span> <span class="nam">pytest</span><span class="op">.</span><span class="nam">raises</span><span class="op">(</span><span class="nam">RuntimeError</span><span class="op">)</span> <span class="key">as</span> <span class="nam">exc</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">12&#x202F;&#x219B;&#x202F;14</span><span class="annotate long">line 12 didn't jump to line 14</span></span></p>
+    <p class="run"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t">    <span class="key">with</span> <span class="nam">pytest</span><span class="op">.</span><span class="nam">raises</span><span class="op">(</span><span class="nam">RuntimeError</span><span class="op">)</span> <span class="key">as</span> <span class="nam">exc</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t">        <span class="nam">User</span><span class="op">.</span><span class="nam">create_partial</span><span class="op">(</span><span class="str">'PartialUser'</span><span class="op">,</span> <span class="nam">exclude</span><span class="op">=</span><span class="op">{</span><span class="str">'name'</span><span class="op">}</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t">    <span class="key">assert</span> <span class="str">'outside of client generation'</span> <span class="key">in</span> <span class="nam">str</span><span class="op">(</span><span class="nam">exc</span><span class="op">.</span><span class="nam">value</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -116,7 +116,7 @@
     <p class="pln"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t">    <span class="com"># we have to redirect stdout to a file to capture it as</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t">    <span class="com"># we are passing stdout to a subprocess</span>&nbsp;</span><span class="r"></span></p>
-    <p class="par run show_par"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t">    <span class="key">with</span> <span class="nam">testdir</span><span class="op">.</span><span class="nam">redirect_stdout_to_file</span><span class="op">(</span><span class="op">)</span> <span class="key">as</span> <span class="nam">file</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">35&#x202F;&#x219B;&#x202F;43</span><span class="annotate long">line 35 didn't jump to line 43</span></span></p>
+    <p class="run"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t">    <span class="key">with</span> <span class="nam">testdir</span><span class="op">.</span><span class="nam">redirect_stdout_to_file</span><span class="op">(</span><span class="op">)</span> <span class="key">as</span> <span class="nam">file</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t">        <span class="key">await</span> <span class="nam">client</span><span class="op">.</span><span class="nam">connect</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t">        <span class="nam">user</span> <span class="op">=</span> <span class="key">await</span> <span class="nam">client</span><span class="op">.</span><span class="nam">user</span><span class="op">.</span><span class="nam">find_unique</span><span class="op">(</span><span class="nam">where</span><span class="op">=</span><span class="op">{</span><span class="str">'id'</span><span class="op">:</span> <span class="str">'jsdhsjd'</span><span class="op">}</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -130,7 +130,7 @@
     <p class="run"><span class="n"><a id="t46" href="#t46">46</a></span><span class="t"><span class="op">@</span><span class="nam">pytest</span><span class="op">.</span><span class="nam">mark</span><span class="op">.</span><span class="nam">asyncio</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t47" href="#t47">47</a></span><span class="t"><span class="key">async</span> <span class="key">def</span> <span class="nam">test_unmarked_test_disallowed_client</span><span class="op">(</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t48" href="#t48">48</a></span><span class="t">    <span class="str">"""Test case that isn't marked with @pytest.mark.prisma cannot access the client"""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="par run show_par"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t">    <span class="key">with</span> <span class="nam">pytest</span><span class="op">.</span><span class="nam">raises</span><span class="op">(</span><span class="nam">RuntimeError</span><span class="op">)</span> <span class="key">as</span> <span class="nam">exc</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">49&#x202F;&#x219B;&#x202F;52</span><span class="annotate long">line 49 didn't jump to line 52</span></span></p>
+    <p class="run"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t">    <span class="key">with</span> <span class="nam">pytest</span><span class="op">.</span><span class="nam">raises</span><span class="op">(</span><span class="nam">RuntimeError</span><span class="op">)</span> <span class="key">as</span> <span class="nam">exc</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t">        <span class="key">await</span> <span class="nam">User</span><span class="op">.</span><span class="nam">prisma</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">create</span><span class="op">(</span><span class="op">{</span><span class="str">'name'</span><span class="op">:</span> <span class="str">'Robert'</span><span class="op">}</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t52" href="#t52">52</a></span><span class="t">    <span class="key">assert</span> <span class="str">'@pytest.mark.prisma'</span> <span class="key">in</span> <span class="nam">exc</span><span class="op">.</span><span class="nam">value</span><span class="op">.</span><span class="nam">args</span><span class="op">[</span><span class="num">0</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
@@ -154,7 +154,7 @@
             <a id="nextFileLink" class="nav" href="d_a44f0ac069e85531_test_models_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2022-11-27 13:22 +0000
+            created at 2022-11-28 01:43 +0000
         </p>
     </div>
 </footer>
