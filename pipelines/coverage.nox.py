@@ -45,7 +45,7 @@ def push_coverage(session: nox.Session) -> None:
     git.checkout(f'origin/{BADGE_BRANCH}', b=BADGE_BRANCH)
 
     # ensure only the files relevant to the static branch will be present
-    git.rm('-rf')
+    git.rm('-rf', '.')
 
     shutil.copy(TMP_SVG_PATH, 'coverage.svg')
 
