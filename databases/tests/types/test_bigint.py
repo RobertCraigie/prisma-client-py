@@ -182,8 +182,8 @@ async def test_atomic_update(client: Prisma) -> None:
 )
 async def test_atomic_update_divide(client: Prisma) -> None:
     """Atomically dividing a `BigInt` value"""
-    model = await client.types.create({'id': 1, 'bigint': 1})
-    assert model.bigint == 1
+    model = await client.types.create({'id': 1, 'bigint': 30})
+    assert model.bigint == 30
 
     updated = await client.types.update(
         where={
