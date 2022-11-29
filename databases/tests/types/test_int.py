@@ -182,6 +182,9 @@ async def test_atomic_update(client: Prisma) -> None:
 )
 async def test_atomic_update_divide(client: Prisma) -> None:
     """Atomically dividing an integer value"""
+    model = await client.types.create({'id': 1, 'integer': 1})
+    assert model.integer == 1
+
     updated = await client.types.update(
         where={
             'id': 1,
