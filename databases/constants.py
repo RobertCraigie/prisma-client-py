@@ -27,7 +27,7 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         unsupported_features=set(),
     ),
     'cockroachdb': DatabaseConfig(
-        id='cockroachdb',
+        id='postgresql',
         name='CockroachDB',
         env_var='COCKROACHDB_URL',
         bools_are_ints=False,
