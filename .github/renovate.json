@@ -3,6 +3,7 @@
   "extends": [
     "config:base"
   ],
+  "ignorePaths": ["databases/docker-compose.yml"],
   "packageRules": [
     {
         "groupName": "dev",
