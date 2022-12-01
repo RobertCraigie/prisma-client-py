@@ -15,15 +15,11 @@
     },
     {
         "groupName": "mypy",
-        "matchFiles": ["pipelines/requirements/mypy.txt"]
+        "matchPackagePatterns": ["mypy"]
     },
     {
         "groupName": "actions",
         "matchPaths": [".github/workflows/**/*.yml"]
     },
-    {
-        "groupName": "lib",
-        "matchPaths": ["requirements/*.txt"]
-    }
   ]
 }
