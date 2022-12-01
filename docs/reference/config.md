@@ -201,52 +201,86 @@ Or through environment variables, e.g. `PRISMA_BINARY_CACHE_DIR`. In the case th
 
 This option controls where the Prisma Engine and Prisma CLI binaries should be downloaded to. This defaults to a temporary directory that includes the current Prisma Engine version.
 
-| Option             | Environment Variable       | Default                                               |
-| ------------------ | -------------------------- | ----------------------------------------------------- |
-| `binary_cache_dir` | `PRISMA_BINARY_CACHE_DIR`  | `/{tmp}/prisma/binaries/engines/{engine_version}` |
+| Option             | Environment Variable       | Default                                                            |
+| ------------------ | -------------------------- | ------------------------------------------------------------------ |
+| `binary_cache_dir` | `PRISMA_BINARY_CACHE_DIR`  | `/{home}/.cache/prisma-binaries/{prisma_version}/{engine_version}` |
+
+### Home Directory
+
+This option can be used to change the base directory of the `binary_cache_dir` option without having to worry about versioning the prisma binaries. This is useful if you need to download the binaries to a local directory.
+
+| Option     | Environment Variable  | Default |
+| --------   | --------------------- | ------- |
+| `home_dir` | `PRISMA_HOME_DIR`     | `~`     |
+
 
 ### Prisma Version
 
-This option controls the version of the Prisma CLI to use. It should be noted that this is intended to be internal and only the pinned prisma version is guaranteed to be supported.
+This option controls the version of Prisma to use. It should be noted that this is intended to be internal and only the pinned prisma version is guaranteed to be supported.
 
 | Option           | Environment Variable  | Default  |
 | ---------------- | --------------------- | -------- |
 | `prisma_version` | `PRISMA_VERSION`      | `3.13.0` |
 
-### Engine Version
+### Expected Engine Version
 
-This option controls the version of the [Prisma Engines](https://github.com/prisma/prisma-engines) to use, like `prisma_version` this is intended to be internal and only the pinned engine version is guaranteed to be supported.
+This is an internal option that is here as a safeguard for the `prisma_version` option. If you modify the `prisma_version` option then you must also update this option to use the corresponding engine version. You can find a list of engine versions [here](https://github.com/prisma/prisma-engines).
 
-| Option           | Environment Variable    | Default                                    |
-| ---------------- | ----------------------- | ------------------------------------------ |
-| `engine_version` | `PRISMA_ENGINE_VERSION` | `efdf9b1183dddfd4258cd181a72125755215ab7b` |
+| Option                    | Environment Variable             | Default                                    |
+| ------------------------- | -------------------------------- | ------------------------------------------ |
+| `expected_engine_version` | `PRISMA_EXPECTED_ENGINE_VERSION` | `efdf9b1183dddfd4258cd181a72125755215ab7b` |
 
-### Prisma URL
 
-This option controls where the Prisma CLI binaries should be downloaded from. If set, this must be a string that takes two format arguments, `version` and `platform`, for example:
+### Binary Platform
 
-```
-https://example.com/prisma-cli-{version}-{platform}.gz
-```
+This option is useful if you need to make use of the [binaryTargets](https://www.prisma.io/docs/concepts/components/prisma-schema/generators#binary-targets) option to build your application on one platform and deploy it on another. This option allows you to set the current platform dynamically as Prisma Client python does not currently support detecting the running platform.
 
-| Option       | Environment Variable | Default                                                                                 |
-| -------------| -------------------- | --------------------------------------------------------------------------------------- |
-| `prisma_url` | `PRISMA_CLI_URL`     | `https://prisma-photongo.s3-eu-west-1.amazonaws.com/prisma-cli-{version}-{platform}.gz` |
+A list of valid options can be found [here](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#binarytargets-options).
 
-### Engine URL
 
-This option controls where the [Prisma Engine](https://github.com/prisma/prisma-engines) binaries should be downloaded from. If set, this must be a string that takes three positional format arguments, for example:
+| Option            | Environment Variable     |
+| ----------------- | ------------------------ |
+| `binary_platform` | `PRISMA_BINARY_PLATFORM` |
 
-```
-https://example.com/prisma-binaries-mirror/{0}/{1}/{2}.gz
-```
+### Use Global Node
 
-Where:
+This option configures whether or not Prisma Client Python will attempt to use the globally installed version of [Node](https://nodejs.org/en/), if it is available, to run the Prisma CLI.
 
-- `0` corresponds to the [engine version](#engine-version)
-- `1` corresponds to the current binary platform
-- `2` corresponds to the name of the engine being downloaded.
+| Option            | Environment Variable     | Default |
+| ----------------- | ------------------------ | ------- |
+| `use_global_node` | `PRISMA_USE_GLOBAL_NODE` | `True`  |
 
-| Option       | Environment Variable | Default                                                 |
-| -------------| -------------------- | ------------------------------------------------------- |
-| `engine_url` | `PRISMA_ENGINE_URL`  | `https://binaries.prisma.sh/all_commits/{0}/{1}/{2}.gz` |
+### Use nodejs-bin
+
+This option configures whether or not Prisma Client Python will attempt to use the installed version of the [nodejs-bin](https://pypi.org/project/nodejs-bin/) package, if it is available, to run the Prisma CLI.
+
+| Option           | Environment Variable    | Default |
+| ---------------- | ----------------------- | ------- |
+| `use_nodejs_bin` | `PRISMA_USE_NODEJS_BIN` | `True`  |
+
+
+TODO:
+- use_nodejs_bin
+- nodeenv_extra_args
+- nodeenv_cache_dir
+
+    # Whether or not to use the global node installation (if available)
+    use_global_node: bool = Field(env='PRISMA_USE_GLOBAL_NODE', default=True)
+
+    # Whether or not to use the `nodejs-bin` package (if installed)
+    use_nodejs_bin: bool = Field(env='PRISMA_USE_NODEJS_BIN', default=True)
+
+    # Extra arguments to pass to nodeenv, arguments are passed after the path, e.g. python -m nodeenv <path> <extra args>
+    nodeenv_extra_args: List[str] = Field(
+        env='PRISMA_NODEENV_EXTRA_ARGS',
+        default_factory=list,
+    )
+
+    # Where to download nodeenv to, defaults to ~/.cache/prisma-nodeenv
+    nodeenv_cache_dir: Path = Field(
+        env='PRISMA_NODEENV_CACHE_DIR',
+        default_factory=lambda: Path.home() / '.cache' / 'prisma-nodeenv',
+    )
+
+
+PRISMA_USE_NODEJS_BIN
