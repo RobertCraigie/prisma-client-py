@@ -1,8 +1,9 @@
-nox==2022.8.7
+nox==2022.11.21
 wheel==0.38.4
 blue==0.9.1
 pre-commit==2.20.0
 twine==4.0.1
 typer==0.7.0
 rtoml==0.9.0
+GitPython
 distro

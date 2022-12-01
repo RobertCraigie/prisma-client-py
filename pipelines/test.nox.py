@@ -19,5 +19,8 @@ def test(session: nox.Session) -> None:
         '-m',
         'pytest',
         '--ignore=databases',
-        *session.posargs
+        *session.posargs,
+        env={
+            'PYTEST_PLUGINS': 'pytester',
+        },
     )

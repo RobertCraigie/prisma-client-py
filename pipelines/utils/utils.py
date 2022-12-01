@@ -1,3 +1,4 @@
+import tempfile
 from pathlib import Path
 
 import nox
@@ -5,6 +6,7 @@ import distro
 
 
 CACHE_DIR = Path.cwd() / '.cache'
+TMP_DIR = Path(tempfile.gettempdir())
 PIPELINES_DIR = Path(__file__).parent.parent
 
 

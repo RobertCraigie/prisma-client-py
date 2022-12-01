@@ -20,7 +20,6 @@ if TYPE_CHECKING:
     from _pytest.pytester import Pytester
 
 
-pytest_plugins = ['pytester']
 LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
 
 
