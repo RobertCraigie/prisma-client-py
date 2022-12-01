@@ -12,7 +12,7 @@ services:
       - databases
 
   mysql-8-0:
-    image: mysql:8.0.28
+    image: mysql:8.0.31
     command: mysqld
     restart: always
     platform: linux/x86_64
