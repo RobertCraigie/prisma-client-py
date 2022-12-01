@@ -4,7 +4,6 @@ import webbrowser
 from pathlib import Path
 
 import nox
-from git.repo import Repo
 
 from lib.utils import maybe_decode
 from pipelines.utils import setup_env, CACHE_DIR, TMP_DIR
@@ -18,6 +17,10 @@ TMP_README_PATH = TMP_DIR / 'README.md'
 
 @nox.session(name='push-coverage')
 def push_coverage(session: nox.Session) -> None:
+    # We have to import `git` here as it will cause an error on machines that don't have
+    # git installed. This happens in our docker tests.
+    from git.repo import Repo
+
     session.env['COVERAGE_FILE'] = str(CACHE_DIR / '.coverage')
     session.install(
         '-r',
