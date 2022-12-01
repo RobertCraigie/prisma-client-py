@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Union, Optional, List, cast
+from typing import TYPE_CHECKING, Union, Optional, List
 
 import tomlkit
 from pydantic import BaseSettings, Extra, Field
