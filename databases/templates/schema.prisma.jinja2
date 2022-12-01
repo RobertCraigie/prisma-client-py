@@ -87,7 +87,7 @@ model Lists {
   floats       Float[]
   bigints      BigInt[]
   decimals     Decimal[]
-  {% if config.supports_feature('json') %}
+  {% if config.supports_feature('json_arrays') %}
   json_objects Json[]
   {% endif %}
   {% if config.supports_feature('enum') %}
