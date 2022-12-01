@@ -1,2 +1,2 @@
-discord.py==1.7.1
+discord.py==1.7.3
 prisma
