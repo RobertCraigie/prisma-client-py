@@ -3,7 +3,7 @@
   "extends": [
     "config:base"
   ],
-  "ignorePaths": ["databases/docker-compose.yml"],
+  "ignorePaths": ["databases/docker-compose.yml", "examples/**"],
   "pip_requirements": {
     "fileMatch": ["requirements/.*\\.txt", "deps/.*\\.txt"]
   },
