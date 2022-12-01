@@ -117,7 +117,7 @@ def test_nodeenv(target: Target) -> None:
 def test_update_path_env() -> None:
     """The _update_path_env() function correctly appends the target binary path to the PATH environment variable"""
     target = THIS_DIR / 'bin'
-    if not target.exists():
+    if not target.exists():  # pragma: no branch
         target.mkdir()
 
     sep = os.pathsep
