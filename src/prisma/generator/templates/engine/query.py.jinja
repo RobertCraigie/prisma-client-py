@@ -18,7 +18,7 @@ from .. import config
 from ..utils import DEBUG
 from ..binaries import platform
 from ..utils import time_since, _env_bool
-from ..types import DatasourceOverride
+from ..types import DatasourceOverride, MetricsFormat
 from ..builder import dumps
 
 
@@ -126,7 +126,13 @@ class QueryEngine(HTTPEngine):
         if self._log_queries:
             env.update(LOG_QUERIES='y')
 
-        args: List[str] = [str(file.absolute()), '-p', str(port), '--enable-raw-queries']
+        args: List[str] = [
+            str(file.absolute()),
+            '-p',
+            str(port),
+            '--enable-metrics',
+            '--enable-raw-queries',
+        ]
         if _env_bool('__PRISMA_PY_PLAYGROUND'):
             env.update(RUST_LOG='info')
             args.append('--enable-playground')
@@ -165,6 +171,22 @@ class QueryEngine(HTTPEngine):
 
     {{ maybe_async_def }}query(self, content: str) -> Any:
         return {{ maybe_await }}self.request('POST', '/', content=content)
+
+    @overload
+    {{ maybe_async_def }}metrics(self, *, format: Literal['json']) -> dict[str, Any]:
+        ...
+
+    @overload
+    {{ maybe_async_def }}metrics(self, *, format: Literal['prometheus']) -> str:
+        ...
+
+    {{ maybe_async_def }}metrics(self, *, format: MetricsFormat) -> str | dict[str, Any]:
+        return {{ maybe_await }}self.request(
+            'GET',
+            f'/metrics?format={format}',
+            parse_response=format == 'json',
+        )
+
 
 
 # black does not respect the fmt: off comment without this

@@ -12,6 +12,11 @@ from ._config import config as config
 from .utils import setup_logging
 from . import errors as errors
 from .validator import *
+from ._metrics import (
+    Metric as Metric,
+    Metrics as Metrics,
+    MetricHistogram as MetricHistogram,
+)
 
 
 try:

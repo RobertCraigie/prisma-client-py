@@ -72,6 +72,8 @@ from .utils import _NoneType
 SortMode = Literal['default', 'insensitive']
 SortOrder = Literal['asc', 'desc']
 
+MetricsFormat = Literal['json', 'prometheus']
+
 
 class _DatasourceOverrideOptional(TypedDict, total=False):
     env: str

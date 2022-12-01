@@ -1,3 +1,4 @@
+{% set annotations = true %}
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider with context %}
 # -- template client.py.jinja --
@@ -5,12 +6,13 @@ from pathlib import Path
 from types import TracebackType
 
 from . import types, models, errors, actions
-from .types import DatasourceOverride, HttpConfig
+from .types import DatasourceOverride, HttpConfig, MetricsFormat
 from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix
+from ._metrics import Metrics
 from .raw_query import deserialize_raw_results
 
 
@@ -302,6 +304,48 @@ class Prisma:
     def batch_(self) -> 'Batch':
         """Returns a context manager for grouping write queries into a single transaction."""
         return Batch(client=self)
+
+    {% if generator.has_preview_feature('metrics') %}
+    @overload
+    {{ maybe_async_def }}get_metrics(self, format: Literal['json'] = 'json') -> Metrics:
+        ...
+
+    @overload
+    {{ maybe_async_def }}get_metrics(self, format: Literal['prometheus']) -> str:
+        ...
+
+    {{ maybe_async_def }}get_metrics(self, format: MetricsFormat = 'json') -> str | Metrics:
+        """Metrics give you a detailed insight into how the Prisma Client interacts with your database.
+
+        You can retrieve metrics in either JSON or Prometheus formats.
+
+        For more details see https://www.prisma.io/docs/concepts/components/prisma-client/metrics.
+        """
+        response = {{ maybe_await }}self._engine.metrics(format=format)
+        if format == 'prometheus':
+            # For the prometheus format we return the response as-is
+            return response
+
+        return Metrics.parse_obj(response)
+    {% else %}
+    def get_metrics(self) -> NoReturn:
+        """Metrics give you a detailed insight into how the Prisma Client interacts with your database.
+
+        This feature is in preview and must be explicitly enabled with a `previewFeatures` flag, e.g.
+
+        ```prisma
+        generator client {
+          provider        = "prisma-client-py"
+          previewFeatures = ["metrics"]
+        }
+        ```
+
+        For more details see https://www.prisma.io/docs/concepts/components/prisma-client/metrics.
+        """
+        raise RuntimeError(
+            'Metrics are in preview and must be explicitly enabled in your Prisma Schema; see https://www.prisma.io/docs/concepts/components/prisma-client/metrics#step-2-enable-the-feature-flag-in-the-prisma-schema-file'
+        )
+    {% endif %}
 
     # TODO: don't return Any
     {{ maybe_async_def }}_execute(

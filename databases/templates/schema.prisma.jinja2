@@ -10,6 +10,7 @@ generator client {
   engineType                  = "binary"
   enable_experimental_decimal = true
   partial_type_generator      = "{{ partial_generator }}"
+  previewFeatures             = ["metrics"]
 }
 
 model User {
