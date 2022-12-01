@@ -1,4 +1,4 @@
 kivy==2.0.0
 kivymd==0.104.2
-pygame==2.1.0
+pygame==2.1.2
 prisma
