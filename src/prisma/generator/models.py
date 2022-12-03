@@ -417,7 +417,7 @@ class Generator(GenericModel, Generic[ConfigT]):
             click.echo(
                 click.style(
                     'Warning: '
-                    'The binaryTargets option is not currently supported by Prisma Client Python',
+                    + 'The binaryTargets option is not officially supported by Prisma Client Python.',
                     fg='yellow',
                 ),
                 file=sys.stdout,
