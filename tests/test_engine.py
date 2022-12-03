@@ -67,7 +67,25 @@ def test_engine_binary_does_not_exist(monkeypatch: MonkeyPatch) -> None:
         utils.ensure(BINARY_PATHS.query_engine)
 
     assert exc.match(
-        r'Expected .* or .* but neither were found\.\nTry running prisma py fetch'
+        r'Expected .*, .* or .* to exist but none were found\.\nTry running prisma py fetch'
+    )
+
+
+def test_engine_binary_does_not_exist_no_binary_paths(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    """No query engine binary found raises an error"""
+
+    def mock_exists(path: Path) -> bool:
+        return False
+
+    monkeypatch.setattr(Path, 'exists', mock_exists, raising=True)
+
+    with pytest.raises(errors.BinaryNotFoundError) as exc:
+        utils.ensure({})
+
+    assert exc.match(
+        r'Expected .* or .* to exist but neither were found\.\nTry running prisma py fetch'
     )
 
 

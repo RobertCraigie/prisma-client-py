@@ -36,19 +36,33 @@ def query_engine_name() -> str:
     return f'prisma-query-engine-{platform.check_for_extension(platform.binary_platform())}'
 
 
-# TODO: detect this smarter, search for the current platform name?
 def _resolve_from_binary_paths(binary_paths: dict[str, str]) -> Path | None:
-    # TODO: actually detect the local platform
     if config.binary_platform is not None:
         return Path(binary_paths[config.binary_platform])
 
-    # NOTE: this can return a file with a different arch to the current platform
-    paths = binary_paths.values()
-    for raw_path in paths:
-        path = Path(raw_path)
-        if path.exists():
+    paths = [Path(p) for p in binary_paths.values()]
+
+    # fast path for when there are no `binaryTargets` defined
+    if len(paths) == 1:
+        return paths[0]
+
+    for path in paths:
+        # we only want to resolve to binary's that we can run on the current machine.
+        # because of the `binaryTargets` option some of the binaries we are given may
+        # not be targeting the same architecture as the current machine
+        if path.exists() and _can_execute_binary(path):
             return path
+
+    # none of the given paths existed or they target a different architecture
     return None
+
+
+def _can_execute_binary(path: Path) -> bool:
+    proc = subprocess.run([str(path), '--version'], check=False)
+    log.debug(
+        'Executable check for %s exited with code: %s', path, proc.returncode
+    )
+    return proc.returncode == 0
 
 
 def ensure(binary_paths: dict[str, str]) -> Path:
@@ -78,7 +92,7 @@ def ensure(binary_paths: dict[str, str]) -> Path:
     elif local_path.exists():
         file = local_path
         log.debug('Query engine found in the working directory')
-    elif file_from_paths is not None:
+    elif file_from_paths is not None and file_from_paths.exists():
         file = file_from_paths
         log.debug(
             'Query engine found from the Prisma CLI generated path: %s',
@@ -89,10 +103,17 @@ def ensure(binary_paths: dict[str, str]) -> Path:
         log.debug('Query engine found in the global path')
 
     if not file:
+        if file_from_paths is not None:
+            expected = f'{local_path}, {global_path} or {file_from_paths} to exist but none'
+        else:
+            expected = f'{local_path} or {global_path} to exist but neither'
+
         raise errors.BinaryNotFoundError(
-            f'Expected {local_path} or {global_path} but neither were found.\n'
-            'Try running prisma py fetch'
+            f'Expected {expected} were found.\n'
+            + 'Try running prisma py fetch'
         )
+
+    log.debug('Using Query Engine binary at %s', file)
 
     start_version = time.monotonic()
     process = subprocess.run(
