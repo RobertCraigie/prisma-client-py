@@ -5,6 +5,7 @@ concurrency = multiprocessing
 source =
     tests
     prisma
+    databases
 
 omit =
     *.py.jinja
@@ -14,6 +15,7 @@ omit =
     */prisma/enums.py
     */prisma/client.py
     */prisma/models.py
+    */prisma/actions.py
     */prisma/partials.py
     # we still want to include these
     # */prisma/builder.py
@@ -27,6 +29,10 @@ exclude_lines =
     @pytest.mark.skip\(?
     if TYPE_CHECKING
     \.\.\.
+
+partial_branches =
+    pragma: no branch
+    if not TYPE_CHECKING:
 
 [paths]
 prisma =

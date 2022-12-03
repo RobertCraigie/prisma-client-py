@@ -11,11 +11,11 @@ def requirements(name: str) -> List[str]:
     return root.joinpath(name).read_text().splitlines()
 
 
-with open('README.md', 'r') as f:
+with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
 
 version = ''
-with open('src/prisma/__init__.py') as f:
+with open('src/prisma/__init__.py', encoding='utf-8') as f:
     match = re.search(
         r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE
     )
@@ -29,10 +29,8 @@ if not version:
 
 
 extras = {
-    'dev': requirements('dev.txt'),
-    'docs': requirements('docs.txt'),
+    'node': requirements('node.txt'),
 }
-
 
 setup(
     name='prisma',
@@ -95,5 +93,9 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
+        'Operating System :: POSIX',
+        'Operating System :: MacOS',
+        'Operating System :: POSIX :: Linux',
+        'Operating System :: Microsoft :: Windows',
     ],
 )

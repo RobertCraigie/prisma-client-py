@@ -11,8 +11,8 @@ async def main(client: Prisma) -> None:
 
     for (
         _
-    ) in (
-        user.posts  # E: Object of type "None" cannot be used as iterable value
+    ) in (  # E: Object of type "None" cannot be used as iterable value
+        user.posts
     ):
         ...
 

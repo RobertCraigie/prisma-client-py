@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Callable
 from asyncio import get_running_loop as get_running_loop
 
 from ._types import CallableT
+from .utils import make_optional
 
 
 if TYPE_CHECKING:
@@ -47,3 +48,20 @@ if sys.version_info[:2] < (3, 8):
         from cached_property import cached_property as cached_property
 else:
     from functools import cached_property as cached_property
+
+
+if TYPE_CHECKING:
+    import nodejs as _nodejs
+
+    nodejs = make_optional(_nodejs)
+else:
+    try:
+        import nodejs
+    except ImportError:
+        nodejs = None
+
+
+def removeprefix(string: str, prefix: str) -> str:
+    if string.startswith(prefix):
+        return string[len(prefix) :]
+    return string

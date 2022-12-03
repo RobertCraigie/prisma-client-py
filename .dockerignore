@@ -1,0 +1,12 @@
+*
+!setup.py
+!README.md
+!src/
+!tests
+!requirements/
+!databases/
+!lib/
+!noxfile.py
+!pipelines/
+!pytest.ini
+!MANIFEST.in

@@ -25,6 +25,7 @@ class Config(BaseConfig):
 log: logging.Logger = logging.getLogger(__name__)
 _created_partial_types: Set[str] = set()
 
+{% if not recursive_types %}
 # packages that implicitly subclass models
 # this should not raise any warnings as users
 # of these packages cannot do anything about it
@@ -58,6 +59,7 @@ def _maybe_warn_subclassing(new_model: str, base_model: str, *, stacklevel: int 
         f'  class {new_model}(prisma.models.{base_model}, warn_subclass=False):'
     )
     warnings.warn(message, errors.UnsupportedSubclassWarning, stacklevel=4)
+{% endif %}
 
 
 {% for model in dmmf.datamodel.models %}

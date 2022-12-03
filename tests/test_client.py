@@ -197,3 +197,10 @@ def test_sqlite_url(client: Prisma) -> None:
     # unknown prefixes are not updated
     url = client._make_sqlite_url('unknown:dev.db', relative_to=rootdir)
     assert url == 'unknown:dev.db'
+
+    # prefixes being dropped without affecting file name
+    url = client._make_sqlite_url('file:file.db')
+    assert url == f'file:{SCHEMA_PATH.parent.joinpath("file.db")}'
+
+    url = client._make_sqlite_url('sqlite:sqlite.db')
+    assert url == f'file:{SCHEMA_PATH.parent.joinpath("sqlite.db")}'
