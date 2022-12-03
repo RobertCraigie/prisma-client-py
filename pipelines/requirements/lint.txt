@@ -3,5 +3,5 @@
 -r deps/pyright.txt
 interrogate==1.5.0
 blue==0.9.1
-mypy==0.950
+mypy==0.991
 slotscheck==0.16.1
