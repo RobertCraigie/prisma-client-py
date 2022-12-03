@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 import subprocess
 from typing import cast
@@ -112,6 +113,34 @@ def test_nodeenv(target: Target) -> None:
         strategy = node.resolve(target)
         assert strategy.resolver == 'nodeenv'
         assert_strategy(strategy)
+
+
+@parametrize_target
+def test_nodeenv_extra_args(
+    target: Target,
+    tmp_path: Path,
+    fake_process: FakeProcess,
+) -> None:
+    """The config option `nodeenv_extra_args` is respected"""
+    cache_dir = tmp_path / 'nodeenv'
+
+    fake_process.register_subprocess(
+        [sys.executable, '-m', 'nodeenv', str(cache_dir), '--my-extra-flag'],
+        returncode=403,
+    )
+
+    with set_config(
+        Config.parse(
+            use_nodejs_bin=False,
+            use_global_node=False,
+            nodeenv_extra_args=['--my-extra-flag'],
+            nodeenv_cache_dir=cache_dir,
+        )
+    ):
+        with pytest.raises(subprocess.CalledProcessError) as exc:
+            node.resolve(target)
+
+        assert exc.value.returncode == 403
 
 
 def test_update_path_env() -> None:
