@@ -236,14 +236,16 @@ class NodeJSPythonStrategy(Strategy):
         else:
             raise UnknownTargetError(target=self.target)
 
-        # TODO
-        return func(  #  type: ignore
-            args,
-            check=check,
-            cwd=cwd,
-            env=env,
-            stdout=stdout,
-            stderr=stderr,
+        return cast(
+            subprocess.CompletedProcess[bytes],
+            func(
+                args,
+                check=check,
+                cwd=cwd,
+                env=env,
+                stdout=stdout,
+                stderr=stderr,
+            ),
         )
 
     @property
