@@ -1,9 +1,10 @@
 import os
 import sys
+import json
 import logging
 import subprocess
 from pathlib import Path
-from typing import List, Optional, Dict, NamedTuple
+from typing import Any, List, Optional, Dict, NamedTuple
 
 import click
 
@@ -56,12 +57,32 @@ class CLICache(NamedTuple):
     entrypoint: Path
 
 
+DEFAULT_PACKAGE_JSON: dict[str, Any] = {
+    'name': 'prisma-binaries',
+    'version': '1.0.0',
+    'private': True,
+    'description': 'Cache directory created by Prisma Client Python to store Prisma Engines',
+    'main': 'node_modules/prisma/build/index.js',
+    'author': 'RobertCraigie',
+    'license': 'Apache-2.0',
+}
+
+
 def ensure_cached() -> CLICache:
     cache_dir = config.binary_cache_dir
     entrypoint = cache_dir / 'node_modules' / 'prisma' / 'build' / 'index.js'
 
     if not cache_dir.exists():
         cache_dir.mkdir(parents=True)
+
+    # We need to create a dummy `package.json` file so that `npm` doesn't try
+    # and search for it elsewhere.
+    #
+    # If it finds a different `package.json` file then the `prisma` package
+    # will be installed there instead of our cache directory.
+    package = cache_dir / 'package.json'
+    if not package.exists():
+        package.write_text(json.dumps(DEFAULT_PACKAGE_JSON))
 
     if not entrypoint.exists():
         click.echo('Installing Prisma CLI')
@@ -73,7 +94,6 @@ def ensure_cached() -> CLICache:
             stderr=subprocess.STDOUT,
         )
         if proc.returncode != 0:
-            # TODO: test
             click.echo(
                 f'An error ocurred while installing the Prisma CLI; npm install log: {proc.stdout.decode("utf-8")}'
             )

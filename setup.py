@@ -32,7 +32,6 @@ extras = {
     'node': requirements('node.txt'),
 }
 
-
 setup(
     name='prisma',
     version=version,
