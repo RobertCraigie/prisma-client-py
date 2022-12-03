@@ -25,7 +25,9 @@ import click
 import pytest
 from click.testing import CliRunner, Result
 
+from prisma import _config
 from prisma.cli import main
+from prisma._proxy import LazyProxy
 from prisma._types import FuncType
 from prisma.binaries import platform
 from prisma.generator.utils import copy_tree
@@ -282,6 +284,18 @@ def get_source_from_function(function: FuncType, **env: Any) -> str:
         lines.insert(start, f'{name} = {value}')
 
     return IMPORT_RELOADER + '\n'.join(lines)
+
+
+@contextlib.contextmanager
+def set_config(config: _config.Config) -> Iterator[_config.Config]:
+    proxy = cast(LazyProxy[_config.Config], _config.config)
+    old = proxy.__get_proxied__()
+
+    try:
+        proxy.__set_proxied__(config)
+        yield config
+    finally:
+        proxy.__set_proxied__(old)
 
 
 def patch_method(

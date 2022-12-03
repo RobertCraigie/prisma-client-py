@@ -172,7 +172,7 @@ def test_binary_targets_warning(testdir: Testdir) -> None:
     assert_no_generator_output(stdout)
     assert (
         'Warning: The binaryTargets option '
-        'is not currently supported by Prisma Client Python' in stdout
+        'is not officially supported by Prisma Client Python' in stdout
     )
 
 

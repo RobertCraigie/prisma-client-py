@@ -9,13 +9,14 @@ from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
-from .generator.models import EngineType, OptionalValueFromEnvVar
+from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix
 
 
 __all__ = (
     'ENGINE_TYPE',
     'SCHEMA_PATH',
+    'BINARY_PATHS',
     'Batch',
     'Prisma',
     'Client',
@@ -26,8 +27,8 @@ __all__ = (
 
 SCHEMA_PATH = Path('{{ schema_path.as_posix() }}')
 PACKAGED_SCHEMA_PATH = Path(__file__).parent.joinpath('schema.prisma')
-
 ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
+BINARY_PATHS = BinaryPaths.parse_obj({{ binary_paths.dict(by_alias=True) }})
 
 RegisteredClient = Union['Prisma', Callable[[], 'Prisma']]
 _registered_client: Optional[RegisteredClient] = None

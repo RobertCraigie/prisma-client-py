@@ -1,4 +1,5 @@
 -r test.txt
+-r node.txt
 -r deps/pyright.txt
 interrogate==1.5.0
 blue==0.9.1

@@ -14,6 +14,7 @@ from pathlib import Path
 
 from . import utils, errors
 from .http import HTTPEngine
+from .. import config
 from ..utils import DEBUG
 from ..binaries import platform
 from ..utils import time_since, _env_bool
@@ -70,6 +71,12 @@ class QueryEngine(HTTPEngine):
         if self.session and not self.session.closed:
             {{ maybe_await }}self.session.close()
 
+    def _ensure_file(self) -> Path:
+        # circular import
+        from ..client import BINARY_PATHS
+
+        return utils.ensure(BINARY_PATHS.query_engine)
+
     {{ maybe_async_def }}connect(
         self,
         timeout: int = 10,
@@ -80,7 +87,7 @@ class QueryEngine(HTTPEngine):
             raise errors.AlreadyConnectedError('Already connected to the query engine')
 
         start = time.monotonic()
-        self.file = file = utils.ensure()
+        self.file = file = self._ensure_file()
 
         try:
             {{ maybe_await }}self.spawn(file, timeout=timeout, datasources=datasources)

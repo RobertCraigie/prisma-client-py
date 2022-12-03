@@ -1,3 +1,4 @@
 -r test.txt
+-r node.txt
 mypy==0.950
 types-mock

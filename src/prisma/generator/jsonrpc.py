@@ -5,7 +5,7 @@ import json
 import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Union, Type, Any
-from typing_extensions import TypedDict
+from typing_extensions import TypedDict, Literal
 
 from pydantic import Field
 
@@ -52,6 +52,14 @@ class ErrorResponse(BaseModel):
 
 Response = Union[SuccessResponse, ErrorResponse]
 
+EngineType = Literal[
+    'prismaFmt',
+    'queryEngine',
+    'libqueryEngine',
+    'migrationEngine',
+    'introspectionEngine',
+]
+
 
 class Manifest(BaseModel):
     """Generator metadata"""
@@ -59,7 +67,7 @@ class Manifest(BaseModel):
     prettyName: str = Field(alias='name')
     defaultOutput: Union[str, Path] = Field(alias='default_output')
     denylist: Optional[List[str]] = None
-    requiresEngines: Optional[List[str]] = Field(
+    requiresEngines: Optional[List[EngineType]] = Field(
         alias='requires_engines', default=None
     )
     requiresGenerators: Optional[List[str]] = Field(

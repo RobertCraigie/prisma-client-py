@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 from typing import TYPE_CHECKING, Iterator
+from pathlib import Path
 
 import pytest
 
@@ -14,6 +15,10 @@ from lib.testing import async_fixture
 
 if TYPE_CHECKING:
     from _pytest.fixtures import FixtureRequest
+    from _pytest.monkeypatch import MonkeyPatch
+
+
+HOME_DIR = Path.home()
 
 
 @async_fixture(name='client', scope='session')
@@ -29,6 +34,14 @@ async def client_fixture() -> Prisma:
 @pytest.fixture(scope='session')
 def event_loop() -> asyncio.AbstractEventLoop:
     return get_or_create_event_loop()
+
+
+@pytest.fixture(autouse=True)
+def setup_env(monkeypatch: 'MonkeyPatch') -> None:
+    # Set a custom home directory to use for caching binaries so that
+    # when we make use of pytest's temporary directory functionality the binaries
+    # don't have to be downloaded again.
+    monkeypatch.setenv('PRISMA_HOME_DIR', str(HOME_DIR))
 
 
 @pytest.fixture(name='patch_prisma', autouse=True)

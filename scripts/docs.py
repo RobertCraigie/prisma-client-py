@@ -46,21 +46,13 @@ def main() -> None:
         r'\1' + '`' + config.prisma_version + '`',
         content,
     )
+
     content = re.sub(
-        r'(`PRISMA_ENGINE_VERSION` \| )`(.*)`',
-        r'\1' + '`' + config.engine_version + '`',
+        r'(`PRISMA_EXPECTED_ENGINE_VERSION` \| )`(.*)`',
+        r'\1' + '`' + config.expected_engine_version + '`',
         content,
     )
-    content = re.sub(
-        r'(`PRISMA_CLI_URL`     \| )`(.*)`',
-        r'\1' + '`' + config.prisma_url + '`',
-        content,
-    )
-    content = re.sub(
-        r'(`PRISMA_ENGINE_URL`  \| )`(.*)`',
-        r'\1' + '`' + config.engine_url + '`',
-        content,
-    )
+
     config_doc.write_text(content)
 
 

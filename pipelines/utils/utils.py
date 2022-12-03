@@ -2,10 +2,12 @@ import tempfile
 from pathlib import Path
 
 import nox
+import distro
 
 
 CACHE_DIR = Path.cwd() / '.cache'
 TMP_DIR = Path(tempfile.gettempdir())
+PIPELINES_DIR = Path(__file__).parent.parent
 
 
 def get_pkg_location(session: nox.Session, pkg: str) -> str:
@@ -44,3 +46,13 @@ def setup_env(session: nox.Session) -> None:
             ]
         ]
     )
+
+
+def maybe_install_nodejs_bin(session: nox.Session) -> bool:
+    # nodejs-bin is not available on alpine yet, we need to wait until this fix is released:
+    # https://github.com/samwillis/nodejs-pypi/issues/11
+    if distro.id() == 'alpine':
+        return False
+
+    session.install('-r', str(PIPELINES_DIR / 'requirements/node.txt'))
+    return True
