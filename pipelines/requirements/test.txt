@@ -1,9 +1,9 @@
 -r coverage.txt
-pytest==6.2.4
+-r deps/pytest-asyncio.txt
+-r deps/pytest.txt
 pytest-sugar
 mock==4.0.3
-pytest-mock==3.6.1
-pytest-asyncio==0.17.0
-pytest-subprocess==1.1.2
-syrupy==1.5.0
-fastapi==0.73.0
+pytest-mock==3.10.0
+pytest-subprocess==1.4.2
+syrupy==3.0.2
+fastapi==0.85.1

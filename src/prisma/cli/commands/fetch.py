@@ -1,4 +1,8 @@
+import shutil
 import click
+
+from ... import config
+from ...cli.prisma import ensure_cached
 
 
 @click.command('fetch', short_help='Download all required binaries.')
@@ -9,12 +13,10 @@ import click
 )
 def cli(force: bool) -> None:
     """Ensures all required binaries are available."""
-    from ... import binaries
-
     if force:
-        binaries.remove_all()
+        shutil.rmtree(config.binary_cache_dir)
 
-    directory = binaries.ensure_cached()
+    directory = ensure_cached().cache_dir
     click.echo(
         f'Downloaded binaries to {click.style(str(directory), fg="green")}'
     )

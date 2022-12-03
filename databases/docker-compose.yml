@@ -1,0 +1,114 @@
+# copied from https://github.com/prisma/prisma-engines/blob/main/docker-compose.yml
+version: "3"
+services:
+
+  cockroachdb-22:
+    image: prismagraphql/cockroachdb-custom:22.1.0
+    restart: always
+    command: start-single-node --insecure
+    ports:
+      - "26257:26257"
+    networks:
+      - databases
+
+  mysql-8-0:
+    image: mysql:8.0.28
+    command: mysqld
+    restart: always
+    platform: linux/x86_64
+    environment:
+      MYSQL_ROOT_PASSWORD: prisma
+      MYSQL_USER: prisma
+      MYSQL_PASSWORD: prisma
+      MYSQL_DATABASE: prisma
+    ports:
+      - "3307:3306"
+    networks:
+      - databases
+    tmpfs: /var/lib/mysql8
+
+  mariadb-10-0:
+    image: mariadb:10
+    restart: always
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: prisma
+      MYSQL_DATABASE: prisma
+    ports:
+      - "3308:3306"
+    networks:
+      - databases
+    tmpfs: /var/lib/mariadb
+
+  postgresql-10:
+    image: postgres:10
+    restart: always
+    command: postgres -c 'max_connections=1000'
+    environment:
+      POSTGRES_PASSWORD: "prisma"
+    ports:
+      - "5432:5432"
+    networks:
+      - databases
+
+  postgresql-11:
+    image: postgres:11
+    restart: always
+    command: postgres -c 'max_connections=1000'
+    environment:
+      POSTGRES_PASSWORD: "prisma"
+    ports:
+      - "5433:5432"
+    networks:
+      - databases
+
+  postgresql-12:
+    image: postgres:12
+    restart: always
+    command: postgres -c 'max_connections=1000'
+    environment:
+      POSTGRES_PASSWORD: "prisma"
+    ports:
+      - "5434:5432"
+    networks:
+      - databases
+
+  postgresql-13:
+    image: postgres:13
+    restart: always
+    command: postgres -c 'max_connections=1000'
+    environment:
+      POSTGRES_PASSWORD: "prisma"
+    ports:
+      - "5435:5432"
+    networks:
+      - databases
+
+  postgresql-14:
+    image: postgres:14
+    restart: always
+    command: postgres -c 'max_connections=1000'
+    environment:
+      POSTGRES_PASSWORD: "prisma"
+      POSTGRES_HOST_AUTH_METHOD: "md5"
+      POSTGRES_INITDB_ARGS: "--auth-host=md5"
+    ports:
+      - "5437:5432"
+    networks:
+      - databases
+
+  postgresql-15:
+    image: postgres:15
+    restart: always
+    command: postgres -c 'max_connections=1000'
+    environment:
+      POSTGRES_PASSWORD: "prisma"
+      POSTGRES_HOST_AUTH_METHOD: "md5"
+      POSTGRES_INITDB_ARGS: "--auth-host=md5"
+    ports:
+      - "5438:5432"
+    networks:
+      - databases
+
+networks:
+  databases: null

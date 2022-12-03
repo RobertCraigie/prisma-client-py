@@ -1,0 +1,193 @@
+datasource db {
+  provider = "{{ config.id }}"
+  url      = env("{{ config.env_var }}")
+}
+
+generator client {
+  provider                    = "coverage run -m prisma"
+  interface                   = "asyncio"
+  recursive_type_depth        = -1
+  engineType                  = "binary"
+  enable_experimental_decimal = true
+  partial_type_generator      = "{{ partial_generator }}"
+}
+
+model User {
+  id         String   @id @default(cuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  name       String
+  {% if config.supports_feature('enum') %}
+  role       Role     @default(USER)
+  {% endif %}
+  posts      Post[]
+  profile    Profile?
+}
+
+model Profile {
+  id          String  @default(cuid())
+  description String
+  country     String
+  city        String?
+  views       Int     @default(0)
+  user        User    @relation(fields: [user_id], references: [id])
+  user_id     String  @unique
+}
+
+model Post {
+  id          String   @id @default(uuid())
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  title       String
+  description String?
+  published   Boolean  @default(false)
+  views       Int      @default(0)
+  author      User?    @relation(fields: [author_id], references: [id])
+  author_id   String?
+}
+
+model Types {
+  id        Int  @id @default(autoincrement())
+  bool_     Boolean  @default(false)
+  string    String   @default("")
+  bytes     Bytes    @default("")
+  bigint    BigInt   @default(0)
+  integer   Int      @default(0)
+  float_    Float    @default(0)
+  datetime_ DateTime @default(now())
+  decimal_  Decimal  @default(1)
+
+  optional_int      Int?      @default(0)
+  optional_bool     Boolean?  @default(false)
+  optional_string   String?   @default("")
+  optional_bytes    Bytes?    @default("")
+  optional_bigint   BigInt?   @default(0)
+  optional_integer  Int?      @default(0)
+  optional_float    Float?    @default(0)
+  optional_datetime DateTime? @default(now())
+  optional_decimal  Decimal?  @default(1)
+
+  // TODO: optional for these too
+  {% if config.supports_feature('enum') %}
+  enum     Role   @default(USER)
+  {% endif %}
+  {% if config.supports_feature('json') %}
+  json_obj Json?  @default("{}")
+  {% endif %}
+}
+
+{% if config.supports_feature('arrays') %}
+model Lists {
+  id           String     @id @default(cuid())
+  strings      String[]
+  bytes        Bytes[]
+  dates        DateTime[]
+  bools        Boolean[]
+  ints         Int[]
+  floats       Float[]
+  bigints      BigInt[]
+  decimals     Decimal[]
+  {% if config.supports_feature('json_arrays') %}
+  json_objects Json[]
+  {% endif %}
+  {% if config.supports_feature('enum') %}
+  roles        Role[]
+  {% endif %}
+}
+{% endif %}
+
+// these models are here for testing different combinations of unique constraints
+// we test these models here as testing them in the root tests would increase mypy
+// type checking time
+
+model Unique1 {
+  name    String
+  surname String
+
+  @@unique([name, surname])
+}
+
+model Unique2 {
+  name    String
+  surname String @unique
+
+  @@unique([name, surname])
+}
+
+model Unique3 {
+  id      String @id @default(cuid())
+  name    String
+  surname String @unique
+
+  @@unique([name, surname])
+}
+
+model Unique4 {
+  name    String
+  surname String
+
+  @@unique([name, surname], name: "my_unique")
+}
+
+model Unique5 {
+  name       String
+  middlename String
+  surname    String
+
+  @@unique([name, middlename, surname])
+}
+
+{% if config.supports_feature('enum') %}
+model Unique6 {
+  name String
+  role Role
+
+  @@unique([name, role])
+}
+{% endif %}
+
+model Id1 {
+  name    String
+  surname String
+
+  @@id([name, surname])
+}
+
+model Id2 {
+  name    String
+  surname String @unique
+
+  @@id([name, surname])
+}
+
+model Id3 {
+  name    String
+  surname String
+
+  @@id([name, surname], name: "my_id")
+}
+
+model Id4 {
+  name       String
+  middlename String
+  surname    String
+
+  @@id([name, middlename, surname])
+}
+
+{% if config.supports_feature('enum') %}
+model Id5 {
+  name String
+  role Role
+
+  @@unique([name, role])
+}
+{% endif %}
+
+{% if config.supports_feature('enum') %}
+enum Role {
+  USER
+  ADMIN
+  EDITOR
+}
+{% endif %}

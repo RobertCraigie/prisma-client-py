@@ -1,0 +1,2 @@
+-r coverage.txt
+-r dev.txt

@@ -118,10 +118,11 @@ def get_datamodel() -> 'Datamodel':
     return data_ctx.get().dmmf.datamodel
 
 
-# typed to ensure the caller has to handle the case where
-# a custom generator config is being used
-def get_config() -> Union[PydanticBaseModel, 'Config']:
-    return config_ctx.get()
+# typed to ensure the caller has to handle the cases where:
+# - a custom generator config is being used
+# - the config is invalid and therefore could not be set
+def get_config() -> Union[None, PydanticBaseModel, 'Config']:
+    return config_ctx.get(None)
 
 
 def get_list_types() -> Iterable[Tuple[str, str]]:
@@ -283,11 +284,8 @@ class Module(BaseModel):
 
         try:
             loader.exec_module(mod)
-        except:
-            print(
-                'An exception ocurred while running the partial type generator'
-            )
-            raise
+        except Exception as exc:
+            raise PartialTypeGeneratorError() from exc
 
 
 class GenericData(GenericModel, Generic[ConfigT]):
@@ -305,6 +303,9 @@ class GenericData(GenericModel, Generic[ConfigT]):
     datasources: List['Datasource'] = FieldInfo(alias='datasources')
     other_generators: List['Generator[_ModelAllowAll]'] = FieldInfo(
         alias='otherGenerators'
+    )
+    binary_paths: 'BinaryPaths' = FieldInfo(
+        alias='binaryPaths', default_factory=lambda: BinaryPaths()
     )
 
     @classmethod
@@ -336,9 +337,9 @@ class GenericData(GenericModel, Generic[ConfigT]):
     def validate_version(cls, values: Dict[Any, Any]) -> Dict[Any, Any]:
         # TODO: test this
         version = values.get('version')
-        if not DEBUG_GENERATOR and version != config.engine_version:
+        if not DEBUG_GENERATOR and version != config.expected_engine_version:
             raise ValueError(
-                f'Prisma Client Python expected Prisma version: {config.engine_version} '
+                f'Prisma Client Python expected Prisma version: {config.expected_engine_version} '
                 f'but got: {version}\n'
                 '  If this is intentional, set the PRISMA_PY_DEBUG_GENERATOR environment '
                 'variable to 1 and try again.\n'
@@ -347,6 +348,46 @@ class GenericData(GenericModel, Generic[ConfigT]):
                 '  or generate the client using the Python CLI, e.g. python3 -m prisma generate'
             )
         return values
+
+
+class BinaryPaths(BaseModel):
+    """This class represents the paths to engine binaries.
+
+    Each property in this class is a mapping of platform name to absolute path, for example:
+
+    ```py
+    # This is what will be set on an M1 chip if there are no other `binaryTargets` set
+    binary_paths.query_engine == {
+        'darwin-arm64': '/Users/robert/.cache/prisma-python/binaries/3.13.0/efdf9b1183dddfd4258cd181a72125755215ab7b/node_modules/prisma/query-engine-darwin-arm64'
+    }
+    ```
+
+    This is only available if the generator explicitly requests them using the `requires_engines` manifest property.
+    """
+
+    query_engine: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='queryEngine',
+    )
+    introspection_engine: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='introspectionEngine',
+    )
+    migration_engine: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='migrationEngine',
+    )
+    libquery_engine: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='libqueryEngine',
+    )
+    prisma_format: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='prismaFmt',
+    )
+
+    class Config(BaseModel.Config):
+        extra: Extra = Extra.ignore
 
 
 class Datasource(BaseModel):
@@ -370,11 +411,12 @@ class Generator(GenericModel, Generic[ConfigT]):
     def warn_binary_targets(
         cls, targets: List['ValueFromEnvVar']
     ) -> List['ValueFromEnvVar']:
-        if targets and any(target.value != 'native' for target in targets):
+        # Prisma by default sends one binary target which is the current platform.
+        if len(targets) > 1:
             click.echo(
                 click.style(
                     'Warning: '
-                    'The binaryTargets option is not currently supported by Prisma Client Python',
+                    + 'The binaryTargets option is not officially supported by Prisma Client Python.',
                     fg='yellow',
                 ),
                 file=sys.stdout,
@@ -565,6 +607,23 @@ class Model(BaseModel):
     def __init__(self, **data: Any) -> None:
         super().__init__(**data)
         self._sampler = Sampler(self)
+
+    @validator('name')
+    @classmethod
+    def name_validator(cls, name: str) -> str:
+        if iskeyword(name):
+            raise ValueError(
+                f'Model name "{name}" shadows a Python keyword; '
+                f'use a different model name with \'@@map("{name}")\'.'
+            )
+
+        if iskeyword(name.lower()):
+            raise ValueError(
+                f'Model name "{name}" results in a client property that shadows a Python keyword; '
+                f'use a different model name with \'@@map("{name}")\'.'
+            )
+
+        return name
 
     @root_validator(allow_reuse=True)
     @classmethod
@@ -1005,4 +1064,8 @@ Datasource.update_forward_refs()
 
 
 from .schema import Schema
-from .errors import CompoundConstraintError, TemplateError
+from .errors import (
+    CompoundConstraintError,
+    PartialTypeGeneratorError,
+    TemplateError,
+)
