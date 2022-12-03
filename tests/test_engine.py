@@ -55,7 +55,6 @@ def test_stopping_engine_on_closed_loop() -> None:
         engine.stop()
 
 
-@pytest.mark.skip_if_custom_binaries
 def test_engine_binary_does_not_exist(monkeypatch: MonkeyPatch) -> None:
     """No query engine binary found raises an error"""
 
@@ -90,7 +89,6 @@ def test_engine_binary_does_not_exist_no_binary_paths(
     )
 
 
-@pytest.mark.skip_if_custom_binaries
 def test_mismatched_version_error(fake_process: FakeProcess) -> None:
     """Mismatched query engine versions raises an error"""
 
@@ -110,7 +108,6 @@ def test_mismatched_version_error(fake_process: FakeProcess) -> None:
     )
 
 
-@pytest.mark.skip_if_custom_binaries
 def test_ensure_local_path(
     testdir: Testdir, fake_process: FakeProcess
 ) -> None:
