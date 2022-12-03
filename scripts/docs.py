@@ -47,12 +47,12 @@ def main() -> None:
         content,
     )
 
-    # TODO: update this
     content = re.sub(
-        r'(`PRISMA_ENGINE_VERSION` \| )`(.*)`',
+        r'(`PRISMA_EXPECTED_ENGINE_VERSION` \| )`(.*)`',
         r'\1' + '`' + config.expected_engine_version + '`',
         content,
     )
+
     config_doc.write_text(content)
 
 
