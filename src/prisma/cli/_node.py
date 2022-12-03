@@ -151,7 +151,6 @@ class NodeBinaryStrategy(Strategy):
     def resolve(cls, target: Target) -> NodeBinaryStrategy:
         path = None
         if config.use_global_node:
-            # TODO: this should check the version
             path = _get_global_binary(target)
 
         if path is not None:
@@ -307,6 +306,10 @@ def _update_path_env(
 
 
 def _get_global_binary(target: Target) -> Path | None:
+    """Returns the path to a globally installed binary.
+
+    This also ensures that the binary is of the right version.
+    """
     log.debug('Checking for global target binary: %s', target)
 
     which = shutil.which(target)
@@ -396,5 +399,5 @@ class LazyBinaryProxy(LazyProxy[Node]):
         return resolve(self.target)
 
 
-npm = cast(Node, LazyBinaryProxy('npm'))
-node = cast(Node, LazyBinaryProxy('node'))
+npm = LazyBinaryProxy('npm').__as_proxied__()
+node = LazyBinaryProxy('node').__as_proxied__()
