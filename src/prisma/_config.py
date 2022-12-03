@@ -41,7 +41,7 @@ class DefaultConfig(BaseSettings):
         default=None,
     )
 
-    # Temporary workaround to support setting the binary platform until it can be properly implemented
+    # Workaround to support setting the binary platform until it can be properly implemented
     binary_platform: Optional[str] = Field(
         env='PRISMA_BINARY_PLATFORM', default=None
     )
@@ -58,10 +58,13 @@ class DefaultConfig(BaseSettings):
         default_factory=list,
     )
 
-    # Where to download nodeenv to, defaults to ~/.cache/prisma-nodeenv
+    # Where to download nodeenv to, defaults to ~/.cache/prisma-python/nodeenv
     nodeenv_cache_dir: Path = Field(
         env='PRISMA_NODEENV_CACHE_DIR',
-        default_factory=lambda: Path.home() / '.cache' / 'prisma-nodeenv',
+        default_factory=lambda: Path.home()
+        / '.cache'
+        / 'prisma-python'
+        / 'nodeenv',
     )
 
     class Config(BaseSettings.Config):
@@ -87,7 +90,8 @@ class Config(DefaultConfig):
             config.binary_cache_dir = (
                 config.home_dir
                 / '.cache'
-                / 'prisma-binaries'
+                / 'prisma-python'
+                / 'binaries'
                 / config.prisma_version
                 / config.expected_engine_version
             )

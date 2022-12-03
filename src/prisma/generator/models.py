@@ -358,7 +358,7 @@ class BinaryPaths(BaseModel):
     ```py
     # This is what will be set on an M1 chip if there are no other `binaryTargets` set
     binary_paths.query_engine == {
-        'darwin-arm64': '/Users/robert/.cache/prisma-binaries/3.13.0/efdf9b1183dddfd4258cd181a72125755215ab7b/node_modules/prisma/query-engine-darwin-arm64'
+        'darwin-arm64': '/Users/robert/.cache/prisma-python/binaries/3.13.0/efdf9b1183dddfd4258cd181a72125755215ab7b/node_modules/prisma/query-engine-darwin-arm64'
     }
     ```
 
@@ -387,7 +387,6 @@ class BinaryPaths(BaseModel):
     )
 
     class Config(BaseModel.Config):
-        # TODO: add definitions for all other fields
         extra: Extra = Extra.ignore
 
 

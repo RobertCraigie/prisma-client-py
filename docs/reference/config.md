@@ -201,9 +201,9 @@ Or through environment variables, e.g. `PRISMA_BINARY_CACHE_DIR`. In the case th
 
 This option controls where the Prisma Engine and Prisma CLI binaries should be downloaded to. This defaults to a cache directory that includes the current Prisma Engine version.
 
-| Option             | Environment Variable       | Default                                                            |
-| ------------------ | -------------------------- | ------------------------------------------------------------------ |
-| `binary_cache_dir` | `PRISMA_BINARY_CACHE_DIR`  | `/{home}/.cache/prisma-binaries/{prisma_version}/{engine_version}` |
+| Option             | Environment Variable       | Default                                                                   |
+| ------------------ | -------------------------- | ------------------------------------------------------------------------- |
+| `binary_cache_dir` | `PRISMA_BINARY_CACHE_DIR`  | `/{home}/.cache/prisma-python/binaries/{prisma_version}/{engine_version}` |
 
 ### Home Directory
 
@@ -278,6 +278,8 @@ python -m nodeenv <path> <extra args>
 
 This option configures where Prisma Client Python will store the Node binary that is installed by [nodeenv](https://github.com/ekalinin/nodeenv).
 
+Note that this does not make use of the [Home Directory](#home-directory) option and instead uses the actual user home directory.
+
 | Option              | Environment Variable       | Default                           |
 | ------------------- | -------------------------- | --------------------------------- |
-| `nodeenv_cache_dir` | `PRISMA_NODEENV_CACHE_DIR` | `/{home}/.cache/prisma-nodeenv/`  |
+| `nodeenv_cache_dir` | `PRISMA_NODEENV_CACHE_DIR` | `~/.cache/prisma-python/nodeenv/` |
