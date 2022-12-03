@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import binascii
 from datetime import datetime
 from ._types import BaseModelT
