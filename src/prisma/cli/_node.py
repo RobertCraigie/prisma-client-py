@@ -293,8 +293,6 @@ def _update_path_env(
 
     path = env.get('PATH', '') or os.environ.get('PATH', '')
     if path:
-        log.debug('Found PATH contents: %s', path)
-
         # handle the case where the PATH already starts with the separator (this probably shouldn't happen)
         if path.startswith(sep):
             path = f'{target_bin.absolute()}{path}'
