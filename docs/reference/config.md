@@ -207,7 +207,7 @@ This option controls where the Prisma Engine and Prisma CLI binaries should be d
 
 ### Home Directory
 
-This option can be used to change the base directory of the `binary_cache_dir` option without having to worry about versioning the prisma binaries. This is useful if you need to download the binaries to a local directory.
+This option can be used to change the base directory of the `binary_cache_dir` option without having to worry about versioning the Prisma binaries. This is useful if you need to download the binaries to a local directory.
 
 | Option     | Environment Variable  | Default |
 | --------   | --------------------- | ------- |
@@ -216,7 +216,7 @@ This option can be used to change the base directory of the `binary_cache_dir` o
 
 ### Prisma Version
 
-This option controls the version of Prisma to use. It should be noted that this is intended to be internal and only the pinned prisma version is guaranteed to be supported.
+This option controls the version of Prisma to use. It should be noted that this is intended to be internal and only the pinned Prisma version is guaranteed to be supported.
 
 | Option           | Environment Variable  | Default  |
 | ---------------- | --------------------- | -------- |
