@@ -25,12 +25,14 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         env_var='POSTGRESQL_URL',
         bools_are_ints=False,
         unsupported_features=set(),
+        autoincrement_id='Int @id @default(autoincrement())',
     ),
     'cockroachdb': DatabaseConfig(
-        id='postgresql',
+        id='cockroachdb',
         name='CockroachDB',
         env_var='COCKROACHDB_URL',
         bools_are_ints=False,
+        autoincrement_id='BigInt @id @default(sequence())',
         unsupported_features={
             'json_arrays',
         },
@@ -40,6 +42,7 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         name='SQLite',
         env_var='SQLITE_URL',
         bools_are_ints=False,
+        autoincrement_id='Int @id @default(autoincrement())',
         unsupported_features={
             'enum',
             'json',
@@ -53,6 +56,7 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         name='MySQL',
         env_var='MYSQL_URL',
         bools_are_ints=True,
+        autoincrement_id='Int @id @default(autoincrement())',
         unsupported_features={
             'arrays',
             'case_sensitivity',
@@ -63,6 +67,7 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         name='MariaDB',
         env_var='MARIADB_URL',
         bools_are_ints=True,
+        autoincrement_id='Int @id @default(autoincrement())',
         unsupported_features={
             'arrays',
             'case_sensitivity',

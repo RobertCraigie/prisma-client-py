@@ -20,6 +20,7 @@ class DatabaseConfig(BaseModel):
     name: str
     env_var: str
     bools_are_ints: bool
+    autoincrement_id: str
     unsupported_features: Set[DatabaseFeature]
 
     # TODO: run this under coverage
