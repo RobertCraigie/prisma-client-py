@@ -237,7 +237,7 @@ class NodeJSPythonStrategy(Strategy):
             raise UnknownTargetError(target=self.target)
 
         return cast(
-            subprocess.CompletedProcess[bytes],
+            'subprocess.CompletedProcess[bytes]',
             func(
                 args,
                 check=check,
