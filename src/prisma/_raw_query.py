@@ -154,7 +154,8 @@ def _deserialize_array(
 
 
 def _deserialize_json(value: object, for_model: bool) -> object:
-    if for_model:
+    # TODO: this may break if someone inserts just a string into the database
+    if not isinstance(value, str) and for_model:
         # TODO: this is very bad
         #
         # Pydantic expects Json fields to be a `str`, we should implement
@@ -162,7 +163,7 @@ def _deserialize_json(value: object, for_model: bool) -> object:
         # on re-serializing the data.
         return json.dumps(value)
 
-    # This has already been deserialized by the query engine
+    # This may or may not have already been deserialized by the database
     return value
 
 
