@@ -39,8 +39,6 @@ async def test_query_first(
     """Standard usage of json_obj in raw SELECT queries"""
     queries = RAW_QUERIES[database]
 
-    # raw = {'foo': 'bar', 'is_foo': True}
-
     record = await client.types.create(
         {
             'json_obj': Json.keys(
