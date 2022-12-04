@@ -2,9 +2,18 @@ from __future__ import annotations
 
 import binascii
 from datetime import datetime
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Optional,
+    Type,
+    Union,
+    overload,
+)
+
 from ._types import BaseModelT
 
-from typing import Any, Callable, Dict, Optional, Type, Union, List
 
 # From: https://github.com/prisma/prisma/blob/main/packages/client/src/runtime/utils/deserializeRawResults.ts
 """
@@ -30,28 +39,73 @@ type PrismaType =
 """
 
 
+@overload
 def deserialize_raw_results(
-    raw_list: list[Any], model: Optional[Type[BaseModelT]] = None
-) -> Union[List[BaseModelT], Any]:
-    return [deserialize_value(obj, model) for obj in raw_list]
+    raw_list: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    ...
+
+
+@overload
+def deserialize_raw_results(
+    raw_list: list[dict[str, object]],
+    model: Type[BaseModelT],
+) -> list[BaseModelT]:
+    ...
+
+
+def deserialize_raw_results(
+    raw_list: list[dict[str, Any]],
+    model: Type[BaseModelT] | None = None,
+) -> Union[list[BaseModelT], list[dict[str, Any]]]:
+    """Deserialize a list of raw query results into their rich Python types.
+
+    If `model` is given, convert each result into the corresponding model.
+    Otherwise results are returned as a dictionary
+    """
+    if model is not None:
+        return [deserialize_value(obj, model=model) for obj in raw_list]
+
+    return [deserialize_value(obj) for obj in raw_list]
+
+
+@overload
+def deserialize_value(raw_obj: dict[str, Any]) -> dict[str, Any]:
+    ...
+
+
+@overload
+def deserialize_value(
+    raw_obj: Dict[str, object],
+    model: Type[BaseModelT],
+) -> BaseModelT:
+    ...
 
 
 def deserialize_value(
-    raw_obj: Dict[Any, Any], model: Optional[Type[BaseModelT]] = None
-) -> Union[List[BaseModelT], Any]:
-    print(raw_obj)
-    obj = {}
-    for attr in raw_obj:
-        raw_value = raw_obj[attr]
-        print(raw_value)
-        _type = raw_value['prisma__type']
+    raw_obj: Dict[Any, Any],
+    model: Optional[Type[BaseModelT]] = None,
+) -> Union[BaseModelT, Any]:
+
+    # create a local reference to avoid performance penalty of global
+    # lookups on some python versions
+    _deserializers = DESERIALIZERS
+
+    new_obj = {}
+    for key, raw_value in raw_obj.items():
         value = raw_value['prisma__value']
-        obj[attr] = (
-            _deserializers[_type](value) if _type in _deserializers else value
+        prisma_type = raw_value['prisma__type']
+
+        new_obj[key] = (
+            _deserializers[prisma_type](value)
+            if prisma_type in _deserializers
+            else value
         )
+
     if model is not None:
-        return model.parse_obj(obj)
-    return obj
+        return model.parse_obj(new_obj)
+
+    return new_obj
 
 
 def _deserialize_datetime(value: str) -> datetime:
@@ -78,7 +132,7 @@ def _deserialize_array(value: list[Any]) -> Union[list[Any], Any]:
     return map(deserialize_value, value)
 
 
-_deserializers: Dict[str, Callable[..., Any]] = {
+DESERIALIZERS: Dict[str, Callable[..., object]] = {
     'bigint': _deserialize_bigint,
     'bytes': _deserialize_bytes,
     'decimal': _deserialize_decimal,
