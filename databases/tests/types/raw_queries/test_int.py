@@ -13,7 +13,7 @@ class Queries(BaseModel):
 
 
 _mysql_queries = Queries(
-    select='SELECT * FROM Types WHERE integer = ?',
+    select='SELECT * FROM Types WHERE `integer` = ?',
 )
 
 _postgresql_queries = Queries(

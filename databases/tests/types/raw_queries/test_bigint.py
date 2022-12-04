@@ -13,7 +13,7 @@ class Queries(BaseModel):
 
 
 _mysql_queries = Queries(
-    select='SELECT * FROM Types WHERE bigint = ?',
+    select='SELECT * FROM Types WHERE `bigint` = ?',
 )
 
 _postgresql_queries = Queries(

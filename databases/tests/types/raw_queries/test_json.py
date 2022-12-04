@@ -13,7 +13,7 @@ class Queries(BaseModel):
 
 
 _mysql_queries = Queries(
-    select='SELECT * FROM Types WHERE json_obj = ?',
+    select='SELECT * FROM Types WHERE json_obj->"$.foo" = ?',
 )
 
 _postgresql_queries = Queries(
@@ -53,12 +53,18 @@ async def test_query_first(
         'is_foo': True,
     }
 
-    found = await client.query_first(queries.select, raw)
+    if database in ['mysql', 'mariadb']:
+        # filtering by the full JSON object does not work for MySQL-like DBs
+        arg = 'bar'
+    else:
+        arg = raw
+
+    found = await client.query_first(queries.select, arg)
     assert found['id'] == record.id
     assert found['json_obj'] == raw
     assert found['json_obj']['is_foo'] is True
 
-    model = await client.query_first(queries.select, raw, model=Types)
+    model = await client.query_first(queries.select, arg, model=Types)
     assert model is not None
     assert model.id == record.id
     assert model.json_obj is not None
