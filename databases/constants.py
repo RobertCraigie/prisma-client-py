@@ -90,7 +90,7 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     'arrays': _fromdir('arrays'),
     'json_arrays': ['arrays/test_json.py'],
     'create_many': ['test_create_many.py'],
-    'raw_queries': ['test_raw_queries.py'],
+    'raw_queries': ['test_raw_queries.py', *_fromdir('types/raw_queries')],
     'case_sensitivity': ['test_case_sensitivity.py'],
 }
 

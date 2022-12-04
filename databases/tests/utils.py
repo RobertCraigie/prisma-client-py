@@ -4,6 +4,8 @@ import os
 from typing import TYPE_CHECKING
 from pydantic import BaseModel
 
+from .._types import DatabaseMapping
+
 if TYPE_CHECKING:
     from typing_extensions import LiteralString
 else:
@@ -136,7 +138,7 @@ _postgresql_queries = RawQueries(
     """,
 )
 
-RAW_QUERIES_MAPPING: dict[str, RawQueries] = {
+RAW_QUERIES_MAPPING: DatabaseMapping[RawQueries] = {
     'postgresql': _postgresql_queries,
     'cockroachdb': _postgresql_queries,
     'mysql': _mysql_queries,
