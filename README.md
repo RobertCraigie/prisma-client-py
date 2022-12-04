@@ -34,6 +34,8 @@ Prisma Client Python can be used in _any_ Python backend application. This can b
 
 ![GIF showcasing Prisma Client Python usage](https://raw.githubusercontent.com/RobertCraigie/prisma-client-py/main/docs/showcase.gif)
 
+> *Note that the only langauge server that is known to support this form of autocompletion is Pylance / Pyright.*
+
 ## Why should you use Prisma Client Python?
 
 Unlike other Python ORMs, Prisma Client Python is **fully type safe** and offers native support for usage **with and without** `async`. All you have to do is [specify the type of client](https://prisma-client-py.readthedocs.io/en/stable/getting_started/setup/) you would like to use for your project in the [Prisma schema file](#the-prisma-schema).
