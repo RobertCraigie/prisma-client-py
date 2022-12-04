@@ -295,7 +295,10 @@ class Prisma:
             }
         )
         result = resp['data']['result']
-        return deserialize_raw_results(result, model)
+        if model is not None:
+            return deserialize_raw_results(result, model=model)
+
+        return deserialize_raw_results(result)
     {% endif %}
 
     def batch_(self) -> 'Batch':
