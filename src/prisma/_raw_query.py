@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import binascii
+from decimal import Decimal
 from datetime import datetime
 from typing import (
     Any,
@@ -105,7 +106,6 @@ def deserialize_value(
     for_model: bool,
     model: Optional[Type[BaseModelT]] = None,
 ) -> Union[BaseModelT, Any]:
-
     # create a local reference to avoid performance penalty of global
     # lookups on some python versions
     _deserializers = DESERIALIZERS
@@ -139,8 +139,8 @@ def _deserialize_bytes(value: str, _for_model: bool) -> bytes:
     return binascii.a2b_base64(value)
 
 
-def _deserialize_decimal(value: str, _for_model: bool) -> float:
-    return float(value)
+def _deserialize_decimal(value: str, _for_model: bool) -> Decimal:
+    return Decimal(value)
 
 
 def _deserialize_time(value: str, _for_model: bool) -> datetime:

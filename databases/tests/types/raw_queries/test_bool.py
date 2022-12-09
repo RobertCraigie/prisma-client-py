@@ -56,6 +56,6 @@ async def test_query_first(
     assert model.id == record.id
 
     if config.bools_are_ints:
-        assert found['bool_'] == 1
+        assert model.bool_ == 1
     else:
-        assert found['bool_'] is True
+        assert model.bool_ is True
