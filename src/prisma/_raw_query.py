@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import binascii
 from decimal import Decimal
 from datetime import datetime
 from typing import (
@@ -15,6 +14,7 @@ from typing import (
 )
 
 from ._types import BaseModelT
+from .fields import Base64
 
 
 # From: https://github.com/prisma/prisma/blob/main/packages/client/src/runtime/utils/deserializeRawResults.ts
@@ -135,8 +135,8 @@ def _deserialize_bigint(value: str, _for_model: bool) -> int:
     return int(value)
 
 
-def _deserialize_bytes(value: str, _for_model: bool) -> bytes:
-    return binascii.a2b_base64(value)
+def _deserialize_bytes(value: str, _for_model: bool) -> Base64:
+    return Base64.fromb64(value)
 
 
 def _deserialize_decimal(value: str, _for_model: bool) -> Decimal:
