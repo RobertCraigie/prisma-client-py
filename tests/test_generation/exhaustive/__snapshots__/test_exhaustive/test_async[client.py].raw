@@ -45,7 +45,7 @@ from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix
-from ._raw_query import deserialize_raw_results
+from ._raw_query import deserialize_raw_results, parse_raw_results
 
 __all__ = (
     'ENGINE_TYPE',
@@ -282,20 +282,45 @@ class Prisma:
         return int(resp['data']['result'])
 
     @overload
-    async def query_first(self, query: LiteralString, *args: Any) -> Any:
+    async def query_first(
+        self,
+        query: LiteralString,
+        *args: Any,
+        deserialize_types: bool = True,
+    ) -> Any:
         ...
 
     @overload
-    async def query_first(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
+    async def query_first(
+        self,
+        query: LiteralString,
+        *args: Any,
+        model: Type[BaseModelT],
+        deserialize_types: bool = True,
+    ) -> Optional[BaseModelT]:
         ...
 
     async def query_first(
-        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self,
+        query: LiteralString,
+        *args: Any,
+        model: Optional[Type[BaseModelT]] = None,
+        deserialize_types: bool = True,
     ) -> Union[Optional[BaseModelT], Any]:
+        """This function is the exact same as `query_raw()` but returns the first result.
+
+        If model is given, the returned record is converted to the pydantic model first,
+        otherwise a raw dictionary will be returned.
+
+        By default the database types are deserialized to rich Python types to normalize the shape between
+        databases and to improve the structure of the data, e.g. datetime fields will be converted to `datetime.datetime` objects.
+
+        If the rich deserialzing does not work for your use case or you would rather control deserializing yourself you can set the `deserialize_types` argument to `False`.
+        """
         if model is not None:
-            results = await self.query_raw(query, *args, model=model)
+            results = await self.query_raw(query, *args, model=model, deserialize_types=deserialize_types)
         else:
-            results = await self.query_raw(query, *args)
+            results = await self.query_raw(query, *args, deserialize_types=deserialize_types)
 
         if not results:
             return None
@@ -303,16 +328,41 @@ class Prisma:
         return results[0]
 
     @overload
-    async def query_raw(self, query: LiteralString, *args: Any) -> Any:
+    async def query_raw(
+        self,
+        query: LiteralString,
+        *args: Any,
+        deserialize_types: bool = True,
+    ) -> Any:
         ...
 
     @overload
-    async def query_raw(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
+    async def query_raw(
+        self,
+        query: LiteralString,
+        *args: Any,
+        model: Type[BaseModelT],
+        deserialize_types: bool = True,
+    ) -> List[BaseModelT]:
         ...
 
     async def query_raw(
-        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
+        self,
+        query: LiteralString,
+        *args: Any,
+        model: Optional[Type[BaseModelT]] = None,
+        deserialize_types: bool = True,
     ) -> Union[List[BaseModelT], Any]:
+        """Execute a raw SQL query against the database.
+
+        If model is given, each returned record is converted to the pydantic model first,
+        otherwise results will be raw dictionaries.
+
+        By default the database types are deserialized to rich Python types to normalize the shape between
+        databases and to improve the structure of the data, e.g. datetime fields will be converted to `datetime.datetime` objects.
+
+        If the rich deserialzing does not work for your use case or you would rather control deserializing yourself you can set the `deserialize_types` argument to `False`.
+        """
         resp = await self._execute(
             operation='mutation',
             method='queryRaw',
@@ -323,7 +373,13 @@ class Prisma:
         )
         result = resp['data']['result']
         if model is not None:
+            if not deserialize_types:
+                return parse_raw_results(result, model=model)
+
             return deserialize_raw_results(result, model=model)
+
+        if not deserialize_types:
+            return parse_raw_results(result)
 
         return deserialize_raw_results(result)
 

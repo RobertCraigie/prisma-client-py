@@ -6,10 +6,6 @@ from datetime import datetime
 from typing import (
     Any,
     Callable,
-    Dict,
-    Optional,
-    Type,
-    Union,
     overload,
 )
 
@@ -43,6 +39,52 @@ type PrismaType =
 
 
 @overload
+def parse_raw_results(
+    raw_list: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    ...
+
+
+@overload
+def parse_raw_results(
+    raw_list: list[dict[str, Any]],
+    *,
+    model: type[BaseModelT],
+) -> list[BaseModelT]:
+    ...
+
+
+def parse_raw_results(
+    raw_list: list[dict[str, Any]],
+    *,
+    model: type[BaseModelT] | None = None,
+) -> list[dict[str, Any]] | list[BaseModelT]:
+    """Like `deserialize_raw_results()` but does not do any parsing to rich Python types."""
+    if model:
+        return [
+            model.parse_obj(_parse_prisma_obj(entry)) for entry in raw_list
+        ]
+
+    return [_parse_prisma_obj(entry) for entry in raw_list]
+
+
+def _parse_prisma_obj(raw_obj: dict[str, Any]) -> dict[str, Any]:
+    return {key: _parse_value(value) for key, value in raw_obj.items()}
+
+
+def _parse_value(raw_obj: dict[str, Any]) -> Any:
+    value = raw_obj['prisma__value']
+    prisma_type = raw_obj['prisma__type']
+
+    # we need special handling for array types as they are the only types
+    # that will contain the `prisma__type` wrappers
+    if prisma_type == 'array':
+        return [_parse_value(entry) for entry in value]
+
+    return value
+
+
+@overload
 def deserialize_raw_results(
     raw_list: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
@@ -52,15 +94,15 @@ def deserialize_raw_results(
 @overload
 def deserialize_raw_results(
     raw_list: list[dict[str, object]],
-    model: Type[BaseModelT],
+    model: type[BaseModelT],
 ) -> list[BaseModelT]:
     ...
 
 
 def deserialize_raw_results(
     raw_list: list[dict[str, Any]],
-    model: Type[BaseModelT] | None = None,
-) -> Union[list[BaseModelT], list[dict[str, Any]]]:
+    model: type[BaseModelT] | None = None,
+) -> list[BaseModelT] | list[dict[str, Any]]:
     """Deserialize a list of raw query results into their rich Python types.
 
     If `model` is given, convert each result into the corresponding model.
@@ -68,11 +110,13 @@ def deserialize_raw_results(
     """
     if model is not None:
         return [
-            deserialize_value(obj, model=model, for_model=True)
+            _deserialize_prisma_object(obj, model=model, for_model=True)
             for obj in raw_list
         ]
 
-    return [deserialize_value(obj, for_model=False) for obj in raw_list]
+    return [
+        _deserialize_prisma_object(obj, for_model=False) for obj in raw_list
+    ]
 
 
 # NOTE: this very weird `for_model` API is simply here as a workaround for
@@ -82,7 +126,7 @@ def deserialize_raw_results(
 
 
 @overload
-def deserialize_value(
+def _deserialize_prisma_object(
     raw_obj: dict[str, Any],
     *,
     for_model: bool,
@@ -91,21 +135,21 @@ def deserialize_value(
 
 
 @overload
-def deserialize_value(
-    raw_obj: Dict[str, object],
+def _deserialize_prisma_object(
+    raw_obj: dict[str, object],
     *,
     for_model: bool,
-    model: Type[BaseModelT],
+    model: type[BaseModelT],
 ) -> BaseModelT:
     ...
 
 
-def deserialize_value(
-    raw_obj: Dict[Any, Any],
+def _deserialize_prisma_object(
+    raw_obj: dict[Any, Any],
     *,
     for_model: bool,
-    model: Optional[Type[BaseModelT]] = None,
-) -> Union[BaseModelT, Any]:
+    model: type[BaseModelT] | None = None,
+) -> BaseModelT | dict[str, Any]:
     # create a local reference to avoid performance penalty of global
     # lookups on some python versions
     _deserializers = DESERIALIZERS
@@ -181,7 +225,7 @@ def _deserialize_json(value: object, for_model: bool) -> object:
     return value
 
 
-DESERIALIZERS: Dict[str, Callable[[Any, bool], object]] = {
+DESERIALIZERS: dict[str, Callable[[Any, bool], object]] = {
     'bigint': _deserialize_bigint,
     'bytes': _deserialize_bytes,
     'decimal': _deserialize_decimal,
