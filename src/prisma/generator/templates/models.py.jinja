@@ -111,7 +111,7 @@ class {{ model.name }}(BaseModel):
     {% endif %}
 
     {% if model.required_array_fields|list|length > 0 %}
-    @validator({{ model.required_array_fields | map(attribute="name") | map('quote') | join(", ") }}, pre=True)
+    @validator({{ model.required_array_fields | map(attribute="name") | map('quote') | join(", ") }}, pre=True, allow_reuse=True)
     @classmethod
     def _transform_required_list_fields(cls, value: object) -> object:
         # When using raw queries, some databases will return `None` for an array field that has not been set yet.

@@ -977,7 +977,7 @@ class Lists(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'Lists', stacklevel=3)
 
-    @validator('strings', 'bytes', 'dates', 'bools', 'ints', 'floats', 'bigints', 'json_objects', 'decimals', pre=True)
+    @validator('strings', 'bytes', 'dates', 'bools', 'ints', 'floats', 'bigints', 'json_objects', 'decimals', pre=True, allow_reuse=True)
     @classmethod
     def _transform_required_list_fields(cls, value: object) -> object:
         # When using raw queries, some databases will return `None` for an array field that has not been set yet.
