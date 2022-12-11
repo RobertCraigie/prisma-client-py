@@ -55,7 +55,7 @@ DEFAULT_ENV = Environment(
 # the type: ignore is required because Jinja2 filters are not typed
 # and Pyright infers the type from the default builtin filters which
 # results in an overly restrictive type
-DEFAULT_ENV.filters['quote'] = quote  # type: ignore
+DEFAULT_ENV.filters['quote'] = quote  # pyright: ignore
 
 partial_models_ctx: ContextVar[Dict[str, PartialModelFields]] = ContextVar(
     'partial_models_ctx', default={}
