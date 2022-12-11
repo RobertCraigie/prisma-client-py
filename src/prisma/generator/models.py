@@ -672,6 +672,12 @@ class Model(BaseModel):
             if field.type in ATOMIC_FIELD_TYPES:
                 yield field
 
+    @property
+    def required_array_fields(self) -> Iterator['Field']:
+        for field in self.all_fields:
+            if field.is_list and not field.relation_name and field.is_required:
+                yield field
+
     # TODO: support combined unique constraints
     @cached_property
     def id_field(self) -> Optional['Field']:

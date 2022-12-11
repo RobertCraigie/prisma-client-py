@@ -147,10 +147,24 @@ def _deserialize_time(value: str, _for_model: bool) -> datetime:
     return datetime.fromisoformat(f'1970-01-01T${value}Z')
 
 
-def _deserialize_array(
-    value: list[Any], for_model: bool
-) -> Union[list[Any], Any]:
-    return [deserialize_value(entry, for_model=for_model) for entry in value]
+def _deserialize_array(value: list[Any], for_model: bool) -> list[Any]:
+    # create a local reference to avoid performance penalty of global
+    # lookups on some python versions
+    _deserializers = DESERIALIZERS
+
+    arr = []
+    for entry in value:
+        prisma_type = entry['prisma__type']
+        prisma_value = entry['prisma__value']
+        arr.append(
+            (
+                _deserializers[prisma_type](prisma_value, for_model)
+                if prisma_type in _deserializers
+                else prisma_value
+            )
+        )
+
+    return arr
 
 
 def _deserialize_json(value: object, for_model: bool) -> object:

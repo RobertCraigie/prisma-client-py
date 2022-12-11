@@ -110,6 +110,22 @@ class {{ model.name }}(BaseModel):
             _maybe_warn_subclassing(cls.__name__, '{{ model.name }}', stacklevel=3)
     {% endif %}
 
+    {% if model.required_array_fields|list|length > 0 %}
+    @validator({{ model.required_array_fields | map(attribute="name") | map('quote') | join(", ") }}, pre=True)
+    @classmethod
+    def _transform_required_list_fields(cls, value: object) -> object:
+        # When using raw queries, some databases will return `None` for an array field that has not been set yet.
+        #
+        # In our case we want to use an empty list instead as that is the internal Prisma behaviour and we want
+        # to use the same consistent structure between the core ORM and raw queries. For example, if we updated
+        # our type definitions to include `None` for `List` fields then it would be misleading as it will only
+        # ever be `None` in raw queries.
+        if value is None:
+            return []
+
+        return value
+    {% endif %}
+
     @staticmethod
     def create_partial(
         name: str,
