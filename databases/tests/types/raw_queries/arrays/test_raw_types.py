@@ -7,7 +7,6 @@ from prisma import Prisma
 
 from ....._compat import LiteralString
 from ....._types import DatabaseMapping, SupportedDatabase
-from .....utils import DatabaseConfig
 
 
 class Queries(BaseModel):
@@ -45,7 +44,6 @@ class Model(BaseModel):
 async def test_query_first(
     client: Prisma,
     database: SupportedDatabase,
-    config: DatabaseConfig,
 ) -> None:
     """Support for disabling our rich parsing of types"""
     queries = RAW_QUERIES[database]
@@ -58,11 +56,7 @@ async def test_query_first(
         deserialize_types=False,
     )
     assert found['id'] == record.id
-
-    if config.bools_are_ints:
-        assert found['bools'] == [1, 0]
-    else:
-        assert found['bools'] == [True, False]
+    assert found['bools'] == [True, False]
 
     model = await client.query_first(
         queries.select,
