@@ -21,7 +21,9 @@ $ npx prisma generate
 ```
 
 !!! note
-    If you use the Node CLI then the custom python commands are not available.
+    This is actually very similar to what Prisma Client Python does under the hood as it will download a Node binary and use that to execute the Prisma CLI.
+
+    If you use the Node CLI yourself then the custom python commands are not available.
     However, you can still do everything else you would normally do with the Prisma CLI,
     including generating the Python Client!
 
