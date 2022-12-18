@@ -149,28 +149,29 @@ class {{ model.name }}(BaseModel):
         try:
             if include:
                 for field in include:
-                    fields[field] = _{{ model.name }}_fields[field]
+                    fields[field] = _{{ model.name }}_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _{{ model.name }}_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _{{ model.name }}_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _{{ model.name }}_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _{{ model.name }}_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             {% if model.has_relational_fields %}
