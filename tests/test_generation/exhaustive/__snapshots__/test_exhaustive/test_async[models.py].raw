@@ -171,28 +171,29 @@ class Post(BaseModel):
         try:
             if include:
                 for field in include:
-                    fields[field] = _Post_fields[field]
+                    fields[field] = _Post_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _Post_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _Post_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _Post_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _Post_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             if exclude_relational_fields:
@@ -314,28 +315,29 @@ class User(BaseModel):
         try:
             if include:
                 for field in include:
-                    fields[field] = _User_fields[field]
+                    fields[field] = _User_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _User_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _User_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _User_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _User_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             if exclude_relational_fields:
@@ -453,28 +455,29 @@ class M(BaseModel):
         try:
             if include:
                 for field in include:
-                    fields[field] = _M_fields[field]
+                    fields[field] = _M_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _M_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _M_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _M_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _M_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             if exclude_relational_fields:
@@ -594,28 +597,29 @@ class N(BaseModel):
         try:
             if include:
                 for field in include:
-                    fields[field] = _N_fields[field]
+                    fields[field] = _N_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _N_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _N_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _N_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _N_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             if exclude_relational_fields:
@@ -733,28 +737,29 @@ class OneOptional(BaseModel):
         try:
             if include:
                 for field in include:
-                    fields[field] = _OneOptional_fields[field]
+                    fields[field] = _OneOptional_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _OneOptional_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _OneOptional_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _OneOptional_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _OneOptional_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             if exclude_relational_fields:
@@ -873,28 +878,29 @@ class ManyRequired(BaseModel):
         try:
             if include:
                 for field in include:
-                    fields[field] = _ManyRequired_fields[field]
+                    fields[field] = _ManyRequired_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _ManyRequired_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _ManyRequired_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _ManyRequired_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _ManyRequired_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             if exclude_relational_fields:
@@ -1010,28 +1016,29 @@ class Lists(BaseModel):
         try:
             if include:
                 for field in include:
-                    fields[field] = _Lists_fields[field]
+                    fields[field] = _Lists_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _Lists_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _Lists_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _Lists_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _Lists_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
 
@@ -1122,28 +1129,29 @@ class A(BaseModel):
         try:
             if include:
                 for field in include:
-                    fields[field] = _A_fields[field]
+                    fields[field] = _A_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _A_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _A_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _A_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _A_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
 
@@ -1230,28 +1238,29 @@ class B(BaseModel):
         try:
             if include:
                 for field in include:
-                    fields[field] = _B_fields[field]
+                    fields[field] = _B_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _B_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _B_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _B_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _B_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
 
@@ -1339,28 +1348,29 @@ class C(BaseModel):
         try:
             if include:
                 for field in include:
-                    fields[field] = _C_fields[field]
+                    fields[field] = _C_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _C_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _C_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _C_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _C_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
 
@@ -1448,28 +1458,29 @@ class D(BaseModel):
         try:
             if include:
                 for field in include:
-                    fields[field] = _D_fields[field]
+                    fields[field] = _D_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _D_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _D_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _D_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _D_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
 
@@ -1555,28 +1566,29 @@ class E(BaseModel):
         try:
             if include:
                 for field in include:
-                    fields[field] = _E_fields[field]
+                    fields[field] = _E_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _E_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _E_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _E_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _E_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
 
