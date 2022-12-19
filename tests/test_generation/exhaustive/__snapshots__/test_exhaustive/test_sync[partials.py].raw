@@ -41,8 +41,8 @@ from . import types, models, fields, enums
 
 class PostWithAuthor(BaseModel):
     id: _str
-    author: Optional[models.User]
     title: _str
+    author: Optional[models.User]
 
     Config = models.Config
 
@@ -55,23 +55,23 @@ class UserOnlyName(BaseModel):
 
 class PostWithCustomAuthor(BaseModel):
     id: _str
-    author: Optional['partials.UserOnlyName']
     title: _str
+    author: Optional['partials.UserOnlyName']
 
     Config = models.Config
 
 
 class UserWithPosts(BaseModel):
-    posts: Optional[List['models.Post']]
     name: _str
+    posts: Optional[List['models.Post']]
 
     Config = models.Config
 
 
 class PostWithNestedRelations(BaseModel):
     id: _str
-    author: Optional['partials.UserWithPosts']
     title: _str
+    author: Optional['partials.UserWithPosts']
 
     Config = models.Config
 
