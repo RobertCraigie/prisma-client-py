@@ -11,6 +11,7 @@ generator db {
   recursive_type_depth        = 3
   output                      = "../../../.tests_cache/generation/exhaustive/__prisma_async_output__/prisma"
   enable_experimental_decimal = true
+  partial_type_generator      = "tests/test_generation/exhaustive/partials.py"
 }
 
 /// Post model documentation

@@ -5,6 +5,8 @@ import os
 import logging
 import inspect
 import warnings
+from collections import OrderedDict
+
 from pydantic import BaseConfig, BaseModel, Field, validator
 
 from . import types, enums, errors, fields
@@ -144,33 +146,34 @@ class {{ model.name }}(BaseModel):
                 'exclude_relational_fields and relations are mutually exclusive'
             )
 
-        fields: Dict['types.{{ model.name }}Keys', PartialModelField] = {}
+        fields: Dict['types.{{ model.name }}Keys', PartialModelField] = OrderedDict()
 
         try:
             if include:
                 for field in include:
-                    fields[field] = _{{ model.name }}_fields[field]
+                    fields[field] = _{{ model.name }}_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _{{ model.name }}_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _{{ model.name }}_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _{{ model.name }}_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _{{ model.name }}_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             {% if model.has_relational_fields %}
@@ -232,17 +235,19 @@ class {{ model.name }}(BaseModel):
 {% else -%}
     _{{ model.name }}_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
 {% endif %}
-_{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] = {
-    {% for field in model.all_fields %}
-    '{{ field.name }}': {
-        'name': '{{ field.name }}',
-        'is_list': {{ field.is_list }},
-        'optional': {{ field.is_optional }},
-        'type': {{ field.python_type_as_string }},
-        'documentation': {% if field.documentation is none %}None{% else %}'''{{ field.documentation }}'''{% endif %},
-    },
-    {% endfor %}
-}
+_{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] = OrderedDict(
+    [
+        {% for field in model.all_fields %}
+        ('{{ field.name }}', {
+            'name': '{{ field.name }}',
+            'is_list': {{ field.is_list }},
+            'optional': {{ field.is_optional }},
+            'type': {{ field.python_type_as_string }},
+            'documentation': {% if field.documentation is none %}None{% else %}'''{{ field.documentation }}'''{% endif %},
+        }),
+        {% endfor %}
+    ],
+)
 
 {% endfor %}
 
