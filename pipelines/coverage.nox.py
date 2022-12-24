@@ -132,7 +132,7 @@ def report_strict(session: nox.Session) -> None:
     # core tests
     omit_files = [
         # integration tests are broken
-        'tests/integrations/conftest.py'
+        'tests/integrations/conftest.py',
         # difficult to run under coverage + not valuable to figure out
         'tests/test_generation/exhaustive/partials.py',
     ]
