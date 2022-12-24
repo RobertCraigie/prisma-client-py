@@ -171,6 +171,18 @@ def _deserialize_prisma_object(
     return new_obj
 
 
+def _deserialize_date(value: str, _for_model: bool) -> datetime:
+    # we currently cannot generate `datetime.date` types because of
+    # https://github.com/prisma/prisma/issues/10252
+    #
+    # so we keep using `datetime.datetime` here for consistency's sake
+    # and ensure that there is no `tzinfo`.
+    #
+    # note that this will not always be called for certain database providers as
+    # they always return Date values with time & timezone details included.
+    return datetime.fromisoformat(value).replace(tzinfo=None)
+
+
 def _deserialize_datetime(value: str, _for_model: bool) -> datetime:
     return datetime.fromisoformat(value)
 
@@ -230,7 +242,7 @@ DESERIALIZERS: dict[str, Callable[[Any, bool], object]] = {
     'bytes': _deserialize_bytes,
     'decimal': _deserialize_decimal,
     'datetime': _deserialize_datetime,
-    'date': _deserialize_datetime,
+    'date': _deserialize_date,
     'time': _deserialize_time,
     'array': _deserialize_array,
     'json': _deserialize_json,

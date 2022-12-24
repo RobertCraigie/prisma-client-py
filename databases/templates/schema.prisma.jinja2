@@ -68,6 +68,9 @@ model Types {
   optional_decimal  Decimal?  @default(1)
 
   // TODO: optional for these too
+  {% if config.supports_feature('date') %}
+  date     DateTime @default(dbgenerated("{{ config.default_date_func }}")) @db.Date
+  {% endif %}
   {% if config.supports_feature('enum') %}
   enum     Role   @default(USER)
   {% endif %}

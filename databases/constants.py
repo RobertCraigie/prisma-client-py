@@ -25,6 +25,7 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         env_var='POSTGRESQL_URL',
         bools_are_ints=False,
         unsupported_features=set(),
+        default_date_func='CURRENT_DATE',
         autoincrement_id='Int @id @default(autoincrement())',
     ),
     'cockroachdb': DatabaseConfig(
@@ -32,6 +33,7 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         name='CockroachDB',
         env_var='COCKROACHDB_URL',
         bools_are_ints=False,
+        default_date_func='CURRENT_DATE',
         autoincrement_id='BigInt @id @default(sequence())',
         unsupported_features={
             'json_arrays',
@@ -42,10 +44,12 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         name='SQLite',
         env_var='SQLITE_URL',
         bools_are_ints=False,
+        default_date_func='',
         autoincrement_id='Int @id @default(autoincrement())',
         unsupported_features={
             'enum',
             'json',
+            'date',
             'arrays',
             'create_many',
             'case_sensitivity',
@@ -56,6 +60,7 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         name='MySQL',
         env_var='MYSQL_URL',
         bools_are_ints=True,
+        default_date_func='(CURRENT_DATE)',
         autoincrement_id='Int @id @default(autoincrement())',
         unsupported_features={
             'arrays',
@@ -67,6 +72,7 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         name='MariaDB',
         env_var='MARIADB_URL',
         bools_are_ints=True,
+        default_date_func='CURRENT_DATE',
         autoincrement_id='Int @id @default(autoincrement())',
         unsupported_features={
             'arrays',
@@ -92,6 +98,7 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
         'types/raw_queries/test_json.py',
     ],
     'arrays': [*_fromdir('arrays'), *_fromdir('types/raw_queries/arrays')],
+    'date': ['types/raw_queries/test_date.py'],
     'json_arrays': ['arrays/test_json.py'],
     'create_many': ['test_create_many.py'],
     'raw_queries': ['test_raw_queries.py', *_fromdir('types/raw_queries')],
