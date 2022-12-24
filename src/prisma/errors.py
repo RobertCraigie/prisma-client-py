@@ -119,6 +119,13 @@ class BuilderError(PrismaError):
     pass
 
 
+class InvalidModelError(BuilderError):
+    def __init__(self, model: type) -> None:
+        super().__init__(
+            f'Expected the {model} type to have a `__prisma_model__` class variable set'
+        )
+
+
 class UnknownModelError(BuilderError):
     def __init__(self, model: str) -> None:
         super().__init__(f'Model: "{model}" does not exist.')

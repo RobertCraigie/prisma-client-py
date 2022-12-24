@@ -138,6 +138,50 @@
   }
   '''
 # ---
+# name: test_select
+  '''
+  query {
+    result: findFirstPost
+    (
+      where: {
+        title: "Foo"
+      }
+    )
+    {
+      published
+    }
+  }
+  '''
+# ---
+# name: test_select.1
+  '''
+  query {
+    result: findFirstPost
+    {
+      published
+      author {
+        name
+      }
+    }
+  }
+  '''
+# ---
+# name: test_select_non_prisma_model_basemodel
+  '''
+  query {
+    result: findFirstPost
+    (
+      where: {
+        title: "Foo"
+      }
+    )
+    {
+      published
+      my_json_blob
+    }
+  }
+  '''
+# ---
 # name: test_unicode
   '''
   query {

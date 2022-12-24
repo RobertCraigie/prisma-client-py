@@ -1,12 +1,14 @@
 {% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import query_methods with context %}
 # -- template partials.py.jinja --
-from pydantic import BaseModel, Field, validator
-from . import types, models, fields, enums
+from pydantic import validator
+from . import types, fields, enums, actions, models
+from .bases import PrismaModelT, PrismaModel as _PrismaModel
 
 
-{% for name, fields in partial_models.items() %}
-class {{ name }}(BaseModel):
-    {% for field in fields.values() %}
+{% for partial in partial_models %}
+class {{ partial.name }}(_PrismaModel):
+    {% for field in partial.fields.values() %}
     {{ field.name }}:
             {%- if field.optional -%}
                 {{ ' ' }}Optional[{{ field.type }}]
@@ -19,7 +21,9 @@ class {{ name }}(BaseModel):
     {% endif %}
     {% endfor %}
 
-    Config = models.Config
+    __prisma_model__: ClassVar[str] = '{{ partial.from_model }}'
+
+    {{ query_methods(partial.from_model, false) }}
 
 
 {% endfor %}
@@ -28,8 +32,8 @@ class {{ name }}(BaseModel):
 # so we have to import ourselves in order to resolve forward references
 from . import partials
 
-{% for name, fields in partial_models.items() %}
-{{ name }}.update_forward_refs()
+{% for partial in partial_models %}
+{{ partial.name }}.update_forward_refs()
 {% endfor %}
 
 # fmt: on

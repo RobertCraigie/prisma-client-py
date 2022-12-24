@@ -248,6 +248,8 @@ class Module(BaseModel):
     def spec_validator(cls, value: Optional[str]) -> machinery.ModuleSpec:
         spec: Optional[machinery.ModuleSpec] = None
 
+        # TODO: this should really work based off of the schema path
+        # and this should suport checking  just partial_types.py if we are in a `prisma` dir
         if value is None:
             value = 'prisma/partial_types.py'
 

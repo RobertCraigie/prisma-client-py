@@ -1,5 +1,5 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import recursive_types with context %}
+{% from '_utils.py.jinja' import recursive_types, query_methods with context %}
 # -- template models.py.jinja --
 import os
 import logging
@@ -8,18 +8,10 @@ import warnings
 from pydantic import BaseConfig, BaseModel, Field, validator
 
 from . import types, enums, errors, fields
-from ._types import BaseModelT, FuncType
+from .bases import PrismaModelT, PrismaModel as _PrismaModel
+from ._types import FuncType
 from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
-
-
-class Config(BaseConfig):
-    use_enum_values: bool = True
-    arbitrary_types_allowed: bool = True
-    allow_population_by_field_name: bool = True
-    json_encoders: Dict[Any, FuncType] = {
-        fields.Base64: serialize_base64,
-    }
 
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -63,7 +55,7 @@ def _maybe_warn_subclassing(new_model: str, base_model: str, *, stacklevel: int 
 
 
 {% for model in dmmf.datamodel.models %}
-class {{ model.name }}(BaseModel):
+class {{ model.name }}(_PrismaModel):
     {% if model.documentation is none %}
     """Represents a {{ model.name }} record"""
     {% else %}
@@ -83,21 +75,11 @@ class {{ model.name }}(BaseModel):
     {% endif %}
     {% endfor %}
 
-    Config = Config
+    __prisma_model__: ClassVar[str] = '{{ model.name }}'
 
-    {% if recursive_types %}
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.{{ model.name }}Actions[BaseModelT]':
-        from .client import get_client
+    {{ query_methods(model.name) }}
 
-        return actions.{{ model.name }}Actions[BaseModelT](get_client(), cls)
-    {% else %}
-    @classmethod
-    def prisma(cls) -> 'actions.{{ model.name }}Actions':
-        from .client import get_client
-
-        return actions.{{ model.name }}Actions(get_client(), cls)
-
+    {% if not recursive_types %}
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
@@ -212,11 +194,13 @@ class {{ model.name }}(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': fields,
+                'from_model': '{{ model.name }}',
+            }
+        )
         _created_partial_types.add(name)
 
 
