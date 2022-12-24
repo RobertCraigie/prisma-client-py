@@ -63,3 +63,26 @@ async def test_query_first(
     assert model is not None
     assert model.id == record2.id
     assert model.decimal_ == Decimal('1.24343336464224')
+
+
+@pytest.mark.asyncio
+async def test_raw_type(
+    client: Prisma,
+    database: SupportedDatabase,
+) -> None:
+    """The runtime type when rich deserializing is not used"""
+    queries = RAW_QUERIES[database]
+
+    record = await client.types.create(
+        {
+            'decimal_': Decimal('1.24343336464224'),
+        }
+    )
+
+    found = await client.query_first(
+        queries.select,
+        Decimal('1.24343336464224'),
+        deserialize_types=False,
+    )
+    assert found['id'] == record.id
+    assert found['decimal_'] == '1.24343336464224'

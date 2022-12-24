@@ -83,3 +83,15 @@ async def test_query_first(
     assert model.json_obj is not None
     assert model.json_obj == raw
     assert model.json_obj['is_foo'] is True
+
+    # raw type
+    result = await client.query_first(
+        queries.select, *args, deserialize_types=False
+    )
+    raw_obj = result['json_obj']
+    if database == 'mariadb':
+        assert type(raw_obj) == str
+        assert json.loads(raw_obj) == raw
+    else:
+        assert type(result['json_obj']) == dict
+        assert result['json_obj'] == raw

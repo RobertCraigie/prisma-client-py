@@ -5,7 +5,7 @@ from typing import List, cast
 from typing_extensions import get_args
 
 from lib import pyright
-from ._types import SupportedDatabase
+from ._types import SupportedDatabase, DatabaseMapping
 from .utils import DatabaseConfig, DatabaseFeature
 
 
@@ -18,7 +18,7 @@ def _fromdir(path: str) -> list[str]:
 
 
 # databases
-CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
+CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
     'postgresql': DatabaseConfig(
         id='postgresql',
         name='PostgreSQL',
