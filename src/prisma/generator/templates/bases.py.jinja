@@ -1,0 +1,30 @@
+{% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import recursive_types with context %}
+# -- template models.py.jinja --
+from pydantic import BaseModel, BaseConfig
+
+from . import fields
+from ._types import FuncType
+from .builder import serialize_base64
+
+
+PrismaModelT = TypeVar('PrismaModelT', bound='PrismaModel')
+
+
+class Config(BaseConfig):
+    use_enum_values: bool = True
+    arbitrary_types_allowed: bool = True
+    allow_population_by_field_name: bool = True
+    json_encoders: Dict[Any, FuncType] = {
+        fields.Base64: serialize_base64,
+    }
+
+
+class PrismaModel(BaseModel):
+    Config = Config
+
+    # TODO: ensure this is required by subclasses
+    __prisma_model__: ClassVar[str]
+
+
+# TODO: create "base" classes for each model that omits every field

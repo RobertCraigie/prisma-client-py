@@ -18,6 +18,9 @@ from typing import (
     Iterable,
     Iterator,
     Callable,
+    ClassVar,
+    NoReturn,
+    TypeVar,
     Generic,
     Mapping,
     Tuple,
@@ -35,8 +38,9 @@ from typing_extensions import TypedDict, Literal
 
 LiteralString = str
 # -- template partials.py.jinja --
-from pydantic import BaseModel, Field, validator
-from . import types, models, fields, enums
+from pydantic import validator
+from . import types, fields, enums, actions, models
+from .bases import PrismaModelT, PrismaModel as _PrismaModel
 
 
 

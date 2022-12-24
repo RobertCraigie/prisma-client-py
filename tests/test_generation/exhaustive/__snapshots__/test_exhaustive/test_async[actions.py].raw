@@ -18,6 +18,9 @@ from typing import (
     Iterable,
     Iterator,
     Callable,
+    ClassVar,
+    NoReturn,
+    TypeVar,
     Generic,
     Mapping,
     Tuple,
@@ -38,11 +41,11 @@ LiteralString = str
 import warnings
 
 from . import types, errors
-from ._types import BaseModelT
-
+from .bases import PrismaModelT, PrismaModel
 
 if TYPE_CHECKING:
     from .client import Client
+
 
 
 class PostActions:
@@ -175,7 +178,7 @@ class PostActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createOne',
-            model='Post',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -242,7 +245,7 @@ class PostActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createMany',
-            model='Post',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -293,7 +296,7 @@ class PostActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='deleteOne',
-                model='Post',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -345,7 +348,7 @@ class PostActions:
         resp = await self._client._execute(
             operation='query',
             method='findUnique',
-            model='Post',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -412,7 +415,7 @@ class PostActions:
         resp = await self._client._execute(
             operation='query',
             method='findMany',
-            model='Post',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -474,7 +477,7 @@ class PostActions:
         resp = await self._client._execute(
             operation='query',
             method='findFirst',
-            model='Post',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -534,7 +537,7 @@ class PostActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='updateOne',
-                model='Post',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -599,7 +602,7 @@ class PostActions:
         resp = await self._client._execute(
             operation='mutation',
             method='upsertOne',
-            model='Post',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -648,7 +651,7 @@ class PostActions:
         resp = await self._client._execute(
             operation='mutation',
             method='updateMany',
-            model='Post',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -793,7 +796,7 @@ class PostActions:
         resp = await self._client._execute(
             operation='query',
             method='aggregate',
-            model='Post',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -839,7 +842,7 @@ class PostActions:
         resp = await self._client._execute(
             operation='mutation',
             method='deleteMany',
-            model='Post',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -950,7 +953,7 @@ class PostActions:
         resp = await self._client._execute(
             operation='query',
             method='groupBy',
-            model='Post',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -1098,7 +1101,7 @@ class UserActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createOne',
-            model='User',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -1173,7 +1176,7 @@ class UserActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createMany',
-            model='User',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1224,7 +1227,7 @@ class UserActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='deleteOne',
-                model='User',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -1276,7 +1279,7 @@ class UserActions:
         resp = await self._client._execute(
             operation='query',
             method='findUnique',
-            model='User',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -1343,7 +1346,7 @@ class UserActions:
         resp = await self._client._execute(
             operation='query',
             method='findMany',
-            model='User',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -1405,7 +1408,7 @@ class UserActions:
         resp = await self._client._execute(
             operation='query',
             method='findFirst',
-            model='User',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -1465,7 +1468,7 @@ class UserActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='updateOne',
-                model='User',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -1538,7 +1541,7 @@ class UserActions:
         resp = await self._client._execute(
             operation='mutation',
             method='upsertOne',
-            model='User',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -1587,7 +1590,7 @@ class UserActions:
         resp = await self._client._execute(
             operation='mutation',
             method='updateMany',
-            model='User',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1732,7 +1735,7 @@ class UserActions:
         resp = await self._client._execute(
             operation='query',
             method='aggregate',
-            model='User',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -1778,7 +1781,7 @@ class UserActions:
         resp = await self._client._execute(
             operation='mutation',
             method='deleteMany',
-            model='User',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1889,7 +1892,7 @@ class UserActions:
         resp = await self._client._execute(
             operation='query',
             method='groupBy',
-            model='User',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -2036,7 +2039,7 @@ class MActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createOne',
-            model='M',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -2109,7 +2112,7 @@ class MActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createMany',
-            model='M',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -2160,7 +2163,7 @@ class MActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='deleteOne',
-                model='M',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -2212,7 +2215,7 @@ class MActions:
         resp = await self._client._execute(
             operation='query',
             method='findUnique',
-            model='M',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -2279,7 +2282,7 @@ class MActions:
         resp = await self._client._execute(
             operation='query',
             method='findMany',
-            model='M',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -2341,7 +2344,7 @@ class MActions:
         resp = await self._client._execute(
             operation='query',
             method='findFirst',
-            model='M',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -2401,7 +2404,7 @@ class MActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='updateOne',
-                model='M',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -2472,7 +2475,7 @@ class MActions:
         resp = await self._client._execute(
             operation='mutation',
             method='upsertOne',
-            model='M',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -2521,7 +2524,7 @@ class MActions:
         resp = await self._client._execute(
             operation='mutation',
             method='updateMany',
-            model='M',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -2666,7 +2669,7 @@ class MActions:
         resp = await self._client._execute(
             operation='query',
             method='aggregate',
-            model='M',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -2712,7 +2715,7 @@ class MActions:
         resp = await self._client._execute(
             operation='mutation',
             method='deleteMany',
-            model='M',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -2823,7 +2826,7 @@ class MActions:
         resp = await self._client._execute(
             operation='query',
             method='groupBy',
-            model='M',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -2971,7 +2974,7 @@ class NActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createOne',
-            model='N',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -3046,7 +3049,7 @@ class NActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createMany',
-            model='N',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -3097,7 +3100,7 @@ class NActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='deleteOne',
-                model='N',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -3149,7 +3152,7 @@ class NActions:
         resp = await self._client._execute(
             operation='query',
             method='findUnique',
-            model='N',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -3216,7 +3219,7 @@ class NActions:
         resp = await self._client._execute(
             operation='query',
             method='findMany',
-            model='N',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -3278,7 +3281,7 @@ class NActions:
         resp = await self._client._execute(
             operation='query',
             method='findFirst',
-            model='N',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -3338,7 +3341,7 @@ class NActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='updateOne',
-                model='N',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -3411,7 +3414,7 @@ class NActions:
         resp = await self._client._execute(
             operation='mutation',
             method='upsertOne',
-            model='N',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -3460,7 +3463,7 @@ class NActions:
         resp = await self._client._execute(
             operation='mutation',
             method='updateMany',
-            model='N',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -3605,7 +3608,7 @@ class NActions:
         resp = await self._client._execute(
             operation='query',
             method='aggregate',
-            model='N',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -3651,7 +3654,7 @@ class NActions:
         resp = await self._client._execute(
             operation='mutation',
             method='deleteMany',
-            model='N',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -3762,7 +3765,7 @@ class NActions:
         resp = await self._client._execute(
             operation='query',
             method='groupBy',
-            model='N',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -3909,7 +3912,7 @@ class OneOptionalActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createOne',
-            model='OneOptional',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -3982,7 +3985,7 @@ class OneOptionalActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createMany',
-            model='OneOptional',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -4033,7 +4036,7 @@ class OneOptionalActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='deleteOne',
-                model='OneOptional',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -4085,7 +4088,7 @@ class OneOptionalActions:
         resp = await self._client._execute(
             operation='query',
             method='findUnique',
-            model='OneOptional',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -4152,7 +4155,7 @@ class OneOptionalActions:
         resp = await self._client._execute(
             operation='query',
             method='findMany',
-            model='OneOptional',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -4214,7 +4217,7 @@ class OneOptionalActions:
         resp = await self._client._execute(
             operation='query',
             method='findFirst',
-            model='OneOptional',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -4274,7 +4277,7 @@ class OneOptionalActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='updateOne',
-                model='OneOptional',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -4345,7 +4348,7 @@ class OneOptionalActions:
         resp = await self._client._execute(
             operation='mutation',
             method='upsertOne',
-            model='OneOptional',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -4394,7 +4397,7 @@ class OneOptionalActions:
         resp = await self._client._execute(
             operation='mutation',
             method='updateMany',
-            model='OneOptional',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -4539,7 +4542,7 @@ class OneOptionalActions:
         resp = await self._client._execute(
             operation='query',
             method='aggregate',
-            model='OneOptional',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -4585,7 +4588,7 @@ class OneOptionalActions:
         resp = await self._client._execute(
             operation='mutation',
             method='deleteMany',
-            model='OneOptional',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -4696,7 +4699,7 @@ class OneOptionalActions:
         resp = await self._client._execute(
             operation='query',
             method='groupBy',
-            model='OneOptional',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -4843,7 +4846,7 @@ class ManyRequiredActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createOne',
-            model='ManyRequired',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -4916,7 +4919,7 @@ class ManyRequiredActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createMany',
-            model='ManyRequired',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -4967,7 +4970,7 @@ class ManyRequiredActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='deleteOne',
-                model='ManyRequired',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -5019,7 +5022,7 @@ class ManyRequiredActions:
         resp = await self._client._execute(
             operation='query',
             method='findUnique',
-            model='ManyRequired',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -5086,7 +5089,7 @@ class ManyRequiredActions:
         resp = await self._client._execute(
             operation='query',
             method='findMany',
-            model='ManyRequired',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -5148,7 +5151,7 @@ class ManyRequiredActions:
         resp = await self._client._execute(
             operation='query',
             method='findFirst',
-            model='ManyRequired',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -5208,7 +5211,7 @@ class ManyRequiredActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='updateOne',
-                model='ManyRequired',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -5279,7 +5282,7 @@ class ManyRequiredActions:
         resp = await self._client._execute(
             operation='mutation',
             method='upsertOne',
-            model='ManyRequired',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -5328,7 +5331,7 @@ class ManyRequiredActions:
         resp = await self._client._execute(
             operation='mutation',
             method='updateMany',
-            model='ManyRequired',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -5473,7 +5476,7 @@ class ManyRequiredActions:
         resp = await self._client._execute(
             operation='query',
             method='aggregate',
-            model='ManyRequired',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -5519,7 +5522,7 @@ class ManyRequiredActions:
         resp = await self._client._execute(
             operation='mutation',
             method='deleteMany',
-            model='ManyRequired',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -5630,7 +5633,7 @@ class ManyRequiredActions:
         resp = await self._client._execute(
             operation='query',
             method='groupBy',
-            model='ManyRequired',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -5772,7 +5775,7 @@ class ListsActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createOne',
-            model='Lists',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -5835,7 +5838,7 @@ class ListsActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createMany',
-            model='Lists',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -5886,7 +5889,7 @@ class ListsActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='deleteOne',
-                model='Lists',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -5938,7 +5941,7 @@ class ListsActions:
         resp = await self._client._execute(
             operation='query',
             method='findUnique',
-            model='Lists',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -6005,7 +6008,7 @@ class ListsActions:
         resp = await self._client._execute(
             operation='query',
             method='findMany',
-            model='Lists',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -6067,7 +6070,7 @@ class ListsActions:
         resp = await self._client._execute(
             operation='query',
             method='findFirst',
-            model='Lists',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -6127,7 +6130,7 @@ class ListsActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='updateOne',
-                model='Lists',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -6188,7 +6191,7 @@ class ListsActions:
         resp = await self._client._execute(
             operation='mutation',
             method='upsertOne',
-            model='Lists',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -6237,7 +6240,7 @@ class ListsActions:
         resp = await self._client._execute(
             operation='mutation',
             method='updateMany',
-            model='Lists',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -6382,7 +6385,7 @@ class ListsActions:
         resp = await self._client._execute(
             operation='query',
             method='aggregate',
-            model='Lists',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -6428,7 +6431,7 @@ class ListsActions:
         resp = await self._client._execute(
             operation='mutation',
             method='deleteMany',
-            model='Lists',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -6539,7 +6542,7 @@ class ListsActions:
         resp = await self._client._execute(
             operation='query',
             method='groupBy',
-            model='Lists',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -6685,7 +6688,7 @@ class AActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createOne',
-            model='A',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -6756,7 +6759,7 @@ class AActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createMany',
-            model='A',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -6807,7 +6810,7 @@ class AActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='deleteOne',
-                model='A',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -6859,7 +6862,7 @@ class AActions:
         resp = await self._client._execute(
             operation='query',
             method='findUnique',
-            model='A',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -6926,7 +6929,7 @@ class AActions:
         resp = await self._client._execute(
             operation='query',
             method='findMany',
-            model='A',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -6988,7 +6991,7 @@ class AActions:
         resp = await self._client._execute(
             operation='query',
             method='findFirst',
-            model='A',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -7048,7 +7051,7 @@ class AActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='updateOne',
-                model='A',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -7115,7 +7118,7 @@ class AActions:
         resp = await self._client._execute(
             operation='mutation',
             method='upsertOne',
-            model='A',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -7164,7 +7167,7 @@ class AActions:
         resp = await self._client._execute(
             operation='mutation',
             method='updateMany',
-            model='A',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -7309,7 +7312,7 @@ class AActions:
         resp = await self._client._execute(
             operation='query',
             method='aggregate',
-            model='A',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -7355,7 +7358,7 @@ class AActions:
         resp = await self._client._execute(
             operation='mutation',
             method='deleteMany',
-            model='A',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -7466,7 +7469,7 @@ class AActions:
         resp = await self._client._execute(
             operation='query',
             method='groupBy',
-            model='A',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -7612,7 +7615,7 @@ class BActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createOne',
-            model='B',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -7683,7 +7686,7 @@ class BActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createMany',
-            model='B',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -7734,7 +7737,7 @@ class BActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='deleteOne',
-                model='B',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -7786,7 +7789,7 @@ class BActions:
         resp = await self._client._execute(
             operation='query',
             method='findUnique',
-            model='B',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -7853,7 +7856,7 @@ class BActions:
         resp = await self._client._execute(
             operation='query',
             method='findMany',
-            model='B',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -7915,7 +7918,7 @@ class BActions:
         resp = await self._client._execute(
             operation='query',
             method='findFirst',
-            model='B',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -7975,7 +7978,7 @@ class BActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='updateOne',
-                model='B',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -8044,7 +8047,7 @@ class BActions:
         resp = await self._client._execute(
             operation='mutation',
             method='upsertOne',
-            model='B',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -8093,7 +8096,7 @@ class BActions:
         resp = await self._client._execute(
             operation='mutation',
             method='updateMany',
-            model='B',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -8238,7 +8241,7 @@ class BActions:
         resp = await self._client._execute(
             operation='query',
             method='aggregate',
-            model='B',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -8284,7 +8287,7 @@ class BActions:
         resp = await self._client._execute(
             operation='mutation',
             method='deleteMany',
-            model='B',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -8395,7 +8398,7 @@ class BActions:
         resp = await self._client._execute(
             operation='query',
             method='groupBy',
-            model='B',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -8543,7 +8546,7 @@ class CActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createOne',
-            model='C',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -8618,7 +8621,7 @@ class CActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createMany',
-            model='C',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -8670,7 +8673,7 @@ class CActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='deleteOne',
-                model='C',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -8723,7 +8726,7 @@ class CActions:
         resp = await self._client._execute(
             operation='query',
             method='findUnique',
-            model='C',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -8790,7 +8793,7 @@ class CActions:
         resp = await self._client._execute(
             operation='query',
             method='findMany',
-            model='C',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -8852,7 +8855,7 @@ class CActions:
         resp = await self._client._execute(
             operation='query',
             method='findFirst',
-            model='C',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -8913,7 +8916,7 @@ class CActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='updateOne',
-                model='C',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -8975,7 +8978,7 @@ class CActions:
         resp = await self._client._execute(
             operation='mutation',
             method='upsertOne',
-            model='C',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -9024,7 +9027,7 @@ class CActions:
         resp = await self._client._execute(
             operation='mutation',
             method='updateMany',
-            model='C',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -9169,7 +9172,7 @@ class CActions:
         resp = await self._client._execute(
             operation='query',
             method='aggregate',
-            model='C',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -9215,7 +9218,7 @@ class CActions:
         resp = await self._client._execute(
             operation='mutation',
             method='deleteMany',
-            model='C',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -9326,7 +9329,7 @@ class CActions:
         resp = await self._client._execute(
             operation='query',
             method='groupBy',
-            model='C',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -9473,7 +9476,7 @@ class DActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createOne',
-            model='D',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -9546,7 +9549,7 @@ class DActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createMany',
-            model='D',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -9597,7 +9600,7 @@ class DActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='deleteOne',
-                model='D',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -9649,7 +9652,7 @@ class DActions:
         resp = await self._client._execute(
             operation='query',
             method='findUnique',
-            model='D',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -9716,7 +9719,7 @@ class DActions:
         resp = await self._client._execute(
             operation='query',
             method='findMany',
-            model='D',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -9778,7 +9781,7 @@ class DActions:
         resp = await self._client._execute(
             operation='query',
             method='findFirst',
-            model='D',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -9838,7 +9841,7 @@ class DActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='updateOne',
-                model='D',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -9909,7 +9912,7 @@ class DActions:
         resp = await self._client._execute(
             operation='mutation',
             method='upsertOne',
-            model='D',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -9958,7 +9961,7 @@ class DActions:
         resp = await self._client._execute(
             operation='mutation',
             method='updateMany',
-            model='D',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -10103,7 +10106,7 @@ class DActions:
         resp = await self._client._execute(
             operation='query',
             method='aggregate',
-            model='D',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -10149,7 +10152,7 @@ class DActions:
         resp = await self._client._execute(
             operation='mutation',
             method='deleteMany',
-            model='D',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -10260,7 +10263,7 @@ class DActions:
         resp = await self._client._execute(
             operation='query',
             method='groupBy',
-            model='D',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -10405,7 +10408,7 @@ class EActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createOne',
-            model='E',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -10474,7 +10477,7 @@ class EActions:
         resp = await self._client._execute(
             operation='mutation',
             method='createMany',
-            model='E',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -10525,7 +10528,7 @@ class EActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='deleteOne',
-                model='E',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -10577,7 +10580,7 @@ class EActions:
         resp = await self._client._execute(
             operation='query',
             method='findUnique',
-            model='E',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -10644,7 +10647,7 @@ class EActions:
         resp = await self._client._execute(
             operation='query',
             method='findMany',
-            model='E',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -10706,7 +10709,7 @@ class EActions:
         resp = await self._client._execute(
             operation='query',
             method='findFirst',
-            model='E',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -10766,7 +10769,7 @@ class EActions:
             resp = await self._client._execute(
                 operation='mutation',
                 method='updateOne',
-                model='E',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -10833,7 +10836,7 @@ class EActions:
         resp = await self._client._execute(
             operation='mutation',
             method='upsertOne',
-            model='E',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -10882,7 +10885,7 @@ class EActions:
         resp = await self._client._execute(
             operation='mutation',
             method='updateMany',
-            model='E',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -11027,7 +11030,7 @@ class EActions:
         resp = await self._client._execute(
             operation='query',
             method='aggregate',
-            model='E',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -11073,7 +11076,7 @@ class EActions:
         resp = await self._client._execute(
             operation='mutation',
             method='deleteMany',
-            model='E',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -11184,7 +11187,7 @@ class EActions:
         resp = await self._client._execute(
             operation='query',
             method='groupBy',
-            model='E',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
