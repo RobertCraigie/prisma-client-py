@@ -138,6 +138,8 @@ def report_strict(session: nox.Session) -> None:
         '--include=tests/**',
         # integration tests are broken
         '--omit=tests/integrations/conftest.py',
+        # difficult to run under coverage + not valuable to figure out
+        '--omit=tests/test_generation/exhaustive/partials.py',
         '--fail-under=100',
     )
 
