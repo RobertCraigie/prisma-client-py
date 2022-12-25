@@ -203,13 +203,7 @@ class QueryBuilder:
                 'Is the field a pydantic.BaseModel type and does it have a `__prisma_model__` class variable?'
             )
 
-        typ = info.type_
-        if not issubclass(typ, PrismaModel):
-            raise RuntimeError(
-                f'The relational field type {typ} does not subclass {PrismaModel}.',
-            )
-
-        return info.type_
+        return cast(Type[PrismaModel], info.type_)
 
     def _transform_aliases(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """Transform dict keys to match global aliases
