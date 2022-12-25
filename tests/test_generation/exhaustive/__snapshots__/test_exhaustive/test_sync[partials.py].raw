@@ -47,10 +47,12 @@ class PostWithAuthor(BaseModel):
     Config = models.Config
 
 
+
 class UserOnlyName(BaseModel):
     name: _str
 
     Config = models.Config
+
 
 
 class PostWithCustomAuthor(BaseModel):
@@ -61,11 +63,21 @@ class PostWithCustomAuthor(BaseModel):
     Config = models.Config
 
 
+
 class UserWithPosts(BaseModel):
     name: _str
     posts: Optional[List['models.Post']]
 
     Config = models.Config
+
+    @validator('posts', pre=True, allow_reuse=True)
+    @classmethod
+    def _transform_required_posts_list(cls, value: object) -> object:
+        # See the `_transform_required_list_fields()` function in `prisma/models.py` for context
+        if value is None:
+            return []
+
+        return value
 
 
 class PostWithNestedRelations(BaseModel):
@@ -74,6 +86,7 @@ class PostWithNestedRelations(BaseModel):
     author: Optional['partials.UserWithPosts']
 
     Config = models.Config
+
 
 
 
