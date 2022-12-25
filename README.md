@@ -34,6 +34,8 @@ Prisma Client Python can be used in _any_ Python backend application. This can b
 
 ![GIF showcasing Prisma Client Python usage](https://raw.githubusercontent.com/RobertCraigie/prisma-client-py/main/docs/showcase.gif)
 
+> _Note that the only langauge server that is known to support this form of autocompletion is Pylance / Pyright._
+
 ## Why should you use Prisma Client Python?
 
 Unlike other Python ORMs, Prisma Client Python is **fully type safe** and offers native support for usage **with and without** `async`. All you have to do is [specify the type of client](https://prisma-client-py.readthedocs.io/en/stable/getting_started/setup/) you would like to use for your project in the [Prisma schema file](#the-prisma-schema).
@@ -292,16 +294,17 @@ All Prisma Client Python methods are fully statically typed, this means you can 
 
 For more details see the [documentation](https://prisma-client-py.readthedocs.io/en/stable/getting_started/type-safety/).
 
-
 #### How does Prisma Client Python interface with Prisma?
 
 Prisma Client Python connects to the database and executes queries using Prisma's rust-based Query Engine, of which the source code can be found here: https://github.com/prisma/prisma-engines.
 
-The Prisma CLI, which is written in TypeScript, is packaged into a single binary which is downloaded for you when you use Prisma Client Python. The CLI interface is the exact same as the standard [Prisma CLI](https://www.prisma.io/docs/reference/api-reference/command-reference).
+Prisma Client Python exposes a CLI interface which wraps the [Prisma CLI](https://www.prisma.io/docs/reference/api-reference/command-reference). This works by downloading a Node binary, if you don't already have Node installed on your machine, installing the CLI with `npm` and running the CLI using Node.
+
+The CLI interface is the exact same as the standard [Prisma CLI](https://www.prisma.io/docs/reference/api-reference/command-reference) with [some additional commands](https://prisma-client-py.readthedocs.io/en/stable/reference/command-line/).
 
 ## Affiliation
 
-Prisma Client Python is *not* an official Prisma product although it is very generously sponsored by Prisma.
+Prisma Client Python is _not_ an official Prisma product although it is very generously sponsored by Prisma.
 
 ## Room for improvement
 
@@ -315,11 +318,11 @@ Supported editors / extensions:
 
 - VSCode with [pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance) v2021.9.4 or higher
 - Sublime Text with [LSP-Pyright](https://github.com/sublimelsp/LSP-pyright) v1.1.196 or higher
-- PyCharm [2022.1 EAP 3](https://youtrack.jetbrains.com/articles/PY-A-233537928/PyCharm-2022.1-EAP-3-(221.4994.44-build)-Release-Notes) added support for completing `TypedDict`s
-    - This does not yet work for Prisma Client Python unfortunately, see [this issue](https://youtrack.jetbrains.com/issue/PY-54151/TypedDict-completion-at-callee-does-not-work-for-methods)
+- PyCharm [2022.1 EAP 3](<https://youtrack.jetbrains.com/articles/PY-A-233537928/PyCharm-2022.1-EAP-3-(221.4994.44-build)-Release-Notes>) added support for completing `TypedDict`s
+  - This does not yet work for Prisma Client Python unfortunately, see [this issue](https://youtrack.jetbrains.com/issue/PY-54151/TypedDict-completion-at-callee-does-not-work-for-methods)
 - Any editor that supports the Language Server Protocol and has an extension supporting Pyright v1.1.196 or higher
-    - vim and neovim with [coc.nvim](https://github.com/fannheyward/coc-pyright)
-    - [emacs](https://github.com/emacs-lsp/lsp-pyright)
+  - vim and neovim with [coc.nvim](https://github.com/fannheyward/coc-pyright)
+  - [emacs](https://github.com/emacs-lsp/lsp-pyright)
 
 ```py
 user = await db.user.find_first(
