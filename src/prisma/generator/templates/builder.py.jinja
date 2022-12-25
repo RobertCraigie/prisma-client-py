@@ -63,7 +63,7 @@ class QueryBuilder:
     operation: str
 
     # prisma model
-    model: Optional[Type['PrismaModel']]
+    model: Optional[Type[PrismaModel]]
 
     # mapping of relational fields to include in the result
     include: Optional[Dict[str, Any]]
@@ -89,7 +89,7 @@ class QueryBuilder:
         method: str,
         operation: str,
         arguments: Dict[str, Any],
-        model: Optional[Type['PrismaModel']] = None,
+        model: Optional[Type[PrismaModel]] = None,
         root_selection: Optional[List[str]] = None
     ) -> None:
         self.model = model
@@ -151,7 +151,7 @@ class QueryBuilder:
         )
         return root
 
-    def get_default_fields(self, model: Type['PrismaModel']) -> List[str]:
+    def get_default_fields(self, model: Type[PrismaModel]) -> List[str]:
         """Returns a list of all the scalar fields of a model
 
         Raises UnknownModelError if the current model cannot be found.
@@ -172,7 +172,7 @@ class QueryBuilder:
             if not _field_is_prisma_model(info)
         ]
 
-    def get_relational_model(self, current_model: Type['PrismaModel'], field: str) -> Type['PrismaModel']:
+    def get_relational_model(self, current_model: Type[PrismaModel], field: str) -> Type[PrismaModel]:
         """Returns the model that the field is related to.
 
         Raises UnknownModelError if the current model is invalid.
@@ -201,6 +201,12 @@ class QueryBuilder:
             raise RuntimeError(
                 f'The `{field}` field doesn\'t appear to be a Prisma Model type. ' +
                 'Is the field a pydantic.BaseModel type and does it have a `__prisma_model__` class variable?'
+            )
+
+        typ = info.type_
+        if not issubclass(typ, PrismaModel):
+            raise RuntimeError(
+                f'The relational field type {typ} does not subclass {PrismaModel}.',
             )
 
         return info.type_
@@ -597,7 +603,7 @@ class Selection(Node):
         }
     }
     """
-    model: Optional[Type['PrismaModel']]
+    model: Optional[Type[PrismaModel]]
     include: Optional[Dict[str, Any]]
     root_selection: Optional[List[str]]
 
@@ -609,7 +615,7 @@ class Selection(Node):
 
     def __init__(
         self,
-        model: Optional[Type['PrismaModel']] = None,
+        model: Optional[Type[PrismaModel]] = None,
         include: Optional[Dict[str, Any]] = None,
         root_selection: Optional[List[str]] = None,
         **kwargs: Any

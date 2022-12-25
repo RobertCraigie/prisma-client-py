@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Mapping, Optional
 from .._types import TypedDict
 
 
@@ -19,4 +19,4 @@ class PartialModelField(TypedDict):
 class PartialModel(TypedDict):
     name: str
     from_model: str
-    fields: Dict[str, PartialModelField]
+    fields: Mapping[str, PartialModelField]
