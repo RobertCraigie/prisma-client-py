@@ -232,7 +232,7 @@ class Post(_PrismaModel):
         models.append(
             {
                 'name': name,
-                'fields': fields,
+                'fields': cast(Mapping[str, PartialModelField], fields),
                 'from_model': 'Post',
             }
         )
@@ -381,7 +381,7 @@ class User(_PrismaModel):
         models.append(
             {
                 'name': name,
-                'fields': fields,
+                'fields': cast(Mapping[str, PartialModelField], fields),
                 'from_model': 'User',
             }
         )
@@ -526,7 +526,7 @@ class M(_PrismaModel):
         models.append(
             {
                 'name': name,
-                'fields': fields,
+                'fields': cast(Mapping[str, PartialModelField], fields),
                 'from_model': 'M',
             }
         )
@@ -673,7 +673,7 @@ class N(_PrismaModel):
         models.append(
             {
                 'name': name,
-                'fields': fields,
+                'fields': cast(Mapping[str, PartialModelField], fields),
                 'from_model': 'N',
             }
         )
@@ -818,7 +818,7 @@ class OneOptional(_PrismaModel):
         models.append(
             {
                 'name': name,
-                'fields': fields,
+                'fields': cast(Mapping[str, PartialModelField], fields),
                 'from_model': 'OneOptional',
             }
         )
@@ -964,7 +964,7 @@ class ManyRequired(_PrismaModel):
         models.append(
             {
                 'name': name,
-                'fields': fields,
+                'fields': cast(Mapping[str, PartialModelField], fields),
                 'from_model': 'ManyRequired',
             }
         )
@@ -1083,7 +1083,7 @@ class Lists(_PrismaModel):
         models.append(
             {
                 'name': name,
-                'fields': fields,
+                'fields': cast(Mapping[str, PartialModelField], fields),
                 'from_model': 'Lists',
             }
         )
@@ -1201,7 +1201,7 @@ class A(_PrismaModel):
         models.append(
             {
                 'name': name,
-                'fields': fields,
+                'fields': cast(Mapping[str, PartialModelField], fields),
                 'from_model': 'A',
             }
         )
@@ -1315,7 +1315,7 @@ class B(_PrismaModel):
         models.append(
             {
                 'name': name,
-                'fields': fields,
+                'fields': cast(Mapping[str, PartialModelField], fields),
                 'from_model': 'B',
             }
         )
@@ -1430,7 +1430,7 @@ class C(_PrismaModel):
         models.append(
             {
                 'name': name,
-                'fields': fields,
+                'fields': cast(Mapping[str, PartialModelField], fields),
                 'from_model': 'C',
             }
         )
@@ -1545,7 +1545,7 @@ class D(_PrismaModel):
         models.append(
             {
                 'name': name,
-                'fields': fields,
+                'fields': cast(Mapping[str, PartialModelField], fields),
                 'from_model': 'D',
             }
         )
@@ -1658,7 +1658,7 @@ class E(_PrismaModel):
         models.append(
             {
                 'name': name,
-                'fields': fields,
+                'fields': cast(Mapping[str, PartialModelField], fields),
                 'from_model': 'E',
             }
         )
