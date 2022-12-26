@@ -200,7 +200,7 @@ class {{ model.name }}(_PrismaModel):
         models.append(
             {
                 'name': name,
-                'fields': fields,
+                'fields': cast(Mapping[str, PartialModelField], fields),
                 'from_model': '{{ model.name }}',
             }
         )
