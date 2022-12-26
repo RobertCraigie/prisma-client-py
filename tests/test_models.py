@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 import pytest
 from fastapi import FastAPI
 
@@ -13,17 +15,23 @@ def test_subclassing_warns() -> None:
     warning as it will cause unexpected behaviour when static type checking as
     action methods will be typed to return the base class, not the sub class.
     """
-    with pytest.warns(UnsupportedSubclassWarning):
+    # For some indiscernible reason, this code causes mypy to crash...
+    #
+    # The `exclude` option doesn't help us because of the way mypy works it still causes it to crash.
+    #
+    # I do not have the time nor the willpower to investigate why this happens so we resort to this solution.
+    if not TYPE_CHECKING:  # pragma: no branch
+        with pytest.warns(UnsupportedSubclassWarning):
 
-        class MyUser(User):
-            pass
+            class MyUser(User):
+                pass
 
-    class MyUser2(User, warn_subclass=False):
-        pass
+            class MyUser2(User, warn_subclass=False):
+                pass
 
-    # ensure other arguments can be passed to support multiple inheritance
-    class MyUser3(User, warn_subclass=False, foo=1):
-        pass
+            # ensure other arguments can be passed to support multiple inheritance
+            class MyUser3(User, warn_subclass=False, foo=1):
+                pass
 
 
 # NOTE: we only include a FastAPI test here as it is a small dependency
