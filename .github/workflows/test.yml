@@ -248,6 +248,14 @@ jobs:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases
 
+      # these tests ensure that unsupported features, e.g. enums on SQLite actually fail
+      - name: Run inverse tests
+        run: |
+          coverage run -m nox -s databases -- test-inverse --coverage --databases=${{ matrix.name }}
+        env:
+          ${{ matrix.env }}: ${{ matrix.url }}
+          COVERAGE_FILE: .cache/.coverage.databases
+
       - name: Upload coverage
         uses: actions/upload-artifact@v3
         with:
