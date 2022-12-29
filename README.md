@@ -34,7 +34,7 @@ Prisma Client Python can be used in _any_ Python backend application. This can b
 
 ![GIF showcasing Prisma Client Python usage](https://raw.githubusercontent.com/RobertCraigie/prisma-client-py/main/docs/showcase.gif)
 
-> _Note that the only langauge server that is known to support this form of autocompletion is Pylance / Pyright._
+> _Note that the only language server that is known to support this form of autocompletion is Pylance / Pyright._
 
 ## Why should you use Prisma Client Python?
 
