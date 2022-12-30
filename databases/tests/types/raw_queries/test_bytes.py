@@ -44,7 +44,7 @@ async def test_query_first(
     found = await client.query_first(queries.select, record.id)
     assert found is not None
     assert found['id'] == record.id
-    assert found['bytes'] == Base64.encode(b'foo')
+    assert found['bytes'] == 'Zm9v'
 
     model = await client.query_first(queries.select, record.id, model=Types)
     assert model is not None

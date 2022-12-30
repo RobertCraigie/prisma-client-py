@@ -45,7 +45,7 @@ async def test_query_first(
 
     found = await client.query_first(queries.select, Decimal(1))
     assert found['id'] == record.id
-    assert found['decimal_'] == Decimal(1)
+    assert found['decimal_'] == 1
 
     record2 = await client.types.create(
         {'decimal_': Decimal('1.24343336464224')}
@@ -55,7 +55,7 @@ async def test_query_first(
         queries.select, Decimal('1.24343336464224')
     )
     assert found['id'] == record2.id
-    assert found['decimal_'] == Decimal('1.24343336464224')
+    assert found['decimal_'] == 1.24343336464224
 
     model = await client.query_first(
         queries.select, Decimal('1.24343336464224'), model=Types

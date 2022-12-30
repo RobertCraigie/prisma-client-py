@@ -55,7 +55,7 @@ async def test_query_first(
 
     found = await client.query_first(queries.select, record.id)
     assert found['id'] == record.id
-    assert found['datetime_'] == datetime_
+    assert found['datetime_'] == '2022-12-25T12:01:34+00:00'
 
     model = await client.query_first(queries.select, record.id, model=Types)
     assert model is not None

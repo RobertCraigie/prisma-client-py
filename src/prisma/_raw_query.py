@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import json
-from decimal import Decimal
-from datetime import datetime
 from typing import (
     Any,
     Callable,
@@ -10,7 +8,6 @@ from typing import (
 )
 
 from ._types import BaseModelT
-from .fields import Base64
 
 
 # From: https://github.com/prisma/prisma/blob/main/packages/client/src/runtime/utils/deserializeRawResults.ts
@@ -171,36 +168,12 @@ def _deserialize_prisma_object(
     return new_obj
 
 
-def _deserialize_date(value: str, _for_model: bool) -> datetime:
-    # we currently cannot generate `datetime.date` types because of
-    # https://github.com/prisma/prisma/issues/10252
-    #
-    # so we keep using `datetime.datetime` here for consistency's sake
-    # and ensure that there is no `tzinfo`.
-    #
-    # note that this will not always be called for certain database providers as
-    # they always return Date values with time & timezone details included.
-    return datetime.fromisoformat(value).replace(tzinfo=None)
-
-
-def _deserialize_datetime(value: str, _for_model: bool) -> datetime:
-    return datetime.fromisoformat(value)
-
-
 def _deserialize_bigint(value: str, _for_model: bool) -> int:
     return int(value)
 
 
-def _deserialize_bytes(value: str, _for_model: bool) -> Base64:
-    return Base64.fromb64(value)
-
-
-def _deserialize_decimal(value: str, _for_model: bool) -> Decimal:
-    return Decimal(value)
-
-
-def _deserialize_time(value: str, _for_model: bool) -> datetime:
-    return datetime.fromisoformat(f'1970-01-01T${value}Z')
+def _deserialize_decimal(value: str, _for_model: bool) -> float:
+    return float(value)
 
 
 def _deserialize_array(value: list[Any], for_model: bool) -> list[Any]:
@@ -239,11 +212,7 @@ def _deserialize_json(value: object, for_model: bool) -> object:
 
 DESERIALIZERS: dict[str, Callable[[Any, bool], object]] = {
     'bigint': _deserialize_bigint,
-    'bytes': _deserialize_bytes,
     'decimal': _deserialize_decimal,
-    'datetime': _deserialize_datetime,
-    'date': _deserialize_date,
-    'time': _deserialize_time,
     'array': _deserialize_array,
     'json': _deserialize_json,
 }
