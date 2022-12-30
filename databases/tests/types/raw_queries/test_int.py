@@ -49,3 +49,26 @@ async def test_query_first(
     assert model is not None
     assert model.id == record.id
     assert model.integer == 12522
+
+
+@pytest.mark.asyncio
+async def test_raw_type(
+    client: Prisma,
+    database: SupportedDatabase,
+) -> None:
+    """The runtime type when rich deserializing is not used"""
+    queries = RAW_QUERIES[database]
+
+    record = await client.types.create(
+        {
+            'integer': 893,
+        }
+    )
+
+    found = await client.query_first(
+        queries.select,
+        893,
+        deserialize_types=False,
+    )
+    assert found['id'] == record.id
+    assert found['integer'] == 893
