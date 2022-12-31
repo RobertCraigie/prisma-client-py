@@ -430,10 +430,12 @@ class _{{ type }}ListFilterIsEmptyInput(TypedDict):
 class _{{ type }}ListUpdateSet(TypedDict):
     set: List[{{ python_type }}]
 
+
 {% if active_provider != 'cockroachdb' %}
 class _{{ type }}ListUpdatePush(TypedDict):
     push: List[{{ python_type }}]
 {% endif %}
+
 
 {{ type }}ListUpdate = Union[
     List[{{ python_type }}],
