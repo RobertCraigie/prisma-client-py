@@ -184,6 +184,7 @@ jobs:
     name: ${{ matrix.name }} ${{ matrix.version }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: MySQL
@@ -206,6 +207,7 @@ jobs:
             env: POSTGRESQL_URL
             url: postgresql://postgres:prisma@localhost:5438/postgres
 
+          # Temporarily disabled due to https://github.com/RobertCraigie/prisma-client-py/issues/636
           - name: CockroachDB
             version: '22'
             env: COCKROACHDB_URL
@@ -244,6 +246,14 @@ jobs:
       - name: Run tests
         run: |
           coverage run -m nox -s databases -- test --coverage --databases=${{ matrix.name }}
+        env:
+          ${{ matrix.env }}: ${{ matrix.url }}
+          COVERAGE_FILE: .cache/.coverage.databases
+
+      # these tests ensure that unsupported features, e.g. enums on SQLite actually fail
+      - name: Run inverse tests
+        run: |
+          coverage run -m nox -s databases -- test-inverse --coverage --databases=${{ matrix.name }}
         env:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases

@@ -17,10 +17,8 @@ from typing import (
     Optional,
     Iterable,
     Iterator,
+    Sequence,
     Callable,
-    ClassVar,
-    NoReturn,
-    TypeVar,
     Generic,
     Mapping,
     Tuple,
@@ -38,105 +36,49 @@ from typing_extensions import TypedDict, Literal
 
 LiteralString = str
 # -- template partials.py.jinja --
-from pydantic import validator
-from . import types, fields, enums, actions, models
-from .bases import PrismaModelT, PrismaModel as _PrismaModel
+from pydantic import BaseModel, Field, validator
+from . import types, models, fields, enums
 
 
-class PostWithAuthor(_PrismaModel):
+class PostWithAuthor(BaseModel):
     id: _str
     title: _str
     author: Optional[models.User]
 
-    __prisma_model__: ClassVar[str] = 'Post'
-
-    
-    # TODO: try out mypy on the latest version to see if this doesn't crash anymore
-    @classmethod
-    def prisma(cls) -> 'NoReturn':
-        raise RuntimeError(
-            'Querying has been disabled as it cannot be typed with mypy;\n'
-            'You must switch to using fully recursive types to enable querying from this model\n'
-            'https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/#querying-from-partial-models'
-        )
+    Config = models.Config
 
 
 
-
-class UserOnlyName(_PrismaModel):
+class UserOnlyName(BaseModel):
     name: _str
 
-    __prisma_model__: ClassVar[str] = 'User'
-
-    
-    # TODO: try out mypy on the latest version to see if this doesn't crash anymore
-    @classmethod
-    def prisma(cls) -> 'NoReturn':
-        raise RuntimeError(
-            'Querying has been disabled as it cannot be typed with mypy;\n'
-            'You must switch to using fully recursive types to enable querying from this model\n'
-            'https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/#querying-from-partial-models'
-        )
+    Config = models.Config
 
 
 
-
-class PostWithCustomAuthor(_PrismaModel):
+class PostWithCustomAuthor(BaseModel):
     id: _str
     title: _str
     author: Optional['partials.UserOnlyName']
 
-    __prisma_model__: ClassVar[str] = 'Post'
-
-    
-    # TODO: try out mypy on the latest version to see if this doesn't crash anymore
-    @classmethod
-    def prisma(cls) -> 'NoReturn':
-        raise RuntimeError(
-            'Querying has been disabled as it cannot be typed with mypy;\n'
-            'You must switch to using fully recursive types to enable querying from this model\n'
-            'https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/#querying-from-partial-models'
-        )
+    Config = models.Config
 
 
 
-
-class UserWithPosts(_PrismaModel):
+class UserWithPosts(BaseModel):
     name: _str
     posts: Optional[List['models.Post']]
 
-    __prisma_model__: ClassVar[str] = 'User'
-
-    
-    # TODO: try out mypy on the latest version to see if this doesn't crash anymore
-    @classmethod
-    def prisma(cls) -> 'NoReturn':
-        raise RuntimeError(
-            'Querying has been disabled as it cannot be typed with mypy;\n'
-            'You must switch to using fully recursive types to enable querying from this model\n'
-            'https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/#querying-from-partial-models'
-        )
+    Config = models.Config
 
 
 
-
-class PostWithNestedRelations(_PrismaModel):
+class PostWithNestedRelations(BaseModel):
     id: _str
     title: _str
     author: Optional['partials.UserWithPosts']
 
-    __prisma_model__: ClassVar[str] = 'Post'
-
-    
-    # TODO: try out mypy on the latest version to see if this doesn't crash anymore
-    @classmethod
-    def prisma(cls) -> 'NoReturn':
-        raise RuntimeError(
-            'Querying has been disabled as it cannot be typed with mypy;\n'
-            'You must switch to using fully recursive types to enable querying from this model\n'
-            'https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/#querying-from-partial-models'
-        )
-
+    Config = models.Config
 
 
 

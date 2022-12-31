@@ -47,7 +47,7 @@ model Post {
 }
 
 model Types {
-  id        Int  @id @default(autoincrement())
+  id        {{ config.autoincrement_id }}
   bool_     Boolean  @default(false)
   string    String   @default("")
   bytes     Bytes    @default("")

@@ -23,7 +23,6 @@ from typing import (
     Iterator,
     Dict,
     Type,
-    cast,
 )
 
 import click
@@ -627,27 +626,6 @@ class Model(BaseModel):
 
         return name
 
-    @root_validator(allow_reuse=True)
-    @classmethod
-    def validate_compound_constraints_are_unique(
-        cls, values: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        # protect against https://github.com/prisma/prisma/issues/10456
-        fields = cast(List['Field'], values.get('all_fields', []))
-        pkey = cast(Optional[PrimaryKey], values.get('compound_primary_key'))
-        if pkey is not None:
-            for field in fields:
-                if field.name == pkey.name:
-                    raise CompoundConstraintError(constraint=pkey)
-
-        indexes = cast(List[UniqueIndex], values.get('unique_indexes'))
-        for field in fields:
-            for constraint in indexes:
-                if field.name == constraint.name:
-                    raise CompoundConstraintError(constraint=constraint)
-
-        return values
-
     @property
     def related_models(self) -> Iterator['Model']:
         models = get_datamodel().models
@@ -672,6 +650,12 @@ class Model(BaseModel):
     def atomic_fields(self) -> Iterator['Field']:
         for field in self.all_fields:
             if field.type in ATOMIC_FIELD_TYPES:
+                yield field
+
+    @property
+    def required_array_fields(self) -> Iterator['Field']:
+        for field in self.all_fields:
+            if field.is_list and not field.relation_name and field.is_required:
                 yield field
 
     # TODO: support combined unique constraints
@@ -708,11 +692,6 @@ class Model(BaseModel):
 
     def sampler(self) -> Sampler:
         return self._sampler
-
-    def get_fields_of_type(self, typ: str) -> Iterator['Field']:
-        for field in self.scalar_fields:
-            if field.type == typ:
-                yield field
 
 
 class Constraint(BaseModel):
@@ -1067,7 +1046,6 @@ Datasource.update_forward_refs()
 
 from .schema import Schema
 from .errors import (
-    CompoundConstraintError,
     PartialTypeGeneratorError,
     TemplateError,
 )

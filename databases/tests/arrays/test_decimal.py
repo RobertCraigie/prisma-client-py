@@ -19,32 +19,6 @@ async def test_updating_decimal(client: Prisma) -> None:
 
     model = await client.lists.update(
         where={
-            'id': models[0].id,
-        },
-        data={
-            'decimals': {
-                'push': [Decimal('22.99'), Decimal('31')],
-            },
-        },
-    )
-    assert model is not None
-    assert model.decimals == [Decimal('22.99'), Decimal('31')]
-
-    model = await client.lists.update(
-        where={
-            'id': models[1].id,
-        },
-        data={
-            'decimals': {
-                'push': [Decimal('5')],
-            },
-        },
-    )
-    assert model is not None
-    assert model.decimals == [Decimal('22.99'), Decimal('30.01'), Decimal('5')]
-
-    model = await client.lists.update(
-        where={
             'id': models[1].id,
         },
         data={

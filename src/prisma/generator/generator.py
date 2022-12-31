@@ -14,6 +14,7 @@ from pydantic import BaseModel, ValidationError
 
 from . import jsonrpc
 from .jsonrpc import Manifest
+from .filters import quote
 from .models import DefaultData, PythonData
 from .types import PartialModel
 from .utils import (
@@ -50,6 +51,12 @@ DEFAULT_ENV = Environment(
     lstrip_blocks=True,
     loader=FileSystemLoader(Path(__file__).parent / 'templates'),
 )
+
+# the type: ignore is required because Jinja2 filters are not typed
+# and Pyright infers the type from the default builtin filters which
+# results in an overly restrictive type
+DEFAULT_ENV.filters['quote'] = quote  # pyright: ignore
+
 partial_models_ctx: ContextVar[List[PartialModel]] = ContextVar(
     'partial_models_ctx', default=[]
 )
