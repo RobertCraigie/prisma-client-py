@@ -2,8 +2,6 @@ import pytest
 from prisma import Prisma
 from prisma.enums import Role
 
-from ..utils import CURRENT_DATABASE
-
 
 @pytest.mark.asyncio
 async def test_filtering_enums(client: Prisma) -> None:
