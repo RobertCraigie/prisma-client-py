@@ -37,6 +37,7 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         autoincrement_id='BigInt @id @default(sequence())',
         unsupported_features={
             'json_arrays',
+            'array_push',
         },
     ),
     'sqlite': DatabaseConfig(
@@ -98,9 +99,10 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
         'types/raw_queries/test_json.py',
     ],
     'arrays': [*_fromdir('arrays'), *_fromdir('types/raw_queries/arrays')],
+    'array_push': _fromdir('arrays/push'),
+    'json_arrays': ['arrays/test_json.py', 'arrays/push/test_json.py'],
     # not yet implemented
     'date': [],
-    'json_arrays': ['arrays/test_json.py'],
     'create_many': ['test_create_many.py'],
     'raw_queries': ['test_raw_queries.py', *_fromdir('types/raw_queries')],
     'case_sensitivity': ['test_case_sensitivity.py'],

@@ -9,6 +9,7 @@ DatabaseFeature = Literal[
     'json',
     'date',
     'arrays',
+    'array_push',
     'json_arrays',
     'raw_queries',
     'create_many',
