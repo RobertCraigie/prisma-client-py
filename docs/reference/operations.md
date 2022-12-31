@@ -453,7 +453,7 @@ user = await db.user.find_first(
 #### Lists fields
 
 !!! warning
-    Scalar list fields are only supported on PostgreSQL and MongoDB
+    Scalar list fields are only supported on PostgreSQL, CockroachDB and MongoDB
 
 Every scalar type can also be defined as a list, for example:
 
@@ -672,7 +672,10 @@ user = await db.user.update(
 ### Updating List Fields
 
 !!! warning
-    Scalar list fields are only supported on PostgreSQL and MongoDB
+    Scalar list fields are only supported on PostgreSQL, CockroachDB and MongoDB
+
+!!! warning
+    The `push` operation is not supported on CockroachDB
 
 ```py
 user = await db.user.update(
