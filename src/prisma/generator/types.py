@@ -14,6 +14,7 @@ class PartialModelField(TypedDict):
     optional: bool
     type: str
     documentation: Optional[str]
+    is_relational: bool
 
 
 PartialModelFields = Dict[str, PartialModelField]

@@ -259,6 +259,7 @@ _{{ model.name }}_fields: Dict['types.{{ model.name }}Keys', PartialModelField] 
             'is_list': {{ field.is_list }},
             'optional': {{ field.is_optional }},
             'type': {{ field.python_type_as_string }},
+            'is_relational': {{ field.relation_name is not none }},
             'documentation': {% if field.documentation is none %}None{% else %}'''{{ field.documentation }}'''{% endif %},
         }),
         {% endfor %}

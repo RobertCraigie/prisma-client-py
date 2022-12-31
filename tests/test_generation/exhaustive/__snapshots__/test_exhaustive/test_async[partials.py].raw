@@ -71,14 +71,6 @@ class UserWithPosts(BaseModel):
 
     Config = models.Config
 
-    @validator('posts', pre=True, allow_reuse=True)
-    @classmethod
-    def _transform_required_posts_list(cls, value: object) -> object:
-        # See the `_transform_required_list_fields()` function in `prisma/models.py` for context
-        if value is None:
-            return []
-
-        return value
 
 
 class PostWithNestedRelations(BaseModel):
