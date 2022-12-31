@@ -200,60 +200,6 @@ def test_old_http_option(testdir: Testdir, http: str, new: str) -> None:
     assert f'interface = "{new}"' in stdout
 
 
-def test_compound_id_implicit_field_shaddowing(testdir: Testdir) -> None:
-    """Compound IDs cannot implicitly have the same name as an already defined field
-
-    https://github.com/prisma/prisma/issues/10456
-    """
-    schema = (
-        testdir.SCHEMA_HEADER
-        + """
-        model User {{
-            name         String
-            surname      String
-            name_surname String
-
-            @@id([name, surname])
-        }}
-    """
-    )
-    with pytest.raises(subprocess.CalledProcessError) as exc:
-        testdir.generate(schema=schema)
-
-    assert (
-        "The field `name_surname` clashes with the `@@id` attribute's name. "
-        'Please resolve the conflict by providing a custom id name: `@@id([...], name: "custom_name")`'
-    ) in str(exc.value.output, 'utf-8')
-
-
-def test_compound_unique_constraint_implicit_field_shaddowing(
-    testdir: Testdir,
-) -> None:
-    """Compound unique constraints cannot implicitly have the same name as an already defined field
-
-    https://github.com/prisma/prisma/issues/10456
-    """
-    schema = (
-        testdir.SCHEMA_HEADER
-        + """
-        model User {{
-            name         String
-            surname      String
-            name_surname String
-
-            @@unique([name, surname])
-        }}
-    """
-    )
-    with pytest.raises(subprocess.CalledProcessError) as exc:
-        testdir.generate(schema=schema)
-
-    assert (
-        'The field `name_surname` clashes with the `@@unique` name. '
-        'Please resolve the conflict by providing a custom id name: `@@unique([...], name: "custom_name")`'
-    ) in str(exc.value.output, 'utf-8')
-
-
 def test_decimal_type_experimental(testdir: Testdir) -> None:
     """The Decimal type requires a config flag to be set"""
     schema = (
