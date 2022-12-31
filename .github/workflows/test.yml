@@ -21,6 +21,7 @@ jobs:
     name: test
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: [3.7, 3.8, 3.9, "3.10", "3.11.0-rc.1"]
@@ -36,12 +37,12 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install codecov==2.1.11 .[dev]
+          pip install . -r pipelines/requirements/ci.txt
 
       - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('pipelines/requirements/*.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -69,15 +70,11 @@ jobs:
         env:
           TARGET_PYTHON: ${{ matrix.python-version }}
 
-      - name: Combine coverage
-        run: |
-          nox -s report
-
       - name: Upload coverage
-        run: |
-          codecov --file coverage.xml
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-data
+          path: ".cache/.coverage.*"
 
   typesafety:
     name: typesafety
@@ -98,12 +95,12 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install .[dev]
+          pip install . -r pipelines/requirements/ci.txt
 
       - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('pipelines/requirements/*.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -130,16 +127,16 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -U .[dev]
+          pip install -U . -r pipelines/requirements/ci.txt
 
       - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('pipelines/requirements/*.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # TODO: add codecov for our mypy plugin
+      # TODO: add coverage for our mypy plugin
       - name: Check linters
         run: |
           nox -s lint
@@ -162,12 +159,12 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -U .[dev]
+          pip install -U . -r pipelines/requirements/ci.txt
 
       - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('pipelines/requirements/*.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -178,7 +175,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mypy
 
-      # TODO: add codecov for our mypy plugin
+      # TODO: figure out how to get coverage for the mypy plugin
       - name: Check Mypy
         run: |
           nox -s mypy
@@ -187,6 +184,7 @@ jobs:
     name: ${{ matrix.name }} ${{ matrix.version }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: MySQL
@@ -209,6 +207,17 @@ jobs:
             env: POSTGRESQL_URL
             url: postgresql://postgres:prisma@localhost:5438/postgres
 
+          # Temporarily disabled due to https://github.com/RobertCraigie/prisma-client-py/issues/636
+          - name: CockroachDB
+            version: '22'
+            env: COCKROACHDB_URL
+            url: postgresql://prisma@localhost:26257/postgres
+
+          - name: MariaDB
+            version: '10.0'
+            env: MARIADB_URL
+            url: mysql://root:prisma@localhost:3308/prisma?connect_timeout=20&socket_timeout=60
+
     steps:
       - uses: actions/checkout@v3
 
@@ -220,12 +229,12 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -U -r pipelines/requirements/ci.txt .[dev]
+          pip install -U . -r pipelines/requirements/ci.txt
 
       - uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('pipelines/requirements/*.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -241,15 +250,63 @@ jobs:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases
 
-      - name: Combine coverage
+      # these tests ensure that unsupported features, e.g. enums on SQLite actually fail
+      - name: Run inverse tests
         run: |
-          nox -s report
+          coverage run -m nox -s databases -- test-inverse --coverage --databases=${{ matrix.name }}
+        env:
+          ${{ matrix.env }}: ${{ matrix.url }}
+          COVERAGE_FILE: .cache/.coverage.databases
 
       - name: Upload coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-data
+          path: ".cache/.coverage*"
+
+  coverage:
+    name: coverage
+    runs-on: ubuntu-latest
+    needs: [databases, test]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
         run: |
-          codecov --file coverage.xml
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          python -m pip install --upgrade pip
+          pip install -U . -r pipelines/requirements/ci.txt
+
+      - name: Download coverage data.
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-data
+          path: .cache/
+
+      - name: Check coverage requirements
+        run: |
+          nox -s report-strict
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: htmlcov
+          path: htmlcov
+
+      - name: Update static coverage
+        if: (success() || failure()) && github.ref == 'refs/heads/main' && github.repository == 'RobertCraigie/prisma-client-py'
+        run: |
+          nox -s push-coverage
+
+      # delete the temporary coverage artifacts to save on unnecessary cloud storage usage
+      - uses: geekyeggo/delete-artifact@v2
+        with:
+          name: coverage-data
 
   mongodb:
     name: MongoDB
@@ -317,21 +374,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        docker-platform: [linux/amd64]
-        # TODO: Uncomment this to add testing support for arm64 and delete
-        # the above
-        # docker-platform: ["linux/amd64", "linux/arm64"]
-        # TODO: Uncomment this later, Go-based CLI does not run on Alpine
-        # https://github.com/prisma/prisma-client-go/issues/357
-        # python-os-distro: [slim-bullseye, alpine]
-        python-os-distro: [slim-bullseye]
+        docker-platform: [linux/amd64, linux/arm64]
+        python-os-distro: [slim-bullseye, alpine]
+        exclude:
+          # Dockerfile is currently broken for alpine / arm64
+          # https://github.com/RobertCraigie/prisma-client-py/issues/581
+          - docker-platform: linux/arm64
+            python-os-distro: alpine
     steps:
       - uses: actions/checkout@v3
+
       # https://github.com/docker/build-push-action/
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+
       - name: Docker Build
         uses: docker/build-push-action@v3
         # https://github.com/docker/build-push-action/#inputs

@@ -1,15 +1,18 @@
 from __future__ import annotations
 
 import os
+import re
 import json
 import shlex
 import shutil
+import contextlib
 from pathlib import Path
 from copy import deepcopy
 from contextvars import ContextVar, copy_context
 from typing import (
     Iterable,
     Optional,
+    Iterator,
     cast,
 )
 
@@ -18,10 +21,15 @@ import yaml
 import click
 import rtoml
 import typer
+from nox.command import CommandFailed
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from lib.utils import flatten, escape_path
-from pipelines.utils import setup_coverage, get_pkg_location
+from pipelines.utils import (
+    setup_coverage,
+    get_pkg_location,
+    maybe_install_nodejs_bin,
+)
 from prisma._compat import cached_property
 
 from .utils import DatabaseConfig
@@ -55,6 +63,9 @@ cli = typer.Typer(
 def test(
     *,
     databases: list[str] = SUPPORTED_DATABASES,
+    exclude_databases: list[
+        str
+    ] = [],  # pyright: ignore[reportCallInDefaultInitializer]
     inplace: bool = False,
     pytest_args: Optional[str] = None,
     lint: bool = True,
@@ -63,34 +74,32 @@ def test(
 ) -> None:
     """Run unit tests and Pyright"""
     session = session_ctx.get()
-    databases = validate_databases(databases)
+
+    exclude = set(validate_databases(exclude_databases))
+    databases = [
+        database
+        for database in validate_databases(databases)
+        if database not in exclude
+    ]
 
     with session.chdir(DATABASES_DIR):
-        # setup env
-        session.install('-r', 'requirements.txt')
-        if inplace:
-            # useful for updating the generated code so that Pylance picks it up
-            session.install('-U', '-e', '..')
-        else:
-            session.install('-U', '..')
-
-        session.run('python', '-m', 'prisma', 'py', 'version')
+        _setup_test_env(session, inplace=inplace)
 
         for database in databases:
             print(title(CONFIG_MAPPING[database].name))
 
             # point coverage to store data in a database specific location
             # as to not overwrite any existing data from other database tests
-            if coverage:
+            if coverage:  # pragma: no branch
                 setup_coverage(session, identifier=database)
 
             runner = Runner(database=database, track_coverage=coverage)
             runner.setup()
 
-            if test:
+            if test:  # pragma: no branch
                 runner.test(pytest_args=pytest_args)
 
-            if lint:
+            if lint:  # pragma: no branch
                 runner.lint()
 
 
@@ -99,6 +108,127 @@ def serve(database: str, *, version: Optional[str] = None) -> None:
     """Start a database server using docker-compose"""
     database = validate_database(database)
     start_database(database, version=version, session=session_ctx.get())
+
+
+@cli.command(name='test-inverse')
+def test_inverse(
+    *,
+    databases: list[str] = SUPPORTED_DATABASES,
+    coverage: bool = False,
+    inplace: bool = False,
+    pytest_args: Optional[str] = None,
+) -> None:
+    """Ensure unsupported features actually result in either:
+
+    - Prisma Schema validation failing
+    - Our unit tests & linters fail
+    """
+    session = session_ctx.get()
+    databases = validate_databases(databases)
+
+    with session.chdir(DATABASES_DIR):
+        _setup_test_env(session, inplace=inplace)
+
+        for database in databases:
+            config = CONFIG_MAPPING[database]
+            print(title(config.name))
+
+            if not config.unsupported_features:
+                print(f'There are no unsupported features for {database}.')
+                continue
+
+            # point coverage to store data in a database specific location
+            # as to not overwrite any existing data from other database tests
+            if coverage:  # pragma: no branch
+                setup_coverage(session, identifier=database)
+
+            # TODO: support for tesing a given list of unsupported features
+            for feature in config.unsupported_features:
+                print(title(f'Testing {feature} feature'))
+
+                new_config = config.copy(deep=True)
+                new_config.unsupported_features.remove(feature)
+
+                runner = Runner(
+                    database=database,
+                    config=new_config,
+                    track_coverage=coverage,
+                )
+
+                with raises_command({1}) as result:
+                    runner.setup()
+
+                if result.did_raise:
+                    print(
+                        'Test setup failed (expectedly); Skipping pytest & pyright checks'
+                    )
+                    continue
+
+                with raises_command({1}):
+                    runner.test(pytest_args=pytest_args)
+
+                with raises_command({1}):
+                    runner.lint()
+
+            click.echo(
+                click.style(
+                    f'✅ All tests successfully failed for {database}',
+                    fg='green',
+                )
+            )
+
+
+def _setup_test_env(session: nox.Session, *, inplace: bool) -> None:
+    session.install('-r', 'requirements.txt')
+    maybe_install_nodejs_bin(session)
+
+    if inplace:  # pragma: no cover
+        # useful for updating the generated code so that Pylance picks it up
+        session.install('-U', '-e', '..')
+    else:
+        session.install('-U', '..')
+
+    session.run('python', '-m', 'prisma', 'py', 'version')
+
+
+class RaisesCommandResult:
+    did_raise: bool
+
+    def __init__(self) -> None:
+        self.did_raise = False
+
+
+# matches nox's CommandFailed exception message
+COMMAND_FAILED_RE = re.compile(r'Returned code (\d+)')
+
+
+@contextlib.contextmanager
+def raises_command(
+    allowed_exit_codes: set[int],
+) -> Iterator[RaisesCommandResult]:
+    """Context manager that intercepts and ignores `nox.CommandFailed` exceptions
+    that are raised due to known exit codes. All other exceptions are passed through.
+    """
+    result = RaisesCommandResult()
+
+    try:
+        yield result
+    except CommandFailed as exc:
+        match = COMMAND_FAILED_RE.match(exc.reason or '')
+        if match is None:
+            raise RuntimeError(
+                f'Could not extract exit code from exception {exc}'
+            )
+
+        exit_code = int(match.group(1))
+        if exit_code not in allowed_exit_codes:
+            raise RuntimeError(
+                f'Unknown code: {exit_code}; Something may have gone wrong '
+                + 'or this exit code must be added to the list of known exit codes; '
+                + f'Allowed exit codes: {allowed_exit_codes}'
+            )
+
+        result.did_raise = True
 
 
 class Runner:
@@ -113,16 +243,17 @@ class Runner:
         *,
         database: SupportedDatabase,
         track_coverage: bool,
+        config: DatabaseConfig | None = None,
     ) -> None:
         self.database = database
         self.session = session_ctx.get()
         self.track_coverage = track_coverage
-        self.config = CONFIG_MAPPING[database]
+        self.config = config or CONFIG_MAPPING[database]
         self.cache_dir = ROOT_DIR / '.tests_cache' / 'databases' / database
 
     def _create_cache_dir(self) -> None:
         cache_dir = self.cache_dir
-        if cache_dir.exists():
+        if cache_dir.exists():  # pragma: no cover
             shutil.rmtree(cache_dir)
 
         cache_dir.mkdir(parents=True, exist_ok=True)
@@ -187,7 +318,7 @@ class Runner:
         )
 
         args = []
-        if pytest_args is not None:
+        if pytest_args is not None:  # pragma: no cover
             args = shlex.split(pytest_args)
 
         # TODO: use PYTEST_ADDOPTS instead
@@ -258,7 +389,7 @@ def validate_database(database: str) -> SupportedDatabase:
     # We convert the input to lowercase so that we don't have to define
     # two separate names in the CI matrix.
     database = database.lower()
-    if database not in SUPPORTED_DATABASES:
+    if database not in SUPPORTED_DATABASES:  # pragma: no cover
         raise ValueError(f'Unknown database: {database}')
 
     return cast(SupportedDatabase, database)
@@ -304,7 +435,3 @@ def entrypoint(session: nox.Session) -> None:
     # copy the current context so that the session object is not leaked
     ctx = copy_context()
     return ctx.run(wrapper)
-
-
-if __name__ == '__main__':
-    cli()

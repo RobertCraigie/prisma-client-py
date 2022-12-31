@@ -1,8 +1,10 @@
 # TODO: merge with other dev requirements
-pytest==6.2.4
-pytest-asyncio==0.18.3
 click==8.1.3
 coverage==6.5.0
-syrupy==3.0.5
+syrupy==3.0.6
 dirty-equals==0.5.0
-pyright==1.1.279
+distro
+
+-r ../pipelines/requirements/deps/pyright.txt
+-r ../pipelines/requirements/deps/pytest.txt
+-r ../pipelines/requirements/deps/pytest-asyncio.txt

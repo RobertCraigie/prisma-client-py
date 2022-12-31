@@ -1,0 +1,1 @@
+git+https://github.com/RobertCraigie/coverage-badge@feat/pass-ignore-errors

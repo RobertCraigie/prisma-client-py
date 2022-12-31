@@ -16,32 +16,6 @@ async def test_updating_boolean(client: Prisma) -> None:
 
     model = await client.lists.update(
         where={
-            'id': models[0].id,
-        },
-        data={
-            'bools': {
-                'push': [True, False, True],
-            },
-        },
-    )
-    assert model is not None
-    assert model.bools == [True, False, True]
-
-    model = await client.lists.update(
-        where={
-            'id': models[1].id,
-        },
-        data={
-            'bools': {
-                'push': [False],
-            },
-        },
-    )
-    assert model is not None
-    assert model.bools == [False, True, False]
-
-    model = await client.lists.update(
-        where={
             'id': models[1].id,
         },
         data={

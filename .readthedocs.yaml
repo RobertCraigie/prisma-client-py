@@ -11,4 +11,4 @@ mkdocs:
 python:
    version: "3.8"
    install:
-   - requirements: requirements/docs.txt
+   - requirements: pipelines/requirements/docs.txt

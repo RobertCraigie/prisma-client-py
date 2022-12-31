@@ -22,6 +22,14 @@ def main() -> None:
             'Could not find showcase GIF in README, has it been updated?'
         )
 
+    content, n = re.subn(
+        r'(<img src="https:\/\/img\.shields\.io\/static\/v1\?label=prisma&message)=(\d?.)+(&color=blue&logo=prisma" alt="Supported Prisma version is) (\d?.)+">',
+        r'\1=' + config.prisma_version + r'\3 ' + config.prisma_version + '">',
+        content,
+    )
+    assert n > 0, "Didn't make any replacements"
+    ROOTDIR.joinpath('README.md').write_text(content)
+
     content = re.sub(r'\(docs(\/.*)\.md(#.*)?\)', r'(\1/\2)', content)
     content = content.replace(SHOWCASE_GIF, './showcase.gif')
     ROOTDIR.joinpath('docs/index.md').write_text(content)
@@ -46,21 +54,13 @@ def main() -> None:
         r'\1' + '`' + config.prisma_version + '`',
         content,
     )
+
     content = re.sub(
-        r'(`PRISMA_ENGINE_VERSION` \| )`(.*)`',
-        r'\1' + '`' + config.engine_version + '`',
+        r'(`PRISMA_EXPECTED_ENGINE_VERSION` \| )`(.*)`',
+        r'\1' + '`' + config.expected_engine_version + '`',
         content,
     )
-    content = re.sub(
-        r'(`PRISMA_CLI_URL`     \| )`(.*)`',
-        r'\1' + '`' + config.prisma_url + '`',
-        content,
-    )
-    content = re.sub(
-        r'(`PRISMA_ENGINE_URL`  \| )`(.*)`',
-        r'\1' + '`' + config.engine_url + '`',
-        content,
-    )
+
     config_doc.write_text(content)
 
 

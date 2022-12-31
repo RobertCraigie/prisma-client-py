@@ -2,6 +2,15 @@
 version: "3"
 services:
 
+  cockroachdb-22:
+    image: prismagraphql/cockroachdb-custom:22.1.0
+    restart: always
+    command: start-single-node --insecure
+    ports:
+      - "26257:26257"
+    networks:
+      - databases
+
   mysql-8-0:
     image: mysql:8.0.28
     command: mysqld
@@ -17,6 +26,19 @@ services:
     networks:
       - databases
     tmpfs: /var/lib/mysql8
+
+  mariadb-10-0:
+    image: mariadb:10
+    restart: always
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: prisma
+      MYSQL_DATABASE: prisma
+    ports:
+      - "3308:3306"
+    networks:
+      - databases
+    tmpfs: /var/lib/mariadb
 
   postgresql-10:
     image: postgres:10

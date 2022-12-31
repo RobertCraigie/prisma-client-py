@@ -5,7 +5,7 @@ from typing import List, cast
 from typing_extensions import get_args
 
 from lib import pyright
-from ._types import SupportedDatabase
+from ._types import SupportedDatabase, DatabaseMapping
 from .utils import DatabaseConfig, DatabaseFeature
 
 
@@ -18,13 +18,30 @@ def _fromdir(path: str) -> list[str]:
 
 
 # databases
-CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
+CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
     'postgresql': DatabaseConfig(
         id='postgresql',
         name='PostgreSQL',
         env_var='POSTGRESQL_URL',
         bools_are_ints=False,
         unsupported_features=set(),
+        default_date_func='CURRENT_DATE',
+        id_declarations={
+            'base': '@id',
+            'cuid': '@id @default(cuid())',
+            'autoincrement': '@id @default(autoincrement())',
+        },
+    ),
+    'cockroachdb': DatabaseConfig(
+        id='cockroachdb',
+        name='CockroachDB',
+        env_var='COCKROACHDB_URL',
+        bools_are_ints=False,
+        default_date_func='CURRENT_DATE',
+        unsupported_features={
+            'json_arrays',
+            'array_push',
+        },
         id_declarations={
             'base': '@id',
             'cuid': '@id @default(cuid())',
@@ -36,9 +53,11 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         name='SQLite',
         env_var='SQLITE_URL',
         bools_are_ints=False,
+        default_date_func='',
         unsupported_features={
             'enum',
             'json',
+            'date',
             'arrays',
             'create_many',
             'case_sensitivity',
@@ -54,6 +73,23 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
         name='MySQL',
         env_var='MYSQL_URL',
         bools_are_ints=True,
+        default_date_func='(CURRENT_DATE)',
+        unsupported_features={
+            'arrays',
+            'case_sensitivity',
+        },
+        id_declarations={
+            'base': '@id',
+            'cuid': '@id @default(cuid())',
+            'autoincrement': '@id @default(autoincrement())',
+        },
+    ),
+    'mariadb': DatabaseConfig(
+        id='mysql',
+        name='MariaDB',
+        env_var='MARIADB_URL',
+        bools_are_ints=True,
+        default_date_func='CURRENT_DATE',
         unsupported_features={
             'arrays',
             'case_sensitivity',
@@ -79,6 +115,8 @@ CONFIG_MAPPING: dict[SupportedDatabase, DatabaseConfig] = {
             'autoincrement': '@id @map("_id")',
             'base': '@id @map("_id")',
         },
+        # TODO
+        default_date_func='',
     ),
 }
 SUPPORTED_DATABASES = cast(
@@ -92,17 +130,19 @@ DATABASES_DIR = Path(__file__).parent
 # database features
 TESTS_DIR = DATABASES_DIR / 'tests'
 FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
-    # TODO: do not require the "features" split?
-    'enum': [
-        'test_enum.py',
-        'arrays/test_enum.py',
-        'composite_keys/test_enum.py',
+    'enum': ['test_enum.py', 'test_arrays/test_enum.py'],
+    'json': [
+        'types/test_json.py',
+        'test_arrays/test_json.py',
+        'types/raw_queries/test_json.py',
     ],
-    'json': ['types/test_json.py', 'arrays/test_json.py'],
-    'decimal': ['types/test_decimal.py', 'arrays/test_decimal.py'],
-    'arrays': _fromdir('arrays'),
+    'arrays': [*_fromdir('arrays'), *_fromdir('types/raw_queries/arrays')],
+    'array_push': _fromdir('arrays/push'),
+    'json_arrays': ['arrays/test_json.py', 'arrays/push/test_json.py'],
+    # not yet implemented
+    'date': [],
     'create_many': ['test_create_many.py'],
-    'sql_raw_queries': ['test_raw_queries.py', 'models/test_raw_queries.py'],
+    'sql_raw_queries': ['test_raw_queries.py', *_fromdir('types/raw_queries')],
     'case_sensitivity': ['test_case_sensitivity.py'],
     'composite_keys': _fromdir('composite_keys'),
 }

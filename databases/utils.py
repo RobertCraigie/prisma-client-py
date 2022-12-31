@@ -7,9 +7,11 @@ from pydantic import BaseModel
 DatabaseFeature = Literal[
     'enum',
     'json',
+    'date',
     'arrays',
     'decimal',
-    'raw_queries',
+    'array_push',
+    'json_arrays',
     'create_many',
     'composite_keys',
     'sql_raw_queries',
@@ -31,6 +33,7 @@ class DatabaseConfig(BaseModel):
     bools_are_ints: bool
     id_declarations: IDDeclarations
     unsupported_features: Set[DatabaseFeature]
+    default_date_func: str
 
     # TODO: run this under coverage
     def supports_feature(

@@ -2,6 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from typing import TypeVar
+from pathlib import Path
 
 
 T = TypeVar('T')
@@ -16,3 +17,14 @@ def escape_path(path: str | Path) -> str:
         path = str(path.absolute())
 
     return path.replace('\\', '\\\\')
+
+
+def maybe_decode(data: str | bytes) -> str:
+    """Helper for decoding `bytes`.
+
+    - Given a `bytes` object, return it decoded using utf8.
+    - Given a `str` object, return it as is.
+    """
+    if isinstance(data, bytes):
+        return data.decode('utf8')
+    return data

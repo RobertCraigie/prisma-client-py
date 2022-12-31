@@ -29,10 +29,8 @@ if not version:
 
 
 extras = {
-    'dev': requirements('dev.txt'),
-    'docs': requirements('docs.txt'),
+    'node': requirements('node.txt'),
 }
-
 
 setup(
     name='prisma',

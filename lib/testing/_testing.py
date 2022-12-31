@@ -11,18 +11,18 @@ from typing import (
 )
 from datetime import datetime, timezone
 
-# TODO: bump version and remove this
-import pytest_asyncio  # type: ignore
+import pytest_asyncio
 
 
 if TYPE_CHECKING:
     from _pytest.config import Config
-    from _pytest.fixtures import FixtureFunctionMarker, _Scope
+    from _pytest.scope import _ScopeName
+    from _pytest.fixtures import FixtureFunctionMarker
 
 
-# TODO: is this still necessary?
+# TODO: report pyright error to pytest-asyncio
 def async_fixture(
-    scope: Union[_Scope, Callable[[str, Config], _Scope]] = 'function',
+    scope: Union[_ScopeName, Callable[[str, Config], _ScopeName]] = 'function',
     params: Optional[Iterable[object]] = None,
     autouse: bool = False,
     ids: Optional[

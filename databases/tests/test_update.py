@@ -4,6 +4,7 @@ from prisma import Prisma
 from prisma.models import IntegerID, User
 
 from lib.testing import async_fixture
+from .utils import CURRENT_DATABASE
 
 
 @async_fixture(name='user_id')
@@ -194,6 +195,10 @@ async def test_update_id_field() -> None:
 
 @pytest.mark.prisma
 @pytest.mark.asyncio
+@pytest.mark.skipif(
+    CURRENT_DATABASE == 'cockroachdb',
+    reason='https://github.com/prisma/prisma/issues/16612',
+)
 async def test_update_id_field_atomic() -> None:
     """Setting an ID field atomically"""
     record = await IntegerID.prisma().create(

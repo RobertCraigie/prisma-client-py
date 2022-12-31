@@ -16,36 +16,6 @@ async def test_updating_bigints(client: Prisma) -> None:
 
     model = await client.lists.update(
         where={
-            'id': models[0].id,
-        },
-        data={
-            'bigints': {
-                'push': [538075535121842179],
-            },
-        },
-    )
-    assert model is not None
-    assert model.bigints == [538075535121842179]
-
-    model = await client.lists.update(
-        where={
-            'id': models[1].id,
-        },
-        data={
-            'bigints': {
-                'push': [186214420957888512],
-            },
-        },
-    )
-    assert model is not None
-    assert model.bigints == [
-        539506179039297536,
-        281454500584095754,
-        186214420957888512,
-    ]
-
-    model = await client.lists.update(
-        where={
             'id': models[1].id,
         },
         data={

@@ -11,7 +11,7 @@ async def main(client: Prisma) -> None:
     users[0].foo  # E: Cannot access member "foo" for type "User"
 
     result = await client.query_raw('')
-    reveal_type(result)  # T: Any
+    reveal_type(result)  # T: List[dict[str, Any]]
 
     query = 'safe StringLiteral query'
     await client.query_raw(query, model=User)
