@@ -16,7 +16,7 @@
     <a href="https://robertcraigie.github.io/prisma-client-py/htmlcov/index.html">
         <img src="https://raw.githubusercontent.com/RobertCraigie/prisma-client-py/static/coverage/coverage.svg" alt="Code coverage report">
     </a>
-    <img src="https://img.shields.io/github/workflow/status/RobertCraigie/prisma-client-py/Test/main?label=tests" alt="GitHub Workflow Status (main)">
+    <img src="https://img.shields.io/github/actions/workflow/status/RobertCraigie/prisma-client-py/test.yml?branch=main&label=tests" alt="GitHub Workflow Status (main)">
     <img src="https://img.shields.io/pypi/pyversions/prisma" alt="Supported python versions">
     <img src="https://img.shields.io/pypi/v/prisma" alt="Latest package version">
     </div>
