@@ -36,52 +36,6 @@ type PrismaType =
 
 
 @overload
-def parse_raw_results(
-    raw_list: list[dict[str, Any]],
-) -> list[dict[str, Any]]:
-    ...
-
-
-@overload
-def parse_raw_results(
-    raw_list: list[dict[str, Any]],
-    *,
-    model: type[BaseModelT],
-) -> list[BaseModelT]:
-    ...
-
-
-def parse_raw_results(
-    raw_list: list[dict[str, Any]],
-    *,
-    model: type[BaseModelT] | None = None,
-) -> list[dict[str, Any]] | list[BaseModelT]:
-    """Like `deserialize_raw_results()` but does not do any parsing to rich Python types."""
-    if model:
-        return [
-            model.parse_obj(_parse_prisma_obj(entry)) for entry in raw_list
-        ]
-
-    return [_parse_prisma_obj(entry) for entry in raw_list]
-
-
-def _parse_prisma_obj(raw_obj: dict[str, Any]) -> dict[str, Any]:
-    return {key: _parse_value(value) for key, value in raw_obj.items()}
-
-
-def _parse_value(raw_obj: dict[str, Any]) -> Any:
-    value = raw_obj['prisma__value']
-    prisma_type = raw_obj['prisma__type']
-
-    # we need special handling for array types as they are the only types
-    # that will contain the `prisma__type` wrappers
-    if prisma_type == 'array':
-        return [_parse_value(entry) for entry in value]
-
-    return value
-
-
-@overload
 def deserialize_raw_results(
     raw_list: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:

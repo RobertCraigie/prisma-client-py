@@ -61,32 +61,3 @@ async def test_query_first(
     assert model is not None
     assert model.id == record.id
     assert model.datetime_ == datetime_
-
-
-@pytest.mark.asyncio
-async def test_raw_type(
-    client: Prisma,
-    database: SupportedDatabase,
-) -> None:
-    """The runtime type when rich deserializing is not used"""
-    queries = RAW_QUERIES[database]
-
-    datetime_input = datetime.datetime(
-        year=2022,
-        month=12,
-        day=25,
-        hour=12,
-        minute=1,
-        second=34,
-        tzinfo=datetime.timezone.utc,
-    )
-
-    record = await client.types.create({'datetime_': datetime_input})
-
-    found = await client.query_first(
-        queries.select,
-        record.id,
-        deserialize_types=False,
-    )
-    assert found['id'] == record.id
-    assert found['datetime_'] == '2022-12-25T12:01:34+00:00'
