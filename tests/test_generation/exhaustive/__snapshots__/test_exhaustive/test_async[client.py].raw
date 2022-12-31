@@ -18,6 +18,7 @@ from typing import (
     Optional,
     Iterable,
     Iterator,
+    Sequence,
     Callable,
     Generic,
     Mapping,
@@ -314,10 +315,12 @@ class Prisma:
         otherwise a raw dictionary will be returned.
 
         By default the database types are deserialized to rich Python types to normalize the shape between
-        databases and to improve the structure of the data, e.g. datetime fields will be converted to `datetime.datetime` objects.
+        databases and to improve the structure of the data, e.g. Decimal fields will be converted to `float` objects.
 
         If the rich deserialzing does not work for your use case or you would rather control deserializing yourself you can set the `deserialize_types` argument to `False`.
+        This will set *most* fields to `str`.
         """
+        results: Sequence[Union[BaseModelT, dict[str, Any]]]
         if model is not None:
             results = await self.query_raw(query, *args, model=model, deserialize_types=deserialize_types)
         else:
@@ -360,9 +363,10 @@ class Prisma:
         otherwise results will be raw dictionaries.
 
         By default the database types are deserialized to rich Python types to normalize the shape between
-        databases and to improve the structure of the data, e.g. datetime fields will be converted to `datetime.datetime` objects.
+        databases and to improve the structure of the data, e.g. Decimal fields will be converted to `float` objects.
 
         If the rich deserialzing does not work for your use case or you would rather control deserializing yourself you can set the `deserialize_types` argument to `False`.
+        This will set *most* fields to `str`.
         """
         resp = await self._execute(
             operation='mutation',
