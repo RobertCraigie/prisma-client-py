@@ -1,16 +1,10 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING
 from pydantic import BaseModel
 
 from .._types import DatabaseMapping
-
-if TYPE_CHECKING:
-    from typing_extensions import LiteralString
-else:
-    # for pydantic support
-    LiteralString = str
+from .._compat import LiteralString
 
 
 CURRENT_DATABASE = os.environ['PRISMA_DATABASE']
