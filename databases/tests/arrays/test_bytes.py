@@ -17,36 +17,6 @@ async def test_updating_bytes(client: Prisma) -> None:
 
     model = await client.lists.update(
         where={
-            'id': models[0].id,
-        },
-        data={
-            'bytes': {
-                'push': [Base64.encode(b'a'), Base64.encode(b'b')],
-            },
-        },
-    )
-    assert model is not None
-    assert model.bytes == [Base64.encode(b'a'), Base64.encode(b'b')]
-
-    model = await client.lists.update(
-        where={
-            'id': models[1].id,
-        },
-        data={
-            'bytes': {
-                'push': [Base64.encode(b'baz')],
-            },
-        },
-    )
-    assert model is not None
-    assert model.bytes == [
-        Base64.encode(b'foo'),
-        Base64.encode(b'bar'),
-        Base64.encode(b'baz'),
-    ]
-
-    model = await client.lists.update(
-        where={
             'id': models[1].id,
         },
         data={

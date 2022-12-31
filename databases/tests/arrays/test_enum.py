@@ -100,10 +100,6 @@ async def test_filtering_enums(client: Prisma) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.skipif(
-    CURRENT_DATABASE == 'cockroachdb',
-    reason='https://github.com/prisma/prisma/issues/16511',
-)
 async def test_updating_enum(client: Prisma) -> None:
     """Updating a Role[] enum value"""
     models = [
@@ -114,32 +110,6 @@ async def test_updating_enum(client: Prisma) -> None:
             },
         ),
     ]
-
-    model = await client.lists.update(
-        where={
-            'id': models[0].id,
-        },
-        data={
-            'roles': {
-                'push': [Role.ADMIN, Role.USER],
-            },
-        },
-    )
-    assert model is not None
-    assert model.roles == [Role.ADMIN, Role.USER]
-
-    model = await client.lists.update(
-        where={
-            'id': models[1].id,
-        },
-        data={
-            'roles': {
-                'push': [Role.EDITOR],
-            },
-        },
-    )
-    assert model is not None
-    assert model.roles == [Role.USER, Role.ADMIN, Role.EDITOR]
 
     model = await client.lists.update(
         where={

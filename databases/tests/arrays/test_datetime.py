@@ -34,34 +34,6 @@ async def test_updating_datetime(client: Prisma) -> None:
 
     model = await client.lists.update(
         where={
-            'id': models[0].id,
-        },
-        data={
-            'dates': {
-                'push': [now, now + timedelta(days=5)],
-            },
-        },
-    )
-    assert model is not None
-    _assert_datelist_equal(model.dates, [now, now + timedelta(days=5)])
-
-    model = await client.lists.update(
-        where={
-            'id': models[1].id,
-        },
-        data={
-            'dates': {
-                'push': [now + timedelta(hours=7)],
-            },
-        },
-    )
-    assert model is not None
-    _assert_datelist_equal(
-        model.dates, [now, now + timedelta(hours=3), now + timedelta(hours=7)]
-    )
-
-    model = await client.lists.update(
-        where={
             'id': models[1].id,
         },
         data={
