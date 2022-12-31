@@ -17,6 +17,7 @@ from typing import (
     Optional,
     Iterable,
     Iterator,
+    Sequence,
     Callable,
     Generic,
     Mapping,
@@ -47,10 +48,12 @@ class PostWithAuthor(BaseModel):
     Config = models.Config
 
 
+
 class UserOnlyName(BaseModel):
     name: _str
 
     Config = models.Config
+
 
 
 class PostWithCustomAuthor(BaseModel):
@@ -61,11 +64,13 @@ class PostWithCustomAuthor(BaseModel):
     Config = models.Config
 
 
+
 class UserWithPosts(BaseModel):
     name: _str
     posts: Optional[List['models.Post']]
 
     Config = models.Config
+
 
 
 class PostWithNestedRelations(BaseModel):
@@ -74,6 +79,7 @@ class PostWithNestedRelations(BaseModel):
     author: Optional['partials.UserWithPosts']
 
     Config = models.Config
+
 
 
 

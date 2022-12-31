@@ -184,6 +184,7 @@ jobs:
     name: ${{ matrix.name }} ${{ matrix.version }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: MySQL
@@ -206,10 +207,11 @@ jobs:
             env: POSTGRESQL_URL
             url: postgresql://postgres:prisma@localhost:5438/postgres
 
-          - name: CockroachDB
-            version: '22'
-            env: COCKROACHDB_URL
-            url: postgresql://prisma@localhost:26257/postgres
+          # Temporarily disabled due to https://github.com/RobertCraigie/prisma-client-py/issues/636
+          # - name: CockroachDB
+          #   version: '22'
+          #   env: COCKROACHDB_URL
+          #   url: postgresql://prisma@localhost:26257/postgres
 
           - name: MariaDB
             version: '10.0'

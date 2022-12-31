@@ -4,9 +4,9 @@ datasource db {
 }
 
 generator db {
-  provider               = "prisma-client-py"
-  interface              = "asyncio"
-  recursive_type_depth   = 5
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
 }
 
 model Post {
@@ -19,7 +19,7 @@ model Post {
   desc       String?
   author     User?      @relation(fields: [author_id], references: [id])
   author_id  String?
-  categories Category[] @relation(references: [id])
+  categories Category[]
 }
 
 model User {
@@ -31,14 +31,14 @@ model User {
 
 model Category {
   id    Int    @id @default(autoincrement())
-  posts Post[] @relation(references: [id])
+  posts Post[]
   name  String
 }
 
 model Profile {
   id      Int    @id @default(autoincrement())
   user    User   @relation(fields: [user_id], references: [id])
-  user_id String
+  user_id String @unique
   bio     String
 }
 

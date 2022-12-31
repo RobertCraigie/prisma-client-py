@@ -17,6 +17,7 @@ from typing import (
     Optional,
     Iterable,
     Iterator,
+    Sequence,
     Callable,
     Generic,
     Mapping,
@@ -133,6 +134,7 @@ class Post(BaseModel):
         super().__init_subclass__()
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'Post', stacklevel=3)
+
 
     @staticmethod
     def create_partial(
@@ -278,6 +280,7 @@ class User(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'User', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -417,6 +420,7 @@ class M(BaseModel):
         super().__init_subclass__()
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'M', stacklevel=3)
+
 
     @staticmethod
     def create_partial(
@@ -560,6 +564,7 @@ class N(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'N', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -699,6 +704,7 @@ class OneOptional(BaseModel):
         super().__init_subclass__()
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'OneOptional', stacklevel=3)
+
 
     @staticmethod
     def create_partial(
@@ -841,6 +847,7 @@ class ManyRequired(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'ManyRequired', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -979,6 +986,20 @@ class Lists(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'Lists', stacklevel=3)
 
+    @validator('strings', 'bytes', 'dates', 'bools', 'ints', 'floats', 'bigints', 'json_objects', 'decimals', pre=True, allow_reuse=True)
+    @classmethod
+    def _transform_required_list_fields(cls, value: object) -> object:
+        # When using raw queries, some databases will return `None` for an array field that has not been set yet.
+        #
+        # In our case we want to use an empty list instead as that is the internal Prisma behaviour and we want
+        # to use the same consistent structure between the core ORM and raw queries. For example, if we updated
+        # our type definitions to include `None` for `List` fields then it would be misleading as it will only
+        # ever be `None` in raw queries.
+        if value is None:
+            return []
+
+        return value
+
     @staticmethod
     def create_partial(
         name: str,
@@ -1092,6 +1113,7 @@ class A(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'A', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -1200,6 +1222,7 @@ class B(BaseModel):
         super().__init_subclass__()
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'B', stacklevel=3)
+
 
     @staticmethod
     def create_partial(
@@ -1311,6 +1334,7 @@ class C(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'C', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -1421,6 +1445,7 @@ class D(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'D', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -1529,6 +1554,7 @@ class E(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'E', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -1621,6 +1647,7 @@ _Post_fields: Dict['types.PostKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('created_at', {
@@ -1628,6 +1655,7 @@ _Post_fields: Dict['types.PostKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'datetime.datetime',
+            'is_relational': False,
             'documentation': None,
         }),
         ('title', {
@@ -1635,6 +1663,7 @@ _Post_fields: Dict['types.PostKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('content', {
@@ -1642,6 +1671,7 @@ _Post_fields: Dict['types.PostKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('published', {
@@ -1649,6 +1679,7 @@ _Post_fields: Dict['types.PostKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_bool',
+            'is_relational': False,
             'documentation': '''Has the post been made public yet?''',
         }),
         ('author', {
@@ -1656,6 +1687,7 @@ _Post_fields: Dict['types.PostKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': 'models.User',
+            'is_relational': True,
             'documentation': '''Relation to the User model
 Second line comment with ' and "''',
         }),
@@ -1664,6 +1696,7 @@ Second line comment with ' and "''',
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
     ],
@@ -1679,6 +1712,7 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('email', {
@@ -1686,6 +1720,7 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('int', {
@@ -1693,6 +1728,7 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_int', {
@@ -1700,6 +1736,7 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('float', {
@@ -1707,6 +1744,7 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_float',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_float', {
@@ -1714,6 +1752,7 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_float',
+            'is_relational': False,
             'documentation': None,
         }),
         ('string', {
@@ -1721,6 +1760,7 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_string', {
@@ -1728,6 +1768,7 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('enum', {
@@ -1735,6 +1776,7 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_enum', {
@@ -1742,6 +1784,7 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
             'documentation': None,
         }),
         ('boolean', {
@@ -1749,6 +1792,7 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_bool',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_boolean', {
@@ -1756,6 +1800,7 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_bool',
+            'is_relational': False,
             'documentation': None,
         }),
         ('posts', {
@@ -1763,6 +1808,7 @@ _User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
             'is_list': True,
             'optional': True,
             'type': 'List[\'models.Post\']',
+            'is_relational': True,
             'documentation': None,
         }),
     ],
@@ -1778,6 +1824,7 @@ _M_fields: Dict['types.MKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('n', {
@@ -1785,6 +1832,7 @@ _M_fields: Dict['types.MKeys', PartialModelField] = OrderedDict(
             'is_list': True,
             'optional': True,
             'type': 'List[\'models.N\']',
+            'is_relational': True,
             'documentation': None,
         }),
         ('int', {
@@ -1792,6 +1840,7 @@ _M_fields: Dict['types.MKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_int', {
@@ -1799,6 +1848,7 @@ _M_fields: Dict['types.MKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('float', {
@@ -1806,6 +1856,7 @@ _M_fields: Dict['types.MKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_float',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_float', {
@@ -1813,6 +1864,7 @@ _M_fields: Dict['types.MKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_float',
+            'is_relational': False,
             'documentation': None,
         }),
         ('string', {
@@ -1820,6 +1872,7 @@ _M_fields: Dict['types.MKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_string', {
@@ -1827,6 +1880,7 @@ _M_fields: Dict['types.MKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('enum', {
@@ -1834,6 +1888,7 @@ _M_fields: Dict['types.MKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_enum', {
@@ -1841,6 +1896,7 @@ _M_fields: Dict['types.MKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
             'documentation': None,
         }),
         ('boolean', {
@@ -1848,6 +1904,7 @@ _M_fields: Dict['types.MKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_bool',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_boolean', {
@@ -1855,6 +1912,7 @@ _M_fields: Dict['types.MKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_bool',
+            'is_relational': False,
             'documentation': None,
         }),
     ],
@@ -1870,6 +1928,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('m', {
@@ -1877,6 +1936,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': True,
             'optional': True,
             'type': 'List[\'models.M\']',
+            'is_relational': True,
             'documentation': None,
         }),
         ('int', {
@@ -1884,6 +1944,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_int', {
@@ -1891,6 +1952,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('float', {
@@ -1898,6 +1960,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_float',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_float', {
@@ -1905,6 +1968,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_float',
+            'is_relational': False,
             'documentation': None,
         }),
         ('string', {
@@ -1912,6 +1976,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_string', {
@@ -1919,6 +1984,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('json_', {
@@ -1926,6 +1992,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'fields.Json',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_json', {
@@ -1933,6 +2000,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': 'fields.Json',
+            'is_relational': False,
             'documentation': None,
         }),
         ('enum', {
@@ -1940,6 +2008,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_enum', {
@@ -1947,6 +2016,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
             'documentation': None,
         }),
         ('boolean', {
@@ -1954,6 +2024,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_bool',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_boolean', {
@@ -1961,6 +2032,7 @@ _N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_bool',
+            'is_relational': False,
             'documentation': None,
         }),
     ],
@@ -1976,6 +2048,7 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedD
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('many', {
@@ -1983,6 +2056,7 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedD
             'is_list': True,
             'optional': True,
             'type': 'List[\'models.ManyRequired\']',
+            'is_relational': True,
             'documentation': None,
         }),
         ('int', {
@@ -1990,6 +2064,7 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedD
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_int', {
@@ -1997,6 +2072,7 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedD
             'is_list': False,
             'optional': True,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('float', {
@@ -2004,6 +2080,7 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedD
             'is_list': False,
             'optional': False,
             'type': '_float',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_float', {
@@ -2011,6 +2088,7 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedD
             'is_list': False,
             'optional': True,
             'type': '_float',
+            'is_relational': False,
             'documentation': None,
         }),
         ('string', {
@@ -2018,6 +2096,7 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedD
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_string', {
@@ -2025,6 +2104,7 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedD
             'is_list': False,
             'optional': True,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('enum', {
@@ -2032,6 +2112,7 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedD
             'is_list': False,
             'optional': False,
             'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_enum', {
@@ -2039,6 +2120,7 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedD
             'is_list': False,
             'optional': True,
             'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
             'documentation': None,
         }),
         ('boolean', {
@@ -2046,6 +2128,7 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedD
             'is_list': False,
             'optional': False,
             'type': '_bool',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_boolean', {
@@ -2053,6 +2136,7 @@ _OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedD
             'is_list': False,
             'optional': True,
             'type': '_bool',
+            'is_relational': False,
             'documentation': None,
         }),
     ],
@@ -2068,6 +2152,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = Ordere
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('one', {
@@ -2075,6 +2160,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = Ordere
             'is_list': False,
             'optional': True,
             'type': 'models.OneOptional',
+            'is_relational': True,
             'documentation': None,
         }),
         ('one_optional_id', {
@@ -2082,6 +2168,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = Ordere
             'is_list': False,
             'optional': True,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('int', {
@@ -2089,6 +2176,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = Ordere
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_int', {
@@ -2096,6 +2184,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = Ordere
             'is_list': False,
             'optional': True,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('float', {
@@ -2103,6 +2192,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = Ordere
             'is_list': False,
             'optional': False,
             'type': '_float',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_float', {
@@ -2110,6 +2200,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = Ordere
             'is_list': False,
             'optional': True,
             'type': '_float',
+            'is_relational': False,
             'documentation': None,
         }),
         ('string', {
@@ -2117,6 +2208,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = Ordere
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_string', {
@@ -2124,6 +2216,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = Ordere
             'is_list': False,
             'optional': True,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('enum', {
@@ -2131,6 +2224,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = Ordere
             'is_list': False,
             'optional': False,
             'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_enum', {
@@ -2138,6 +2232,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = Ordere
             'is_list': False,
             'optional': True,
             'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
             'documentation': None,
         }),
         ('boolean', {
@@ -2145,6 +2240,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = Ordere
             'is_list': False,
             'optional': False,
             'type': '_bool',
+            'is_relational': False,
             'documentation': None,
         }),
         ('optional_boolean', {
@@ -2152,6 +2248,7 @@ _ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = Ordere
             'is_list': False,
             'optional': True,
             'type': '_bool',
+            'is_relational': False,
             'documentation': None,
         }),
     ],
@@ -2165,6 +2262,7 @@ _Lists_fields: Dict['types.ListsKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('strings', {
@@ -2172,6 +2270,7 @@ _Lists_fields: Dict['types.ListsKeys', PartialModelField] = OrderedDict(
             'is_list': True,
             'optional': False,
             'type': 'List[_str]',
+            'is_relational': False,
             'documentation': None,
         }),
         ('bytes', {
@@ -2179,6 +2278,7 @@ _Lists_fields: Dict['types.ListsKeys', PartialModelField] = OrderedDict(
             'is_list': True,
             'optional': False,
             'type': 'List[\'fields.Base64\']',
+            'is_relational': False,
             'documentation': None,
         }),
         ('dates', {
@@ -2186,6 +2286,7 @@ _Lists_fields: Dict['types.ListsKeys', PartialModelField] = OrderedDict(
             'is_list': True,
             'optional': False,
             'type': 'List[datetime.datetime]',
+            'is_relational': False,
             'documentation': None,
         }),
         ('bools', {
@@ -2193,6 +2294,7 @@ _Lists_fields: Dict['types.ListsKeys', PartialModelField] = OrderedDict(
             'is_list': True,
             'optional': False,
             'type': 'List[_bool]',
+            'is_relational': False,
             'documentation': None,
         }),
         ('ints', {
@@ -2200,6 +2302,7 @@ _Lists_fields: Dict['types.ListsKeys', PartialModelField] = OrderedDict(
             'is_list': True,
             'optional': False,
             'type': 'List[_int]',
+            'is_relational': False,
             'documentation': None,
         }),
         ('floats', {
@@ -2207,6 +2310,7 @@ _Lists_fields: Dict['types.ListsKeys', PartialModelField] = OrderedDict(
             'is_list': True,
             'optional': False,
             'type': 'List[_float]',
+            'is_relational': False,
             'documentation': None,
         }),
         ('bigints', {
@@ -2214,6 +2318,7 @@ _Lists_fields: Dict['types.ListsKeys', PartialModelField] = OrderedDict(
             'is_list': True,
             'optional': False,
             'type': 'List[_int]',
+            'is_relational': False,
             'documentation': None,
         }),
         ('json_objects', {
@@ -2221,6 +2326,7 @@ _Lists_fields: Dict['types.ListsKeys', PartialModelField] = OrderedDict(
             'is_list': True,
             'optional': False,
             'type': 'List[\'fields.Json\']',
+            'is_relational': False,
             'documentation': None,
         }),
         ('decimals', {
@@ -2228,6 +2334,7 @@ _Lists_fields: Dict['types.ListsKeys', PartialModelField] = OrderedDict(
             'is_list': True,
             'optional': False,
             'type': 'List[decimal.Decimal]',
+            'is_relational': False,
             'documentation': None,
         }),
     ],
@@ -2241,6 +2348,7 @@ _A_fields: Dict['types.AKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('name', {
@@ -2248,6 +2356,7 @@ _A_fields: Dict['types.AKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': True,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('int', {
@@ -2255,6 +2364,7 @@ _A_fields: Dict['types.AKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('sInt', {
@@ -2262,6 +2372,7 @@ _A_fields: Dict['types.AKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('inc_int', {
@@ -2269,6 +2380,7 @@ _A_fields: Dict['types.AKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('inc_sInt', {
@@ -2276,6 +2388,7 @@ _A_fields: Dict['types.AKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('bInt', {
@@ -2283,6 +2396,7 @@ _A_fields: Dict['types.AKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('inc_bInt', {
@@ -2290,6 +2404,7 @@ _A_fields: Dict['types.AKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_int',
+            'is_relational': False,
             'documentation': None,
         }),
         ('enum', {
@@ -2297,6 +2412,7 @@ _A_fields: Dict['types.AKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
             'documentation': None,
         }),
     ],
@@ -2310,6 +2426,7 @@ _B_fields: Dict['types.BKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('float', {
@@ -2317,6 +2434,7 @@ _B_fields: Dict['types.BKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_float',
+            'is_relational': False,
             'documentation': None,
         }),
         ('d_float', {
@@ -2324,6 +2442,7 @@ _B_fields: Dict['types.BKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_float',
+            'is_relational': False,
             'documentation': None,
         }),
         ('decFloat', {
@@ -2331,6 +2450,7 @@ _B_fields: Dict['types.BKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'decimal.Decimal',
+            'is_relational': False,
             'documentation': None,
         }),
         ('numFloat', {
@@ -2338,6 +2458,7 @@ _B_fields: Dict['types.BKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'decimal.Decimal',
+            'is_relational': False,
             'documentation': None,
         }),
     ],
@@ -2351,6 +2472,7 @@ _C_fields: Dict['types.CKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('v_char', {
@@ -2358,6 +2480,7 @@ _C_fields: Dict['types.CKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('text', {
@@ -2365,6 +2488,7 @@ _C_fields: Dict['types.CKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('bit', {
@@ -2372,6 +2496,7 @@ _C_fields: Dict['types.CKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('v_bit', {
@@ -2379,6 +2504,7 @@ _C_fields: Dict['types.CKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('uuid', {
@@ -2386,6 +2512,7 @@ _C_fields: Dict['types.CKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
     ],
@@ -2399,6 +2526,7 @@ _D_fields: Dict['types.DKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('bool', {
@@ -2406,6 +2534,7 @@ _D_fields: Dict['types.DKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_bool',
+            'is_relational': False,
             'documentation': None,
         }),
         ('xml', {
@@ -2413,6 +2542,7 @@ _D_fields: Dict['types.DKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('json_', {
@@ -2420,6 +2550,7 @@ _D_fields: Dict['types.DKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'fields.Json',
+            'is_relational': False,
             'documentation': None,
         }),
         ('jsonb', {
@@ -2427,6 +2558,7 @@ _D_fields: Dict['types.DKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'fields.Json',
+            'is_relational': False,
             'documentation': None,
         }),
         ('binary', {
@@ -2434,6 +2566,7 @@ _D_fields: Dict['types.DKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'fields.Base64',
+            'is_relational': False,
             'documentation': None,
         }),
     ],
@@ -2447,6 +2580,7 @@ _E_fields: Dict['types.EKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': '_str',
+            'is_relational': False,
             'documentation': None,
         }),
         ('date', {
@@ -2454,6 +2588,7 @@ _E_fields: Dict['types.EKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'datetime.datetime',
+            'is_relational': False,
             'documentation': None,
         }),
         ('time', {
@@ -2461,6 +2596,7 @@ _E_fields: Dict['types.EKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'datetime.datetime',
+            'is_relational': False,
             'documentation': None,
         }),
         ('ts', {
@@ -2468,6 +2604,7 @@ _E_fields: Dict['types.EKeys', PartialModelField] = OrderedDict(
             'is_list': False,
             'optional': False,
             'type': 'datetime.datetime',
+            'is_relational': False,
             'documentation': None,
         }),
     ],

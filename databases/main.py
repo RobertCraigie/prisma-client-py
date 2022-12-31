@@ -63,6 +63,9 @@ cli = typer.Typer(
 def test(
     *,
     databases: list[str] = SUPPORTED_DATABASES,
+    exclude_databases: list[
+        str
+    ] = [],  # pyright: ignore[reportCallInDefaultInitializer]
     inplace: bool = False,
     pytest_args: Optional[str] = None,
     lint: bool = True,
@@ -71,7 +74,13 @@ def test(
 ) -> None:
     """Run unit tests and Pyright"""
     session = session_ctx.get()
-    databases = validate_databases(databases)
+
+    exclude = set(validate_databases(exclude_databases))
+    databases = [
+        database
+        for database in validate_databases(databases)
+        if database not in exclude
+    ]
 
     with session.chdir(DATABASES_DIR):
         _setup_test_env(session, inplace=inplace)
