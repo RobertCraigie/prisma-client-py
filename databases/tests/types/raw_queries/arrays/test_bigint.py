@@ -22,7 +22,7 @@ _postgresql_queries = Queries(
     select='SELECT * FROM "Lists" WHERE id = $1',
 )
 
-RAW_QUERIES: DatabaseMapping[Queries | None] = {
+RAW_QUERIES: DatabaseMapping[Queries] = {
     'mysql': _mysql_queries,
     'mariadb': _mysql_queries,
     'sqlite': Queries(
@@ -30,8 +30,9 @@ RAW_QUERIES: DatabaseMapping[Queries | None] = {
     ),
     'postgresql': _postgresql_queries,
     'cockroachdb': _postgresql_queries,
-    # TODO
-    'sqlserver': None,
+    'sqlserver': Queries(
+        select='SELECT * FROM Lists WHERE id = @P1',
+    ),
 }
 
 

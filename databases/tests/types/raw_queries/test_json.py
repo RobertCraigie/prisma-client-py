@@ -20,7 +20,7 @@ _postgresql_queries = Queries(
     select='SELECT * FROM "Types" WHERE json_obj = $1',
 )
 
-RAW_QUERIES: DatabaseMapping[Queries | None] = {
+RAW_QUERIES: DatabaseMapping[Queries] = {
     'mysql': Queries(
         select='SELECT * FROM Types WHERE json_obj->"$.foo" = ?',
     ),
@@ -32,8 +32,9 @@ RAW_QUERIES: DatabaseMapping[Queries | None] = {
     ),
     'postgresql': _postgresql_queries,
     'cockroachdb': _postgresql_queries,
-    # TODO
-    'sqlserver': None,
+    'sqlserver': Queries(
+        select='SELECT * FROM Types WHERE json_obj = @P1',
+    ),
 }
 
 

@@ -132,7 +132,7 @@ _postgresql_queries = RawQueries(
     """,
 )
 
-RAW_QUERIES_MAPPING: DatabaseMapping[RawQueries | None] = {
+RAW_QUERIES_MAPPING: DatabaseMapping[RawQueries] = {
     'postgresql': _postgresql_queries,
     'cockroachdb': _postgresql_queries,
     'mysql': _mysql_queries,
@@ -239,6 +239,4 @@ RAW_QUERIES_MAPPING: DatabaseMapping[RawQueries | None] = {
             WHERE id = 'sdldsd'
         """,
     ),
-    # TODO
-    'sqlserver': None,
 }
