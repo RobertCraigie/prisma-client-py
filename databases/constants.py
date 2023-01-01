@@ -142,9 +142,19 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     # not yet implemented
     'date': [],
     'create_many': ['test_create_many.py'],
-    'sql_raw_queries': ['test_raw_queries.py', *_fromdir('types/raw_queries')],
+    'sql_raw_queries': [
+        'test_raw_queries.py',
+        'models/test_raw_queries.py',
+        *_fromdir('types/raw_queries'),
+    ],
     'case_sensitivity': ['test_case_sensitivity.py'],
     'composite_keys': _fromdir('composite_keys'),
+    'decimal': [
+        'types/test_decimal.py',
+        'arrays/test_decimal.py',
+        'arrays/push/test_decimal.py',
+        'types/raw_queries/test_decimal.py',
+    ],
 }
 
 # config files
