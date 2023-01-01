@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 from pydantic import BaseModel
 
@@ -21,7 +23,7 @@ _postgresql_queries = Queries(
     select='SELECT * FROM "Types" WHERE bool_ = $1',
 )
 
-RAW_QUERIES: DatabaseMapping[Queries] = {
+RAW_QUERIES: DatabaseMapping[Queries | None] = {
     'mysql': _mysql_queries,
     'mariadb': _mysql_queries,
     'sqlite': Queries(
@@ -40,6 +42,7 @@ async def test_query_first(
 ) -> None:
     """Standard usage of Boolean in raw SELECT queries"""
     queries = RAW_QUERIES[database]
+    assert queries is not None
 
     record = await client.types.create({'bool_': True})
 

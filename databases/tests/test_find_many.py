@@ -118,8 +118,6 @@ async def test_filtering_one_to_one_relation(client: Prisma) -> None:
         )
         batcher.user.create({'name': 'Callum'})
 
-    # TODO: replacing description with anything else does not cause
-    # pyright to report an error
     users = await client.user.find_many(
         where={
             'profile': {

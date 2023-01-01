@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 
 import pytest
@@ -18,7 +20,7 @@ _postgresql_queries = Queries(
     select='SELECT * FROM "Types" WHERE json_obj = $1',
 )
 
-RAW_QUERIES: DatabaseMapping[Queries] = {
+RAW_QUERIES: DatabaseMapping[Queries | None] = {
     'mysql': Queries(
         select='SELECT * FROM Types WHERE json_obj->"$.foo" = ?',
     ),
@@ -40,6 +42,7 @@ async def test_query_first(
 ) -> None:
     """Standard usage of json_obj in raw SELECT queries"""
     queries = RAW_QUERIES[database]
+    assert queries is not None
 
     record = await client.types.create(
         {
