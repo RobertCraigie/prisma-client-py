@@ -201,7 +201,7 @@ RAW_QUERIES_MAPPING: DatabaseMapping[RawQueries] = {
         find_user_by_id="""
             SELECT *
             FROM User
-            WHERE User.id = @P1
+            WHERE [dbo].[User].[id] = @P1
         """,
         find_user_by_id_limit_1="""
             SELECT *
