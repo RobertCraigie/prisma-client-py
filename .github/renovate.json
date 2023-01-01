@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "ignorePaths": ["databases/docker-compose.yml", "examples/**"],
+  "pip_requirements": {
+    "fileMatch": ["requirements/.*\\.txt", "deps/.*\\.txt"]
+  },
+  "packageRules": [
+    {
+        "groupName": "dev",
+        "matchPaths": ["pipelines/requirements/**/*.txt", "databases/*.txt"],
+        "excludePackageNames": ["mypy", "pytest-mypy-plugins"]
+    },
+    {
+        "groupName": "mypy",
+        "matchPackagePatterns": ["mypy"]
+    },
+    {
+        "groupName": "actions",
+        "matchPaths": [".github/workflows/**/*.yml"]
+    },
+  ]
+}

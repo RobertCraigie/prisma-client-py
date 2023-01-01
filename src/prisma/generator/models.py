@@ -23,7 +23,6 @@ from typing import (
     Iterator,
     Dict,
     Type,
-    cast,
 )
 
 import click
@@ -304,6 +303,9 @@ class GenericData(GenericModel, Generic[ConfigT]):
     other_generators: List['Generator[_ModelAllowAll]'] = FieldInfo(
         alias='otherGenerators'
     )
+    binary_paths: 'BinaryPaths' = FieldInfo(
+        alias='binaryPaths', default_factory=lambda: BinaryPaths()
+    )
 
     @classmethod
     def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
@@ -334,9 +336,9 @@ class GenericData(GenericModel, Generic[ConfigT]):
     def validate_version(cls, values: Dict[Any, Any]) -> Dict[Any, Any]:
         # TODO: test this
         version = values.get('version')
-        if not DEBUG_GENERATOR and version != config.engine_version:
+        if not DEBUG_GENERATOR and version != config.expected_engine_version:
             raise ValueError(
-                f'Prisma Client Python expected Prisma version: {config.engine_version} '
+                f'Prisma Client Python expected Prisma version: {config.expected_engine_version} '
                 f'but got: {version}\n'
                 '  If this is intentional, set the PRISMA_PY_DEBUG_GENERATOR environment '
                 'variable to 1 and try again.\n'
@@ -345,6 +347,46 @@ class GenericData(GenericModel, Generic[ConfigT]):
                 '  or generate the client using the Python CLI, e.g. python3 -m prisma generate'
             )
         return values
+
+
+class BinaryPaths(BaseModel):
+    """This class represents the paths to engine binaries.
+
+    Each property in this class is a mapping of platform name to absolute path, for example:
+
+    ```py
+    # This is what will be set on an M1 chip if there are no other `binaryTargets` set
+    binary_paths.query_engine == {
+        'darwin-arm64': '/Users/robert/.cache/prisma-python/binaries/3.13.0/efdf9b1183dddfd4258cd181a72125755215ab7b/node_modules/prisma/query-engine-darwin-arm64'
+    }
+    ```
+
+    This is only available if the generator explicitly requests them using the `requires_engines` manifest property.
+    """
+
+    query_engine: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='queryEngine',
+    )
+    introspection_engine: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='introspectionEngine',
+    )
+    migration_engine: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='migrationEngine',
+    )
+    libquery_engine: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='libqueryEngine',
+    )
+    prisma_format: Dict[str, str] = FieldInfo(
+        default_factory=dict,
+        alias='prismaFmt',
+    )
+
+    class Config(BaseModel.Config):
+        extra: Extra = Extra.ignore
 
 
 class Datasource(BaseModel):
@@ -368,11 +410,12 @@ class Generator(GenericModel, Generic[ConfigT]):
     def warn_binary_targets(
         cls, targets: List['ValueFromEnvVar']
     ) -> List['ValueFromEnvVar']:
-        if targets and any(target.value != 'native' for target in targets):
+        # Prisma by default sends one binary target which is the current platform.
+        if len(targets) > 1:
             click.echo(
                 click.style(
                     'Warning: '
-                    'The binaryTargets option is not currently supported by Prisma Client Python',
+                    + 'The binaryTargets option is not officially supported by Prisma Client Python.',
                     fg='yellow',
                 ),
                 file=sys.stdout,
@@ -564,26 +607,22 @@ class Model(BaseModel):
         super().__init__(**data)
         self._sampler = Sampler(self)
 
-    @root_validator(allow_reuse=True)
+    @validator('name')
     @classmethod
-    def validate_compound_constraints_are_unique(
-        cls, values: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        # protect against https://github.com/prisma/prisma/issues/10456
-        fields = cast(List['Field'], values.get('all_fields', []))
-        pkey = cast(Optional[PrimaryKey], values.get('compound_primary_key'))
-        if pkey is not None:
-            for field in fields:
-                if field.name == pkey.name:
-                    raise CompoundConstraintError(constraint=pkey)
+    def name_validator(cls, name: str) -> str:
+        if iskeyword(name):
+            raise ValueError(
+                f'Model name "{name}" shadows a Python keyword; '
+                f'use a different model name with \'@@map("{name}")\'.'
+            )
 
-        indexes = cast(List[UniqueIndex], values.get('unique_indexes'))
-        for field in fields:
-            for constraint in indexes:
-                if field.name == constraint.name:
-                    raise CompoundConstraintError(constraint=constraint)
+        if iskeyword(name.lower()):
+            raise ValueError(
+                f'Model name "{name}" results in a client property that shadows a Python keyword; '
+                f'use a different model name with \'@@map("{name}")\'.'
+            )
 
-        return values
+        return name
 
     @property
     def related_models(self) -> Iterator['Model']:
@@ -609,6 +648,12 @@ class Model(BaseModel):
     def atomic_fields(self) -> Iterator['Field']:
         for field in self.all_fields:
             if field.type in ATOMIC_FIELD_TYPES:
+                yield field
+
+    @property
+    def required_array_fields(self) -> Iterator['Field']:
+        for field in self.all_fields:
+            if field.is_list and not field.relation_name and field.is_required:
                 yield field
 
     # TODO: support combined unique constraints
@@ -645,11 +690,6 @@ class Model(BaseModel):
 
     def sampler(self) -> Sampler:
         return self._sampler
-
-    def get_fields_of_type(self, typ: str) -> Iterator['Field']:
-        for field in self.scalar_fields:
-            if field.type == typ:
-                yield field
 
 
 class Constraint(BaseModel):
@@ -1004,7 +1044,6 @@ Datasource.update_forward_refs()
 
 from .schema import Schema
 from .errors import (
-    CompoundConstraintError,
     PartialTypeGeneratorError,
     TemplateError,
 )

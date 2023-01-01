@@ -12,7 +12,7 @@ async def main(client: Prisma) -> None:
     user.foo  # E: Cannot access member "foo" for type "User"
 
     result = await client.query_first('')
-    reveal_type(result)  # T: Any
+    reveal_type(result)  # T: dict[str, Any]
 
     query = 'safe StringLiteral query'
     await client.query_first(query, model=User)

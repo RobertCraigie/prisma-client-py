@@ -57,7 +57,7 @@ async def test_find_many(client: Prisma) -> None:
 
 
 @pytest.mark.asyncio
-async def test_cursor(client: Prisma, datasource: str) -> None:
+async def test_cursor(client: Prisma) -> None:
     """Cursor argument correctly paginates results"""
     posts = [
         await client.post.create({'title': 'Foo 1', 'published': False}),

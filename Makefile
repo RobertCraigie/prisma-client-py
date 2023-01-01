@@ -1,7 +1,8 @@
 .PHONY: bootstrap
 bootstrap:
 	pip install -U wheel
-	pip install -U -e .[all]
+	pip install -U -e .
+	pip install -U -r pipelines/requirements/dev.txt
 	prisma db push --schema=tests/data/schema.prisma
 	cp tests/data/dev.db dev.db
 	pre-commit install

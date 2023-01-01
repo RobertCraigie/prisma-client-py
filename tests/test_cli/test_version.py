@@ -10,12 +10,12 @@ HASH = re.compile(r'[a-f0-9]{40}')
 PLACEHOLDER = re.compile(r'.*')
 SEMANTIC_VERSION = re.compile(r'(\d?\d\.){2}\d?\da?')
 PATTERN = re.compile(
-    f'prisma               : (?P<prisma>{SEMANTIC_VERSION.pattern})\n'
-    f'prisma client python : (?P<prisma_client_python>{SEMANTIC_VERSION.pattern})\n'
-    f'platform             : (?P<platform>{PLACEHOLDER.pattern})\n'
-    f'engines              : (?P<engines>{HASH.pattern})\n'
-    f'install path         : (?P<install_path>{PLACEHOLDER.pattern})\n'
-    f'installed extras     : (?P<installed_extras>{PLACEHOLDER.pattern})'
+    f'prisma                  : (?P<prisma>{SEMANTIC_VERSION.pattern})\n'
+    f'prisma client python    : (?P<prisma_client_python>{SEMANTIC_VERSION.pattern})\n'
+    f'platform                : (?P<platform>{PLACEHOLDER.pattern})\n'
+    f'expected engine version : (?P<expected_engine_version>{HASH.pattern})\n'
+    f'install path            : (?P<install_path>{PLACEHOLDER.pattern})\n'
+    f'installed extras        : (?P<installed_extras>{PLACEHOLDER.pattern})'
 )
 
 
@@ -35,7 +35,7 @@ def test_version_json(runner: Runner) -> None:
     assert SEMANTIC_VERSION.match(data['prisma'])
     assert SEMANTIC_VERSION.match(data['prisma-client-python'])
     assert PLACEHOLDER.match(data['platform'])
-    assert HASH.match(data['engines'])
+    assert HASH.match(data['expected-engine-version'])
     assert isinstance(data['installed-extras'], list)
 
 

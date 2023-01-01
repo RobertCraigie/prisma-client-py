@@ -145,7 +145,7 @@ Serializable = Union[
         {%+ if next != '' -%}
             'not': Union[str, '{{ next }}'],
         {% endif %}
-        {%+ if active_provider in ['postgresql', 'mongodb'] -%}
+        {%+ if active_provider in ['postgresql', 'cockroachdb', 'mongodb'] -%}
             'mode': SortMode,
         {% endif %}
     },
@@ -431,14 +431,18 @@ class _{{ type }}ListUpdateSet(TypedDict):
     set: List[{{ python_type }}]
 
 
+{% if active_provider != 'cockroachdb' %}
 class _{{ type }}ListUpdatePush(TypedDict):
     push: List[{{ python_type }}]
+{% endif %}
 
 
 {{ type }}ListUpdate = Union[
     List[{{ python_type }}],
     _{{ type }}ListUpdateSet,
+    {% if active_provider != 'cockroachdb' %}
     _{{ type }}ListUpdatePush,
+    {% endif %}
 ]
 
 {% endfor %}

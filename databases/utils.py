@@ -7,7 +7,10 @@ from pydantic import BaseModel
 DatabaseFeature = Literal[
     'enum',
     'json',
+    'date',
     'arrays',
+    'array_push',
+    'json_arrays',
     'raw_queries',
     'create_many',
     'case_sensitivity',
@@ -19,7 +22,9 @@ class DatabaseConfig(BaseModel):
     name: str
     env_var: str
     bools_are_ints: bool
+    autoincrement_id: str
     unsupported_features: Set[DatabaseFeature]
+    default_date_func: str
 
     # TODO: run this under coverage
     def supports_feature(

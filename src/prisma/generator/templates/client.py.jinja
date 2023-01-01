@@ -1,3 +1,4 @@
+{% set annotations = true %}
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider with context %}
 # -- template client.py.jinja --
@@ -9,13 +10,14 @@ from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
-from .generator.models import EngineType, OptionalValueFromEnvVar
+from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix
-
+from ._raw_query import deserialize_raw_results
 
 __all__ = (
     'ENGINE_TYPE',
     'SCHEMA_PATH',
+    'BINARY_PATHS',
     'Batch',
     'Prisma',
     'Client',
@@ -26,8 +28,8 @@ __all__ = (
 
 SCHEMA_PATH = Path('{{ schema_path.as_posix() }}')
 PACKAGED_SCHEMA_PATH = Path(__file__).parent.joinpath('schema.prisma')
-
 ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
+BINARY_PATHS = BinaryPaths.parse_obj({{ binary_paths.dict(by_alias=True) }})
 
 RegisteredClient = Union['Prisma', Callable[[], 'Prisma']]
 _registered_client: Optional[RegisteredClient] = None
@@ -254,16 +256,34 @@ class Prisma:
         return int(resp['data']['result'])
 
     @overload
-    {{ maybe_async_def }}query_first(self, query: LiteralString, *args: Any) -> Any:
+    {{ maybe_async_def }}query_first(
+        self,
+        query: LiteralString,
+        *args: Any,
+    ) -> dict[str, Any]:
         ...
 
     @overload
-    {{ maybe_async_def }}query_first(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> Optional[BaseModelT]:
+    {{ maybe_async_def }}query_first(
+        self,
+        query: LiteralString,
+        *args: Any,
+        model: Type[BaseModelT],
+    ) -> Optional[BaseModelT]:
         ...
 
     {{ maybe_async_def }}query_first(
-        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
-    ) -> Union[Optional[BaseModelT], Any]:
+        self,
+        query: LiteralString,
+        *args: Any,
+        model: Optional[Type[BaseModelT]] = None,
+    ) -> Union[Optional[BaseModelT], dict[str, Any]]:
+        """This function is the exact same as `query_raw()` but returns the first result.
+
+        If model is given, the returned record is converted to the pydantic model first,
+        otherwise a raw dictionary will be returned.
+        """
+        results: Sequence[Union[BaseModelT, dict[str, Any]]]
         if model is not None:
             results = {{ maybe_await }}self.query_raw(query, *args, model=model)
         else:
@@ -275,16 +295,33 @@ class Prisma:
         return results[0]
 
     @overload
-    {{ maybe_async_def }}query_raw(self, query: LiteralString, *args: Any) -> Any:
+    {{ maybe_async_def }}query_raw(
+        self,
+        query: LiteralString,
+        *args: Any,
+    ) -> List[dict[str, Any]]:
         ...
 
     @overload
-    {{ maybe_async_def }}query_raw(self, query: LiteralString, *args: Any, model: Type[BaseModelT]) -> List[BaseModelT]:
+    {{ maybe_async_def }}query_raw(
+        self,
+        query: LiteralString,
+        *args: Any,
+        model: Type[BaseModelT],
+    ) -> List[BaseModelT]:
         ...
 
     {{ maybe_async_def }}query_raw(
-        self, query: LiteralString, *args: Any, model: Optional[Type[BaseModelT]] = None
-    ) -> Union[List[BaseModelT], Any]:
+        self,
+        query: LiteralString,
+        *args: Any,
+        model: Optional[Type[BaseModelT]] = None,
+    ) -> Union[List[BaseModelT], List[dict[str, Any]]]:
+        """Execute a raw SQL query against the database.
+
+        If model is given, each returned record is converted to the pydantic model first,
+        otherwise results will be raw dictionaries.
+        """
         resp = {{ maybe_await }}self._execute(
             operation='{{ operations.query_raw }}',
             method='{{ methods.query_raw }}',
@@ -295,8 +332,9 @@ class Prisma:
         )
         result = resp['data']['result']
         if model is not None:
-            return [model.parse_obj(r) for r in result]
-        return result
+            return deserialize_raw_results(result, model=model)
+
+        return deserialize_raw_results(result)
     {% endif %}
 
     def batch_(self) -> 'Batch':

@@ -49,7 +49,8 @@ ENV PATH="/home/prisma/.local/bin:${PATH}"
 COPY --chown=prisma:prisma . .
 
 RUN pip install --upgrade pip && \
-    pip install .[dev]
+    pip install . && \
+    pip install -U -r pipelines/requirements/dev.txt
 
 # This has the side-effect of downing the prisma binaries
 # and will fail if the CLI cannot get run
@@ -57,3 +58,13 @@ RUN prisma -v
 
 # Very light-weight test that CLI generation works
 RUN prisma generate --schema ./tests/data/schema.prisma
+
+# Ensure all combinations of non-global Node resolvers work
+RUN nox -s test -p 3.10 -- tests/test_node
+
+# Ensure database access using SQLite works
+ENV SQLITE_URL="file:sqlite.db"
+
+# We don't run linters here because pyright-python is currently broken in certain docker images
+# TODO: lint when fixed
+RUN nox -s databases -- test --databases=sqlite --no-lint

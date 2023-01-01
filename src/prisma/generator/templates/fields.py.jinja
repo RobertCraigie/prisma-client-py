@@ -87,6 +87,17 @@ class Base64:
         """Encode bytes into valid Base64"""
         return cls(base64.b64encode(value))
 
+    @classmethod
+    def fromb64(cls, value: Union[str, bytes]) -> 'Base64':
+        """
+        Create an instance of the `Base64` class from data that has already
+        been encoded into a valid base 64 structure.
+        """
+        if isinstance(value, bytes):
+            return cls(value)
+
+        return cls(value.encode(BASE64_ENCODING))
+
     def decode(self) -> bytes:
         """Decode from Base64 to the original bytes object"""
         return base64.b64decode(self._raw)
