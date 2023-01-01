@@ -84,6 +84,8 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         id='sqlserver',
         name='SQL Server',
         env_var='SQLSERVER_URL',
+        default_date_func='CURRENT_DATE',
+        autoincrement_id='Int @id @default(autoincrement())',
         bools_are_ints=False,
         unsupported_features={
             'enum',
