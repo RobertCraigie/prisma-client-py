@@ -91,6 +91,8 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
             'enum',
             'json',
             'arrays',
+            'case_sensitivity',
+            'create_many_skip_duplicates',
         },
     ),
 }
@@ -117,7 +119,8 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     'json_arrays': ['arrays/test_json.py', 'arrays/push/test_json.py'],
     # not yet implemented
     'date': [],
-    'create_many': ['test_create_many.py'],
+    'create_many': _fromdir('create_many'),
+    'create_many_skip_duplicates': ['create_many/test_skip_duplicates.py'],
     'raw_queries': ['test_raw_queries.py', *_fromdir('types/raw_queries')],
     'case_sensitivity': ['test_case_sensitivity.py'],
 }
