@@ -130,7 +130,11 @@ DATABASES_DIR = Path(__file__).parent
 # database features
 TESTS_DIR = DATABASES_DIR / 'tests'
 FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
-    'enum': ['test_enum.py', 'test_arrays/test_enum.py'],
+    'enum': [
+        'test_enum.py',
+        'test_arrays/test_enum.py',
+        'composite_keys/test_enum.py',
+    ],
     'json': [
         'types/test_json.py',
         'test_arrays/test_json.py',
