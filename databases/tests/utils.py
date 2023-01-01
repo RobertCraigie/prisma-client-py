@@ -239,4 +239,6 @@ RAW_QUERIES_MAPPING: DatabaseMapping[RawQueries | None] = {
             WHERE id = 'sdldsd'
         """,
     ),
+    # TODO
+    'sqlserver': None,
 }

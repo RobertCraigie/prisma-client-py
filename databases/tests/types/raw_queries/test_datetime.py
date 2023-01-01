@@ -32,6 +32,8 @@ RAW_QUERIES: DatabaseMapping[Queries | None] = {
     ),
     'postgresql': _postgresql_queries,
     'cockroachdb': _postgresql_queries,
+    # TODO
+    'sqlserver': None,
 }
 
 
