@@ -207,7 +207,6 @@ jobs:
             env: POSTGRESQL_URL
             url: postgresql://postgres:prisma@localhost:5438/postgres
 
-          # Temporarily disabled due to https://github.com/RobertCraigie/prisma-client-py/issues/636
           - name: CockroachDB
             version: '22'
             env: COCKROACHDB_URL
