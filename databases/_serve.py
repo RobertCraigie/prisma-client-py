@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import shlex
-import subprocess
 from pathlib import Path
 
 import nox
@@ -9,6 +8,7 @@ import nox
 from ._types import SupportedDatabase
 
 
+SCRIPTS = Path(__file__).parent / 'scripts'
 DOCKER_COMPOSE_FILE = Path(__file__).parent / 'docker-compose.yml'
 
 
@@ -21,6 +21,10 @@ def start_database(
     """Start a docker-compose database service"""
     if database == 'sqlite':
         raise ValueError('Cannot start a server for SQLite.')
+
+    if database == 'mongodb':
+        session.run_always(str(SCRIPTS / 'start-mongodb.sh'))
+        return
 
     args = shlex.split(
         f'docker compose -f {DOCKER_COMPOSE_FILE} up -d --remove-orphans'
