@@ -187,7 +187,7 @@ async def test_atomic_update_divide(client: Prisma) -> None:
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'bigint': {
