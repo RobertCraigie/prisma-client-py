@@ -358,6 +358,7 @@ class {{ model.name }}Actions:
         cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
         include: Optional[types.{{ model.name }}Include] = None,
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
+        distinct: Optional[List[types.{{ model.name }}ScalarFieldKeys]] = None,
     ) -> List[{{ ModelType }}]:
         """Find multiple {{ model.name }} records.
 
@@ -377,6 +378,8 @@ class {{ model.name }}Actions:
             {{ include_doc }}
         order
             Order the returned {{ model.name }} records by any field
+        distinct
+            Filter {{ model.name }} records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -414,6 +417,7 @@ class {{ model.name }}Actions:
                 'order_by': order,
                 'cursor': cursor,
                 'include': include,
+                'distinct': distinct,
             },
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
@@ -425,6 +429,7 @@ class {{ model.name }}Actions:
         cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
         include: Optional[types.{{ model.name }}Include] = None,
         order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
+        distinct: Optional[List[types.{{ model.name }}ScalarFieldKeys]] = None,
     ) -> Optional[{{ ModelType }}]:
         """Find a single {{ model.name }} record.
 
@@ -440,6 +445,8 @@ class {{ model.name }}Actions:
             {{ include_doc }}
         order
             Order the returned {{ model.name }} records by any field
+        distinct
+            Filter {{ model.name }} records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -474,7 +481,8 @@ class {{ model.name }}Actions:
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
-                'include': include
+                'include': include,
+                'distinct': distinct,
             },
         )
         result = resp['data']['result']

@@ -366,6 +366,7 @@ class PostActions:
         cursor: Optional[types.PostWhereUniqueInput] = None,
         include: Optional[types.PostInclude] = None,
         order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
+        distinct: Optional[List[types.PostScalarFieldKeys]] = None,
     ) -> List['models.Post']:
         """Find multiple Post records.
 
@@ -385,6 +386,8 @@ class PostActions:
             Specifies which relations should be loaded on the returned Post model
         order
             Order the returned Post records by any field
+        distinct
+            Filter Post records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -422,6 +425,7 @@ class PostActions:
                 'order_by': order,
                 'cursor': cursor,
                 'include': include,
+                'distinct': distinct,
             },
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
@@ -433,6 +437,7 @@ class PostActions:
         cursor: Optional[types.PostWhereUniqueInput] = None,
         include: Optional[types.PostInclude] = None,
         order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
+        distinct: Optional[List[types.PostScalarFieldKeys]] = None,
     ) -> Optional['models.Post']:
         """Find a single Post record.
 
@@ -448,6 +453,8 @@ class PostActions:
             Specifies which relations should be loaded on the returned Post model
         order
             Order the returned Post records by any field
+        distinct
+            Filter Post records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -482,7 +489,8 @@ class PostActions:
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
-                'include': include
+                'include': include,
+                'distinct': distinct,
             },
         )
         result = resp['data']['result']
@@ -1297,6 +1305,7 @@ class UserActions:
         cursor: Optional[types.UserWhereUniqueInput] = None,
         include: Optional[types.UserInclude] = None,
         order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
+        distinct: Optional[List[types.UserScalarFieldKeys]] = None,
     ) -> List['models.User']:
         """Find multiple User records.
 
@@ -1316,6 +1325,8 @@ class UserActions:
             Specifies which relations should be loaded on the returned User model
         order
             Order the returned User records by any field
+        distinct
+            Filter User records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -1353,6 +1364,7 @@ class UserActions:
                 'order_by': order,
                 'cursor': cursor,
                 'include': include,
+                'distinct': distinct,
             },
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
@@ -1364,6 +1376,7 @@ class UserActions:
         cursor: Optional[types.UserWhereUniqueInput] = None,
         include: Optional[types.UserInclude] = None,
         order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
+        distinct: Optional[List[types.UserScalarFieldKeys]] = None,
     ) -> Optional['models.User']:
         """Find a single User record.
 
@@ -1379,6 +1392,8 @@ class UserActions:
             Specifies which relations should be loaded on the returned User model
         order
             Order the returned User records by any field
+        distinct
+            Filter User records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -1413,7 +1428,8 @@ class UserActions:
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
-                'include': include
+                'include': include,
+                'distinct': distinct,
             },
         )
         result = resp['data']['result']
@@ -2233,6 +2249,7 @@ class MActions:
         cursor: Optional[types.MWhereUniqueInput] = None,
         include: Optional[types.MInclude] = None,
         order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
+        distinct: Optional[List[types.MScalarFieldKeys]] = None,
     ) -> List['models.M']:
         """Find multiple M records.
 
@@ -2252,6 +2269,8 @@ class MActions:
             Specifies which relations should be loaded on the returned M model
         order
             Order the returned M records by any field
+        distinct
+            Filter M records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -2289,6 +2308,7 @@ class MActions:
                 'order_by': order,
                 'cursor': cursor,
                 'include': include,
+                'distinct': distinct,
             },
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
@@ -2300,6 +2320,7 @@ class MActions:
         cursor: Optional[types.MWhereUniqueInput] = None,
         include: Optional[types.MInclude] = None,
         order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
+        distinct: Optional[List[types.MScalarFieldKeys]] = None,
     ) -> Optional['models.M']:
         """Find a single M record.
 
@@ -2315,6 +2336,8 @@ class MActions:
             Specifies which relations should be loaded on the returned M model
         order
             Order the returned M records by any field
+        distinct
+            Filter M records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -2349,7 +2372,8 @@ class MActions:
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
-                'include': include
+                'include': include,
+                'distinct': distinct,
             },
         )
         result = resp['data']['result']
@@ -3170,6 +3194,7 @@ class NActions:
         cursor: Optional[types.NWhereUniqueInput] = None,
         include: Optional[types.NInclude] = None,
         order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
+        distinct: Optional[List[types.NScalarFieldKeys]] = None,
     ) -> List['models.N']:
         """Find multiple N records.
 
@@ -3189,6 +3214,8 @@ class NActions:
             Specifies which relations should be loaded on the returned N model
         order
             Order the returned N records by any field
+        distinct
+            Filter N records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -3226,6 +3253,7 @@ class NActions:
                 'order_by': order,
                 'cursor': cursor,
                 'include': include,
+                'distinct': distinct,
             },
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
@@ -3237,6 +3265,7 @@ class NActions:
         cursor: Optional[types.NWhereUniqueInput] = None,
         include: Optional[types.NInclude] = None,
         order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
+        distinct: Optional[List[types.NScalarFieldKeys]] = None,
     ) -> Optional['models.N']:
         """Find a single N record.
 
@@ -3252,6 +3281,8 @@ class NActions:
             Specifies which relations should be loaded on the returned N model
         order
             Order the returned N records by any field
+        distinct
+            Filter N records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -3286,7 +3317,8 @@ class NActions:
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
-                'include': include
+                'include': include,
+                'distinct': distinct,
             },
         )
         result = resp['data']['result']
@@ -4106,6 +4138,7 @@ class OneOptionalActions:
         cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
         include: Optional[types.OneOptionalInclude] = None,
         order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
+        distinct: Optional[List[types.OneOptionalScalarFieldKeys]] = None,
     ) -> List['models.OneOptional']:
         """Find multiple OneOptional records.
 
@@ -4125,6 +4158,8 @@ class OneOptionalActions:
             Specifies which relations should be loaded on the returned OneOptional model
         order
             Order the returned OneOptional records by any field
+        distinct
+            Filter OneOptional records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -4162,6 +4197,7 @@ class OneOptionalActions:
                 'order_by': order,
                 'cursor': cursor,
                 'include': include,
+                'distinct': distinct,
             },
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
@@ -4173,6 +4209,7 @@ class OneOptionalActions:
         cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
         include: Optional[types.OneOptionalInclude] = None,
         order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
+        distinct: Optional[List[types.OneOptionalScalarFieldKeys]] = None,
     ) -> Optional['models.OneOptional']:
         """Find a single OneOptional record.
 
@@ -4188,6 +4225,8 @@ class OneOptionalActions:
             Specifies which relations should be loaded on the returned OneOptional model
         order
             Order the returned OneOptional records by any field
+        distinct
+            Filter OneOptional records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -4222,7 +4261,8 @@ class OneOptionalActions:
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
-                'include': include
+                'include': include,
+                'distinct': distinct,
             },
         )
         result = resp['data']['result']
@@ -5040,6 +5080,7 @@ class ManyRequiredActions:
         cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
         include: Optional[types.ManyRequiredInclude] = None,
         order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
+        distinct: Optional[List[types.ManyRequiredScalarFieldKeys]] = None,
     ) -> List['models.ManyRequired']:
         """Find multiple ManyRequired records.
 
@@ -5059,6 +5100,8 @@ class ManyRequiredActions:
             Specifies which relations should be loaded on the returned ManyRequired model
         order
             Order the returned ManyRequired records by any field
+        distinct
+            Filter ManyRequired records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -5096,6 +5139,7 @@ class ManyRequiredActions:
                 'order_by': order,
                 'cursor': cursor,
                 'include': include,
+                'distinct': distinct,
             },
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
@@ -5107,6 +5151,7 @@ class ManyRequiredActions:
         cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
         include: Optional[types.ManyRequiredInclude] = None,
         order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
+        distinct: Optional[List[types.ManyRequiredScalarFieldKeys]] = None,
     ) -> Optional['models.ManyRequired']:
         """Find a single ManyRequired record.
 
@@ -5122,6 +5167,8 @@ class ManyRequiredActions:
             Specifies which relations should be loaded on the returned ManyRequired model
         order
             Order the returned ManyRequired records by any field
+        distinct
+            Filter ManyRequired records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -5156,7 +5203,8 @@ class ManyRequiredActions:
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
-                'include': include
+                'include': include,
+                'distinct': distinct,
             },
         )
         result = resp['data']['result']
@@ -5959,6 +6007,7 @@ class ListsActions:
         cursor: Optional[types.ListsWhereUniqueInput] = None,
         include: Optional[types.ListsInclude] = None,
         order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
+        distinct: Optional[List[types.ListsScalarFieldKeys]] = None,
     ) -> List['models.Lists']:
         """Find multiple Lists records.
 
@@ -5978,6 +6027,8 @@ class ListsActions:
             Specifies which relations should be loaded on the returned Lists model
         order
             Order the returned Lists records by any field
+        distinct
+            Filter Lists records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -6015,6 +6066,7 @@ class ListsActions:
                 'order_by': order,
                 'cursor': cursor,
                 'include': include,
+                'distinct': distinct,
             },
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
@@ -6026,6 +6078,7 @@ class ListsActions:
         cursor: Optional[types.ListsWhereUniqueInput] = None,
         include: Optional[types.ListsInclude] = None,
         order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
+        distinct: Optional[List[types.ListsScalarFieldKeys]] = None,
     ) -> Optional['models.Lists']:
         """Find a single Lists record.
 
@@ -6041,6 +6094,8 @@ class ListsActions:
             Specifies which relations should be loaded on the returned Lists model
         order
             Order the returned Lists records by any field
+        distinct
+            Filter Lists records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -6075,7 +6130,8 @@ class ListsActions:
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
-                'include': include
+                'include': include,
+                'distinct': distinct,
             },
         )
         result = resp['data']['result']
@@ -6880,6 +6936,7 @@ class AActions:
         cursor: Optional[types.AWhereUniqueInput] = None,
         include: Optional[types.AInclude] = None,
         order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
+        distinct: Optional[List[types.AScalarFieldKeys]] = None,
     ) -> List['models.A']:
         """Find multiple A records.
 
@@ -6899,6 +6956,8 @@ class AActions:
             Specifies which relations should be loaded on the returned A model
         order
             Order the returned A records by any field
+        distinct
+            Filter A records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -6936,6 +6995,7 @@ class AActions:
                 'order_by': order,
                 'cursor': cursor,
                 'include': include,
+                'distinct': distinct,
             },
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
@@ -6947,6 +7007,7 @@ class AActions:
         cursor: Optional[types.AWhereUniqueInput] = None,
         include: Optional[types.AInclude] = None,
         order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
+        distinct: Optional[List[types.AScalarFieldKeys]] = None,
     ) -> Optional['models.A']:
         """Find a single A record.
 
@@ -6962,6 +7023,8 @@ class AActions:
             Specifies which relations should be loaded on the returned A model
         order
             Order the returned A records by any field
+        distinct
+            Filter A records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -6996,7 +7059,8 @@ class AActions:
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
-                'include': include
+                'include': include,
+                'distinct': distinct,
             },
         )
         result = resp['data']['result']
@@ -7807,6 +7871,7 @@ class BActions:
         cursor: Optional[types.BWhereUniqueInput] = None,
         include: Optional[types.BInclude] = None,
         order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
+        distinct: Optional[List[types.BScalarFieldKeys]] = None,
     ) -> List['models.B']:
         """Find multiple B records.
 
@@ -7826,6 +7891,8 @@ class BActions:
             Specifies which relations should be loaded on the returned B model
         order
             Order the returned B records by any field
+        distinct
+            Filter B records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -7863,6 +7930,7 @@ class BActions:
                 'order_by': order,
                 'cursor': cursor,
                 'include': include,
+                'distinct': distinct,
             },
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
@@ -7874,6 +7942,7 @@ class BActions:
         cursor: Optional[types.BWhereUniqueInput] = None,
         include: Optional[types.BInclude] = None,
         order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
+        distinct: Optional[List[types.BScalarFieldKeys]] = None,
     ) -> Optional['models.B']:
         """Find a single B record.
 
@@ -7889,6 +7958,8 @@ class BActions:
             Specifies which relations should be loaded on the returned B model
         order
             Order the returned B records by any field
+        distinct
+            Filter B records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -7923,7 +7994,8 @@ class BActions:
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
-                'include': include
+                'include': include,
+                'distinct': distinct,
             },
         )
         result = resp['data']['result']
@@ -8744,6 +8816,7 @@ class CActions:
         cursor: Optional[types.CWhereUniqueInput] = None,
         include: Optional[types.CInclude] = None,
         order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
+        distinct: Optional[List[types.CScalarFieldKeys]] = None,
     ) -> List['models.C']:
         """Find multiple C records.
 
@@ -8763,6 +8836,8 @@ class CActions:
             Specifies which relations should be loaded on the returned C model
         order
             Order the returned C records by any field
+        distinct
+            Filter C records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -8800,6 +8875,7 @@ class CActions:
                 'order_by': order,
                 'cursor': cursor,
                 'include': include,
+                'distinct': distinct,
             },
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
@@ -8811,6 +8887,7 @@ class CActions:
         cursor: Optional[types.CWhereUniqueInput] = None,
         include: Optional[types.CInclude] = None,
         order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
+        distinct: Optional[List[types.CScalarFieldKeys]] = None,
     ) -> Optional['models.C']:
         """Find a single C record.
 
@@ -8826,6 +8903,8 @@ class CActions:
             Specifies which relations should be loaded on the returned C model
         order
             Order the returned C records by any field
+        distinct
+            Filter C records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -8860,7 +8939,8 @@ class CActions:
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
-                'include': include
+                'include': include,
+                'distinct': distinct,
             },
         )
         result = resp['data']['result']
@@ -9670,6 +9750,7 @@ class DActions:
         cursor: Optional[types.DWhereUniqueInput] = None,
         include: Optional[types.DInclude] = None,
         order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
+        distinct: Optional[List[types.DScalarFieldKeys]] = None,
     ) -> List['models.D']:
         """Find multiple D records.
 
@@ -9689,6 +9770,8 @@ class DActions:
             Specifies which relations should be loaded on the returned D model
         order
             Order the returned D records by any field
+        distinct
+            Filter D records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -9726,6 +9809,7 @@ class DActions:
                 'order_by': order,
                 'cursor': cursor,
                 'include': include,
+                'distinct': distinct,
             },
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
@@ -9737,6 +9821,7 @@ class DActions:
         cursor: Optional[types.DWhereUniqueInput] = None,
         include: Optional[types.DInclude] = None,
         order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
+        distinct: Optional[List[types.DScalarFieldKeys]] = None,
     ) -> Optional['models.D']:
         """Find a single D record.
 
@@ -9752,6 +9837,8 @@ class DActions:
             Specifies which relations should be loaded on the returned D model
         order
             Order the returned D records by any field
+        distinct
+            Filter D records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -9786,7 +9873,8 @@ class DActions:
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
-                'include': include
+                'include': include,
+                'distinct': distinct,
             },
         )
         result = resp['data']['result']
@@ -10598,6 +10686,7 @@ class EActions:
         cursor: Optional[types.EWhereUniqueInput] = None,
         include: Optional[types.EInclude] = None,
         order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
+        distinct: Optional[List[types.EScalarFieldKeys]] = None,
     ) -> List['models.E']:
         """Find multiple E records.
 
@@ -10617,6 +10706,8 @@ class EActions:
             Specifies which relations should be loaded on the returned E model
         order
             Order the returned E records by any field
+        distinct
+            Filter E records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -10654,6 +10745,7 @@ class EActions:
                 'order_by': order,
                 'cursor': cursor,
                 'include': include,
+                'distinct': distinct,
             },
         )
         return [self._model.parse_obj(r) for r in resp['data']['result']]
@@ -10665,6 +10757,7 @@ class EActions:
         cursor: Optional[types.EWhereUniqueInput] = None,
         include: Optional[types.EInclude] = None,
         order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
+        distinct: Optional[List[types.EScalarFieldKeys]] = None,
     ) -> Optional['models.E']:
         """Find a single E record.
 
@@ -10680,6 +10773,8 @@ class EActions:
             Specifies which relations should be loaded on the returned E model
         order
             Order the returned E records by any field
+        distinct
+            Filter E records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -10714,7 +10809,8 @@ class EActions:
                 'where': where,
                 'order_by': order,
                 'cursor': cursor,
-                'include': include
+                'include': include,
+                'distinct': distinct,
             },
         )
         result = resp['data']['result']
