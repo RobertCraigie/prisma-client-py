@@ -144,7 +144,7 @@ jobs:
       # Ensure that all Prisma Schema files are up to date
       - name: Check formatting
         run: |
-          make format
+          nox -s format
           git diff --exit-code
 
   mypy:

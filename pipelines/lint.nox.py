@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import nox
 
 from pipelines.utils import get_pkg_location, setup_env
@@ -54,3 +56,15 @@ def mypy(session: nox.Session) -> None:
         '--package',
         'tests',
     )
+
+
+@nox.session
+def format(session: nox.Session) -> None:
+    """Format Python source code and all Prisma Schema files"""
+    session.install('-r', 'pipelines/requirements/deps/blue.txt')
+    session.install('-e', '.')
+
+    session.run('blue', '.')
+
+    for entry in Path.cwd().glob('**/*.schema.prisma'):
+        session.run('prisma', 'format', f'--schema={entry}')
