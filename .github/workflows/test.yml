@@ -141,6 +141,12 @@ jobs:
         run: |
           nox -s lint
 
+      # Ensure that all Prisma Schema files are up to date
+      - name: Check formatting
+        run: |
+          make format
+          git diff --exit-code
+
   mypy:
     name: mypy
     runs-on: ubuntu-latest
