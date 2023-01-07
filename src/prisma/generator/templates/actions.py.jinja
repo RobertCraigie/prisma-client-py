@@ -378,6 +378,8 @@ class {{ model.name }}Actions:
             {{ include_doc }}
         order
             Order the returned {{ model.name }} records by any field
+        distinct
+            Filter {{ model.name }} records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -443,6 +445,8 @@ class {{ model.name }}Actions:
             {{ include_doc }}
         order
             Order the returned {{ model.name }} records by any field
+        distinct
+            Filter {{ model.name }} records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------

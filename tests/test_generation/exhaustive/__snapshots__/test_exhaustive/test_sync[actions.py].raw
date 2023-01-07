@@ -386,6 +386,8 @@ class PostActions:
             Specifies which relations should be loaded on the returned Post model
         order
             Order the returned Post records by any field
+        distinct
+            Filter Post records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -451,6 +453,8 @@ class PostActions:
             Specifies which relations should be loaded on the returned Post model
         order
             Order the returned Post records by any field
+        distinct
+            Filter Post records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -1321,6 +1325,8 @@ class UserActions:
             Specifies which relations should be loaded on the returned User model
         order
             Order the returned User records by any field
+        distinct
+            Filter User records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -1386,6 +1392,8 @@ class UserActions:
             Specifies which relations should be loaded on the returned User model
         order
             Order the returned User records by any field
+        distinct
+            Filter User records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -2261,6 +2269,8 @@ class MActions:
             Specifies which relations should be loaded on the returned M model
         order
             Order the returned M records by any field
+        distinct
+            Filter M records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -2326,6 +2336,8 @@ class MActions:
             Specifies which relations should be loaded on the returned M model
         order
             Order the returned M records by any field
+        distinct
+            Filter M records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -3202,6 +3214,8 @@ class NActions:
             Specifies which relations should be loaded on the returned N model
         order
             Order the returned N records by any field
+        distinct
+            Filter N records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -3267,6 +3281,8 @@ class NActions:
             Specifies which relations should be loaded on the returned N model
         order
             Order the returned N records by any field
+        distinct
+            Filter N records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -4142,6 +4158,8 @@ class OneOptionalActions:
             Specifies which relations should be loaded on the returned OneOptional model
         order
             Order the returned OneOptional records by any field
+        distinct
+            Filter OneOptional records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -4207,6 +4225,8 @@ class OneOptionalActions:
             Specifies which relations should be loaded on the returned OneOptional model
         order
             Order the returned OneOptional records by any field
+        distinct
+            Filter OneOptional records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -5080,6 +5100,8 @@ class ManyRequiredActions:
             Specifies which relations should be loaded on the returned ManyRequired model
         order
             Order the returned ManyRequired records by any field
+        distinct
+            Filter ManyRequired records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -5145,6 +5167,8 @@ class ManyRequiredActions:
             Specifies which relations should be loaded on the returned ManyRequired model
         order
             Order the returned ManyRequired records by any field
+        distinct
+            Filter ManyRequired records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -6003,6 +6027,8 @@ class ListsActions:
             Specifies which relations should be loaded on the returned Lists model
         order
             Order the returned Lists records by any field
+        distinct
+            Filter Lists records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -6068,6 +6094,8 @@ class ListsActions:
             Specifies which relations should be loaded on the returned Lists model
         order
             Order the returned Lists records by any field
+        distinct
+            Filter Lists records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -6928,6 +6956,8 @@ class AActions:
             Specifies which relations should be loaded on the returned A model
         order
             Order the returned A records by any field
+        distinct
+            Filter A records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -6993,6 +7023,8 @@ class AActions:
             Specifies which relations should be loaded on the returned A model
         order
             Order the returned A records by any field
+        distinct
+            Filter A records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -7859,6 +7891,8 @@ class BActions:
             Specifies which relations should be loaded on the returned B model
         order
             Order the returned B records by any field
+        distinct
+            Filter B records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -7924,6 +7958,8 @@ class BActions:
             Specifies which relations should be loaded on the returned B model
         order
             Order the returned B records by any field
+        distinct
+            Filter B records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -8800,6 +8836,8 @@ class CActions:
             Specifies which relations should be loaded on the returned C model
         order
             Order the returned C records by any field
+        distinct
+            Filter C records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -8865,6 +8903,8 @@ class CActions:
             Specifies which relations should be loaded on the returned C model
         order
             Order the returned C records by any field
+        distinct
+            Filter C records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -9730,6 +9770,8 @@ class DActions:
             Specifies which relations should be loaded on the returned D model
         order
             Order the returned D records by any field
+        distinct
+            Filter D records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -9795,6 +9837,8 @@ class DActions:
             Specifies which relations should be loaded on the returned D model
         order
             Order the returned D records by any field
+        distinct
+            Filter D records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -10662,6 +10706,8 @@ class EActions:
             Specifies which relations should be loaded on the returned E model
         order
             Order the returned E records by any field
+        distinct
+            Filter E records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
@@ -10727,6 +10773,8 @@ class EActions:
             Specifies which relations should be loaded on the returned E model
         order
             Order the returned E records by any field
+        distinct
+            Filter E records by either a single distinct field or distinct combinations of fields
 
         Returns
         -------
