@@ -19,6 +19,7 @@ def lint(session: nox.Session) -> None:
         'pyright',
         get_pkg_location(session, 'prisma'),
         'tests',
+        'databases',
     )
     session.run('pyright', '--ignoreexternal', '--verifytypes', 'prisma')
     session.run(
