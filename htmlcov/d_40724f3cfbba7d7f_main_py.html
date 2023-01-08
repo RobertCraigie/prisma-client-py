@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="d_40724f3cfbba7d7f_partials_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2023-01-08 10:54 +0000
+            created at 2023-01-08 11:13 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -160,7 +160,7 @@
     <p class="run"><span class="n"><a id="t76" href="#t76">76</a></span><span class="t">    <span class="nam">session</span> <span class="op">=</span> <span class="nam">session_ctx</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t77" href="#t77">77</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t">    <span class="nam">exclude</span> <span class="op">=</span> <span class="nam">set</span><span class="op">(</span><span class="nam">validate_databases</span><span class="op">(</span><span class="nam">exclude_databases</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t">    <span class="nam">databases</span> <span class="op">=</span> <span class="op">[</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t">    <span class="nam">validated_databases</span><span class="op">:</span> <span class="nam">list</span><span class="op">[</span><span class="nam">SupportedDatabase</span><span class="op">]</span> <span class="op">=</span> <span class="op">[</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t">        <span class="nam">database</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t">        <span class="key">for</span> <span class="nam">database</span> <span class="key">in</span> <span class="nam">validate_databases</span><span class="op">(</span><span class="nam">databases</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t">        <span class="key">if</span> <span class="nam">database</span> <span class="key">not</span> <span class="key">in</span> <span class="nam">exclude</span>&nbsp;</span><span class="r"></span></p>
@@ -169,7 +169,7 @@
     <p class="run"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t">    <span class="key">with</span> <span class="nam">session</span><span class="op">.</span><span class="nam">chdir</span><span class="op">(</span><span class="nam">DATABASES_DIR</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t">        <span class="nam">_setup_test_env</span><span class="op">(</span><span class="nam">session</span><span class="op">,</span> <span class="nam">inplace</span><span class="op">=</span><span class="nam">inplace</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t">        <span class="key">for</span> <span class="nam">database</span> <span class="key">in</span> <span class="nam">databases</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t">        <span class="key">for</span> <span class="nam">database</span> <span class="key">in</span> <span class="nam">validated_databases</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t">            <span class="nam">print</span><span class="op">(</span><span class="nam">title</span><span class="op">(</span><span class="nam">CONFIG_MAPPING</span><span class="op">[</span><span class="nam">database</span><span class="op">]</span><span class="op">.</span><span class="nam">name</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t">            <span class="com"># point coverage to store data in a database specific location</span>&nbsp;</span><span class="r"></span></p>
@@ -527,7 +527,7 @@
             <a id="nextFileLink" class="nav" href="d_40724f3cfbba7d7f_partials_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2023-01-08 10:54 +0000
+            created at 2023-01-08 11:13 +0000
         </p>
     </div>
 </footer>
