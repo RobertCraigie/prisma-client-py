@@ -9,7 +9,8 @@ from . import types, models, errors, actions
 from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT
 from .engine import AbstractEngine, QueryEngine
-from .builder import QueryBuilder
+from .builder import QueryBuilder, Operation
+from .middleware import MiddlewareFunc, MiddlewareParams, MiddlewareResult
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix
 from ._raw_query import deserialize_raw_results
@@ -131,6 +132,7 @@ class Prisma:
         '_datasource',
         '_connect_timeout',
         '_http_config',
+        '_middlewares',
     )
 
     def __init__(
@@ -156,6 +158,7 @@ class Prisma:
         self._datasource = datasource
         self._connect_timeout = connect_timeout
         self._http_config: HttpConfig = http or {}
+        self._middlewares: List[MiddlewareFunc] = []
 
         if use_dotenv:
             load_env()
@@ -243,11 +246,21 @@ class Prisma:
             {% endif %}
             self.__engine = None
 
+    # TODO: add support for clearing middlewares
+
+    def use(self, *middlewares: MiddlewareFunc) -> None:
+        """Setup a middleware function to be called before each query is executed.
+
+        TODO: link to docs
+        """
+        self._middlewares.extend(middlewares)
+
     {% if active_provider != 'mongodb' %}
     {{ maybe_async_def }}execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = {{ maybe_await }}self._execute(
             operation='{{ operations.execute_raw }}',
-            method='{{ methods.execute_raw }}',
+            method='execute_raw',
+            prisma_method='{{ methods.execute_raw }}',
             arguments={
                 'query': query,
                 'parameters': args,
@@ -285,9 +298,18 @@ class Prisma:
         """
         results: Sequence[Union[BaseModelT, dict[str, Any]]]
         if model is not None:
-            results = {{ maybe_await }}self.query_raw(query, *args, model=model)
+            results = {{ maybe_await }}self._execute_raw_query(
+                query,
+                *args,
+                model=model,
+                _from_method='query_first',
+            )
         else:
-            results = {{ maybe_await }}self.query_raw(query, *args)
+            results = {{ maybe_await }}self._execute_raw_query(
+                query,
+                *args,
+                _from_method='query_first',
+            )
 
         if not results:
             return None
@@ -322,9 +344,41 @@ class Prisma:
         If model is given, each returned record is converted to the pydantic model first,
         otherwise results will be raw dictionaries.
         """
+        return {{ maybe_await }}self._execute_raw_query(
+            query, *args, _from_method='query_raw'
+        )
+
+
+    @overload
+    {{ maybe_async_def }}_execute_raw_query(
+        self,
+        query: LiteralString,
+        *args: Any,
+        _from_method: str,
+    ) -> list[dict[str, Any]]:
+        ...
+
+    @overload
+    {{ maybe_async_def }}_execute_raw_query(
+        self,
+        query: LiteralString,
+        *args: Any,
+        _from_method: str,
+        model: Type[BaseModelT],
+    ) -> list[BaseModelT]:
+        ...
+
+    {{ maybe_async_def }}_execute_raw_query(
+        self,
+        query: LiteralString,
+        *args: Any,
+        _from_method: str,
+        model: Optional[Type[BaseModelT]] = None,
+    ) -> list[BaseModelT] | list[dict[str, Any]]:
         resp = {{ maybe_await }}self._execute(
             operation='{{ operations.query_raw }}',
-            method='{{ methods.query_raw }}',
+            method=_from_method,
+            prisma_method='{{ methods.query_raw }}',
             arguments={
                 'query': query,
                 'parameters': args,
@@ -335,6 +389,7 @@ class Prisma:
             return deserialize_raw_results(result, model=model)
 
         return deserialize_raw_results(result)
+
     {% endif %}
 
     def batch_(self) -> 'Batch':
@@ -344,20 +399,47 @@ class Prisma:
     # TODO: don't return Any
     {{ maybe_async_def }}_execute(
         self,
+        *,
         method: str,
-        operation: str,
+        prisma_method: str,
+        operation: Operation,
         arguments: Dict[str, Any],
         model: Optional[str] = None,
         root_selection: Optional[List[str]] = None
     ) -> Any:
-        builder = QueryBuilder(
-            operation=operation,
+        {{ maybe_async_def }}executor(params: MiddlewareParams) -> MiddlewareResult:
+            builder = QueryBuilder(
+                operation=params.operation,
+                method=params.prisma_method,
+                model=params.model_name,
+                arguments=params.arguments,
+                # TODO: move this to middleware params too
+                root_selection=root_selection,
+            )
+            return {{ maybe_await }}self._engine.query(builder.build())
+
+        # TODO: should this also operate on the parsed return type?
+        {{ maybe_async_def }}get_result(params: MiddlewareParams) -> MiddlewareResult:
+            try:
+                middleware = next(iterator)
+            except StopIteration:
+                return {{ maybe_await }}executor(params)
+
+            return {{ maybe_await }}middleware(params, get_result)
+
+        params = MiddlewareParams(
             method=method,
-            model=model,
+            operation=operation,
+            model_name=model,
             arguments=arguments,
-            root_selection=root_selection,
+            prisma_method=prisma_method,
         )
-        return {{ maybe_await }}self._engine.query(builder.build())
+        if not self._middlewares:
+            return {{ maybe_await }}executor(params)
+
+        first, *rest = self._middlewares
+        iterator = iter(rest)
+        return {{ maybe_await }}first(params, get_result)
 
     def _create_engine(self, dml_path: Path = PACKAGED_SCHEMA_PATH) -> AbstractEngine:
         if ENGINE_TYPE == EngineType.binary:

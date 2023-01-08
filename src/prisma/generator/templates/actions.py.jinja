@@ -174,7 +174,8 @@ class {{ model.name }}Actions:
         """
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.create }}',
-            method='{{ methods.create }}',
+            method='create',
+            prisma_method='{{ methods.create }}',
             model='{{ model.name }}',
             arguments={
                 'data': data,
@@ -239,7 +240,8 @@ class {{ model.name }}Actions:
 
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.create_many }}',
-            method='{{ methods.create_many }}',
+            method='create_many',
+            prisma_method='{{ methods.create_many }}',
             model='{{ model.name }}',
             arguments={
                 'data': data,
@@ -288,7 +290,8 @@ class {{ model.name }}Actions:
         try:
             resp = {{ maybe_await }}self._client._execute(
                 operation='{{ operations.delete }}',
-                method='{{ methods.delete }}',
+                method='delete',
+                prisma_method='{{ methods.delete }}',
                 model='{{ model.name }}',
                 arguments={
                     'where': where,
@@ -338,7 +341,8 @@ class {{ model.name }}Actions:
         """
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.find_unique }}',
-            method='{{ methods.find_unique }}',
+            method='find_unique',
+            prisma_method='{{ methods.find_unique }}',
             model='{{ model.name }}',
             arguments={
                 'where': where,
@@ -408,7 +412,8 @@ class {{ model.name }}Actions:
         """
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.find_many }}',
-            method='{{ methods.find_many }}',
+            method='find_many',
+            prisma_method='{{ methods.find_many }}',
             model='{{ model.name }}',
             arguments={
                 'take': take,
@@ -474,7 +479,8 @@ class {{ model.name }}Actions:
         """
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.find_first }}',
-            method='{{ methods.find_first }}',
+            method='find_first',
+            prisma_method='{{ methods.find_first }}',
             model='{{ model.name }}',
             arguments={
                 'skip': skip,
@@ -534,7 +540,8 @@ class {{ model.name }}Actions:
         try:
             resp = {{ maybe_await }}self._client._execute(
                 operation='{{ operations["update"] }}',
-                method='{{ methods["update"] }}',
+                method='update',
+                prisma_method='{{ methods["update"] }}',
                 model='{{ model.name }}',
                 arguments={
                     'data': data,
@@ -620,7 +627,8 @@ class {{ model.name }}Actions:
         """
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.upsert }}',
-            method='{{ methods.upsert }}',
+            method='upsert',
+            prisma_method='{{ methods.upsert }}',
             model='{{ model.name }}',
             arguments={
                 'where': where,
@@ -669,7 +677,8 @@ class {{ model.name }}Actions:
         """
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.update_many }}',
-            method='{{ methods.update_many }}',
+            method='update_many',
+            prisma_method='{{ methods.update_many }}',
             model='{{ model.name }}',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -776,7 +785,8 @@ class {{ model.name }}Actions:
 
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.count }}',
-            method='{{ methods.count }}',
+            method='count',
+            prisma_method='{{ methods.count }}',
             model='{{ model.name }}',
             arguments={
                 'take': take,
@@ -821,7 +831,8 @@ class {{ model.name }}Actions:
         """
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.delete_many }}',
-            method='{{ methods.delete_many }}',
+            method='delete_many',
+            prisma_method='{{ methods.delete_many }}',
             model='{{ model.name }}',
             arguments={'where': where},
             root_selection=['count'],
@@ -940,7 +951,8 @@ class {{ model.name }}Actions:
 
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.group_by }}',
-            method='{{ methods.group_by }}',
+            method='group_by',
+            prisma_method='{{ methods.group_by }}',
             model='{{ model.name }}',
             arguments={
                 'by': by,

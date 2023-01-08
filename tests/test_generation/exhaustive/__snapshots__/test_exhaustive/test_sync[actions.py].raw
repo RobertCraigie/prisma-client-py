@@ -176,7 +176,8 @@ class PostActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='createOne',
+            method='create',
+            prisma_method='createOne',
             model='Post',
             arguments={
                 'data': data,
@@ -243,7 +244,8 @@ class PostActions:
 
         resp = self._client._execute(
             operation='mutation',
-            method='createMany',
+            method='create_many',
+            prisma_method='createMany',
             model='Post',
             arguments={
                 'data': data,
@@ -294,7 +296,8 @@ class PostActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='deleteOne',
+                method='delete',
+                prisma_method='deleteOne',
                 model='Post',
                 arguments={
                     'where': where,
@@ -346,7 +349,8 @@ class PostActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findUnique',
+            method='find_unique',
+            prisma_method='findUnique',
             model='Post',
             arguments={
                 'where': where,
@@ -416,7 +420,8 @@ class PostActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findMany',
+            method='find_many',
+            prisma_method='findMany',
             model='Post',
             arguments={
                 'take': take,
@@ -482,7 +487,8 @@ class PostActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findFirst',
+            method='find_first',
+            prisma_method='findFirst',
             model='Post',
             arguments={
                 'skip': skip,
@@ -543,7 +549,8 @@ class PostActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='updateOne',
+                method='update',
+                prisma_method='updateOne',
                 model='Post',
                 arguments={
                     'data': data,
@@ -608,7 +615,8 @@ class PostActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='upsertOne',
+            method='upsert',
+            prisma_method='upsertOne',
             model='Post',
             arguments={
                 'where': where,
@@ -657,7 +665,8 @@ class PostActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='updateMany',
+            method='update_many',
+            prisma_method='updateMany',
             model='Post',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -802,7 +811,8 @@ class PostActions:
 
         resp = self._client._execute(
             operation='query',
-            method='aggregate',
+            method='count',
+            prisma_method='aggregate',
             model='Post',
             arguments={
                 'take': take,
@@ -848,7 +858,8 @@ class PostActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='deleteMany',
+            method='delete_many',
+            prisma_method='deleteMany',
             model='Post',
             arguments={'where': where},
             root_selection=['count'],
@@ -959,7 +970,8 @@ class PostActions:
 
         resp = self._client._execute(
             operation='query',
-            method='groupBy',
+            method='group_by',
+            prisma_method='groupBy',
             model='Post',
             arguments={
                 'by': by,
@@ -1107,7 +1119,8 @@ class UserActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='createOne',
+            method='create',
+            prisma_method='createOne',
             model='User',
             arguments={
                 'data': data,
@@ -1182,7 +1195,8 @@ class UserActions:
 
         resp = self._client._execute(
             operation='mutation',
-            method='createMany',
+            method='create_many',
+            prisma_method='createMany',
             model='User',
             arguments={
                 'data': data,
@@ -1233,7 +1247,8 @@ class UserActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='deleteOne',
+                method='delete',
+                prisma_method='deleteOne',
                 model='User',
                 arguments={
                     'where': where,
@@ -1285,7 +1300,8 @@ class UserActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findUnique',
+            method='find_unique',
+            prisma_method='findUnique',
             model='User',
             arguments={
                 'where': where,
@@ -1355,7 +1371,8 @@ class UserActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findMany',
+            method='find_many',
+            prisma_method='findMany',
             model='User',
             arguments={
                 'take': take,
@@ -1421,7 +1438,8 @@ class UserActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findFirst',
+            method='find_first',
+            prisma_method='findFirst',
             model='User',
             arguments={
                 'skip': skip,
@@ -1482,7 +1500,8 @@ class UserActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='updateOne',
+                method='update',
+                prisma_method='updateOne',
                 model='User',
                 arguments={
                     'data': data,
@@ -1555,7 +1574,8 @@ class UserActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='upsertOne',
+            method='upsert',
+            prisma_method='upsertOne',
             model='User',
             arguments={
                 'where': where,
@@ -1604,7 +1624,8 @@ class UserActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='updateMany',
+            method='update_many',
+            prisma_method='updateMany',
             model='User',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -1749,7 +1770,8 @@ class UserActions:
 
         resp = self._client._execute(
             operation='query',
-            method='aggregate',
+            method='count',
+            prisma_method='aggregate',
             model='User',
             arguments={
                 'take': take,
@@ -1795,7 +1817,8 @@ class UserActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='deleteMany',
+            method='delete_many',
+            prisma_method='deleteMany',
             model='User',
             arguments={'where': where},
             root_selection=['count'],
@@ -1906,7 +1929,8 @@ class UserActions:
 
         resp = self._client._execute(
             operation='query',
-            method='groupBy',
+            method='group_by',
+            prisma_method='groupBy',
             model='User',
             arguments={
                 'by': by,
@@ -2053,7 +2077,8 @@ class MActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='createOne',
+            method='create',
+            prisma_method='createOne',
             model='M',
             arguments={
                 'data': data,
@@ -2126,7 +2151,8 @@ class MActions:
 
         resp = self._client._execute(
             operation='mutation',
-            method='createMany',
+            method='create_many',
+            prisma_method='createMany',
             model='M',
             arguments={
                 'data': data,
@@ -2177,7 +2203,8 @@ class MActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='deleteOne',
+                method='delete',
+                prisma_method='deleteOne',
                 model='M',
                 arguments={
                     'where': where,
@@ -2229,7 +2256,8 @@ class MActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findUnique',
+            method='find_unique',
+            prisma_method='findUnique',
             model='M',
             arguments={
                 'where': where,
@@ -2299,7 +2327,8 @@ class MActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findMany',
+            method='find_many',
+            prisma_method='findMany',
             model='M',
             arguments={
                 'take': take,
@@ -2365,7 +2394,8 @@ class MActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findFirst',
+            method='find_first',
+            prisma_method='findFirst',
             model='M',
             arguments={
                 'skip': skip,
@@ -2426,7 +2456,8 @@ class MActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='updateOne',
+                method='update',
+                prisma_method='updateOne',
                 model='M',
                 arguments={
                     'data': data,
@@ -2497,7 +2528,8 @@ class MActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='upsertOne',
+            method='upsert',
+            prisma_method='upsertOne',
             model='M',
             arguments={
                 'where': where,
@@ -2546,7 +2578,8 @@ class MActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='updateMany',
+            method='update_many',
+            prisma_method='updateMany',
             model='M',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -2691,7 +2724,8 @@ class MActions:
 
         resp = self._client._execute(
             operation='query',
-            method='aggregate',
+            method='count',
+            prisma_method='aggregate',
             model='M',
             arguments={
                 'take': take,
@@ -2737,7 +2771,8 @@ class MActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='deleteMany',
+            method='delete_many',
+            prisma_method='deleteMany',
             model='M',
             arguments={'where': where},
             root_selection=['count'],
@@ -2848,7 +2883,8 @@ class MActions:
 
         resp = self._client._execute(
             operation='query',
-            method='groupBy',
+            method='group_by',
+            prisma_method='groupBy',
             model='M',
             arguments={
                 'by': by,
@@ -2996,7 +3032,8 @@ class NActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='createOne',
+            method='create',
+            prisma_method='createOne',
             model='N',
             arguments={
                 'data': data,
@@ -3071,7 +3108,8 @@ class NActions:
 
         resp = self._client._execute(
             operation='mutation',
-            method='createMany',
+            method='create_many',
+            prisma_method='createMany',
             model='N',
             arguments={
                 'data': data,
@@ -3122,7 +3160,8 @@ class NActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='deleteOne',
+                method='delete',
+                prisma_method='deleteOne',
                 model='N',
                 arguments={
                     'where': where,
@@ -3174,7 +3213,8 @@ class NActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findUnique',
+            method='find_unique',
+            prisma_method='findUnique',
             model='N',
             arguments={
                 'where': where,
@@ -3244,7 +3284,8 @@ class NActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findMany',
+            method='find_many',
+            prisma_method='findMany',
             model='N',
             arguments={
                 'take': take,
@@ -3310,7 +3351,8 @@ class NActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findFirst',
+            method='find_first',
+            prisma_method='findFirst',
             model='N',
             arguments={
                 'skip': skip,
@@ -3371,7 +3413,8 @@ class NActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='updateOne',
+                method='update',
+                prisma_method='updateOne',
                 model='N',
                 arguments={
                     'data': data,
@@ -3444,7 +3487,8 @@ class NActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='upsertOne',
+            method='upsert',
+            prisma_method='upsertOne',
             model='N',
             arguments={
                 'where': where,
@@ -3493,7 +3537,8 @@ class NActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='updateMany',
+            method='update_many',
+            prisma_method='updateMany',
             model='N',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -3638,7 +3683,8 @@ class NActions:
 
         resp = self._client._execute(
             operation='query',
-            method='aggregate',
+            method='count',
+            prisma_method='aggregate',
             model='N',
             arguments={
                 'take': take,
@@ -3684,7 +3730,8 @@ class NActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='deleteMany',
+            method='delete_many',
+            prisma_method='deleteMany',
             model='N',
             arguments={'where': where},
             root_selection=['count'],
@@ -3795,7 +3842,8 @@ class NActions:
 
         resp = self._client._execute(
             operation='query',
-            method='groupBy',
+            method='group_by',
+            prisma_method='groupBy',
             model='N',
             arguments={
                 'by': by,
@@ -3942,7 +3990,8 @@ class OneOptionalActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='createOne',
+            method='create',
+            prisma_method='createOne',
             model='OneOptional',
             arguments={
                 'data': data,
@@ -4015,7 +4064,8 @@ class OneOptionalActions:
 
         resp = self._client._execute(
             operation='mutation',
-            method='createMany',
+            method='create_many',
+            prisma_method='createMany',
             model='OneOptional',
             arguments={
                 'data': data,
@@ -4066,7 +4116,8 @@ class OneOptionalActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='deleteOne',
+                method='delete',
+                prisma_method='deleteOne',
                 model='OneOptional',
                 arguments={
                     'where': where,
@@ -4118,7 +4169,8 @@ class OneOptionalActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findUnique',
+            method='find_unique',
+            prisma_method='findUnique',
             model='OneOptional',
             arguments={
                 'where': where,
@@ -4188,7 +4240,8 @@ class OneOptionalActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findMany',
+            method='find_many',
+            prisma_method='findMany',
             model='OneOptional',
             arguments={
                 'take': take,
@@ -4254,7 +4307,8 @@ class OneOptionalActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findFirst',
+            method='find_first',
+            prisma_method='findFirst',
             model='OneOptional',
             arguments={
                 'skip': skip,
@@ -4315,7 +4369,8 @@ class OneOptionalActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='updateOne',
+                method='update',
+                prisma_method='updateOne',
                 model='OneOptional',
                 arguments={
                     'data': data,
@@ -4386,7 +4441,8 @@ class OneOptionalActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='upsertOne',
+            method='upsert',
+            prisma_method='upsertOne',
             model='OneOptional',
             arguments={
                 'where': where,
@@ -4435,7 +4491,8 @@ class OneOptionalActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='updateMany',
+            method='update_many',
+            prisma_method='updateMany',
             model='OneOptional',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -4580,7 +4637,8 @@ class OneOptionalActions:
 
         resp = self._client._execute(
             operation='query',
-            method='aggregate',
+            method='count',
+            prisma_method='aggregate',
             model='OneOptional',
             arguments={
                 'take': take,
@@ -4626,7 +4684,8 @@ class OneOptionalActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='deleteMany',
+            method='delete_many',
+            prisma_method='deleteMany',
             model='OneOptional',
             arguments={'where': where},
             root_selection=['count'],
@@ -4737,7 +4796,8 @@ class OneOptionalActions:
 
         resp = self._client._execute(
             operation='query',
-            method='groupBy',
+            method='group_by',
+            prisma_method='groupBy',
             model='OneOptional',
             arguments={
                 'by': by,
@@ -4884,7 +4944,8 @@ class ManyRequiredActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='createOne',
+            method='create',
+            prisma_method='createOne',
             model='ManyRequired',
             arguments={
                 'data': data,
@@ -4957,7 +5018,8 @@ class ManyRequiredActions:
 
         resp = self._client._execute(
             operation='mutation',
-            method='createMany',
+            method='create_many',
+            prisma_method='createMany',
             model='ManyRequired',
             arguments={
                 'data': data,
@@ -5008,7 +5070,8 @@ class ManyRequiredActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='deleteOne',
+                method='delete',
+                prisma_method='deleteOne',
                 model='ManyRequired',
                 arguments={
                     'where': where,
@@ -5060,7 +5123,8 @@ class ManyRequiredActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findUnique',
+            method='find_unique',
+            prisma_method='findUnique',
             model='ManyRequired',
             arguments={
                 'where': where,
@@ -5130,7 +5194,8 @@ class ManyRequiredActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findMany',
+            method='find_many',
+            prisma_method='findMany',
             model='ManyRequired',
             arguments={
                 'take': take,
@@ -5196,7 +5261,8 @@ class ManyRequiredActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findFirst',
+            method='find_first',
+            prisma_method='findFirst',
             model='ManyRequired',
             arguments={
                 'skip': skip,
@@ -5257,7 +5323,8 @@ class ManyRequiredActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='updateOne',
+                method='update',
+                prisma_method='updateOne',
                 model='ManyRequired',
                 arguments={
                     'data': data,
@@ -5328,7 +5395,8 @@ class ManyRequiredActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='upsertOne',
+            method='upsert',
+            prisma_method='upsertOne',
             model='ManyRequired',
             arguments={
                 'where': where,
@@ -5377,7 +5445,8 @@ class ManyRequiredActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='updateMany',
+            method='update_many',
+            prisma_method='updateMany',
             model='ManyRequired',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -5522,7 +5591,8 @@ class ManyRequiredActions:
 
         resp = self._client._execute(
             operation='query',
-            method='aggregate',
+            method='count',
+            prisma_method='aggregate',
             model='ManyRequired',
             arguments={
                 'take': take,
@@ -5568,7 +5638,8 @@ class ManyRequiredActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='deleteMany',
+            method='delete_many',
+            prisma_method='deleteMany',
             model='ManyRequired',
             arguments={'where': where},
             root_selection=['count'],
@@ -5679,7 +5750,8 @@ class ManyRequiredActions:
 
         resp = self._client._execute(
             operation='query',
-            method='groupBy',
+            method='group_by',
+            prisma_method='groupBy',
             model='ManyRequired',
             arguments={
                 'by': by,
@@ -5821,7 +5893,8 @@ class ListsActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='createOne',
+            method='create',
+            prisma_method='createOne',
             model='Lists',
             arguments={
                 'data': data,
@@ -5884,7 +5957,8 @@ class ListsActions:
 
         resp = self._client._execute(
             operation='mutation',
-            method='createMany',
+            method='create_many',
+            prisma_method='createMany',
             model='Lists',
             arguments={
                 'data': data,
@@ -5935,7 +6009,8 @@ class ListsActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='deleteOne',
+                method='delete',
+                prisma_method='deleteOne',
                 model='Lists',
                 arguments={
                     'where': where,
@@ -5987,7 +6062,8 @@ class ListsActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findUnique',
+            method='find_unique',
+            prisma_method='findUnique',
             model='Lists',
             arguments={
                 'where': where,
@@ -6057,7 +6133,8 @@ class ListsActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findMany',
+            method='find_many',
+            prisma_method='findMany',
             model='Lists',
             arguments={
                 'take': take,
@@ -6123,7 +6200,8 @@ class ListsActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findFirst',
+            method='find_first',
+            prisma_method='findFirst',
             model='Lists',
             arguments={
                 'skip': skip,
@@ -6184,7 +6262,8 @@ class ListsActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='updateOne',
+                method='update',
+                prisma_method='updateOne',
                 model='Lists',
                 arguments={
                     'data': data,
@@ -6245,7 +6324,8 @@ class ListsActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='upsertOne',
+            method='upsert',
+            prisma_method='upsertOne',
             model='Lists',
             arguments={
                 'where': where,
@@ -6294,7 +6374,8 @@ class ListsActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='updateMany',
+            method='update_many',
+            prisma_method='updateMany',
             model='Lists',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -6439,7 +6520,8 @@ class ListsActions:
 
         resp = self._client._execute(
             operation='query',
-            method='aggregate',
+            method='count',
+            prisma_method='aggregate',
             model='Lists',
             arguments={
                 'take': take,
@@ -6485,7 +6567,8 @@ class ListsActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='deleteMany',
+            method='delete_many',
+            prisma_method='deleteMany',
             model='Lists',
             arguments={'where': where},
             root_selection=['count'],
@@ -6596,7 +6679,8 @@ class ListsActions:
 
         resp = self._client._execute(
             operation='query',
-            method='groupBy',
+            method='group_by',
+            prisma_method='groupBy',
             model='Lists',
             arguments={
                 'by': by,
@@ -6742,7 +6826,8 @@ class AActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='createOne',
+            method='create',
+            prisma_method='createOne',
             model='A',
             arguments={
                 'data': data,
@@ -6813,7 +6898,8 @@ class AActions:
 
         resp = self._client._execute(
             operation='mutation',
-            method='createMany',
+            method='create_many',
+            prisma_method='createMany',
             model='A',
             arguments={
                 'data': data,
@@ -6864,7 +6950,8 @@ class AActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='deleteOne',
+                method='delete',
+                prisma_method='deleteOne',
                 model='A',
                 arguments={
                     'where': where,
@@ -6916,7 +7003,8 @@ class AActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findUnique',
+            method='find_unique',
+            prisma_method='findUnique',
             model='A',
             arguments={
                 'where': where,
@@ -6986,7 +7074,8 @@ class AActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findMany',
+            method='find_many',
+            prisma_method='findMany',
             model='A',
             arguments={
                 'take': take,
@@ -7052,7 +7141,8 @@ class AActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findFirst',
+            method='find_first',
+            prisma_method='findFirst',
             model='A',
             arguments={
                 'skip': skip,
@@ -7113,7 +7203,8 @@ class AActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='updateOne',
+                method='update',
+                prisma_method='updateOne',
                 model='A',
                 arguments={
                     'data': data,
@@ -7180,7 +7271,8 @@ class AActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='upsertOne',
+            method='upsert',
+            prisma_method='upsertOne',
             model='A',
             arguments={
                 'where': where,
@@ -7229,7 +7321,8 @@ class AActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='updateMany',
+            method='update_many',
+            prisma_method='updateMany',
             model='A',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -7374,7 +7467,8 @@ class AActions:
 
         resp = self._client._execute(
             operation='query',
-            method='aggregate',
+            method='count',
+            prisma_method='aggregate',
             model='A',
             arguments={
                 'take': take,
@@ -7420,7 +7514,8 @@ class AActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='deleteMany',
+            method='delete_many',
+            prisma_method='deleteMany',
             model='A',
             arguments={'where': where},
             root_selection=['count'],
@@ -7531,7 +7626,8 @@ class AActions:
 
         resp = self._client._execute(
             operation='query',
-            method='groupBy',
+            method='group_by',
+            prisma_method='groupBy',
             model='A',
             arguments={
                 'by': by,
@@ -7677,7 +7773,8 @@ class BActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='createOne',
+            method='create',
+            prisma_method='createOne',
             model='B',
             arguments={
                 'data': data,
@@ -7748,7 +7845,8 @@ class BActions:
 
         resp = self._client._execute(
             operation='mutation',
-            method='createMany',
+            method='create_many',
+            prisma_method='createMany',
             model='B',
             arguments={
                 'data': data,
@@ -7799,7 +7897,8 @@ class BActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='deleteOne',
+                method='delete',
+                prisma_method='deleteOne',
                 model='B',
                 arguments={
                     'where': where,
@@ -7851,7 +7950,8 @@ class BActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findUnique',
+            method='find_unique',
+            prisma_method='findUnique',
             model='B',
             arguments={
                 'where': where,
@@ -7921,7 +8021,8 @@ class BActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findMany',
+            method='find_many',
+            prisma_method='findMany',
             model='B',
             arguments={
                 'take': take,
@@ -7987,7 +8088,8 @@ class BActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findFirst',
+            method='find_first',
+            prisma_method='findFirst',
             model='B',
             arguments={
                 'skip': skip,
@@ -8048,7 +8150,8 @@ class BActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='updateOne',
+                method='update',
+                prisma_method='updateOne',
                 model='B',
                 arguments={
                     'data': data,
@@ -8117,7 +8220,8 @@ class BActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='upsertOne',
+            method='upsert',
+            prisma_method='upsertOne',
             model='B',
             arguments={
                 'where': where,
@@ -8166,7 +8270,8 @@ class BActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='updateMany',
+            method='update_many',
+            prisma_method='updateMany',
             model='B',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -8311,7 +8416,8 @@ class BActions:
 
         resp = self._client._execute(
             operation='query',
-            method='aggregate',
+            method='count',
+            prisma_method='aggregate',
             model='B',
             arguments={
                 'take': take,
@@ -8357,7 +8463,8 @@ class BActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='deleteMany',
+            method='delete_many',
+            prisma_method='deleteMany',
             model='B',
             arguments={'where': where},
             root_selection=['count'],
@@ -8468,7 +8575,8 @@ class BActions:
 
         resp = self._client._execute(
             operation='query',
-            method='groupBy',
+            method='group_by',
+            prisma_method='groupBy',
             model='B',
             arguments={
                 'by': by,
@@ -8616,7 +8724,8 @@ class CActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='createOne',
+            method='create',
+            prisma_method='createOne',
             model='C',
             arguments={
                 'data': data,
@@ -8691,7 +8800,8 @@ class CActions:
 
         resp = self._client._execute(
             operation='mutation',
-            method='createMany',
+            method='create_many',
+            prisma_method='createMany',
             model='C',
             arguments={
                 'data': data,
@@ -8743,7 +8853,8 @@ class CActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='deleteOne',
+                method='delete',
+                prisma_method='deleteOne',
                 model='C',
                 arguments={
                     'where': where,
@@ -8796,7 +8907,8 @@ class CActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findUnique',
+            method='find_unique',
+            prisma_method='findUnique',
             model='C',
             arguments={
                 'where': where,
@@ -8866,7 +8978,8 @@ class CActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findMany',
+            method='find_many',
+            prisma_method='findMany',
             model='C',
             arguments={
                 'take': take,
@@ -8932,7 +9045,8 @@ class CActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findFirst',
+            method='find_first',
+            prisma_method='findFirst',
             model='C',
             arguments={
                 'skip': skip,
@@ -8994,7 +9108,8 @@ class CActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='updateOne',
+                method='update',
+                prisma_method='updateOne',
                 model='C',
                 arguments={
                     'data': data,
@@ -9056,7 +9171,8 @@ class CActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='upsertOne',
+            method='upsert',
+            prisma_method='upsertOne',
             model='C',
             arguments={
                 'where': where,
@@ -9105,7 +9221,8 @@ class CActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='updateMany',
+            method='update_many',
+            prisma_method='updateMany',
             model='C',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -9250,7 +9367,8 @@ class CActions:
 
         resp = self._client._execute(
             operation='query',
-            method='aggregate',
+            method='count',
+            prisma_method='aggregate',
             model='C',
             arguments={
                 'take': take,
@@ -9296,7 +9414,8 @@ class CActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='deleteMany',
+            method='delete_many',
+            prisma_method='deleteMany',
             model='C',
             arguments={'where': where},
             root_selection=['count'],
@@ -9407,7 +9526,8 @@ class CActions:
 
         resp = self._client._execute(
             operation='query',
-            method='groupBy',
+            method='group_by',
+            prisma_method='groupBy',
             model='C',
             arguments={
                 'by': by,
@@ -9554,7 +9674,8 @@ class DActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='createOne',
+            method='create',
+            prisma_method='createOne',
             model='D',
             arguments={
                 'data': data,
@@ -9627,7 +9748,8 @@ class DActions:
 
         resp = self._client._execute(
             operation='mutation',
-            method='createMany',
+            method='create_many',
+            prisma_method='createMany',
             model='D',
             arguments={
                 'data': data,
@@ -9678,7 +9800,8 @@ class DActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='deleteOne',
+                method='delete',
+                prisma_method='deleteOne',
                 model='D',
                 arguments={
                     'where': where,
@@ -9730,7 +9853,8 @@ class DActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findUnique',
+            method='find_unique',
+            prisma_method='findUnique',
             model='D',
             arguments={
                 'where': where,
@@ -9800,7 +9924,8 @@ class DActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findMany',
+            method='find_many',
+            prisma_method='findMany',
             model='D',
             arguments={
                 'take': take,
@@ -9866,7 +9991,8 @@ class DActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findFirst',
+            method='find_first',
+            prisma_method='findFirst',
             model='D',
             arguments={
                 'skip': skip,
@@ -9927,7 +10053,8 @@ class DActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='updateOne',
+                method='update',
+                prisma_method='updateOne',
                 model='D',
                 arguments={
                     'data': data,
@@ -9998,7 +10125,8 @@ class DActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='upsertOne',
+            method='upsert',
+            prisma_method='upsertOne',
             model='D',
             arguments={
                 'where': where,
@@ -10047,7 +10175,8 @@ class DActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='updateMany',
+            method='update_many',
+            prisma_method='updateMany',
             model='D',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -10192,7 +10321,8 @@ class DActions:
 
         resp = self._client._execute(
             operation='query',
-            method='aggregate',
+            method='count',
+            prisma_method='aggregate',
             model='D',
             arguments={
                 'take': take,
@@ -10238,7 +10368,8 @@ class DActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='deleteMany',
+            method='delete_many',
+            prisma_method='deleteMany',
             model='D',
             arguments={'where': where},
             root_selection=['count'],
@@ -10349,7 +10480,8 @@ class DActions:
 
         resp = self._client._execute(
             operation='query',
-            method='groupBy',
+            method='group_by',
+            prisma_method='groupBy',
             model='D',
             arguments={
                 'by': by,
@@ -10494,7 +10626,8 @@ class EActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='createOne',
+            method='create',
+            prisma_method='createOne',
             model='E',
             arguments={
                 'data': data,
@@ -10563,7 +10696,8 @@ class EActions:
 
         resp = self._client._execute(
             operation='mutation',
-            method='createMany',
+            method='create_many',
+            prisma_method='createMany',
             model='E',
             arguments={
                 'data': data,
@@ -10614,7 +10748,8 @@ class EActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='deleteOne',
+                method='delete',
+                prisma_method='deleteOne',
                 model='E',
                 arguments={
                     'where': where,
@@ -10666,7 +10801,8 @@ class EActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findUnique',
+            method='find_unique',
+            prisma_method='findUnique',
             model='E',
             arguments={
                 'where': where,
@@ -10736,7 +10872,8 @@ class EActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findMany',
+            method='find_many',
+            prisma_method='findMany',
             model='E',
             arguments={
                 'take': take,
@@ -10802,7 +10939,8 @@ class EActions:
         """
         resp = self._client._execute(
             operation='query',
-            method='findFirst',
+            method='find_first',
+            prisma_method='findFirst',
             model='E',
             arguments={
                 'skip': skip,
@@ -10863,7 +11001,8 @@ class EActions:
         try:
             resp = self._client._execute(
                 operation='mutation',
-                method='updateOne',
+                method='update',
+                prisma_method='updateOne',
                 model='E',
                 arguments={
                     'data': data,
@@ -10930,7 +11069,8 @@ class EActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='upsertOne',
+            method='upsert',
+            prisma_method='upsertOne',
             model='E',
             arguments={
                 'where': where,
@@ -10979,7 +11119,8 @@ class EActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='updateMany',
+            method='update_many',
+            prisma_method='updateMany',
             model='E',
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -11124,7 +11265,8 @@ class EActions:
 
         resp = self._client._execute(
             operation='query',
-            method='aggregate',
+            method='count',
+            prisma_method='aggregate',
             model='E',
             arguments={
                 'take': take,
@@ -11170,7 +11312,8 @@ class EActions:
         """
         resp = self._client._execute(
             operation='mutation',
-            method='deleteMany',
+            method='delete_many',
+            prisma_method='deleteMany',
             model='E',
             arguments={'where': where},
             root_selection=['count'],
@@ -11281,7 +11424,8 @@ class EActions:
 
         resp = self._client._execute(
             operation='query',
-            method='groupBy',
+            method='group_by',
+            prisma_method='groupBy',
             model='E',
             arguments={
                 'by': by,

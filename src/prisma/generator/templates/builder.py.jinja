@@ -52,13 +52,15 @@ RELATIONAL_FIELD_MAPPINGS: Dict[str, Dict[str, str]] = {
     {% endfor %}
 }
 
+Operation = Literal['query', 'mutation']
+
 
 class QueryBuilder:
     # prisma method
     method: str
 
     # GraphQL operation
-    operation: str
+    operation: Operation
 
     # prisma model
     model: Optional[str]
@@ -85,7 +87,7 @@ class QueryBuilder:
         self,
         *,
         method: str,
-        operation: str,
+        operation: Operation,
         arguments: Dict[str, Any],
         model: Optional[str] = None,
         root_selection: Optional[List[str]] = None
