@@ -76,7 +76,7 @@ def test(
     session = session_ctx.get()
 
     exclude = set(validate_databases(exclude_databases))
-    databases = [
+    validated_databases: list[SupportedDatabase] = [
         database
         for database in validate_databases(databases)
         if database not in exclude
@@ -85,7 +85,7 @@ def test(
     with session.chdir(DATABASES_DIR):
         _setup_test_env(session, inplace=inplace)
 
-        for database in databases:
+        for database in validated_databases:
             print(title(CONFIG_MAPPING[database].name))
 
             # point coverage to store data in a database specific location
