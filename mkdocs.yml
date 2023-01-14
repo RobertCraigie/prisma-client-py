@@ -58,6 +58,7 @@ nav:
   - Reference:
       - Query Operations: reference/operations.md
       - Client: reference/client.md
+      - Selecting Fields: reference/select-fields.md
       - Model Based Access: reference/model-actions.md
       - Batching Queries: reference/batching.md
       - Partial Types: reference/partials.md
