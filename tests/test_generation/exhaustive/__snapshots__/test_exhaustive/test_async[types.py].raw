@@ -1215,6 +1215,7 @@ class FindManyPostArgsFromPost(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive1'
 
 
@@ -1225,6 +1226,7 @@ class FindManyPostArgsFromPostRecursive1(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive2'
 
 
@@ -1235,6 +1237,7 @@ class FindManyPostArgsFromPostRecursive2(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     
     
 
@@ -1275,6 +1278,7 @@ class FindManyUserArgsFromPost(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive1'
 
 
@@ -1285,6 +1289,7 @@ class FindManyUserArgsFromPostRecursive1(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive2'
 
 
@@ -1295,6 +1300,7 @@ class FindManyUserArgsFromPostRecursive2(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     
     
 
@@ -1335,6 +1341,7 @@ class FindManyMArgsFromPost(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive1'
 
 
@@ -1345,6 +1352,7 @@ class FindManyMArgsFromPostRecursive1(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive2'
 
 
@@ -1355,6 +1363,7 @@ class FindManyMArgsFromPostRecursive2(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     
     
 
@@ -1395,6 +1404,7 @@ class FindManyNArgsFromPost(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive1'
 
 
@@ -1405,6 +1415,7 @@ class FindManyNArgsFromPostRecursive1(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive2'
 
 
@@ -1415,6 +1426,7 @@ class FindManyNArgsFromPostRecursive2(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     
     
 
@@ -1455,6 +1467,7 @@ class FindManyOneOptionalArgsFromPost(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
 
 
@@ -1465,6 +1478,7 @@ class FindManyOneOptionalArgsFromPostRecursive1(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive2'
 
 
@@ -1475,6 +1489,7 @@ class FindManyOneOptionalArgsFromPostRecursive2(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     
     
 
@@ -1515,6 +1530,7 @@ class FindManyManyRequiredArgsFromPost(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
 
 
@@ -1525,6 +1541,7 @@ class FindManyManyRequiredArgsFromPostRecursive1(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
 
 
@@ -1535,6 +1552,7 @@ class FindManyManyRequiredArgsFromPostRecursive2(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     
     
 
@@ -1573,6 +1591,7 @@ class FindManyListsArgsFromPost(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive1'
 
 
@@ -1583,6 +1602,7 @@ class FindManyListsArgsFromPostRecursive1(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive2'
 
 
@@ -1593,6 +1613,7 @@ class FindManyListsArgsFromPostRecursive2(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     
     
 
@@ -1631,6 +1652,7 @@ class FindManyAArgsFromPost(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive1'
 
 
@@ -1641,6 +1663,7 @@ class FindManyAArgsFromPostRecursive1(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive2'
 
 
@@ -1651,6 +1674,7 @@ class FindManyAArgsFromPostRecursive2(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     
     
 
@@ -1689,6 +1713,7 @@ class FindManyBArgsFromPost(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive1'
 
 
@@ -1699,6 +1724,7 @@ class FindManyBArgsFromPostRecursive1(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive2'
 
 
@@ -1709,6 +1735,7 @@ class FindManyBArgsFromPostRecursive2(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     
     
 
@@ -1747,6 +1774,7 @@ class FindManyCArgsFromPost(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive1'
 
 
@@ -1757,6 +1785,7 @@ class FindManyCArgsFromPostRecursive1(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive2'
 
 
@@ -1767,6 +1796,7 @@ class FindManyCArgsFromPostRecursive2(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     
     
 
@@ -1805,6 +1835,7 @@ class FindManyDArgsFromPost(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive1'
 
 
@@ -1815,6 +1846,7 @@ class FindManyDArgsFromPostRecursive1(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive2'
 
 
@@ -1825,6 +1857,7 @@ class FindManyDArgsFromPostRecursive2(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     
     
 
@@ -1863,6 +1896,7 @@ class FindManyEArgsFromPost(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive1'
 
 
@@ -1873,6 +1907,7 @@ class FindManyEArgsFromPostRecursive1(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive2'
 
 
@@ -1883,6 +1918,7 @@ class FindManyEArgsFromPostRecursive2(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     
 
 
@@ -2428,6 +2464,7 @@ class FindManyPostArgsFromUser(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive1'
 
 
@@ -2438,6 +2475,7 @@ class FindManyPostArgsFromUserRecursive1(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive2'
 
 
@@ -2448,6 +2486,7 @@ class FindManyPostArgsFromUserRecursive2(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     
     
 
@@ -2488,6 +2527,7 @@ class FindManyUserArgsFromUser(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive1'
 
 
@@ -2498,6 +2538,7 @@ class FindManyUserArgsFromUserRecursive1(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive2'
 
 
@@ -2508,6 +2549,7 @@ class FindManyUserArgsFromUserRecursive2(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     
     
 
@@ -2548,6 +2590,7 @@ class FindManyMArgsFromUser(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive1'
 
 
@@ -2558,6 +2601,7 @@ class FindManyMArgsFromUserRecursive1(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive2'
 
 
@@ -2568,6 +2612,7 @@ class FindManyMArgsFromUserRecursive2(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     
     
 
@@ -2608,6 +2653,7 @@ class FindManyNArgsFromUser(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive1'
 
 
@@ -2618,6 +2664,7 @@ class FindManyNArgsFromUserRecursive1(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive2'
 
 
@@ -2628,6 +2675,7 @@ class FindManyNArgsFromUserRecursive2(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     
     
 
@@ -2668,6 +2716,7 @@ class FindManyOneOptionalArgsFromUser(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
 
 
@@ -2678,6 +2727,7 @@ class FindManyOneOptionalArgsFromUserRecursive1(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive2'
 
 
@@ -2688,6 +2738,7 @@ class FindManyOneOptionalArgsFromUserRecursive2(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     
     
 
@@ -2728,6 +2779,7 @@ class FindManyManyRequiredArgsFromUser(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
 
 
@@ -2738,6 +2790,7 @@ class FindManyManyRequiredArgsFromUserRecursive1(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
 
 
@@ -2748,6 +2801,7 @@ class FindManyManyRequiredArgsFromUserRecursive2(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     
     
 
@@ -2786,6 +2840,7 @@ class FindManyListsArgsFromUser(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive1'
 
 
@@ -2796,6 +2851,7 @@ class FindManyListsArgsFromUserRecursive1(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive2'
 
 
@@ -2806,6 +2862,7 @@ class FindManyListsArgsFromUserRecursive2(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     
     
 
@@ -2844,6 +2901,7 @@ class FindManyAArgsFromUser(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive1'
 
 
@@ -2854,6 +2912,7 @@ class FindManyAArgsFromUserRecursive1(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive2'
 
 
@@ -2864,6 +2923,7 @@ class FindManyAArgsFromUserRecursive2(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     
     
 
@@ -2902,6 +2962,7 @@ class FindManyBArgsFromUser(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive1'
 
 
@@ -2912,6 +2973,7 @@ class FindManyBArgsFromUserRecursive1(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive2'
 
 
@@ -2922,6 +2984,7 @@ class FindManyBArgsFromUserRecursive2(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     
     
 
@@ -2960,6 +3023,7 @@ class FindManyCArgsFromUser(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive1'
 
 
@@ -2970,6 +3034,7 @@ class FindManyCArgsFromUserRecursive1(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive2'
 
 
@@ -2980,6 +3045,7 @@ class FindManyCArgsFromUserRecursive2(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     
     
 
@@ -3018,6 +3084,7 @@ class FindManyDArgsFromUser(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive1'
 
 
@@ -3028,6 +3095,7 @@ class FindManyDArgsFromUserRecursive1(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive2'
 
 
@@ -3038,6 +3106,7 @@ class FindManyDArgsFromUserRecursive2(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     
     
 
@@ -3076,6 +3145,7 @@ class FindManyEArgsFromUser(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive1'
 
 
@@ -3086,6 +3156,7 @@ class FindManyEArgsFromUserRecursive1(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive2'
 
 
@@ -3096,6 +3167,7 @@ class FindManyEArgsFromUserRecursive2(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     
 
 
@@ -3710,6 +3782,7 @@ class FindManyPostArgsFromM(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive1'
 
 
@@ -3720,6 +3793,7 @@ class FindManyPostArgsFromMRecursive1(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive2'
 
 
@@ -3730,6 +3804,7 @@ class FindManyPostArgsFromMRecursive2(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     
     
 
@@ -3770,6 +3845,7 @@ class FindManyUserArgsFromM(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive1'
 
 
@@ -3780,6 +3856,7 @@ class FindManyUserArgsFromMRecursive1(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive2'
 
 
@@ -3790,6 +3867,7 @@ class FindManyUserArgsFromMRecursive2(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     
     
 
@@ -3830,6 +3908,7 @@ class FindManyMArgsFromM(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive1'
 
 
@@ -3840,6 +3919,7 @@ class FindManyMArgsFromMRecursive1(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive2'
 
 
@@ -3850,6 +3930,7 @@ class FindManyMArgsFromMRecursive2(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     
     
 
@@ -3890,6 +3971,7 @@ class FindManyNArgsFromM(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive1'
 
 
@@ -3900,6 +3982,7 @@ class FindManyNArgsFromMRecursive1(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive2'
 
 
@@ -3910,6 +3993,7 @@ class FindManyNArgsFromMRecursive2(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     
     
 
@@ -3950,6 +4034,7 @@ class FindManyOneOptionalArgsFromM(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
 
 
@@ -3960,6 +4045,7 @@ class FindManyOneOptionalArgsFromMRecursive1(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive2'
 
 
@@ -3970,6 +4056,7 @@ class FindManyOneOptionalArgsFromMRecursive2(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     
     
 
@@ -4010,6 +4097,7 @@ class FindManyManyRequiredArgsFromM(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
 
 
@@ -4020,6 +4108,7 @@ class FindManyManyRequiredArgsFromMRecursive1(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
 
 
@@ -4030,6 +4119,7 @@ class FindManyManyRequiredArgsFromMRecursive2(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     
     
 
@@ -4068,6 +4158,7 @@ class FindManyListsArgsFromM(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive1'
 
 
@@ -4078,6 +4169,7 @@ class FindManyListsArgsFromMRecursive1(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive2'
 
 
@@ -4088,6 +4180,7 @@ class FindManyListsArgsFromMRecursive2(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     
     
 
@@ -4126,6 +4219,7 @@ class FindManyAArgsFromM(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive1'
 
 
@@ -4136,6 +4230,7 @@ class FindManyAArgsFromMRecursive1(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive2'
 
 
@@ -4146,6 +4241,7 @@ class FindManyAArgsFromMRecursive2(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     
     
 
@@ -4184,6 +4280,7 @@ class FindManyBArgsFromM(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive1'
 
 
@@ -4194,6 +4291,7 @@ class FindManyBArgsFromMRecursive1(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive2'
 
 
@@ -4204,6 +4302,7 @@ class FindManyBArgsFromMRecursive2(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     
     
 
@@ -4242,6 +4341,7 @@ class FindManyCArgsFromM(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive1'
 
 
@@ -4252,6 +4352,7 @@ class FindManyCArgsFromMRecursive1(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive2'
 
 
@@ -4262,6 +4363,7 @@ class FindManyCArgsFromMRecursive2(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     
     
 
@@ -4300,6 +4402,7 @@ class FindManyDArgsFromM(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive1'
 
 
@@ -4310,6 +4413,7 @@ class FindManyDArgsFromMRecursive1(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive2'
 
 
@@ -4320,6 +4424,7 @@ class FindManyDArgsFromMRecursive2(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     
     
 
@@ -4358,6 +4463,7 @@ class FindManyEArgsFromM(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive1'
 
 
@@ -4368,6 +4474,7 @@ class FindManyEArgsFromMRecursive1(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive2'
 
 
@@ -4378,6 +4485,7 @@ class FindManyEArgsFromMRecursive2(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     
 
 
@@ -5004,6 +5112,7 @@ class FindManyPostArgsFromN(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive1'
 
 
@@ -5014,6 +5123,7 @@ class FindManyPostArgsFromNRecursive1(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive2'
 
 
@@ -5024,6 +5134,7 @@ class FindManyPostArgsFromNRecursive2(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     
     
 
@@ -5064,6 +5175,7 @@ class FindManyUserArgsFromN(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive1'
 
 
@@ -5074,6 +5186,7 @@ class FindManyUserArgsFromNRecursive1(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive2'
 
 
@@ -5084,6 +5197,7 @@ class FindManyUserArgsFromNRecursive2(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     
     
 
@@ -5124,6 +5238,7 @@ class FindManyMArgsFromN(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive1'
 
 
@@ -5134,6 +5249,7 @@ class FindManyMArgsFromNRecursive1(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive2'
 
 
@@ -5144,6 +5260,7 @@ class FindManyMArgsFromNRecursive2(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     
     
 
@@ -5184,6 +5301,7 @@ class FindManyNArgsFromN(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive1'
 
 
@@ -5194,6 +5312,7 @@ class FindManyNArgsFromNRecursive1(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive2'
 
 
@@ -5204,6 +5323,7 @@ class FindManyNArgsFromNRecursive2(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     
     
 
@@ -5244,6 +5364,7 @@ class FindManyOneOptionalArgsFromN(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
 
 
@@ -5254,6 +5375,7 @@ class FindManyOneOptionalArgsFromNRecursive1(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive2'
 
 
@@ -5264,6 +5386,7 @@ class FindManyOneOptionalArgsFromNRecursive2(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     
     
 
@@ -5304,6 +5427,7 @@ class FindManyManyRequiredArgsFromN(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
 
 
@@ -5314,6 +5438,7 @@ class FindManyManyRequiredArgsFromNRecursive1(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
 
 
@@ -5324,6 +5449,7 @@ class FindManyManyRequiredArgsFromNRecursive2(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     
     
 
@@ -5362,6 +5488,7 @@ class FindManyListsArgsFromN(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive1'
 
 
@@ -5372,6 +5499,7 @@ class FindManyListsArgsFromNRecursive1(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive2'
 
 
@@ -5382,6 +5510,7 @@ class FindManyListsArgsFromNRecursive2(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     
     
 
@@ -5420,6 +5549,7 @@ class FindManyAArgsFromN(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive1'
 
 
@@ -5430,6 +5560,7 @@ class FindManyAArgsFromNRecursive1(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive2'
 
 
@@ -5440,6 +5571,7 @@ class FindManyAArgsFromNRecursive2(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     
     
 
@@ -5478,6 +5610,7 @@ class FindManyBArgsFromN(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive1'
 
 
@@ -5488,6 +5621,7 @@ class FindManyBArgsFromNRecursive1(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive2'
 
 
@@ -5498,6 +5632,7 @@ class FindManyBArgsFromNRecursive2(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     
     
 
@@ -5536,6 +5671,7 @@ class FindManyCArgsFromN(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive1'
 
 
@@ -5546,6 +5682,7 @@ class FindManyCArgsFromNRecursive1(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive2'
 
 
@@ -5556,6 +5693,7 @@ class FindManyCArgsFromNRecursive2(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     
     
 
@@ -5594,6 +5732,7 @@ class FindManyDArgsFromN(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive1'
 
 
@@ -5604,6 +5743,7 @@ class FindManyDArgsFromNRecursive1(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive2'
 
 
@@ -5614,6 +5754,7 @@ class FindManyDArgsFromNRecursive2(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     
     
 
@@ -5652,6 +5793,7 @@ class FindManyEArgsFromN(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive1'
 
 
@@ -5662,6 +5804,7 @@ class FindManyEArgsFromNRecursive1(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive2'
 
 
@@ -5672,6 +5815,7 @@ class FindManyEArgsFromNRecursive2(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     
 
 
@@ -6300,6 +6444,7 @@ class FindManyPostArgsFromOneOptional(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive1'
 
 
@@ -6310,6 +6455,7 @@ class FindManyPostArgsFromOneOptionalRecursive1(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive2'
 
 
@@ -6320,6 +6466,7 @@ class FindManyPostArgsFromOneOptionalRecursive2(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     
     
 
@@ -6360,6 +6507,7 @@ class FindManyUserArgsFromOneOptional(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive1'
 
 
@@ -6370,6 +6518,7 @@ class FindManyUserArgsFromOneOptionalRecursive1(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive2'
 
 
@@ -6380,6 +6529,7 @@ class FindManyUserArgsFromOneOptionalRecursive2(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     
     
 
@@ -6420,6 +6570,7 @@ class FindManyMArgsFromOneOptional(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive1'
 
 
@@ -6430,6 +6581,7 @@ class FindManyMArgsFromOneOptionalRecursive1(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive2'
 
 
@@ -6440,6 +6592,7 @@ class FindManyMArgsFromOneOptionalRecursive2(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     
     
 
@@ -6480,6 +6633,7 @@ class FindManyNArgsFromOneOptional(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive1'
 
 
@@ -6490,6 +6644,7 @@ class FindManyNArgsFromOneOptionalRecursive1(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive2'
 
 
@@ -6500,6 +6655,7 @@ class FindManyNArgsFromOneOptionalRecursive2(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     
     
 
@@ -6540,6 +6696,7 @@ class FindManyOneOptionalArgsFromOneOptional(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
 
 
@@ -6550,6 +6707,7 @@ class FindManyOneOptionalArgsFromOneOptionalRecursive1(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive2'
 
 
@@ -6560,6 +6718,7 @@ class FindManyOneOptionalArgsFromOneOptionalRecursive2(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     
     
 
@@ -6600,6 +6759,7 @@ class FindManyManyRequiredArgsFromOneOptional(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
 
 
@@ -6610,6 +6770,7 @@ class FindManyManyRequiredArgsFromOneOptionalRecursive1(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
 
 
@@ -6620,6 +6781,7 @@ class FindManyManyRequiredArgsFromOneOptionalRecursive2(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     
     
 
@@ -6658,6 +6820,7 @@ class FindManyListsArgsFromOneOptional(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive1'
 
 
@@ -6668,6 +6831,7 @@ class FindManyListsArgsFromOneOptionalRecursive1(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive2'
 
 
@@ -6678,6 +6842,7 @@ class FindManyListsArgsFromOneOptionalRecursive2(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     
     
 
@@ -6716,6 +6881,7 @@ class FindManyAArgsFromOneOptional(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive1'
 
 
@@ -6726,6 +6892,7 @@ class FindManyAArgsFromOneOptionalRecursive1(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive2'
 
 
@@ -6736,6 +6903,7 @@ class FindManyAArgsFromOneOptionalRecursive2(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     
     
 
@@ -6774,6 +6942,7 @@ class FindManyBArgsFromOneOptional(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive1'
 
 
@@ -6784,6 +6953,7 @@ class FindManyBArgsFromOneOptionalRecursive1(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive2'
 
 
@@ -6794,6 +6964,7 @@ class FindManyBArgsFromOneOptionalRecursive2(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     
     
 
@@ -6832,6 +7003,7 @@ class FindManyCArgsFromOneOptional(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive1'
 
 
@@ -6842,6 +7014,7 @@ class FindManyCArgsFromOneOptionalRecursive1(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive2'
 
 
@@ -6852,6 +7025,7 @@ class FindManyCArgsFromOneOptionalRecursive2(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     
     
 
@@ -6890,6 +7064,7 @@ class FindManyDArgsFromOneOptional(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive1'
 
 
@@ -6900,6 +7075,7 @@ class FindManyDArgsFromOneOptionalRecursive1(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive2'
 
 
@@ -6910,6 +7086,7 @@ class FindManyDArgsFromOneOptionalRecursive2(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     
     
 
@@ -6948,6 +7125,7 @@ class FindManyEArgsFromOneOptional(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive1'
 
 
@@ -6958,6 +7136,7 @@ class FindManyEArgsFromOneOptionalRecursive1(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive2'
 
 
@@ -6968,6 +7147,7 @@ class FindManyEArgsFromOneOptionalRecursive2(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     
 
 
@@ -7579,6 +7759,7 @@ class FindManyPostArgsFromManyRequired(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive1'
 
 
@@ -7589,6 +7770,7 @@ class FindManyPostArgsFromManyRequiredRecursive1(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive2'
 
 
@@ -7599,6 +7781,7 @@ class FindManyPostArgsFromManyRequiredRecursive2(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     
     
 
@@ -7639,6 +7822,7 @@ class FindManyUserArgsFromManyRequired(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive1'
 
 
@@ -7649,6 +7833,7 @@ class FindManyUserArgsFromManyRequiredRecursive1(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive2'
 
 
@@ -7659,6 +7844,7 @@ class FindManyUserArgsFromManyRequiredRecursive2(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     
     
 
@@ -7699,6 +7885,7 @@ class FindManyMArgsFromManyRequired(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive1'
 
 
@@ -7709,6 +7896,7 @@ class FindManyMArgsFromManyRequiredRecursive1(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive2'
 
 
@@ -7719,6 +7907,7 @@ class FindManyMArgsFromManyRequiredRecursive2(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     
     
 
@@ -7759,6 +7948,7 @@ class FindManyNArgsFromManyRequired(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive1'
 
 
@@ -7769,6 +7959,7 @@ class FindManyNArgsFromManyRequiredRecursive1(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive2'
 
 
@@ -7779,6 +7970,7 @@ class FindManyNArgsFromManyRequiredRecursive2(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     
     
 
@@ -7819,6 +8011,7 @@ class FindManyOneOptionalArgsFromManyRequired(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
 
 
@@ -7829,6 +8022,7 @@ class FindManyOneOptionalArgsFromManyRequiredRecursive1(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive2'
 
 
@@ -7839,6 +8033,7 @@ class FindManyOneOptionalArgsFromManyRequiredRecursive2(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     
     
 
@@ -7879,6 +8074,7 @@ class FindManyManyRequiredArgsFromManyRequired(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
 
 
@@ -7889,6 +8085,7 @@ class FindManyManyRequiredArgsFromManyRequiredRecursive1(TypedDict, total=False)
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
 
 
@@ -7899,6 +8096,7 @@ class FindManyManyRequiredArgsFromManyRequiredRecursive2(TypedDict, total=False)
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     
     
 
@@ -7937,6 +8135,7 @@ class FindManyListsArgsFromManyRequired(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive1'
 
 
@@ -7947,6 +8146,7 @@ class FindManyListsArgsFromManyRequiredRecursive1(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive2'
 
 
@@ -7957,6 +8157,7 @@ class FindManyListsArgsFromManyRequiredRecursive2(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     
     
 
@@ -7995,6 +8196,7 @@ class FindManyAArgsFromManyRequired(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive1'
 
 
@@ -8005,6 +8207,7 @@ class FindManyAArgsFromManyRequiredRecursive1(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive2'
 
 
@@ -8015,6 +8218,7 @@ class FindManyAArgsFromManyRequiredRecursive2(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     
     
 
@@ -8053,6 +8257,7 @@ class FindManyBArgsFromManyRequired(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive1'
 
 
@@ -8063,6 +8268,7 @@ class FindManyBArgsFromManyRequiredRecursive1(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive2'
 
 
@@ -8073,6 +8279,7 @@ class FindManyBArgsFromManyRequiredRecursive2(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     
     
 
@@ -8111,6 +8318,7 @@ class FindManyCArgsFromManyRequired(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive1'
 
 
@@ -8121,6 +8329,7 @@ class FindManyCArgsFromManyRequiredRecursive1(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive2'
 
 
@@ -8131,6 +8340,7 @@ class FindManyCArgsFromManyRequiredRecursive2(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     
     
 
@@ -8169,6 +8379,7 @@ class FindManyDArgsFromManyRequired(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive1'
 
 
@@ -8179,6 +8390,7 @@ class FindManyDArgsFromManyRequiredRecursive1(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive2'
 
 
@@ -8189,6 +8401,7 @@ class FindManyDArgsFromManyRequiredRecursive2(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     
     
 
@@ -8227,6 +8440,7 @@ class FindManyEArgsFromManyRequired(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive1'
 
 
@@ -8237,6 +8451,7 @@ class FindManyEArgsFromManyRequiredRecursive1(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive2'
 
 
@@ -8247,6 +8462,7 @@ class FindManyEArgsFromManyRequiredRecursive2(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     
 
 
@@ -8848,6 +9064,7 @@ class FindManyPostArgsFromLists(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive1'
 
 
@@ -8858,6 +9075,7 @@ class FindManyPostArgsFromListsRecursive1(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive2'
 
 
@@ -8868,6 +9086,7 @@ class FindManyPostArgsFromListsRecursive2(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     
     
 
@@ -8908,6 +9127,7 @@ class FindManyUserArgsFromLists(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive1'
 
 
@@ -8918,6 +9138,7 @@ class FindManyUserArgsFromListsRecursive1(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive2'
 
 
@@ -8928,6 +9149,7 @@ class FindManyUserArgsFromListsRecursive2(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     
     
 
@@ -8968,6 +9190,7 @@ class FindManyMArgsFromLists(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive1'
 
 
@@ -8978,6 +9201,7 @@ class FindManyMArgsFromListsRecursive1(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive2'
 
 
@@ -8988,6 +9212,7 @@ class FindManyMArgsFromListsRecursive2(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     
     
 
@@ -9028,6 +9253,7 @@ class FindManyNArgsFromLists(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive1'
 
 
@@ -9038,6 +9264,7 @@ class FindManyNArgsFromListsRecursive1(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive2'
 
 
@@ -9048,6 +9275,7 @@ class FindManyNArgsFromListsRecursive2(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     
     
 
@@ -9088,6 +9316,7 @@ class FindManyOneOptionalArgsFromLists(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
 
 
@@ -9098,6 +9327,7 @@ class FindManyOneOptionalArgsFromListsRecursive1(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive2'
 
 
@@ -9108,6 +9338,7 @@ class FindManyOneOptionalArgsFromListsRecursive2(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     
     
 
@@ -9148,6 +9379,7 @@ class FindManyManyRequiredArgsFromLists(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
 
 
@@ -9158,6 +9390,7 @@ class FindManyManyRequiredArgsFromListsRecursive1(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
 
 
@@ -9168,6 +9401,7 @@ class FindManyManyRequiredArgsFromListsRecursive2(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     
     
 
@@ -9206,6 +9440,7 @@ class FindManyListsArgsFromLists(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive1'
 
 
@@ -9216,6 +9451,7 @@ class FindManyListsArgsFromListsRecursive1(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive2'
 
 
@@ -9226,6 +9462,7 @@ class FindManyListsArgsFromListsRecursive2(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     
     
 
@@ -9264,6 +9501,7 @@ class FindManyAArgsFromLists(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive1'
 
 
@@ -9274,6 +9512,7 @@ class FindManyAArgsFromListsRecursive1(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive2'
 
 
@@ -9284,6 +9523,7 @@ class FindManyAArgsFromListsRecursive2(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     
     
 
@@ -9322,6 +9562,7 @@ class FindManyBArgsFromLists(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive1'
 
 
@@ -9332,6 +9573,7 @@ class FindManyBArgsFromListsRecursive1(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive2'
 
 
@@ -9342,6 +9584,7 @@ class FindManyBArgsFromListsRecursive2(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     
     
 
@@ -9380,6 +9623,7 @@ class FindManyCArgsFromLists(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive1'
 
 
@@ -9390,6 +9634,7 @@ class FindManyCArgsFromListsRecursive1(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive2'
 
 
@@ -9400,6 +9645,7 @@ class FindManyCArgsFromListsRecursive2(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     
     
 
@@ -9438,6 +9684,7 @@ class FindManyDArgsFromLists(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive1'
 
 
@@ -9448,6 +9695,7 @@ class FindManyDArgsFromListsRecursive1(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive2'
 
 
@@ -9458,6 +9706,7 @@ class FindManyDArgsFromListsRecursive2(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     
     
 
@@ -9496,6 +9745,7 @@ class FindManyEArgsFromLists(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive1'
 
 
@@ -9506,6 +9756,7 @@ class FindManyEArgsFromListsRecursive1(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive2'
 
 
@@ -9516,6 +9767,7 @@ class FindManyEArgsFromListsRecursive2(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     
 
 
@@ -10082,6 +10334,7 @@ class FindManyPostArgsFromA(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive1'
 
 
@@ -10092,6 +10345,7 @@ class FindManyPostArgsFromARecursive1(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive2'
 
 
@@ -10102,6 +10356,7 @@ class FindManyPostArgsFromARecursive2(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     
     
 
@@ -10142,6 +10397,7 @@ class FindManyUserArgsFromA(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive1'
 
 
@@ -10152,6 +10408,7 @@ class FindManyUserArgsFromARecursive1(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive2'
 
 
@@ -10162,6 +10419,7 @@ class FindManyUserArgsFromARecursive2(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     
     
 
@@ -10202,6 +10460,7 @@ class FindManyMArgsFromA(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive1'
 
 
@@ -10212,6 +10471,7 @@ class FindManyMArgsFromARecursive1(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive2'
 
 
@@ -10222,6 +10482,7 @@ class FindManyMArgsFromARecursive2(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     
     
 
@@ -10262,6 +10523,7 @@ class FindManyNArgsFromA(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive1'
 
 
@@ -10272,6 +10534,7 @@ class FindManyNArgsFromARecursive1(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive2'
 
 
@@ -10282,6 +10545,7 @@ class FindManyNArgsFromARecursive2(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     
     
 
@@ -10322,6 +10586,7 @@ class FindManyOneOptionalArgsFromA(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
 
 
@@ -10332,6 +10597,7 @@ class FindManyOneOptionalArgsFromARecursive1(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive2'
 
 
@@ -10342,6 +10608,7 @@ class FindManyOneOptionalArgsFromARecursive2(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     
     
 
@@ -10382,6 +10649,7 @@ class FindManyManyRequiredArgsFromA(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
 
 
@@ -10392,6 +10660,7 @@ class FindManyManyRequiredArgsFromARecursive1(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
 
 
@@ -10402,6 +10671,7 @@ class FindManyManyRequiredArgsFromARecursive2(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     
     
 
@@ -10440,6 +10710,7 @@ class FindManyListsArgsFromA(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive1'
 
 
@@ -10450,6 +10721,7 @@ class FindManyListsArgsFromARecursive1(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive2'
 
 
@@ -10460,6 +10732,7 @@ class FindManyListsArgsFromARecursive2(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     
     
 
@@ -10498,6 +10771,7 @@ class FindManyAArgsFromA(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive1'
 
 
@@ -10508,6 +10782,7 @@ class FindManyAArgsFromARecursive1(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive2'
 
 
@@ -10518,6 +10793,7 @@ class FindManyAArgsFromARecursive2(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     
     
 
@@ -10556,6 +10832,7 @@ class FindManyBArgsFromA(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive1'
 
 
@@ -10566,6 +10843,7 @@ class FindManyBArgsFromARecursive1(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive2'
 
 
@@ -10576,6 +10854,7 @@ class FindManyBArgsFromARecursive2(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     
     
 
@@ -10614,6 +10893,7 @@ class FindManyCArgsFromA(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive1'
 
 
@@ -10624,6 +10904,7 @@ class FindManyCArgsFromARecursive1(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive2'
 
 
@@ -10634,6 +10915,7 @@ class FindManyCArgsFromARecursive2(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     
     
 
@@ -10672,6 +10954,7 @@ class FindManyDArgsFromA(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive1'
 
 
@@ -10682,6 +10965,7 @@ class FindManyDArgsFromARecursive1(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive2'
 
 
@@ -10692,6 +10976,7 @@ class FindManyDArgsFromARecursive2(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     
     
 
@@ -10730,6 +11015,7 @@ class FindManyEArgsFromA(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive1'
 
 
@@ -10740,6 +11026,7 @@ class FindManyEArgsFromARecursive1(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive2'
 
 
@@ -10750,6 +11037,7 @@ class FindManyEArgsFromARecursive2(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     
 
 
@@ -11258,6 +11546,7 @@ class FindManyPostArgsFromB(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive1'
 
 
@@ -11268,6 +11557,7 @@ class FindManyPostArgsFromBRecursive1(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive2'
 
 
@@ -11278,6 +11568,7 @@ class FindManyPostArgsFromBRecursive2(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     
     
 
@@ -11318,6 +11609,7 @@ class FindManyUserArgsFromB(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive1'
 
 
@@ -11328,6 +11620,7 @@ class FindManyUserArgsFromBRecursive1(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive2'
 
 
@@ -11338,6 +11631,7 @@ class FindManyUserArgsFromBRecursive2(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     
     
 
@@ -11378,6 +11672,7 @@ class FindManyMArgsFromB(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive1'
 
 
@@ -11388,6 +11683,7 @@ class FindManyMArgsFromBRecursive1(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive2'
 
 
@@ -11398,6 +11694,7 @@ class FindManyMArgsFromBRecursive2(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     
     
 
@@ -11438,6 +11735,7 @@ class FindManyNArgsFromB(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive1'
 
 
@@ -11448,6 +11746,7 @@ class FindManyNArgsFromBRecursive1(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive2'
 
 
@@ -11458,6 +11757,7 @@ class FindManyNArgsFromBRecursive2(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     
     
 
@@ -11498,6 +11798,7 @@ class FindManyOneOptionalArgsFromB(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
 
 
@@ -11508,6 +11809,7 @@ class FindManyOneOptionalArgsFromBRecursive1(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive2'
 
 
@@ -11518,6 +11820,7 @@ class FindManyOneOptionalArgsFromBRecursive2(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     
     
 
@@ -11558,6 +11861,7 @@ class FindManyManyRequiredArgsFromB(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
 
 
@@ -11568,6 +11872,7 @@ class FindManyManyRequiredArgsFromBRecursive1(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
 
 
@@ -11578,6 +11883,7 @@ class FindManyManyRequiredArgsFromBRecursive2(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     
     
 
@@ -11616,6 +11922,7 @@ class FindManyListsArgsFromB(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive1'
 
 
@@ -11626,6 +11933,7 @@ class FindManyListsArgsFromBRecursive1(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive2'
 
 
@@ -11636,6 +11944,7 @@ class FindManyListsArgsFromBRecursive2(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     
     
 
@@ -11674,6 +11983,7 @@ class FindManyAArgsFromB(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive1'
 
 
@@ -11684,6 +11994,7 @@ class FindManyAArgsFromBRecursive1(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive2'
 
 
@@ -11694,6 +12005,7 @@ class FindManyAArgsFromBRecursive2(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     
     
 
@@ -11732,6 +12044,7 @@ class FindManyBArgsFromB(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive1'
 
 
@@ -11742,6 +12055,7 @@ class FindManyBArgsFromBRecursive1(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive2'
 
 
@@ -11752,6 +12066,7 @@ class FindManyBArgsFromBRecursive2(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     
     
 
@@ -11790,6 +12105,7 @@ class FindManyCArgsFromB(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive1'
 
 
@@ -11800,6 +12116,7 @@ class FindManyCArgsFromBRecursive1(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive2'
 
 
@@ -11810,6 +12127,7 @@ class FindManyCArgsFromBRecursive2(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     
     
 
@@ -11848,6 +12166,7 @@ class FindManyDArgsFromB(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive1'
 
 
@@ -11858,6 +12177,7 @@ class FindManyDArgsFromBRecursive1(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive2'
 
 
@@ -11868,6 +12188,7 @@ class FindManyDArgsFromBRecursive2(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     
     
 
@@ -11906,6 +12227,7 @@ class FindManyEArgsFromB(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive1'
 
 
@@ -11916,6 +12238,7 @@ class FindManyEArgsFromBRecursive1(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive2'
 
 
@@ -11926,6 +12249,7 @@ class FindManyEArgsFromBRecursive2(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     
 
 
@@ -12368,6 +12692,7 @@ class FindManyPostArgsFromC(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive1'
 
 
@@ -12378,6 +12703,7 @@ class FindManyPostArgsFromCRecursive1(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive2'
 
 
@@ -12388,6 +12714,7 @@ class FindManyPostArgsFromCRecursive2(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     
     
 
@@ -12428,6 +12755,7 @@ class FindManyUserArgsFromC(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive1'
 
 
@@ -12438,6 +12766,7 @@ class FindManyUserArgsFromCRecursive1(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive2'
 
 
@@ -12448,6 +12777,7 @@ class FindManyUserArgsFromCRecursive2(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     
     
 
@@ -12488,6 +12818,7 @@ class FindManyMArgsFromC(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive1'
 
 
@@ -12498,6 +12829,7 @@ class FindManyMArgsFromCRecursive1(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive2'
 
 
@@ -12508,6 +12840,7 @@ class FindManyMArgsFromCRecursive2(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     
     
 
@@ -12548,6 +12881,7 @@ class FindManyNArgsFromC(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive1'
 
 
@@ -12558,6 +12892,7 @@ class FindManyNArgsFromCRecursive1(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive2'
 
 
@@ -12568,6 +12903,7 @@ class FindManyNArgsFromCRecursive2(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     
     
 
@@ -12608,6 +12944,7 @@ class FindManyOneOptionalArgsFromC(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
 
 
@@ -12618,6 +12955,7 @@ class FindManyOneOptionalArgsFromCRecursive1(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive2'
 
 
@@ -12628,6 +12966,7 @@ class FindManyOneOptionalArgsFromCRecursive2(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     
     
 
@@ -12668,6 +13007,7 @@ class FindManyManyRequiredArgsFromC(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
 
 
@@ -12678,6 +13018,7 @@ class FindManyManyRequiredArgsFromCRecursive1(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
 
 
@@ -12688,6 +13029,7 @@ class FindManyManyRequiredArgsFromCRecursive2(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     
     
 
@@ -12726,6 +13068,7 @@ class FindManyListsArgsFromC(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive1'
 
 
@@ -12736,6 +13079,7 @@ class FindManyListsArgsFromCRecursive1(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive2'
 
 
@@ -12746,6 +13090,7 @@ class FindManyListsArgsFromCRecursive2(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     
     
 
@@ -12784,6 +13129,7 @@ class FindManyAArgsFromC(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive1'
 
 
@@ -12794,6 +13140,7 @@ class FindManyAArgsFromCRecursive1(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive2'
 
 
@@ -12804,6 +13151,7 @@ class FindManyAArgsFromCRecursive2(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     
     
 
@@ -12842,6 +13190,7 @@ class FindManyBArgsFromC(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive1'
 
 
@@ -12852,6 +13201,7 @@ class FindManyBArgsFromCRecursive1(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive2'
 
 
@@ -12862,6 +13212,7 @@ class FindManyBArgsFromCRecursive2(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     
     
 
@@ -12900,6 +13251,7 @@ class FindManyCArgsFromC(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive1'
 
 
@@ -12910,6 +13262,7 @@ class FindManyCArgsFromCRecursive1(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive2'
 
 
@@ -12920,6 +13273,7 @@ class FindManyCArgsFromCRecursive2(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     
     
 
@@ -12958,6 +13312,7 @@ class FindManyDArgsFromC(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive1'
 
 
@@ -12968,6 +13323,7 @@ class FindManyDArgsFromCRecursive1(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive2'
 
 
@@ -12978,6 +13334,7 @@ class FindManyDArgsFromCRecursive2(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     
     
 
@@ -13016,6 +13373,7 @@ class FindManyEArgsFromC(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive1'
 
 
@@ -13026,6 +13384,7 @@ class FindManyEArgsFromCRecursive1(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive2'
 
 
@@ -13036,6 +13395,7 @@ class FindManyEArgsFromCRecursive2(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     
 
 
@@ -13477,6 +13837,7 @@ class FindManyPostArgsFromD(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive1'
 
 
@@ -13487,6 +13848,7 @@ class FindManyPostArgsFromDRecursive1(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive2'
 
 
@@ -13497,6 +13859,7 @@ class FindManyPostArgsFromDRecursive2(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     
     
 
@@ -13537,6 +13900,7 @@ class FindManyUserArgsFromD(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive1'
 
 
@@ -13547,6 +13911,7 @@ class FindManyUserArgsFromDRecursive1(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive2'
 
 
@@ -13557,6 +13922,7 @@ class FindManyUserArgsFromDRecursive2(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     
     
 
@@ -13597,6 +13963,7 @@ class FindManyMArgsFromD(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive1'
 
 
@@ -13607,6 +13974,7 @@ class FindManyMArgsFromDRecursive1(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive2'
 
 
@@ -13617,6 +13985,7 @@ class FindManyMArgsFromDRecursive2(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     
     
 
@@ -13657,6 +14026,7 @@ class FindManyNArgsFromD(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive1'
 
 
@@ -13667,6 +14037,7 @@ class FindManyNArgsFromDRecursive1(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive2'
 
 
@@ -13677,6 +14048,7 @@ class FindManyNArgsFromDRecursive2(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     
     
 
@@ -13717,6 +14089,7 @@ class FindManyOneOptionalArgsFromD(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
 
 
@@ -13727,6 +14100,7 @@ class FindManyOneOptionalArgsFromDRecursive1(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive2'
 
 
@@ -13737,6 +14111,7 @@ class FindManyOneOptionalArgsFromDRecursive2(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     
     
 
@@ -13777,6 +14152,7 @@ class FindManyManyRequiredArgsFromD(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
 
 
@@ -13787,6 +14163,7 @@ class FindManyManyRequiredArgsFromDRecursive1(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
 
 
@@ -13797,6 +14174,7 @@ class FindManyManyRequiredArgsFromDRecursive2(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     
     
 
@@ -13835,6 +14213,7 @@ class FindManyListsArgsFromD(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive1'
 
 
@@ -13845,6 +14224,7 @@ class FindManyListsArgsFromDRecursive1(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive2'
 
 
@@ -13855,6 +14235,7 @@ class FindManyListsArgsFromDRecursive2(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     
     
 
@@ -13893,6 +14274,7 @@ class FindManyAArgsFromD(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive1'
 
 
@@ -13903,6 +14285,7 @@ class FindManyAArgsFromDRecursive1(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive2'
 
 
@@ -13913,6 +14296,7 @@ class FindManyAArgsFromDRecursive2(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     
     
 
@@ -13951,6 +14335,7 @@ class FindManyBArgsFromD(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive1'
 
 
@@ -13961,6 +14346,7 @@ class FindManyBArgsFromDRecursive1(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive2'
 
 
@@ -13971,6 +14357,7 @@ class FindManyBArgsFromDRecursive2(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     
     
 
@@ -14009,6 +14396,7 @@ class FindManyCArgsFromD(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive1'
 
 
@@ -14019,6 +14407,7 @@ class FindManyCArgsFromDRecursive1(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive2'
 
 
@@ -14029,6 +14418,7 @@ class FindManyCArgsFromDRecursive2(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     
     
 
@@ -14067,6 +14457,7 @@ class FindManyDArgsFromD(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive1'
 
 
@@ -14077,6 +14468,7 @@ class FindManyDArgsFromDRecursive1(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive2'
 
 
@@ -14087,6 +14479,7 @@ class FindManyDArgsFromDRecursive2(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     
     
 
@@ -14125,6 +14518,7 @@ class FindManyEArgsFromD(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive1'
 
 
@@ -14135,6 +14529,7 @@ class FindManyEArgsFromDRecursive1(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive2'
 
 
@@ -14145,6 +14540,7 @@ class FindManyEArgsFromDRecursive2(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     
 
 
@@ -14560,6 +14956,7 @@ class FindManyPostArgsFromE(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive1'
 
 
@@ -14570,6 +14967,7 @@ class FindManyPostArgsFromERecursive1(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     include: 'PostIncludeFromPostRecursive2'
 
 
@@ -14580,6 +14978,7 @@ class FindManyPostArgsFromERecursive2(TypedDict, total=False):
     order_by: Union['PostOrderByInput', List['PostOrderByInput']]
     where: 'PostWhereInput'
     cursor: 'PostWhereUniqueInput'
+    distinct: List['PostScalarFieldKeys']
     
     
 
@@ -14620,6 +15019,7 @@ class FindManyUserArgsFromE(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive1'
 
 
@@ -14630,6 +15030,7 @@ class FindManyUserArgsFromERecursive1(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     include: 'UserIncludeFromUserRecursive2'
 
 
@@ -14640,6 +15041,7 @@ class FindManyUserArgsFromERecursive2(TypedDict, total=False):
     order_by: Union['UserOrderByInput', List['UserOrderByInput']]
     where: 'UserWhereInput'
     cursor: 'UserWhereUniqueInput'
+    distinct: List['UserScalarFieldKeys']
     
     
 
@@ -14680,6 +15082,7 @@ class FindManyMArgsFromE(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive1'
 
 
@@ -14690,6 +15093,7 @@ class FindManyMArgsFromERecursive1(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     include: 'MIncludeFromMRecursive2'
 
 
@@ -14700,6 +15104,7 @@ class FindManyMArgsFromERecursive2(TypedDict, total=False):
     order_by: Union['MOrderByInput', List['MOrderByInput']]
     where: 'MWhereInput'
     cursor: 'MWhereUniqueInput'
+    distinct: List['MScalarFieldKeys']
     
     
 
@@ -14740,6 +15145,7 @@ class FindManyNArgsFromE(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive1'
 
 
@@ -14750,6 +15156,7 @@ class FindManyNArgsFromERecursive1(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     include: 'NIncludeFromNRecursive2'
 
 
@@ -14760,6 +15167,7 @@ class FindManyNArgsFromERecursive2(TypedDict, total=False):
     order_by: Union['NOrderByInput', List['NOrderByInput']]
     where: 'NWhereInput'
     cursor: 'NWhereUniqueInput'
+    distinct: List['NScalarFieldKeys']
     
     
 
@@ -14800,6 +15208,7 @@ class FindManyOneOptionalArgsFromE(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive1'
 
 
@@ -14810,6 +15219,7 @@ class FindManyOneOptionalArgsFromERecursive1(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     include: 'OneOptionalIncludeFromOneOptionalRecursive2'
 
 
@@ -14820,6 +15230,7 @@ class FindManyOneOptionalArgsFromERecursive2(TypedDict, total=False):
     order_by: Union['OneOptionalOrderByInput', List['OneOptionalOrderByInput']]
     where: 'OneOptionalWhereInput'
     cursor: 'OneOptionalWhereUniqueInput'
+    distinct: List['OneOptionalScalarFieldKeys']
     
     
 
@@ -14860,6 +15271,7 @@ class FindManyManyRequiredArgsFromE(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive1'
 
 
@@ -14870,6 +15282,7 @@ class FindManyManyRequiredArgsFromERecursive1(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     include: 'ManyRequiredIncludeFromManyRequiredRecursive2'
 
 
@@ -14880,6 +15293,7 @@ class FindManyManyRequiredArgsFromERecursive2(TypedDict, total=False):
     order_by: Union['ManyRequiredOrderByInput', List['ManyRequiredOrderByInput']]
     where: 'ManyRequiredWhereInput'
     cursor: 'ManyRequiredWhereUniqueInput'
+    distinct: List['ManyRequiredScalarFieldKeys']
     
     
 
@@ -14918,6 +15332,7 @@ class FindManyListsArgsFromE(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive1'
 
 
@@ -14928,6 +15343,7 @@ class FindManyListsArgsFromERecursive1(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     include: 'ListsIncludeFromListsRecursive2'
 
 
@@ -14938,6 +15354,7 @@ class FindManyListsArgsFromERecursive2(TypedDict, total=False):
     order_by: Union['ListsOrderByInput', List['ListsOrderByInput']]
     where: 'ListsWhereInput'
     cursor: 'ListsWhereUniqueInput'
+    distinct: List['ListsScalarFieldKeys']
     
     
 
@@ -14976,6 +15393,7 @@ class FindManyAArgsFromE(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive1'
 
 
@@ -14986,6 +15404,7 @@ class FindManyAArgsFromERecursive1(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     include: 'AIncludeFromARecursive2'
 
 
@@ -14996,6 +15415,7 @@ class FindManyAArgsFromERecursive2(TypedDict, total=False):
     order_by: Union['AOrderByInput', List['AOrderByInput']]
     where: 'AWhereInput'
     cursor: 'AWhereUniqueInput'
+    distinct: List['AScalarFieldKeys']
     
     
 
@@ -15034,6 +15454,7 @@ class FindManyBArgsFromE(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive1'
 
 
@@ -15044,6 +15465,7 @@ class FindManyBArgsFromERecursive1(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     include: 'BIncludeFromBRecursive2'
 
 
@@ -15054,6 +15476,7 @@ class FindManyBArgsFromERecursive2(TypedDict, total=False):
     order_by: Union['BOrderByInput', List['BOrderByInput']]
     where: 'BWhereInput'
     cursor: 'BWhereUniqueInput'
+    distinct: List['BScalarFieldKeys']
     
     
 
@@ -15092,6 +15515,7 @@ class FindManyCArgsFromE(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive1'
 
 
@@ -15102,6 +15526,7 @@ class FindManyCArgsFromERecursive1(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     include: 'CIncludeFromCRecursive2'
 
 
@@ -15112,6 +15537,7 @@ class FindManyCArgsFromERecursive2(TypedDict, total=False):
     order_by: Union['COrderByInput', List['COrderByInput']]
     where: 'CWhereInput'
     cursor: 'CWhereUniqueInput'
+    distinct: List['CScalarFieldKeys']
     
     
 
@@ -15150,6 +15576,7 @@ class FindManyDArgsFromE(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive1'
 
 
@@ -15160,6 +15587,7 @@ class FindManyDArgsFromERecursive1(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     include: 'DIncludeFromDRecursive2'
 
 
@@ -15170,6 +15598,7 @@ class FindManyDArgsFromERecursive2(TypedDict, total=False):
     order_by: Union['DOrderByInput', List['DOrderByInput']]
     where: 'DWhereInput'
     cursor: 'DWhereUniqueInput'
+    distinct: List['DScalarFieldKeys']
     
     
 
@@ -15208,6 +15637,7 @@ class FindManyEArgsFromE(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive1'
 
 
@@ -15218,6 +15648,7 @@ class FindManyEArgsFromERecursive1(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     include: 'EIncludeFromERecursive2'
 
 
@@ -15228,6 +15659,7 @@ class FindManyEArgsFromERecursive2(TypedDict, total=False):
     order_by: Union['EOrderByInput', List['EOrderByInput']]
     where: 'EWhereInput'
     cursor: 'EWhereUniqueInput'
+    distinct: List['EScalarFieldKeys']
     
 
 
