@@ -371,6 +371,11 @@ class Prisma:
         If model is given, each returned record is converted to the pydantic model first,
         otherwise results will be raw dictionaries.
         """
+        if model is not None:
+            return self._execute_raw_query(
+                query, *args, model=model, _from_method='query_raw'
+            )
+
         return self._execute_raw_query(
             query, *args, _from_method='query_raw'
         )
