@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 # fmt: off
 # I prefer this way of formatting
 import datetime
 from typing import Dict, Any
+from typing_extensions import Literal
 
 import pytest
 from syrupy.assertion import SnapshotAssertion
@@ -21,7 +24,7 @@ from prisma.errors import UnknownRelationalFieldError, UnknownModelError
 
 def build_query(
     method: str,
-    operation: str,
+    operation: Literal['query'] | Literal['mutation'],
     arguments: Dict[str, Any],
     **kwargs: Any,
 ) -> str:
