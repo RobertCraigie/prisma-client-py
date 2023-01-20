@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+import signal
 from pathlib import Path
 from typing import Iterator, Optional
 
@@ -46,6 +47,34 @@ async def test_engine_connects() -> None:
         await db.connect()
 
     await db.disconnect()
+
+
+@pytest.mark.asyncio
+async def test_engine_process_sigint_mask() -> None:
+    """Block SIGINT in current process"""
+    signal.pthread_sigmask(signal.SIG_BLOCK, [signal.SIGINT])
+    db = Prisma()
+    await db.connect()
+
+    with pytest.raises(errors.AlreadyConnectedError):
+        await db.connect()
+
+    await asyncio.wait_for(db.disconnect(), timeout=5)
+    signal.pthread_sigmask(signal.SIG_UNBLOCK, [signal.SIGINT])
+
+
+@pytest.mark.asyncio
+async def test_engine_process_sigterm_mask() -> None:
+    """Block SIGTERM in current process"""
+    signal.pthread_sigmask(signal.SIG_BLOCK, [signal.SIGTERM])
+    db = Prisma()
+    await db.connect()
+
+    with pytest.raises(errors.AlreadyConnectedError):
+        await db.connect()
+
+    await asyncio.wait_for(db.disconnect(), timeout=5)
+    signal.pthread_sigmask(signal.SIG_UNBLOCK, [signal.SIGTERM])
 
 
 def test_stopping_engine_on_closed_loop() -> None:

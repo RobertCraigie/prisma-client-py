@@ -170,6 +170,11 @@ class QueryEngine(HTTPEngine):
             env=env,
             stdout=sys.stdout,
             stderr=sys.stderr,
+            preexec_fn=lambda: signal.pthread_sigmask(
+                signal.SIG_UNBLOCK, [signal.SIGINT, signal.SIGTERM]
+            )
+            if hasattr(signal, "pthread_sigmask")
+            else None,
         )
 
         last_exc = None
