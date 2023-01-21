@@ -29,6 +29,7 @@ class HTTPEngine(AbstractEngine):
         headers: Optional[Dict[str, str]] = None,
         **kwargs: Any,
     ) -> None:
+        super().__init__()
         self.url = url
         self.session = HTTP(**kwargs)
         self.headers = headers if headers is not None else {}
@@ -54,7 +55,14 @@ class HTTPEngine(AbstractEngine):
         if self.session and not self.session.closed:
             {{ maybe_await }}self.session.close()
 
-    {{ maybe_async_def }}request(self, method: Method, path: str, *, content: Any = None) -> Any:
+    {{ maybe_async_def }}request(
+        self,
+        method: Method,
+        path: str,
+        *,
+        content: Any = None,
+        headers: Optional[Dict[str, str]] = None,
+    ) -> Any:
         if self.url is None:
             raise errors.NotConnectedError('Not connected to the query engine')
 
@@ -65,6 +73,9 @@ class HTTPEngine(AbstractEngine):
                 **self.headers,
             }
         }
+
+        if headers is not None:
+            kwargs['headers'].update(headers)
 
         if content is not None:
             kwargs['content'] = content

@@ -20,6 +20,7 @@ from ..binaries import platform
 from ..utils import time_since, _env_bool
 from ..types import DatasourceOverride
 from ..builder import dumps
+from ._types import TransactionId
 
 
 __all__ = ('QueryEngine',)
@@ -163,9 +164,40 @@ class QueryEngine(HTTPEngine):
                 'Could not connect to the query engine'
             ) from last_exc
 
-    {{ maybe_async_def }}query(self, content: str) -> Any:
-        return {{ maybe_await }}self.request('POST', '/', content=content)
+    {{ maybe_async_def }}query(
+        self,
+        content: str,
+        *,
+        tx_id: Optional[TransactionId] = None
+    ) -> Any:
+        headers: Dict[str, str] = {}
+        if tx_id is not None:
+            headers['X-transaction-id'] = tx_id
 
+        return {{ maybe_await }}self.request(
+            'POST',
+            '/',
+            content=content,
+            headers=headers,
+        )
+
+    {{ maybe_async_def }}start_transaction(self, *, content: str) -> TransactionId:
+        result = {{ maybe_await }}self.request(
+            'POST',
+            '/transaction/start',
+            content=content,
+        )
+        return TransactionId(result['id'])
+
+    {{ maybe_async_def }}commit_transaction(self, tx_id: TransactionId) -> None:
+        {{ maybe_await }}self.request(
+            'POST', f'/transaction/{tx_id}/commit'
+        )
+
+    {{ maybe_async_def }}rollback_transaction(self, tx_id: TransactionId) -> None:
+        {{ maybe_await }}self.request(
+            'POST', f'/transaction/{tx_id}/rollback'
+        )
 
 # black does not respect the fmt: off comment without this
 # fmt: on

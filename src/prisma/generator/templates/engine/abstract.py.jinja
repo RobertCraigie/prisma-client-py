@@ -1,9 +1,14 @@
+{% set annotations = true %}
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import maybe_async_def with context %}
 # -- template engine/abstract.py.jinja --
 from abc import ABC, abstractmethod
+from ._types import TransactionId
 from ..types import DatasourceOverride
 from .._compat import get_running_loop
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 __all__ = (
     'AbstractEngine',
@@ -11,6 +16,9 @@ __all__ = (
 
 class AbstractEngine(ABC):
     dml: str
+
+    def __init__(self) -> None:
+        self._refcount = 1
 
     def stop(self) -> None:
         """Wrapper for synchronously calling close() and aclose()"""
@@ -23,6 +31,26 @@ class AbstractEngine(ABC):
         else:
             if not loop.is_closed():
                 loop.create_task(self.aclose())
+
+    def decref(self) -> None:
+        """Decrement the reference counter by 1. Called when client instances are being destroyed."""
+        self._refcount -= 1
+
+    def new_ref(self) -> Self:
+        """Increment the reference counter for this engine and return the current instance to support sharing the same engine
+        between multiple `Prisma` instances.
+
+        Used to determine whether shutting down a given client should result in the engine being shut down too.
+        """
+        self._refcount += 1
+        return self
+
+    def should_stop(self) -> bool:
+        """Whether or not the engine should be stopped.
+
+        This should only be called *after* `.decref()`.
+        """
+        return self._refcount <= 0
 
     @abstractmethod
     def close(self) -> None:
@@ -46,7 +74,7 @@ class AbstractEngine(ABC):
         ...
 
     @abstractmethod
-    {{ maybe_async_def }}query(self, content: str) -> Any:
+    {{ maybe_async_def }}query(self, content: str, *, tx_id: Optional[TransactionId] = None) -> Any:
         """Execute a GraphQL query.
 
         This method expects a JSON object matching this structure:
@@ -57,4 +85,19 @@ class AbstractEngine(ABC):
             'query': str,
         }
         """
+        ...
+
+    @abstractmethod
+    {{ maybe_async_def }}start_transaction(self, *, content: str) -> TransactionId:
+        """Start an interactive transaction, returns the transaction ID that can be used to perform subsequent operations"""
+        ...
+
+    @abstractmethod
+    {{ maybe_async_def }}commit_transaction(self, tx_id: TransactionId) -> None:
+        """Commit an interactive transaction, the given transaction will no longer be usable"""
+        ...
+
+    @abstractmethod
+    {{ maybe_async_def }}rollback_transaction(self, tx_id: TransactionId) -> None:
+        """Rollback an interactive transaction, the given transaction will no longer be usable"""
         ...

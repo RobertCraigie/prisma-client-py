@@ -37,14 +37,15 @@ from typing_extensions import TypedDict, Literal
 
 LiteralString = str
 # -- template client.py.jinja --
+import warnings
 from pathlib import Path
 from types import TracebackType
 
 from . import types, models, errors, actions
 from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT
-from .engine import AbstractEngine, QueryEngine
-from .builder import QueryBuilder
+from .engine import AbstractEngine, QueryEngine, TransactionId
+from .builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix
 from ._raw_query import deserialize_raw_results
@@ -175,11 +176,12 @@ class Prisma:
         'd',
         'e',
         '__engine',
-        '_active_provider',
-        '_log_queries',
+        '_tx_id',
         '_datasource',
-        '_connect_timeout',
+        '_log_queries',
         '_http_config',
+        '_connect_timeout',
+        '_active_provider',
     )
 
     def __init__(
@@ -204,12 +206,16 @@ class Prisma:
         self.c = actions.CActions(self, models.C)
         self.d = actions.DActions(self, models.D)
         self.e = actions.EActions(self, models.E)
+
+        # NOTE: if you add any more properties here then you may also need to forward
+        # them in the `_copy()` method.
         self.__engine: Optional[AbstractEngine] = None
         self._active_provider = 'postgresql'
         self._log_queries = log_queries
         self._datasource = datasource
         self._connect_timeout = connect_timeout
         self._http_config: HttpConfig = http or {}
+        self._tx_id: Optional[TransactionId] = None
 
         if use_dotenv:
             load_env()
@@ -219,7 +225,15 @@ class Prisma:
 
     def __del__(self) -> None:
         if self.__engine is not None:
-            self.__engine.stop()
+            self.__engine.decref()
+
+            # we only actually want to stop the engine if there are no longer any references to it.
+            #
+            # this can happen if a transaction manager has been created but stil exists after
+            # the lifetime of the original Prisma instance.
+            if self.__engine.should_stop():
+                self.__engine.stop()
+
             self.__engine = None
 
 
@@ -367,6 +381,29 @@ class Prisma:
         """Returns a context manager for grouping write queries into a single transaction."""
         return Batch(client=self)
 
+    def tx(self, *, max_wait: int = 2000, timeout: int = 5000) -> 'TransactionManager':
+        """Returns a context manager for executing queries within a database transaction.
+
+        Entering the context manager returns a new Prisma instance wrapping all
+        actions within a transaction, queries will be isolated to the Prisma instance and
+        will not be commited to the database until the context manager exits.
+
+        Example usage:
+
+        ```py
+        with client.tx() as transaction:
+            user1 = client.user.create({'name': 'Robert'})
+            user2 = client.user.create({'name': 'Tegan'})
+        ```
+
+        In the above example, if the first database call succeeds but the second does not then neither of the records will be created.
+        """
+        return TransactionManager(client=self, max_wait=max_wait, timeout=timeout)
+
+    def is_transaction(self) -> bool:
+        """Returns True if the client is wrapped within a transaction"""
+        return self._tx_id is not None
+
     # TODO: don't return Any
     def _execute(
         self,
@@ -383,7 +420,25 @@ class Prisma:
             arguments=arguments,
             root_selection=root_selection,
         )
-        return self._engine.query(builder.build())
+        return self._engine.query(builder.build(), tx_id=self._tx_id)
+
+    def _copy(self) -> 'Prisma':
+        """Return a new Prisma instance using the same engine process (if connected).
+
+        This is only intended for private usage, there are no guarantees around this API.
+        """
+        new = Prisma(
+            use_dotenv=False,
+            http=self._http_config,
+            datasource=self._datasource,
+            log_queries=self._log_queries,
+            connect_timeout=self._connect_timeout,
+        )
+
+        if self.__engine is not None:
+            new._engine = self.__engine.new_ref()
+
+        return new
 
     def _create_engine(self, dml_path: Path = PACKAGED_SCHEMA_PATH) -> AbstractEngine:
         if ENGINE_TYPE == EngineType.binary:
@@ -404,6 +459,10 @@ class Prisma:
         if engine is None:
             raise errors.ClientNotConnectedError()
         return engine
+
+    @_engine.setter
+    def _engine(self, engine: AbstractEngine) -> None:
+        self.__engine = engine
 
     def _make_sqlite_datasource(self) -> DatasourceOverride:
         return {
@@ -427,6 +486,78 @@ class Prisma:
             'name': 'db',
             'url': OptionalValueFromEnvVar(**{'value': None, 'fromEnvVar': 'DB_URL'}).resolve(),
         }
+
+
+class TransactionManager:
+    """Context manager for wrapping a Prisma instance within a transaction.
+
+    This should never be created manually, instead it should be used
+    through the Prisma.tx() method.
+    """
+
+    def __init__(self, client: Prisma, max_wait: int, timeout: int) -> None:
+        self.__client = client
+        self._max_wait = max_wait
+        self._timeout = timeout
+        self._tx_id: Optional[TransactionId] = None
+
+    def start(self, *, _from_context: bool = False) -> Prisma:
+        """Start the transaction and return the wrapped Prisma instance"""
+        if self.__client.is_transaction():
+            # if we were called from the context manager then the stacklevel
+            # needs to be one higher to warn on the actual offending code
+            warnings.warn(
+                'The current client is already in a transaction. This can lead to surprising behaviour.',
+                UserWarning,
+                stacklevel=3 if _from_context else 2
+            )
+
+        tx_id = self.__client._engine.start_transaction(
+            content=dumps(
+                {
+                    'timeout': self._timeout,
+                    'max_wait': self._max_wait,
+                }
+            ),
+        )
+        self._tx_id = tx_id
+        client = self.__client._copy()
+        client._tx_id = tx_id
+        return client
+
+    def commit(self) -> None:
+        """Commit the transaction to the database, this transaction will no longer be usable"""
+        if self._tx_id is None:
+            raise errors.TransactionNotStartedError()
+
+        self.__client._engine.commit_transaction(self._tx_id)
+
+    def rollback(self) -> None:
+        """Do not commit the changes to the database, this transaction will no longer be usable"""
+        if self._tx_id is None:
+            raise errors.TransactionNotStartedError()
+
+        self.__client._engine.rollback_transaction(self._tx_id)
+
+    def __enter__(self) -> Prisma:
+        return self.start(_from_context=True)
+
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
+        if exc is None:
+            self.commit()
+
+        try:
+            self.rollback()
+        except Exception as exc:
+            log.warning(
+                'Encountered exc %s while rolling back a transaction. Ignoring and raising original exception',
+                exc
+            )
 
 
 # TODO: this should return the results as well
@@ -469,8 +600,6 @@ class Batch:
     def commit(self) -> None:
         """Execute the queries"""
         # TODO: normalise this, we should still call client._execute
-        from .builder import dumps
-
         queries = self.__queries
         self.__queries = []
 
@@ -484,7 +613,10 @@ class Batch:
             ],
             'transaction': True,
         }
-        self.__client._engine.query(dumps(payload))
+        self.__client._engine.query(
+            dumps(payload),
+            tx_id=self.__client._tx_id,
+        )
 
     def execute_raw(self, query: LiteralString, *args: Any) -> None:
         self._add(

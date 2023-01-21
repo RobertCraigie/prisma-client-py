@@ -204,3 +204,23 @@ def test_sqlite_url(client: Prisma) -> None:
 
     url = client._make_sqlite_url('sqlite:sqlite.db')
     assert url == f'file:{SCHEMA_PATH.parent.joinpath("sqlite.db")}'
+
+
+def test_copy() -> None:
+    """The Prisma._copy() method forwards all relevant properties"""
+    client1 = Prisma(
+        log_queries=True,
+        datasource={
+            'url': 'foo',
+        },
+        connect_timeout=15,
+        http={
+            'trust_env': False,
+        },
+    )
+    client2 = client1._copy()
+    assert client2._engine is None
+    assert client2._log_queries is True
+    assert client2._datasource == {'url': 'foo'}
+    assert client2._connect_timeout == 15
+    assert client2._http_config == {'trust_env': False}
