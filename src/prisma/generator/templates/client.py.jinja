@@ -3,6 +3,7 @@
 {% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, maybe_async, methods, operations, recursive_types, active_provider with context %}
 # -- template client.py.jinja --
 import warnings
+import logging
 from pathlib import Path
 from types import TracebackType
 
@@ -26,6 +27,8 @@ __all__ = (
     'register',
     'get_client',
 )
+
+log = logging.getLogger(__name__)
 
 SCHEMA_PATH = Path('{{ schema_path.as_posix() }}')
 PACKAGED_SCHEMA_PATH = Path(__file__).parent.joinpath('schema.prisma')
