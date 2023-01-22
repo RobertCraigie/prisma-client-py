@@ -84,6 +84,7 @@ class HTTPEngine(AbstractEngine):
         log.debug('Sending %s request to %s with content: %s', method, url, content)
 
         resp = {{ maybe_await }}self.session.request(method, url, **kwargs)
+        log.debug('%s %s returned status %s', method, url, resp.status)
 
         if 300 > resp.status >= 200:
             response = {{ maybe_await }}resp.json()

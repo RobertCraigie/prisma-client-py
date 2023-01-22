@@ -28,7 +28,7 @@ __all__ = (
     'get_client',
 )
 
-log = logging.getLogger(__name__)
+log: logging.Logger = logging.getLogger(__name__)
 
 SCHEMA_PATH = Path('{{ schema_path.as_posix() }}')
 PACKAGED_SCHEMA_PATH = Path(__file__).parent.joinpath('schema.prisma')
@@ -534,7 +534,7 @@ class TransactionManager:
             await self.rollback()
         except Exception as exc:
             log.warning(
-                'Encountered exc %s while rolling back a transaction. Ignoring and raising original exception',
+                'Encountered exc `%s` while rolling back a transaction. Ignoring and raising original exception',
                 exc
             )
     {% else %}
@@ -549,12 +549,13 @@ class TransactionManager:
     ) -> None:
         if exc is None:
             self.commit()
+            return
 
         try:
             self.rollback()
         except Exception as exc:
             log.warning(
-                'Encountered exc %s while rolling back a transaction. Ignoring and raising original exception',
+                'Encountered exc `%s` while rolling back a transaction. Ignoring and raising original exception',
                 exc
             )
     {% endif %}
