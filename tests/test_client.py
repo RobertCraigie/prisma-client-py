@@ -212,7 +212,7 @@ async def test_copy() -> None:
     client1 = Prisma(
         log_queries=True,
         datasource={
-            'url': 'foo',
+            'url': 'file:foo.db',
         },
         connect_timeout=15,
         http={
