@@ -365,6 +365,12 @@ class Prisma:
         actions within a transaction, queries will be isolated to the Prisma instance and
         will not be commited to the database until the context manager exits.
 
+        By default, Prisma will wait a maximum of 2 seconds to acquire a transaction from the database. You can modify this
+        defualt with the `max_wait` argument which accepts a value in milliseconds.
+
+        By default, Prisma will cancel and rollback ay transactions that last longer than 5 seconds. You can modify this timeout
+        with the `timeout` argument which accepts a value in milliseconds.
+
         Example usage:
 
         ```py
