@@ -7,4 +7,5 @@ distro
 
 -r ../pipelines/requirements/deps/pyright.txt
 -r ../pipelines/requirements/deps/pytest.txt
+-r ../pipelines/requirements/deps/pytest-mock.txt
 -r ../pipelines/requirements/deps/pytest-asyncio.txt
