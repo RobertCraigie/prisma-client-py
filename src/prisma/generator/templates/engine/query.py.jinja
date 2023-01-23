@@ -46,16 +46,20 @@ class QueryEngine(HTTPEngine):
     def __del__(self) -> None:
         self.stop()
 
-    def close(self) -> None:
+    def close(self, timeout: int = 1) -> None:
         log.debug('Disconnecting query engine...')
 
         if self.process is not None:
             if platform.name() == 'windows':
                 self.process.kill()
+                self.process.wait()
             else:
                 self.process.send_signal(signal.SIGINT)
+                try:
+                    self.process.wait(timeout = timeout)
+                except subprocess.TimeoutExpired:
+                    self.process.send_signal(signal.SIGKILL)
 
-            self.process.wait()
             self.process = None
 
         {% if not is_async %}
@@ -132,16 +136,19 @@ class QueryEngine(HTTPEngine):
             args.append('--enable-playground')
 
         log.debug('Starting query engine...')
-        self.process = subprocess.Popen(
-            args,
-            env=env,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-            preexec_fn=lambda: signal.pthread_sigmask(
+        popen_kwargs: Dict[str,Any] = {
+            "env": env,
+            "stdout": sys.stdout,
+            "stderr": sys.stderr,
+        }
+        if platform.name() != 'windows':
+            popen_kwargs["preexec_fn"] = lambda: signal.pthread_sigmask(
                 signal.SIG_UNBLOCK, [signal.SIGINT, signal.SIGTERM]
             )
-            if hasattr(signal, "pthread_sigmask")
-            else None,
+
+        self.process = subprocess.Popen(
+            args,
+            **popen_kwargs
         )
 
         last_exc = None
