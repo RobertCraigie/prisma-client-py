@@ -15,7 +15,7 @@ from prisma.engine import errors, utils
 from prisma.engine.query import QueryEngine
 from prisma._compat import get_running_loop
 
-from .utils import Testdir
+from .utils import Testdir, skipif_windows
 
 
 @contextlib.contextmanager
@@ -50,6 +50,7 @@ async def test_engine_connects() -> None:
 
 
 @pytest.mark.asyncio
+@skipif_windows
 async def test_engine_process_sigint_mask() -> None:
     """Block SIGINT in current process"""
     signal.pthread_sigmask(signal.SIG_BLOCK, [signal.SIGINT])
@@ -64,6 +65,7 @@ async def test_engine_process_sigint_mask() -> None:
 
 
 @pytest.mark.asyncio
+@skipif_windows
 async def test_engine_process_sigterm_mask() -> None:
     """Block SIGTERM in current process"""
     signal.pthread_sigmask(signal.SIG_BLOCK, [signal.SIGTERM])
