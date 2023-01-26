@@ -66,7 +66,7 @@ class QueryEngine(HTTPEngine):
     dml_path: Path
     url: Optional[str]
     file: Optional[Path]
-    process: Optional[subprocess.Popen[bytes]]
+    process: Optional[subprocess.Popen[str | bytes]]
 
     def __init__(self, *, dml_path: Path, log_queries: bool = False, **kwargs: Any) -> None:
         super().__init__(url=None, **kwargs)
