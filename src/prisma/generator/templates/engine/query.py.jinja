@@ -46,7 +46,7 @@ class QueryEngine(HTTPEngine):
     def __del__(self) -> None:
         self.stop()
 
-    def close(self, timeout: int = 1) -> None:
+    def close(self, timeout: float = 1.0) -> None:
         log.debug('Disconnecting query engine...')
 
         if self.process is not None:
