@@ -173,6 +173,7 @@ class QueryEngine(HTTPEngine):
             "env": env,
             "stdout": sys.stdout,
             "stderr": sys.stderr,
+            "text": False,
         }
         if platform.name() != 'windows':
             popen_kwargs["preexec_fn"] = lambda: signal.pthread_sigmask(
