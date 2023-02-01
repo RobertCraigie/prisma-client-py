@@ -394,7 +394,7 @@ def test_partial_type_generator_error_while_running(testdir: Testdir) -> None:
     """Exception ocurring while running partial type generator logs exception"""
 
     def generator() -> None:  # mark: filedef
-        import foo  # pyright: ignore[reportUnusedImport]
+        import foo  # pyright: ignore[reportUnusedImport,reportMissingImports]
 
     testdir.make_from_function(generator, name='prisma/partial_types.py')
 
