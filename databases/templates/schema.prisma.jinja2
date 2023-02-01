@@ -44,6 +44,13 @@ model Post {
   views       Int      @default(0)
   author      User?    @relation(fields: [author_id], references: [id])
   author_id   String?
+  categories Category[]
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  posts Post[]
+  name  String
 }
 
 model Types {
