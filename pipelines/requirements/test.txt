@@ -4,6 +4,6 @@
 pytest-sugar
 mock==4.0.3
 pytest-mock==3.10.0
-pytest-subprocess==1.4.2
+pytest-subprocess==1.5.0
 syrupy==3.0.6
-fastapi==0.89.0
+fastapi==0.89.1
