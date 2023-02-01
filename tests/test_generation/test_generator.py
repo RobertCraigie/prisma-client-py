@@ -108,7 +108,7 @@ def test_invalid_type_argument() -> None:
             return super().get_manifest()  # type: ignore
 
         def generate(self, data: Path) -> None:  # pragma: no cover
-            return super().generate(data)  # type: ignore
+            return super().generate(data)
 
     with pytest.raises(TypeError) as exc:
         MyGenerator().data_class
@@ -118,7 +118,7 @@ def test_invalid_type_argument() -> None:
 
     class MyGenerator2(GenericGenerator[Manifest]):
         def get_manifest(self) -> Manifest:  # pragma: no cover
-            return super().get_manifest()
+            return super().get_manifest()  # type: ignore
 
         def generate(self, data: Manifest) -> None:  # pragma: no cover
             return super().generate(data)
