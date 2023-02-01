@@ -130,7 +130,14 @@ async def test_find_unique_include_pagination(
     user = await client.user.find_unique(
         where={'id': user_id},
         include={
-            'posts': {'cursor': {'id': posts[0].id}, 'take': 1, 'skip': 1}
+            'posts': {
+                'cursor': {'id': posts[0].id},
+                'take': 1,
+                'skip': 1,
+                'order_by': {
+                    'created_at': 'asc',
+                },
+            }
         },
     )
     assert user is not None
@@ -141,7 +148,14 @@ async def test_find_unique_include_pagination(
     user = await client.user.find_unique(
         where={'id': user_id},
         include={
-            'posts': {'cursor': {'id': posts[1].id}, 'take': -1, 'skip': 1}
+            'posts': {
+                'cursor': {'id': posts[1].id},
+                'take': -1,
+                'skip': 1,
+                'order_by': {
+                    'created_at': 'asc',
+                },
+            },
         },
     )
     assert user is not None
