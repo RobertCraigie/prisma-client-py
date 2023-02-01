@@ -1,10 +1,3 @@
-# disable these pyright errors as they are not actual errors in this context
-# we know that the included 1-M relational field will not be None when
-# we explicitly include it and we can't add code to constrain the type e.g.
-# `assert user.posts is not None`
-# because we use the tests code to ensure that the mypy plugin is working
-# correctly, any actual typing errors will be caught by mypy
-# pyright: reportOptionalSubscript=false, reportOptionalIterable=false
 from typing import List
 
 import pytest
@@ -123,7 +116,8 @@ async def test_find_unique_include_where(
         include={'posts': {'where': {'created_at': posts[0].created_at}}},
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
+    assert user.posts is not None
+    assert len(user.posts) == 1
     assert user.posts[0].id == posts[0].id
 
 
@@ -140,7 +134,8 @@ async def test_find_unique_include_pagination(
         },
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
+    assert user.posts is not None
+    assert len(user.posts) == 1
     assert user.posts[0].id == posts[1].id
 
     user = await client.user.find_unique(
@@ -150,7 +145,8 @@ async def test_find_unique_include_pagination(
         },
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
+    assert user.posts is not None
+    assert len(user.posts) == 1
     assert user.posts[0].id == posts[0].id
 
 
@@ -171,7 +167,8 @@ async def test_find_unique_include_nested_where_or(
     assert user is not None
 
     assert posts[0].published is False
-    assert len(user.posts) == 3  # pyright: ignore[reportGeneralTypeIssues]
+    assert user.posts is not None
+    assert len(user.posts) == 3
 
     assert user.posts[0].id == posts[0].id
     assert user.posts[1].id == posts[1].id
@@ -197,7 +194,9 @@ async def test_find_unique_include_nested_include(
     )
     assert user is not None
     assert user.profile is None
+    assert user.posts is not None
     for post in user.posts:
+        assert post.categories is not None
         for category in post.categories:
             assert category.posts is not None
 
