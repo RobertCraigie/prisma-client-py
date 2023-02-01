@@ -48,7 +48,7 @@ model Post {
 }
 
 model Category {
-  id    Int    @id @default(autoincrement())
+  id          String   @id @default(uuid())
   posts Post[]
   name  String
 }
