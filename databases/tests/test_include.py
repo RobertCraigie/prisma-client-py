@@ -72,14 +72,20 @@ async def create_or_get_posts(client: Prisma, user_id: str) -> List[Post]:
 async def test_find_unique_include(client: Prisma, user_id: str) -> None:
     """Including a one-to-many relationship returns all records as a list of models"""
     user = await client.user.find_unique(
-        where={'id': user_id}, include={'posts': True}
+        where={'id': user_id},
+        include={
+            'posts': {
+                'order_by': {'title': 'asc'},
+            }
+        },
     )
     assert user is not None
     assert user.name == 'Robert'
-    assert len(user.posts) == 4  # pyright: ignore[reportGeneralTypeIssues]
+    assert user.posts is not None
+    assert len(user.posts) == 4
 
     for i, post in enumerate(
-        user.posts,  # pyright: ignore[reportGeneralTypeIssues]
+        user.posts,
         start=1,
     ):
         assert post.author is None
@@ -102,7 +108,8 @@ async def test_find_unique_include_take(client: Prisma, user_id: str) -> None:
         },
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
+    assert user.posts is not None
+    assert len(user.posts) == 1
 
 
 @pytest.mark.asyncio
@@ -174,7 +181,12 @@ async def test_find_unique_include_nested_where_or(
         where={'id': user_id},
         include={
             'posts': {
-                'where': {'OR': [{'published': True}, {'id': posts[0].id}]}
+                'where': {
+                    'OR': [
+                        {'published': True},
+                        {'id': posts[0].id},
+                    ],
+                }
             }
         },
     )
