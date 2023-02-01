@@ -186,7 +186,10 @@ async def test_find_unique_include_nested_where_or(
                         {'published': True},
                         {'id': posts[0].id},
                     ],
-                }
+                },
+                'order_by': {
+                    'created_at': 'asc',
+                },
             }
         },
     )
