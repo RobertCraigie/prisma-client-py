@@ -395,3 +395,109 @@ async def test_list_wrapper_query_transformation(client: Prisma) -> None:
     )
     assert found is not None
     assert found.name == '40 robert'
+
+
+@pytest.mark.asyncio
+async def test_distinct(client: Prisma) -> None:
+    """Filtering by distinct combinations of fields"""
+    users = [
+        await client.user.create(
+            data={
+                'name': 'Robert',
+            },
+        ),
+        await client.user.create(
+            data={
+                'name': 'Tegan',
+            },
+        ),
+        await client.user.create(
+            data={
+                'name': 'Patrick',
+            },
+        ),
+    ]
+    async with client.batch_() as batcher:
+        batcher.profile.create(
+            {
+                'city': 'Dundee',
+                'country': 'Scotland',
+                'description': 'Foo',
+                'user_id': users[0].id,
+            }
+        )
+        batcher.profile.create(
+            {
+                'city': 'Edinburgh',
+                'country': 'Scotland',
+                'description': 'Foo',
+                'user_id': users[1].id,
+            }
+        )
+        batcher.profile.create(
+            {
+                'city': 'London',
+                'country': 'England',
+                'description': 'Foo',
+                'user_id': users[2].id,
+            }
+        )
+
+    found = await client.profile.find_first(
+        where={'country': 'Scotland'},
+        distinct=['city'],
+        order={'city': 'asc'},
+    )
+    assert found is not None
+    assert found.city == 'Dundee'
+
+    found = await client.profile.find_first(
+        where={'country': 'Scotland'},
+        distinct=['city'],
+        order={'city': 'desc'},
+    )
+    assert found is not None
+    assert found.city == 'Edinburgh'
+
+
+@pytest.mark.asyncio
+async def test_distinct_relations(client: Prisma) -> None:
+    """Using `distinct` across relations"""
+    user = await client.user.create(
+        {
+            'name': 'Robert',
+            'posts': {
+                'create': [
+                    {
+                        'title': 'Post 1',
+                        'published': True,
+                    },
+                    {
+                        'title': 'Post 2',
+                        'published': False,
+                    },
+                    {
+                        'title': 'Post 3',
+                        'published': True,
+                    },
+                ]
+            },
+        }
+    )
+
+    found = await client.user.find_first(
+        where={
+            'id': user.id,
+        },
+        include={
+            'posts': {
+                'order_by': {'title': 'asc'},
+                'distinct': ['published'],
+            }
+        },
+    )
+    assert found is not None
+    assert found.posts is not None
+    assert len(found.posts) == 2
+    assert found.posts[0].published is True
+    assert found.posts[1].published is False

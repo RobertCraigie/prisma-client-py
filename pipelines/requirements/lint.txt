@@ -1,7 +1,9 @@
 -r test.txt
 -r node.txt
+-r dev.txt
 -r deps/pyright.txt
+-r deps/blue.txt
+-r ../../databases/requirements.txt
 interrogate==1.5.0
-blue==0.9.1
 mypy==0.991
-slotscheck==0.16.1
+slotscheck==0.16.3

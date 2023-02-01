@@ -1,14 +1,10 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING
 from pydantic import BaseModel
 
-if TYPE_CHECKING:
-    from typing_extensions import LiteralString
-else:
-    # for pydantic support
-    LiteralString = str
+from .._types import DatabaseMapping
+from .._compat import LiteralString
 
 
 CURRENT_DATABASE = os.environ['PRISMA_DATABASE']
@@ -136,7 +132,7 @@ _postgresql_queries = RawQueries(
     """,
 )
 
-RAW_QUERIES_MAPPING: dict[str, RawQueries] = {
+RAW_QUERIES_MAPPING: DatabaseMapping[RawQueries] = {
     'postgresql': _postgresql_queries,
     'cockroachdb': _postgresql_queries,
     'mysql': _mysql_queries,

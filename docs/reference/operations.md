@@ -160,6 +160,35 @@ posts = await db.post.find_many(
 )
 ```
 
+### Distinct Records
+
+The following query will find all `Profile` records that have a distinct `city` field.
+
+```py
+profiles = await db.profiles.find_many(
+    distinct=['city'],
+)
+# [
+#  { city: 'Paris' },
+#  { city: 'Lyon' },
+# ]
+```
+
+You can also filter by distinct combinations, for example the following query will return all records that have a distinct `city` *and* `country` combination.
+
+```py
+profiles = await db.profiles.find_many(
+    distinct=['city', 'country'],
+)
+# [
+#  { city: 'Paris', country: 'France' },
+#  { city: 'Paris', country: 'Denmark' },
+#  { city: 'Lyon', country: 'France' },
+# ]
+```
+
+You can currently only use `distinct` with `find_many()` and `find_first()` queries.
+
 ### Filtering by Relational Fields
 
 Within the filter you can query for everything you would normally query for, like it was a `find_first()` call on the relational field, for example:
@@ -453,7 +482,7 @@ user = await db.user.find_first(
 #### Lists fields
 
 !!! warning
-    Scalar list fields are only supported on PostgreSQL and MongoDB
+    Scalar list fields are only supported on PostgreSQL, CockroachDB and MongoDB
 
 Every scalar type can also be defined as a list, for example:
 
@@ -672,7 +701,10 @@ user = await db.user.update(
 ### Updating List Fields
 
 !!! warning
-    Scalar list fields are only supported on PostgreSQL and MongoDB
+    Scalar list fields are only supported on PostgreSQL, CockroachDB and MongoDB
+
+!!! warning
+    The `push` operation is not supported on CockroachDB
 
 ```py
 user = await db.user.update(

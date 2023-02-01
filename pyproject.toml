@@ -5,6 +5,8 @@ include = [
     "scripts"
 ]
 ignore = [
+    # these are type checked separately
+    "databases/tests",
     # TODO: this should not ignore tests/integrations/conftest.py
     "tests/integrations/**/*",
 ]

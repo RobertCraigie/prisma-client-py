@@ -17,6 +17,7 @@ from typing import (
     Optional,
     Iterable,
     Iterator,
+    Sequence,
     Callable,
     Generic,
     Mapping,
@@ -39,6 +40,8 @@ import os
 import logging
 import inspect
 import warnings
+from collections import OrderedDict
+
 from pydantic import BaseConfig, BaseModel, Field, validator
 
 from . import types, enums, errors, fields
@@ -132,6 +135,7 @@ class Post(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'Post', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -166,33 +170,34 @@ class Post(BaseModel):
                 'exclude_relational_fields and relations are mutually exclusive'
             )
 
-        fields: Dict['types.PostKeys', PartialModelField] = {}
+        fields: Dict['types.PostKeys', PartialModelField] = OrderedDict()
 
         try:
             if include:
                 for field in include:
-                    fields[field] = _Post_fields[field]
+                    fields[field] = _Post_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _Post_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _Post_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _Post_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _Post_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             if exclude_relational_fields:
@@ -275,6 +280,7 @@ class User(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'User', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -309,33 +315,34 @@ class User(BaseModel):
                 'exclude_relational_fields and relations are mutually exclusive'
             )
 
-        fields: Dict['types.UserKeys', PartialModelField] = {}
+        fields: Dict['types.UserKeys', PartialModelField] = OrderedDict()
 
         try:
             if include:
                 for field in include:
-                    fields[field] = _User_fields[field]
+                    fields[field] = _User_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _User_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _User_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _User_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _User_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             if exclude_relational_fields:
@@ -414,6 +421,7 @@ class M(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'M', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -448,33 +456,34 @@ class M(BaseModel):
                 'exclude_relational_fields and relations are mutually exclusive'
             )
 
-        fields: Dict['types.MKeys', PartialModelField] = {}
+        fields: Dict['types.MKeys', PartialModelField] = OrderedDict()
 
         try:
             if include:
                 for field in include:
-                    fields[field] = _M_fields[field]
+                    fields[field] = _M_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _M_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _M_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _M_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _M_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             if exclude_relational_fields:
@@ -555,6 +564,7 @@ class N(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'N', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -589,33 +599,34 @@ class N(BaseModel):
                 'exclude_relational_fields and relations are mutually exclusive'
             )
 
-        fields: Dict['types.NKeys', PartialModelField] = {}
+        fields: Dict['types.NKeys', PartialModelField] = OrderedDict()
 
         try:
             if include:
                 for field in include:
-                    fields[field] = _N_fields[field]
+                    fields[field] = _N_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _N_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _N_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _N_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _N_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             if exclude_relational_fields:
@@ -694,6 +705,7 @@ class OneOptional(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'OneOptional', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -728,33 +740,34 @@ class OneOptional(BaseModel):
                 'exclude_relational_fields and relations are mutually exclusive'
             )
 
-        fields: Dict['types.OneOptionalKeys', PartialModelField] = {}
+        fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedDict()
 
         try:
             if include:
                 for field in include:
-                    fields[field] = _OneOptional_fields[field]
+                    fields[field] = _OneOptional_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _OneOptional_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _OneOptional_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _OneOptional_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _OneOptional_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             if exclude_relational_fields:
@@ -834,6 +847,7 @@ class ManyRequired(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'ManyRequired', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -868,33 +882,34 @@ class ManyRequired(BaseModel):
                 'exclude_relational_fields and relations are mutually exclusive'
             )
 
-        fields: Dict['types.ManyRequiredKeys', PartialModelField] = {}
+        fields: Dict['types.ManyRequiredKeys', PartialModelField] = OrderedDict()
 
         try:
             if include:
                 for field in include:
-                    fields[field] = _ManyRequired_fields[field]
+                    fields[field] = _ManyRequired_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _ManyRequired_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _ManyRequired_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _ManyRequired_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _ManyRequired_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
             if exclude_relational_fields:
@@ -971,6 +986,20 @@ class Lists(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'Lists', stacklevel=3)
 
+    @validator('strings', 'bytes', 'dates', 'bools', 'ints', 'floats', 'bigints', 'json_objects', 'decimals', pre=True, allow_reuse=True)
+    @classmethod
+    def _transform_required_list_fields(cls, value: object) -> object:
+        # When using raw queries, some databases will return `None` for an array field that has not been set yet.
+        #
+        # In our case we want to use an empty list instead as that is the internal Prisma behaviour and we want
+        # to use the same consistent structure between the core ORM and raw queries. For example, if we updated
+        # our type definitions to include `None` for `List` fields then it would be misleading as it will only
+        # ever be `None` in raw queries.
+        if value is None:
+            return []
+
+        return value
+
     @staticmethod
     def create_partial(
         name: str,
@@ -1005,33 +1034,34 @@ class Lists(BaseModel):
                 'exclude_relational_fields and relations are mutually exclusive'
             )
 
-        fields: Dict['types.ListsKeys', PartialModelField] = {}
+        fields: Dict['types.ListsKeys', PartialModelField] = OrderedDict()
 
         try:
             if include:
                 for field in include:
-                    fields[field] = _Lists_fields[field]
+                    fields[field] = _Lists_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _Lists_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _Lists_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _Lists_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _Lists_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
 
@@ -1083,6 +1113,7 @@ class A(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'A', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -1117,33 +1148,34 @@ class A(BaseModel):
                 'exclude_relational_fields and relations are mutually exclusive'
             )
 
-        fields: Dict['types.AKeys', PartialModelField] = {}
+        fields: Dict['types.AKeys', PartialModelField] = OrderedDict()
 
         try:
             if include:
                 for field in include:
-                    fields[field] = _A_fields[field]
+                    fields[field] = _A_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _A_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _A_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _A_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _A_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
 
@@ -1191,6 +1223,7 @@ class B(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'B', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -1225,33 +1258,34 @@ class B(BaseModel):
                 'exclude_relational_fields and relations are mutually exclusive'
             )
 
-        fields: Dict['types.BKeys', PartialModelField] = {}
+        fields: Dict['types.BKeys', PartialModelField] = OrderedDict()
 
         try:
             if include:
                 for field in include:
-                    fields[field] = _B_fields[field]
+                    fields[field] = _B_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _B_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _B_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _B_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _B_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
 
@@ -1300,6 +1334,7 @@ class C(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'C', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -1334,33 +1369,34 @@ class C(BaseModel):
                 'exclude_relational_fields and relations are mutually exclusive'
             )
 
-        fields: Dict['types.CKeys', PartialModelField] = {}
+        fields: Dict['types.CKeys', PartialModelField] = OrderedDict()
 
         try:
             if include:
                 for field in include:
-                    fields[field] = _C_fields[field]
+                    fields[field] = _C_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _C_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _C_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _C_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _C_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
 
@@ -1409,6 +1445,7 @@ class D(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'D', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -1443,33 +1480,34 @@ class D(BaseModel):
                 'exclude_relational_fields and relations are mutually exclusive'
             )
 
-        fields: Dict['types.DKeys', PartialModelField] = {}
+        fields: Dict['types.DKeys', PartialModelField] = OrderedDict()
 
         try:
             if include:
                 for field in include:
-                    fields[field] = _D_fields[field]
+                    fields[field] = _D_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _D_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _D_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _D_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _D_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
 
@@ -1516,6 +1554,7 @@ class E(BaseModel):
         if warn_subclass:
             _maybe_warn_subclassing(cls.__name__, 'E', stacklevel=3)
 
+
     @staticmethod
     def create_partial(
         name: str,
@@ -1550,33 +1589,34 @@ class E(BaseModel):
                 'exclude_relational_fields and relations are mutually exclusive'
             )
 
-        fields: Dict['types.EKeys', PartialModelField] = {}
+        fields: Dict['types.EKeys', PartialModelField] = OrderedDict()
 
         try:
             if include:
                 for field in include:
-                    fields[field] = _E_fields[field]
+                    fields[field] = _E_fields[field].copy()
             elif exclude:
                 for field in exclude:
                     if field not in _E_fields:
                         raise KeyError(field)
 
                 fields = {
-                    key: data
+                    key: data.copy()
                     for key, data in _E_fields.items()
                     if key not in exclude
                 }
             else:
-                fields = _E_fields.copy()
+                fields = {
+                    key: data.copy()
+                    for key, data in _E_fields.items()
+                }
 
             if required:
                 for field in required:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = False
 
             if optional:
                 for field in optional:
-                    fields[field] = fields[field].copy()
                     fields[field]['optional'] = True
 
 
@@ -1600,840 +1640,975 @@ class E(BaseModel):
 _Post_relational_fields: Set[str] = {
         'author',
     }
-_Post_fields: Dict['types.PostKeys', PartialModelField] = {
-    'id': {
-        'name': 'id',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'created_at': {
-        'name': 'created_at',
-        'is_list': False,
-        'optional': False,
-        'type': 'datetime.datetime',
-        'documentation': None,
-    },
-    'title': {
-        'name': 'title',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'content': {
-        'name': 'content',
-        'is_list': False,
-        'optional': True,
-        'type': '_str',
-        'documentation': None,
-    },
-    'published': {
-        'name': 'published',
-        'is_list': False,
-        'optional': False,
-        'type': '_bool',
-        'documentation': '''Has the post been made public yet?''',
-    },
-    'author': {
-        'name': 'author',
-        'is_list': False,
-        'optional': True,
-        'type': 'models.User',
-        'documentation': '''Relation to the User model
+_Post_fields: Dict['types.PostKeys', PartialModelField] = OrderedDict(
+    [
+        ('id', {
+            'name': 'id',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('created_at', {
+            'name': 'created_at',
+            'is_list': False,
+            'optional': False,
+            'type': 'datetime.datetime',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('title', {
+            'name': 'title',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('content', {
+            'name': 'content',
+            'is_list': False,
+            'optional': True,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('published', {
+            'name': 'published',
+            'is_list': False,
+            'optional': False,
+            'type': '_bool',
+            'is_relational': False,
+            'documentation': '''Has the post been made public yet?''',
+        }),
+        ('author', {
+            'name': 'author',
+            'is_list': False,
+            'optional': True,
+            'type': 'models.User',
+            'is_relational': True,
+            'documentation': '''Relation to the User model
 Second line comment with ' and "''',
-    },
-    'author_id': {
-        'name': 'author_id',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-}
+        }),
+        ('author_id', {
+            'name': 'author_id',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+    ],
+)
 
 _User_relational_fields: Set[str] = {
         'posts',
     }
-_User_fields: Dict['types.UserKeys', PartialModelField] = {
-    'id': {
-        'name': 'id',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'email': {
-        'name': 'email',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'int': {
-        'name': 'int',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'optional_int': {
-        'name': 'optional_int',
-        'is_list': False,
-        'optional': True,
-        'type': '_int',
-        'documentation': None,
-    },
-    'float': {
-        'name': 'float',
-        'is_list': False,
-        'optional': False,
-        'type': '_float',
-        'documentation': None,
-    },
-    'optional_float': {
-        'name': 'optional_float',
-        'is_list': False,
-        'optional': True,
-        'type': '_float',
-        'documentation': None,
-    },
-    'string': {
-        'name': 'string',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'optional_string': {
-        'name': 'optional_string',
-        'is_list': False,
-        'optional': True,
-        'type': '_str',
-        'documentation': None,
-    },
-    'enum': {
-        'name': 'enum',
-        'is_list': False,
-        'optional': False,
-        'type': 'enums.ABeautifulEnum',
-        'documentation': None,
-    },
-    'optional_enum': {
-        'name': 'optional_enum',
-        'is_list': False,
-        'optional': True,
-        'type': 'enums.ABeautifulEnum',
-        'documentation': None,
-    },
-    'boolean': {
-        'name': 'boolean',
-        'is_list': False,
-        'optional': False,
-        'type': '_bool',
-        'documentation': None,
-    },
-    'optional_boolean': {
-        'name': 'optional_boolean',
-        'is_list': False,
-        'optional': True,
-        'type': '_bool',
-        'documentation': None,
-    },
-    'posts': {
-        'name': 'posts',
-        'is_list': True,
-        'optional': True,
-        'type': 'List[\'models.Post\']',
-        'documentation': None,
-    },
-}
+_User_fields: Dict['types.UserKeys', PartialModelField] = OrderedDict(
+    [
+        ('id', {
+            'name': 'id',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('email', {
+            'name': 'email',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('int', {
+            'name': 'int',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_int', {
+            'name': 'optional_int',
+            'is_list': False,
+            'optional': True,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('float', {
+            'name': 'float',
+            'is_list': False,
+            'optional': False,
+            'type': '_float',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_float', {
+            'name': 'optional_float',
+            'is_list': False,
+            'optional': True,
+            'type': '_float',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('string', {
+            'name': 'string',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_string', {
+            'name': 'optional_string',
+            'is_list': False,
+            'optional': True,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('enum', {
+            'name': 'enum',
+            'is_list': False,
+            'optional': False,
+            'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_enum', {
+            'name': 'optional_enum',
+            'is_list': False,
+            'optional': True,
+            'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('boolean', {
+            'name': 'boolean',
+            'is_list': False,
+            'optional': False,
+            'type': '_bool',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_boolean', {
+            'name': 'optional_boolean',
+            'is_list': False,
+            'optional': True,
+            'type': '_bool',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('posts', {
+            'name': 'posts',
+            'is_list': True,
+            'optional': True,
+            'type': 'List[\'models.Post\']',
+            'is_relational': True,
+            'documentation': None,
+        }),
+    ],
+)
 
 _M_relational_fields: Set[str] = {
         'n',
     }
-_M_fields: Dict['types.MKeys', PartialModelField] = {
-    'id': {
-        'name': 'id',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'n': {
-        'name': 'n',
-        'is_list': True,
-        'optional': True,
-        'type': 'List[\'models.N\']',
-        'documentation': None,
-    },
-    'int': {
-        'name': 'int',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'optional_int': {
-        'name': 'optional_int',
-        'is_list': False,
-        'optional': True,
-        'type': '_int',
-        'documentation': None,
-    },
-    'float': {
-        'name': 'float',
-        'is_list': False,
-        'optional': False,
-        'type': '_float',
-        'documentation': None,
-    },
-    'optional_float': {
-        'name': 'optional_float',
-        'is_list': False,
-        'optional': True,
-        'type': '_float',
-        'documentation': None,
-    },
-    'string': {
-        'name': 'string',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'optional_string': {
-        'name': 'optional_string',
-        'is_list': False,
-        'optional': True,
-        'type': '_str',
-        'documentation': None,
-    },
-    'enum': {
-        'name': 'enum',
-        'is_list': False,
-        'optional': False,
-        'type': 'enums.ABeautifulEnum',
-        'documentation': None,
-    },
-    'optional_enum': {
-        'name': 'optional_enum',
-        'is_list': False,
-        'optional': True,
-        'type': 'enums.ABeautifulEnum',
-        'documentation': None,
-    },
-    'boolean': {
-        'name': 'boolean',
-        'is_list': False,
-        'optional': False,
-        'type': '_bool',
-        'documentation': None,
-    },
-    'optional_boolean': {
-        'name': 'optional_boolean',
-        'is_list': False,
-        'optional': True,
-        'type': '_bool',
-        'documentation': None,
-    },
-}
+_M_fields: Dict['types.MKeys', PartialModelField] = OrderedDict(
+    [
+        ('id', {
+            'name': 'id',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('n', {
+            'name': 'n',
+            'is_list': True,
+            'optional': True,
+            'type': 'List[\'models.N\']',
+            'is_relational': True,
+            'documentation': None,
+        }),
+        ('int', {
+            'name': 'int',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_int', {
+            'name': 'optional_int',
+            'is_list': False,
+            'optional': True,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('float', {
+            'name': 'float',
+            'is_list': False,
+            'optional': False,
+            'type': '_float',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_float', {
+            'name': 'optional_float',
+            'is_list': False,
+            'optional': True,
+            'type': '_float',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('string', {
+            'name': 'string',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_string', {
+            'name': 'optional_string',
+            'is_list': False,
+            'optional': True,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('enum', {
+            'name': 'enum',
+            'is_list': False,
+            'optional': False,
+            'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_enum', {
+            'name': 'optional_enum',
+            'is_list': False,
+            'optional': True,
+            'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('boolean', {
+            'name': 'boolean',
+            'is_list': False,
+            'optional': False,
+            'type': '_bool',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_boolean', {
+            'name': 'optional_boolean',
+            'is_list': False,
+            'optional': True,
+            'type': '_bool',
+            'is_relational': False,
+            'documentation': None,
+        }),
+    ],
+)
 
 _N_relational_fields: Set[str] = {
         'm',
     }
-_N_fields: Dict['types.NKeys', PartialModelField] = {
-    'id': {
-        'name': 'id',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'm': {
-        'name': 'm',
-        'is_list': True,
-        'optional': True,
-        'type': 'List[\'models.M\']',
-        'documentation': None,
-    },
-    'int': {
-        'name': 'int',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'optional_int': {
-        'name': 'optional_int',
-        'is_list': False,
-        'optional': True,
-        'type': '_int',
-        'documentation': None,
-    },
-    'float': {
-        'name': 'float',
-        'is_list': False,
-        'optional': False,
-        'type': '_float',
-        'documentation': None,
-    },
-    'optional_float': {
-        'name': 'optional_float',
-        'is_list': False,
-        'optional': True,
-        'type': '_float',
-        'documentation': None,
-    },
-    'string': {
-        'name': 'string',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'optional_string': {
-        'name': 'optional_string',
-        'is_list': False,
-        'optional': True,
-        'type': '_str',
-        'documentation': None,
-    },
-    'json_': {
-        'name': 'json_',
-        'is_list': False,
-        'optional': False,
-        'type': 'fields.Json',
-        'documentation': None,
-    },
-    'optional_json': {
-        'name': 'optional_json',
-        'is_list': False,
-        'optional': True,
-        'type': 'fields.Json',
-        'documentation': None,
-    },
-    'enum': {
-        'name': 'enum',
-        'is_list': False,
-        'optional': False,
-        'type': 'enums.ABeautifulEnum',
-        'documentation': None,
-    },
-    'optional_enum': {
-        'name': 'optional_enum',
-        'is_list': False,
-        'optional': True,
-        'type': 'enums.ABeautifulEnum',
-        'documentation': None,
-    },
-    'boolean': {
-        'name': 'boolean',
-        'is_list': False,
-        'optional': False,
-        'type': '_bool',
-        'documentation': None,
-    },
-    'optional_boolean': {
-        'name': 'optional_boolean',
-        'is_list': False,
-        'optional': True,
-        'type': '_bool',
-        'documentation': None,
-    },
-}
+_N_fields: Dict['types.NKeys', PartialModelField] = OrderedDict(
+    [
+        ('id', {
+            'name': 'id',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('m', {
+            'name': 'm',
+            'is_list': True,
+            'optional': True,
+            'type': 'List[\'models.M\']',
+            'is_relational': True,
+            'documentation': None,
+        }),
+        ('int', {
+            'name': 'int',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_int', {
+            'name': 'optional_int',
+            'is_list': False,
+            'optional': True,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('float', {
+            'name': 'float',
+            'is_list': False,
+            'optional': False,
+            'type': '_float',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_float', {
+            'name': 'optional_float',
+            'is_list': False,
+            'optional': True,
+            'type': '_float',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('string', {
+            'name': 'string',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_string', {
+            'name': 'optional_string',
+            'is_list': False,
+            'optional': True,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('json_', {
+            'name': 'json_',
+            'is_list': False,
+            'optional': False,
+            'type': 'fields.Json',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_json', {
+            'name': 'optional_json',
+            'is_list': False,
+            'optional': True,
+            'type': 'fields.Json',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('enum', {
+            'name': 'enum',
+            'is_list': False,
+            'optional': False,
+            'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_enum', {
+            'name': 'optional_enum',
+            'is_list': False,
+            'optional': True,
+            'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('boolean', {
+            'name': 'boolean',
+            'is_list': False,
+            'optional': False,
+            'type': '_bool',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_boolean', {
+            'name': 'optional_boolean',
+            'is_list': False,
+            'optional': True,
+            'type': '_bool',
+            'is_relational': False,
+            'documentation': None,
+        }),
+    ],
+)
 
 _OneOptional_relational_fields: Set[str] = {
         'many',
     }
-_OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = {
-    'id': {
-        'name': 'id',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'many': {
-        'name': 'many',
-        'is_list': True,
-        'optional': True,
-        'type': 'List[\'models.ManyRequired\']',
-        'documentation': None,
-    },
-    'int': {
-        'name': 'int',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'optional_int': {
-        'name': 'optional_int',
-        'is_list': False,
-        'optional': True,
-        'type': '_int',
-        'documentation': None,
-    },
-    'float': {
-        'name': 'float',
-        'is_list': False,
-        'optional': False,
-        'type': '_float',
-        'documentation': None,
-    },
-    'optional_float': {
-        'name': 'optional_float',
-        'is_list': False,
-        'optional': True,
-        'type': '_float',
-        'documentation': None,
-    },
-    'string': {
-        'name': 'string',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'optional_string': {
-        'name': 'optional_string',
-        'is_list': False,
-        'optional': True,
-        'type': '_str',
-        'documentation': None,
-    },
-    'enum': {
-        'name': 'enum',
-        'is_list': False,
-        'optional': False,
-        'type': 'enums.ABeautifulEnum',
-        'documentation': None,
-    },
-    'optional_enum': {
-        'name': 'optional_enum',
-        'is_list': False,
-        'optional': True,
-        'type': 'enums.ABeautifulEnum',
-        'documentation': None,
-    },
-    'boolean': {
-        'name': 'boolean',
-        'is_list': False,
-        'optional': False,
-        'type': '_bool',
-        'documentation': None,
-    },
-    'optional_boolean': {
-        'name': 'optional_boolean',
-        'is_list': False,
-        'optional': True,
-        'type': '_bool',
-        'documentation': None,
-    },
-}
+_OneOptional_fields: Dict['types.OneOptionalKeys', PartialModelField] = OrderedDict(
+    [
+        ('id', {
+            'name': 'id',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('many', {
+            'name': 'many',
+            'is_list': True,
+            'optional': True,
+            'type': 'List[\'models.ManyRequired\']',
+            'is_relational': True,
+            'documentation': None,
+        }),
+        ('int', {
+            'name': 'int',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_int', {
+            'name': 'optional_int',
+            'is_list': False,
+            'optional': True,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('float', {
+            'name': 'float',
+            'is_list': False,
+            'optional': False,
+            'type': '_float',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_float', {
+            'name': 'optional_float',
+            'is_list': False,
+            'optional': True,
+            'type': '_float',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('string', {
+            'name': 'string',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_string', {
+            'name': 'optional_string',
+            'is_list': False,
+            'optional': True,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('enum', {
+            'name': 'enum',
+            'is_list': False,
+            'optional': False,
+            'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_enum', {
+            'name': 'optional_enum',
+            'is_list': False,
+            'optional': True,
+            'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('boolean', {
+            'name': 'boolean',
+            'is_list': False,
+            'optional': False,
+            'type': '_bool',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_boolean', {
+            'name': 'optional_boolean',
+            'is_list': False,
+            'optional': True,
+            'type': '_bool',
+            'is_relational': False,
+            'documentation': None,
+        }),
+    ],
+)
 
 _ManyRequired_relational_fields: Set[str] = {
         'one',
     }
-_ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = {
-    'id': {
-        'name': 'id',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'one': {
-        'name': 'one',
-        'is_list': False,
-        'optional': True,
-        'type': 'models.OneOptional',
-        'documentation': None,
-    },
-    'one_optional_id': {
-        'name': 'one_optional_id',
-        'is_list': False,
-        'optional': True,
-        'type': '_int',
-        'documentation': None,
-    },
-    'int': {
-        'name': 'int',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'optional_int': {
-        'name': 'optional_int',
-        'is_list': False,
-        'optional': True,
-        'type': '_int',
-        'documentation': None,
-    },
-    'float': {
-        'name': 'float',
-        'is_list': False,
-        'optional': False,
-        'type': '_float',
-        'documentation': None,
-    },
-    'optional_float': {
-        'name': 'optional_float',
-        'is_list': False,
-        'optional': True,
-        'type': '_float',
-        'documentation': None,
-    },
-    'string': {
-        'name': 'string',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'optional_string': {
-        'name': 'optional_string',
-        'is_list': False,
-        'optional': True,
-        'type': '_str',
-        'documentation': None,
-    },
-    'enum': {
-        'name': 'enum',
-        'is_list': False,
-        'optional': False,
-        'type': 'enums.ABeautifulEnum',
-        'documentation': None,
-    },
-    'optional_enum': {
-        'name': 'optional_enum',
-        'is_list': False,
-        'optional': True,
-        'type': 'enums.ABeautifulEnum',
-        'documentation': None,
-    },
-    'boolean': {
-        'name': 'boolean',
-        'is_list': False,
-        'optional': False,
-        'type': '_bool',
-        'documentation': None,
-    },
-    'optional_boolean': {
-        'name': 'optional_boolean',
-        'is_list': False,
-        'optional': True,
-        'type': '_bool',
-        'documentation': None,
-    },
-}
+_ManyRequired_fields: Dict['types.ManyRequiredKeys', PartialModelField] = OrderedDict(
+    [
+        ('id', {
+            'name': 'id',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('one', {
+            'name': 'one',
+            'is_list': False,
+            'optional': True,
+            'type': 'models.OneOptional',
+            'is_relational': True,
+            'documentation': None,
+        }),
+        ('one_optional_id', {
+            'name': 'one_optional_id',
+            'is_list': False,
+            'optional': True,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('int', {
+            'name': 'int',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_int', {
+            'name': 'optional_int',
+            'is_list': False,
+            'optional': True,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('float', {
+            'name': 'float',
+            'is_list': False,
+            'optional': False,
+            'type': '_float',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_float', {
+            'name': 'optional_float',
+            'is_list': False,
+            'optional': True,
+            'type': '_float',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('string', {
+            'name': 'string',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_string', {
+            'name': 'optional_string',
+            'is_list': False,
+            'optional': True,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('enum', {
+            'name': 'enum',
+            'is_list': False,
+            'optional': False,
+            'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_enum', {
+            'name': 'optional_enum',
+            'is_list': False,
+            'optional': True,
+            'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('boolean', {
+            'name': 'boolean',
+            'is_list': False,
+            'optional': False,
+            'type': '_bool',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('optional_boolean', {
+            'name': 'optional_boolean',
+            'is_list': False,
+            'optional': True,
+            'type': '_bool',
+            'is_relational': False,
+            'documentation': None,
+        }),
+    ],
+)
 
 _Lists_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
-_Lists_fields: Dict['types.ListsKeys', PartialModelField] = {
-    'id': {
-        'name': 'id',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'strings': {
-        'name': 'strings',
-        'is_list': True,
-        'optional': False,
-        'type': 'List[_str]',
-        'documentation': None,
-    },
-    'bytes': {
-        'name': 'bytes',
-        'is_list': True,
-        'optional': False,
-        'type': 'List[\'fields.Base64\']',
-        'documentation': None,
-    },
-    'dates': {
-        'name': 'dates',
-        'is_list': True,
-        'optional': False,
-        'type': 'List[datetime.datetime]',
-        'documentation': None,
-    },
-    'bools': {
-        'name': 'bools',
-        'is_list': True,
-        'optional': False,
-        'type': 'List[_bool]',
-        'documentation': None,
-    },
-    'ints': {
-        'name': 'ints',
-        'is_list': True,
-        'optional': False,
-        'type': 'List[_int]',
-        'documentation': None,
-    },
-    'floats': {
-        'name': 'floats',
-        'is_list': True,
-        'optional': False,
-        'type': 'List[_float]',
-        'documentation': None,
-    },
-    'bigints': {
-        'name': 'bigints',
-        'is_list': True,
-        'optional': False,
-        'type': 'List[_int]',
-        'documentation': None,
-    },
-    'json_objects': {
-        'name': 'json_objects',
-        'is_list': True,
-        'optional': False,
-        'type': 'List[\'fields.Json\']',
-        'documentation': None,
-    },
-    'decimals': {
-        'name': 'decimals',
-        'is_list': True,
-        'optional': False,
-        'type': 'List[decimal.Decimal]',
-        'documentation': None,
-    },
-}
+_Lists_fields: Dict['types.ListsKeys', PartialModelField] = OrderedDict(
+    [
+        ('id', {
+            'name': 'id',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('strings', {
+            'name': 'strings',
+            'is_list': True,
+            'optional': False,
+            'type': 'List[_str]',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('bytes', {
+            'name': 'bytes',
+            'is_list': True,
+            'optional': False,
+            'type': 'List[\'fields.Base64\']',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('dates', {
+            'name': 'dates',
+            'is_list': True,
+            'optional': False,
+            'type': 'List[datetime.datetime]',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('bools', {
+            'name': 'bools',
+            'is_list': True,
+            'optional': False,
+            'type': 'List[_bool]',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('ints', {
+            'name': 'ints',
+            'is_list': True,
+            'optional': False,
+            'type': 'List[_int]',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('floats', {
+            'name': 'floats',
+            'is_list': True,
+            'optional': False,
+            'type': 'List[_float]',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('bigints', {
+            'name': 'bigints',
+            'is_list': True,
+            'optional': False,
+            'type': 'List[_int]',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('json_objects', {
+            'name': 'json_objects',
+            'is_list': True,
+            'optional': False,
+            'type': 'List[\'fields.Json\']',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('decimals', {
+            'name': 'decimals',
+            'is_list': True,
+            'optional': False,
+            'type': 'List[decimal.Decimal]',
+            'is_relational': False,
+            'documentation': None,
+        }),
+    ],
+)
 
 _A_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
-_A_fields: Dict['types.AKeys', PartialModelField] = {
-    'email': {
-        'name': 'email',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'name': {
-        'name': 'name',
-        'is_list': False,
-        'optional': True,
-        'type': '_str',
-        'documentation': None,
-    },
-    'int': {
-        'name': 'int',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'sInt': {
-        'name': 'sInt',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'inc_int': {
-        'name': 'inc_int',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'inc_sInt': {
-        'name': 'inc_sInt',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'bInt': {
-        'name': 'bInt',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'inc_bInt': {
-        'name': 'inc_bInt',
-        'is_list': False,
-        'optional': False,
-        'type': '_int',
-        'documentation': None,
-    },
-    'enum': {
-        'name': 'enum',
-        'is_list': False,
-        'optional': False,
-        'type': 'enums.ABeautifulEnum',
-        'documentation': None,
-    },
-}
+_A_fields: Dict['types.AKeys', PartialModelField] = OrderedDict(
+    [
+        ('email', {
+            'name': 'email',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('name', {
+            'name': 'name',
+            'is_list': False,
+            'optional': True,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('int', {
+            'name': 'int',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('sInt', {
+            'name': 'sInt',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('inc_int', {
+            'name': 'inc_int',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('inc_sInt', {
+            'name': 'inc_sInt',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('bInt', {
+            'name': 'bInt',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('inc_bInt', {
+            'name': 'inc_bInt',
+            'is_list': False,
+            'optional': False,
+            'type': '_int',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('enum', {
+            'name': 'enum',
+            'is_list': False,
+            'optional': False,
+            'type': 'enums.ABeautifulEnum',
+            'is_relational': False,
+            'documentation': None,
+        }),
+    ],
+)
 
 _B_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
-_B_fields: Dict['types.BKeys', PartialModelField] = {
-    'id': {
-        'name': 'id',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'float': {
-        'name': 'float',
-        'is_list': False,
-        'optional': False,
-        'type': '_float',
-        'documentation': None,
-    },
-    'd_float': {
-        'name': 'd_float',
-        'is_list': False,
-        'optional': False,
-        'type': '_float',
-        'documentation': None,
-    },
-    'decFloat': {
-        'name': 'decFloat',
-        'is_list': False,
-        'optional': False,
-        'type': 'decimal.Decimal',
-        'documentation': None,
-    },
-    'numFloat': {
-        'name': 'numFloat',
-        'is_list': False,
-        'optional': False,
-        'type': 'decimal.Decimal',
-        'documentation': None,
-    },
-}
+_B_fields: Dict['types.BKeys', PartialModelField] = OrderedDict(
+    [
+        ('id', {
+            'name': 'id',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('float', {
+            'name': 'float',
+            'is_list': False,
+            'optional': False,
+            'type': '_float',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('d_float', {
+            'name': 'd_float',
+            'is_list': False,
+            'optional': False,
+            'type': '_float',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('decFloat', {
+            'name': 'decFloat',
+            'is_list': False,
+            'optional': False,
+            'type': 'decimal.Decimal',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('numFloat', {
+            'name': 'numFloat',
+            'is_list': False,
+            'optional': False,
+            'type': 'decimal.Decimal',
+            'is_relational': False,
+            'documentation': None,
+        }),
+    ],
+)
 
 _C_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
-_C_fields: Dict['types.CKeys', PartialModelField] = {
-    'char': {
-        'name': 'char',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'v_char': {
-        'name': 'v_char',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'text': {
-        'name': 'text',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'bit': {
-        'name': 'bit',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'v_bit': {
-        'name': 'v_bit',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'uuid': {
-        'name': 'uuid',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-}
+_C_fields: Dict['types.CKeys', PartialModelField] = OrderedDict(
+    [
+        ('char', {
+            'name': 'char',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('v_char', {
+            'name': 'v_char',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('text', {
+            'name': 'text',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('bit', {
+            'name': 'bit',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('v_bit', {
+            'name': 'v_bit',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('uuid', {
+            'name': 'uuid',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+    ],
+)
 
 _D_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
-_D_fields: Dict['types.DKeys', PartialModelField] = {
-    'id': {
-        'name': 'id',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'bool': {
-        'name': 'bool',
-        'is_list': False,
-        'optional': False,
-        'type': '_bool',
-        'documentation': None,
-    },
-    'xml': {
-        'name': 'xml',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'json_': {
-        'name': 'json_',
-        'is_list': False,
-        'optional': False,
-        'type': 'fields.Json',
-        'documentation': None,
-    },
-    'jsonb': {
-        'name': 'jsonb',
-        'is_list': False,
-        'optional': False,
-        'type': 'fields.Json',
-        'documentation': None,
-    },
-    'binary': {
-        'name': 'binary',
-        'is_list': False,
-        'optional': False,
-        'type': 'fields.Base64',
-        'documentation': None,
-    },
-}
+_D_fields: Dict['types.DKeys', PartialModelField] = OrderedDict(
+    [
+        ('id', {
+            'name': 'id',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('bool', {
+            'name': 'bool',
+            'is_list': False,
+            'optional': False,
+            'type': '_bool',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('xml', {
+            'name': 'xml',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('json_', {
+            'name': 'json_',
+            'is_list': False,
+            'optional': False,
+            'type': 'fields.Json',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('jsonb', {
+            'name': 'jsonb',
+            'is_list': False,
+            'optional': False,
+            'type': 'fields.Json',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('binary', {
+            'name': 'binary',
+            'is_list': False,
+            'optional': False,
+            'type': 'fields.Base64',
+            'is_relational': False,
+            'documentation': None,
+        }),
+    ],
+)
 
 _E_relational_fields: Set[str] = set()  # pyright: ignore[reportUnusedVariable]
-_E_fields: Dict['types.EKeys', PartialModelField] = {
-    'id': {
-        'name': 'id',
-        'is_list': False,
-        'optional': False,
-        'type': '_str',
-        'documentation': None,
-    },
-    'date': {
-        'name': 'date',
-        'is_list': False,
-        'optional': False,
-        'type': 'datetime.datetime',
-        'documentation': None,
-    },
-    'time': {
-        'name': 'time',
-        'is_list': False,
-        'optional': False,
-        'type': 'datetime.datetime',
-        'documentation': None,
-    },
-    'ts': {
-        'name': 'ts',
-        'is_list': False,
-        'optional': False,
-        'type': 'datetime.datetime',
-        'documentation': None,
-    },
-}
+_E_fields: Dict['types.EKeys', PartialModelField] = OrderedDict(
+    [
+        ('id', {
+            'name': 'id',
+            'is_list': False,
+            'optional': False,
+            'type': '_str',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('date', {
+            'name': 'date',
+            'is_list': False,
+            'optional': False,
+            'type': 'datetime.datetime',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('time', {
+            'name': 'time',
+            'is_list': False,
+            'optional': False,
+            'type': 'datetime.datetime',
+            'is_relational': False,
+            'documentation': None,
+        }),
+        ('ts', {
+            'name': 'ts',
+            'is_list': False,
+            'optional': False,
+            'type': 'datetime.datetime',
+            'is_relational': False,
+            'documentation': None,
+        }),
+    ],
+)
 
 
 

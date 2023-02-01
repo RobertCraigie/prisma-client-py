@@ -141,6 +141,12 @@ jobs:
         run: |
           nox -s lint
 
+      # Ensure that all Prisma Schema files are up to date
+      - name: Check formatting
+        run: |
+          nox -s format
+          git diff --exit-code
+
   mypy:
     name: mypy
     runs-on: ubuntu-latest
@@ -184,6 +190,7 @@ jobs:
     name: ${{ matrix.name }} ${{ matrix.version }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: MySQL
@@ -244,6 +251,14 @@ jobs:
       - name: Run tests
         run: |
           coverage run -m nox -s databases -- test --coverage --databases=${{ matrix.name }}
+        env:
+          ${{ matrix.env }}: ${{ matrix.url }}
+          COVERAGE_FILE: .cache/.coverage.databases
+
+      # these tests ensure that unsupported features, e.g. enums on SQLite actually fail
+      - name: Run inverse tests
+        run: |
+          coverage run -m nox -s databases -- test-inverse --coverage --databases=${{ matrix.name }}
         env:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases
