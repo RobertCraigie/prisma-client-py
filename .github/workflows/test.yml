@@ -104,10 +104,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Run tests
-        # TODO: run mypy too
+      - name: Run Pyright tests
         run: |
           nox -s typesafety-pyright
+
+      - name: Run mypy tests
+        run: |
+          nox -s typesafety-mypy
+
 
   lint:
     name: lint
