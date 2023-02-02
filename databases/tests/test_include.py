@@ -28,7 +28,14 @@ async def posts_fixture(client: Prisma, user_id: str) -> List[Post]:
 
 async def create_or_get_posts(client: Prisma, user_id: str) -> List[Post]:
     user = await client.user.find_unique(
-        where={'id': user_id}, include={'posts': True}
+        where={'id': user_id},
+        include={
+            'posts': {
+                'order_by': {
+                    'title': 'asc',
+                },
+            },
+        },
     )
     assert user is not None
 
@@ -142,7 +149,7 @@ async def test_find_unique_include_pagination(
                 'take': 1,
                 'skip': 1,
                 'order_by': {
-                    'created_at': 'asc',
+                    'title': 'asc',
                 },
             }
         },
@@ -160,7 +167,7 @@ async def test_find_unique_include_pagination(
                 'take': -1,
                 'skip': 1,
                 'order_by': {
-                    'created_at': 'asc',
+                    'title': 'asc',
                 },
             },
         },
@@ -183,12 +190,12 @@ async def test_find_unique_include_nested_where_or(
             'posts': {
                 'where': {
                     'OR': [
-                        {'published': True},
                         {'id': posts[0].id},
+                        {'published': True},
                     ],
                 },
                 'order_by': {
-                    'created_at': 'asc',
+                    'title': 'asc',
                 },
             }
         },
