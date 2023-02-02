@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="d_008d62399e2fcc76_test_models_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v7.1.0</a>,
-            created at 2023-02-01 22:44 +0000
+            created at 2023-02-02 10:15 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -189,7 +189,7 @@
     <p class="pln"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t">    <span class="key">class</span> <span class="nam">MyGenerator</span><span class="op">(</span><span class="nam">GenericGenerator</span><span class="op">[</span><span class="nam">Path</span><span class="op">]</span><span class="op">)</span><span class="op">:</span>  <span class="com"># type: ignore</span>&nbsp;</span><span class="r"></span></p>
     <p class="exc show_exc"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t">        <span class="key">def</span> <span class="nam">get_manifest</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span> <span class="op">-></span> <span class="nam">Manifest</span><span class="op">:</span>  <span class="com"># pragma: no cover</span>&nbsp;</span><span class="r"></span></p>
-    <p class="exc show_exc"><span class="n"><a id="t108" href="#t108">108</a></span><span class="t">            <span class="key">return</span> <span class="nam">super</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">get_manifest</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="exc show_exc"><span class="n"><a id="t108" href="#t108">108</a></span><span class="t">            <span class="key">return</span> <span class="nam">super</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">get_manifest</span><span class="op">(</span><span class="op">)</span>  <span class="com"># type: ignore</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="exc show_exc"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t">        <span class="key">def</span> <span class="nam">generate</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">data</span><span class="op">:</span> <span class="nam">Path</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>  <span class="com"># pragma: no cover</span>&nbsp;</span><span class="r"></span></p>
     <p class="exc show_exc"><span class="n"><a id="t111" href="#t111">111</a></span><span class="t">            <span class="key">return</span> <span class="nam">super</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">generate</span><span class="op">(</span><span class="nam">data</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -202,7 +202,7 @@
     <p class="pln"><span class="n"><a id="t118" href="#t118">118</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t119" href="#t119">119</a></span><span class="t">    <span class="key">class</span> <span class="nam">MyGenerator2</span><span class="op">(</span><span class="nam">GenericGenerator</span><span class="op">[</span><span class="nam">Manifest</span><span class="op">]</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="exc show_exc"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t">        <span class="key">def</span> <span class="nam">get_manifest</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span> <span class="op">-></span> <span class="nam">Manifest</span><span class="op">:</span>  <span class="com"># pragma: no cover</span>&nbsp;</span><span class="r"></span></p>
-    <p class="exc show_exc"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t">            <span class="key">return</span> <span class="nam">super</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">get_manifest</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="exc show_exc"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t">            <span class="key">return</span> <span class="nam">super</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">get_manifest</span><span class="op">(</span><span class="op">)</span>  <span class="com"># type: ignore</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="exc show_exc"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t">        <span class="key">def</span> <span class="nam">generate</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">data</span><span class="op">:</span> <span class="nam">Manifest</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>  <span class="com"># pragma: no cover</span>&nbsp;</span><span class="r"></span></p>
     <p class="exc show_exc"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t">            <span class="key">return</span> <span class="nam">super</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">generate</span><span class="op">(</span><span class="nam">data</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -254,7 +254,7 @@
             <a id="nextFileLink" class="nav" href="d_008d62399e2fcc76_test_models_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v7.1.0</a>,
-            created at 2023-02-01 22:44 +0000
+            created at 2023-02-02 10:15 +0000
         </p>
     </div>
 </footer>
