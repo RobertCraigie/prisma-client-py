@@ -58,8 +58,9 @@ time.sleep({{ duration }})
 
 {% set active_provider = datasources[0].active_provider %}
 
-{% macro query_methods(name, enable_non_recursive=True) %}
-{% if recursive_types %}
+{% macro query_methods(name) %}
+{# TODO: fix indentation behaviour here #}
+{% if true %}
 
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.{{ name }}Actions[PrismaModelT]':
@@ -67,23 +68,5 @@ time.sleep({{ duration }})
 
         return actions.{{ name }}Actions[PrismaModelT](get_client(), cls)
 {% else %}
-
-    {% if enable_non_recursive %}
-    @classmethod
-    def prisma(cls) -> 'actions.{{ name }}Actions':
-        from .client import get_client
-
-        return actions.{{ name }}Actions(get_client(), cls)
-    {% else %}
-    # TODO: try out mypy on the latest version to see if this doesn't crash anymore
-    @classmethod
-    def prisma(cls) -> 'NoReturn':
-        raise RuntimeError(
-            'Querying has been disabled as it cannot be typed with mypy;\n'
-            'You must switch to using fully recursive types to enable querying from this model\n'
-            'https://prisma-client-py.readthedocs.io/en/stable/reference/limitations/#querying-from-partial-models'
-        )
-    {% endif %}
-
 {% endif %}
 {% endmacro %}

@@ -36,13 +36,8 @@ if TYPE_CHECKING:
 {% set RawModelType = "prisma.models.%s" % model.name %}
 {% set include_doc = 'Specifies which relations should be loaded on the returned %s model' % model.name %}
 
-{% if recursive_types %}
 {% set ModelType = 'PrismaModelT' %}
 class {{ model.name }}Actions(Generic[PrismaModelT]):
-{% else %}
-{% set ModelType = "'models.%s'" % model.name %}
-class {{ model.name }}Actions:
-{% endif %}
     __slots__ = (
         '_client',
         '_model',
