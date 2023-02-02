@@ -44,6 +44,23 @@ class {{ model.name }}(_PrismaModel):
 
     {{ query_methods(model.name) }}
 
+    {% if not recursive_types %}
+    # take *args and **kwargs so that other metaclasses can define arguments
+    def __init_subclass__(
+        cls,
+        *args: Any,
+        warn_subclass: Optional[bool] = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init_subclass__()
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
+    {% endif %}
+
     {% if model.required_array_fields|list|length > 0 %}
     @validator({{ model.required_array_fields | map(attribute="name") | map('quote') | join(", ") }}, pre=True, allow_reuse=True)
     @classmethod
