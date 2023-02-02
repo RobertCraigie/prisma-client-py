@@ -84,19 +84,19 @@
 
       user = await client.user.find_unique(include={'posts': True}, where={'id': '1'})
       if user is not None:
-        reveal_type(user.posts)  # N: Revealed type is "Union[None, builtins.list[prisma.models.Post]]"
+        reveal_type(user.posts)  # N: Revealed type is "Union[builtins.list[prisma.models.Post], None]"
 
       user = await client.user.find_unique({'id': '1'}, {'posts': True})
       if user is not None:
-        reveal_type(user.posts)  # N: Revealed type is "Union[None, builtins.list[prisma.models.Post]]"
+        reveal_type(user.posts)  # N: Revealed type is "Union[builtins.list[prisma.models.Post], None]"
 
       user = await client.user.find_unique({'id': '1'}, dict(posts=True))
       if user is not None:
-        reveal_type(user.posts)  # N: Revealed type is "Union[None, builtins.list[prisma.models.Post]]"
+        reveal_type(user.posts)  # N: Revealed type is "Union[builtins.list[prisma.models.Post], None]"
 
       user = await client.user.find_unique({'id': '1'}, include={'posts': True, 'profile': True})
       if user is not None:
-        reveal_type(user.posts)  # N: Revealed type is "Union[None, builtins.list[prisma.models.Post]]"
+        reveal_type(user.posts)  # N: Revealed type is "Union[builtins.list[prisma.models.Post], None]"
         reveal_type(user.profile)  # N: Revealed type is "Union[prisma.models.Profile, None]"
 
       user = await client.user.find_unique({'id': '1'}, include={'posts': False})
