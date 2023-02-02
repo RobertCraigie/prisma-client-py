@@ -125,8 +125,8 @@
       reveal_type(user.profile)  # N: Revealed type is "Union[prisma.models.Profile, None]"
 
       if user.posts is not None:
-        reveal_type(user.posts)  # N: Revealed type is "builtins.list[prisma.models.Post, prisma.models.Post]"
-        reveal_type(user.posts[0].categories)  # N: Revealed type is "builtins.list[prisma.models.Category]"
+        reveal_type(user.posts)  # N: Revealed type is "builtins.list[prisma.models.Post]"
+        reveal_type(user.posts[0].categories)  # N: Revealed type is "Union[builtins.list[prisma.models.Category], None]"
 
     async def test_explicit_include_type(client: Prisma) -> None:
       user = await client.user.find_unique(
@@ -134,9 +134,7 @@
         include=UserInclude(posts=True)
       )
       assert user is not None
-
-      # TODO: why is the type duplicated?
-      reveal_type(user.posts)  # N: Revealed type is "Union[builtins.list[prisma.models.Post, prisma.models.Post], None]"
+      reveal_type(user.posts)  # N: Revealed type is "Union[builtins.list[prisma.models.Post], None]"
 
     async def test_correct_return_model_type(client: Prisma) -> None:
       query = '''
@@ -165,7 +163,7 @@
         WHERE title = "hi"
       '''
       posts = await client.query_raw(query)
-      reveal_type(posts)  # N: Revealed type is "Any"
+      reveal_type(posts)  # N: Revealed type is "builtins.list[builtins.dict[builtins.str, Any]]"
 
     async def test_bad_model_argument(client: Prisma) -> None:
       query = '''
@@ -212,7 +210,8 @@
       )
 
     def test_validator() -> None:
-      reveal_type(validate(PostCreateInput, {}))  # N: Revealed type is "prisma.types.PostCreateInput"
+      validated = validate(PostCreateInput, {})
+      reveal_type(validated.get('id'))  # N: Revealed type is "Union[builtins.str, None]"
 
     async def test_count_select(client: Prisma) -> None:
       count = await client.post.count()
