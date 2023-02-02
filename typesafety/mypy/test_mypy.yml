@@ -75,7 +75,7 @@
       user = await client.user.find_unique({'id': '1'}, include={'posts': True})
       if user is not None:
         reveal_type(user.posts)  # N: Revealed type is "Union[builtins.list[prisma.models.Post], None]"
-        if len(user.posts) == 0:
+        if user.posts is not None and len(user.posts) == 0:
           print('user does not have any posts!')
         else:
           print('user has at least one post')
