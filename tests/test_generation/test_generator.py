@@ -105,7 +105,7 @@ def test_invalid_type_argument() -> None:
 
     class MyGenerator(GenericGenerator[Path]):  # type: ignore
         def get_manifest(self) -> Manifest:  # pragma: no cover
-            return super().get_manifest()
+            return super().get_manifest()  # type: ignore
 
         def generate(self, data: Path) -> None:  # pragma: no cover
             return super().generate(data)
@@ -118,7 +118,7 @@ def test_invalid_type_argument() -> None:
 
     class MyGenerator2(GenericGenerator[Manifest]):
         def get_manifest(self) -> Manifest:  # pragma: no cover
-            return super().get_manifest()
+            return super().get_manifest()  # type: ignore
 
         def generate(self, data: Manifest) -> None:  # pragma: no cover
             return super().generate(data)
