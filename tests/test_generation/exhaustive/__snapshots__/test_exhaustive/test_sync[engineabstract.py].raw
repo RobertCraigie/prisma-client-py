@@ -37,17 +37,20 @@ from typing_extensions import TypedDict, Literal
 
 LiteralString = str
 # -- template engine/abstract.py.jinja --
+from typing import TypeVar
 from abc import ABC, abstractmethod
 from ._types import TransactionId
 from ..types import DatasourceOverride
 from .._compat import get_running_loop
 
-if TYPE_CHECKING:
-    from typing_extensions import Self
 
 __all__ = (
     'AbstractEngine',
 )
+
+
+_EngineT = TypeVar('_EngineT', bound='AbstractEngine')
+
 
 class AbstractEngine(ABC):
     dml: str
@@ -71,11 +74,11 @@ class AbstractEngine(ABC):
         """Decrement the reference counter by 1. Called when client instances are being destroyed."""
         self._refcount -= 1
 
-    def new_ref(self) -> Self:
+    def new_ref(self: _EngineT) -> _EngineT:
         """Increment the reference counter for this engine and return the current instance to support sharing the same engine
         between multiple `Prisma` instances.
 
-        Used to determine whether shutting down a given client should result in the engine being shut down too.
+        This is used to determine whether shutting down a given client should result in the engine being shut down too.
         """
         self._refcount += 1
         return self
