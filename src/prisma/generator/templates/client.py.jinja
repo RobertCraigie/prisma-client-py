@@ -114,11 +114,7 @@ def get_client() -> 'Prisma':
 
 class Prisma:
     {% for model in dmmf.datamodel.models %}
-    {% if recursive_types %}
     {{ model.name.lower() }}: 'actions.{{ model.name }}Actions[models.{{ model.name }}]'
-    {% else %}
-    {{ model.name.lower() }}: 'actions.{{ model.name }}Actions'
-    {% endif %}
     {% endfor %}
 
     __slots__ = (
@@ -144,11 +140,7 @@ class Prisma:
         http: Optional[HttpConfig] = None,
     ) -> None:
         {% for model in dmmf.datamodel.models %}
-        {% if recursive_types %}
         self.{{ model.name.lower() }} = actions.{{ model.name }}Actions[models.{{ model.name }}](self, models.{{ model.name }})
-        {% else %}
-        self.{{ model.name.lower() }} = actions.{{ model.name }}Actions(self, models.{{ model.name }})
-        {% endif %}
         {% endfor %}
         self.__engine: Optional[AbstractEngine] = None
         self._active_provider = '{{ active_provider }}'

@@ -47,13 +47,13 @@ if TYPE_CHECKING:
     from .client import Client
 
 
-class PostActions:
+class PostActions(Generic[BaseModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.Post']) -> None:
+    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -61,7 +61,7 @@ class PostActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.Post']:
+    ) -> List[BaseModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -99,7 +99,7 @@ class PostActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.Post']:
+    ) -> Optional[BaseModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -139,7 +139,7 @@ class PostActions:
         self,
         data: types.PostCreateInput,
         include: Optional[types.PostInclude] = None
-    ) -> 'models.Post':
+    ) -> BaseModelT:
         """Create a new Post record.
 
         Parameters
@@ -257,7 +257,7 @@ class PostActions:
         self,
         where: types.PostWhereUniqueInput,
         include: Optional[types.PostInclude] = None
-    ) -> Optional['models.Post']:
+    ) -> Optional[BaseModelT]:
         """Delete a single Post record.
 
         Parameters
@@ -310,7 +310,7 @@ class PostActions:
         self,
         where: types.PostWhereUniqueInput,
         include: Optional[types.PostInclude] = None
-    ) -> Optional['models.Post']:
+    ) -> Optional[BaseModelT]:
         """Find a unique Post record.
 
         Parameters
@@ -367,7 +367,7 @@ class PostActions:
         include: Optional[types.PostInclude] = None,
         order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
         distinct: Optional[List[types.PostScalarFieldKeys]] = None,
-    ) -> List['models.Post']:
+    ) -> List[BaseModelT]:
         """Find multiple Post records.
 
         An empty list is returned if no records could be found.
@@ -438,7 +438,7 @@ class PostActions:
         include: Optional[types.PostInclude] = None,
         order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
         distinct: Optional[List[types.PostScalarFieldKeys]] = None,
-    ) -> Optional['models.Post']:
+    ) -> Optional[BaseModelT]:
         """Find a single Post record.
 
         Parameters
@@ -503,7 +503,7 @@ class PostActions:
         data: types.PostUpdateInput,
         where: types.PostWhereUniqueInput,
         include: Optional[types.PostInclude] = None
-    ) -> Optional['models.Post']:
+    ) -> Optional[BaseModelT]:
         """Update a single Post record.
 
         Parameters
@@ -561,7 +561,7 @@ class PostActions:
         where: types.PostWhereUniqueInput,
         data: types.PostUpsertInput,
         include: Optional[types.PostInclude] = None,
-    ) -> 'models.Post':
+    ) -> BaseModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -974,13 +974,13 @@ class PostActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class UserActions:
+class UserActions(Generic[BaseModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.User']) -> None:
+    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -988,7 +988,7 @@ class UserActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.User']:
+    ) -> List[BaseModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -1026,7 +1026,7 @@ class UserActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.User']:
+    ) -> Optional[BaseModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -1066,7 +1066,7 @@ class UserActions:
         self,
         data: types.UserCreateInput,
         include: Optional[types.UserInclude] = None
-    ) -> 'models.User':
+    ) -> BaseModelT:
         """Create a new User record.
 
         Parameters
@@ -1196,7 +1196,7 @@ class UserActions:
         self,
         where: types.UserWhereUniqueInput,
         include: Optional[types.UserInclude] = None
-    ) -> Optional['models.User']:
+    ) -> Optional[BaseModelT]:
         """Delete a single User record.
 
         Parameters
@@ -1249,7 +1249,7 @@ class UserActions:
         self,
         where: types.UserWhereUniqueInput,
         include: Optional[types.UserInclude] = None
-    ) -> Optional['models.User']:
+    ) -> Optional[BaseModelT]:
         """Find a unique User record.
 
         Parameters
@@ -1306,7 +1306,7 @@ class UserActions:
         include: Optional[types.UserInclude] = None,
         order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
         distinct: Optional[List[types.UserScalarFieldKeys]] = None,
-    ) -> List['models.User']:
+    ) -> List[BaseModelT]:
         """Find multiple User records.
 
         An empty list is returned if no records could be found.
@@ -1377,7 +1377,7 @@ class UserActions:
         include: Optional[types.UserInclude] = None,
         order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
         distinct: Optional[List[types.UserScalarFieldKeys]] = None,
-    ) -> Optional['models.User']:
+    ) -> Optional[BaseModelT]:
         """Find a single User record.
 
         Parameters
@@ -1442,7 +1442,7 @@ class UserActions:
         data: types.UserUpdateInput,
         where: types.UserWhereUniqueInput,
         include: Optional[types.UserInclude] = None
-    ) -> Optional['models.User']:
+    ) -> Optional[BaseModelT]:
         """Update a single User record.
 
         Parameters
@@ -1500,7 +1500,7 @@ class UserActions:
         where: types.UserWhereUniqueInput,
         data: types.UserUpsertInput,
         include: Optional[types.UserInclude] = None,
-    ) -> 'models.User':
+    ) -> BaseModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -1921,13 +1921,13 @@ class UserActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class MActions:
+class MActions(Generic[BaseModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.M']) -> None:
+    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -1935,7 +1935,7 @@ class MActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.M']:
+    ) -> List[BaseModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -1973,7 +1973,7 @@ class MActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.M']:
+    ) -> Optional[BaseModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -2013,7 +2013,7 @@ class MActions:
         self,
         data: types.MCreateInput,
         include: Optional[types.MInclude] = None
-    ) -> 'models.M':
+    ) -> BaseModelT:
         """Create a new M record.
 
         Parameters
@@ -2140,7 +2140,7 @@ class MActions:
         self,
         where: types.MWhereUniqueInput,
         include: Optional[types.MInclude] = None
-    ) -> Optional['models.M']:
+    ) -> Optional[BaseModelT]:
         """Delete a single M record.
 
         Parameters
@@ -2193,7 +2193,7 @@ class MActions:
         self,
         where: types.MWhereUniqueInput,
         include: Optional[types.MInclude] = None
-    ) -> Optional['models.M']:
+    ) -> Optional[BaseModelT]:
         """Find a unique M record.
 
         Parameters
@@ -2250,7 +2250,7 @@ class MActions:
         include: Optional[types.MInclude] = None,
         order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
         distinct: Optional[List[types.MScalarFieldKeys]] = None,
-    ) -> List['models.M']:
+    ) -> List[BaseModelT]:
         """Find multiple M records.
 
         An empty list is returned if no records could be found.
@@ -2321,7 +2321,7 @@ class MActions:
         include: Optional[types.MInclude] = None,
         order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
         distinct: Optional[List[types.MScalarFieldKeys]] = None,
-    ) -> Optional['models.M']:
+    ) -> Optional[BaseModelT]:
         """Find a single M record.
 
         Parameters
@@ -2386,7 +2386,7 @@ class MActions:
         data: types.MUpdateInput,
         where: types.MWhereUniqueInput,
         include: Optional[types.MInclude] = None
-    ) -> Optional['models.M']:
+    ) -> Optional[BaseModelT]:
         """Update a single M record.
 
         Parameters
@@ -2444,7 +2444,7 @@ class MActions:
         where: types.MWhereUniqueInput,
         data: types.MUpsertInput,
         include: Optional[types.MInclude] = None,
-    ) -> 'models.M':
+    ) -> BaseModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -2863,13 +2863,13 @@ class MActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class NActions:
+class NActions(Generic[BaseModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.N']) -> None:
+    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -2877,7 +2877,7 @@ class NActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.N']:
+    ) -> List[BaseModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -2915,7 +2915,7 @@ class NActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.N']:
+    ) -> Optional[BaseModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -2955,7 +2955,7 @@ class NActions:
         self,
         data: types.NCreateInput,
         include: Optional[types.NInclude] = None
-    ) -> 'models.N':
+    ) -> BaseModelT:
         """Create a new N record.
 
         Parameters
@@ -3085,7 +3085,7 @@ class NActions:
         self,
         where: types.NWhereUniqueInput,
         include: Optional[types.NInclude] = None
-    ) -> Optional['models.N']:
+    ) -> Optional[BaseModelT]:
         """Delete a single N record.
 
         Parameters
@@ -3138,7 +3138,7 @@ class NActions:
         self,
         where: types.NWhereUniqueInput,
         include: Optional[types.NInclude] = None
-    ) -> Optional['models.N']:
+    ) -> Optional[BaseModelT]:
         """Find a unique N record.
 
         Parameters
@@ -3195,7 +3195,7 @@ class NActions:
         include: Optional[types.NInclude] = None,
         order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
         distinct: Optional[List[types.NScalarFieldKeys]] = None,
-    ) -> List['models.N']:
+    ) -> List[BaseModelT]:
         """Find multiple N records.
 
         An empty list is returned if no records could be found.
@@ -3266,7 +3266,7 @@ class NActions:
         include: Optional[types.NInclude] = None,
         order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
         distinct: Optional[List[types.NScalarFieldKeys]] = None,
-    ) -> Optional['models.N']:
+    ) -> Optional[BaseModelT]:
         """Find a single N record.
 
         Parameters
@@ -3331,7 +3331,7 @@ class NActions:
         data: types.NUpdateInput,
         where: types.NWhereUniqueInput,
         include: Optional[types.NInclude] = None
-    ) -> Optional['models.N']:
+    ) -> Optional[BaseModelT]:
         """Update a single N record.
 
         Parameters
@@ -3389,7 +3389,7 @@ class NActions:
         where: types.NWhereUniqueInput,
         data: types.NUpsertInput,
         include: Optional[types.NInclude] = None,
-    ) -> 'models.N':
+    ) -> BaseModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -3810,13 +3810,13 @@ class NActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class OneOptionalActions:
+class OneOptionalActions(Generic[BaseModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.OneOptional']) -> None:
+    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -3824,7 +3824,7 @@ class OneOptionalActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.OneOptional']:
+    ) -> List[BaseModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -3862,7 +3862,7 @@ class OneOptionalActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.OneOptional']:
+    ) -> Optional[BaseModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -3902,7 +3902,7 @@ class OneOptionalActions:
         self,
         data: types.OneOptionalCreateInput,
         include: Optional[types.OneOptionalInclude] = None
-    ) -> 'models.OneOptional':
+    ) -> BaseModelT:
         """Create a new OneOptional record.
 
         Parameters
@@ -4029,7 +4029,7 @@ class OneOptionalActions:
         self,
         where: types.OneOptionalWhereUniqueInput,
         include: Optional[types.OneOptionalInclude] = None
-    ) -> Optional['models.OneOptional']:
+    ) -> Optional[BaseModelT]:
         """Delete a single OneOptional record.
 
         Parameters
@@ -4082,7 +4082,7 @@ class OneOptionalActions:
         self,
         where: types.OneOptionalWhereUniqueInput,
         include: Optional[types.OneOptionalInclude] = None
-    ) -> Optional['models.OneOptional']:
+    ) -> Optional[BaseModelT]:
         """Find a unique OneOptional record.
 
         Parameters
@@ -4139,7 +4139,7 @@ class OneOptionalActions:
         include: Optional[types.OneOptionalInclude] = None,
         order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
         distinct: Optional[List[types.OneOptionalScalarFieldKeys]] = None,
-    ) -> List['models.OneOptional']:
+    ) -> List[BaseModelT]:
         """Find multiple OneOptional records.
 
         An empty list is returned if no records could be found.
@@ -4210,7 +4210,7 @@ class OneOptionalActions:
         include: Optional[types.OneOptionalInclude] = None,
         order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
         distinct: Optional[List[types.OneOptionalScalarFieldKeys]] = None,
-    ) -> Optional['models.OneOptional']:
+    ) -> Optional[BaseModelT]:
         """Find a single OneOptional record.
 
         Parameters
@@ -4275,7 +4275,7 @@ class OneOptionalActions:
         data: types.OneOptionalUpdateInput,
         where: types.OneOptionalWhereUniqueInput,
         include: Optional[types.OneOptionalInclude] = None
-    ) -> Optional['models.OneOptional']:
+    ) -> Optional[BaseModelT]:
         """Update a single OneOptional record.
 
         Parameters
@@ -4333,7 +4333,7 @@ class OneOptionalActions:
         where: types.OneOptionalWhereUniqueInput,
         data: types.OneOptionalUpsertInput,
         include: Optional[types.OneOptionalInclude] = None,
-    ) -> 'models.OneOptional':
+    ) -> BaseModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -4752,13 +4752,13 @@ class OneOptionalActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class ManyRequiredActions:
+class ManyRequiredActions(Generic[BaseModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.ManyRequired']) -> None:
+    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -4766,7 +4766,7 @@ class ManyRequiredActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.ManyRequired']:
+    ) -> List[BaseModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -4804,7 +4804,7 @@ class ManyRequiredActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.ManyRequired']:
+    ) -> Optional[BaseModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -4844,7 +4844,7 @@ class ManyRequiredActions:
         self,
         data: types.ManyRequiredCreateInput,
         include: Optional[types.ManyRequiredInclude] = None
-    ) -> 'models.ManyRequired':
+    ) -> BaseModelT:
         """Create a new ManyRequired record.
 
         Parameters
@@ -4971,7 +4971,7 @@ class ManyRequiredActions:
         self,
         where: types.ManyRequiredWhereUniqueInput,
         include: Optional[types.ManyRequiredInclude] = None
-    ) -> Optional['models.ManyRequired']:
+    ) -> Optional[BaseModelT]:
         """Delete a single ManyRequired record.
 
         Parameters
@@ -5024,7 +5024,7 @@ class ManyRequiredActions:
         self,
         where: types.ManyRequiredWhereUniqueInput,
         include: Optional[types.ManyRequiredInclude] = None
-    ) -> Optional['models.ManyRequired']:
+    ) -> Optional[BaseModelT]:
         """Find a unique ManyRequired record.
 
         Parameters
@@ -5081,7 +5081,7 @@ class ManyRequiredActions:
         include: Optional[types.ManyRequiredInclude] = None,
         order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
         distinct: Optional[List[types.ManyRequiredScalarFieldKeys]] = None,
-    ) -> List['models.ManyRequired']:
+    ) -> List[BaseModelT]:
         """Find multiple ManyRequired records.
 
         An empty list is returned if no records could be found.
@@ -5152,7 +5152,7 @@ class ManyRequiredActions:
         include: Optional[types.ManyRequiredInclude] = None,
         order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
         distinct: Optional[List[types.ManyRequiredScalarFieldKeys]] = None,
-    ) -> Optional['models.ManyRequired']:
+    ) -> Optional[BaseModelT]:
         """Find a single ManyRequired record.
 
         Parameters
@@ -5217,7 +5217,7 @@ class ManyRequiredActions:
         data: types.ManyRequiredUpdateInput,
         where: types.ManyRequiredWhereUniqueInput,
         include: Optional[types.ManyRequiredInclude] = None
-    ) -> Optional['models.ManyRequired']:
+    ) -> Optional[BaseModelT]:
         """Update a single ManyRequired record.
 
         Parameters
@@ -5275,7 +5275,7 @@ class ManyRequiredActions:
         where: types.ManyRequiredWhereUniqueInput,
         data: types.ManyRequiredUpsertInput,
         include: Optional[types.ManyRequiredInclude] = None,
-    ) -> 'models.ManyRequired':
+    ) -> BaseModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -5694,13 +5694,13 @@ class ManyRequiredActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class ListsActions:
+class ListsActions(Generic[BaseModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.Lists']) -> None:
+    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -5708,7 +5708,7 @@ class ListsActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.Lists']:
+    ) -> List[BaseModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -5746,7 +5746,7 @@ class ListsActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.Lists']:
+    ) -> Optional[BaseModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -5786,7 +5786,7 @@ class ListsActions:
         self,
         data: types.ListsCreateInput,
         include: Optional[types.ListsInclude] = None
-    ) -> 'models.Lists':
+    ) -> BaseModelT:
         """Create a new Lists record.
 
         Parameters
@@ -5898,7 +5898,7 @@ class ListsActions:
         self,
         where: types.ListsWhereUniqueInput,
         include: Optional[types.ListsInclude] = None
-    ) -> Optional['models.Lists']:
+    ) -> Optional[BaseModelT]:
         """Delete a single Lists record.
 
         Parameters
@@ -5951,7 +5951,7 @@ class ListsActions:
         self,
         where: types.ListsWhereUniqueInput,
         include: Optional[types.ListsInclude] = None
-    ) -> Optional['models.Lists']:
+    ) -> Optional[BaseModelT]:
         """Find a unique Lists record.
 
         Parameters
@@ -6008,7 +6008,7 @@ class ListsActions:
         include: Optional[types.ListsInclude] = None,
         order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
         distinct: Optional[List[types.ListsScalarFieldKeys]] = None,
-    ) -> List['models.Lists']:
+    ) -> List[BaseModelT]:
         """Find multiple Lists records.
 
         An empty list is returned if no records could be found.
@@ -6079,7 +6079,7 @@ class ListsActions:
         include: Optional[types.ListsInclude] = None,
         order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
         distinct: Optional[List[types.ListsScalarFieldKeys]] = None,
-    ) -> Optional['models.Lists']:
+    ) -> Optional[BaseModelT]:
         """Find a single Lists record.
 
         Parameters
@@ -6144,7 +6144,7 @@ class ListsActions:
         data: types.ListsUpdateInput,
         where: types.ListsWhereUniqueInput,
         include: Optional[types.ListsInclude] = None
-    ) -> Optional['models.Lists']:
+    ) -> Optional[BaseModelT]:
         """Update a single Lists record.
 
         Parameters
@@ -6202,7 +6202,7 @@ class ListsActions:
         where: types.ListsWhereUniqueInput,
         data: types.ListsUpsertInput,
         include: Optional[types.ListsInclude] = None,
-    ) -> 'models.Lists':
+    ) -> BaseModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -6611,13 +6611,13 @@ class ListsActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class AActions:
+class AActions(Generic[BaseModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.A']) -> None:
+    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -6625,7 +6625,7 @@ class AActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.A']:
+    ) -> List[BaseModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -6663,7 +6663,7 @@ class AActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.A']:
+    ) -> Optional[BaseModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -6703,7 +6703,7 @@ class AActions:
         self,
         data: types.ACreateInput,
         include: Optional[types.AInclude] = None
-    ) -> 'models.A':
+    ) -> BaseModelT:
         """Create a new A record.
 
         Parameters
@@ -6827,7 +6827,7 @@ class AActions:
         self,
         where: types.AWhereUniqueInput,
         include: Optional[types.AInclude] = None
-    ) -> Optional['models.A']:
+    ) -> Optional[BaseModelT]:
         """Delete a single A record.
 
         Parameters
@@ -6880,7 +6880,7 @@ class AActions:
         self,
         where: types.AWhereUniqueInput,
         include: Optional[types.AInclude] = None
-    ) -> Optional['models.A']:
+    ) -> Optional[BaseModelT]:
         """Find a unique A record.
 
         Parameters
@@ -6937,7 +6937,7 @@ class AActions:
         include: Optional[types.AInclude] = None,
         order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
         distinct: Optional[List[types.AScalarFieldKeys]] = None,
-    ) -> List['models.A']:
+    ) -> List[BaseModelT]:
         """Find multiple A records.
 
         An empty list is returned if no records could be found.
@@ -7008,7 +7008,7 @@ class AActions:
         include: Optional[types.AInclude] = None,
         order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
         distinct: Optional[List[types.AScalarFieldKeys]] = None,
-    ) -> Optional['models.A']:
+    ) -> Optional[BaseModelT]:
         """Find a single A record.
 
         Parameters
@@ -7073,7 +7073,7 @@ class AActions:
         data: types.AUpdateInput,
         where: types.AWhereUniqueInput,
         include: Optional[types.AInclude] = None
-    ) -> Optional['models.A']:
+    ) -> Optional[BaseModelT]:
         """Update a single A record.
 
         Parameters
@@ -7131,7 +7131,7 @@ class AActions:
         where: types.AWhereUniqueInput,
         data: types.AUpsertInput,
         include: Optional[types.AInclude] = None,
-    ) -> 'models.A':
+    ) -> BaseModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -7546,13 +7546,13 @@ class AActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class BActions:
+class BActions(Generic[BaseModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.B']) -> None:
+    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -7560,7 +7560,7 @@ class BActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.B']:
+    ) -> List[BaseModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -7598,7 +7598,7 @@ class BActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.B']:
+    ) -> Optional[BaseModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -7638,7 +7638,7 @@ class BActions:
         self,
         data: types.BCreateInput,
         include: Optional[types.BInclude] = None
-    ) -> 'models.B':
+    ) -> BaseModelT:
         """Create a new B record.
 
         Parameters
@@ -7762,7 +7762,7 @@ class BActions:
         self,
         where: types.BWhereUniqueInput,
         include: Optional[types.BInclude] = None
-    ) -> Optional['models.B']:
+    ) -> Optional[BaseModelT]:
         """Delete a single B record.
 
         Parameters
@@ -7815,7 +7815,7 @@ class BActions:
         self,
         where: types.BWhereUniqueInput,
         include: Optional[types.BInclude] = None
-    ) -> Optional['models.B']:
+    ) -> Optional[BaseModelT]:
         """Find a unique B record.
 
         Parameters
@@ -7872,7 +7872,7 @@ class BActions:
         include: Optional[types.BInclude] = None,
         order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
         distinct: Optional[List[types.BScalarFieldKeys]] = None,
-    ) -> List['models.B']:
+    ) -> List[BaseModelT]:
         """Find multiple B records.
 
         An empty list is returned if no records could be found.
@@ -7943,7 +7943,7 @@ class BActions:
         include: Optional[types.BInclude] = None,
         order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
         distinct: Optional[List[types.BScalarFieldKeys]] = None,
-    ) -> Optional['models.B']:
+    ) -> Optional[BaseModelT]:
         """Find a single B record.
 
         Parameters
@@ -8008,7 +8008,7 @@ class BActions:
         data: types.BUpdateInput,
         where: types.BWhereUniqueInput,
         include: Optional[types.BInclude] = None
-    ) -> Optional['models.B']:
+    ) -> Optional[BaseModelT]:
         """Update a single B record.
 
         Parameters
@@ -8066,7 +8066,7 @@ class BActions:
         where: types.BWhereUniqueInput,
         data: types.BUpsertInput,
         include: Optional[types.BInclude] = None,
-    ) -> 'models.B':
+    ) -> BaseModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -8483,13 +8483,13 @@ class BActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class CActions:
+class CActions(Generic[BaseModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.C']) -> None:
+    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -8497,7 +8497,7 @@ class CActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.C']:
+    ) -> List[BaseModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -8535,7 +8535,7 @@ class CActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.C']:
+    ) -> Optional[BaseModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -8575,7 +8575,7 @@ class CActions:
         self,
         data: types.CCreateInput,
         include: Optional[types.CInclude] = None
-    ) -> 'models.C':
+    ) -> BaseModelT:
         """Create a new C record.
 
         Parameters
@@ -8705,7 +8705,7 @@ class CActions:
         self,
         where: types.CWhereUniqueInput,
         include: Optional[types.CInclude] = None
-    ) -> Optional['models.C']:
+    ) -> Optional[BaseModelT]:
         """Delete a single C record.
 
         Parameters
@@ -8759,7 +8759,7 @@ class CActions:
         self,
         where: types.CWhereUniqueInput,
         include: Optional[types.CInclude] = None
-    ) -> Optional['models.C']:
+    ) -> Optional[BaseModelT]:
         """Find a unique C record.
 
         Parameters
@@ -8817,7 +8817,7 @@ class CActions:
         include: Optional[types.CInclude] = None,
         order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
         distinct: Optional[List[types.CScalarFieldKeys]] = None,
-    ) -> List['models.C']:
+    ) -> List[BaseModelT]:
         """Find multiple C records.
 
         An empty list is returned if no records could be found.
@@ -8888,7 +8888,7 @@ class CActions:
         include: Optional[types.CInclude] = None,
         order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
         distinct: Optional[List[types.CScalarFieldKeys]] = None,
-    ) -> Optional['models.C']:
+    ) -> Optional[BaseModelT]:
         """Find a single C record.
 
         Parameters
@@ -8953,7 +8953,7 @@ class CActions:
         data: types.CUpdateInput,
         where: types.CWhereUniqueInput,
         include: Optional[types.CInclude] = None
-    ) -> Optional['models.C']:
+    ) -> Optional[BaseModelT]:
         """Update a single C record.
 
         Parameters
@@ -9012,7 +9012,7 @@ class CActions:
         where: types.CWhereUniqueInput,
         data: types.CUpsertInput,
         include: Optional[types.CInclude] = None,
-    ) -> 'models.C':
+    ) -> BaseModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -9422,13 +9422,13 @@ class CActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class DActions:
+class DActions(Generic[BaseModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.D']) -> None:
+    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -9436,7 +9436,7 @@ class DActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.D']:
+    ) -> List[BaseModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -9474,7 +9474,7 @@ class DActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.D']:
+    ) -> Optional[BaseModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -9514,7 +9514,7 @@ class DActions:
         self,
         data: types.DCreateInput,
         include: Optional[types.DInclude] = None
-    ) -> 'models.D':
+    ) -> BaseModelT:
         """Create a new D record.
 
         Parameters
@@ -9641,7 +9641,7 @@ class DActions:
         self,
         where: types.DWhereUniqueInput,
         include: Optional[types.DInclude] = None
-    ) -> Optional['models.D']:
+    ) -> Optional[BaseModelT]:
         """Delete a single D record.
 
         Parameters
@@ -9694,7 +9694,7 @@ class DActions:
         self,
         where: types.DWhereUniqueInput,
         include: Optional[types.DInclude] = None
-    ) -> Optional['models.D']:
+    ) -> Optional[BaseModelT]:
         """Find a unique D record.
 
         Parameters
@@ -9751,7 +9751,7 @@ class DActions:
         include: Optional[types.DInclude] = None,
         order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
         distinct: Optional[List[types.DScalarFieldKeys]] = None,
-    ) -> List['models.D']:
+    ) -> List[BaseModelT]:
         """Find multiple D records.
 
         An empty list is returned if no records could be found.
@@ -9822,7 +9822,7 @@ class DActions:
         include: Optional[types.DInclude] = None,
         order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
         distinct: Optional[List[types.DScalarFieldKeys]] = None,
-    ) -> Optional['models.D']:
+    ) -> Optional[BaseModelT]:
         """Find a single D record.
 
         Parameters
@@ -9887,7 +9887,7 @@ class DActions:
         data: types.DUpdateInput,
         where: types.DWhereUniqueInput,
         include: Optional[types.DInclude] = None
-    ) -> Optional['models.D']:
+    ) -> Optional[BaseModelT]:
         """Update a single D record.
 
         Parameters
@@ -9945,7 +9945,7 @@ class DActions:
         where: types.DWhereUniqueInput,
         data: types.DUpsertInput,
         include: Optional[types.DInclude] = None,
-    ) -> 'models.D':
+    ) -> BaseModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -10364,13 +10364,13 @@ class DActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class EActions:
+class EActions(Generic[BaseModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.E']) -> None:
+    def __init__(self, client: 'Client', model: Type[BaseModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -10378,7 +10378,7 @@ class EActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.E']:
+    ) -> List[BaseModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -10416,7 +10416,7 @@ class EActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.E']:
+    ) -> Optional[BaseModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -10456,7 +10456,7 @@ class EActions:
         self,
         data: types.ECreateInput,
         include: Optional[types.EInclude] = None
-    ) -> 'models.E':
+    ) -> BaseModelT:
         """Create a new E record.
 
         Parameters
@@ -10577,7 +10577,7 @@ class EActions:
         self,
         where: types.EWhereUniqueInput,
         include: Optional[types.EInclude] = None
-    ) -> Optional['models.E']:
+    ) -> Optional[BaseModelT]:
         """Delete a single E record.
 
         Parameters
@@ -10630,7 +10630,7 @@ class EActions:
         self,
         where: types.EWhereUniqueInput,
         include: Optional[types.EInclude] = None
-    ) -> Optional['models.E']:
+    ) -> Optional[BaseModelT]:
         """Find a unique E record.
 
         Parameters
@@ -10687,7 +10687,7 @@ class EActions:
         include: Optional[types.EInclude] = None,
         order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
         distinct: Optional[List[types.EScalarFieldKeys]] = None,
-    ) -> List['models.E']:
+    ) -> List[BaseModelT]:
         """Find multiple E records.
 
         An empty list is returned if no records could be found.
@@ -10758,7 +10758,7 @@ class EActions:
         include: Optional[types.EInclude] = None,
         order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
         distinct: Optional[List[types.EScalarFieldKeys]] = None,
-    ) -> Optional['models.E']:
+    ) -> Optional[BaseModelT]:
         """Find a single E record.
 
         Parameters
@@ -10823,7 +10823,7 @@ class EActions:
         data: types.EUpdateInput,
         where: types.EWhereUniqueInput,
         include: Optional[types.EInclude] = None
-    ) -> Optional['models.E']:
+    ) -> Optional[BaseModelT]:
         """Update a single E record.
 
         Parameters
@@ -10881,7 +10881,7 @@ class EActions:
         where: types.EWhereUniqueInput,
         data: types.EUpsertInput,
         include: Optional[types.EInclude] = None,
-    ) -> 'models.E':
+    ) -> BaseModelT:
         """Updates an existing record or create a new one
 
         Parameters

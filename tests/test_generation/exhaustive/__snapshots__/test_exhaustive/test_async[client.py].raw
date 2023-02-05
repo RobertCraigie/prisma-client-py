@@ -148,18 +148,18 @@ def get_client() -> 'Prisma':
 
 
 class Prisma:
-    post: 'actions.PostActions'
-    user: 'actions.UserActions'
-    m: 'actions.MActions'
-    n: 'actions.NActions'
-    oneoptional: 'actions.OneOptionalActions'
-    manyrequired: 'actions.ManyRequiredActions'
-    lists: 'actions.ListsActions'
-    a: 'actions.AActions'
-    b: 'actions.BActions'
-    c: 'actions.CActions'
-    d: 'actions.DActions'
-    e: 'actions.EActions'
+    post: 'actions.PostActions[models.Post]'
+    user: 'actions.UserActions[models.User]'
+    m: 'actions.MActions[models.M]'
+    n: 'actions.NActions[models.N]'
+    oneoptional: 'actions.OneOptionalActions[models.OneOptional]'
+    manyrequired: 'actions.ManyRequiredActions[models.ManyRequired]'
+    lists: 'actions.ListsActions[models.Lists]'
+    a: 'actions.AActions[models.A]'
+    b: 'actions.BActions[models.B]'
+    c: 'actions.CActions[models.C]'
+    d: 'actions.DActions[models.D]'
+    e: 'actions.EActions[models.E]'
 
     __slots__ = (
         'post',
@@ -192,18 +192,18 @@ class Prisma:
         connect_timeout: int = 10,
         http: Optional[HttpConfig] = None,
     ) -> None:
-        self.post = actions.PostActions(self, models.Post)
-        self.user = actions.UserActions(self, models.User)
-        self.m = actions.MActions(self, models.M)
-        self.n = actions.NActions(self, models.N)
-        self.oneoptional = actions.OneOptionalActions(self, models.OneOptional)
-        self.manyrequired = actions.ManyRequiredActions(self, models.ManyRequired)
-        self.lists = actions.ListsActions(self, models.Lists)
-        self.a = actions.AActions(self, models.A)
-        self.b = actions.BActions(self, models.B)
-        self.c = actions.CActions(self, models.C)
-        self.d = actions.DActions(self, models.D)
-        self.e = actions.EActions(self, models.E)
+        self.post = actions.PostActions[models.Post](self, models.Post)
+        self.user = actions.UserActions[models.User](self, models.User)
+        self.m = actions.MActions[models.M](self, models.M)
+        self.n = actions.NActions[models.N](self, models.N)
+        self.oneoptional = actions.OneOptionalActions[models.OneOptional](self, models.OneOptional)
+        self.manyrequired = actions.ManyRequiredActions[models.ManyRequired](self, models.ManyRequired)
+        self.lists = actions.ListsActions[models.Lists](self, models.Lists)
+        self.a = actions.AActions[models.A](self, models.A)
+        self.b = actions.BActions[models.B](self, models.B)
+        self.c = actions.CActions[models.C](self, models.C)
+        self.d = actions.DActions[models.D](self, models.D)
+        self.e = actions.EActions[models.E](self, models.E)
         self.__engine: Optional[AbstractEngine] = None
         self._active_provider = 'postgresql'
         self._log_queries = log_queries

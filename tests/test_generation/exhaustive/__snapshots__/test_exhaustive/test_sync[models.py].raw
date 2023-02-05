@@ -62,41 +62,6 @@ class Config(BaseConfig):
 log: logging.Logger = logging.getLogger(__name__)
 _created_partial_types: Set[str] = set()
 
-# packages that implicitly subclass models
-# this should not raise any warnings as users
-# of these packages cannot do anything about it
-_implicit_subclass_packages: Set[str] = {
-    'fastapi',
-}
-
-
-def _maybe_warn_subclassing(new_model: str, base_model: str, *, stacklevel: int = 3) -> None:
-    # at least 3 frames are guaranteed to exist if we are being called from __init_subclass__
-    # stack: 1 = __init_subclass__, 2 = abc, 3 = <caller>
-    try:
-        frame = inspect.stack()[stacklevel]
-        module = inspect.getmodule(frame[0])
-        if module is not None:
-            name, *_ = module.__name__.split('.')
-            if name in _implicit_subclass_packages:
-                return
-    except Exception as exc:
-        # disabling subclass warnings depending on the caller module is not a mission critical
-        # feature, users can disable these warnings themselves
-        # https://github.com/RobertCraigie/prisma-client-py/issues/278#issuecomment-1031421561
-        log.debug('Ignoring exception encountered during stack inspection check: %s', str(exc))
-
-    message = (
-        'Subclassing models while using pseudo-recursive types may cause unexpected '
-        'errors when static type checking;\n'
-        'You can disable this warning by generating fully recursive types: \n'
-        'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive\n'
-        'or if that is not possible you can pass warn_subclass=False e.g.\n'
-        f'  class {new_model}(prisma.models.{base_model}, warn_subclass=False):'
-    )
-    warnings.warn(message, errors.UnsupportedSubclassWarning, stacklevel=4)
-
-
 class Post(BaseModel):
     """Post model documentation
     """
@@ -119,21 +84,25 @@ class Post(BaseModel):
     Config = Config
 
     @classmethod
-    def prisma(cls) -> 'actions.PostActions':
+    def prisma(cls: Type[BaseModelT]) -> 'actions.PostActions[BaseModelT]':
         from .client import get_client
 
-        return actions.PostActions(get_client(), cls)
+        return actions.PostActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'Post', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -264,21 +233,25 @@ class User(BaseModel):
     Config = Config
 
     @classmethod
-    def prisma(cls) -> 'actions.UserActions':
+    def prisma(cls: Type[BaseModelT]) -> 'actions.UserActions[BaseModelT]':
         from .client import get_client
 
-        return actions.UserActions(get_client(), cls)
+        return actions.UserActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'User', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -405,21 +378,25 @@ class M(BaseModel):
     Config = Config
 
     @classmethod
-    def prisma(cls) -> 'actions.MActions':
+    def prisma(cls: Type[BaseModelT]) -> 'actions.MActions[BaseModelT]':
         from .client import get_client
 
-        return actions.MActions(get_client(), cls)
+        return actions.MActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'M', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -548,21 +525,25 @@ class N(BaseModel):
     Config = Config
 
     @classmethod
-    def prisma(cls) -> 'actions.NActions':
+    def prisma(cls: Type[BaseModelT]) -> 'actions.NActions[BaseModelT]':
         from .client import get_client
 
-        return actions.NActions(get_client(), cls)
+        return actions.NActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'N', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -689,21 +670,25 @@ class OneOptional(BaseModel):
     Config = Config
 
     @classmethod
-    def prisma(cls) -> 'actions.OneOptionalActions':
+    def prisma(cls: Type[BaseModelT]) -> 'actions.OneOptionalActions[BaseModelT]':
         from .client import get_client
 
-        return actions.OneOptionalActions(get_client(), cls)
+        return actions.OneOptionalActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'OneOptional', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -831,21 +816,25 @@ class ManyRequired(BaseModel):
     Config = Config
 
     @classmethod
-    def prisma(cls) -> 'actions.ManyRequiredActions':
+    def prisma(cls: Type[BaseModelT]) -> 'actions.ManyRequiredActions[BaseModelT]':
         from .client import get_client
 
-        return actions.ManyRequiredActions(get_client(), cls)
+        return actions.ManyRequiredActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'ManyRequired', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -970,21 +959,25 @@ class Lists(BaseModel):
     Config = Config
 
     @classmethod
-    def prisma(cls) -> 'actions.ListsActions':
+    def prisma(cls: Type[BaseModelT]) -> 'actions.ListsActions[BaseModelT]':
         from .client import get_client
 
-        return actions.ListsActions(get_client(), cls)
+        return actions.ListsActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'Lists', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
     @validator('strings', 'bytes', 'dates', 'bools', 'ints', 'floats', 'bigints', 'json_objects', 'decimals', pre=True, allow_reuse=True)
     @classmethod
@@ -1097,21 +1090,25 @@ class A(BaseModel):
     Config = Config
 
     @classmethod
-    def prisma(cls) -> 'actions.AActions':
+    def prisma(cls: Type[BaseModelT]) -> 'actions.AActions[BaseModelT]':
         from .client import get_client
 
-        return actions.AActions(get_client(), cls)
+        return actions.AActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'A', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -1207,21 +1204,25 @@ class B(BaseModel):
     Config = Config
 
     @classmethod
-    def prisma(cls) -> 'actions.BActions':
+    def prisma(cls: Type[BaseModelT]) -> 'actions.BActions[BaseModelT]':
         from .client import get_client
 
-        return actions.BActions(get_client(), cls)
+        return actions.BActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'B', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -1318,21 +1319,25 @@ class C(BaseModel):
     Config = Config
 
     @classmethod
-    def prisma(cls) -> 'actions.CActions':
+    def prisma(cls: Type[BaseModelT]) -> 'actions.CActions[BaseModelT]':
         from .client import get_client
 
-        return actions.CActions(get_client(), cls)
+        return actions.CActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'C', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -1429,21 +1434,25 @@ class D(BaseModel):
     Config = Config
 
     @classmethod
-    def prisma(cls) -> 'actions.DActions':
+    def prisma(cls: Type[BaseModelT]) -> 'actions.DActions[BaseModelT]':
         from .client import get_client
 
-        return actions.DActions(get_client(), cls)
+        return actions.DActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'D', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -1538,21 +1547,25 @@ class E(BaseModel):
     Config = Config
 
     @classmethod
-    def prisma(cls) -> 'actions.EActions':
+    def prisma(cls: Type[BaseModelT]) -> 'actions.EActions[BaseModelT]':
         from .client import get_client
 
-        return actions.EActions(get_client(), cls)
+        return actions.EActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'E', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
