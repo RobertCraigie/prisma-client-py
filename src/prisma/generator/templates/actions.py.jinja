@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 {% set include_doc = 'Specifies which relations should be loaded on the returned %s model' % model.name %}
 
 {% set ModelType = 'PrismaModelT' %}
-class {{ model.name }}Actions(Generic[PrismaModelT]):
+class {{ model.name }}Actions(Generic[{{ ModelType }}]):
     __slots__ = (
         '_client',
         '_model',
