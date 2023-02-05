@@ -150,5 +150,6 @@ class PrismaWarning(Warning):
     pass
 
 
+# Note: this is currently unused but not worth removing
 class UnsupportedSubclassWarning(PrismaWarning):
     pass
