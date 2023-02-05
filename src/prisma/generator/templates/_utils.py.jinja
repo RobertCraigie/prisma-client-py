@@ -59,14 +59,10 @@ time.sleep({{ duration }})
 {% set active_provider = datasources[0].active_provider %}
 
 {% macro query_methods(name) %}
-{# TODO: fix indentation behaviour here #}
-{% if true %}
 
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.{{ name }}Actions[PrismaModelT]':
         from .client import get_client
 
         return actions.{{ name }}Actions[PrismaModelT](get_client(), cls)
-{% else %}
-{% endif %}
 {% endmacro %}

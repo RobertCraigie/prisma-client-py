@@ -77,12 +77,13 @@ class Post(_PrismaModel):
     author_id: _int
 
     __prisma_model__: ClassVar[str] = 'Post'
-
+    
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.PostActions[PrismaModelT]':
         from .client import get_client
 
         return actions.PostActions[PrismaModelT](get_client(), cls)
+
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -228,12 +229,13 @@ class User(_PrismaModel):
     posts: Optional[List['models.Post']]
 
     __prisma_model__: ClassVar[str] = 'User'
-
+    
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.UserActions[PrismaModelT]':
         from .client import get_client
 
         return actions.UserActions[PrismaModelT](get_client(), cls)
+
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -375,12 +377,13 @@ class M(_PrismaModel):
     optional_boolean: Optional[_bool]
 
     __prisma_model__: ClassVar[str] = 'M'
-
+    
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.MActions[PrismaModelT]':
         from .client import get_client
 
         return actions.MActions[PrismaModelT](get_client(), cls)
+
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -524,12 +527,13 @@ class N(_PrismaModel):
     optional_boolean: Optional[_bool]
 
     __prisma_model__: ClassVar[str] = 'N'
-
+    
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.NActions[PrismaModelT]':
         from .client import get_client
 
         return actions.NActions[PrismaModelT](get_client(), cls)
+
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -671,12 +675,13 @@ class OneOptional(_PrismaModel):
     optional_boolean: Optional[_bool]
 
     __prisma_model__: ClassVar[str] = 'OneOptional'
-
+    
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.OneOptionalActions[PrismaModelT]':
         from .client import get_client
 
         return actions.OneOptionalActions[PrismaModelT](get_client(), cls)
+
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -819,12 +824,13 @@ class ManyRequired(_PrismaModel):
     optional_boolean: Optional[_bool]
 
     __prisma_model__: ClassVar[str] = 'ManyRequired'
-
+    
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.ManyRequiredActions[PrismaModelT]':
         from .client import get_client
 
         return actions.ManyRequiredActions[PrismaModelT](get_client(), cls)
+
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -964,12 +970,13 @@ class Lists(_PrismaModel):
     decimals: List[decimal.Decimal]
 
     __prisma_model__: ClassVar[str] = 'Lists'
-
+    
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.ListsActions[PrismaModelT]':
         from .client import get_client
 
         return actions.ListsActions[PrismaModelT](get_client(), cls)
+
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1097,12 +1104,13 @@ class A(_PrismaModel):
     enum: 'enums.ABeautifulEnum'
 
     __prisma_model__: ClassVar[str] = 'A'
-
+    
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.AActions[PrismaModelT]':
         from .client import get_client
 
         return actions.AActions[PrismaModelT](get_client(), cls)
+
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1213,12 +1221,13 @@ class B(_PrismaModel):
     numFloat: decimal.Decimal
 
     __prisma_model__: ClassVar[str] = 'B'
-
+    
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.BActions[PrismaModelT]':
         from .client import get_client
 
         return actions.BActions[PrismaModelT](get_client(), cls)
+
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1330,12 +1339,13 @@ class C(_PrismaModel):
     uuid: _str
 
     __prisma_model__: ClassVar[str] = 'C'
-
+    
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.CActions[PrismaModelT]':
         from .client import get_client
 
         return actions.CActions[PrismaModelT](get_client(), cls)
+
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1447,12 +1457,13 @@ class D(_PrismaModel):
     binary: 'fields.Base64'
 
     __prisma_model__: ClassVar[str] = 'D'
-
+    
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.DActions[PrismaModelT]':
         from .client import get_client
 
         return actions.DActions[PrismaModelT](get_client(), cls)
+
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1562,12 +1573,13 @@ class E(_PrismaModel):
     ts: datetime.datetime
 
     __prisma_model__: ClassVar[str] = 'E'
-
+    
     @classmethod
     def prisma(cls: Type[PrismaModelT]) -> 'actions.EActions[PrismaModelT]':
         from .client import get_client
 
         return actions.EActions[PrismaModelT](get_client(), cls)
+
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(

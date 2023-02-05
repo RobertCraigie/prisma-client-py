@@ -41,12 +41,7 @@ class {{ model.name }}(_PrismaModel):
     {% endfor %}
 
     __prisma_model__: ClassVar[str] = '{{ model.name }}'
-
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.{{ model.name }}Actions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.{{ model.name }}Actions[PrismaModelT](get_client(), cls)
+    {{ query_methods(model.name) }}
 
     {% if not recursive_types %}
     # take *args and **kwargs so that other metaclasses can define arguments
