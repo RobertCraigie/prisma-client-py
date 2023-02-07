@@ -47,8 +47,7 @@ from collections import OrderedDict
 
 from pydantic import BaseConfig, BaseModel, Field, validator
 
-from . import types, enums, errors, fields
-from .bases import PrismaModelT, PrismaModel as _PrismaModel
+from . import types, enums, errors, fields, bases
 from ._types import FuncType
 from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
@@ -57,7 +56,7 @@ from .generator import partial_models_ctx, PartialModelField
 log: logging.Logger = logging.getLogger(__name__)
 _created_partial_types: Set[str] = set()
 
-class Post(_PrismaModel):
+class Post(bases.BasePost):
     """Post model documentation
     """
 
@@ -75,15 +74,6 @@ class Post(_PrismaModel):
     """
 
     author_id: _int
-
-    __prisma_model__: ClassVar[str] = 'Post'
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.PostActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.PostActions[PrismaModelT](get_client(), cls)
-
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -208,7 +198,7 @@ class Post(_PrismaModel):
         _created_partial_types.add(name)
 
 
-class User(_PrismaModel):
+class User(bases.BaseUser):
     """User model documentation
 
     Third line comment
@@ -227,15 +217,6 @@ class User(_PrismaModel):
     boolean: _bool
     optional_boolean: Optional[_bool]
     posts: Optional[List['models.Post']]
-
-    __prisma_model__: ClassVar[str] = 'User'
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.UserActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.UserActions[PrismaModelT](get_client(), cls)
-
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -360,7 +341,7 @@ class User(_PrismaModel):
         _created_partial_types.add(name)
 
 
-class M(_PrismaModel):
+class M(bases.BaseM):
     """Represents a M record"""
 
     id: _int
@@ -375,15 +356,6 @@ class M(_PrismaModel):
     optional_enum: Optional['enums.ABeautifulEnum']
     boolean: _bool
     optional_boolean: Optional[_bool]
-
-    __prisma_model__: ClassVar[str] = 'M'
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.MActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.MActions[PrismaModelT](get_client(), cls)
-
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -508,7 +480,7 @@ class M(_PrismaModel):
         _created_partial_types.add(name)
 
 
-class N(_PrismaModel):
+class N(bases.BaseN):
     """Represents a N record"""
 
     id: _int
@@ -525,15 +497,6 @@ class N(_PrismaModel):
     optional_enum: Optional['enums.ABeautifulEnum']
     boolean: _bool
     optional_boolean: Optional[_bool]
-
-    __prisma_model__: ClassVar[str] = 'N'
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.NActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.NActions[PrismaModelT](get_client(), cls)
-
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -658,7 +621,7 @@ class N(_PrismaModel):
         _created_partial_types.add(name)
 
 
-class OneOptional(_PrismaModel):
+class OneOptional(bases.BaseOneOptional):
     """Represents a OneOptional record"""
 
     id: _int
@@ -673,15 +636,6 @@ class OneOptional(_PrismaModel):
     optional_enum: Optional['enums.ABeautifulEnum']
     boolean: _bool
     optional_boolean: Optional[_bool]
-
-    __prisma_model__: ClassVar[str] = 'OneOptional'
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.OneOptionalActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.OneOptionalActions[PrismaModelT](get_client(), cls)
-
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -806,7 +760,7 @@ class OneOptional(_PrismaModel):
         _created_partial_types.add(name)
 
 
-class ManyRequired(_PrismaModel):
+class ManyRequired(bases.BaseManyRequired):
     """Represents a ManyRequired record"""
 
     id: _int
@@ -822,15 +776,6 @@ class ManyRequired(_PrismaModel):
     optional_enum: Optional['enums.ABeautifulEnum']
     boolean: _bool
     optional_boolean: Optional[_bool]
-
-    __prisma_model__: ClassVar[str] = 'ManyRequired'
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.ManyRequiredActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.ManyRequiredActions[PrismaModelT](get_client(), cls)
-
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -955,7 +900,7 @@ class ManyRequired(_PrismaModel):
         _created_partial_types.add(name)
 
 
-class Lists(_PrismaModel):
+class Lists(bases.BaseLists):
     """Represents a Lists record"""
 
     id: _str
@@ -968,15 +913,6 @@ class Lists(_PrismaModel):
     bigints: List[_int]
     json_objects: List['fields.Json']
     decimals: List[decimal.Decimal]
-
-    __prisma_model__: ClassVar[str] = 'Lists'
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.ListsActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.ListsActions[PrismaModelT](get_client(), cls)
-
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1090,7 +1026,7 @@ class Lists(_PrismaModel):
         _created_partial_types.add(name)
 
 
-class A(_PrismaModel):
+class A(bases.BaseA):
     """Represents a A record"""
 
     email: _str
@@ -1102,15 +1038,6 @@ class A(_PrismaModel):
     bInt: _int
     inc_bInt: _int
     enum: 'enums.ABeautifulEnum'
-
-    __prisma_model__: ClassVar[str] = 'A'
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.AActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.AActions[PrismaModelT](get_client(), cls)
-
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1211,7 +1138,7 @@ class A(_PrismaModel):
         _created_partial_types.add(name)
 
 
-class B(_PrismaModel):
+class B(bases.BaseB):
     """Represents a B record"""
 
     id: _str
@@ -1219,15 +1146,6 @@ class B(_PrismaModel):
     d_float: _float
     decFloat: decimal.Decimal
     numFloat: decimal.Decimal
-
-    __prisma_model__: ClassVar[str] = 'B'
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.BActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.BActions[PrismaModelT](get_client(), cls)
-
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1328,7 +1246,7 @@ class B(_PrismaModel):
         _created_partial_types.add(name)
 
 
-class C(_PrismaModel):
+class C(bases.BaseC):
     """Represents a C record"""
 
     char: _str
@@ -1337,15 +1255,6 @@ class C(_PrismaModel):
     bit: _str
     v_bit: _str
     uuid: _str
-
-    __prisma_model__: ClassVar[str] = 'C'
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.CActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.CActions[PrismaModelT](get_client(), cls)
-
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1446,7 +1355,7 @@ class C(_PrismaModel):
         _created_partial_types.add(name)
 
 
-class D(_PrismaModel):
+class D(bases.BaseD):
     """Represents a D record"""
 
     id: _str
@@ -1455,15 +1364,6 @@ class D(_PrismaModel):
     json_: 'fields.Json'
     jsonb: 'fields.Json'
     binary: 'fields.Base64'
-
-    __prisma_model__: ClassVar[str] = 'D'
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.DActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.DActions[PrismaModelT](get_client(), cls)
-
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1564,22 +1464,13 @@ class D(_PrismaModel):
         _created_partial_types.add(name)
 
 
-class E(_PrismaModel):
+class E(bases.BaseE):
     """Represents a E record"""
 
     id: _str
     date: datetime.datetime
     time: datetime.datetime
     ts: datetime.datetime
-
-    __prisma_model__: ClassVar[str] = 'E'
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.EActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.EActions[PrismaModelT](get_client(), cls)
-
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(

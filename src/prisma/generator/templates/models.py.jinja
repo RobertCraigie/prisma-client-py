@@ -1,5 +1,5 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import query_methods with context %}
+{% from '_utils.py.jinja' import recursive_types with context %}
 # -- template models.py.jinja --
 import os
 import logging
@@ -9,8 +9,7 @@ from collections import OrderedDict
 
 from pydantic import BaseConfig, BaseModel, Field, validator
 
-from . import types, enums, errors, fields
-from .bases import PrismaModelT, PrismaModel as _PrismaModel
+from . import types, enums, errors, fields, bases
 from ._types import FuncType
 from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
@@ -20,7 +19,7 @@ log: logging.Logger = logging.getLogger(__name__)
 _created_partial_types: Set[str] = set()
 
 {% for model in dmmf.datamodel.models %}
-class {{ model.name }}(_PrismaModel):
+class {{ model.name }}(bases.Base{{ model.name }}):
     {% if model.documentation is none %}
     """Represents a {{ model.name }} record"""
     {% else %}
@@ -39,9 +38,6 @@ class {{ model.name }}(_PrismaModel):
 
     {% endif %}
     {% endfor %}
-
-    __prisma_model__: ClassVar[str] = '{{ model.name }}'
-    {{ query_methods(model.name) }}
 
     {% if not recursive_types %}
     # take *args and **kwargs so that other metaclasses can define arguments

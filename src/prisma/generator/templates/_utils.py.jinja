@@ -61,8 +61,8 @@ time.sleep({{ duration }})
 {% macro query_methods(name) %}
 
     @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.{{ name }}Actions[PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.{{ name }}Actions[_PrismaModelT]':
         from .client import get_client
 
-        return actions.{{ name }}Actions[PrismaModelT](get_client(), cls)
+        return actions.{{ name }}Actions[_PrismaModelT](get_client(), cls)
 {% endmacro %}

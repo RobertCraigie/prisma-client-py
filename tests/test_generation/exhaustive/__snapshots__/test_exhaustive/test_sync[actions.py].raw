@@ -40,23 +40,26 @@ from typing_extensions import TypedDict, Literal
 
 LiteralString = str
 # -- template actions.py.jinja --
+from typing import TypeVar
 import warnings
 
-from . import types, errors
-from .bases import PrismaModelT, PrismaModel
+from . import types, errors, bases
 
 if TYPE_CHECKING:
     from .client import Client
+    from .bases import _PrismaModel
 
 
+_PrismaModelT = TypeVar('_PrismaModelT', bound='_PrismaModel')
 
-class PostActions(Generic[PrismaModelT]):
+
+class PostActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[PrismaModelT]) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -64,7 +67,7 @@ class PostActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -102,7 +105,7 @@ class PostActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -142,7 +145,7 @@ class PostActions(Generic[PrismaModelT]):
         self,
         data: types.PostCreateInput,
         include: Optional[types.PostInclude] = None
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Create a new Post record.
 
         Parameters
@@ -260,7 +263,7 @@ class PostActions(Generic[PrismaModelT]):
         self,
         where: types.PostWhereUniqueInput,
         include: Optional[types.PostInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single Post record.
 
         Parameters
@@ -313,7 +316,7 @@ class PostActions(Generic[PrismaModelT]):
         self,
         where: types.PostWhereUniqueInput,
         include: Optional[types.PostInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique Post record.
 
         Parameters
@@ -370,7 +373,7 @@ class PostActions(Generic[PrismaModelT]):
         include: Optional[types.PostInclude] = None,
         order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
         distinct: Optional[List[types.PostScalarFieldKeys]] = None,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Find multiple Post records.
 
         An empty list is returned if no records could be found.
@@ -441,7 +444,7 @@ class PostActions(Generic[PrismaModelT]):
         include: Optional[types.PostInclude] = None,
         order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
         distinct: Optional[List[types.PostScalarFieldKeys]] = None,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a single Post record.
 
         Parameters
@@ -506,7 +509,7 @@ class PostActions(Generic[PrismaModelT]):
         data: types.PostUpdateInput,
         where: types.PostWhereUniqueInput,
         include: Optional[types.PostInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Update a single Post record.
 
         Parameters
@@ -564,7 +567,7 @@ class PostActions(Generic[PrismaModelT]):
         where: types.PostWhereUniqueInput,
         data: types.PostUpsertInput,
         include: Optional[types.PostInclude] = None,
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -977,13 +980,13 @@ class PostActions(Generic[PrismaModelT]):
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class UserActions(Generic[PrismaModelT]):
+class UserActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[PrismaModelT]) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -991,7 +994,7 @@ class UserActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -1029,7 +1032,7 @@ class UserActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -1069,7 +1072,7 @@ class UserActions(Generic[PrismaModelT]):
         self,
         data: types.UserCreateInput,
         include: Optional[types.UserInclude] = None
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Create a new User record.
 
         Parameters
@@ -1199,7 +1202,7 @@ class UserActions(Generic[PrismaModelT]):
         self,
         where: types.UserWhereUniqueInput,
         include: Optional[types.UserInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single User record.
 
         Parameters
@@ -1252,7 +1255,7 @@ class UserActions(Generic[PrismaModelT]):
         self,
         where: types.UserWhereUniqueInput,
         include: Optional[types.UserInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique User record.
 
         Parameters
@@ -1309,7 +1312,7 @@ class UserActions(Generic[PrismaModelT]):
         include: Optional[types.UserInclude] = None,
         order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
         distinct: Optional[List[types.UserScalarFieldKeys]] = None,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Find multiple User records.
 
         An empty list is returned if no records could be found.
@@ -1380,7 +1383,7 @@ class UserActions(Generic[PrismaModelT]):
         include: Optional[types.UserInclude] = None,
         order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
         distinct: Optional[List[types.UserScalarFieldKeys]] = None,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a single User record.
 
         Parameters
@@ -1445,7 +1448,7 @@ class UserActions(Generic[PrismaModelT]):
         data: types.UserUpdateInput,
         where: types.UserWhereUniqueInput,
         include: Optional[types.UserInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Update a single User record.
 
         Parameters
@@ -1503,7 +1506,7 @@ class UserActions(Generic[PrismaModelT]):
         where: types.UserWhereUniqueInput,
         data: types.UserUpsertInput,
         include: Optional[types.UserInclude] = None,
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -1924,13 +1927,13 @@ class UserActions(Generic[PrismaModelT]):
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class MActions(Generic[PrismaModelT]):
+class MActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[PrismaModelT]) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -1938,7 +1941,7 @@ class MActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -1976,7 +1979,7 @@ class MActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -2016,7 +2019,7 @@ class MActions(Generic[PrismaModelT]):
         self,
         data: types.MCreateInput,
         include: Optional[types.MInclude] = None
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Create a new M record.
 
         Parameters
@@ -2143,7 +2146,7 @@ class MActions(Generic[PrismaModelT]):
         self,
         where: types.MWhereUniqueInput,
         include: Optional[types.MInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single M record.
 
         Parameters
@@ -2196,7 +2199,7 @@ class MActions(Generic[PrismaModelT]):
         self,
         where: types.MWhereUniqueInput,
         include: Optional[types.MInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique M record.
 
         Parameters
@@ -2253,7 +2256,7 @@ class MActions(Generic[PrismaModelT]):
         include: Optional[types.MInclude] = None,
         order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
         distinct: Optional[List[types.MScalarFieldKeys]] = None,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Find multiple M records.
 
         An empty list is returned if no records could be found.
@@ -2324,7 +2327,7 @@ class MActions(Generic[PrismaModelT]):
         include: Optional[types.MInclude] = None,
         order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
         distinct: Optional[List[types.MScalarFieldKeys]] = None,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a single M record.
 
         Parameters
@@ -2389,7 +2392,7 @@ class MActions(Generic[PrismaModelT]):
         data: types.MUpdateInput,
         where: types.MWhereUniqueInput,
         include: Optional[types.MInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Update a single M record.
 
         Parameters
@@ -2447,7 +2450,7 @@ class MActions(Generic[PrismaModelT]):
         where: types.MWhereUniqueInput,
         data: types.MUpsertInput,
         include: Optional[types.MInclude] = None,
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -2866,13 +2869,13 @@ class MActions(Generic[PrismaModelT]):
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class NActions(Generic[PrismaModelT]):
+class NActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[PrismaModelT]) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -2880,7 +2883,7 @@ class NActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -2918,7 +2921,7 @@ class NActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -2958,7 +2961,7 @@ class NActions(Generic[PrismaModelT]):
         self,
         data: types.NCreateInput,
         include: Optional[types.NInclude] = None
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Create a new N record.
 
         Parameters
@@ -3088,7 +3091,7 @@ class NActions(Generic[PrismaModelT]):
         self,
         where: types.NWhereUniqueInput,
         include: Optional[types.NInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single N record.
 
         Parameters
@@ -3141,7 +3144,7 @@ class NActions(Generic[PrismaModelT]):
         self,
         where: types.NWhereUniqueInput,
         include: Optional[types.NInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique N record.
 
         Parameters
@@ -3198,7 +3201,7 @@ class NActions(Generic[PrismaModelT]):
         include: Optional[types.NInclude] = None,
         order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
         distinct: Optional[List[types.NScalarFieldKeys]] = None,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Find multiple N records.
 
         An empty list is returned if no records could be found.
@@ -3269,7 +3272,7 @@ class NActions(Generic[PrismaModelT]):
         include: Optional[types.NInclude] = None,
         order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
         distinct: Optional[List[types.NScalarFieldKeys]] = None,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a single N record.
 
         Parameters
@@ -3334,7 +3337,7 @@ class NActions(Generic[PrismaModelT]):
         data: types.NUpdateInput,
         where: types.NWhereUniqueInput,
         include: Optional[types.NInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Update a single N record.
 
         Parameters
@@ -3392,7 +3395,7 @@ class NActions(Generic[PrismaModelT]):
         where: types.NWhereUniqueInput,
         data: types.NUpsertInput,
         include: Optional[types.NInclude] = None,
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -3813,13 +3816,13 @@ class NActions(Generic[PrismaModelT]):
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class OneOptionalActions(Generic[PrismaModelT]):
+class OneOptionalActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[PrismaModelT]) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -3827,7 +3830,7 @@ class OneOptionalActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -3865,7 +3868,7 @@ class OneOptionalActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -3905,7 +3908,7 @@ class OneOptionalActions(Generic[PrismaModelT]):
         self,
         data: types.OneOptionalCreateInput,
         include: Optional[types.OneOptionalInclude] = None
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Create a new OneOptional record.
 
         Parameters
@@ -4032,7 +4035,7 @@ class OneOptionalActions(Generic[PrismaModelT]):
         self,
         where: types.OneOptionalWhereUniqueInput,
         include: Optional[types.OneOptionalInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single OneOptional record.
 
         Parameters
@@ -4085,7 +4088,7 @@ class OneOptionalActions(Generic[PrismaModelT]):
         self,
         where: types.OneOptionalWhereUniqueInput,
         include: Optional[types.OneOptionalInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique OneOptional record.
 
         Parameters
@@ -4142,7 +4145,7 @@ class OneOptionalActions(Generic[PrismaModelT]):
         include: Optional[types.OneOptionalInclude] = None,
         order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
         distinct: Optional[List[types.OneOptionalScalarFieldKeys]] = None,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Find multiple OneOptional records.
 
         An empty list is returned if no records could be found.
@@ -4213,7 +4216,7 @@ class OneOptionalActions(Generic[PrismaModelT]):
         include: Optional[types.OneOptionalInclude] = None,
         order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
         distinct: Optional[List[types.OneOptionalScalarFieldKeys]] = None,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a single OneOptional record.
 
         Parameters
@@ -4278,7 +4281,7 @@ class OneOptionalActions(Generic[PrismaModelT]):
         data: types.OneOptionalUpdateInput,
         where: types.OneOptionalWhereUniqueInput,
         include: Optional[types.OneOptionalInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Update a single OneOptional record.
 
         Parameters
@@ -4336,7 +4339,7 @@ class OneOptionalActions(Generic[PrismaModelT]):
         where: types.OneOptionalWhereUniqueInput,
         data: types.OneOptionalUpsertInput,
         include: Optional[types.OneOptionalInclude] = None,
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -4755,13 +4758,13 @@ class OneOptionalActions(Generic[PrismaModelT]):
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class ManyRequiredActions(Generic[PrismaModelT]):
+class ManyRequiredActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[PrismaModelT]) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -4769,7 +4772,7 @@ class ManyRequiredActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -4807,7 +4810,7 @@ class ManyRequiredActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -4847,7 +4850,7 @@ class ManyRequiredActions(Generic[PrismaModelT]):
         self,
         data: types.ManyRequiredCreateInput,
         include: Optional[types.ManyRequiredInclude] = None
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Create a new ManyRequired record.
 
         Parameters
@@ -4974,7 +4977,7 @@ class ManyRequiredActions(Generic[PrismaModelT]):
         self,
         where: types.ManyRequiredWhereUniqueInput,
         include: Optional[types.ManyRequiredInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single ManyRequired record.
 
         Parameters
@@ -5027,7 +5030,7 @@ class ManyRequiredActions(Generic[PrismaModelT]):
         self,
         where: types.ManyRequiredWhereUniqueInput,
         include: Optional[types.ManyRequiredInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique ManyRequired record.
 
         Parameters
@@ -5084,7 +5087,7 @@ class ManyRequiredActions(Generic[PrismaModelT]):
         include: Optional[types.ManyRequiredInclude] = None,
         order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
         distinct: Optional[List[types.ManyRequiredScalarFieldKeys]] = None,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Find multiple ManyRequired records.
 
         An empty list is returned if no records could be found.
@@ -5155,7 +5158,7 @@ class ManyRequiredActions(Generic[PrismaModelT]):
         include: Optional[types.ManyRequiredInclude] = None,
         order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
         distinct: Optional[List[types.ManyRequiredScalarFieldKeys]] = None,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a single ManyRequired record.
 
         Parameters
@@ -5220,7 +5223,7 @@ class ManyRequiredActions(Generic[PrismaModelT]):
         data: types.ManyRequiredUpdateInput,
         where: types.ManyRequiredWhereUniqueInput,
         include: Optional[types.ManyRequiredInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Update a single ManyRequired record.
 
         Parameters
@@ -5278,7 +5281,7 @@ class ManyRequiredActions(Generic[PrismaModelT]):
         where: types.ManyRequiredWhereUniqueInput,
         data: types.ManyRequiredUpsertInput,
         include: Optional[types.ManyRequiredInclude] = None,
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -5697,13 +5700,13 @@ class ManyRequiredActions(Generic[PrismaModelT]):
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class ListsActions(Generic[PrismaModelT]):
+class ListsActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[PrismaModelT]) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -5711,7 +5714,7 @@ class ListsActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -5749,7 +5752,7 @@ class ListsActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -5789,7 +5792,7 @@ class ListsActions(Generic[PrismaModelT]):
         self,
         data: types.ListsCreateInput,
         include: Optional[types.ListsInclude] = None
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Create a new Lists record.
 
         Parameters
@@ -5901,7 +5904,7 @@ class ListsActions(Generic[PrismaModelT]):
         self,
         where: types.ListsWhereUniqueInput,
         include: Optional[types.ListsInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single Lists record.
 
         Parameters
@@ -5954,7 +5957,7 @@ class ListsActions(Generic[PrismaModelT]):
         self,
         where: types.ListsWhereUniqueInput,
         include: Optional[types.ListsInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique Lists record.
 
         Parameters
@@ -6011,7 +6014,7 @@ class ListsActions(Generic[PrismaModelT]):
         include: Optional[types.ListsInclude] = None,
         order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
         distinct: Optional[List[types.ListsScalarFieldKeys]] = None,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Find multiple Lists records.
 
         An empty list is returned if no records could be found.
@@ -6082,7 +6085,7 @@ class ListsActions(Generic[PrismaModelT]):
         include: Optional[types.ListsInclude] = None,
         order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
         distinct: Optional[List[types.ListsScalarFieldKeys]] = None,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a single Lists record.
 
         Parameters
@@ -6147,7 +6150,7 @@ class ListsActions(Generic[PrismaModelT]):
         data: types.ListsUpdateInput,
         where: types.ListsWhereUniqueInput,
         include: Optional[types.ListsInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Update a single Lists record.
 
         Parameters
@@ -6205,7 +6208,7 @@ class ListsActions(Generic[PrismaModelT]):
         where: types.ListsWhereUniqueInput,
         data: types.ListsUpsertInput,
         include: Optional[types.ListsInclude] = None,
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -6614,13 +6617,13 @@ class ListsActions(Generic[PrismaModelT]):
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class AActions(Generic[PrismaModelT]):
+class AActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[PrismaModelT]) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -6628,7 +6631,7 @@ class AActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -6666,7 +6669,7 @@ class AActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -6706,7 +6709,7 @@ class AActions(Generic[PrismaModelT]):
         self,
         data: types.ACreateInput,
         include: Optional[types.AInclude] = None
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Create a new A record.
 
         Parameters
@@ -6830,7 +6833,7 @@ class AActions(Generic[PrismaModelT]):
         self,
         where: types.AWhereUniqueInput,
         include: Optional[types.AInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single A record.
 
         Parameters
@@ -6883,7 +6886,7 @@ class AActions(Generic[PrismaModelT]):
         self,
         where: types.AWhereUniqueInput,
         include: Optional[types.AInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique A record.
 
         Parameters
@@ -6940,7 +6943,7 @@ class AActions(Generic[PrismaModelT]):
         include: Optional[types.AInclude] = None,
         order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
         distinct: Optional[List[types.AScalarFieldKeys]] = None,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Find multiple A records.
 
         An empty list is returned if no records could be found.
@@ -7011,7 +7014,7 @@ class AActions(Generic[PrismaModelT]):
         include: Optional[types.AInclude] = None,
         order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
         distinct: Optional[List[types.AScalarFieldKeys]] = None,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a single A record.
 
         Parameters
@@ -7076,7 +7079,7 @@ class AActions(Generic[PrismaModelT]):
         data: types.AUpdateInput,
         where: types.AWhereUniqueInput,
         include: Optional[types.AInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Update a single A record.
 
         Parameters
@@ -7134,7 +7137,7 @@ class AActions(Generic[PrismaModelT]):
         where: types.AWhereUniqueInput,
         data: types.AUpsertInput,
         include: Optional[types.AInclude] = None,
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -7549,13 +7552,13 @@ class AActions(Generic[PrismaModelT]):
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class BActions(Generic[PrismaModelT]):
+class BActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[PrismaModelT]) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -7563,7 +7566,7 @@ class BActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -7601,7 +7604,7 @@ class BActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -7641,7 +7644,7 @@ class BActions(Generic[PrismaModelT]):
         self,
         data: types.BCreateInput,
         include: Optional[types.BInclude] = None
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Create a new B record.
 
         Parameters
@@ -7765,7 +7768,7 @@ class BActions(Generic[PrismaModelT]):
         self,
         where: types.BWhereUniqueInput,
         include: Optional[types.BInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single B record.
 
         Parameters
@@ -7818,7 +7821,7 @@ class BActions(Generic[PrismaModelT]):
         self,
         where: types.BWhereUniqueInput,
         include: Optional[types.BInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique B record.
 
         Parameters
@@ -7875,7 +7878,7 @@ class BActions(Generic[PrismaModelT]):
         include: Optional[types.BInclude] = None,
         order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
         distinct: Optional[List[types.BScalarFieldKeys]] = None,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Find multiple B records.
 
         An empty list is returned if no records could be found.
@@ -7946,7 +7949,7 @@ class BActions(Generic[PrismaModelT]):
         include: Optional[types.BInclude] = None,
         order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
         distinct: Optional[List[types.BScalarFieldKeys]] = None,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a single B record.
 
         Parameters
@@ -8011,7 +8014,7 @@ class BActions(Generic[PrismaModelT]):
         data: types.BUpdateInput,
         where: types.BWhereUniqueInput,
         include: Optional[types.BInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Update a single B record.
 
         Parameters
@@ -8069,7 +8072,7 @@ class BActions(Generic[PrismaModelT]):
         where: types.BWhereUniqueInput,
         data: types.BUpsertInput,
         include: Optional[types.BInclude] = None,
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -8486,13 +8489,13 @@ class BActions(Generic[PrismaModelT]):
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class CActions(Generic[PrismaModelT]):
+class CActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[PrismaModelT]) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -8500,7 +8503,7 @@ class CActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -8538,7 +8541,7 @@ class CActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -8578,7 +8581,7 @@ class CActions(Generic[PrismaModelT]):
         self,
         data: types.CCreateInput,
         include: Optional[types.CInclude] = None
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Create a new C record.
 
         Parameters
@@ -8708,7 +8711,7 @@ class CActions(Generic[PrismaModelT]):
         self,
         where: types.CWhereUniqueInput,
         include: Optional[types.CInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single C record.
 
         Parameters
@@ -8762,7 +8765,7 @@ class CActions(Generic[PrismaModelT]):
         self,
         where: types.CWhereUniqueInput,
         include: Optional[types.CInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique C record.
 
         Parameters
@@ -8820,7 +8823,7 @@ class CActions(Generic[PrismaModelT]):
         include: Optional[types.CInclude] = None,
         order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
         distinct: Optional[List[types.CScalarFieldKeys]] = None,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Find multiple C records.
 
         An empty list is returned if no records could be found.
@@ -8891,7 +8894,7 @@ class CActions(Generic[PrismaModelT]):
         include: Optional[types.CInclude] = None,
         order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
         distinct: Optional[List[types.CScalarFieldKeys]] = None,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a single C record.
 
         Parameters
@@ -8956,7 +8959,7 @@ class CActions(Generic[PrismaModelT]):
         data: types.CUpdateInput,
         where: types.CWhereUniqueInput,
         include: Optional[types.CInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Update a single C record.
 
         Parameters
@@ -9015,7 +9018,7 @@ class CActions(Generic[PrismaModelT]):
         where: types.CWhereUniqueInput,
         data: types.CUpsertInput,
         include: Optional[types.CInclude] = None,
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -9425,13 +9428,13 @@ class CActions(Generic[PrismaModelT]):
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class DActions(Generic[PrismaModelT]):
+class DActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[PrismaModelT]) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -9439,7 +9442,7 @@ class DActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -9477,7 +9480,7 @@ class DActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -9517,7 +9520,7 @@ class DActions(Generic[PrismaModelT]):
         self,
         data: types.DCreateInput,
         include: Optional[types.DInclude] = None
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Create a new D record.
 
         Parameters
@@ -9644,7 +9647,7 @@ class DActions(Generic[PrismaModelT]):
         self,
         where: types.DWhereUniqueInput,
         include: Optional[types.DInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single D record.
 
         Parameters
@@ -9697,7 +9700,7 @@ class DActions(Generic[PrismaModelT]):
         self,
         where: types.DWhereUniqueInput,
         include: Optional[types.DInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique D record.
 
         Parameters
@@ -9754,7 +9757,7 @@ class DActions(Generic[PrismaModelT]):
         include: Optional[types.DInclude] = None,
         order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
         distinct: Optional[List[types.DScalarFieldKeys]] = None,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Find multiple D records.
 
         An empty list is returned if no records could be found.
@@ -9825,7 +9828,7 @@ class DActions(Generic[PrismaModelT]):
         include: Optional[types.DInclude] = None,
         order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
         distinct: Optional[List[types.DScalarFieldKeys]] = None,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a single D record.
 
         Parameters
@@ -9890,7 +9893,7 @@ class DActions(Generic[PrismaModelT]):
         data: types.DUpdateInput,
         where: types.DWhereUniqueInput,
         include: Optional[types.DInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Update a single D record.
 
         Parameters
@@ -9948,7 +9951,7 @@ class DActions(Generic[PrismaModelT]):
         where: types.DWhereUniqueInput,
         data: types.DUpsertInput,
         include: Optional[types.DInclude] = None,
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -10367,13 +10370,13 @@ class DActions(Generic[PrismaModelT]):
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class EActions(Generic[PrismaModelT]):
+class EActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[PrismaModelT]) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -10381,7 +10384,7 @@ class EActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -10419,7 +10422,7 @@ class EActions(Generic[PrismaModelT]):
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -10459,7 +10462,7 @@ class EActions(Generic[PrismaModelT]):
         self,
         data: types.ECreateInput,
         include: Optional[types.EInclude] = None
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Create a new E record.
 
         Parameters
@@ -10580,7 +10583,7 @@ class EActions(Generic[PrismaModelT]):
         self,
         where: types.EWhereUniqueInput,
         include: Optional[types.EInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single E record.
 
         Parameters
@@ -10633,7 +10636,7 @@ class EActions(Generic[PrismaModelT]):
         self,
         where: types.EWhereUniqueInput,
         include: Optional[types.EInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique E record.
 
         Parameters
@@ -10690,7 +10693,7 @@ class EActions(Generic[PrismaModelT]):
         include: Optional[types.EInclude] = None,
         order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
         distinct: Optional[List[types.EScalarFieldKeys]] = None,
-    ) -> List[PrismaModelT]:
+    ) -> List[_PrismaModelT]:
         """Find multiple E records.
 
         An empty list is returned if no records could be found.
@@ -10761,7 +10764,7 @@ class EActions(Generic[PrismaModelT]):
         include: Optional[types.EInclude] = None,
         order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
         distinct: Optional[List[types.EScalarFieldKeys]] = None,
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Find a single E record.
 
         Parameters
@@ -10826,7 +10829,7 @@ class EActions(Generic[PrismaModelT]):
         data: types.EUpdateInput,
         where: types.EWhereUniqueInput,
         include: Optional[types.EInclude] = None
-    ) -> Optional[PrismaModelT]:
+    ) -> Optional[_PrismaModelT]:
         """Update a single E record.
 
         Parameters
@@ -10884,7 +10887,7 @@ class EActions(Generic[PrismaModelT]):
         where: types.EWhereUniqueInput,
         data: types.EUpsertInput,
         include: Optional[types.EInclude] = None,
-    ) -> PrismaModelT:
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters

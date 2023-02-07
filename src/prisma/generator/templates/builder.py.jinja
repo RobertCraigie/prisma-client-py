@@ -29,7 +29,7 @@ from .errors import UnknownModelError, UnknownRelationalFieldError, InvalidModel
 from ._constants import QUERY_BUILDER_ALIASES
 
 if TYPE_CHECKING:
-    from .bases import PrismaModel
+    from .bases import _PrismaModel as PrismaModel
 
 
 log: logging.Logger = logging.getLogger(__name__)

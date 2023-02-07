@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from contextvars import ContextVar
 from typing import Generic, Dict, Type, List, Any, Optional, cast
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, StrictUndefined
 from pydantic import BaseModel, ValidationError
 
 from . import jsonrpc
@@ -50,6 +50,7 @@ DEFAULT_ENV = Environment(
     trim_blocks=True,
     lstrip_blocks=True,
     loader=FileSystemLoader(Path(__file__).parent / 'templates'),
+    undefined=StrictUndefined,
 )
 
 # the type: ignore is required because Jinja2 filters are not typed

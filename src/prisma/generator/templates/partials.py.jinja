@@ -1,13 +1,11 @@
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import query_methods with context %}
 # -- template partials.py.jinja --
 from pydantic import validator
-from . import types, fields, enums, actions, models
-from .bases import PrismaModelT, PrismaModel as _PrismaModel
+from . import types, fields, enums, actions, models, bases
 
 
 {% for partial in partial_models %}
-class {{ partial.name }}(_PrismaModel):
+class {{ partial.name }}(bases.Base{{ partial.from_model }}):
     {% for field in partial.fields.values() %}
     {{ field.name }}:
             {%- if field.optional -%}
@@ -20,10 +18,6 @@ class {{ partial.name }}(_PrismaModel):
 
     {% endif %}
     {% endfor %}
-
-    __prisma_model__: ClassVar[str] = '{{ partial.from_model }}'
-
-    {{ query_methods(partial.from_model) }}
 
     {% for field in partial.fields.values() %}
     {% if field.is_list and not field.is_relational and not field.optional %}

@@ -40,89 +40,38 @@ from typing_extensions import TypedDict, Literal
 LiteralString = str
 # -- template partials.py.jinja --
 from pydantic import validator
-from . import types, fields, enums, actions, models
-from .bases import PrismaModelT, PrismaModel as _PrismaModel
+from . import types, fields, enums, actions, models, bases
 
 
-class PostWithAuthor(_PrismaModel):
+class PostWithAuthor(bases.BasePost):
     id: _str
     title: _str
     author: Optional[models.User]
 
-    __prisma_model__: ClassVar[str] = 'Post'
-
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.PostActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.PostActions[PrismaModelT](get_client(), cls)
 
 
-
-
-class UserOnlyName(_PrismaModel):
+class UserOnlyName(bases.BaseUser):
     name: _str
 
-    __prisma_model__: ClassVar[str] = 'User'
-
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.UserActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.UserActions[PrismaModelT](get_client(), cls)
 
 
-
-
-class PostWithCustomAuthor(_PrismaModel):
+class PostWithCustomAuthor(bases.BasePost):
     id: _str
     title: _str
     author: Optional['partials.UserOnlyName']
 
-    __prisma_model__: ClassVar[str] = 'Post'
-
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.PostActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.PostActions[PrismaModelT](get_client(), cls)
 
 
-
-
-class UserWithPosts(_PrismaModel):
+class UserWithPosts(bases.BaseUser):
     name: _str
     posts: Optional[List['models.Post']]
 
-    __prisma_model__: ClassVar[str] = 'User'
-
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.UserActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.UserActions[PrismaModelT](get_client(), cls)
 
 
-
-
-class PostWithNestedRelations(_PrismaModel):
+class PostWithNestedRelations(bases.BasePost):
     id: _str
     title: _str
     author: Optional['partials.UserWithPosts']
-
-    __prisma_model__: ClassVar[str] = 'Post'
-
-    
-    @classmethod
-    def prisma(cls: Type[PrismaModelT]) -> 'actions.PostActions[PrismaModelT]':
-        from .client import get_client
-
-        return actions.PostActions[PrismaModelT](get_client(), cls)
-
 
 
 

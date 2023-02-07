@@ -2,14 +2,17 @@
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider with context %}
 # -- template actions.py.jinja --
+from typing import TypeVar
 import warnings
 
-from . import types, errors
-from .bases import PrismaModelT, PrismaModel
+from . import types, errors, bases
 
 if TYPE_CHECKING:
     from .client import Client
+    from .bases import _PrismaModel
 
+
+_PrismaModelT = TypeVar('_PrismaModelT', bound='_PrismaModel')
 
 {# TODO: support sampling combined unique constraints #}
 {% macro sample_where_unique(model) %}
@@ -36,7 +39,7 @@ if TYPE_CHECKING:
 {% set RawModelType = "prisma.models.%s" % model.name %}
 {% set include_doc = 'Specifies which relations should be loaded on the returned %s model' % model.name %}
 
-{% set ModelType = 'PrismaModelT' %}
+{% set ModelType = '_PrismaModelT' %}
 class {{ model.name }}Actions(Generic[{{ ModelType }}]):
     __slots__ = (
         '_client',
