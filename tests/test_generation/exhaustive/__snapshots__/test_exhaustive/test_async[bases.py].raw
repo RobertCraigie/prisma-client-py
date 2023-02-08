@@ -41,15 +41,15 @@ LiteralString = str
 # -- template models.py.jinja --
 from pydantic import BaseModel, BaseConfig
 
-from . import fields
+from . import fields, actions
 from ._types import FuncType
 from .builder import serialize_base64
 
 
-PrismaModelT = TypeVar('PrismaModelT', bound='PrismaModel')
+_PrismaModelT = TypeVar('_PrismaModelT', bound='_PrismaModel')
 
 
-class Config(BaseConfig):
+class _Config(BaseConfig):
     use_enum_values: bool = True
     arbitrary_types_allowed: bool = True
     allow_population_by_field_name: bool = True
@@ -58,12 +58,132 @@ class Config(BaseConfig):
     }
 
 
-class PrismaModel(BaseModel):
-    Config = Config
+class _PrismaModel(BaseModel):
+    Config = _Config
 
     # TODO: ensure this is required by subclasses
     __prisma_model__: ClassVar[str]
 
 
-# TODO: create "base" classes for each model that omits every field
+class BasePost(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['Post']] = 'Post'
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.PostActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.PostActions[_PrismaModelT](get_client(), cls)
+
+
+class BaseUser(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['User']] = 'User'
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.UserActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.UserActions[_PrismaModelT](get_client(), cls)
+
+
+class BaseM(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['M']] = 'M'
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.MActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.MActions[_PrismaModelT](get_client(), cls)
+
+
+class BaseN(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['N']] = 'N'
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.NActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.NActions[_PrismaModelT](get_client(), cls)
+
+
+class BaseOneOptional(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['OneOptional']] = 'OneOptional'
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.OneOptionalActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.OneOptionalActions[_PrismaModelT](get_client(), cls)
+
+
+class BaseManyRequired(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['ManyRequired']] = 'ManyRequired'
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.ManyRequiredActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.ManyRequiredActions[_PrismaModelT](get_client(), cls)
+
+
+class BaseLists(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['Lists']] = 'Lists'
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.ListsActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.ListsActions[_PrismaModelT](get_client(), cls)
+
+
+class BaseA(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['A']] = 'A'
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.AActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.AActions[_PrismaModelT](get_client(), cls)
+
+
+class BaseB(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['B']] = 'B'
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.BActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.BActions[_PrismaModelT](get_client(), cls)
+
+
+class BaseC(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['C']] = 'C'
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.CActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.CActions[_PrismaModelT](get_client(), cls)
+
+
+class BaseD(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['D']] = 'D'
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.DActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.DActions[_PrismaModelT](get_client(), cls)
+
+
+class BaseE(_PrismaModel):
+    __prisma_model__: ClassVar[Literal['E']] = 'E'
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.EActions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.EActions[_PrismaModelT](get_client(), cls)
+
+
+
 '''
