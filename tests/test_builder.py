@@ -9,7 +9,7 @@ from syrupy.assertion import SnapshotAssertion
 
 from prisma import models
 from prisma.utils import _NoneType
-from prisma.bases import PrismaModel
+from prisma.bases import _PrismaModel as PrismaModel
 from prisma.builder import QueryBuilder, serializer
 from prisma.errors import UnknownRelationalFieldError, UnknownModelError
 
