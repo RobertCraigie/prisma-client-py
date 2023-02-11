@@ -69,7 +69,7 @@ class QueryEngine(HTTPEngine):
     dml_path: Path
     url: Optional[str]
     file: Optional[Path]
-    process: Optional[subprocess.Popen[bytes]]
+    process: subprocess.Popen[bytes] | subprocess.Popen[str] | None
 
     def __init__(self, *, dml_path: Path, log_queries: bool = False, **kwargs: Any) -> None:
         super().__init__(url=None, **kwargs)
@@ -84,7 +84,7 @@ class QueryEngine(HTTPEngine):
     def __del__(self) -> None:
         self.stop()
 
-    def close(self, timeout: Optional[float] = None) -> None:
+    def close(self, *, timeout: Optional[float] = None) -> None:
         log.debug('Disconnecting query engine...')
 
         if self.process is not None:
@@ -94,7 +94,7 @@ class QueryEngine(HTTPEngine):
             else:
                 self.process.send_signal(signal.SIGINT)
                 try:
-                    self.process.wait(timeout = timeout)
+                    self.process.wait(timeout=timeout)
                 except subprocess.TimeoutExpired:
                     self.process.send_signal(signal.SIGKILL)
 
@@ -102,8 +102,8 @@ class QueryEngine(HTTPEngine):
 
         log.debug('Disconnected query engine')
 
-    async def aclose(self, timeout: Optional[float] = None) -> None:
-        self.close(timeout)
+    async def aclose(self, *, timeout: Optional[float] = None) -> None:
+        self.close(timeout=timeout)
         await self._close_session()
 
     async def _close_session(self) -> None:

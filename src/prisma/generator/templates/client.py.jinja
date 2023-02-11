@@ -229,11 +229,11 @@ class Prisma:
         """Disconnect the Prisma query engine."""
         if self.__engine is not None:
             {% if is_async %}
-            {{ maybe_await }}self.__engine.aclose(timeout)
+            {{ maybe_await }}self.__engine.aclose(timeout=timeout)
             {% else %}
-            self.__engine.close(timeout)
+            self.__engine.close(timeout=timeout)
             {% endif %}
-            self.__engine.stop()
+            self.__engine.stop(timeout=timeout)
             self.__engine = None
 
     {% if active_provider != 'mongodb' %}

@@ -272,8 +272,8 @@ class Prisma:
     async def disconnect(self, timeout: Optional[float] = None) -> None:
         """Disconnect the Prisma query engine."""
         if self.__engine is not None:
-            await self.__engine.aclose(timeout)
-            self.__engine.stop()
+            await self.__engine.aclose(timeout=timeout)
+            self.__engine.stop(timeout=timeout)
             self.__engine = None
 
     async def execute_raw(self, query: LiteralString, *args: Any) -> int:
