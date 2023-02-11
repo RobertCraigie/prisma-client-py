@@ -12,10 +12,10 @@ class Foo:
 def test_valid() -> None:
     """Basic usage with correct data"""
     validated = validate(types.IntFilter, {'equals': 1})
-    assert validated == {'equals': 1}  # type: ignore[comparison-overlap]
+    assert validated == {'equals': 1}
 
     validated = validate(types.IntFilter, {'equals': '1'})
-    assert validated == {'equals': 1}  # type: ignore[comparison-overlap]
+    assert validated == {'equals': 1}
 
 
 def test_disallows_non_typeddict_type(snapshot: SnapshotAssertion) -> None:
@@ -47,7 +47,7 @@ def test_recursive(snapshot: SnapshotAssertion) -> None:
     assert str(exc.value) == snapshot
 
     validated = validate(types.FloatFilter, {'not': {'not': {'not': '193.4'}}})
-    assert validated == {'not': {'not': {'not': 193.4}}}  # type: ignore[comparison-overlap]
+    assert validated == {'not': {'not': {'not': 193.4}}}
 
 
 def test_missing_values(snapshot: SnapshotAssertion) -> None:
@@ -63,13 +63,13 @@ def test_optional_values() -> None:
     validated = validate(
         types.PostCreateInput, dict(title='My Title', published=True)
     )
-    assert validated == {'title': 'My Title', 'published': True}  # type: ignore[comparison-overlap]
+    assert validated == {'title': 'My Title', 'published': True}
 
     validated = validate(
         type=types.PostCreateInput,
         data=dict(title='My Title', published=True, desc=None),
     )
-    assert validated == {  # type: ignore[comparison-overlap]
+    assert validated == {
         'title': 'My Title',
         'published': True,
         'desc': None,

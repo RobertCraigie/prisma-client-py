@@ -20,6 +20,6 @@
     {
         "groupName": "actions",
         "matchPaths": [".github/workflows/**/*.yml"]
-    },
+    }
   ]
 }

@@ -1,10 +1,3 @@
-# disable these pyright errors as they are not actual errors in this context
-# we know that the included 1-M relational field will not be None when
-# we explicitly include it and we can't add code to constrain the type e.g.
-# `assert user.posts is not None`
-# because we use the tests code to ensure that the mypy plugin is working
-# correctly, any actual typing errors will be caught by mypy
-# pyright: reportOptionalSubscript=false, reportOptionalIterable=false
 from typing import List
 
 import pytest
@@ -35,7 +28,14 @@ async def posts_fixture(client: Prisma, user_id: str) -> List[Post]:
 
 async def create_or_get_posts(client: Prisma, user_id: str) -> List[Post]:
     user = await client.user.find_unique(
-        where={'id': user_id}, include={'posts': True}
+        where={'id': user_id},
+        include={
+            'posts': {
+                'order_by': {
+                    'title': 'asc',
+                },
+            },
+        },
     )
     assert user is not None
 
@@ -79,14 +79,20 @@ async def create_or_get_posts(client: Prisma, user_id: str) -> List[Post]:
 async def test_find_unique_include(client: Prisma, user_id: str) -> None:
     """Including a one-to-many relationship returns all records as a list of models"""
     user = await client.user.find_unique(
-        where={'id': user_id}, include={'posts': True}
+        where={'id': user_id},
+        include={
+            'posts': {
+                'order_by': {'title': 'asc'},
+            }
+        },
     )
     assert user is not None
     assert user.name == 'Robert'
-    assert len(user.posts) == 4  # pyright: ignore[reportGeneralTypeIssues]
+    assert user.posts is not None
+    assert len(user.posts) == 4
 
     for i, post in enumerate(
-        user.posts,  # pyright: ignore[reportGeneralTypeIssues]
+        user.posts,
         start=1,
     ):
         assert post.author is None
@@ -109,7 +115,8 @@ async def test_find_unique_include_take(client: Prisma, user_id: str) -> None:
         },
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
+    assert user.posts is not None
+    assert len(user.posts) == 1
 
 
 @pytest.mark.asyncio
@@ -123,7 +130,8 @@ async def test_find_unique_include_where(
         include={'posts': {'where': {'created_at': posts[0].created_at}}},
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
+    assert user.posts is not None
+    assert len(user.posts) == 1
     assert user.posts[0].id == posts[0].id
 
 
@@ -136,21 +144,37 @@ async def test_find_unique_include_pagination(
     user = await client.user.find_unique(
         where={'id': user_id},
         include={
-            'posts': {'cursor': {'id': posts[0].id}, 'take': 1, 'skip': 1}
+            'posts': {
+                'cursor': {'id': posts[0].id},
+                'take': 1,
+                'skip': 1,
+                'order_by': {
+                    'title': 'asc',
+                },
+            }
         },
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
+    assert user.posts is not None
+    assert len(user.posts) == 1
     assert user.posts[0].id == posts[1].id
 
     user = await client.user.find_unique(
         where={'id': user_id},
         include={
-            'posts': {'cursor': {'id': posts[1].id}, 'take': -1, 'skip': 1}
+            'posts': {
+                'cursor': {'id': posts[1].id},
+                'take': -1,
+                'skip': 1,
+                'order_by': {
+                    'title': 'asc',
+                },
+            },
         },
     )
     assert user is not None
-    assert len(user.posts) == 1  # pyright: ignore[reportGeneralTypeIssues]
+    assert user.posts is not None
+    assert len(user.posts) == 1
     assert user.posts[0].id == posts[0].id
 
 
@@ -164,14 +188,23 @@ async def test_find_unique_include_nested_where_or(
         where={'id': user_id},
         include={
             'posts': {
-                'where': {'OR': [{'published': True}, {'id': posts[0].id}]}
+                'where': {
+                    'OR': [
+                        {'id': posts[0].id},
+                        {'published': True},
+                    ],
+                },
+                'order_by': {
+                    'title': 'asc',
+                },
             }
         },
     )
     assert user is not None
 
     assert posts[0].published is False
-    assert len(user.posts) == 3  # pyright: ignore[reportGeneralTypeIssues]
+    assert user.posts is not None
+    assert len(user.posts) == 3
 
     assert user.posts[0].id == posts[0].id
     assert user.posts[1].id == posts[1].id
@@ -197,7 +230,9 @@ async def test_find_unique_include_nested_include(
     )
     assert user is not None
     assert user.profile is None
+    assert user.posts is not None
     for post in user.posts:
+        assert post.categories is not None
         for category in post.categories:
             assert category.posts is not None
 
