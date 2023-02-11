@@ -178,6 +178,8 @@ class QueryEngine(HTTPEngine):
             "text": False,
         }
         if platform.name() != 'windows':
+            # ensure SIGINT is unblocked before forking the query engine
+            # https://github.com/RobertCraigie/prisma-client-py/pull/678
             popen_kwargs["preexec_fn"] = lambda: signal.pthread_sigmask(
                 signal.SIG_UNBLOCK, [signal.SIGINT, signal.SIGTERM]
             )
