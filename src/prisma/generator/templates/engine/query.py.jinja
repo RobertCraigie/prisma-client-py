@@ -52,7 +52,7 @@ class QueryEngine(HTTPEngine):
         if self.process is not None:
             if platform.name() == 'windows':
                 self.process.kill()
-                self.process.wait()
+                self.process.wait(timeout=timeout)
             else:
                 self.process.send_signal(signal.SIGINT)
                 try:
