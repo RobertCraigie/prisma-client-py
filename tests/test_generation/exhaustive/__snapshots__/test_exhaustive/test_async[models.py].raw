@@ -19,6 +19,9 @@ from typing import (
     Iterator,
     Sequence,
     Callable,
+    ClassVar,
+    NoReturn,
+    TypeVar,
     Generic,
     Mapping,
     Tuple,
@@ -44,25 +47,16 @@ from collections import OrderedDict
 
 from pydantic import BaseConfig, BaseModel, Field, validator
 
-from . import types, enums, errors, fields
-from ._types import BaseModelT, FuncType
+from . import types, enums, errors, fields, bases
+from ._types import FuncType
 from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
-
-
-class Config(BaseConfig):
-    use_enum_values: bool = True
-    arbitrary_types_allowed: bool = True
-    allow_population_by_field_name: bool = True
-    json_encoders: Dict[Any, FuncType] = {
-        fields.Base64: serialize_base64,
-    }
 
 
 log: logging.Logger = logging.getLogger(__name__)
 _created_partial_types: Set[str] = set()
 
-class Post(BaseModel):
+class Post(bases.BasePost):
     """Post model documentation
     """
 
@@ -80,14 +74,6 @@ class Post(BaseModel):
     """
 
     author_id: _int
-
-    Config = Config
-
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.PostActions[BaseModelT]':
-        from .client import get_client
-
-        return actions.PostActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -202,15 +188,17 @@ class Post(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'Post',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class User(BaseModel):
+class User(bases.BaseUser):
     """User model documentation
 
     Third line comment
@@ -229,14 +217,6 @@ class User(BaseModel):
     boolean: _bool
     optional_boolean: Optional[_bool]
     posts: Optional[List['models.Post']]
-
-    Config = Config
-
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.UserActions[BaseModelT]':
-        from .client import get_client
-
-        return actions.UserActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -351,15 +331,17 @@ class User(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'User',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class M(BaseModel):
+class M(bases.BaseM):
     """Represents a M record"""
 
     id: _int
@@ -374,14 +356,6 @@ class M(BaseModel):
     optional_enum: Optional['enums.ABeautifulEnum']
     boolean: _bool
     optional_boolean: Optional[_bool]
-
-    Config = Config
-
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.MActions[BaseModelT]':
-        from .client import get_client
-
-        return actions.MActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -496,15 +470,17 @@ class M(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'M',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class N(BaseModel):
+class N(bases.BaseN):
     """Represents a N record"""
 
     id: _int
@@ -521,14 +497,6 @@ class N(BaseModel):
     optional_enum: Optional['enums.ABeautifulEnum']
     boolean: _bool
     optional_boolean: Optional[_bool]
-
-    Config = Config
-
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.NActions[BaseModelT]':
-        from .client import get_client
-
-        return actions.NActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -643,15 +611,17 @@ class N(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'N',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class OneOptional(BaseModel):
+class OneOptional(bases.BaseOneOptional):
     """Represents a OneOptional record"""
 
     id: _int
@@ -666,14 +636,6 @@ class OneOptional(BaseModel):
     optional_enum: Optional['enums.ABeautifulEnum']
     boolean: _bool
     optional_boolean: Optional[_bool]
-
-    Config = Config
-
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.OneOptionalActions[BaseModelT]':
-        from .client import get_client
-
-        return actions.OneOptionalActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -788,15 +750,17 @@ class OneOptional(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'OneOptional',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class ManyRequired(BaseModel):
+class ManyRequired(bases.BaseManyRequired):
     """Represents a ManyRequired record"""
 
     id: _int
@@ -812,14 +776,6 @@ class ManyRequired(BaseModel):
     optional_enum: Optional['enums.ABeautifulEnum']
     boolean: _bool
     optional_boolean: Optional[_bool]
-
-    Config = Config
-
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.ManyRequiredActions[BaseModelT]':
-        from .client import get_client
-
-        return actions.ManyRequiredActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -934,15 +890,17 @@ class ManyRequired(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'ManyRequired',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class Lists(BaseModel):
+class Lists(bases.BaseLists):
     """Represents a Lists record"""
 
     id: _str
@@ -955,14 +913,6 @@ class Lists(BaseModel):
     bigints: List[_int]
     json_objects: List['fields.Json']
     decimals: List[decimal.Decimal]
-
-    Config = Config
-
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.ListsActions[BaseModelT]':
-        from .client import get_client
-
-        return actions.ListsActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1066,15 +1016,17 @@ class Lists(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'Lists',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class A(BaseModel):
+class A(bases.BaseA):
     """Represents a A record"""
 
     email: _str
@@ -1086,14 +1038,6 @@ class A(BaseModel):
     bInt: _int
     inc_bInt: _int
     enum: 'enums.ABeautifulEnum'
-
-    Config = Config
-
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.AActions[BaseModelT]':
-        from .client import get_client
-
-        return actions.AActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1184,15 +1128,17 @@ class A(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'A',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class B(BaseModel):
+class B(bases.BaseB):
     """Represents a B record"""
 
     id: _str
@@ -1200,14 +1146,6 @@ class B(BaseModel):
     d_float: _float
     decFloat: decimal.Decimal
     numFloat: decimal.Decimal
-
-    Config = Config
-
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.BActions[BaseModelT]':
-        from .client import get_client
-
-        return actions.BActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1298,15 +1236,17 @@ class B(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'B',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class C(BaseModel):
+class C(bases.BaseC):
     """Represents a C record"""
 
     char: _str
@@ -1315,14 +1255,6 @@ class C(BaseModel):
     bit: _str
     v_bit: _str
     uuid: _str
-
-    Config = Config
-
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.CActions[BaseModelT]':
-        from .client import get_client
-
-        return actions.CActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1413,15 +1345,17 @@ class C(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'C',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class D(BaseModel):
+class D(bases.BaseD):
     """Represents a D record"""
 
     id: _str
@@ -1430,14 +1364,6 @@ class D(BaseModel):
     json_: 'fields.Json'
     jsonb: 'fields.Json'
     binary: 'fields.Base64'
-
-    Config = Config
-
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.DActions[BaseModelT]':
-        from .client import get_client
-
-        return actions.DActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1528,29 +1454,23 @@ class D(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'D',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class E(BaseModel):
+class E(bases.BaseE):
     """Represents a E record"""
 
     id: _str
     date: datetime.datetime
     time: datetime.datetime
     ts: datetime.datetime
-
-    Config = Config
-
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.EActions[BaseModelT]':
-        from .client import get_client
-
-        return actions.EActions[BaseModelT](get_client(), cls)
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -1641,11 +1561,13 @@ class E(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'E',
+            }
+        )
         _created_partial_types.add(name)
 
 

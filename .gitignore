@@ -125,6 +125,7 @@ tmp/
 
 # generated code
 src/prisma/http.py
+src/prisma/bases.py
 src/prisma/types.py
 src/prisma/enums.py
 src/prisma/client.py

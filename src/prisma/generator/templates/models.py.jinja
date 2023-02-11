@@ -9,26 +9,17 @@ from collections import OrderedDict
 
 from pydantic import BaseConfig, BaseModel, Field, validator
 
-from . import types, enums, errors, fields
-from ._types import BaseModelT, FuncType
+from . import types, enums, errors, fields, bases
+from ._types import FuncType
 from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
-
-
-class Config(BaseConfig):
-    use_enum_values: bool = True
-    arbitrary_types_allowed: bool = True
-    allow_population_by_field_name: bool = True
-    json_encoders: Dict[Any, FuncType] = {
-        fields.Base64: serialize_base64,
-    }
 
 
 log: logging.Logger = logging.getLogger(__name__)
 _created_partial_types: Set[str] = set()
 
 {% for model in dmmf.datamodel.models %}
-class {{ model.name }}(BaseModel):
+class {{ model.name }}(bases.Base{{ model.name }}):
     {% if model.documentation is none %}
     """Represents a {{ model.name }} record"""
     {% else %}
@@ -47,14 +38,6 @@ class {{ model.name }}(BaseModel):
 
     {% endif %}
     {% endfor %}
-
-    Config = Config
-
-    @classmethod
-    def prisma(cls: Type[BaseModelT]) -> 'actions.{{ model.name }}Actions[BaseModelT]':
-        from .client import get_client
-
-        return actions.{{ model.name }}Actions[BaseModelT](get_client(), cls)
 
     {% if not recursive_types %}
     # take *args and **kwargs so that other metaclasses can define arguments
@@ -192,11 +175,13 @@ class {{ model.name }}(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': '{{ model.name }}',
+            }
+        )
         _created_partial_types.add(name)
 
 

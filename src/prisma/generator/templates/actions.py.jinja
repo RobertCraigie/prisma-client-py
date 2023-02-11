@@ -2,14 +2,17 @@
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider with context %}
 # -- template actions.py.jinja --
+from typing import TypeVar
 import warnings
 
-from . import types, errors
-from ._types import BaseModelT
-
+from . import types, errors, bases
 
 if TYPE_CHECKING:
     from .client import Client
+    from .bases import _PrismaModel
+
+
+_PrismaModelT = TypeVar('_PrismaModelT', bound='_PrismaModel')
 
 {# TODO: support sampling combined unique constraints #}
 {% macro sample_where_unique(model) %}
@@ -36,8 +39,8 @@ if TYPE_CHECKING:
 {% set RawModelType = "prisma.models.%s" % model.name %}
 {% set include_doc = 'Specifies which relations should be loaded on the returned %s model' % model.name %}
 
-{% set ModelType = 'BaseModelT' %}
-class {{ model.name }}Actions(Generic[BaseModelT]):
+{% set ModelType = '_PrismaModelT' %}
+class {{ model.name }}Actions(Generic[{{ ModelType }}]):
     __slots__ = (
         '_client',
         '_model',
@@ -170,7 +173,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.create }}',
             method='{{ methods.create }}',
-            model='{{ model.name }}',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -235,7 +238,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.create_many }}',
             method='{{ methods.create_many }}',
-            model='{{ model.name }}',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -284,7 +287,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
             resp = {{ maybe_await }}self._client._execute(
                 operation='{{ operations.delete }}',
                 method='{{ methods.delete }}',
-                model='{{ model.name }}',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -334,7 +337,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.find_unique }}',
             method='{{ methods.find_unique }}',
-            model='{{ model.name }}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -404,7 +407,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.find_many }}',
             method='{{ methods.find_many }}',
-            model='{{ model.name }}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -470,7 +473,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.find_first }}',
             method='{{ methods.find_first }}',
-            model='{{ model.name }}',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -530,7 +533,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
             resp = {{ maybe_await }}self._client._execute(
                 operation='{{ operations["update"] }}',
                 method='{{ methods["update"] }}',
-                model='{{ model.name }}',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -616,7 +619,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.upsert }}',
             method='{{ methods.upsert }}',
-            model='{{ model.name }}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -665,7 +668,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.update_many }}',
             method='{{ methods.update_many }}',
-            model='{{ model.name }}',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -772,7 +775,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.count }}',
             method='{{ methods.count }}',
-            model='{{ model.name }}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -817,7 +820,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.delete_many }}',
             method='{{ methods.delete_many }}',
-            model='{{ model.name }}',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -936,7 +939,7 @@ class {{ model.name }}Actions(Generic[BaseModelT]):
         resp = {{ maybe_await }}self._client._execute(
             operation='{{ operations.group_by }}',
             method='{{ methods.group_by }}',
-            model='{{ model.name }}',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,

@@ -1,12 +1,12 @@
 {% include '_header.py.jinja' %}
 # -- template partials.py.jinja --
-from pydantic import BaseModel, Field, validator
-from . import types, models, fields, enums
+from pydantic import validator
+from . import types, fields, enums, actions, models, bases
 
 
-{% for name, fields in partial_models.items() %}
-class {{ name }}(BaseModel):
-    {% for field in fields.values() %}
+{% for partial in partial_models %}
+class {{ partial.name }}(bases.Base{{ partial.from_model }}):
+    {% for field in partial.fields.values() %}
     {{ field.name }}:
             {%- if field.optional -%}
                 {{ ' ' }}Optional[{{ field.type }}]
@@ -19,9 +19,7 @@ class {{ name }}(BaseModel):
     {% endif %}
     {% endfor %}
 
-    Config = models.Config
-
-    {% for field in fields.values() %}
+    {% for field in partial.fields.values() %}
     {% if field.is_list and not field.is_relational and not field.optional %}
     @validator('{{ field.name }}', pre=True, allow_reuse=True)
     @classmethod
@@ -41,8 +39,8 @@ class {{ name }}(BaseModel):
 # so we have to import ourselves in order to resolve forward references
 from . import partials
 
-{% for name, fields in partial_models.items() %}
-{{ name }}.update_forward_refs()
+{% for partial in partial_models %}
+{{ partial.name }}.update_forward_refs()
 {% endfor %}
 
 # fmt: on

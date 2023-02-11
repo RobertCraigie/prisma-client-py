@@ -57,3 +57,12 @@ time.sleep({{ duration }})
 %}
 
 {% set active_provider = datasources[0].active_provider %}
+
+{% macro query_methods(name) %}
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.{{ name }}Actions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.{{ name }}Actions[_PrismaModelT](get_client(), cls)
+{% endmacro %}
