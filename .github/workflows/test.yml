@@ -53,12 +53,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mypy
 
+      - if: matrix.os == 'ubuntu-latest'
+        name: Testing
+        run: |
+          mv /etc/os-release /etc/os-release.tmp
+          python -c 'import distro; print(distro.id())'
+
       - name: Setup database
-        # for some reason prisma creates the database where the schema is stored
-        # but when using the prisma query engine it uses the root directory
         run: |
           python -m prisma db push --schema=tests/data/schema.prisma --skip-generate
-          cp tests/data/dev.db dev.db
 
       - name: Setup coverage
         run: |
