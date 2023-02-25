@@ -56,7 +56,7 @@ jobs:
       - if: matrix.os == 'ubuntu-latest'
         name: Testing
         run: |
-          mv /etc/os-release /etc/os-release.tmp
+          sudo mv /etc/os-release /etc/os-release.tmp
           python -c 'import distro; print(distro.id())'
 
       - name: Setup database
