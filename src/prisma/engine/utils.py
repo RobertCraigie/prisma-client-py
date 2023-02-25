@@ -33,7 +33,7 @@ ERROR_MAPPING: Dict[str, Type[Exception]] = {
 
 
 def query_engine_name() -> str:
-    return f'prisma-query-engine-{platform.binary_platform()}'
+    return f'prisma-query-engine-{platform.check_for_extension(platform.binary_platform())}'
 
 
 def _resolve_from_binary_paths(binary_paths: dict[str, str]) -> Path | None:
