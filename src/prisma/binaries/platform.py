@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 import re
 import sys
 import subprocess
 import platform as _platform
 from functools import lru_cache
-from typing import Tuple
+
+import distro
 
 
 def name() -> str:
@@ -20,31 +23,16 @@ def check_for_extension(file: str) -> str:
 
 def linux_distro() -> str:
     # NOTE: this has only been tested on ubuntu
-    distro_id, distro_id_like = _get_linux_distro_details()
-    if distro_id == 'alpine':
+    if distro.id() == 'alpine':
         return 'alpine'
 
-    if any(
-        distro in distro_id_like for distro in ['centos', 'fedora', 'rhel']
-    ):
+    id_like = distro.like()
+
+    if any(d in id_like for d in ['centos', 'fedora', 'rhel']):
         return 'rhel'
 
     # default to debian
     return 'debian'
-
-
-def _get_linux_distro_details() -> Tuple[str, str]:
-    process = subprocess.run(
-        ['cat', '/etc/os-release'], stdout=subprocess.PIPE, check=True
-    )
-    output = str(process.stdout, sys.getdefaultencoding())
-
-    match = re.search(r'ID="?([^"\n]*)"?', output)
-    distro_id = match.group(1) if match else ''
-
-    match = re.search(r'ID_LIKE="?([^"\n]*)"?', output)
-    distro_id_like = match.group(1) if match else ''
-    return distro_id, distro_id_like
 
 
 @lru_cache(maxsize=None)

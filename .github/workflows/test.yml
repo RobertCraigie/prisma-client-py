@@ -58,6 +58,7 @@ jobs:
         run: |
           sudo mv /etc/os-release /etc/os-release.tmp
           python -c 'import distro; print(distro.id())'
+          python -c 'import distro, json; print(json.dumps(distro.info(), indent=2))'
 
       - name: Setup database
         run: |
