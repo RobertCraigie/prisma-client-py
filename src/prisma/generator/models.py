@@ -733,7 +733,7 @@ class Field(BaseModel):
     is_generated: bool = FieldInfo(alias='isGenerated')
     is_updated_at: bool = FieldInfo(alias='isUpdatedAt')
 
-    default: Optional[Union['DefaultValue', str]]
+    default: Optional[Union['DefaultValue', str, List[object]]]
     has_default_value: bool = FieldInfo(alias='hasDefaultValue')
 
     relation_name: Optional[str] = FieldInfo(alias='relationName')
