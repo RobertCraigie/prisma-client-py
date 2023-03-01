@@ -38,7 +38,7 @@ def test_version_json(runner: Runner) -> None:
     assert PLACEHOLDER.match(data['platform'])
     assert HASH.match(data['expected-engine-version'])
     assert isinstance(data['installed-extras'], list)
-    assert PLACEHOLDER.match(data['binary_cache_dir'])
+    assert PLACEHOLDER.match(data['binary-cache-dir'])
 
 
 def test_same_output(runner: Runner) -> None:
