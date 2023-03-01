@@ -14,8 +14,9 @@ PATTERN = re.compile(
     f'prisma client python    : (?P<prisma_client_python>{SEMANTIC_VERSION.pattern})\n'
     f'platform                : (?P<platform>{PLACEHOLDER.pattern})\n'
     f'expected engine version : (?P<expected_engine_version>{HASH.pattern})\n'
+    f'installed extras        : (?P<installed_extras>{PLACEHOLDER.pattern})\n'
     f'install path            : (?P<install_path>{PLACEHOLDER.pattern})\n'
-    f'installed extras        : (?P<installed_extras>{PLACEHOLDER.pattern})'
+    f'binary cache dir        : (?P<binary_cache_dir>{PLACEHOLDER.pattern})\n'
 )
 
 
@@ -37,6 +38,7 @@ def test_version_json(runner: Runner) -> None:
     assert PLACEHOLDER.match(data['platform'])
     assert HASH.match(data['expected-engine-version'])
     assert isinstance(data['installed-extras'], list)
+    assert PLACEHOLDER.match(data['binary_cache_dir'])
 
 
 def test_same_output(runner: Runner) -> None:
