@@ -88,18 +88,30 @@ def ensure_cached() -> CLICache:
 
     if not entrypoint.exists():
         click.echo('Installing Prisma CLI')
-        proc = npm.run(
-            'install',
-            f'prisma@{config.prisma_version}',
-            cwd=config.binary_cache_dir,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-        )
-        if proc.returncode != 0:
-            click.echo(
-                f'An error ocurred while installing the Prisma CLI; npm install log: {proc.stdout.decode("utf-8")}'
+
+        try:
+            proc = npm.run(
+                'install',
+                f'prisma@{config.prisma_version}',
+                cwd=config.binary_cache_dir,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
             )
-            proc.check_returncode()
+            if proc.returncode != 0:
+                click.echo(
+                    f'An error ocurred while installing the Prisma CLI; npm install log: {proc.stdout.decode("utf-8")}'
+                )
+                proc.check_returncode()
+        except Exception:
+            # as we use the entrypoint existing to check whether or not we should run `npm install`
+            # we need to make sure it doesn't exist if running `npm install` fails as it will otherwise
+            # lead to a broken state, https://github.com/RobertCraigie/prisma-client-py/issues/705
+            if entrypoint.exists():
+                try:
+                    entrypoint.unlink()
+                except Exception:
+                    pass
+            raise
 
     if not entrypoint.exists():
         raise PrismaError(
