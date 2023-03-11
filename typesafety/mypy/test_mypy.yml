@@ -48,15 +48,15 @@
 
       if True:
         data['id'] = '983293asdsad'
-        data['invalid'] = True  # E: TypedDict "PostCreateInput" has no key "invalid"  [typeddict-item]
+        data['invalid'] = True  # E: TypedDict "PostCreateInput" has no key "invalid"  [typeddict-unknown-key]
 
       await client.post.create(data)
 
     async def test_find_unique_where_incorrect_inputs(client: Prisma) -> None:
       await client.post.find_unique()  # E: Missing positional argument "where" in call to "find_unique" of "PostActions"  [call-arg]
 
-      await client.post.find_unique({'published': False})  # E: Extra key "published" for TypedDict "_PostWhereUnique_id_Input"  [typeddict-item]
-      await client.post.find_unique({'title': 'Hello, world'})  # E: Extra key "title" for TypedDict "_PostWhereUnique_id_Input"  [typeddict-item]
+      await client.post.find_unique({'published': False})  # E: Missing key "id" for TypedDict "_PostWhereUnique_id_Input"  [typeddict-item]  # E: Extra key "published" for TypedDict "_PostWhereUnique_id_Input"  [typeddict-unknown-key]
+      await client.post.find_unique({'title': 'Hello, world'})  # E: Missing key "id" for TypedDict "_PostWhereUnique_id_Input"  [typeddict-item]  # E: Extra key "title" for TypedDict "_PostWhereUnique_id_Input"  [typeddict-unknown-key]
 
       await client.post.find_unique({'id': 2})  # E: Incompatible types (expression has type "int", TypedDict item "id" has type "str")  [typeddict-item]
 
