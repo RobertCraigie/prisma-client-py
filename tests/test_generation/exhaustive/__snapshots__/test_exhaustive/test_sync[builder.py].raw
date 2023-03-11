@@ -481,9 +481,11 @@ class ResultNode(Node):
     def enter(self) -> str:
         model = self.builder.model
         if model is not None:
-            return f'result: {self.builder.method}{model.__prisma_model__}'
+            model_name = model.__prisma_model__
+        else:
+            model_name = ''
 
-        return f'result: {self.builder.method}'
+        return f'result: {self.builder.method.format(model=model_name)}'
 
     def depart(self) -> Optional[str]:
         return None
@@ -849,5 +851,4 @@ def dumps(obj: Any, **kwargs: Any) -> str:
 
 # black does not respect the fmt: off comment without this
 # fmt: on
-
 '''

@@ -348,6 +348,53 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             return None
         return self._model.parse_obj(result)
 
+    {{ maybe_async_def }}find_unique_or_raise(
+        self,
+        where: types.{{ model.name }}WhereUniqueInput,
+        include: Optional[types.{{ model.name}}Include] = None
+    ) -> {{ ModelType }}:
+        """Find a unique {{ model.name }} record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            {{ model.name }} filter to find the record, must be unique
+        include
+            {{ include_doc }}
+
+        Returns
+        -------
+        {{ RawModelType }}
+            The found {{ model.name }} record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        {{ base_error_doc }}
+        {{ query_error_doc }}
+
+        Example
+        -------
+        ```py
+        {{ model.name.lower() }} = {{ maybe_await }}{{ model.name }}.prisma().find_unique_or_raise(
+            where={
+                {{ sample_where_unique(model) }}
+            },
+        )
+        ```
+        """
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.find_unique_or_raise }}',
+            method='{{ methods.find_unique_or_raise }}',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     {{ maybe_async_def }}find_many(
         self,
         take: Optional[int] = None,
@@ -487,6 +534,71 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         if result is None:
             return None
         return self._model.parse_obj(result)
+
+    {{ maybe_async_def }}find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.{{ model.name }}WhereInput] = None,
+        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
+        include: Optional[types.{{ model.name }}Include] = None,
+        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
+        distinct: Optional[List[types.{{ model.name }}ScalarFieldKeys]] = None,
+    ) -> {{ ModelType }}:
+        """Find a single {{ model.name }} record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            {{ model.name }} filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            {{ include_doc }}
+        order
+            Order the returned {{ model.name }} records by any field
+        distinct
+            Filter {{ model.name }} records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        {{ RawModelType }}
+            The first {{ model.name }} record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        {{ base_error_doc }}
+
+        Example
+        -------
+        ```py
+        {% set field = model.sampler().get_field() %}
+        # find the second {{ model.name }} record ordered by the {{ field.name }} field
+        {{ model.name.lower() }} = {{ maybe_await }}{{ model.name }}.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                '{{ field.name }}': 'desc',
+            },
+        )
+        ```
+        """
+        resp = {{ maybe_await }}self._client._execute(
+            operation='{{ operations.find_first_or_raise }}',
+            method='{{ methods.find_first_or_raise }}',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
 
     {{ maybe_async_def }}update(
         self,
