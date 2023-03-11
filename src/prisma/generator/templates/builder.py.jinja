@@ -56,8 +56,8 @@ MISSING = object()
 
 
 class QueryBuilder:
-    # prisma method
-    method: str
+    # prisma method format, e.g. `findUnique{model}`
+    method_format: str
 
     # GraphQL operation
     operation: str
@@ -75,7 +75,7 @@ class QueryBuilder:
     root_selection: Optional[List[str]]
 
     __slots__ = (
-        'method',
+        'method_format',
         'operation',
         'model',
         'include',
@@ -93,7 +93,7 @@ class QueryBuilder:
         root_selection: Optional[List[str]] = None
     ) -> None:
         self.model = model
-        self.method = method
+        self.method_format = method
         self.operation = operation
         self.root_selection = root_selection
         self.arguments = args = self._transform_aliases(arguments)
@@ -416,7 +416,8 @@ class ResultNode(Node):
         else:
             model_name = ''
 
-        return f'result: {self.builder.method.format(model=model_name)}'
+        method = self.builder.method_format.format(model=model_name)
+        return f'result: {method}'
 
     def depart(self) -> Optional[str]:
         return None
@@ -476,7 +477,7 @@ class Arguments(Node):
                 # here as prisma expects parameters to be passed as a json string
                 # value like "[\"John\",\"123\"]", and we encode twice to ensure
                 # that only the inner quotes are escaped
-                if self.builder.method in {'queryRaw', 'executeRaw'}:
+                if self.builder.method_format in {'queryRaw{model}', 'executeRaw{model}'}:
                     children.append(f'{arg}: {dumps(dumps(value))}')
                 else:
                     children.append(Key(arg, node=ListNode.create(self.builder, data=value)))
