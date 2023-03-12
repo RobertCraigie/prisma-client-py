@@ -1,5 +1,3 @@
-from typing import Any
-
 import httpx
 
 from ._types import Method
@@ -21,7 +19,9 @@ class HTTP(AbstractHTTP[httpx.Client, httpx.Response]):
                 for chunk in resp.iter_bytes():
                     fd.write(chunk)
 
-    def request(self, method: Method, url: str, **kwargs: Any) -> 'Response':
+    def request(
+        self, method: Method, url: str, **kwargs: object
+    ) -> 'Response':
         return Response(self.session.request(method, url, **kwargs))
 
     def open(self) -> None:
@@ -46,8 +46,8 @@ class Response(AbstractResponse[httpx.Response]):
     def status(self) -> int:
         return self.original.status_code
 
-    def json(self, **kwargs: Any) -> Any:
+    def json(self, **kwargs: object) -> object:
         return self.original.json(**kwargs)
 
-    def text(self, **kwargs: Any) -> str:
+    def text(self, **kwargs: object) -> str:
         return self.original.content.decode(**kwargs)

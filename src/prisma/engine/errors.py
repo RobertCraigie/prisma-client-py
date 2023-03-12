@@ -16,7 +16,7 @@ __all__ = (
 )
 
 
-_AnyResponse = AbstractResponse[Any]
+_UnknownResponse = AbstractResponse[Any]
 
 
 class EngineError(PrismaError):
@@ -54,9 +54,9 @@ class EngineConnectionError(EngineError):
 
 
 class EngineRequestError(EngineError):
-    response: _AnyResponse
+    response: _UnknownResponse
 
-    def __init__(self, response: _AnyResponse, body: str):
+    def __init__(self, response: _UnknownResponse, body: str):
         self.response = response
 
         # TODO: better error message
@@ -64,7 +64,7 @@ class EngineRequestError(EngineError):
 
 
 class UnprocessableEntityError(EngineRequestError):
-    def __init__(self, response: _AnyResponse):
+    def __init__(self, response: _UnknownResponse):
         super().__init__(
             response,
             (

@@ -6,7 +6,7 @@ import json
 import logging
 import subprocess
 from pathlib import Path
-from typing import Any, List, Optional, Dict, NamedTuple
+from typing import NamedTuple
 
 import click
 
@@ -19,9 +19,9 @@ log: logging.Logger = logging.getLogger(__name__)
 
 
 def run(
-    args: List[str],
+    args: list[str],
     check: bool = False,
-    env: Optional[Dict[str, str]] = None,
+    env: dict[str, str] | None = None,
 ) -> int:
     log.debug('Running prisma command with args: %s', args)
 
@@ -59,7 +59,7 @@ class CLICache(NamedTuple):
     entrypoint: Path
 
 
-DEFAULT_PACKAGE_JSON: dict[str, Any] = {
+DEFAULT_PACKAGE_JSON: dict[str, object] = {
     'name': 'prisma-binaries',
     'version': '1.0.0',
     'private': True,

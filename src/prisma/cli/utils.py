@@ -163,7 +163,7 @@ def error(message: str, exit_: bool = True) -> Union[None, NoReturn]:
         return None
 
 
-def pretty_info(mapping: Mapping[str, Any]) -> str:
+def pretty_info(mapping: Mapping[str, object]) -> str:
     """Pretty print a mapping
 
     e.g {'foo': 'bar', 'hello': 1}

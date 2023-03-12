@@ -1,4 +1,6 @@
-from typing import Callable, Coroutine, TypeVar, Type, Tuple, Any
+from __future__ import annotations
+
+from typing import Callable, Coroutine, TypeVar, Type, Tuple, Any, Mapping
 from pydantic import BaseModel
 from typing_extensions import (
     TypeGuard as TypeGuard,
@@ -26,3 +28,14 @@ class InheritsGeneric(Protocol):
 
 class _GenericAlias(Protocol):
     __origin__: Type[object]
+
+
+# Note: not exhaustively defined, there may be other fields
+class ErrorResponse(TypedDict, total=False):
+    user_facing_error: UserFacingError
+
+
+class UserFacingError(TypedDict, total=False):
+    error_code: str
+    message: str
+    meta: Mapping[str, object]

@@ -1,5 +1,4 @@
 import json
-from typing import Any
 
 import httpx
 
@@ -23,7 +22,7 @@ class HTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
                     fd.write(chunk)
 
     async def request(
-        self, method: Method, url: str, **kwargs: Any
+        self, method: Method, url: str, **kwargs: object
     ) -> 'Response':
         return Response(await self.session.request(method, url, **kwargs))
 
@@ -50,10 +49,10 @@ class Response(AbstractResponse[httpx.Response]):
     def status(self) -> int:
         return self.original.status_code
 
-    async def json(self, **kwargs: Any) -> Any:
+    async def json(self, **kwargs: object) -> object:
         return json.loads(await self.original.aread(), **kwargs)
 
-    async def text(self, **kwargs: Any) -> str:
+    async def text(self, **kwargs: object) -> str:
         return ''.join(
             [part async for part in self.original.aiter_text(**kwargs)]
         )

@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import sys
 from types import ModuleType
 from functools import lru_cache
-from typing import Type, TypeVar, Any, cast
+from typing import Type, TypeVar, cast
+from typing_extensions import TypedDict
 
 from pydantic import BaseModel, Extra, create_model_from_typeddict
 from pydantic.typing import is_typeddict
@@ -24,7 +27,7 @@ class CachedModel(Protocol):
     __pydantic_model__: BaseModel
 
 
-def _get_module(typ: Type[Any]) -> ModuleType:
+def _get_module(typ: type[object]) -> ModuleType:
     return sys.modules[typ.__module__]
 
 
@@ -39,7 +42,7 @@ def patch_pydantic() -> None:
     create_model = annotated_types.create_model_from_typeddict
 
     def patched_create_model(
-        typeddict_cls: Any, **kwargs: Any
+        typeddict_cls: type[TypedDict], **kwargs: object
     ) -> Type[BaseModel]:
         kwargs.setdefault('__module__', typeddict_cls.__module__)
         return create_model(typeddict_cls, **kwargs)
@@ -47,7 +50,7 @@ def patch_pydantic() -> None:
     annotated_types.create_model_from_typeddict = patched_create_model
 
 
-def validate(type: Type[T], data: Any) -> T:
+def validate(type: Type[T], data: object) -> T:
     """Validate untrusted data matches a given TypedDict
 
     For example:
@@ -55,7 +58,7 @@ def validate(type: Type[T], data: Any) -> T:
     from prisma import validate, types
     from prisma.models import User
 
-    def user_create_handler(data: Any) -> None:
+    def user_create_handler(data: object) -> None:
         validated = validate(types.UserCreateInput, data)
         user = await User.prisma().create(data=validated)
     """

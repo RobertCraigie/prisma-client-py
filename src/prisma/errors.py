@@ -1,4 +1,8 @@
-from typing import Any, Optional
+from __future__ import annotations
+
+from typing import Mapping, cast
+
+from ._types import ErrorResponse
 
 
 __all__ = (
@@ -57,11 +61,16 @@ class UnsupportedDatabaseError(PrismaError):
 
 
 class DataError(PrismaError):
-    data: Any
-    code: Any
-    meta: Any
+    data: ErrorResponse
+    code: str | None
+    meta: Mapping[str, object] | None
 
-    def __init__(self, data: Any, *, message: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        data: ErrorResponse,
+        *,
+        message: str | None = None,
+    ) -> None:
         self.data = data
 
         user_facing_error = data.get('user_facing_error', {})
@@ -85,19 +94,28 @@ class MissingRequiredValueError(DataError):
 
 
 class RawQueryError(DataError):
-    def __init__(self, data: Any) -> None:
+    def __init__(self, data: ErrorResponse) -> None:
         try:
             super().__init__(
-                data, message=data['user_facing_error']['meta']['message']
+                data,
+                message=cast(
+                    str, data['user_facing_error']['meta']['message']
+                ),
             )
         except KeyError:
             super().__init__(data)
 
 
 class TableNotFoundError(DataError):
-    def __init__(self, data: Any) -> None:
+    table: str | None
+
+    def __init__(self, data: ErrorResponse) -> None:
         super().__init__(data)
-        self.table: Optional[str] = self.meta.get('table')
+        self.table = (
+            cast('str | None', self.meta.get('table'))
+            if self.meta is not None
+            else None
+        )
 
 
 class FieldNotFoundError(DataError):

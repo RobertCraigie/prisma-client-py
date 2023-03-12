@@ -8,7 +8,17 @@ import logging
 import warnings
 import contextlib
 from importlib.util import find_spec
-from typing import Any, TypeVar, Union, Dict, Iterator, Coroutine, NoReturn
+from typing import (
+    Callable,
+    TypeVar,
+    Union,
+    Dict,
+    Iterator,
+    Coroutine,
+    NoReturn,
+    Mapping,
+)
+from typing_extensions import TypeGuard
 
 from ._types import FuncType, CoroType, TypeGuard
 
@@ -42,20 +52,20 @@ def setup_logging() -> None:
 
 def maybe_async_run(
     func: Union[FuncType, CoroType],
-    *args: Any,
-    **kwargs: Any,
+    *args: object,
+    **kwargs: object,
 ) -> object:
     if is_coroutine(func):
         return async_run(func(*args, **kwargs))
     return func(*args, **kwargs)
 
 
-def async_run(coro: Coroutine[Any, Any, _T]) -> _T:
+def async_run(coro: Coroutine[object, object, _T]) -> _T:
     """Execute the coroutine and return the result."""
     return get_or_create_event_loop().run_until_complete(coro)
 
 
-def is_coroutine(obj: Any) -> TypeGuard[CoroType]:
+def is_coroutine(obj: object) -> TypeGuard[CoroType]:
     return asyncio.iscoroutinefunction(obj) or inspect.isgeneratorfunction(obj)
 
 
@@ -78,13 +88,15 @@ def temp_env_update(env: Dict[str, str]) -> Iterator[None]:
 
 
 @contextlib.contextmanager
-def monkeypatch(obj: Any, attr: str, new: Any) -> Any:
+def monkeypatch(
+    obj: object, attr: str, new: Callable[..., object]
+) -> Iterator[object]:
     """Temporarily replace a method with a new funtion
 
     The previously set method is passed as the first argument to the new function
     """
 
-    def patched(*args: Any, **kwargs: Any) -> Any:
+    def patched(*args: object, **kwargs: object) -> object:
         return new(old, *args, **kwargs)
 
     old = getattr(obj, attr)
@@ -135,3 +147,7 @@ def make_optional(value: _T) -> _T | None:
     but want to mark it as potentially None.
     """
     return value
+
+
+def is_mapping(obj: object) -> TypeGuard[Mapping[str, object]]:
+    return isinstance(obj, Mapping)

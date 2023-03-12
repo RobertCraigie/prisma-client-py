@@ -6,6 +6,7 @@ from typing import (
     Callable,
     overload,
 )
+from typing_extensions import TypedDict
 
 from ._types import BaseModelT
 
@@ -35,25 +36,30 @@ type PrismaType =
 """
 
 
+class PrismaObject(TypedDict):
+    prisma__value: object
+    prisma__type: str
+
+
 @overload
 def deserialize_raw_results(
-    raw_list: list[dict[str, Any]]
-) -> list[dict[str, Any]]:
+    raw_list: list[dict[str, PrismaObject]]
+) -> list[dict[str, object]]:
     ...
 
 
 @overload
 def deserialize_raw_results(
-    raw_list: list[dict[str, object]],
+    raw_list: list[dict[str, PrismaObject]],
     model: type[BaseModelT],
 ) -> list[BaseModelT]:
     ...
 
 
 def deserialize_raw_results(
-    raw_list: list[dict[str, Any]],
+    raw_list: list[dict[str, PrismaObject]],
     model: type[BaseModelT] | None = None,
-) -> list[BaseModelT] | list[dict[str, Any]]:
+) -> list[BaseModelT] | list[dict[str, object]]:
     """Deserialize a list of raw query results into their rich Python types.
 
     If `model` is given, convert each result into the corresponding model.
@@ -78,16 +84,16 @@ def deserialize_raw_results(
 
 @overload
 def _deserialize_prisma_object(
-    raw_obj: dict[str, Any],
+    raw_obj: dict[str, PrismaObject],
     *,
     for_model: bool,
-) -> dict[str, Any]:
+) -> dict[str, object]:
     ...
 
 
 @overload
 def _deserialize_prisma_object(
-    raw_obj: dict[str, object],
+    raw_obj: dict[str, PrismaObject],
     *,
     for_model: bool,
     model: type[BaseModelT],
@@ -96,11 +102,11 @@ def _deserialize_prisma_object(
 
 
 def _deserialize_prisma_object(
-    raw_obj: dict[Any, Any],
+    raw_obj: dict[str, PrismaObject],
     *,
     for_model: bool,
     model: type[BaseModelT] | None = None,
-) -> BaseModelT | dict[str, Any]:
+) -> BaseModelT | dict[str, object]:
     # create a local reference to avoid performance penalty of global
     # lookups on some python versions
     _deserializers = DESERIALIZERS
@@ -130,7 +136,9 @@ def _deserialize_decimal(value: str, _for_model: bool) -> float:
     return float(value)
 
 
-def _deserialize_array(value: list[Any], for_model: bool) -> list[Any]:
+def _deserialize_array(
+    value: list[PrismaObject], for_model: bool
+) -> list[Any]:
     # create a local reference to avoid performance penalty of global
     # lookups on some python versions
     _deserializers = DESERIALIZERS

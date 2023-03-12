@@ -1,6 +1,5 @@
 from abc import abstractmethod, ABC
 from typing import (
-    Any,
     Union,
     Coroutine,
     Type,
@@ -21,16 +20,16 @@ from .errors import HTTPClientClosedError
 Session = TypeVar('Session')
 Response = TypeVar('Response')
 ReturnType = TypeVar('ReturnType')
-MaybeCoroutine = Union[Coroutine[Any, Any, ReturnType], ReturnType]
+MaybeCoroutine = Union[Coroutine[object, object, ReturnType], ReturnType]
 
-DEFAULT_CONFIG: Dict[str, Any] = {
+DEFAULT_CONFIG: Dict[str, object] = {
     'limits': Limits(max_connections=1000),
     'timeout': Timeout(30),
 }
 
 
 class AbstractHTTP(ABC, Generic[Session, Response]):
-    session_kwargs: Dict[str, Any]
+    session_kwargs: Dict[str, object]
 
     __slots__ = (
         '_session',
@@ -39,7 +38,7 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
 
     # NOTE: ParamSpec wouldn't be valid here:
     # https://github.com/microsoft/pyright/issues/2667
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self, **kwargs: object) -> None:
         # NoneType = not used yet
         # None = closed
         # Session = open
@@ -55,7 +54,10 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
 
     @abstractmethod
     def request(
-        self, method: Method, url: str, **kwargs: Any
+        self,
+        method: Method,
+        url: str,
+        **kwargs: object,
     ) -> MaybeCoroutine['AbstractResponse[Response]']:
         ...
 
@@ -114,7 +116,7 @@ class AbstractResponse(ABC, Generic[Response]):
         ...
 
     @abstractmethod
-    def json(self) -> MaybeCoroutine[Any]:
+    def json(self) -> MaybeCoroutine[object]:
         ...
 
     @abstractmethod
