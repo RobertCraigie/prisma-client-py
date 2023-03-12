@@ -580,6 +580,19 @@ class Datamodel(BaseModel):
     enums: List['Enum']
     models: List['Model']
 
+    # not implemented yet
+    types: List[object]
+
+    @validator('types')
+    @classmethod
+    def no_composite_types_validator(cls, types: list[object]) -> object:
+        if types:
+            raise ValueError(
+                'Composite types are not supported yet. Please indicate you need this here: https://github.com/RobertCraigie/prisma-client-py/issues/314'
+            )
+
+        return types
+
 
 class Enum(BaseModel):
     name: str
