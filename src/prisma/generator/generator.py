@@ -174,8 +174,7 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
                 f'JSON RPC received unexpected method: {request.method}'
             )
 
-        if response is not None:
-            jsonrpc.reply(response)
+        jsonrpc.reply(response)
 
     @cached_property
     def data_class(self) -> Type[BaseModelT]:
