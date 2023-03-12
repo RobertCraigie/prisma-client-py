@@ -170,6 +170,8 @@ class NodeBinaryStrategy(Strategy):
                 'Skipping nodeenv installation as it already exists at %s',
                 cache_dir,
             )
+            for p in cache_dir.iterdir():
+                log.debug(p)
         else:
             log.debug('Installing nodeenv to %s', cache_dir)
             subprocess.run(
