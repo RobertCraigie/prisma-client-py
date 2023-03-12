@@ -41,7 +41,7 @@ def test_basic_building(snapshot: SnapshotAssertion) -> None:
     """Standard builder usage with and without a model"""
     query = QueryBuilder(
         operation='query',
-        method='findUnique',
+        method='findUnique{model}',
         model=models.User,
         arguments={'where': {'id': '1'}}
     ).build_query()
@@ -49,7 +49,7 @@ def test_basic_building(snapshot: SnapshotAssertion) -> None:
 
     query = QueryBuilder(
         operation='mutation',
-        method='queryRaw',
+        method='queryRaw{model}',
         arguments={'where': {'id': '1'}}
     ).build_query()
     assert query == snapshot
@@ -60,7 +60,7 @@ def test_invalid_include() -> None:
     with pytest.raises(UnknownRelationalFieldError) as exception:
         QueryBuilder(
             operation='query',
-            method='findUnique',
+            method='findUnique{model}',
             model=models.User,
             arguments={
                 'include': {
@@ -79,7 +79,7 @@ def test_include_no_model() -> None:
     with pytest.raises(ValueError) as exc:
         build_query(
             operation='mutation',
-            method='queryRaw',
+            method='queryRaw{model}',
             arguments={'include': {'posts': True}}
         )
 
@@ -90,7 +90,7 @@ def test_include_with_arguments(snapshot: SnapshotAssertion) -> None:
     """Including a field with filters"""
     query = QueryBuilder(
         operation='query',
-        method='findUnique',
+        method='findUnique{model}',
         model=models.User,
         arguments={
             'where': {'id': 1},
@@ -104,7 +104,7 @@ def test_raw_queries(snapshot: SnapshotAssertion) -> None:
     """Raw queries serialise paramaters to JSON"""
     query = QueryBuilder(
         operation='mutation',
-        method='queryRaw',
+        method='queryRaw{model}',
         arguments={
             'query': 'SELECT * FROM User where id = $1',
             'parameters': ["1263526"],
@@ -117,7 +117,7 @@ def test_datetime_serialization_tz_aware(snapshot: SnapshotAssertion) -> None:
     """Serializing a timezone aware datetime converts to UTC"""
     query = QueryBuilder(
         operation='query',
-        method='findUnique',
+        method='findUnique{model}',
         model=models.Post,
         arguments={
             'where': {
@@ -132,7 +132,7 @@ def test_datetime_serialization_tz_unaware(snapshot: SnapshotAssertion) -> None:
     """Serializing a timezone naive datetime converts to UTC"""
     query = QueryBuilder(
         operation='query',
-        method='findUnique',
+        method='findUnique{model}',
         model=models.Post,
         arguments={
             'where': {
@@ -147,7 +147,7 @@ def test_unicode(snapshot: SnapshotAssertion) -> None:
     """Serializing unicode strings does not convert to ASCII"""
     query = QueryBuilder(
         operation='query',
-        method='findUnique',
+        method='findUnique{model}',
         model=models.User,
         arguments={
             'where': {
@@ -166,7 +166,7 @@ def test_unknown_model() -> None:
     with pytest.raises(UnknownModelError) as exc:
         QueryBuilder(
             operation='query',
-            method='findUnique',
+            method='findUnique{model}',
             model=FooModel,
             arguments={},
         ).build_query()
@@ -179,7 +179,7 @@ def test_unserializable_type() -> None:
     with pytest.raises(TypeError) as exc:
         QueryBuilder(
             operation='query',
-            method='findFirst',
+            method='findFirst{model}',
             arguments={
                 'where': QueryBuilder
             }
@@ -193,7 +193,7 @@ def test_unserializable_instance() -> None:
     with pytest.raises(TypeError) as exc:
         QueryBuilder(
             operation='query',
-            method='findFirst',
+            method='findFirst{model}',
             arguments={
                 'where': _NoneType()
             }
@@ -214,7 +214,7 @@ def test_custom_serialization(snapshot: SnapshotAssertion) -> None:
 
     query = QueryBuilder(
         operation='query',
-        method='findUnique',
+        method='findUnique{model}',
         model=models.Post,
         arguments={
             'where': {
@@ -239,7 +239,7 @@ def test_select(snapshot: SnapshotAssertion) -> None:
 
     query = QueryBuilder(
         operation='query',
-        method='findFirst',
+        method='findFirst{model}',
         model=CustomModel,
         arguments={
             'where': {
@@ -252,7 +252,7 @@ def test_select(snapshot: SnapshotAssertion) -> None:
     with pytest.raises(UnknownRelationalFieldError) as exc:
         QueryBuilder(
             operation='query',
-            method='findUnique',
+            method='findUnique{model}',
             model=OtherModel,
             arguments={
                 'include': {
@@ -265,7 +265,7 @@ def test_select(snapshot: SnapshotAssertion) -> None:
 
     query = QueryBuilder(
         operation='query',
-        method='findFirst',
+        method='findFirst{model}',
         model=CustomModel,
         arguments={
             'include': {
@@ -296,7 +296,7 @@ def test_select_non_prisma_model_basemodel(snapshot: SnapshotAssertion) -> None:
 
     query = QueryBuilder(
         operation='query',
-        method='findFirst',
+        method='findFirst{model}',
         model=CustomModel,
         arguments={
             'where': {
