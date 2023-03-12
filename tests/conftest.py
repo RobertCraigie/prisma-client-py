@@ -50,7 +50,9 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 
 
 def pytest_sessionfinish(session: pytest.Session) -> None:
-    if LOGGING_CONTEXT_MANAGER is not None:  # pragma: no branch
+    if (
+        LOGGING_CONTEXT_MANAGER is not None
+    ):  # pragma: no branch  # pyright: ignore[reportUnnecessaryComparison]
         LOGGING_CONTEXT_MANAGER.__exit__(None, None, None)
 
 
