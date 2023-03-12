@@ -3,8 +3,8 @@
 __title__ = 'prisma'
 __author__ = 'RobertCraigie'
 __license__ = 'APACHE'
-__copyright__ = 'Copyright 2020-2021 RobertCraigie'
-__version__ = '0.8.2a'
+__copyright__ = 'Copyright 2020-2023 RobertCraigie'
+__version__ = '0.8.3a'
 
 from typing import TYPE_CHECKING
 
