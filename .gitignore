@@ -118,9 +118,6 @@ env.bak/
 venv.bak/
 .direnv
 
-# Environment variables
-.envrc
-
 # local testing files
 tmp/
 
@@ -153,7 +150,7 @@ databases/*pyrightconfig.json
 .DS_Store
 
 # Direnv
-.envrc
+.envrc.local
 
 # Prisma Py
 __prisma__
