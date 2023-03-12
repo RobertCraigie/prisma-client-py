@@ -88,7 +88,7 @@ user = await db.user.create(
 There are two different methods you can use here to find a unique record. Which one you use depends on the context surrounding the query:
 
 - Use `find_unique` if it is *expected* for the record to not exist in the database
-- Use `find_unique_or_raise` if it is very *unexpected* for the record to not exist in the database
+- Use `find_unique_or_raise` if it is *unexpected* for the record to not exist in the database
 
 ```py
 user = await db.user.find_unique(
@@ -113,7 +113,7 @@ user = await db.user.find_unique_or_raise(
 There are two different methods you can use here to find a single record. Which one you use depends on the context surrounding the query:
 
 - Use `find_first` if it is *expected* for the record to not exist in the database
-- Use `find_first_or_raise` if it is very *unexpected* for the record to not exist in the database
+- Use `find_first_or_raise` if it is *unexpected* for the record to not exist in the database
 
 ```py
 post = await db.post.find_first(
