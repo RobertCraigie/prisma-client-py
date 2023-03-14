@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import os
 import sys
 import enum
@@ -587,7 +585,7 @@ class Datamodel(BaseModel):
 
     @validator('types')
     @classmethod
-    def no_composite_types_validator(cls, types: list[object]) -> object:
+    def no_composite_types_validator(cls, types: List[object]) -> object:
         if types:
             raise ValueError(
                 'Composite types are not supported yet. Please indicate you need this here: https://github.com/RobertCraigie/prisma-client-py/issues/314'
