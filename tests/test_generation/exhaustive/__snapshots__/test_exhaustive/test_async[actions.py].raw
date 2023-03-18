@@ -181,8 +181,7 @@ class PostActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='createOne{model}',
+            method='create',
             model=self._model,
             arguments={
                 'data': data,
@@ -248,8 +247,7 @@ class PostActions(Generic[_PrismaModelT]):
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = await self._client._execute(
-            operation='mutation',
-            method='createMany{model}',
+            method='create_many',
             model=self._model,
             arguments={
                 'data': data,
@@ -299,8 +297,7 @@ class PostActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='deleteOne{model}',
+                method='delete',
                 model=self._model,
                 arguments={
                     'where': where,
@@ -351,8 +348,7 @@ class PostActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}',
+            method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
@@ -403,8 +399,7 @@ class PostActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}OrThrow',
+            method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
@@ -470,8 +465,7 @@ class PostActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findMany{model}',
+            method='find_many',
             model=self._model,
             arguments={
                 'take': take,
@@ -536,8 +530,7 @@ class PostActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}',
+            method='find_first',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -604,8 +597,7 @@ class PostActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}OrThrow',
+            method='find_first_or_raise',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -662,8 +654,7 @@ class PostActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='updateOne{model}',
+                method='update',
                 model=self._model,
                 arguments={
                     'data': data,
@@ -727,8 +718,7 @@ class PostActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='upsertOne{model}',
+            method='upsert',
             model=self._model,
             arguments={
                 'where': where,
@@ -776,8 +766,7 @@ class PostActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='updateMany{model}',
+            method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -921,8 +910,7 @@ class PostActions(Generic[_PrismaModelT]):
             ]
 
         resp = await self._client._execute(
-            operation='query',
-            method='aggregate{model}',
+            method='count',
             model=self._model,
             arguments={
                 'take': take,
@@ -967,8 +955,7 @@ class PostActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='deleteMany{model}',
+            method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
@@ -1078,8 +1065,7 @@ class PostActions(Generic[_PrismaModelT]):
                 root_selection.append(_select_fields('_count', count))
 
         resp = await self._client._execute(
-            operation='query',
-            method='groupBy{model}',
+            method='group_by',
             model=self._model,
             arguments={
                 'by': by,
@@ -1226,8 +1212,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='createOne{model}',
+            method='create',
             model=self._model,
             arguments={
                 'data': data,
@@ -1301,8 +1286,7 @@ class UserActions(Generic[_PrismaModelT]):
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = await self._client._execute(
-            operation='mutation',
-            method='createMany{model}',
+            method='create_many',
             model=self._model,
             arguments={
                 'data': data,
@@ -1352,8 +1336,7 @@ class UserActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='deleteOne{model}',
+                method='delete',
                 model=self._model,
                 arguments={
                     'where': where,
@@ -1404,8 +1387,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}',
+            method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
@@ -1456,8 +1438,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}OrThrow',
+            method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
@@ -1523,8 +1504,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findMany{model}',
+            method='find_many',
             model=self._model,
             arguments={
                 'take': take,
@@ -1589,8 +1569,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}',
+            method='find_first',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -1657,8 +1636,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}OrThrow',
+            method='find_first_or_raise',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -1715,8 +1693,7 @@ class UserActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='updateOne{model}',
+                method='update',
                 model=self._model,
                 arguments={
                     'data': data,
@@ -1788,8 +1765,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='upsertOne{model}',
+            method='upsert',
             model=self._model,
             arguments={
                 'where': where,
@@ -1837,8 +1813,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='updateMany{model}',
+            method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -1982,8 +1957,7 @@ class UserActions(Generic[_PrismaModelT]):
             ]
 
         resp = await self._client._execute(
-            operation='query',
-            method='aggregate{model}',
+            method='count',
             model=self._model,
             arguments={
                 'take': take,
@@ -2028,8 +2002,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='deleteMany{model}',
+            method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
@@ -2139,8 +2112,7 @@ class UserActions(Generic[_PrismaModelT]):
                 root_selection.append(_select_fields('_count', count))
 
         resp = await self._client._execute(
-            operation='query',
-            method='groupBy{model}',
+            method='group_by',
             model=self._model,
             arguments={
                 'by': by,
@@ -2286,8 +2258,7 @@ class MActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='createOne{model}',
+            method='create',
             model=self._model,
             arguments={
                 'data': data,
@@ -2359,8 +2330,7 @@ class MActions(Generic[_PrismaModelT]):
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = await self._client._execute(
-            operation='mutation',
-            method='createMany{model}',
+            method='create_many',
             model=self._model,
             arguments={
                 'data': data,
@@ -2410,8 +2380,7 @@ class MActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='deleteOne{model}',
+                method='delete',
                 model=self._model,
                 arguments={
                     'where': where,
@@ -2462,8 +2431,7 @@ class MActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}',
+            method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
@@ -2514,8 +2482,7 @@ class MActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}OrThrow',
+            method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
@@ -2581,8 +2548,7 @@ class MActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findMany{model}',
+            method='find_many',
             model=self._model,
             arguments={
                 'take': take,
@@ -2647,8 +2613,7 @@ class MActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}',
+            method='find_first',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -2715,8 +2680,7 @@ class MActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}OrThrow',
+            method='find_first_or_raise',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -2773,8 +2737,7 @@ class MActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='updateOne{model}',
+                method='update',
                 model=self._model,
                 arguments={
                     'data': data,
@@ -2844,8 +2807,7 @@ class MActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='upsertOne{model}',
+            method='upsert',
             model=self._model,
             arguments={
                 'where': where,
@@ -2893,8 +2855,7 @@ class MActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='updateMany{model}',
+            method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -3038,8 +2999,7 @@ class MActions(Generic[_PrismaModelT]):
             ]
 
         resp = await self._client._execute(
-            operation='query',
-            method='aggregate{model}',
+            method='count',
             model=self._model,
             arguments={
                 'take': take,
@@ -3084,8 +3044,7 @@ class MActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='deleteMany{model}',
+            method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
@@ -3195,8 +3154,7 @@ class MActions(Generic[_PrismaModelT]):
                 root_selection.append(_select_fields('_count', count))
 
         resp = await self._client._execute(
-            operation='query',
-            method='groupBy{model}',
+            method='group_by',
             model=self._model,
             arguments={
                 'by': by,
@@ -3343,8 +3301,7 @@ class NActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='createOne{model}',
+            method='create',
             model=self._model,
             arguments={
                 'data': data,
@@ -3418,8 +3375,7 @@ class NActions(Generic[_PrismaModelT]):
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = await self._client._execute(
-            operation='mutation',
-            method='createMany{model}',
+            method='create_many',
             model=self._model,
             arguments={
                 'data': data,
@@ -3469,8 +3425,7 @@ class NActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='deleteOne{model}',
+                method='delete',
                 model=self._model,
                 arguments={
                     'where': where,
@@ -3521,8 +3476,7 @@ class NActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}',
+            method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
@@ -3573,8 +3527,7 @@ class NActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}OrThrow',
+            method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
@@ -3640,8 +3593,7 @@ class NActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findMany{model}',
+            method='find_many',
             model=self._model,
             arguments={
                 'take': take,
@@ -3706,8 +3658,7 @@ class NActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}',
+            method='find_first',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -3774,8 +3725,7 @@ class NActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}OrThrow',
+            method='find_first_or_raise',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -3832,8 +3782,7 @@ class NActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='updateOne{model}',
+                method='update',
                 model=self._model,
                 arguments={
                     'data': data,
@@ -3905,8 +3854,7 @@ class NActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='upsertOne{model}',
+            method='upsert',
             model=self._model,
             arguments={
                 'where': where,
@@ -3954,8 +3902,7 @@ class NActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='updateMany{model}',
+            method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -4099,8 +4046,7 @@ class NActions(Generic[_PrismaModelT]):
             ]
 
         resp = await self._client._execute(
-            operation='query',
-            method='aggregate{model}',
+            method='count',
             model=self._model,
             arguments={
                 'take': take,
@@ -4145,8 +4091,7 @@ class NActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='deleteMany{model}',
+            method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
@@ -4256,8 +4201,7 @@ class NActions(Generic[_PrismaModelT]):
                 root_selection.append(_select_fields('_count', count))
 
         resp = await self._client._execute(
-            operation='query',
-            method='groupBy{model}',
+            method='group_by',
             model=self._model,
             arguments={
                 'by': by,
@@ -4403,8 +4347,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='createOne{model}',
+            method='create',
             model=self._model,
             arguments={
                 'data': data,
@@ -4476,8 +4419,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = await self._client._execute(
-            operation='mutation',
-            method='createMany{model}',
+            method='create_many',
             model=self._model,
             arguments={
                 'data': data,
@@ -4527,8 +4469,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='deleteOne{model}',
+                method='delete',
                 model=self._model,
                 arguments={
                     'where': where,
@@ -4579,8 +4520,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}',
+            method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
@@ -4631,8 +4571,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}OrThrow',
+            method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
@@ -4698,8 +4637,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findMany{model}',
+            method='find_many',
             model=self._model,
             arguments={
                 'take': take,
@@ -4764,8 +4702,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}',
+            method='find_first',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -4832,8 +4769,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}OrThrow',
+            method='find_first_or_raise',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -4890,8 +4826,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='updateOne{model}',
+                method='update',
                 model=self._model,
                 arguments={
                     'data': data,
@@ -4961,8 +4896,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='upsertOne{model}',
+            method='upsert',
             model=self._model,
             arguments={
                 'where': where,
@@ -5010,8 +4944,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='updateMany{model}',
+            method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -5155,8 +5088,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             ]
 
         resp = await self._client._execute(
-            operation='query',
-            method='aggregate{model}',
+            method='count',
             model=self._model,
             arguments={
                 'take': take,
@@ -5201,8 +5133,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='deleteMany{model}',
+            method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
@@ -5312,8 +5243,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 root_selection.append(_select_fields('_count', count))
 
         resp = await self._client._execute(
-            operation='query',
-            method='groupBy{model}',
+            method='group_by',
             model=self._model,
             arguments={
                 'by': by,
@@ -5459,8 +5389,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='createOne{model}',
+            method='create',
             model=self._model,
             arguments={
                 'data': data,
@@ -5532,8 +5461,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = await self._client._execute(
-            operation='mutation',
-            method='createMany{model}',
+            method='create_many',
             model=self._model,
             arguments={
                 'data': data,
@@ -5583,8 +5511,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='deleteOne{model}',
+                method='delete',
                 model=self._model,
                 arguments={
                     'where': where,
@@ -5635,8 +5562,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}',
+            method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
@@ -5687,8 +5613,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}OrThrow',
+            method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
@@ -5754,8 +5679,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findMany{model}',
+            method='find_many',
             model=self._model,
             arguments={
                 'take': take,
@@ -5820,8 +5744,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}',
+            method='find_first',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -5888,8 +5811,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}OrThrow',
+            method='find_first_or_raise',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -5946,8 +5868,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='updateOne{model}',
+                method='update',
                 model=self._model,
                 arguments={
                     'data': data,
@@ -6017,8 +5938,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='upsertOne{model}',
+            method='upsert',
             model=self._model,
             arguments={
                 'where': where,
@@ -6066,8 +5986,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='updateMany{model}',
+            method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -6211,8 +6130,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             ]
 
         resp = await self._client._execute(
-            operation='query',
-            method='aggregate{model}',
+            method='count',
             model=self._model,
             arguments={
                 'take': take,
@@ -6257,8 +6175,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='deleteMany{model}',
+            method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
@@ -6368,8 +6285,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 root_selection.append(_select_fields('_count', count))
 
         resp = await self._client._execute(
-            operation='query',
-            method='groupBy{model}',
+            method='group_by',
             model=self._model,
             arguments={
                 'by': by,
@@ -6510,8 +6426,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='createOne{model}',
+            method='create',
             model=self._model,
             arguments={
                 'data': data,
@@ -6573,8 +6488,7 @@ class ListsActions(Generic[_PrismaModelT]):
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = await self._client._execute(
-            operation='mutation',
-            method='createMany{model}',
+            method='create_many',
             model=self._model,
             arguments={
                 'data': data,
@@ -6624,8 +6538,7 @@ class ListsActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='deleteOne{model}',
+                method='delete',
                 model=self._model,
                 arguments={
                     'where': where,
@@ -6676,8 +6589,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}',
+            method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
@@ -6728,8 +6640,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}OrThrow',
+            method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
@@ -6795,8 +6706,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findMany{model}',
+            method='find_many',
             model=self._model,
             arguments={
                 'take': take,
@@ -6861,8 +6771,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}',
+            method='find_first',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -6929,8 +6838,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}OrThrow',
+            method='find_first_or_raise',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -6987,8 +6895,7 @@ class ListsActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='updateOne{model}',
+                method='update',
                 model=self._model,
                 arguments={
                     'data': data,
@@ -7048,8 +6955,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='upsertOne{model}',
+            method='upsert',
             model=self._model,
             arguments={
                 'where': where,
@@ -7097,8 +7003,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='updateMany{model}',
+            method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -7242,8 +7147,7 @@ class ListsActions(Generic[_PrismaModelT]):
             ]
 
         resp = await self._client._execute(
-            operation='query',
-            method='aggregate{model}',
+            method='count',
             model=self._model,
             arguments={
                 'take': take,
@@ -7288,8 +7192,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='deleteMany{model}',
+            method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
@@ -7399,8 +7302,7 @@ class ListsActions(Generic[_PrismaModelT]):
                 root_selection.append(_select_fields('_count', count))
 
         resp = await self._client._execute(
-            operation='query',
-            method='groupBy{model}',
+            method='group_by',
             model=self._model,
             arguments={
                 'by': by,
@@ -7545,8 +7447,7 @@ class AActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='createOne{model}',
+            method='create',
             model=self._model,
             arguments={
                 'data': data,
@@ -7616,8 +7517,7 @@ class AActions(Generic[_PrismaModelT]):
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = await self._client._execute(
-            operation='mutation',
-            method='createMany{model}',
+            method='create_many',
             model=self._model,
             arguments={
                 'data': data,
@@ -7667,8 +7567,7 @@ class AActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='deleteOne{model}',
+                method='delete',
                 model=self._model,
                 arguments={
                     'where': where,
@@ -7719,8 +7618,7 @@ class AActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}',
+            method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
@@ -7771,8 +7669,7 @@ class AActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}OrThrow',
+            method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
@@ -7838,8 +7735,7 @@ class AActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findMany{model}',
+            method='find_many',
             model=self._model,
             arguments={
                 'take': take,
@@ -7904,8 +7800,7 @@ class AActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}',
+            method='find_first',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -7972,8 +7867,7 @@ class AActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}OrThrow',
+            method='find_first_or_raise',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -8030,8 +7924,7 @@ class AActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='updateOne{model}',
+                method='update',
                 model=self._model,
                 arguments={
                     'data': data,
@@ -8097,8 +7990,7 @@ class AActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='upsertOne{model}',
+            method='upsert',
             model=self._model,
             arguments={
                 'where': where,
@@ -8146,8 +8038,7 @@ class AActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='updateMany{model}',
+            method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -8291,8 +8182,7 @@ class AActions(Generic[_PrismaModelT]):
             ]
 
         resp = await self._client._execute(
-            operation='query',
-            method='aggregate{model}',
+            method='count',
             model=self._model,
             arguments={
                 'take': take,
@@ -8337,8 +8227,7 @@ class AActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='deleteMany{model}',
+            method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
@@ -8448,8 +8337,7 @@ class AActions(Generic[_PrismaModelT]):
                 root_selection.append(_select_fields('_count', count))
 
         resp = await self._client._execute(
-            operation='query',
-            method='groupBy{model}',
+            method='group_by',
             model=self._model,
             arguments={
                 'by': by,
@@ -8594,8 +8482,7 @@ class BActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='createOne{model}',
+            method='create',
             model=self._model,
             arguments={
                 'data': data,
@@ -8665,8 +8552,7 @@ class BActions(Generic[_PrismaModelT]):
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = await self._client._execute(
-            operation='mutation',
-            method='createMany{model}',
+            method='create_many',
             model=self._model,
             arguments={
                 'data': data,
@@ -8716,8 +8602,7 @@ class BActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='deleteOne{model}',
+                method='delete',
                 model=self._model,
                 arguments={
                     'where': where,
@@ -8768,8 +8653,7 @@ class BActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}',
+            method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
@@ -8820,8 +8704,7 @@ class BActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}OrThrow',
+            method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
@@ -8887,8 +8770,7 @@ class BActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findMany{model}',
+            method='find_many',
             model=self._model,
             arguments={
                 'take': take,
@@ -8953,8 +8835,7 @@ class BActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}',
+            method='find_first',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -9021,8 +8902,7 @@ class BActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}OrThrow',
+            method='find_first_or_raise',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -9079,8 +8959,7 @@ class BActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='updateOne{model}',
+                method='update',
                 model=self._model,
                 arguments={
                     'data': data,
@@ -9148,8 +9027,7 @@ class BActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='upsertOne{model}',
+            method='upsert',
             model=self._model,
             arguments={
                 'where': where,
@@ -9197,8 +9075,7 @@ class BActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='updateMany{model}',
+            method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -9342,8 +9219,7 @@ class BActions(Generic[_PrismaModelT]):
             ]
 
         resp = await self._client._execute(
-            operation='query',
-            method='aggregate{model}',
+            method='count',
             model=self._model,
             arguments={
                 'take': take,
@@ -9388,8 +9264,7 @@ class BActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='deleteMany{model}',
+            method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
@@ -9499,8 +9374,7 @@ class BActions(Generic[_PrismaModelT]):
                 root_selection.append(_select_fields('_count', count))
 
         resp = await self._client._execute(
-            operation='query',
-            method='groupBy{model}',
+            method='group_by',
             model=self._model,
             arguments={
                 'by': by,
@@ -9647,8 +9521,7 @@ class CActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='createOne{model}',
+            method='create',
             model=self._model,
             arguments={
                 'data': data,
@@ -9722,8 +9595,7 @@ class CActions(Generic[_PrismaModelT]):
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = await self._client._execute(
-            operation='mutation',
-            method='createMany{model}',
+            method='create_many',
             model=self._model,
             arguments={
                 'data': data,
@@ -9774,8 +9646,7 @@ class CActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='deleteOne{model}',
+                method='delete',
                 model=self._model,
                 arguments={
                     'where': where,
@@ -9827,8 +9698,7 @@ class CActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}',
+            method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
@@ -9880,8 +9750,7 @@ class CActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}OrThrow',
+            method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
@@ -9947,8 +9816,7 @@ class CActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findMany{model}',
+            method='find_many',
             model=self._model,
             arguments={
                 'take': take,
@@ -10013,8 +9881,7 @@ class CActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}',
+            method='find_first',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -10081,8 +9948,7 @@ class CActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}OrThrow',
+            method='find_first_or_raise',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -10140,8 +10006,7 @@ class CActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='updateOne{model}',
+                method='update',
                 model=self._model,
                 arguments={
                     'data': data,
@@ -10202,8 +10067,7 @@ class CActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='upsertOne{model}',
+            method='upsert',
             model=self._model,
             arguments={
                 'where': where,
@@ -10251,8 +10115,7 @@ class CActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='updateMany{model}',
+            method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -10396,8 +10259,7 @@ class CActions(Generic[_PrismaModelT]):
             ]
 
         resp = await self._client._execute(
-            operation='query',
-            method='aggregate{model}',
+            method='count',
             model=self._model,
             arguments={
                 'take': take,
@@ -10442,8 +10304,7 @@ class CActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='deleteMany{model}',
+            method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
@@ -10553,8 +10414,7 @@ class CActions(Generic[_PrismaModelT]):
                 root_selection.append(_select_fields('_count', count))
 
         resp = await self._client._execute(
-            operation='query',
-            method='groupBy{model}',
+            method='group_by',
             model=self._model,
             arguments={
                 'by': by,
@@ -10700,8 +10560,7 @@ class DActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='createOne{model}',
+            method='create',
             model=self._model,
             arguments={
                 'data': data,
@@ -10773,8 +10632,7 @@ class DActions(Generic[_PrismaModelT]):
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = await self._client._execute(
-            operation='mutation',
-            method='createMany{model}',
+            method='create_many',
             model=self._model,
             arguments={
                 'data': data,
@@ -10824,8 +10682,7 @@ class DActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='deleteOne{model}',
+                method='delete',
                 model=self._model,
                 arguments={
                     'where': where,
@@ -10876,8 +10733,7 @@ class DActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}',
+            method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
@@ -10928,8 +10784,7 @@ class DActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}OrThrow',
+            method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
@@ -10995,8 +10850,7 @@ class DActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findMany{model}',
+            method='find_many',
             model=self._model,
             arguments={
                 'take': take,
@@ -11061,8 +10915,7 @@ class DActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}',
+            method='find_first',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -11129,8 +10982,7 @@ class DActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}OrThrow',
+            method='find_first_or_raise',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -11187,8 +11039,7 @@ class DActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='updateOne{model}',
+                method='update',
                 model=self._model,
                 arguments={
                     'data': data,
@@ -11258,8 +11109,7 @@ class DActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='upsertOne{model}',
+            method='upsert',
             model=self._model,
             arguments={
                 'where': where,
@@ -11307,8 +11157,7 @@ class DActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='updateMany{model}',
+            method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -11452,8 +11301,7 @@ class DActions(Generic[_PrismaModelT]):
             ]
 
         resp = await self._client._execute(
-            operation='query',
-            method='aggregate{model}',
+            method='count',
             model=self._model,
             arguments={
                 'take': take,
@@ -11498,8 +11346,7 @@ class DActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='deleteMany{model}',
+            method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
@@ -11609,8 +11456,7 @@ class DActions(Generic[_PrismaModelT]):
                 root_selection.append(_select_fields('_count', count))
 
         resp = await self._client._execute(
-            operation='query',
-            method='groupBy{model}',
+            method='group_by',
             model=self._model,
             arguments={
                 'by': by,
@@ -11754,8 +11600,7 @@ class EActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='createOne{model}',
+            method='create',
             model=self._model,
             arguments={
                 'data': data,
@@ -11823,8 +11668,7 @@ class EActions(Generic[_PrismaModelT]):
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = await self._client._execute(
-            operation='mutation',
-            method='createMany{model}',
+            method='create_many',
             model=self._model,
             arguments={
                 'data': data,
@@ -11874,8 +11718,7 @@ class EActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='deleteOne{model}',
+                method='delete',
                 model=self._model,
                 arguments={
                     'where': where,
@@ -11926,8 +11769,7 @@ class EActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}',
+            method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
@@ -11978,8 +11820,7 @@ class EActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findUnique{model}OrThrow',
+            method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
@@ -12045,8 +11886,7 @@ class EActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findMany{model}',
+            method='find_many',
             model=self._model,
             arguments={
                 'take': take,
@@ -12111,8 +11951,7 @@ class EActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}',
+            method='find_first',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -12179,8 +12018,7 @@ class EActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='query',
-            method='findFirst{model}OrThrow',
+            method='find_first_or_raise',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -12237,8 +12075,7 @@ class EActions(Generic[_PrismaModelT]):
         """
         try:
             resp = await self._client._execute(
-                operation='mutation',
-                method='updateOne{model}',
+                method='update',
                 model=self._model,
                 arguments={
                     'data': data,
@@ -12304,8 +12141,7 @@ class EActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='upsertOne{model}',
+            method='upsert',
             model=self._model,
             arguments={
                 'where': where,
@@ -12353,8 +12189,7 @@ class EActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='updateMany{model}',
+            method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -12498,8 +12333,7 @@ class EActions(Generic[_PrismaModelT]):
             ]
 
         resp = await self._client._execute(
-            operation='query',
-            method='aggregate{model}',
+            method='count',
             model=self._model,
             arguments={
                 'take': take,
@@ -12544,8 +12378,7 @@ class EActions(Generic[_PrismaModelT]):
         ```
         """
         resp = await self._client._execute(
-            operation='mutation',
-            method='deleteMany{model}',
+            method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
@@ -12655,8 +12488,7 @@ class EActions(Generic[_PrismaModelT]):
                 root_selection.append(_select_fields('_count', count))
 
         resp = await self._client._execute(
-            operation='query',
-            method='groupBy{model}',
+            method='group_by',
             model=self._model,
             arguments={
                 'by': by,
@@ -12682,5 +12514,4 @@ def _select_fields(root: str, select: Mapping[str, Any]) -> str:
 
 
 from . import models
-
 '''

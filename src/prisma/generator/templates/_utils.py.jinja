@@ -18,48 +18,6 @@ time.sleep({{ duration }})
 {% endif %}
 {%- endmacro %}
 
-{% set operations = {
-    'create': 'mutation',
-    'delete': 'mutation',
-    'update': 'mutation',
-    'upsert': 'mutation',
-    'query_raw': 'mutation',
-    'create_many': 'mutation',
-    'execute_raw': 'mutation',
-    'delete_many': 'mutation',
-    'update_many': 'mutation',
-
-    'count': 'query',
-    'group_by': 'query',
-    'find_many': 'query',
-    'find_first': 'query',
-    'find_first_or_raise': 'query',
-    'find_unique': 'query',
-    'find_unique_or_raise': 'query',
-}
-%}
-
-{% set methods = {
-    'create': 'createOne{model}',
-    'delete': 'deleteOne{model}',
-    'update': 'updateOne{model}',
-    'upsert': 'upsertOne{model}',
-    'query_raw': 'queryRaw{model}',
-    'create_many': 'createMany{model}',
-    'execute_raw': 'executeRaw{model}',
-    'delete_many': 'deleteMany{model}',
-    'update_many': 'updateMany{model}',
-
-    'count': 'aggregate{model}',
-    'group_by': 'groupBy{model}',
-    'find_many': 'findMany{model}',
-    'find_first': 'findFirst{model}',
-    'find_first_or_raise': 'findFirst{model}OrThrow',
-    'find_unique': 'findUnique{model}',
-    'find_unique_or_raise': 'findUnique{model}OrThrow',
-}
-%}
-
 {% set active_provider = datasources[0].active_provider %}
 
 {% macro query_methods(name) %}
