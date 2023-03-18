@@ -1,6 +1,7 @@
 -r coverage.txt
 -r deps/pytest-asyncio.txt
 -r deps/pytest.txt
+-r benchmarks.txt
 pytest-sugar
 mock==5.0.1
 pytest-mock==3.10.0
