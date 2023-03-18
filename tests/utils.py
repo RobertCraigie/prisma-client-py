@@ -56,12 +56,7 @@ for name in sys.modules.copy():
         sys.modules.pop(name, None)
 """
 
-SCHEMA_HEADER = """
-datasource db {{
-  provider = "sqlite"
-  url      = "file:dev.db"
-}}
-
+DEFAULT_GENERATOR = """
 generator db {{
   provider = "coverage run -m prisma"
   output = "{output}"
@@ -69,6 +64,17 @@ generator db {{
 }}
 
 """
+
+SCHEMA_HEADER = (
+    """
+datasource db {{
+  provider = "sqlite"
+  url      = "file:dev.db"
+}}
+
+"""
+    + DEFAULT_GENERATOR
+)
 
 DEFAULT_SCHEMA = (
     SCHEMA_HEADER
@@ -151,6 +157,7 @@ class Testdir:
     __test__ = False
     SCHEMA_HEADER = SCHEMA_HEADER
     default_schema = DEFAULT_SCHEMA
+    default_generator = DEFAULT_GENERATOR
 
     def __init__(self, pytester: Pytester) -> None:
         self.pytester = pytester

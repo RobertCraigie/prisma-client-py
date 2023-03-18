@@ -44,6 +44,13 @@ model Post {
   views       Int      @default(0)
   author      User?    @relation(fields: [author_id], references: [id])
   author_id   String?
+  categories Category[]
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  posts Post[]
+  name  String
 }
 
 model Types {
@@ -92,6 +99,24 @@ model Lists {
   {% endif %}
   {% if config.supports_feature('enum') %}
   roles        Role[]
+  {% endif %}
+}
+
+model ListsDefaults {
+  id           String     @id @default(cuid())
+  strings      String[]   @default(["foo"])
+  bytes        Bytes[]    @default(["foo"])
+  dates        DateTime[] @default(["2002-10-02T10:00:00-05:00"])
+  bools        Boolean[]  @default([true, false])
+  ints         Int[]      @default([1, 9])
+  floats       Float[]    @default([10.5])
+  bigints      BigInt[]   @default([18233293293])
+  decimals     Decimal[]  @default([17382.23268])
+  {% if config.supports_feature('json_arrays') %}
+  json_objects Json[]     @default(["{\"foo\": \"bar\"}"])
+  {% endif %}
+  {% if config.supports_feature('enum') %}
+  roles        Role[]     @default([USER])
   {% endif %}
 }
 {% endif %}

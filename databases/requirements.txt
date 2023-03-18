@@ -1,6 +1,5 @@
 # TODO: merge with other dev requirements
-click==8.1.3
-coverage==6.5.0
+coverage==7.2.1
 syrupy==3.0.6
 dirty-equals==0.5.0
 distro

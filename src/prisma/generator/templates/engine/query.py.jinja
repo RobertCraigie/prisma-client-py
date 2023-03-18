@@ -31,7 +31,7 @@ class QueryEngine(HTTPEngine):
     dml_path: Path
     url: Optional[str]
     file: Optional[Path]
-    process: Optional[subprocess.Popen[bytes]]
+    process: subprocess.Popen[bytes] | subprocess.Popen[str] | None
 
     def __init__(self, *, dml_path: Path, log_queries: bool = False, **kwargs: Any) -> None:
         super().__init__(url=None, **kwargs)
@@ -46,16 +46,20 @@ class QueryEngine(HTTPEngine):
     def __del__(self) -> None:
         self.stop()
 
-    def close(self) -> None:
+    def close(self, *, timeout: Optional[float] = None) -> None:
         log.debug('Disconnecting query engine...')
 
         if self.process is not None:
             if platform.name() == 'windows':
                 self.process.kill()
+                self.process.wait(timeout=timeout)
             else:
                 self.process.send_signal(signal.SIGINT)
+                try:
+                    self.process.wait(timeout=timeout)
+                except subprocess.TimeoutExpired:
+                    self.process.send_signal(signal.SIGKILL)
 
-            self.process.wait()
             self.process = None
 
         {% if not is_async %}
@@ -63,8 +67,8 @@ class QueryEngine(HTTPEngine):
         {% endif %}
         log.debug('Disconnected query engine')
 
-    async def aclose(self) -> None:
-        self.close()
+    async def aclose(self, *, timeout: Optional[float] = None) -> None:
+        self.close(timeout=timeout)
         {{ maybe_await }}self._close_session()
 
     {{ maybe_async_def }}_close_session(self) -> None:
@@ -132,11 +136,22 @@ class QueryEngine(HTTPEngine):
             args.append('--enable-playground')
 
         log.debug('Starting query engine...')
+        popen_kwargs: Dict[str,Any] = {
+            "env": env,
+            "stdout": sys.stdout,
+            "stderr": sys.stderr,
+            "text": False,
+        }
+        if platform.name() != 'windows':
+            # ensure SIGINT is unblocked before forking the query engine
+            # https://github.com/RobertCraigie/prisma-client-py/pull/678
+            popen_kwargs["preexec_fn"] = lambda: signal.pthread_sigmask(
+                signal.SIG_UNBLOCK, [signal.SIGINT, signal.SIGTERM]
+            )
+
         self.process = subprocess.Popen(
             args,
-            env=env,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
+            **popen_kwargs
         )
 
         last_exc = None

@@ -116,15 +116,14 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
-# Environment variables
-.envrc
+.direnv
 
 # local testing files
 tmp/
 
 # generated code
 src/prisma/http.py
+src/prisma/bases.py
 src/prisma/types.py
 src/prisma/enums.py
 src/prisma/client.py
@@ -151,7 +150,7 @@ databases/*pyrightconfig.json
 .DS_Store
 
 # Direnv
-.envrc
+.envrc.local
 
 # Prisma Py
 __prisma__

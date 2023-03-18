@@ -20,6 +20,9 @@ from typing import (
     Iterator,
     Sequence,
     Callable,
+    ClassVar,
+    NoReturn,
+    TypeVar,
     Generic,
     Mapping,
     Tuple,
@@ -37,23 +40,26 @@ from typing_extensions import TypedDict, Literal
 
 LiteralString = str
 # -- template actions.py.jinja --
+from typing import TypeVar
 import warnings
 
-from . import types, errors
-from ._types import BaseModelT
-
+from . import types, errors, bases
 
 if TYPE_CHECKING:
     from .client import Client
+    from .bases import _PrismaModel
 
 
-class PostActions:
+_PrismaModelT = TypeVar('_PrismaModelT', bound='_PrismaModel')
+
+
+class PostActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.Post']) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -61,7 +67,7 @@ class PostActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.Post']:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -99,7 +105,7 @@ class PostActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.Post']:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -139,7 +145,7 @@ class PostActions:
         self,
         data: types.PostCreateInput,
         include: Optional[types.PostInclude] = None
-    ) -> 'models.Post':
+    ) -> _PrismaModelT:
         """Create a new Post record.
 
         Parameters
@@ -176,9 +182,8 @@ class PostActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='create',
-            prisma_method='createOne',
-            model='Post',
+            method='createOne{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -244,9 +249,8 @@ class PostActions:
 
         resp = await self._client._execute(
             operation='mutation',
-            method='create_many',
-            prisma_method='createMany',
-            model='Post',
+            method='createMany{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -259,7 +263,7 @@ class PostActions:
         self,
         where: types.PostWhereUniqueInput,
         include: Optional[types.PostInclude] = None
-    ) -> Optional['models.Post']:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single Post record.
 
         Parameters
@@ -296,9 +300,8 @@ class PostActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='delete',
-                prisma_method='deleteOne',
-                model='Post',
+                method='deleteOne{model}',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -313,7 +316,7 @@ class PostActions:
         self,
         where: types.PostWhereUniqueInput,
         include: Optional[types.PostInclude] = None
-    ) -> Optional['models.Post']:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique Post record.
 
         Parameters
@@ -349,9 +352,8 @@ class PostActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_unique',
-            prisma_method='findUnique',
-            model='Post',
+            method='findUnique{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -362,6 +364,55 @@ class PostActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_unique_or_raise(
+        self,
+        where: types.PostWhereUniqueInput,
+        include: Optional[types.PostInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique Post record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            Post filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned Post model
+
+        Returns
+        -------
+        prisma.models.Post
+            The found Post record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        post = await Post.prisma().find_unique_or_raise(
+            where={
+                'id': 267834847,
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findUnique{model}OrThrow',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def find_many(
         self,
         take: Optional[int] = None,
@@ -371,7 +422,7 @@ class PostActions:
         include: Optional[types.PostInclude] = None,
         order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
         distinct: Optional[List[types.PostScalarFieldKeys]] = None,
-    ) -> List['models.Post']:
+    ) -> List[_PrismaModelT]:
         """Find multiple Post records.
 
         An empty list is returned if no records could be found.
@@ -420,9 +471,8 @@ class PostActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_many',
-            prisma_method='findMany',
-            model='Post',
+            method='findMany{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -443,7 +493,7 @@ class PostActions:
         include: Optional[types.PostInclude] = None,
         order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
         distinct: Optional[List[types.PostScalarFieldKeys]] = None,
-    ) -> Optional['models.Post']:
+    ) -> Optional[_PrismaModelT]:
         """Find a single Post record.
 
         Parameters
@@ -487,9 +537,8 @@ class PostActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_first',
-            prisma_method='findFirst',
-            model='Post',
+            method='findFirst{model}',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -504,12 +553,77 @@ class PostActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.PostWhereInput] = None,
+        cursor: Optional[types.PostWhereUniqueInput] = None,
+        include: Optional[types.PostInclude] = None,
+        order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
+        distinct: Optional[List[types.PostScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single Post record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            Post filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned Post model
+        order
+            Order the returned Post records by any field
+        distinct
+            Filter Post records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.Post
+            The first Post record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second Post record ordered by the published field
+        post = await Post.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'published': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findFirst{model}OrThrow',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def update(
         self,
         data: types.PostUpdateInput,
         where: types.PostWhereUniqueInput,
         include: Optional[types.PostInclude] = None
-    ) -> Optional['models.Post']:
+    ) -> Optional[_PrismaModelT]:
         """Update a single Post record.
 
         Parameters
@@ -538,7 +652,7 @@ class PostActions:
         ```py
         post = await Post.prisma().update(
             where={
-                'id': 267834847,
+                'id': 180171308,
             },
             data={
                 # data to update the Post record to
@@ -549,9 +663,8 @@ class PostActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='update',
-                prisma_method='updateOne',
-                model='Post',
+                method='updateOne{model}',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -568,7 +681,7 @@ class PostActions:
         where: types.PostWhereUniqueInput,
         data: types.PostUpsertInput,
         include: Optional[types.PostInclude] = None,
-    ) -> 'models.Post':
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -597,11 +710,11 @@ class PostActions:
         ```py
         post = await Post.prisma().upsert(
             where={
-                'id': 180171308,
+                'id': 836760821,
             },
             data={
                 'create': {
-                    'id': 180171308,
+                    'id': 836760821,
                     'title': 'dgiiaaijj',
                     'author_id': 1508029952,
                 },
@@ -615,9 +728,8 @@ class PostActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='upsert',
-            prisma_method='upsertOne',
-            model='Post',
+            method='upsertOne{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -657,7 +769,7 @@ class PostActions:
         # update all Post records
         total = await Post.prisma().update_many(
             data={
-                'published': False
+                'author_id': 595337866
             },
             where={}
         )
@@ -665,9 +777,8 @@ class PostActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='update_many',
-            prisma_method='updateMany',
-            model='Post',
+            method='updateMany{model}',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -723,7 +834,7 @@ class PostActions:
         results = await Post.prisma().count(
             select={
                 '_all': True,
-                'author_id': True,
+                'id': True,
             },
         )
         ```
@@ -790,7 +901,7 @@ class PostActions:
         results = await Post.prisma().count(
             select={
                 '_all': True,
-                'id': True,
+                'created_at': True,
             },
         )
         ```
@@ -811,9 +922,8 @@ class PostActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='count',
-            prisma_method='aggregate',
-            model='Post',
+            method='aggregate{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -858,9 +968,8 @@ class PostActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='delete_many',
-            prisma_method='deleteMany',
-            model='Post',
+            method='deleteMany{model}',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -934,10 +1043,10 @@ class PostActions:
         Example
         -------
         ```py
-        # group Post records by created_at values
+        # group Post records by title values
         # and count how many records are in each group
         results = await Post.prisma().group_by(
-            ['created_at'],
+            ['title'],
             count=True,
         )
         ```
@@ -970,9 +1079,8 @@ class PostActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='group_by',
-            prisma_method='groupBy',
-            model='Post',
+            method='groupBy{model}',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -986,13 +1094,13 @@ class PostActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class UserActions:
+class UserActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.User']) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -1000,7 +1108,7 @@ class UserActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.User']:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -1028,7 +1136,7 @@ class UserActions:
         ```py
         users = await User.prisma().query_raw(
             'SELECT * FROM User WHERE id = $1',
-            595337866,
+            790425851,
         )
         ```
         """
@@ -1038,7 +1146,7 @@ class UserActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.User']:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -1068,7 +1176,7 @@ class UserActions:
         ```py
         user = await User.prisma().query_first(
             'SELECT * FROM User WHERE email = $1',
-            'hjaecfifb',
+            'cbbbjbfcii',
         )
         ```
         """
@@ -1078,7 +1186,7 @@ class UserActions:
         self,
         data: types.UserCreateInput,
         include: Optional[types.UserInclude] = None
-    ) -> 'models.User':
+    ) -> _PrismaModelT:
         """Create a new User record.
 
         Parameters
@@ -1107,21 +1215,20 @@ class UserActions:
         user = await User.prisma().create(
             data={
                 # data to create a User record
-                'email': 'cbbbjbfcii',
-                'int': 1149758321,
-                'float': 1644289366.138829,
-                'string': 'bgehebiafc',
+                'email': 'bbejhfidcb',
+                'int': 1644289366,
+                'float': 1388290519.164741,
+                'string': 'bghffegacj',
                 'enum': enums.ABeautifulEnum.A,
-                'boolean': False,
+                'boolean': True,
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='create',
-            prisma_method='createOne',
-            model='User',
+            method='createOne{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -1169,21 +1276,21 @@ class UserActions:
             data=[
                 {
                     # data to create a User record
-                    'email': 'bhghchehcc',
-                    'int': 326272115,
-                    'float': 1343201072.67578,
-                    'string': 'heejgedji',
+                    'email': 'dcgchcbbf',
+                    'int': 1343201072,
+                    'float': 675780521.74496,
+                    'string': 'bjgjgibgbf',
                     'enum': enums.ABeautifulEnum.A,
-                    'boolean': False,
+                    'boolean': True,
                 },
                 {
                     # data to create a User record
-                    'email': 'bbbgbhfjge',
-                    'int': 861472101,
-                    'float': 1303003706.168663,
-                    'string': 'caaaedabfc',
+                    'email': 'igbehcbab',
+                    'int': 1303003706,
+                    'float': 1686638315.200043,
+                    'string': 'bigibebcib',
                     'enum': enums.ABeautifulEnum.A,
-                    'boolean': False,
+                    'boolean': True,
                 },
             ],
             skip_duplicates=True,
@@ -1195,9 +1302,8 @@ class UserActions:
 
         resp = await self._client._execute(
             operation='mutation',
-            method='create_many',
-            prisma_method='createMany',
-            model='User',
+            method='createMany{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1210,7 +1316,7 @@ class UserActions:
         self,
         where: types.UserWhereUniqueInput,
         include: Optional[types.UserInclude] = None
-    ) -> Optional['models.User']:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single User record.
 
         Parameters
@@ -1239,7 +1345,7 @@ class UserActions:
         ```py
         user = await User.prisma().delete(
             where={
-                'id': 1860847622,
+                'id': 1448521415,
             },
         )
         ```
@@ -1247,9 +1353,8 @@ class UserActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='delete',
-                prisma_method='deleteOne',
-                model='User',
+                method='deleteOne{model}',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -1264,7 +1369,7 @@ class UserActions:
         self,
         where: types.UserWhereUniqueInput,
         include: Optional[types.UserInclude] = None
-    ) -> Optional['models.User']:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique User record.
 
         Parameters
@@ -1293,16 +1398,15 @@ class UserActions:
         ```py
         user = await User.prisma().find_unique(
             where={
-                'id': 1448521415,
+                'id': 1628650740,
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_unique',
-            prisma_method='findUnique',
-            model='User',
+            method='findUnique{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -1313,6 +1417,55 @@ class UserActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_unique_or_raise(
+        self,
+        where: types.UserWhereUniqueInput,
+        include: Optional[types.UserInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique User record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            User filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned User model
+
+        Returns
+        -------
+        prisma.models.User
+            The found User record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        user = await User.prisma().find_unique_or_raise(
+            where={
+                'id': 1249606685,
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findUnique{model}OrThrow',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def find_many(
         self,
         take: Optional[int] = None,
@@ -1322,7 +1475,7 @@ class UserActions:
         include: Optional[types.UserInclude] = None,
         order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
         distinct: Optional[List[types.UserScalarFieldKeys]] = None,
-    ) -> List['models.User']:
+    ) -> List[_PrismaModelT]:
         """Find multiple User records.
 
         An empty list is returned if no records could be found.
@@ -1371,9 +1524,8 @@ class UserActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_many',
-            prisma_method='findMany',
-            model='User',
+            method='findMany{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -1394,7 +1546,7 @@ class UserActions:
         include: Optional[types.UserInclude] = None,
         order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
         distinct: Optional[List[types.UserScalarFieldKeys]] = None,
-    ) -> Optional['models.User']:
+    ) -> Optional[_PrismaModelT]:
         """Find a single User record.
 
         Parameters
@@ -1438,9 +1590,8 @@ class UserActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_first',
-            prisma_method='findFirst',
-            model='User',
+            method='findFirst{model}',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -1455,12 +1606,77 @@ class UserActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.UserWhereInput] = None,
+        cursor: Optional[types.UserWhereUniqueInput] = None,
+        include: Optional[types.UserInclude] = None,
+        order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
+        distinct: Optional[List[types.UserScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single User record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            User filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned User model
+        order
+            Order the returned User records by any field
+        distinct
+            Filter User records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.User
+            The first User record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second User record ordered by the float field
+        user = await User.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'float': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findFirst{model}OrThrow',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def update(
         self,
         data: types.UserUpdateInput,
         where: types.UserWhereUniqueInput,
         include: Optional[types.UserInclude] = None
-    ) -> Optional['models.User']:
+    ) -> Optional[_PrismaModelT]:
         """Update a single User record.
 
         Parameters
@@ -1489,7 +1705,7 @@ class UserActions:
         ```py
         user = await User.prisma().update(
             where={
-                'id': 1628650740,
+                'id': 835903122,
             },
             data={
                 # data to update the User record to
@@ -1500,9 +1716,8 @@ class UserActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='update',
-                prisma_method='updateOne',
-                model='User',
+                method='updateOne{model}',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -1519,7 +1734,7 @@ class UserActions:
         where: types.UserWhereUniqueInput,
         data: types.UserUpsertInput,
         include: Optional[types.UserInclude] = None,
-    ) -> 'models.User':
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -1548,25 +1763,25 @@ class UserActions:
         ```py
         user = await User.prisma().upsert(
             where={
-                'id': 1249606685,
+                'id': 763719779,
             },
             data={
                 'create': {
-                    'id': 1249606685,
-                    'email': 'bbbgbhfjge',
-                    'int': 861472101,
-                    'float': 1303003706.168663,
-                    'string': 'caaaedabfc',
+                    'id': 763719779,
+                    'email': 'igbehcbab',
+                    'int': 1303003706,
+                    'float': 1686638315.200043,
+                    'string': 'bigibebcib',
                     'enum': enums.ABeautifulEnum.A,
-                    'boolean': False,
+                    'boolean': True,
                 },
                 'update': {
-                    'email': 'bbbgbhfjge',
-                    'int': 861472101,
-                    'float': 1303003706.168663,
-                    'string': 'caaaedabfc',
+                    'email': 'igbehcbab',
+                    'int': 1303003706,
+                    'float': 1686638315.200043,
+                    'string': 'bigibebcib',
                     'enum': enums.ABeautifulEnum.A,
-                    'boolean': False,
+                    'boolean': True,
                 },
             },
         )
@@ -1574,9 +1789,8 @@ class UserActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='upsert',
-            prisma_method='upsertOne',
-            model='User',
+            method='upsertOne{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -1616,7 +1830,7 @@ class UserActions:
         # update all User records
         total = await User.prisma().update_many(
             data={
-                'float': 835903122.76371
+                'optional_float': 429995104.177581
             },
             where={}
         )
@@ -1624,9 +1838,8 @@ class UserActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='update_many',
-            prisma_method='updateMany',
-            model='User',
+            method='updateMany{model}',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1682,7 +1895,7 @@ class UserActions:
         results = await User.prisma().count(
             select={
                 '_all': True,
-                'optional_float': True,
+                'string': True,
             },
         )
         ```
@@ -1749,7 +1962,7 @@ class UserActions:
         results = await User.prisma().count(
             select={
                 '_all': True,
-                'string': True,
+                'optional_string': True,
             },
         )
         ```
@@ -1770,9 +1983,8 @@ class UserActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='count',
-            prisma_method='aggregate',
-            model='User',
+            method='aggregate{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -1817,9 +2029,8 @@ class UserActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='delete_many',
-            prisma_method='deleteMany',
-            model='User',
+            method='deleteMany{model}',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1893,10 +2104,10 @@ class UserActions:
         Example
         -------
         ```py
-        # group User records by optional_string values
+        # group User records by enum values
         # and count how many records are in each group
         results = await User.prisma().group_by(
-            ['optional_string'],
+            ['enum'],
             count=True,
         )
         ```
@@ -1929,9 +2140,8 @@ class UserActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='group_by',
-            prisma_method='groupBy',
-            model='User',
+            method='groupBy{model}',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -1945,13 +2155,13 @@ class UserActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class MActions:
+class MActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.M']) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -1959,7 +2169,7 @@ class MActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.M']:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -1987,7 +2197,7 @@ class MActions:
         ```py
         users = await M.prisma().query_raw(
             'SELECT * FROM M WHERE id = $1',
-            429995104,
+            893145566,
         )
         ```
         """
@@ -1997,7 +2207,7 @@ class MActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.M']:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -2027,7 +2237,7 @@ class MActions:
         ```py
         user = await M.prisma().query_first(
             'SELECT * FROM M WHERE int = $1',
-            1775811865,
+            995405759,
         )
         ```
         """
@@ -2037,7 +2247,7 @@ class MActions:
         self,
         data: types.MCreateInput,
         include: Optional[types.MInclude] = None
-    ) -> 'models.M':
+    ) -> _PrismaModelT:
         """Create a new M record.
 
         Parameters
@@ -2066,9 +2276,9 @@ class MActions:
         m = await M.prisma().create(
             data={
                 # data to create a M record
-                'int': 893145566,
-                'float': 995405759.210273,
-                'string': 'chbfcacbd',
+                'int': 2102736524,
+                'float': 271520213.45663,
+                'string': 'caficfigfb',
                 'enum': enums.ABeautifulEnum.A,
                 'boolean': True,
             },
@@ -2077,9 +2287,8 @@ class MActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='create',
-            prisma_method='createOne',
-            model='M',
+            method='createOne{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -2127,17 +2336,17 @@ class MActions:
             data=[
                 {
                     # data to create a M record
-                    'int': 2058258651,
-                    'float': 1583689592.87844,
-                    'string': 'bghfciaafe',
+                    'int': 878442065,
+                    'float': 1675280054.162757,
+                    'string': 'cafeiaccbc',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': False,
                 },
                 {
                     # data to create a M record
-                    'int': 2054802212,
-                    'float': 60335757.68446,
-                    'string': 'bgcffadich',
+                    'int': 684462146,
+                    'float': 1625503827.52182,
+                    'string': 'bcggadccgf',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -2151,9 +2360,8 @@ class MActions:
 
         resp = await self._client._execute(
             operation='mutation',
-            method='create_many',
-            prisma_method='createMany',
-            model='M',
+            method='createMany{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -2166,7 +2374,7 @@ class MActions:
         self,
         where: types.MWhereUniqueInput,
         include: Optional[types.MInclude] = None
-    ) -> Optional['models.M']:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single M record.
 
         Parameters
@@ -2195,7 +2403,7 @@ class MActions:
         ```py
         m = await M.prisma().delete(
             where={
-                'id': 1266032265,
+                'id': 2053047983,
             },
         )
         ```
@@ -2203,9 +2411,8 @@ class MActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='delete',
-                prisma_method='deleteOne',
-                model='M',
+                method='deleteOne{model}',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -2220,7 +2427,7 @@ class MActions:
         self,
         where: types.MWhereUniqueInput,
         include: Optional[types.MInclude] = None
-    ) -> Optional['models.M']:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique M record.
 
         Parameters
@@ -2249,16 +2456,15 @@ class MActions:
         ```py
         m = await M.prisma().find_unique(
             where={
-                'id': 93253262,
+                'id': 685333180,
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_unique',
-            prisma_method='findUnique',
-            model='M',
+            method='findUnique{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -2269,6 +2475,55 @@ class MActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_unique_or_raise(
+        self,
+        where: types.MWhereUniqueInput,
+        include: Optional[types.MInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique M record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            M filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned M model
+
+        Returns
+        -------
+        prisma.models.M
+            The found M record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        m = await M.prisma().find_unique_or_raise(
+            where={
+                'id': 127474245,
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findUnique{model}OrThrow',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def find_many(
         self,
         take: Optional[int] = None,
@@ -2278,7 +2533,7 @@ class MActions:
         include: Optional[types.MInclude] = None,
         order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
         distinct: Optional[List[types.MScalarFieldKeys]] = None,
-    ) -> List['models.M']:
+    ) -> List[_PrismaModelT]:
         """Find multiple M records.
 
         An empty list is returned if no records could be found.
@@ -2327,9 +2582,8 @@ class MActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_many',
-            prisma_method='findMany',
-            model='M',
+            method='findMany{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -2350,7 +2604,7 @@ class MActions:
         include: Optional[types.MInclude] = None,
         order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
         distinct: Optional[List[types.MScalarFieldKeys]] = None,
-    ) -> Optional['models.M']:
+    ) -> Optional[_PrismaModelT]:
         """Find a single M record.
 
         Parameters
@@ -2394,9 +2648,8 @@ class MActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_first',
-            prisma_method='findFirst',
-            model='M',
+            method='findFirst{model}',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -2411,12 +2664,77 @@ class MActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.MWhereInput] = None,
+        cursor: Optional[types.MWhereUniqueInput] = None,
+        include: Optional[types.MInclude] = None,
+        order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
+        distinct: Optional[List[types.MScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single M record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            M filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned M model
+        order
+            Order the returned M records by any field
+        distinct
+            Filter M records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.M
+            The first M record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second M record ordered by the optional_float field
+        m = await M.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'optional_float': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findFirst{model}OrThrow',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def update(
         self,
         data: types.MUpdateInput,
         where: types.MWhereUniqueInput,
         include: Optional[types.MInclude] = None
-    ) -> Optional['models.M']:
+    ) -> Optional[_PrismaModelT]:
         """Update a single M record.
 
         Parameters
@@ -2445,7 +2763,7 @@ class MActions:
         ```py
         m = await M.prisma().update(
             where={
-                'id': 2053047983,
+                'id': 948921754,
             },
             data={
                 # data to update the M record to
@@ -2456,9 +2774,8 @@ class MActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='update',
-                prisma_method='updateOne',
-                model='M',
+                method='updateOne{model}',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -2475,7 +2792,7 @@ class MActions:
         where: types.MWhereUniqueInput,
         data: types.MUpsertInput,
         include: Optional[types.MInclude] = None,
-    ) -> 'models.M':
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -2504,21 +2821,21 @@ class MActions:
         ```py
         m = await M.prisma().upsert(
             where={
-                'id': 685333180,
+                'id': 1964990155,
             },
             data={
                 'create': {
-                    'id': 685333180,
-                    'int': 2054802212,
-                    'float': 60335757.68446,
-                    'string': 'bgcffadich',
+                    'id': 1964990155,
+                    'int': 684462146,
+                    'float': 1625503827.52182,
+                    'string': 'bcggadccgf',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
                 'update': {
-                    'int': 2054802212,
-                    'float': 60335757.68446,
-                    'string': 'bgcffadich',
+                    'int': 684462146,
+                    'float': 1625503827.52182,
+                    'string': 'bcggadccgf',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -2528,9 +2845,8 @@ class MActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='upsert',
-            prisma_method='upsertOne',
-            model='M',
+            method='upsertOne{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -2570,7 +2886,7 @@ class MActions:
         # update all M records
         total = await M.prisma().update_many(
             data={
-                'optional_float': 127474245.94892
+                'string': 'bcciijbibg'
             },
             where={}
         )
@@ -2578,9 +2894,8 @@ class MActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='update_many',
-            prisma_method='updateMany',
-            model='M',
+            method='updateMany{model}',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -2636,7 +2951,7 @@ class MActions:
         results = await M.prisma().count(
             select={
                 '_all': True,
-                'string': True,
+                'optional_string': True,
             },
         )
         ```
@@ -2703,7 +3018,7 @@ class MActions:
         results = await M.prisma().count(
             select={
                 '_all': True,
-                'optional_string': True,
+                'enum': True,
             },
         )
         ```
@@ -2724,9 +3039,8 @@ class MActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='count',
-            prisma_method='aggregate',
-            model='M',
+            method='aggregate{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -2771,9 +3085,8 @@ class MActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='delete_many',
-            prisma_method='deleteMany',
-            model='M',
+            method='deleteMany{model}',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -2847,10 +3160,10 @@ class MActions:
         Example
         -------
         ```py
-        # group M records by enum values
+        # group M records by optional_enum values
         # and count how many records are in each group
         results = await M.prisma().group_by(
-            ['enum'],
+            ['optional_enum'],
             count=True,
         )
         ```
@@ -2883,9 +3196,8 @@ class MActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='group_by',
-            prisma_method='groupBy',
-            model='M',
+            method='groupBy{model}',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -2899,13 +3211,13 @@ class MActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class NActions:
+class NActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.N']) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -2913,7 +3225,7 @@ class NActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.N']:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -2941,7 +3253,7 @@ class NActions:
         ```py
         users = await N.prisma().query_raw(
             'SELECT * FROM N WHERE id = $1',
-            1964990155,
+            255202753,
         )
         ```
         """
@@ -2951,7 +3263,7 @@ class NActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.N']:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -2981,7 +3293,7 @@ class NActions:
         ```py
         user = await N.prisma().query_first(
             'SELECT * FROM N WHERE int = $1',
-            1228891816,
+            1223573862,
         )
         ```
         """
@@ -2991,7 +3303,7 @@ class NActions:
         self,
         data: types.NCreateInput,
         include: Optional[types.NInclude] = None
-    ) -> 'models.N':
+    ) -> _PrismaModelT:
         """Create a new N record.
 
         Parameters
@@ -3020,10 +3332,10 @@ class NActions:
         n = await N.prisma().create(
             data={
                 # data to create a N record
-                'int': 255202753,
-                'float': 1223573862.54126,
-                'string': 'bageiegghg',
-                'json_': Json({'faidicegb': True}),
+                'int': 541269159,
+                'float': 1064846676.50838,
+                'string': 'bacecgfhbe',
+                'json_': Json({'ihcahiead': True}),
                 'enum': enums.ABeautifulEnum.A,
                 'boolean': True,
             },
@@ -3032,9 +3344,8 @@ class NActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='create',
-            prisma_method='createOne',
-            model='N',
+            method='createOne{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -3082,19 +3393,19 @@ class NActions:
             data=[
                 {
                     # data to create a N record
-                    'int': 872078403,
-                    'float': 1874748096.91689,
-                    'string': 'hgjcghfbi',
-                    'json_': Json({'icadbcehj': True}),
+                    'int': 916896761,
+                    'float': 769267518.82031,
+                    'string': 'jchciaee',
+                    'json_': Json({'deeificjd': True}),
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
                 {
                     # data to create a N record
-                    'int': 344858293,
-                    'float': 1121741130.149589,
-                    'string': 'caifcbgii',
-                    'json_': Json({'igaibbfgj': True}),
+                    'int': 1495896251,
+                    'float': 208521688.86081,
+                    'string': 'bggajdcbbi',
+                    'json_': Json({'fcfhgbjed': True}),
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -3108,9 +3419,8 @@ class NActions:
 
         resp = await self._client._execute(
             operation='mutation',
-            method='create_many',
-            prisma_method='createMany',
-            model='N',
+            method='createMany{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -3123,7 +3433,7 @@ class NActions:
         self,
         where: types.NWhereUniqueInput,
         include: Optional[types.NInclude] = None
-    ) -> Optional['models.N']:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single N record.
 
         Parameters
@@ -3152,7 +3462,7 @@ class NActions:
         ```py
         n = await N.prisma().delete(
             where={
-                'id': 525761943,
+                'id': 493907821,
             },
         )
         ```
@@ -3160,9 +3470,8 @@ class NActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='delete',
-                prisma_method='deleteOne',
-                model='N',
+                method='deleteOne{model}',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -3177,7 +3486,7 @@ class NActions:
         self,
         where: types.NWhereUniqueInput,
         include: Optional[types.NInclude] = None
-    ) -> Optional['models.N']:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique N record.
 
         Parameters
@@ -3206,16 +3515,15 @@ class NActions:
         ```py
         n = await N.prisma().find_unique(
             where={
-                'id': 736209796,
+                'id': 639686562,
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_unique',
-            prisma_method='findUnique',
-            model='N',
+            method='findUnique{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -3226,6 +3534,55 @@ class NActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_unique_or_raise(
+        self,
+        where: types.NWhereUniqueInput,
+        include: Optional[types.NInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique N record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            N filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned N model
+
+        Returns
+        -------
+        prisma.models.N
+            The found N record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        n = await N.prisma().find_unique_or_raise(
+            where={
+                'id': 654007347,
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findUnique{model}OrThrow',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def find_many(
         self,
         take: Optional[int] = None,
@@ -3235,7 +3592,7 @@ class NActions:
         include: Optional[types.NInclude] = None,
         order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
         distinct: Optional[List[types.NScalarFieldKeys]] = None,
-    ) -> List['models.N']:
+    ) -> List[_PrismaModelT]:
         """Find multiple N records.
 
         An empty list is returned if no records could be found.
@@ -3284,9 +3641,8 @@ class NActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_many',
-            prisma_method='findMany',
-            model='N',
+            method='findMany{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -3307,7 +3663,7 @@ class NActions:
         include: Optional[types.NInclude] = None,
         order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
         distinct: Optional[List[types.NScalarFieldKeys]] = None,
-    ) -> Optional['models.N']:
+    ) -> Optional[_PrismaModelT]:
         """Find a single N record.
 
         Parameters
@@ -3351,9 +3707,8 @@ class NActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_first',
-            prisma_method='findFirst',
-            model='N',
+            method='findFirst{model}',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -3368,12 +3723,77 @@ class NActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.NWhereInput] = None,
+        cursor: Optional[types.NWhereUniqueInput] = None,
+        include: Optional[types.NInclude] = None,
+        order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
+        distinct: Optional[List[types.NScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single N record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            N filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned N model
+        order
+            Order the returned N records by any field
+        distinct
+            Filter N records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.N
+            The first N record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second N record ordered by the optional_float field
+        n = await N.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'optional_float': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findFirst{model}OrThrow',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def update(
         self,
         data: types.NUpdateInput,
         where: types.NWhereUniqueInput,
         include: Optional[types.NInclude] = None
-    ) -> Optional['models.N']:
+    ) -> Optional[_PrismaModelT]:
         """Update a single N record.
 
         Parameters
@@ -3402,7 +3822,7 @@ class NActions:
         ```py
         n = await N.prisma().update(
             where={
-                'id': 493907821,
+                'id': 1905261552,
             },
             data={
                 # data to update the N record to
@@ -3413,9 +3833,8 @@ class NActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='update',
-                prisma_method='updateOne',
-                model='N',
+                method='updateOne{model}',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -3432,7 +3851,7 @@ class NActions:
         where: types.NWhereUniqueInput,
         data: types.NUpsertInput,
         include: Optional[types.NInclude] = None,
-    ) -> 'models.N':
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -3461,23 +3880,23 @@ class NActions:
         ```py
         n = await N.prisma().upsert(
             where={
-                'id': 639686562,
+                'id': 78746985,
             },
             data={
                 'create': {
-                    'id': 639686562,
-                    'int': 344858293,
-                    'float': 1121741130.149589,
-                    'string': 'caifcbgii',
-                    'json_': Json({'igaibbfgj': True}),
+                    'id': 78746985,
+                    'int': 1495896251,
+                    'float': 208521688.86081,
+                    'string': 'bggajdcbbi',
+                    'json_': Json({'fcfhgbjed': True}),
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
                 'update': {
-                    'int': 344858293,
-                    'float': 1121741130.149589,
-                    'string': 'caifcbgii',
-                    'json_': Json({'igaibbfgj': True}),
+                    'int': 1495896251,
+                    'float': 208521688.86081,
+                    'string': 'bggajdcbbi',
+                    'json_': Json({'fcfhgbjed': True}),
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -3487,9 +3906,8 @@ class NActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='upsert',
-            prisma_method='upsertOne',
-            model='N',
+            method='upsertOne{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -3529,7 +3947,7 @@ class NActions:
         # update all N records
         total = await N.prisma().update_many(
             data={
-                'optional_float': 654007347.190526
+                'string': 'bdjidcidac'
             },
             where={}
         )
@@ -3537,9 +3955,8 @@ class NActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='update_many',
-            prisma_method='updateMany',
-            model='N',
+            method='updateMany{model}',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -3595,7 +4012,7 @@ class NActions:
         results = await N.prisma().count(
             select={
                 '_all': True,
-                'string': True,
+                'optional_string': True,
             },
         )
         ```
@@ -3662,7 +4079,7 @@ class NActions:
         results = await N.prisma().count(
             select={
                 '_all': True,
-                'optional_string': True,
+                'json_': True,
             },
         )
         ```
@@ -3683,9 +4100,8 @@ class NActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='count',
-            prisma_method='aggregate',
-            model='N',
+            method='aggregate{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -3730,9 +4146,8 @@ class NActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='delete_many',
-            prisma_method='deleteMany',
-            model='N',
+            method='deleteMany{model}',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -3806,10 +4221,10 @@ class NActions:
         Example
         -------
         ```py
-        # group N records by json_ values
+        # group N records by optional_json values
         # and count how many records are in each group
         results = await N.prisma().group_by(
-            ['json_'],
+            ['optional_json'],
             count=True,
         )
         ```
@@ -3842,9 +4257,8 @@ class NActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='group_by',
-            prisma_method='groupBy',
-            model='N',
+            method='groupBy{model}',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -3858,13 +4272,13 @@ class NActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class OneOptionalActions:
+class OneOptionalActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.OneOptional']) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -3872,7 +4286,7 @@ class OneOptionalActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.OneOptional']:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -3900,7 +4314,7 @@ class OneOptionalActions:
         ```py
         users = await OneOptional.prisma().query_raw(
             'SELECT * FROM OneOptional WHERE id = $1',
-            78746985,
+            856000655,
         )
         ```
         """
@@ -3910,7 +4324,7 @@ class OneOptionalActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.OneOptional']:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -3940,7 +4354,7 @@ class OneOptionalActions:
         ```py
         user = await OneOptional.prisma().query_first(
             'SELECT * FROM OneOptional WHERE int = $1',
-            1398328302,
+            1452336924,
         )
         ```
         """
@@ -3950,7 +4364,7 @@ class OneOptionalActions:
         self,
         data: types.OneOptionalCreateInput,
         include: Optional[types.OneOptionalInclude] = None
-    ) -> 'models.OneOptional':
+    ) -> _PrismaModelT:
         """Create a new OneOptional record.
 
         Parameters
@@ -3979,9 +4393,9 @@ class OneOptionalActions:
         oneoptional = await OneOptional.prisma().create(
             data={
                 # data to create a OneOptional record
-                'int': 856000655,
-                'float': 1452336924.157319,
-                'string': 'cabdjadaji',
+                'int': 1573199653,
+                'float': 2013903098.50096,
+                'string': 'biaagcedjc',
                 'enum': enums.ABeautifulEnum.A,
                 'boolean': False,
             },
@@ -3990,9 +4404,8 @@ class OneOptionalActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='create',
-            prisma_method='createOne',
-            model='OneOptional',
+            method='createOne{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -4040,17 +4453,17 @@ class OneOptionalActions:
             data=[
                 {
                     # data to create a OneOptional record
-                    'int': 1800624392,
-                    'float': 2077067425.167211,
-                    'string': 'jcgghhgdj',
+                    'int': 1672112838,
+                    'float': 926677639.144762,
+                    'string': 'bhdiaidiaf',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
                 {
                     # data to create a OneOptional record
-                    'int': 1738083805,
-                    'float': 340946258.60107,
-                    'string': 'cjagadcjg',
+                    'int': 601077795,
+                    'float': 290603296.185582,
+                    'string': 'bgbbaajbic',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': False,
                 },
@@ -4064,9 +4477,8 @@ class OneOptionalActions:
 
         resp = await self._client._execute(
             operation='mutation',
-            method='create_many',
-            prisma_method='createMany',
-            model='OneOptional',
+            method='createMany{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -4079,7 +4491,7 @@ class OneOptionalActions:
         self,
         where: types.OneOptionalWhereUniqueInput,
         include: Optional[types.OneOptionalInclude] = None
-    ) -> Optional['models.OneOptional']:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single OneOptional record.
 
         Parameters
@@ -4108,7 +4520,7 @@ class OneOptionalActions:
         ```py
         oneoptional = await OneOptional.prisma().delete(
             where={
-                'id': 1611009182,
+                'id': 300568396,
             },
         )
         ```
@@ -4116,9 +4528,8 @@ class OneOptionalActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='delete',
-                prisma_method='deleteOne',
-                model='OneOptional',
+                method='deleteOne{model}',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -4133,7 +4544,7 @@ class OneOptionalActions:
         self,
         where: types.OneOptionalWhereUniqueInput,
         include: Optional[types.OneOptionalInclude] = None
-    ) -> Optional['models.OneOptional']:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique OneOptional record.
 
         Parameters
@@ -4162,16 +4573,15 @@ class OneOptionalActions:
         ```py
         oneoptional = await OneOptional.prisma().find_unique(
             where={
-                'id': 446673791,
+                'id': 632626069,
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_unique',
-            prisma_method='findUnique',
-            model='OneOptional',
+            method='findUnique{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -4182,6 +4592,55 @@ class OneOptionalActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_unique_or_raise(
+        self,
+        where: types.OneOptionalWhereUniqueInput,
+        include: Optional[types.OneOptionalInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique OneOptional record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            OneOptional filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned OneOptional model
+
+        Returns
+        -------
+        prisma.models.OneOptional
+            The found OneOptional record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        oneoptional = await OneOptional.prisma().find_unique_or_raise(
+            where={
+                'id': 1724011690,
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findUnique{model}OrThrow',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def find_many(
         self,
         take: Optional[int] = None,
@@ -4191,7 +4650,7 @@ class OneOptionalActions:
         include: Optional[types.OneOptionalInclude] = None,
         order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
         distinct: Optional[List[types.OneOptionalScalarFieldKeys]] = None,
-    ) -> List['models.OneOptional']:
+    ) -> List[_PrismaModelT]:
         """Find multiple OneOptional records.
 
         An empty list is returned if no records could be found.
@@ -4240,9 +4699,8 @@ class OneOptionalActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_many',
-            prisma_method='findMany',
-            model='OneOptional',
+            method='findMany{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -4263,7 +4721,7 @@ class OneOptionalActions:
         include: Optional[types.OneOptionalInclude] = None,
         order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
         distinct: Optional[List[types.OneOptionalScalarFieldKeys]] = None,
-    ) -> Optional['models.OneOptional']:
+    ) -> Optional[_PrismaModelT]:
         """Find a single OneOptional record.
 
         Parameters
@@ -4307,9 +4765,8 @@ class OneOptionalActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_first',
-            prisma_method='findFirst',
-            model='OneOptional',
+            method='findFirst{model}',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -4324,12 +4781,77 @@ class OneOptionalActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.OneOptionalWhereInput] = None,
+        cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
+        include: Optional[types.OneOptionalInclude] = None,
+        order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
+        distinct: Optional[List[types.OneOptionalScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single OneOptional record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            OneOptional filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned OneOptional model
+        order
+            Order the returned OneOptional records by any field
+        distinct
+            Filter OneOptional records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.OneOptional
+            The first OneOptional record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second OneOptional record ordered by the optional_float field
+        oneoptional = await OneOptional.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'optional_float': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findFirst{model}OrThrow',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def update(
         self,
         data: types.OneOptionalUpdateInput,
         where: types.OneOptionalWhereUniqueInput,
         include: Optional[types.OneOptionalInclude] = None
-    ) -> Optional['models.OneOptional']:
+    ) -> Optional[_PrismaModelT]:
         """Update a single OneOptional record.
 
         Parameters
@@ -4358,7 +4880,7 @@ class OneOptionalActions:
         ```py
         oneoptional = await OneOptional.prisma().update(
             where={
-                'id': 300568396,
+                'id': 470157467,
             },
             data={
                 # data to update the OneOptional record to
@@ -4369,9 +4891,8 @@ class OneOptionalActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='update',
-                prisma_method='updateOne',
-                model='OneOptional',
+                method='updateOne{model}',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -4388,7 +4909,7 @@ class OneOptionalActions:
         where: types.OneOptionalWhereUniqueInput,
         data: types.OneOptionalUpsertInput,
         include: Optional[types.OneOptionalInclude] = None,
-    ) -> 'models.OneOptional':
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -4417,21 +4938,21 @@ class OneOptionalActions:
         ```py
         oneoptional = await OneOptional.prisma().upsert(
             where={
-                'id': 632626069,
+                'id': 1209209912,
             },
             data={
                 'create': {
-                    'id': 632626069,
-                    'int': 1738083805,
-                    'float': 340946258.60107,
-                    'string': 'cjagadcjg',
+                    'id': 1209209912,
+                    'int': 601077795,
+                    'float': 290603296.185582,
+                    'string': 'bgbbaajbic',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': False,
                 },
                 'update': {
-                    'int': 1738083805,
-                    'float': 340946258.60107,
-                    'string': 'cjagadcjg',
+                    'int': 601077795,
+                    'float': 290603296.185582,
+                    'string': 'bgbbaajbic',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': False,
                 },
@@ -4441,9 +4962,8 @@ class OneOptionalActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='upsert',
-            prisma_method='upsertOne',
-            model='OneOptional',
+            method='upsertOne{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -4483,7 +5003,7 @@ class OneOptionalActions:
         # update all OneOptional records
         total = await OneOptional.prisma().update_many(
             data={
-                'optional_float': 1724011690.47015
+                'string': 'bfdgheeegf'
             },
             where={}
         )
@@ -4491,9 +5011,8 @@ class OneOptionalActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='update_many',
-            prisma_method='updateMany',
-            model='OneOptional',
+            method='updateMany{model}',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -4549,7 +5068,7 @@ class OneOptionalActions:
         results = await OneOptional.prisma().count(
             select={
                 '_all': True,
-                'string': True,
+                'optional_string': True,
             },
         )
         ```
@@ -4616,7 +5135,7 @@ class OneOptionalActions:
         results = await OneOptional.prisma().count(
             select={
                 '_all': True,
-                'optional_string': True,
+                'enum': True,
             },
         )
         ```
@@ -4637,9 +5156,8 @@ class OneOptionalActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='count',
-            prisma_method='aggregate',
-            model='OneOptional',
+            method='aggregate{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -4684,9 +5202,8 @@ class OneOptionalActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='delete_many',
-            prisma_method='deleteMany',
-            model='OneOptional',
+            method='deleteMany{model}',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -4760,10 +5277,10 @@ class OneOptionalActions:
         Example
         -------
         ```py
-        # group OneOptional records by enum values
+        # group OneOptional records by optional_enum values
         # and count how many records are in each group
         results = await OneOptional.prisma().group_by(
-            ['enum'],
+            ['optional_enum'],
             count=True,
         )
         ```
@@ -4796,9 +5313,8 @@ class OneOptionalActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='group_by',
-            prisma_method='groupBy',
-            model='OneOptional',
+            method='groupBy{model}',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -4812,13 +5328,13 @@ class OneOptionalActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class ManyRequiredActions:
+class ManyRequiredActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.ManyRequired']) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -4826,7 +5342,7 @@ class ManyRequiredActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.ManyRequired']:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -4854,7 +5370,7 @@ class ManyRequiredActions:
         ```py
         users = await ManyRequired.prisma().query_raw(
             'SELECT * FROM ManyRequired WHERE id = $1',
-            1209209912,
+            424218998,
         )
         ```
         """
@@ -4864,7 +5380,7 @@ class ManyRequiredActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.ManyRequired']:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -4894,7 +5410,7 @@ class ManyRequiredActions:
         ```py
         user = await ManyRequired.prisma().query_first(
             'SELECT * FROM ManyRequired WHERE one_optional_id = $1',
-            1536744465,
+            2125632375,
         )
         ```
         """
@@ -4904,7 +5420,7 @@ class ManyRequiredActions:
         self,
         data: types.ManyRequiredCreateInput,
         include: Optional[types.ManyRequiredInclude] = None
-    ) -> 'models.ManyRequired':
+    ) -> _PrismaModelT:
         """Create a new ManyRequired record.
 
         Parameters
@@ -4933,9 +5449,9 @@ class ManyRequiredActions:
         manyrequired = await ManyRequired.prisma().create(
             data={
                 # data to create a ManyRequired record
-                'int': 424218998,
-                'float': 2125632375.53695,
-                'string': 'jcehcdchh',
+                'int': 536951780,
+                'float': 924723277.162193,
+                'string': 'bieiidcabj',
                 'enum': enums.ABeautifulEnum.A,
                 'boolean': True,
             },
@@ -4944,9 +5460,8 @@ class ManyRequiredActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='create',
-            prisma_method='createOne',
-            model='ManyRequired',
+            method='createOne{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -4994,17 +5509,17 @@ class ManyRequiredActions:
             data=[
                 {
                     # data to create a ManyRequired record
-                    'int': 1848832019,
-                    'float': 1921528400.210042,
-                    'string': 'iejbeaaeg',
+                    'int': 2100427849,
+                    'float': 849140046.92815,
+                    'string': 'chdadcaga',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': False,
                 },
                 {
                     # data to create a ManyRequired record
-                    'int': 273032060,
-                    'float': 982848517.51073,
-                    'string': 'cbbheiicgh',
+                    'int': 510737498,
+                    'float': 2117488267.140194,
+                    'string': 'bcjhgahffd',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -5018,9 +5533,8 @@ class ManyRequiredActions:
 
         resp = await self._client._execute(
             operation='mutation',
-            method='create_many',
-            prisma_method='createMany',
-            model='ManyRequired',
+            method='createMany{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -5033,7 +5547,7 @@ class ManyRequiredActions:
         self,
         where: types.ManyRequiredWhereUniqueInput,
         include: Optional[types.ManyRequiredInclude] = None
-    ) -> Optional['models.ManyRequired']:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single ManyRequired record.
 
         Parameters
@@ -5062,7 +5576,7 @@ class ManyRequiredActions:
         ```py
         manyrequired = await ManyRequired.prisma().delete(
             where={
-                'id': 1297607553,
+                'id': 976832615,
             },
         )
         ```
@@ -5070,9 +5584,8 @@ class ManyRequiredActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='delete',
-                prisma_method='deleteOne',
-                model='ManyRequired',
+                method='deleteOne{model}',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -5087,7 +5600,7 @@ class ManyRequiredActions:
         self,
         where: types.ManyRequiredWhereUniqueInput,
         include: Optional[types.ManyRequiredInclude] = None
-    ) -> Optional['models.ManyRequired']:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique ManyRequired record.
 
         Parameters
@@ -5116,16 +5629,15 @@ class ManyRequiredActions:
         ```py
         manyrequired = await ManyRequired.prisma().find_unique(
             where={
-                'id': 519488550,
+                'id': 1696425492,
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_unique',
-            prisma_method='findUnique',
-            model='ManyRequired',
+            method='findUnique{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -5136,6 +5648,55 @@ class ManyRequiredActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_unique_or_raise(
+        self,
+        where: types.ManyRequiredWhereUniqueInput,
+        include: Optional[types.ManyRequiredInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique ManyRequired record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            ManyRequired filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned ManyRequired model
+
+        Returns
+        -------
+        prisma.models.ManyRequired
+            The found ManyRequired record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        manyrequired = await ManyRequired.prisma().find_unique_or_raise(
+            where={
+                'id': 169262781,
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findUnique{model}OrThrow',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def find_many(
         self,
         take: Optional[int] = None,
@@ -5145,7 +5706,7 @@ class ManyRequiredActions:
         include: Optional[types.ManyRequiredInclude] = None,
         order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
         distinct: Optional[List[types.ManyRequiredScalarFieldKeys]] = None,
-    ) -> List['models.ManyRequired']:
+    ) -> List[_PrismaModelT]:
         """Find multiple ManyRequired records.
 
         An empty list is returned if no records could be found.
@@ -5194,9 +5755,8 @@ class ManyRequiredActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_many',
-            prisma_method='findMany',
-            model='ManyRequired',
+            method='findMany{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -5217,7 +5777,7 @@ class ManyRequiredActions:
         include: Optional[types.ManyRequiredInclude] = None,
         order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
         distinct: Optional[List[types.ManyRequiredScalarFieldKeys]] = None,
-    ) -> Optional['models.ManyRequired']:
+    ) -> Optional[_PrismaModelT]:
         """Find a single ManyRequired record.
 
         Parameters
@@ -5261,9 +5821,8 @@ class ManyRequiredActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_first',
-            prisma_method='findFirst',
-            model='ManyRequired',
+            method='findFirst{model}',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -5278,12 +5837,77 @@ class ManyRequiredActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.ManyRequiredWhereInput] = None,
+        cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
+        include: Optional[types.ManyRequiredInclude] = None,
+        order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
+        distinct: Optional[List[types.ManyRequiredScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single ManyRequired record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            ManyRequired filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned ManyRequired model
+        order
+            Order the returned ManyRequired records by any field
+        distinct
+            Filter ManyRequired records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.ManyRequired
+            The first ManyRequired record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second ManyRequired record ordered by the float field
+        manyrequired = await ManyRequired.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'float': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findFirst{model}OrThrow',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def update(
         self,
         data: types.ManyRequiredUpdateInput,
         where: types.ManyRequiredWhereUniqueInput,
         include: Optional[types.ManyRequiredInclude] = None
-    ) -> Optional['models.ManyRequired']:
+    ) -> Optional[_PrismaModelT]:
         """Update a single ManyRequired record.
 
         Parameters
@@ -5312,7 +5936,7 @@ class ManyRequiredActions:
         ```py
         manyrequired = await ManyRequired.prisma().update(
             where={
-                'id': 976832615,
+                'id': 1023081650,
             },
             data={
                 # data to update the ManyRequired record to
@@ -5323,9 +5947,8 @@ class ManyRequiredActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='update',
-                prisma_method='updateOne',
-                model='ManyRequired',
+                method='updateOne{model}',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -5342,7 +5965,7 @@ class ManyRequiredActions:
         where: types.ManyRequiredWhereUniqueInput,
         data: types.ManyRequiredUpsertInput,
         include: Optional[types.ManyRequiredInclude] = None,
-    ) -> 'models.ManyRequired':
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -5371,21 +5994,21 @@ class ManyRequiredActions:
         ```py
         manyrequired = await ManyRequired.prisma().upsert(
             where={
-                'id': 1696425492,
+                'id': 327681027,
             },
             data={
                 'create': {
-                    'id': 1696425492,
-                    'int': 273032060,
-                    'float': 982848517.51073,
-                    'string': 'cbbheiicgh',
+                    'id': 327681027,
+                    'int': 510737498,
+                    'float': 2117488267.140194,
+                    'string': 'bcjhgahffd',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
                 'update': {
-                    'int': 273032060,
-                    'float': 982848517.51073,
-                    'string': 'cbbheiicgh',
+                    'int': 510737498,
+                    'float': 2117488267.140194,
+                    'string': 'bcjhgahffd',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -5395,9 +6018,8 @@ class ManyRequiredActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='upsert',
-            prisma_method='upsertOne',
-            model='ManyRequired',
+            method='upsertOne{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -5437,7 +6059,7 @@ class ManyRequiredActions:
         # update all ManyRequired records
         total = await ManyRequired.prisma().update_many(
             data={
-                'float': 169262781.102308
+                'optional_float': 527748992.202935
             },
             where={}
         )
@@ -5445,9 +6067,8 @@ class ManyRequiredActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='update_many',
-            prisma_method='updateMany',
-            model='ManyRequired',
+            method='updateMany{model}',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -5503,7 +6124,7 @@ class ManyRequiredActions:
         results = await ManyRequired.prisma().count(
             select={
                 '_all': True,
-                'optional_float': True,
+                'string': True,
             },
         )
         ```
@@ -5570,7 +6191,7 @@ class ManyRequiredActions:
         results = await ManyRequired.prisma().count(
             select={
                 '_all': True,
-                'string': True,
+                'optional_string': True,
             },
         )
         ```
@@ -5591,9 +6212,8 @@ class ManyRequiredActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='count',
-            prisma_method='aggregate',
-            model='ManyRequired',
+            method='aggregate{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -5638,9 +6258,8 @@ class ManyRequiredActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='delete_many',
-            prisma_method='deleteMany',
-            model='ManyRequired',
+            method='deleteMany{model}',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -5714,10 +6333,10 @@ class ManyRequiredActions:
         Example
         -------
         ```py
-        # group ManyRequired records by optional_string values
+        # group ManyRequired records by enum values
         # and count how many records are in each group
         results = await ManyRequired.prisma().group_by(
-            ['optional_string'],
+            ['enum'],
             count=True,
         )
         ```
@@ -5750,9 +6369,8 @@ class ManyRequiredActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='group_by',
-            prisma_method='groupBy',
-            model='ManyRequired',
+            method='groupBy{model}',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -5766,13 +6384,13 @@ class ManyRequiredActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class ListsActions:
+class ListsActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.Lists']) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -5780,7 +6398,7 @@ class ListsActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.Lists']:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -5808,7 +6426,7 @@ class ListsActions:
         ```py
         users = await Lists.prisma().query_raw(
             'SELECT * FROM Lists WHERE id = $1',
-            'dchgibach',
+            'bdbifjhbbi',
         )
         ```
         """
@@ -5818,7 +6436,7 @@ class ListsActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.Lists']:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -5848,7 +6466,7 @@ class ListsActions:
         ```py
         user = await Lists.prisma().query_first(
             'SELECT * FROM Lists WHERE strings = $1',
-            ['fchheijjc'],
+            ['cbccbbcdfb'],
         )
         ```
         """
@@ -5858,7 +6476,7 @@ class ListsActions:
         self,
         data: types.ListsCreateInput,
         include: Optional[types.ListsInclude] = None
-    ) -> 'models.Lists':
+    ) -> _PrismaModelT:
         """Create a new Lists record.
 
         Parameters
@@ -5893,9 +6511,8 @@ class ListsActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='create',
-            prisma_method='createOne',
-            model='Lists',
+            method='createOne{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -5957,9 +6574,8 @@ class ListsActions:
 
         resp = await self._client._execute(
             operation='mutation',
-            method='create_many',
-            prisma_method='createMany',
-            model='Lists',
+            method='createMany{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -5972,7 +6588,7 @@ class ListsActions:
         self,
         where: types.ListsWhereUniqueInput,
         include: Optional[types.ListsInclude] = None
-    ) -> Optional['models.Lists']:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single Lists record.
 
         Parameters
@@ -6001,7 +6617,7 @@ class ListsActions:
         ```py
         lists = await Lists.prisma().delete(
             where={
-                'id': 'cacjdfhejh',
+                'id': 'bacejedaca',
             },
         )
         ```
@@ -6009,9 +6625,8 @@ class ListsActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='delete',
-                prisma_method='deleteOne',
-                model='Lists',
+                method='deleteOne{model}',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -6026,7 +6641,7 @@ class ListsActions:
         self,
         where: types.ListsWhereUniqueInput,
         include: Optional[types.ListsInclude] = None
-    ) -> Optional['models.Lists']:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique Lists record.
 
         Parameters
@@ -6055,16 +6670,15 @@ class ListsActions:
         ```py
         lists = await Lists.prisma().find_unique(
             where={
-                'id': 'bdbifjhbbi',
+                'id': 'bhbhdahfaj',
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_unique',
-            prisma_method='findUnique',
-            model='Lists',
+            method='findUnique{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -6075,6 +6689,55 @@ class ListsActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_unique_or_raise(
+        self,
+        where: types.ListsWhereUniqueInput,
+        include: Optional[types.ListsInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique Lists record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            Lists filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned Lists model
+
+        Returns
+        -------
+        prisma.models.Lists
+            The found Lists record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        lists = await Lists.prisma().find_unique_or_raise(
+            where={
+                'id': 'bfjibceaec',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findUnique{model}OrThrow',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def find_many(
         self,
         take: Optional[int] = None,
@@ -6084,7 +6747,7 @@ class ListsActions:
         include: Optional[types.ListsInclude] = None,
         order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
         distinct: Optional[List[types.ListsScalarFieldKeys]] = None,
-    ) -> List['models.Lists']:
+    ) -> List[_PrismaModelT]:
         """Find multiple Lists records.
 
         An empty list is returned if no records could be found.
@@ -6133,9 +6796,8 @@ class ListsActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_many',
-            prisma_method='findMany',
-            model='Lists',
+            method='findMany{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -6156,7 +6818,7 @@ class ListsActions:
         include: Optional[types.ListsInclude] = None,
         order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
         distinct: Optional[List[types.ListsScalarFieldKeys]] = None,
-    ) -> Optional['models.Lists']:
+    ) -> Optional[_PrismaModelT]:
         """Find a single Lists record.
 
         Parameters
@@ -6200,9 +6862,8 @@ class ListsActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_first',
-            prisma_method='findFirst',
-            model='Lists',
+            method='findFirst{model}',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -6217,12 +6878,77 @@ class ListsActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.ListsWhereInput] = None,
+        cursor: Optional[types.ListsWhereUniqueInput] = None,
+        include: Optional[types.ListsInclude] = None,
+        order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
+        distinct: Optional[List[types.ListsScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single Lists record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            Lists filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned Lists model
+        order
+            Order the returned Lists records by any field
+        distinct
+            Filter Lists records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.Lists
+            The first Lists record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second Lists record ordered by the bools field
+        lists = await Lists.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'bools': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findFirst{model}OrThrow',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def update(
         self,
         data: types.ListsUpdateInput,
         where: types.ListsWhereUniqueInput,
         include: Optional[types.ListsInclude] = None
-    ) -> Optional['models.Lists']:
+    ) -> Optional[_PrismaModelT]:
         """Update a single Lists record.
 
         Parameters
@@ -6251,7 +6977,7 @@ class ListsActions:
         ```py
         lists = await Lists.prisma().update(
             where={
-                'id': 'cbccbbcdfb',
+                'id': 'ibhgcdbgd',
             },
             data={
                 # data to update the Lists record to
@@ -6262,9 +6988,8 @@ class ListsActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='update',
-                prisma_method='updateOne',
-                model='Lists',
+                method='updateOne{model}',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -6281,7 +7006,7 @@ class ListsActions:
         where: types.ListsWhereUniqueInput,
         data: types.ListsUpsertInput,
         include: Optional[types.ListsInclude] = None,
-    ) -> 'models.Lists':
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -6310,11 +7035,11 @@ class ListsActions:
         ```py
         lists = await Lists.prisma().upsert(
             where={
-                'id': 'bacejedaca',
+                'id': 'badaffhddg',
             },
             data={
                 'create': {
-                    'id': 'bacejedaca',
+                    'id': 'badaffhddg',
                 },
                 'update': {
                 },
@@ -6324,9 +7049,8 @@ class ListsActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='upsert',
-            prisma_method='upsertOne',
-            model='Lists',
+            method='upsertOne{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -6366,7 +7090,7 @@ class ListsActions:
         # update all Lists records
         total = await Lists.prisma().update_many(
             data={
-                'bools': [False]
+                'ints': [1131525873]
             },
             where={}
         )
@@ -6374,9 +7098,8 @@ class ListsActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='update_many',
-            prisma_method='updateMany',
-            model='Lists',
+            method='updateMany{model}',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -6432,7 +7155,7 @@ class ListsActions:
         results = await Lists.prisma().count(
             select={
                 '_all': True,
-                'ints': True,
+                'floats': True,
             },
         )
         ```
@@ -6499,7 +7222,7 @@ class ListsActions:
         results = await Lists.prisma().count(
             select={
                 '_all': True,
-                'floats': True,
+                'bigints': True,
             },
         )
         ```
@@ -6520,9 +7243,8 @@ class ListsActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='count',
-            prisma_method='aggregate',
-            model='Lists',
+            method='aggregate{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -6567,9 +7289,8 @@ class ListsActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='delete_many',
-            prisma_method='deleteMany',
-            model='Lists',
+            method='deleteMany{model}',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -6643,10 +7364,10 @@ class ListsActions:
         Example
         -------
         ```py
-        # group Lists records by bigints values
+        # group Lists records by json_objects values
         # and count how many records are in each group
         results = await Lists.prisma().group_by(
-            ['bigints'],
+            ['json_objects'],
             count=True,
         )
         ```
@@ -6679,9 +7400,8 @@ class ListsActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='group_by',
-            prisma_method='groupBy',
-            model='Lists',
+            method='groupBy{model}',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -6695,13 +7415,13 @@ class ListsActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class AActions:
+class AActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.A']) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -6709,7 +7429,7 @@ class AActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.A']:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -6737,7 +7457,7 @@ class AActions:
         ```py
         users = await A.prisma().query_raw(
             'SELECT * FROM A WHERE email = $1',
-            'bfjibceaec',
+            'cbagggbji',
         )
         ```
         """
@@ -6747,7 +7467,7 @@ class AActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.A']:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -6777,7 +7497,7 @@ class AActions:
         ```py
         user = await A.prisma().query_first(
             'SELECT * FROM A WHERE name = $1',
-            'ibhgcdbgd',
+            'bchgafhjed',
         )
         ```
         """
@@ -6787,7 +7507,7 @@ class AActions:
         self,
         data: types.ACreateInput,
         include: Optional[types.AInclude] = None
-    ) -> 'models.A':
+    ) -> _PrismaModelT:
         """Create a new A record.
 
         Parameters
@@ -6816,19 +7536,18 @@ class AActions:
         a = await A.prisma().create(
             data={
                 # data to create a A record
-                'email': 'badaffhddg',
-                'int': 1131525873,
-                'sInt': 210666198,
-                'bInt': 15312695316,
+                'email': 'heffgjdei',
+                'int': 307876141,
+                'sInt': 1674049122,
+                'bInt': 18322255716,
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='create',
-            prisma_method='createOne',
-            model='A',
+            method='createOne{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -6876,17 +7595,17 @@ class AActions:
             data=[
                 {
                     # data to create a A record
-                    'email': 'heffgjdei',
-                    'int': 307876141,
-                    'sInt': 1674049122,
-                    'bInt': 18322255716,
-                },
-                {
-                    # data to create a A record
                     'email': 'jfiahhbae',
                     'int': 1513050921,
                     'sInt': 204674734,
                     'bInt': 24811819956,
+                },
+                {
+                    # data to create a A record
+                    'email': 'bbidjbbjaa',
+                    'int': 1589704933,
+                    'sInt': 1243475898,
+                    'bInt': 16437947652,
                 },
             ],
             skip_duplicates=True,
@@ -6898,9 +7617,8 @@ class AActions:
 
         resp = await self._client._execute(
             operation='mutation',
-            method='create_many',
-            prisma_method='createMany',
-            model='A',
+            method='createMany{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -6913,7 +7631,7 @@ class AActions:
         self,
         where: types.AWhereUniqueInput,
         include: Optional[types.AInclude] = None
-    ) -> Optional['models.A']:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single A record.
 
         Parameters
@@ -6942,7 +7660,7 @@ class AActions:
         ```py
         a = await A.prisma().delete(
             where={
-                'email': 'bbidjbbjaa',
+                'email': 'bghifjdeia',
             },
         )
         ```
@@ -6950,9 +7668,8 @@ class AActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='delete',
-                prisma_method='deleteOne',
-                model='A',
+                method='deleteOne{model}',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -6967,7 +7684,7 @@ class AActions:
         self,
         where: types.AWhereUniqueInput,
         include: Optional[types.AInclude] = None
-    ) -> Optional['models.A']:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique A record.
 
         Parameters
@@ -6996,16 +7713,15 @@ class AActions:
         ```py
         a = await A.prisma().find_unique(
             where={
-                'email': 'bfijhaejdd',
+                'email': 'eadfcbbcb',
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_unique',
-            prisma_method='findUnique',
-            model='A',
+            method='findUnique{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -7016,6 +7732,55 @@ class AActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_unique_or_raise(
+        self,
+        where: types.AWhereUniqueInput,
+        include: Optional[types.AInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique A record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            A filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned A model
+
+        Returns
+        -------
+        prisma.models.A
+            The found A record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        a = await A.prisma().find_unique_or_raise(
+            where={
+                'email': 'geihgahba',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findUnique{model}OrThrow',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def find_many(
         self,
         take: Optional[int] = None,
@@ -7025,7 +7790,7 @@ class AActions:
         include: Optional[types.AInclude] = None,
         order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
         distinct: Optional[List[types.AScalarFieldKeys]] = None,
-    ) -> List['models.A']:
+    ) -> List[_PrismaModelT]:
         """Find multiple A records.
 
         An empty list is returned if no records could be found.
@@ -7074,9 +7839,8 @@ class AActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_many',
-            prisma_method='findMany',
-            model='A',
+            method='findMany{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -7097,7 +7861,7 @@ class AActions:
         include: Optional[types.AInclude] = None,
         order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
         distinct: Optional[List[types.AScalarFieldKeys]] = None,
-    ) -> Optional['models.A']:
+    ) -> Optional[_PrismaModelT]:
         """Find a single A record.
 
         Parameters
@@ -7141,9 +7905,8 @@ class AActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_first',
-            prisma_method='findFirst',
-            model='A',
+            method='findFirst{model}',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -7158,12 +7921,77 @@ class AActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.AWhereInput] = None,
+        cursor: Optional[types.AWhereUniqueInput] = None,
+        include: Optional[types.AInclude] = None,
+        order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
+        distinct: Optional[List[types.AScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single A record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            A filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned A model
+        order
+            Order the returned A records by any field
+        distinct
+            Filter A records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.A
+            The first A record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second A record ordered by the inc_int field
+        a = await A.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'inc_int': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findFirst{model}OrThrow',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def update(
         self,
         data: types.AUpdateInput,
         where: types.AWhereUniqueInput,
         include: Optional[types.AInclude] = None
-    ) -> Optional['models.A']:
+    ) -> Optional[_PrismaModelT]:
         """Update a single A record.
 
         Parameters
@@ -7192,7 +8020,7 @@ class AActions:
         ```py
         a = await A.prisma().update(
             where={
-                'email': 'bcedehfiji',
+                'email': 'gahdcdhbj',
             },
             data={
                 # data to update the A record to
@@ -7203,9 +8031,8 @@ class AActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='update',
-                prisma_method='updateOne',
-                model='A',
+                method='updateOne{model}',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -7222,7 +8049,7 @@ class AActions:
         where: types.AWhereUniqueInput,
         data: types.AUpsertInput,
         include: Optional[types.AInclude] = None,
-    ) -> 'models.A':
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -7251,19 +8078,19 @@ class AActions:
         ```py
         a = await A.prisma().upsert(
             where={
-                'email': 'bdgjicijhb',
+                'email': 'begiijahea',
             },
             data={
                 'create': {
-                    'email': 'bdgjicijhb',
-                    'int': 1513050921,
-                    'sInt': 204674734,
-                    'bInt': 24811819956,
+                    'email': 'begiijahea',
+                    'int': 1589704933,
+                    'sInt': 1243475898,
+                    'bInt': 16437947652,
                 },
                 'update': {
-                    'int': 1513050921,
-                    'sInt': 204674734,
-                    'bInt': 24811819956,
+                    'int': 1589704933,
+                    'sInt': 1243475898,
+                    'bInt': 16437947652,
                 },
             },
         )
@@ -7271,9 +8098,8 @@ class AActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='upsert',
-            prisma_method='upsertOne',
-            model='A',
+            method='upsertOne{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -7313,7 +8139,7 @@ class AActions:
         # update all A records
         total = await A.prisma().update_many(
             data={
-                'inc_int': 1678593480
+                'inc_sInt': 629039005
             },
             where={}
         )
@@ -7321,9 +8147,8 @@ class AActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='update_many',
-            prisma_method='updateMany',
-            model='A',
+            method='updateMany{model}',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -7379,7 +8204,7 @@ class AActions:
         results = await A.prisma().count(
             select={
                 '_all': True,
-                'inc_sInt': True,
+                'bInt': True,
             },
         )
         ```
@@ -7446,7 +8271,7 @@ class AActions:
         results = await A.prisma().count(
             select={
                 '_all': True,
-                'bInt': True,
+                'inc_bInt': True,
             },
         )
         ```
@@ -7467,9 +8292,8 @@ class AActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='count',
-            prisma_method='aggregate',
-            model='A',
+            method='aggregate{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -7514,9 +8338,8 @@ class AActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='delete_many',
-            prisma_method='deleteMany',
-            model='A',
+            method='deleteMany{model}',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -7590,10 +8413,10 @@ class AActions:
         Example
         -------
         ```py
-        # group A records by inc_bInt values
+        # group A records by enum values
         # and count how many records are in each group
         results = await A.prisma().group_by(
-            ['inc_bInt'],
+            ['enum'],
             count=True,
         )
         ```
@@ -7626,9 +8449,8 @@ class AActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='group_by',
-            prisma_method='groupBy',
-            model='A',
+            method='groupBy{model}',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -7642,13 +8464,13 @@ class AActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class BActions:
+class BActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.B']) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -7656,7 +8478,7 @@ class BActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.B']:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -7684,7 +8506,7 @@ class BActions:
         ```py
         users = await B.prisma().query_raw(
             'SELECT * FROM B WHERE id = $1',
-            'eadfcbbcb',
+            'bcbebgiaic',
         )
         ```
         """
@@ -7694,7 +8516,7 @@ class BActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.B']:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -7724,7 +8546,7 @@ class BActions:
         ```py
         user = await B.prisma().query_first(
             'SELECT * FROM B WHERE float = $1',
-            648760710.60732,
+            898613219.65837,
         )
         ```
         """
@@ -7734,7 +8556,7 @@ class BActions:
         self,
         data: types.BCreateInput,
         include: Optional[types.BInclude] = None
-    ) -> 'models.B':
+    ) -> _PrismaModelT:
         """Create a new B record.
 
         Parameters
@@ -7763,19 +8585,18 @@ class BActions:
         b = await B.prisma().create(
             data={
                 # data to create a B record
-                'float': 1468890740.62903,
-                'd_float': 1214168082.89861,
-                'decFloat': Decimal('658378208.95462'),
-                'numFloat': Decimal('1214809950.104782'),
+                'float': 954620057.121480,
+                'd_float': 1047820095.130273,
+                'decFloat': Decimal('893052245.28008'),
+                'numFloat': Decimal('549668955.7679'),
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='create',
-            prisma_method='createOne',
-            model='B',
+            method='createOne{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -7823,17 +8644,17 @@ class BActions:
             data=[
                 {
                     # data to create a B record
-                    'float': 1302734860.89305,
-                    'd_float': 280083306.54966,
-                    'decFloat': Decimal('76790008.209829'),
-                    'numFloat': Decimal('245900342.81186'),
+                    'float': 2098299345.24590,
+                    'd_float': 811863863.138880,
+                    'decFloat': Decimal('752577037.118766'),
+                    'numFloat': Decimal('769681363.121429'),
                 },
                 {
                     # data to create a B record
-                    'float': 1388801188.75257,
-                    'd_float': 1187663298.76968,
-                    'decFloat': Decimal('1214295824.102141'),
-                    'numFloat': Decimal('351503374.132118'),
+                    'float': 1021417993.35150,
+                    'd_float': 1321184815.36973,
+                    'decFloat': Decimal('1191235013.62756'),
+                    'numFloat': Decimal('1872952907.179328'),
                 },
             ],
             skip_duplicates=True,
@@ -7845,9 +8666,8 @@ class BActions:
 
         resp = await self._client._execute(
             operation='mutation',
-            method='create_many',
-            prisma_method='createMany',
-            model='B',
+            method='createMany{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -7860,7 +8680,7 @@ class BActions:
         self,
         where: types.BWhereUniqueInput,
         include: Optional[types.BInclude] = None
-    ) -> Optional['models.B']:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single B record.
 
         Parameters
@@ -7889,7 +8709,7 @@ class BActions:
         ```py
         b = await B.prisma().delete(
             where={
-                'id': 'dgjhdcggi',
+                'id': 'bibedjhcej',
             },
         )
         ```
@@ -7897,9 +8717,8 @@ class BActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='delete',
-                prisma_method='deleteOne',
-                model='B',
+                method='deleteOne{model}',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -7914,7 +8733,7 @@ class BActions:
         self,
         where: types.BWhereUniqueInput,
         include: Optional[types.BInclude] = None
-    ) -> Optional['models.B']:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique B record.
 
         Parameters
@@ -7943,16 +8762,15 @@ class BActions:
         ```py
         b = await B.prisma().find_unique(
             where={
-                'id': 'bbjbcdfabd',
+                'id': 'bjcdajabfa',
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_unique',
-            prisma_method='findUnique',
-            model='B',
+            method='findUnique{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -7963,6 +8781,55 @@ class BActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_unique_or_raise(
+        self,
+        where: types.BWhereUniqueInput,
+        include: Optional[types.BInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique B record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            B filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned B model
+
+        Returns
+        -------
+        prisma.models.B
+            The found B record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        b = await B.prisma().find_unique_or_raise(
+            where={
+                'id': 'bchhceeeff',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findUnique{model}OrThrow',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def find_many(
         self,
         take: Optional[int] = None,
@@ -7972,7 +8839,7 @@ class BActions:
         include: Optional[types.BInclude] = None,
         order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
         distinct: Optional[List[types.BScalarFieldKeys]] = None,
-    ) -> List['models.B']:
+    ) -> List[_PrismaModelT]:
         """Find multiple B records.
 
         An empty list is returned if no records could be found.
@@ -8021,9 +8888,8 @@ class BActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_many',
-            prisma_method='findMany',
-            model='B',
+            method='findMany{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -8044,7 +8910,7 @@ class BActions:
         include: Optional[types.BInclude] = None,
         order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
         distinct: Optional[List[types.BScalarFieldKeys]] = None,
-    ) -> Optional['models.B']:
+    ) -> Optional[_PrismaModelT]:
         """Find a single B record.
 
         Parameters
@@ -8088,9 +8954,8 @@ class BActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_first',
-            prisma_method='findFirst',
-            model='B',
+            method='findFirst{model}',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -8105,12 +8970,77 @@ class BActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.BWhereInput] = None,
+        cursor: Optional[types.BWhereUniqueInput] = None,
+        include: Optional[types.BInclude] = None,
+        order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
+        distinct: Optional[List[types.BScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single B record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            B filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned B model
+        order
+            Order the returned B records by any field
+        distinct
+            Filter B records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.B
+            The first B record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second B record ordered by the numFloat field
+        b = await B.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'numFloat': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findFirst{model}OrThrow',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def update(
         self,
         data: types.BUpdateInput,
         where: types.BWhereUniqueInput,
         include: Optional[types.BInclude] = None
-    ) -> Optional['models.B']:
+    ) -> Optional[_PrismaModelT]:
         """Update a single B record.
 
         Parameters
@@ -8139,7 +9069,7 @@ class BActions:
         ```py
         b = await B.prisma().update(
             where={
-                'id': 'gchfgbcec',
+                'id': 'bbgaifhdaa',
             },
             data={
                 # data to update the B record to
@@ -8150,9 +9080,8 @@ class BActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='update',
-                prisma_method='updateOne',
-                model='B',
+                method='updateOne{model}',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -8169,7 +9098,7 @@ class BActions:
         where: types.BWhereUniqueInput,
         data: types.BUpsertInput,
         include: Optional[types.BInclude] = None,
-    ) -> 'models.B':
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -8198,21 +9127,21 @@ class BActions:
         ```py
         b = await B.prisma().upsert(
             where={
-                'id': 'bihcjfcjah',
+                'id': 'dgbcdaegb',
             },
             data={
                 'create': {
-                    'id': 'bihcjfcjah',
-                    'float': 1388801188.75257,
-                    'd_float': 1187663298.76968,
-                    'decFloat': Decimal('1214295824.102141'),
-                    'numFloat': Decimal('351503374.132118'),
+                    'id': 'dgbcdaegb',
+                    'float': 1021417993.35150,
+                    'd_float': 1321184815.36973,
+                    'decFloat': Decimal('1191235013.62756'),
+                    'numFloat': Decimal('1872952907.179328'),
                 },
                 'update': {
-                    'float': 1388801188.75257,
-                    'd_float': 1187663298.76968,
-                    'decFloat': Decimal('1214295824.102141'),
-                    'numFloat': Decimal('351503374.132118'),
+                    'float': 1021417993.35150,
+                    'd_float': 1321184815.36973,
+                    'decFloat': Decimal('1191235013.62756'),
+                    'numFloat': Decimal('1872952907.179328'),
                 },
             },
         )
@@ -8220,9 +9149,8 @@ class BActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='upsert',
-            prisma_method='upsertOne',
-            model='B',
+            method='upsertOne{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -8262,7 +9190,7 @@ class BActions:
         # update all B records
         total = await B.prisma().update_many(
             data={
-                'numFloat': Decimal('1793282088.181439')
+                'id': 'beagfbbjig'
             },
             where={}
         )
@@ -8270,9 +9198,8 @@ class BActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='update_many',
-            prisma_method='updateMany',
-            model='B',
+            method='updateMany{model}',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -8328,7 +9255,7 @@ class BActions:
         results = await B.prisma().count(
             select={
                 '_all': True,
-                'id': True,
+                'float': True,
             },
         )
         ```
@@ -8395,7 +9322,7 @@ class BActions:
         results = await B.prisma().count(
             select={
                 '_all': True,
-                'float': True,
+                'd_float': True,
             },
         )
         ```
@@ -8416,9 +9343,8 @@ class BActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='count',
-            prisma_method='aggregate',
-            model='B',
+            method='aggregate{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -8463,9 +9389,8 @@ class BActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='delete_many',
-            prisma_method='deleteMany',
-            model='B',
+            method='deleteMany{model}',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -8539,10 +9464,10 @@ class BActions:
         Example
         -------
         ```py
-        # group B records by d_float values
+        # group B records by decFloat values
         # and count how many records are in each group
         results = await B.prisma().group_by(
-            ['d_float'],
+            ['decFloat'],
             count=True,
         )
         ```
@@ -8575,9 +9500,8 @@ class BActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='group_by',
-            prisma_method='groupBy',
-            model='B',
+            method='groupBy{model}',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -8591,13 +9515,13 @@ class BActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class CActions:
+class CActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.C']) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -8605,7 +9529,7 @@ class CActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.C']:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -8633,7 +9557,7 @@ class CActions:
         ```py
         users = await C.prisma().query_raw(
             'SELECT * FROM C WHERE char = $1',
-            'bjcdajabfa',
+            'beicihhijb',
         )
         ```
         """
@@ -8643,7 +9567,7 @@ class CActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.C']:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -8673,7 +9597,7 @@ class CActions:
         ```py
         user = await C.prisma().query_first(
             'SELECT * FROM C WHERE v_char = $1',
-            'bchhceeeff',
+            'fgggcdcjg',
         )
         ```
         """
@@ -8683,7 +9607,7 @@ class CActions:
         self,
         data: types.CCreateInput,
         include: Optional[types.CInclude] = None
-    ) -> 'models.C':
+    ) -> _PrismaModelT:
         """Create a new C record.
 
         Parameters
@@ -8712,21 +9636,20 @@ class CActions:
         c = await C.prisma().create(
             data={
                 # data to create a C record
-                'char': 'bbgaifhdaa',
-                'v_char': 'dgbcdaegb',
-                'text': 'beagfbbjig',
-                'bit': 'beicihhijb',
-                'v_bit': 'fgggcdcjg',
-                'uuid': 'ccjbbjigf',
+                'char': 'ccjbbjigf',
+                'v_char': 'bhfaabbaha',
+                'text': 'ebajedhhf',
+                'bit': 'jajacedge',
+                'v_bit': 'hffgbabgf',
+                'uuid': 'biacbiieja',
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='create',
-            prisma_method='createOne',
-            model='C',
+            method='createOne{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -8774,21 +9697,21 @@ class CActions:
             data=[
                 {
                     # data to create a C record
-                    'char': 'bhfaabbaha',
-                    'v_char': 'ebajedhhf',
-                    'text': 'jajacedge',
-                    'bit': 'hffgbabgf',
-                    'v_bit': 'biacbiieja',
-                    'uuid': 'cjejbgbff',
+                    'char': 'cjejbgbff',
+                    'v_char': 'fgeahddae',
+                    'text': 'diageigcf',
+                    'bit': 'badagbgeha',
+                    'v_bit': 'ibgebbjch',
+                    'uuid': 'baieajjiee',
                 },
                 {
                     # data to create a C record
-                    'char': 'fgeahddae',
-                    'v_char': 'diageigcf',
-                    'text': 'badagbgeha',
-                    'bit': 'ibgebbjch',
-                    'v_bit': 'baieajjiee',
-                    'uuid': 'bahjhaccfd',
+                    'char': 'bahjhaccfd',
+                    'v_char': 'hffhfabhi',
+                    'text': 'bbcigiadhb',
+                    'bit': 'cfjagbbae',
+                    'v_bit': 'bbbfhdidef',
+                    'uuid': 'bdadhibhec',
                 },
             ],
             skip_duplicates=True,
@@ -8800,9 +9723,8 @@ class CActions:
 
         resp = await self._client._execute(
             operation='mutation',
-            method='create_many',
-            prisma_method='createMany',
-            model='C',
+            method='createMany{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -8815,7 +9737,7 @@ class CActions:
         self,
         where: types.CWhereUniqueInput,
         include: Optional[types.CInclude] = None
-    ) -> Optional['models.C']:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single C record.
 
         Parameters
@@ -8853,9 +9775,8 @@ class CActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='delete',
-                prisma_method='deleteOne',
-                model='C',
+                method='deleteOne{model}',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -8870,7 +9791,7 @@ class CActions:
         self,
         where: types.CWhereUniqueInput,
         include: Optional[types.CInclude] = None
-    ) -> Optional['models.C']:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique C record.
 
         Parameters
@@ -8907,9 +9828,8 @@ class CActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_unique',
-            prisma_method='findUnique',
-            model='C',
+            method='findUnique{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -8920,6 +9840,56 @@ class CActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_unique_or_raise(
+        self,
+        where: types.CWhereUniqueInput,
+        include: Optional[types.CInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique C record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            C filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned C model
+
+        Returns
+        -------
+        prisma.models.C
+            The found C record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        c = await C.prisma().find_unique_or_raise(
+            where={
+                # C where unique filter
+
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findUnique{model}OrThrow',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def find_many(
         self,
         take: Optional[int] = None,
@@ -8929,7 +9899,7 @@ class CActions:
         include: Optional[types.CInclude] = None,
         order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
         distinct: Optional[List[types.CScalarFieldKeys]] = None,
-    ) -> List['models.C']:
+    ) -> List[_PrismaModelT]:
         """Find multiple C records.
 
         An empty list is returned if no records could be found.
@@ -8978,9 +9948,8 @@ class CActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_many',
-            prisma_method='findMany',
-            model='C',
+            method='findMany{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -9001,7 +9970,7 @@ class CActions:
         include: Optional[types.CInclude] = None,
         order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
         distinct: Optional[List[types.CScalarFieldKeys]] = None,
-    ) -> Optional['models.C']:
+    ) -> Optional[_PrismaModelT]:
         """Find a single C record.
 
         Parameters
@@ -9045,9 +10014,8 @@ class CActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_first',
-            prisma_method='findFirst',
-            model='C',
+            method='findFirst{model}',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -9062,12 +10030,77 @@ class CActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.CWhereInput] = None,
+        cursor: Optional[types.CWhereUniqueInput] = None,
+        include: Optional[types.CInclude] = None,
+        order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
+        distinct: Optional[List[types.CScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single C record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            C filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned C model
+        order
+            Order the returned C records by any field
+        distinct
+            Filter C records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.C
+            The first C record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second C record ordered by the v_bit field
+        c = await C.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'v_bit': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findFirst{model}OrThrow',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def update(
         self,
         data: types.CUpdateInput,
         where: types.CWhereUniqueInput,
         include: Optional[types.CInclude] = None
-    ) -> Optional['models.C']:
+    ) -> Optional[_PrismaModelT]:
         """Update a single C record.
 
         Parameters
@@ -9108,9 +10141,8 @@ class CActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='update',
-                prisma_method='updateOne',
-                model='C',
+                method='updateOne{model}',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -9127,7 +10159,7 @@ class CActions:
         where: types.CWhereUniqueInput,
         data: types.CUpsertInput,
         include: Optional[types.CInclude] = None,
-    ) -> 'models.C':
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -9171,9 +10203,8 @@ class CActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='upsert',
-            prisma_method='upsertOne',
-            model='C',
+            method='upsertOne{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -9213,7 +10244,7 @@ class CActions:
         # update all C records
         total = await C.prisma().update_many(
             data={
-                'v_bit': 'hffhfabhi'
+                'uuid': 'bfhdjaiejf'
             },
             where={}
         )
@@ -9221,9 +10252,8 @@ class CActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='update_many',
-            prisma_method='updateMany',
-            model='C',
+            method='updateMany{model}',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -9279,7 +10309,7 @@ class CActions:
         results = await C.prisma().count(
             select={
                 '_all': True,
-                'uuid': True,
+                'char': True,
             },
         )
         ```
@@ -9346,7 +10376,7 @@ class CActions:
         results = await C.prisma().count(
             select={
                 '_all': True,
-                'char': True,
+                'v_char': True,
             },
         )
         ```
@@ -9367,9 +10397,8 @@ class CActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='count',
-            prisma_method='aggregate',
-            model='C',
+            method='aggregate{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -9414,9 +10443,8 @@ class CActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='delete_many',
-            prisma_method='deleteMany',
-            model='C',
+            method='deleteMany{model}',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -9490,10 +10518,10 @@ class CActions:
         Example
         -------
         ```py
-        # group C records by v_char values
+        # group C records by text values
         # and count how many records are in each group
         results = await C.prisma().group_by(
-            ['v_char'],
+            ['text'],
             count=True,
         )
         ```
@@ -9526,9 +10554,8 @@ class CActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='group_by',
-            prisma_method='groupBy',
-            model='C',
+            method='groupBy{model}',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -9542,13 +10569,13 @@ class CActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class DActions:
+class DActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.D']) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -9556,7 +10583,7 @@ class DActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.D']:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -9584,7 +10611,7 @@ class DActions:
         ```py
         users = await D.prisma().query_raw(
             'SELECT * FROM D WHERE id = $1',
-            'bbcigiadhb',
+            'bbjfijjadg',
         )
         ```
         """
@@ -9594,7 +10621,7 @@ class DActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.D']:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -9624,7 +10651,7 @@ class DActions:
         ```py
         user = await D.prisma().query_first(
             'SELECT * FROM D WHERE bool = $1',
-            True,
+            False,
         )
         ```
         """
@@ -9634,7 +10661,7 @@ class DActions:
         self,
         data: types.DCreateInput,
         include: Optional[types.DInclude] = None
-    ) -> 'models.D':
+    ) -> _PrismaModelT:
         """Create a new D record.
 
         Parameters
@@ -9663,20 +10690,19 @@ class DActions:
         d = await D.prisma().create(
             data={
                 # data to create a D record
-                'bool': False,
-                'xml': 'bdadhibhec',
-                'json_': Json({'bfhdjaiejf': True}),
-                'jsonb': Json({'bbjfijjadg': True}),
-                'binary': Base64.encode(b'hdjacbehh'),
+                'bool': True,
+                'xml': 'bcgjbdgjdj',
+                'json_': Json({'fhdbhifae': True}),
+                'jsonb': Json({'beeacgfcej': True}),
+                'binary': Base64.encode(b'bbifhdiicc'),
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='create',
-            prisma_method='createOne',
-            model='D',
+            method='createOne{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -9724,19 +10750,19 @@ class DActions:
             data=[
                 {
                     # data to create a D record
-                    'bool': True,
-                    'xml': 'bcgjbdgjdj',
-                    'json_': Json({'fhdbhifae': True}),
-                    'jsonb': Json({'beeacgfcej': True}),
-                    'binary': Base64.encode(b'bbifhdiicc'),
-                },
-                {
-                    # data to create a D record
                     'bool': False,
                     'xml': 'bjagdgabbg',
                     'json_': Json({'bjbbcffdij': True}),
                     'jsonb': Json({'begcgchdi': True}),
                     'binary': Base64.encode(b'bhbjceagbb'),
+                },
+                {
+                    # data to create a D record
+                    'bool': True,
+                    'xml': 'bdidcfdfjd',
+                    'json_': Json({'dfeggejja': True}),
+                    'jsonb': Json({'gehbgghbj': True}),
+                    'binary': Base64.encode(b'dfhaijeie'),
                 },
             ],
             skip_duplicates=True,
@@ -9748,9 +10774,8 @@ class DActions:
 
         resp = await self._client._execute(
             operation='mutation',
-            method='create_many',
-            prisma_method='createMany',
-            model='D',
+            method='createMany{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -9763,7 +10788,7 @@ class DActions:
         self,
         where: types.DWhereUniqueInput,
         include: Optional[types.DInclude] = None
-    ) -> Optional['models.D']:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single D record.
 
         Parameters
@@ -9792,7 +10817,7 @@ class DActions:
         ```py
         d = await D.prisma().delete(
             where={
-                'id': 'bjeifffjdg',
+                'id': 'gbcdjgicb',
             },
         )
         ```
@@ -9800,9 +10825,8 @@ class DActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='delete',
-                prisma_method='deleteOne',
-                model='D',
+                method='deleteOne{model}',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -9817,7 +10841,7 @@ class DActions:
         self,
         where: types.DWhereUniqueInput,
         include: Optional[types.DInclude] = None
-    ) -> Optional['models.D']:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique D record.
 
         Parameters
@@ -9846,16 +10870,15 @@ class DActions:
         ```py
         d = await D.prisma().find_unique(
             where={
-                'id': 'bdidcfdfjd',
+                'id': 'biaibdagac',
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_unique',
-            prisma_method='findUnique',
-            model='D',
+            method='findUnique{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -9866,6 +10889,55 @@ class DActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_unique_or_raise(
+        self,
+        where: types.DWhereUniqueInput,
+        include: Optional[types.DInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique D record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            D filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned D model
+
+        Returns
+        -------
+        prisma.models.D
+            The found D record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        d = await D.prisma().find_unique_or_raise(
+            where={
+                'id': 'bbfbheibcd',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findUnique{model}OrThrow',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def find_many(
         self,
         take: Optional[int] = None,
@@ -9875,7 +10947,7 @@ class DActions:
         include: Optional[types.DInclude] = None,
         order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
         distinct: Optional[List[types.DScalarFieldKeys]] = None,
-    ) -> List['models.D']:
+    ) -> List[_PrismaModelT]:
         """Find multiple D records.
 
         An empty list is returned if no records could be found.
@@ -9924,9 +10996,8 @@ class DActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_many',
-            prisma_method='findMany',
-            model='D',
+            method='findMany{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -9947,7 +11018,7 @@ class DActions:
         include: Optional[types.DInclude] = None,
         order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
         distinct: Optional[List[types.DScalarFieldKeys]] = None,
-    ) -> Optional['models.D']:
+    ) -> Optional[_PrismaModelT]:
         """Find a single D record.
 
         Parameters
@@ -9991,9 +11062,8 @@ class DActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_first',
-            prisma_method='findFirst',
-            model='D',
+            method='findFirst{model}',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -10008,12 +11078,77 @@ class DActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.DWhereInput] = None,
+        cursor: Optional[types.DWhereUniqueInput] = None,
+        include: Optional[types.DInclude] = None,
+        order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
+        distinct: Optional[List[types.DScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single D record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            D filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned D model
+        order
+            Order the returned D records by any field
+        distinct
+            Filter D records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.D
+            The first D record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second D record ordered by the jsonb field
+        d = await D.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'jsonb': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findFirst{model}OrThrow',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def update(
         self,
         data: types.DUpdateInput,
         where: types.DWhereUniqueInput,
         include: Optional[types.DInclude] = None
-    ) -> Optional['models.D']:
+    ) -> Optional[_PrismaModelT]:
         """Update a single D record.
 
         Parameters
@@ -10042,7 +11177,7 @@ class DActions:
         ```py
         d = await D.prisma().update(
             where={
-                'id': 'dfeggejja',
+                'id': 'hiagajie',
             },
             data={
                 # data to update the D record to
@@ -10053,9 +11188,8 @@ class DActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='update',
-                prisma_method='updateOne',
-                model='D',
+                method='updateOne{model}',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -10072,7 +11206,7 @@ class DActions:
         where: types.DWhereUniqueInput,
         data: types.DUpsertInput,
         include: Optional[types.DInclude] = None,
-    ) -> 'models.D':
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -10101,23 +11235,23 @@ class DActions:
         ```py
         d = await D.prisma().upsert(
             where={
-                'id': 'gehbgghbj',
+                'id': 'eeejidbif',
             },
             data={
                 'create': {
-                    'id': 'gehbgghbj',
-                    'bool': False,
-                    'xml': 'bjagdgabbg',
-                    'json_': Json({'bjbbcffdij': True}),
-                    'jsonb': Json({'begcgchdi': True}),
-                    'binary': Base64.encode(b'bhbjceagbb'),
+                    'id': 'eeejidbif',
+                    'bool': True,
+                    'xml': 'bdidcfdfjd',
+                    'json_': Json({'dfeggejja': True}),
+                    'jsonb': Json({'gehbgghbj': True}),
+                    'binary': Base64.encode(b'dfhaijeie'),
                 },
                 'update': {
-                    'bool': False,
-                    'xml': 'bjagdgabbg',
-                    'json_': Json({'bjbbcffdij': True}),
-                    'jsonb': Json({'begcgchdi': True}),
-                    'binary': Base64.encode(b'bhbjceagbb'),
+                    'bool': True,
+                    'xml': 'bdidcfdfjd',
+                    'json_': Json({'dfeggejja': True}),
+                    'jsonb': Json({'gehbgghbj': True}),
+                    'binary': Base64.encode(b'dfhaijeie'),
                 },
             },
         )
@@ -10125,9 +11259,8 @@ class DActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='upsert',
-            prisma_method='upsertOne',
-            model='D',
+            method='upsertOne{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -10167,7 +11300,7 @@ class DActions:
         # update all D records
         total = await D.prisma().update_many(
             data={
-                'jsonb': Json({'dfhaijeie': True})
+                'binary': Base64.encode(b'efgbahec')
             },
             where={}
         )
@@ -10175,9 +11308,8 @@ class DActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='update_many',
-            prisma_method='updateMany',
-            model='D',
+            method='updateMany{model}',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -10233,7 +11365,7 @@ class DActions:
         results = await D.prisma().count(
             select={
                 '_all': True,
-                'binary': True,
+                'id': True,
             },
         )
         ```
@@ -10300,7 +11432,7 @@ class DActions:
         results = await D.prisma().count(
             select={
                 '_all': True,
-                'id': True,
+                'bool': True,
             },
         )
         ```
@@ -10321,9 +11453,8 @@ class DActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='count',
-            prisma_method='aggregate',
-            model='D',
+            method='aggregate{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -10368,9 +11499,8 @@ class DActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='delete_many',
-            prisma_method='deleteMany',
-            model='D',
+            method='deleteMany{model}',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -10444,10 +11574,10 @@ class DActions:
         Example
         -------
         ```py
-        # group D records by bool values
+        # group D records by xml values
         # and count how many records are in each group
         results = await D.prisma().group_by(
-            ['bool'],
+            ['xml'],
             count=True,
         )
         ```
@@ -10480,9 +11610,8 @@ class DActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='group_by',
-            prisma_method='groupBy',
-            model='D',
+            method='groupBy{model}',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -10496,13 +11625,13 @@ class DActions:
         return resp['data']['result']  # type: ignore[no-any-return]
 
 
-class EActions:
+class EActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type['models.E']) -> None:
+    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -10510,7 +11639,7 @@ class EActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List['models.E']:
+    ) -> List[_PrismaModelT]:
         """Execute a raw SQL query
 
         Parameters
@@ -10538,7 +11667,7 @@ class EActions:
         ```py
         users = await E.prisma().query_raw(
             'SELECT * FROM E WHERE id = $1',
-            'gbcdjgicb',
+            'hgjaiebfb',
         )
         ```
         """
@@ -10548,7 +11677,7 @@ class EActions:
         self,
         query: LiteralString,
         *args: Any,
-    ) -> Optional['models.E']:
+    ) -> Optional[_PrismaModelT]:
         """Execute a raw SQL query, returning the first result
 
         Parameters
@@ -10588,7 +11717,7 @@ class EActions:
         self,
         data: types.ECreateInput,
         include: Optional[types.EInclude] = None
-    ) -> 'models.E':
+    ) -> _PrismaModelT:
         """Create a new E record.
 
         Parameters
@@ -10626,9 +11755,8 @@ class EActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='create',
-            prisma_method='createOne',
-            model='E',
+            method='createOne{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
@@ -10696,9 +11824,8 @@ class EActions:
 
         resp = await self._client._execute(
             operation='mutation',
-            method='create_many',
-            prisma_method='createMany',
-            model='E',
+            method='createMany{model}',
+            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -10711,7 +11838,7 @@ class EActions:
         self,
         where: types.EWhereUniqueInput,
         include: Optional[types.EInclude] = None
-    ) -> Optional['models.E']:
+    ) -> Optional[_PrismaModelT]:
         """Delete a single E record.
 
         Parameters
@@ -10740,7 +11867,7 @@ class EActions:
         ```py
         e = await E.prisma().delete(
             where={
-                'id': 'biaibdagac',
+                'id': 'bddefjjabc',
             },
         )
         ```
@@ -10748,9 +11875,8 @@ class EActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='delete',
-                prisma_method='deleteOne',
-                model='E',
+                method='deleteOne{model}',
+                model=self._model,
                 arguments={
                     'where': where,
                     'include': include,
@@ -10765,7 +11891,7 @@ class EActions:
         self,
         where: types.EWhereUniqueInput,
         include: Optional[types.EInclude] = None
-    ) -> Optional['models.E']:
+    ) -> Optional[_PrismaModelT]:
         """Find a unique E record.
 
         Parameters
@@ -10794,16 +11920,15 @@ class EActions:
         ```py
         e = await E.prisma().find_unique(
             where={
-                'id': 'bbfbheibcd',
+                'id': 'bbbghgbadh',
             },
         )
         ```
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_unique',
-            prisma_method='findUnique',
-            model='E',
+            method='findUnique{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -10814,6 +11939,55 @@ class EActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_unique_or_raise(
+        self,
+        where: types.EWhereUniqueInput,
+        include: Optional[types.EInclude] = None
+    ) -> _PrismaModelT:
+        """Find a unique E record. Raises `RecordNotFoundError` if no record is found.
+
+        Parameters
+        ----------
+        where
+            E filter to find the record, must be unique
+        include
+            Specifies which relations should be loaded on the returned E model
+
+        Returns
+        -------
+        prisma.models.E
+            The found E record
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+
+        Example
+        -------
+        ```py
+        e = await E.prisma().find_unique_or_raise(
+            where={
+                'id': 'bbhcgagaic',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findUnique{model}OrThrow',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def find_many(
         self,
         take: Optional[int] = None,
@@ -10823,7 +11997,7 @@ class EActions:
         include: Optional[types.EInclude] = None,
         order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
         distinct: Optional[List[types.EScalarFieldKeys]] = None,
-    ) -> List['models.E']:
+    ) -> List[_PrismaModelT]:
         """Find multiple E records.
 
         An empty list is returned if no records could be found.
@@ -10872,9 +12046,8 @@ class EActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_many',
-            prisma_method='findMany',
-            model='E',
+            method='findMany{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -10895,7 +12068,7 @@ class EActions:
         include: Optional[types.EInclude] = None,
         order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
         distinct: Optional[List[types.EScalarFieldKeys]] = None,
-    ) -> Optional['models.E']:
+    ) -> Optional[_PrismaModelT]:
         """Find a single E record.
 
         Parameters
@@ -10939,9 +12112,8 @@ class EActions:
         """
         resp = await self._client._execute(
             operation='query',
-            method='find_first',
-            prisma_method='findFirst',
-            model='E',
+            method='findFirst{model}',
+            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -10956,12 +12128,77 @@ class EActions:
             return None
         return self._model.parse_obj(result)
 
+    async def find_first_or_raise(
+        self,
+        skip: Optional[int] = None,
+        where: Optional[types.EWhereInput] = None,
+        cursor: Optional[types.EWhereUniqueInput] = None,
+        include: Optional[types.EInclude] = None,
+        order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
+        distinct: Optional[List[types.EScalarFieldKeys]] = None,
+    ) -> _PrismaModelT:
+        """Find a single E record. Raises `RecordNotFoundError` if no record was found.
+
+        Parameters
+        ----------
+        skip
+            Ignore the first N records
+        where
+            E filter to select the record
+        cursor
+            Specifies the position in the list to start returning results from, (typically an ID field)
+        include
+            Specifies which relations should be loaded on the returned E model
+        order
+            Order the returned E records by any field
+        distinct
+            Filter E records by either a single distinct field or distinct combinations of fields
+
+        Returns
+        -------
+        prisma.models.E
+            The first E record found, matching the given arguments
+
+        Raises
+        ------
+        prisma.errors.RecordNotFoundError
+            No record was found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        # find the second E record ordered by the id field
+        e = await E.prisma().find_first_or_raise(
+            skip=1,
+            order={
+                'id': 'desc',
+            },
+        )
+        ```
+        """
+        resp = await self._client._execute(
+            operation='query',
+            method='findFirst{model}OrThrow',
+            model=self._model,
+            arguments={
+                'skip': skip,
+                'where': where,
+                'order_by': order,
+                'cursor': cursor,
+                'include': include,
+                'distinct': distinct,
+            },
+        )
+        return self._model.parse_obj(resp['data']['result'])
+
     async def update(
         self,
         data: types.EUpdateInput,
         where: types.EWhereUniqueInput,
         include: Optional[types.EInclude] = None
-    ) -> Optional['models.E']:
+    ) -> Optional[_PrismaModelT]:
         """Update a single E record.
 
         Parameters
@@ -10990,7 +12227,7 @@ class EActions:
         ```py
         e = await E.prisma().update(
             where={
-                'id': 'hiagajie',
+                'id': 'ddaabegbb',
             },
             data={
                 # data to update the E record to
@@ -11001,9 +12238,8 @@ class EActions:
         try:
             resp = await self._client._execute(
                 operation='mutation',
-                method='update',
-                prisma_method='updateOne',
-                model='E',
+                method='updateOne{model}',
+                model=self._model,
                 arguments={
                     'data': data,
                     'where': where,
@@ -11020,7 +12256,7 @@ class EActions:
         where: types.EWhereUniqueInput,
         data: types.EUpsertInput,
         include: Optional[types.EInclude] = None,
-    ) -> 'models.E':
+    ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
         Parameters
@@ -11049,11 +12285,11 @@ class EActions:
         ```py
         e = await E.prisma().upsert(
             where={
-                'id': 'eeejidbif',
+                'id': 'bhgibfgbbc',
             },
             data={
                 'create': {
-                    'id': 'eeejidbif',
+                    'id': 'bhgibfgbbc',
                     'date': datetime.datetime.utcnow(),
                     'time': datetime.datetime.utcnow(),
                     'ts': datetime.datetime.utcnow(),
@@ -11069,9 +12305,8 @@ class EActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='upsert',
-            prisma_method='upsertOne',
-            model='E',
+            method='upsertOne{model}',
+            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
@@ -11111,7 +12346,7 @@ class EActions:
         # update all E records
         total = await E.prisma().update_many(
             data={
-                'id': 'efgbahec'
+                'date': datetime.datetime.utcnow()
             },
             where={}
         )
@@ -11119,9 +12354,8 @@ class EActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='update_many',
-            prisma_method='updateMany',
-            model='E',
+            method='updateMany{model}',
+            model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -11177,7 +12411,7 @@ class EActions:
         results = await E.prisma().count(
             select={
                 '_all': True,
-                'date': True,
+                'time': True,
             },
         )
         ```
@@ -11244,7 +12478,7 @@ class EActions:
         results = await E.prisma().count(
             select={
                 '_all': True,
-                'time': True,
+                'ts': True,
             },
         )
         ```
@@ -11265,9 +12499,8 @@ class EActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='count',
-            prisma_method='aggregate',
-            model='E',
+            method='aggregate{model}',
+            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -11312,9 +12545,8 @@ class EActions:
         """
         resp = await self._client._execute(
             operation='mutation',
-            method='delete_many',
-            prisma_method='deleteMany',
-            model='E',
+            method='deleteMany{model}',
+            model=self._model,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -11388,10 +12620,10 @@ class EActions:
         Example
         -------
         ```py
-        # group E records by ts values
+        # group E records by id values
         # and count how many records are in each group
         results = await E.prisma().group_by(
-            ['ts'],
+            ['id'],
             count=True,
         )
         ```
@@ -11424,9 +12656,8 @@ class EActions:
 
         resp = await self._client._execute(
             operation='query',
-            method='group_by',
-            prisma_method='groupBy',
-            model='E',
+            method='groupBy{model}',
+            model=self._model,
             arguments={
                 'by': by,
                 'take': take,

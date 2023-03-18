@@ -219,3 +219,34 @@ def test_decimal_type_experimental(testdir: Testdir) -> None:
     assert (
         'set the `enable_experimental_decimal` config flag to true' in output
     )
+
+
+def test_composite_type_not_supported(testdir: Testdir) -> None:
+    """Composite types are not supported yet"""
+    schema = (
+        testdir.default_generator
+        + """
+        datasource db {{
+            provider = "mongodb"
+            url      = env("foo")
+        }}
+
+        model User {{
+            id       String @id @map("_id")
+            // settings UserSettings
+        }}
+
+        type UserSettings {{
+            points Decimal
+        }}
+    """
+    )
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    output = str(exc.value.output, 'utf-8')
+    assert 'Composite types are not supported yet.' in output
+    assert (
+        'https://github.com/RobertCraigie/prisma-client-py/issues/314'
+        in output
+    )

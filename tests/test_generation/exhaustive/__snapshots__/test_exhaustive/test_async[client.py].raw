@@ -20,6 +20,9 @@ from typing import (
     Iterator,
     Sequence,
     Callable,
+    ClassVar,
+    NoReturn,
+    TypeVar,
     Generic,
     Mapping,
     Tuple,
@@ -43,9 +46,9 @@ from types import TracebackType
 from . import types, models, errors, actions
 from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT
+from .bases import _PrismaModel
 from .engine import AbstractEngine, QueryEngine
-from .builder import QueryBuilder, Operation
-from .middleware import MiddlewareFunc, MiddlewareParams, MiddlewareResult
+from .builder import QueryBuilder
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix
 from ._raw_query import deserialize_raw_results
@@ -149,18 +152,18 @@ def get_client() -> 'Prisma':
 
 
 class Prisma:
-    post: 'actions.PostActions'
-    user: 'actions.UserActions'
-    m: 'actions.MActions'
-    n: 'actions.NActions'
-    oneoptional: 'actions.OneOptionalActions'
-    manyrequired: 'actions.ManyRequiredActions'
-    lists: 'actions.ListsActions'
-    a: 'actions.AActions'
-    b: 'actions.BActions'
-    c: 'actions.CActions'
-    d: 'actions.DActions'
-    e: 'actions.EActions'
+    post: 'actions.PostActions[models.Post]'
+    user: 'actions.UserActions[models.User]'
+    m: 'actions.MActions[models.M]'
+    n: 'actions.NActions[models.N]'
+    oneoptional: 'actions.OneOptionalActions[models.OneOptional]'
+    manyrequired: 'actions.ManyRequiredActions[models.ManyRequired]'
+    lists: 'actions.ListsActions[models.Lists]'
+    a: 'actions.AActions[models.A]'
+    b: 'actions.BActions[models.B]'
+    c: 'actions.CActions[models.C]'
+    d: 'actions.DActions[models.D]'
+    e: 'actions.EActions[models.E]'
 
     __slots__ = (
         'post',
@@ -181,7 +184,6 @@ class Prisma:
         '_datasource',
         '_connect_timeout',
         '_http_config',
-        '_middlewares',
     )
 
     def __init__(
@@ -194,25 +196,24 @@ class Prisma:
         connect_timeout: int = 10,
         http: Optional[HttpConfig] = None,
     ) -> None:
-        self.post = actions.PostActions(self, models.Post)
-        self.user = actions.UserActions(self, models.User)
-        self.m = actions.MActions(self, models.M)
-        self.n = actions.NActions(self, models.N)
-        self.oneoptional = actions.OneOptionalActions(self, models.OneOptional)
-        self.manyrequired = actions.ManyRequiredActions(self, models.ManyRequired)
-        self.lists = actions.ListsActions(self, models.Lists)
-        self.a = actions.AActions(self, models.A)
-        self.b = actions.BActions(self, models.B)
-        self.c = actions.CActions(self, models.C)
-        self.d = actions.DActions(self, models.D)
-        self.e = actions.EActions(self, models.E)
+        self.post = actions.PostActions[models.Post](self, models.Post)
+        self.user = actions.UserActions[models.User](self, models.User)
+        self.m = actions.MActions[models.M](self, models.M)
+        self.n = actions.NActions[models.N](self, models.N)
+        self.oneoptional = actions.OneOptionalActions[models.OneOptional](self, models.OneOptional)
+        self.manyrequired = actions.ManyRequiredActions[models.ManyRequired](self, models.ManyRequired)
+        self.lists = actions.ListsActions[models.Lists](self, models.Lists)
+        self.a = actions.AActions[models.A](self, models.A)
+        self.b = actions.BActions[models.B](self, models.B)
+        self.c = actions.CActions[models.C](self, models.C)
+        self.d = actions.DActions[models.D](self, models.D)
+        self.e = actions.EActions[models.E](self, models.E)
         self.__engine: Optional[AbstractEngine] = None
         self._active_provider = 'postgresql'
         self._log_queries = log_queries
         self._datasource = datasource
         self._connect_timeout = connect_timeout
         self._http_config: HttpConfig = http or {}
-        self._middlewares: List[MiddlewareFunc] = []
 
         if use_dotenv:
             load_env()
@@ -268,27 +269,17 @@ class Prisma:
             datasources=datasources,
         )
 
-    async def disconnect(self) -> None:
+    async def disconnect(self, timeout: Optional[float] = None) -> None:
         """Disconnect the Prisma query engine."""
         if self.__engine is not None:
-            self.__engine.close()
-            await self.__engine.aclose()
+            await self.__engine.aclose(timeout=timeout)
+            self.__engine.stop(timeout=timeout)
             self.__engine = None
-
-    # TODO: add support for clearing middlewares
-
-    def use(self, *middlewares: MiddlewareFunc) -> None:
-        """Setup a middleware function to be called before each query is executed.
-
-        TODO: link to docs
-        """
-        self._middlewares.extend(middlewares)
 
     async def execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = await self._execute(
             operation='mutation',
-            method='execute_raw',
-            prisma_method='executeRaw',
+            method='executeRaw{model}',
             arguments={
                 'query': query,
                 'parameters': args,
@@ -326,18 +317,9 @@ class Prisma:
         """
         results: Sequence[Union[BaseModelT, dict[str, Any]]]
         if model is not None:
-            results = await self._execute_raw_query(
-                query,
-                *args,
-                model=model,
-                _from_method='query_first',
-            )
+            results = await self.query_raw(query, *args, model=model)
         else:
-            results = await self._execute_raw_query(
-                query,
-                *args,
-                _from_method='query_first',
-            )
+            results = await self.query_raw(query, *args)
 
         if not results:
             return None
@@ -372,46 +354,9 @@ class Prisma:
         If model is given, each returned record is converted to the pydantic model first,
         otherwise results will be raw dictionaries.
         """
-        if model is not None:
-            return await self._execute_raw_query(
-                query, *args, model=model, _from_method='query_raw'
-            )
-
-        return await self._execute_raw_query(
-            query, *args, _from_method='query_raw'
-        )
-
-
-    @overload
-    async def _execute_raw_query(
-        self,
-        query: LiteralString,
-        *args: Any,
-        _from_method: str,
-    ) -> list[dict[str, Any]]:
-        ...
-
-    @overload
-    async def _execute_raw_query(
-        self,
-        query: LiteralString,
-        *args: Any,
-        _from_method: str,
-        model: Type[BaseModelT],
-    ) -> list[BaseModelT]:
-        ...
-
-    async def _execute_raw_query(
-        self,
-        query: LiteralString,
-        *args: Any,
-        _from_method: str,
-        model: Optional[Type[BaseModelT]] = None,
-    ) -> list[BaseModelT] | list[dict[str, Any]]:
         resp = await self._execute(
             operation='mutation',
-            method=_from_method,
-            prisma_method='queryRaw',
+            method='queryRaw{model}',
             arguments={
                 'query': query,
                 'parameters': args,
@@ -423,7 +368,6 @@ class Prisma:
 
         return deserialize_raw_results(result)
 
-
     def batch_(self) -> 'Batch':
         """Returns a context manager for grouping write queries into a single transaction."""
         return Batch(client=self)
@@ -431,47 +375,20 @@ class Prisma:
     # TODO: don't return Any
     async def _execute(
         self,
-        *,
         method: str,
-        prisma_method: str,
-        operation: Operation,
+        operation: str,
         arguments: Dict[str, Any],
-        model: Optional[str] = None,
+        model: Optional[Type['_PrismaModel']] = None,
         root_selection: Optional[List[str]] = None
     ) -> Any:
-        async def executor(params: MiddlewareParams) -> MiddlewareResult:
-            builder = QueryBuilder(
-                operation=params.operation,
-                method=params.prisma_method,
-                model=params.model_name,
-                arguments=params.arguments,
-                # TODO: move this to middleware params too
-                root_selection=root_selection,
-            )
-            return await self._engine.query(builder.build())
-
-        # TODO: should this also operate on the parsed return type?
-        async def get_result(params: MiddlewareParams) -> MiddlewareResult:
-            try:
-                middleware = next(iterator)
-            except StopIteration:
-                return await executor(params)
-
-            return await middleware(params, get_result)
-
-        params = MiddlewareParams(
-            method=method,
+        builder = QueryBuilder(
             operation=operation,
-            model_name=model,
+            method=method,
+            model=model,
             arguments=arguments,
-            prisma_method=prisma_method,
+            root_selection=root_selection,
         )
-        if not self._middlewares:
-            return await executor(params)
-
-        first, *rest = self._middlewares
-        iterator = iter(rest)
-        return await first(params, get_result)
+        return await self._engine.query(builder.build())
 
     def _create_engine(self, dml_path: Path = PACKAGED_SCHEMA_PATH) -> AbstractEngine:
         if ENGINE_TYPE == EngineType.binary:
@@ -577,7 +494,7 @@ class Batch:
     def execute_raw(self, query: LiteralString, *args: Any) -> None:
         self._add(
             operation='mutation',
-            method='executeRaw',
+            method='executeRaw{model}',
             arguments={
                 'query': query,
                 'parameters': args,
@@ -610,8 +527,8 @@ class PostBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='createOne',
-            model='Post',
+            method='createOne{model}',
+            model=models.Post,
             arguments={
                 'data': data,
                 'include': include,
@@ -629,8 +546,8 @@ class PostBatchActions:
 
         self._batcher._add(
             operation='mutation',
-            method='createMany',
-            model='Post',
+            method='createMany{model}',
+            model=models.Post,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -645,8 +562,8 @@ class PostBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteOne',
-            model='Post',
+            method='deleteOne{model}',
+            model=models.Post,
             arguments={
                 'where': where,
                 'include': include,
@@ -661,8 +578,8 @@ class PostBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateOne',
-            model='Post',
+            method='updateOne{model}',
+            model=models.Post,
             arguments={
                 'data': data,
                 'where': where,
@@ -678,8 +595,8 @@ class PostBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='upsertOne',
-            model='Post',
+            method='upsertOne{model}',
+            model=models.Post,
             arguments={
                 'where': where,
                 'include': include,
@@ -695,8 +612,8 @@ class PostBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateMany',
-            model='Post',
+            method='updateMany{model}',
+            model=models.Post,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -707,8 +624,8 @@ class PostBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteMany',
-            model='Post',
+            method='deleteMany{model}',
+            model=models.Post,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -728,8 +645,8 @@ class UserBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='createOne',
-            model='User',
+            method='createOne{model}',
+            model=models.User,
             arguments={
                 'data': data,
                 'include': include,
@@ -747,8 +664,8 @@ class UserBatchActions:
 
         self._batcher._add(
             operation='mutation',
-            method='createMany',
-            model='User',
+            method='createMany{model}',
+            model=models.User,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -763,8 +680,8 @@ class UserBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteOne',
-            model='User',
+            method='deleteOne{model}',
+            model=models.User,
             arguments={
                 'where': where,
                 'include': include,
@@ -779,8 +696,8 @@ class UserBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateOne',
-            model='User',
+            method='updateOne{model}',
+            model=models.User,
             arguments={
                 'data': data,
                 'where': where,
@@ -796,8 +713,8 @@ class UserBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='upsertOne',
-            model='User',
+            method='upsertOne{model}',
+            model=models.User,
             arguments={
                 'where': where,
                 'include': include,
@@ -813,8 +730,8 @@ class UserBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateMany',
-            model='User',
+            method='updateMany{model}',
+            model=models.User,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -825,8 +742,8 @@ class UserBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteMany',
-            model='User',
+            method='deleteMany{model}',
+            model=models.User,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -846,8 +763,8 @@ class MBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='createOne',
-            model='M',
+            method='createOne{model}',
+            model=models.M,
             arguments={
                 'data': data,
                 'include': include,
@@ -865,8 +782,8 @@ class MBatchActions:
 
         self._batcher._add(
             operation='mutation',
-            method='createMany',
-            model='M',
+            method='createMany{model}',
+            model=models.M,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -881,8 +798,8 @@ class MBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteOne',
-            model='M',
+            method='deleteOne{model}',
+            model=models.M,
             arguments={
                 'where': where,
                 'include': include,
@@ -897,8 +814,8 @@ class MBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateOne',
-            model='M',
+            method='updateOne{model}',
+            model=models.M,
             arguments={
                 'data': data,
                 'where': where,
@@ -914,8 +831,8 @@ class MBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='upsertOne',
-            model='M',
+            method='upsertOne{model}',
+            model=models.M,
             arguments={
                 'where': where,
                 'include': include,
@@ -931,8 +848,8 @@ class MBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateMany',
-            model='M',
+            method='updateMany{model}',
+            model=models.M,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -943,8 +860,8 @@ class MBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteMany',
-            model='M',
+            method='deleteMany{model}',
+            model=models.M,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -964,8 +881,8 @@ class NBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='createOne',
-            model='N',
+            method='createOne{model}',
+            model=models.N,
             arguments={
                 'data': data,
                 'include': include,
@@ -983,8 +900,8 @@ class NBatchActions:
 
         self._batcher._add(
             operation='mutation',
-            method='createMany',
-            model='N',
+            method='createMany{model}',
+            model=models.N,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -999,8 +916,8 @@ class NBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteOne',
-            model='N',
+            method='deleteOne{model}',
+            model=models.N,
             arguments={
                 'where': where,
                 'include': include,
@@ -1015,8 +932,8 @@ class NBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateOne',
-            model='N',
+            method='updateOne{model}',
+            model=models.N,
             arguments={
                 'data': data,
                 'where': where,
@@ -1032,8 +949,8 @@ class NBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='upsertOne',
-            model='N',
+            method='upsertOne{model}',
+            model=models.N,
             arguments={
                 'where': where,
                 'include': include,
@@ -1049,8 +966,8 @@ class NBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateMany',
-            model='N',
+            method='updateMany{model}',
+            model=models.N,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1061,8 +978,8 @@ class NBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteMany',
-            model='N',
+            method='deleteMany{model}',
+            model=models.N,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1082,8 +999,8 @@ class OneOptionalBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='createOne',
-            model='OneOptional',
+            method='createOne{model}',
+            model=models.OneOptional,
             arguments={
                 'data': data,
                 'include': include,
@@ -1101,8 +1018,8 @@ class OneOptionalBatchActions:
 
         self._batcher._add(
             operation='mutation',
-            method='createMany',
-            model='OneOptional',
+            method='createMany{model}',
+            model=models.OneOptional,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1117,8 +1034,8 @@ class OneOptionalBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteOne',
-            model='OneOptional',
+            method='deleteOne{model}',
+            model=models.OneOptional,
             arguments={
                 'where': where,
                 'include': include,
@@ -1133,8 +1050,8 @@ class OneOptionalBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateOne',
-            model='OneOptional',
+            method='updateOne{model}',
+            model=models.OneOptional,
             arguments={
                 'data': data,
                 'where': where,
@@ -1150,8 +1067,8 @@ class OneOptionalBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='upsertOne',
-            model='OneOptional',
+            method='upsertOne{model}',
+            model=models.OneOptional,
             arguments={
                 'where': where,
                 'include': include,
@@ -1167,8 +1084,8 @@ class OneOptionalBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateMany',
-            model='OneOptional',
+            method='updateMany{model}',
+            model=models.OneOptional,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1179,8 +1096,8 @@ class OneOptionalBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteMany',
-            model='OneOptional',
+            method='deleteMany{model}',
+            model=models.OneOptional,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1200,8 +1117,8 @@ class ManyRequiredBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='createOne',
-            model='ManyRequired',
+            method='createOne{model}',
+            model=models.ManyRequired,
             arguments={
                 'data': data,
                 'include': include,
@@ -1219,8 +1136,8 @@ class ManyRequiredBatchActions:
 
         self._batcher._add(
             operation='mutation',
-            method='createMany',
-            model='ManyRequired',
+            method='createMany{model}',
+            model=models.ManyRequired,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1235,8 +1152,8 @@ class ManyRequiredBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteOne',
-            model='ManyRequired',
+            method='deleteOne{model}',
+            model=models.ManyRequired,
             arguments={
                 'where': where,
                 'include': include,
@@ -1251,8 +1168,8 @@ class ManyRequiredBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateOne',
-            model='ManyRequired',
+            method='updateOne{model}',
+            model=models.ManyRequired,
             arguments={
                 'data': data,
                 'where': where,
@@ -1268,8 +1185,8 @@ class ManyRequiredBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='upsertOne',
-            model='ManyRequired',
+            method='upsertOne{model}',
+            model=models.ManyRequired,
             arguments={
                 'where': where,
                 'include': include,
@@ -1285,8 +1202,8 @@ class ManyRequiredBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateMany',
-            model='ManyRequired',
+            method='updateMany{model}',
+            model=models.ManyRequired,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1297,8 +1214,8 @@ class ManyRequiredBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteMany',
-            model='ManyRequired',
+            method='deleteMany{model}',
+            model=models.ManyRequired,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1318,8 +1235,8 @@ class ListsBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='createOne',
-            model='Lists',
+            method='createOne{model}',
+            model=models.Lists,
             arguments={
                 'data': data,
                 'include': include,
@@ -1337,8 +1254,8 @@ class ListsBatchActions:
 
         self._batcher._add(
             operation='mutation',
-            method='createMany',
-            model='Lists',
+            method='createMany{model}',
+            model=models.Lists,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1353,8 +1270,8 @@ class ListsBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteOne',
-            model='Lists',
+            method='deleteOne{model}',
+            model=models.Lists,
             arguments={
                 'where': where,
                 'include': include,
@@ -1369,8 +1286,8 @@ class ListsBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateOne',
-            model='Lists',
+            method='updateOne{model}',
+            model=models.Lists,
             arguments={
                 'data': data,
                 'where': where,
@@ -1386,8 +1303,8 @@ class ListsBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='upsertOne',
-            model='Lists',
+            method='upsertOne{model}',
+            model=models.Lists,
             arguments={
                 'where': where,
                 'include': include,
@@ -1403,8 +1320,8 @@ class ListsBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateMany',
-            model='Lists',
+            method='updateMany{model}',
+            model=models.Lists,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1415,8 +1332,8 @@ class ListsBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteMany',
-            model='Lists',
+            method='deleteMany{model}',
+            model=models.Lists,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1436,8 +1353,8 @@ class ABatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='createOne',
-            model='A',
+            method='createOne{model}',
+            model=models.A,
             arguments={
                 'data': data,
                 'include': include,
@@ -1455,8 +1372,8 @@ class ABatchActions:
 
         self._batcher._add(
             operation='mutation',
-            method='createMany',
-            model='A',
+            method='createMany{model}',
+            model=models.A,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1471,8 +1388,8 @@ class ABatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteOne',
-            model='A',
+            method='deleteOne{model}',
+            model=models.A,
             arguments={
                 'where': where,
                 'include': include,
@@ -1487,8 +1404,8 @@ class ABatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateOne',
-            model='A',
+            method='updateOne{model}',
+            model=models.A,
             arguments={
                 'data': data,
                 'where': where,
@@ -1504,8 +1421,8 @@ class ABatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='upsertOne',
-            model='A',
+            method='upsertOne{model}',
+            model=models.A,
             arguments={
                 'where': where,
                 'include': include,
@@ -1521,8 +1438,8 @@ class ABatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateMany',
-            model='A',
+            method='updateMany{model}',
+            model=models.A,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1533,8 +1450,8 @@ class ABatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteMany',
-            model='A',
+            method='deleteMany{model}',
+            model=models.A,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1554,8 +1471,8 @@ class BBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='createOne',
-            model='B',
+            method='createOne{model}',
+            model=models.B,
             arguments={
                 'data': data,
                 'include': include,
@@ -1573,8 +1490,8 @@ class BBatchActions:
 
         self._batcher._add(
             operation='mutation',
-            method='createMany',
-            model='B',
+            method='createMany{model}',
+            model=models.B,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1589,8 +1506,8 @@ class BBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteOne',
-            model='B',
+            method='deleteOne{model}',
+            model=models.B,
             arguments={
                 'where': where,
                 'include': include,
@@ -1605,8 +1522,8 @@ class BBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateOne',
-            model='B',
+            method='updateOne{model}',
+            model=models.B,
             arguments={
                 'data': data,
                 'where': where,
@@ -1622,8 +1539,8 @@ class BBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='upsertOne',
-            model='B',
+            method='upsertOne{model}',
+            model=models.B,
             arguments={
                 'where': where,
                 'include': include,
@@ -1639,8 +1556,8 @@ class BBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateMany',
-            model='B',
+            method='updateMany{model}',
+            model=models.B,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1651,8 +1568,8 @@ class BBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteMany',
-            model='B',
+            method='deleteMany{model}',
+            model=models.B,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1672,8 +1589,8 @@ class CBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='createOne',
-            model='C',
+            method='createOne{model}',
+            model=models.C,
             arguments={
                 'data': data,
                 'include': include,
@@ -1691,8 +1608,8 @@ class CBatchActions:
 
         self._batcher._add(
             operation='mutation',
-            method='createMany',
-            model='C',
+            method='createMany{model}',
+            model=models.C,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1707,8 +1624,8 @@ class CBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteOne',
-            model='C',
+            method='deleteOne{model}',
+            model=models.C,
             arguments={
                 'where': where,
                 'include': include,
@@ -1723,8 +1640,8 @@ class CBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateOne',
-            model='C',
+            method='updateOne{model}',
+            model=models.C,
             arguments={
                 'data': data,
                 'where': where,
@@ -1740,8 +1657,8 @@ class CBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='upsertOne',
-            model='C',
+            method='upsertOne{model}',
+            model=models.C,
             arguments={
                 'where': where,
                 'include': include,
@@ -1757,8 +1674,8 @@ class CBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateMany',
-            model='C',
+            method='updateMany{model}',
+            model=models.C,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1769,8 +1686,8 @@ class CBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteMany',
-            model='C',
+            method='deleteMany{model}',
+            model=models.C,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1790,8 +1707,8 @@ class DBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='createOne',
-            model='D',
+            method='createOne{model}',
+            model=models.D,
             arguments={
                 'data': data,
                 'include': include,
@@ -1809,8 +1726,8 @@ class DBatchActions:
 
         self._batcher._add(
             operation='mutation',
-            method='createMany',
-            model='D',
+            method='createMany{model}',
+            model=models.D,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1825,8 +1742,8 @@ class DBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteOne',
-            model='D',
+            method='deleteOne{model}',
+            model=models.D,
             arguments={
                 'where': where,
                 'include': include,
@@ -1841,8 +1758,8 @@ class DBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateOne',
-            model='D',
+            method='updateOne{model}',
+            model=models.D,
             arguments={
                 'data': data,
                 'where': where,
@@ -1858,8 +1775,8 @@ class DBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='upsertOne',
-            model='D',
+            method='upsertOne{model}',
+            model=models.D,
             arguments={
                 'where': where,
                 'include': include,
@@ -1875,8 +1792,8 @@ class DBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateMany',
-            model='D',
+            method='updateMany{model}',
+            model=models.D,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1887,8 +1804,8 @@ class DBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteMany',
-            model='D',
+            method='deleteMany{model}',
+            model=models.D,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1908,8 +1825,8 @@ class EBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='createOne',
-            model='E',
+            method='createOne{model}',
+            model=models.E,
             arguments={
                 'data': data,
                 'include': include,
@@ -1927,8 +1844,8 @@ class EBatchActions:
 
         self._batcher._add(
             operation='mutation',
-            method='createMany',
-            model='E',
+            method='createMany{model}',
+            model=models.E,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1943,8 +1860,8 @@ class EBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteOne',
-            model='E',
+            method='deleteOne{model}',
+            model=models.E,
             arguments={
                 'where': where,
                 'include': include,
@@ -1959,8 +1876,8 @@ class EBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateOne',
-            model='E',
+            method='updateOne{model}',
+            model=models.E,
             arguments={
                 'data': data,
                 'where': where,
@@ -1976,8 +1893,8 @@ class EBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='upsertOne',
-            model='E',
+            method='upsertOne{model}',
+            model=models.E,
             arguments={
                 'where': where,
                 'include': include,
@@ -1993,8 +1910,8 @@ class EBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='updateMany',
-            model='E',
+            method='updateMany{model}',
+            model=models.E,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -2005,8 +1922,8 @@ class EBatchActions:
     ) -> None:
         self._batcher._add(
             operation='mutation',
-            method='deleteMany',
-            model='E',
+            method='deleteMany{model}',
+            model=models.E,
             arguments={'where': where},
             root_selection=['count'],
         )

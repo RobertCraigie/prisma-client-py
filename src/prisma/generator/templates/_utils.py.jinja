@@ -33,27 +33,40 @@ time.sleep({{ duration }})
     'group_by': 'query',
     'find_many': 'query',
     'find_first': 'query',
+    'find_first_or_raise': 'query',
     'find_unique': 'query',
+    'find_unique_or_raise': 'query',
 }
 %}
 
 {% set methods = {
-    'create': 'createOne',
-    'delete': 'deleteOne',
-    'update': 'updateOne',
-    'upsert': 'upsertOne',
-    'query_raw': 'queryRaw',
-    'create_many': 'createMany',
-    'execute_raw': 'executeRaw',
-    'delete_many': 'deleteMany',
-    'update_many': 'updateMany',
+    'create': 'createOne{model}',
+    'delete': 'deleteOne{model}',
+    'update': 'updateOne{model}',
+    'upsert': 'upsertOne{model}',
+    'query_raw': 'queryRaw{model}',
+    'create_many': 'createMany{model}',
+    'execute_raw': 'executeRaw{model}',
+    'delete_many': 'deleteMany{model}',
+    'update_many': 'updateMany{model}',
 
-    'count': 'aggregate',
-    'group_by': 'groupBy',
-    'find_many': 'findMany',
-    'find_first': 'findFirst',
-    'find_unique': 'findUnique',
+    'count': 'aggregate{model}',
+    'group_by': 'groupBy{model}',
+    'find_many': 'findMany{model}',
+    'find_first': 'findFirst{model}',
+    'find_first_or_raise': 'findFirst{model}OrThrow',
+    'find_unique': 'findUnique{model}',
+    'find_unique_or_raise': 'findUnique{model}OrThrow',
 }
 %}
 
 {% set active_provider = datasources[0].active_provider %}
+
+{% macro query_methods(name) %}
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.{{ name }}Actions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.{{ name }}Actions[_PrismaModelT](get_client(), cls)
+{% endmacro %}

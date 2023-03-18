@@ -247,6 +247,8 @@ class Module(BaseModel):
     def spec_validator(cls, value: Optional[str]) -> machinery.ModuleSpec:
         spec: Optional[machinery.ModuleSpec] = None
 
+        # TODO: this should really work based off of the schema path
+        # and this should suport checking  just partial_types.py if we are in a `prisma` dir
         if value is None:
             value = 'prisma/partial_types.py'
 
@@ -578,6 +580,19 @@ class Datamodel(BaseModel):
     enums: List['Enum']
     models: List['Model']
 
+    # not implemented yet
+    types: List[object]
+
+    @validator('types')
+    @classmethod
+    def no_composite_types_validator(cls, types: List[object]) -> object:
+        if types:
+            raise ValueError(
+                'Composite types are not supported yet. Please indicate you need this here: https://github.com/RobertCraigie/prisma-client-py/issues/314'
+            )
+
+        return types
+
 
 class Enum(BaseModel):
     name: str
@@ -731,7 +746,7 @@ class Field(BaseModel):
     is_generated: bool = FieldInfo(alias='isGenerated')
     is_updated_at: bool = FieldInfo(alias='isUpdatedAt')
 
-    default: Optional[Union['DefaultValue', str]]
+    default: Optional[Union['DefaultValue', str, List[object]]]
     has_default_value: bool = FieldInfo(alias='hasDefaultValue')
 
     relation_name: Optional[str] = FieldInfo(alias='relationName')
