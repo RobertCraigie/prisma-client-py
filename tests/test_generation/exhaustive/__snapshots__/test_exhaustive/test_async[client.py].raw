@@ -50,8 +50,7 @@ from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT, PrismaMethod
 from .bases import _PrismaModel
 from .engine import AbstractEngine, QueryEngine
-from .builder import QueryBuilder, Operation
-from .middleware import MiddlewareFunc, MiddlewareParams, MiddlewareResult
+from .builder import QueryBuilder
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix
 from ._raw_query import deserialize_raw_results
@@ -187,7 +186,6 @@ class Prisma:
         '_datasource',
         '_connect_timeout',
         '_http_config',
-        '_middlewares',
     )
 
     def __init__(
@@ -218,7 +216,6 @@ class Prisma:
         self._datasource = datasource
         self._connect_timeout = connect_timeout
         self._http_config: HttpConfig = http or {}
-        self._middlewares: List[MiddlewareFunc] = []
 
         if use_dotenv:
             load_env()
@@ -281,15 +278,6 @@ class Prisma:
             self.__engine.stop(timeout=timeout)
             self.__engine = None
 
-    # TODO: add support for clearing middlewares
-
-    def use(self, *middlewares: MiddlewareFunc) -> None:
-        """Setup a middleware function to be called before each query is executed.
-
-        TODO: link to docs
-        """
-        self._middlewares.extend(middlewares)
-
     async def execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = await self._execute(
             method='execute_raw',
@@ -331,18 +319,9 @@ class Prisma:
         """
         results: Sequence[Union[BaseModelT, dict[str, Any]]]
         if model is not None:
-            results = await self._execute_raw_query(
-                query,
-                *args,
-                model=model,
-                _from_method='query_first',
-            )
+            results = await self.query_raw(query, *args, model=model)
         else:
-            results = await self._execute_raw_query(
-                query,
-                *args,
-                _from_method='query_first',
-            )
+            results = await self.query_raw(query, *args)
 
         if not results:
             return None
@@ -377,44 +356,8 @@ class Prisma:
         If model is given, each returned record is converted to the pydantic model first,
         otherwise results will be raw dictionaries.
         """
-        if model is not None:
-            return await self._execute_raw_query(
-                query, *args, model=model, _from_method='query_raw'
-            )
-
-        return await self._execute_raw_query(
-            query, *args, _from_method='query_raw'
-        )
-
-
-    @overload
-    async def _execute_raw_query(
-        self,
-        query: LiteralString,
-        *args: Any,
-        _from_method: PrismaMethod,
-    ) -> list[dict[str, Any]]:
-        ...
-
-    @overload
-    async def _execute_raw_query(
-        self,
-        query: LiteralString,
-        *args: Any,
-        _from_method: PrismaMethod,
-        model: Type[BaseModelT],
-    ) -> list[BaseModelT]:
-        ...
-
-    async def _execute_raw_query(
-        self,
-        query: LiteralString,
-        *args: Any,
-        _from_method: PrismaMethod,
-        model: Type[BaseModelT] | None = None,
-    ) -> list[BaseModelT] | list[dict[str, Any]]:
         resp = await self._execute(
-            method=_from_method,
+            method='query_raw',
             arguments={
                 'query': query,
                 'parameters': args,
@@ -427,7 +370,6 @@ class Prisma:
 
         return deserialize_raw_results(result)
 
-
     def batch_(self) -> 'Batch':
         """Returns a context manager for grouping write queries into a single transaction."""
         return Batch(client=self)
@@ -435,42 +377,18 @@ class Prisma:
     # TODO: don't return Any
     async def _execute(
         self,
-        *,
         method: PrismaMethod,
-        arguments: dict[str, Any],
-        model: type[BaseModel] | None,
-        root_selection: list[str] | None = None
+        arguments: Dict[str, Any],
+        model: Optional[Type['_PrismaModel']] = None,
+        root_selection: Optional[List[str]] = None
     ) -> Any:
-        async def executor(params: MiddlewareParams) -> MiddlewareResult:
-            builder = QueryBuilder(
-                method=params.method,
-                model=params.model,
-                arguments=params.arguments,
-                # TODO: move this to middleware params too
-                root_selection=root_selection,
-            )
-            return await self._engine.query(builder.build())
-
-        # TODO: should this also operate on the parsed return type? (yes)
-        async def get_result(params: MiddlewareParams) -> MiddlewareResult:
-            try:
-                middleware = next(iterator)
-            except StopIteration:
-                return await executor(params)
-
-            return await middleware(params, get_result)
-
-        params = MiddlewareParams(
+        builder = QueryBuilder(
             method=method,
             model=model,
             arguments=arguments,
+            root_selection=root_selection,
         )
-        if not self._middlewares:
-            return await executor(params)
-
-        first, *rest = self._middlewares
-        iterator = iter(rest)
-        return await first(params, get_result)
+        return await self._engine.query(builder.build())
 
     def _create_engine(self, dml_path: Path = PACKAGED_SCHEMA_PATH) -> AbstractEngine:
         if ENGINE_TYPE == EngineType.binary:
