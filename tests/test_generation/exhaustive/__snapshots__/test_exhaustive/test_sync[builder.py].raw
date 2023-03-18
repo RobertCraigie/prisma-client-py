@@ -227,7 +227,7 @@ class QueryBuilder:
 
     def build(self) -> str:
         """Build the payload that should be sent to the QueryEngine"""
-        data = {
+        data: dict[str, object] = {
             'variables': {},
             'operation_name': self.operation,
             'query': self.build_query(),
