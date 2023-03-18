@@ -26,3 +26,27 @@ class InheritsGeneric(Protocol):
 
 class _GenericAlias(Protocol):
     __origin__: Type[object]
+
+
+PrismaMethod = Literal[
+    # raw queries
+    'query_raw',
+    'query_first',
+    'execute_raw',
+    # mutatitive queries
+    'create',
+    'delete',
+    'update',
+    'upsert',
+    'create_many',
+    'delete_many',
+    'update_many',
+    # read queries
+    'count',
+    'group_by',
+    'find_many',
+    'find_first',
+    'find_first_or_raise',
+    'find_unique',
+    'find_unique_or_raise',
+]

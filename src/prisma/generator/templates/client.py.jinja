@@ -1,13 +1,15 @@
 {% set annotations = true %}
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider with context %}
+{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, recursive_types, active_provider with context %}
 # -- template client.py.jinja --
 from pathlib import Path
 from types import TracebackType
 
+from pydantic import BaseModel
+
 from . import types, models, errors, actions
 from .types import DatasourceOverride, HttpConfig
-from ._types import BaseModelT
+from ._types import BaseModelT, PrismaMethod
 from .bases import _PrismaModel
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
@@ -239,12 +241,12 @@ class Prisma:
     {% if active_provider != 'mongodb' %}
     {{ maybe_async_def }}execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = {{ maybe_await }}self._execute(
-            operation='{{ operations.execute_raw }}',
-            method='{{ methods.execute_raw }}',
+            method='execute_raw',
             arguments={
                 'query': query,
                 'parameters': args,
-            }
+            },
+            model=None,
         )
         return int(resp['data']['result'])
 
@@ -316,12 +318,12 @@ class Prisma:
         otherwise results will be raw dictionaries.
         """
         resp = {{ maybe_await }}self._execute(
-            operation='{{ operations.query_raw }}',
-            method='{{ methods.query_raw }}',
+            method='query_raw',
             arguments={
                 'query': query,
                 'parameters': args,
-            }
+            },
+            model=model,
         )
         result = resp['data']['result']
         if model is not None:
@@ -337,14 +339,12 @@ class Prisma:
     # TODO: don't return Any
     {{ maybe_async_def }}_execute(
         self,
-        method: str,
-        operation: str,
+        method: PrismaMethod,
         arguments: Dict[str, Any],
         model: Optional[Type['_PrismaModel']] = None,
         root_selection: Optional[List[str]] = None
     ) -> Any:
         builder = QueryBuilder(
-            operation=operation,
             method=method,
             model=model,
             arguments=arguments,
@@ -438,8 +438,7 @@ class Batch:
     {% if active_provider != 'mongodb' %}
     def execute_raw(self, query: LiteralString, *args: Any) -> None:
         self._add(
-            operation='{{ operations.execute_raw }}',
-            method='{{ methods.execute_raw }}',
+            method='execute_raw',
             arguments={
                 'query': query,
                 'parameters': args,
@@ -487,8 +486,7 @@ class {{ model.name }}BatchActions:
         include: Optional[types.{{ model.name}}Include] = None
     ) -> None:
         self._batcher._add(
-            operation='{{ operations.create }}',
-            method='{{ methods.create }}',
+            method='create',
             model=models.{{ model.name }},
             arguments={
                 'data': data,
@@ -506,8 +504,7 @@ class {{ model.name }}BatchActions:
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         self._batcher._add(
-            operation='{{ operations.create_many }}',
-            method='{{ methods.create_many }}',
+            method='create_many',
             model=models.{{ model.name }},
             arguments={
                 'data': data,
@@ -522,8 +519,7 @@ class {{ model.name }}BatchActions:
         include: Optional[types.{{ model.name}}Include] = None,
     ) -> None:
         self._batcher._add(
-            operation='{{ operations.delete }}',
-            method='{{ methods.delete }}',
+            method='delete',
             model=models.{{ model.name }},
             arguments={
                 'where': where,
@@ -538,8 +534,7 @@ class {{ model.name }}BatchActions:
         include: Optional[types.{{ model.name}}Include] = None
     ) -> None:
         self._batcher._add(
-            operation='{{ operations["update"] }}',
-            method='{{ methods["update"] }}',
+            method='update',
             model=models.{{ model.name }},
             arguments={
                 'data': data,
@@ -555,8 +550,7 @@ class {{ model.name }}BatchActions:
         include: Optional[types.{{ model.name}}Include] = None,
     ) -> None:
         self._batcher._add(
-            operation='{{ operations.upsert }}',
-            method='{{ methods.upsert }}',
+            method='upsert',
             model=models.{{ model.name }},
             arguments={
                 'where': where,
@@ -572,8 +566,7 @@ class {{ model.name }}BatchActions:
         where: types.{{ model.name }}WhereInput,
     ) -> None:
         self._batcher._add(
-            operation='{{ operations.update_many }}',
-            method='{{ methods.update_many }}',
+            method='update_many',
             model=models.{{ model.name }},
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -584,8 +577,7 @@ class {{ model.name }}BatchActions:
         where: Optional[types.{{ model.name }}WhereInput] = None,
     ) -> None:
         self._batcher._add(
-            operation='{{ operations.delete_many }}',
-            method='{{ methods.delete_many }}',
+            method='delete_many',
             model=models.{{ model.name }},
             arguments={'where': where},
             root_selection=['count'],
