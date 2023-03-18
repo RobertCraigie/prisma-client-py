@@ -38,10 +38,10 @@ class HTTPEngine(AbstractEngine):
         self.stop()
 
     {% if is_async %}
-    def close(self) -> None:
+    def close(self, *, timeout: Optional[float] = None) -> None:
         pass
 
-    async def aclose(self) -> None:
+    async def aclose(self, *, timeout: Optional[float] = None) -> None:
         await self._close_session()
     {% else %}
     def close(self) -> None:

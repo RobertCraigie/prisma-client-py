@@ -23,9 +23,12 @@ class AbstractEngine(ABC):
     def __init__(self) -> None:
         self._refcount = 1
 
-    def stop(self) -> None:
-        """Wrapper for synchronously calling close() and aclose()"""
-        self.close()
+    def stop(self, *, timeout: Optional[float] = None) -> None:
+        """Wrapper for synchronously calling close() and aclose()
+
+        The `timeout` argument is in seconds.
+        """
+        self.close(timeout=timeout)
         try:
             loop = get_running_loop()
         except RuntimeError:
@@ -33,7 +36,7 @@ class AbstractEngine(ABC):
             return
         else:
             if not loop.is_closed():
-                loop.create_task(self.aclose())
+                loop.create_task(self.aclose(timeout=timeout))
 
     def decref(self) -> None:
         """Decrement the reference counter by 1. Called when client instances are being destroyed."""
@@ -56,14 +59,19 @@ class AbstractEngine(ABC):
         return self._refcount <= 0
 
     @abstractmethod
-    def close(self) -> None:
-        """Synchronous method for closing the engine, useful if the underlying engine uses a subprocess"""
+    def close(self, *, timeout: Optional[float] = None) -> None:
+        """Synchronous method for closing the engine, useful if the underlying engine uses a subprocess
+
+        The `timeout` argument is in seconds.
+        """
         ...
 
     @abstractmethod
-    async def aclose(self) -> None:
+    async def aclose(self, *, timeout: Optional[float] = None) -> None:
         """Asynchronous method for closing the engine, only used if an
         asynchronous client is generated.
+
+        The `timeout` argument is in seconds.
         """
         ...
 

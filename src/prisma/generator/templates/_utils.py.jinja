@@ -20,42 +20,13 @@ time.sleep({{ duration }})
 {% endif %}
 {%- endmacro %}
 
-{% set operations = {
-    'create': 'mutation',
-    'delete': 'mutation',
-    'update': 'mutation',
-    'upsert': 'mutation',
-    'query_raw': 'mutation',
-    'create_many': 'mutation',
-    'execute_raw': 'mutation',
-    'delete_many': 'mutation',
-    'update_many': 'mutation',
-
-    'count': 'query',
-    'group_by': 'query',
-    'find_many': 'query',
-    'find_first': 'query',
-    'find_unique': 'query',
-}
-%}
-
-{% set methods = {
-    'create': 'createOne',
-    'delete': 'deleteOne',
-    'update': 'updateOne',
-    'upsert': 'upsertOne',
-    'query_raw': 'queryRaw',
-    'create_many': 'createMany',
-    'execute_raw': 'executeRaw',
-    'delete_many': 'deleteMany',
-    'update_many': 'updateMany',
-
-    'count': 'aggregate',
-    'group_by': 'groupBy',
-    'find_many': 'findMany',
-    'find_first': 'findFirst',
-    'find_unique': 'findUnique',
-}
-%}
-
 {% set active_provider = datasources[0].active_provider %}
+
+{% macro query_methods(name) %}
+
+    @classmethod
+    def prisma(cls: Type[_PrismaModelT]) -> 'actions.{{ name }}Actions[_PrismaModelT]':
+        from .client import get_client
+
+        return actions.{{ name }}Actions[_PrismaModelT](get_client(), cls)
+{% endmacro %}

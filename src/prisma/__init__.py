@@ -3,8 +3,8 @@
 __title__ = 'prisma'
 __author__ = 'RobertCraigie'
 __license__ = 'APACHE'
-__copyright__ = 'Copyright 2020-2021 RobertCraigie'
-__version__ = '0.8.1a'
+__copyright__ = 'Copyright 2020-2023 RobertCraigie'
+__version__ = '0.8.3a'
 
 from typing import TYPE_CHECKING
 
@@ -12,6 +12,7 @@ from ._config import config as config
 from .utils import setup_logging
 from . import errors as errors
 from .validator import *
+from ._types import PrismaMethod as PrismaMethod
 
 
 try:

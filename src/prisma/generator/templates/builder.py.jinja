@@ -1,16 +1,7 @@
+{% set annotations = true %}
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import maybe_async_def, maybe_await with context %}
 # -- template builder.py.jinja --
-
-# TODO: the QueryBuilder should validate and add type information context.
-#       currently we just naively iterate through arguments and encode them
-#       using standard json when we don't have any special casing for it.
-#       this makes it more difficult to add support for non-standard types
-#       such as the `Json` type.
-# TODO: optimise for performance (switch to c / cython?)
-# TODO: pass context around differently, relying on the builder instance is
-#       not ideal, context should be local to each node
-
 
 import json
 import logging
@@ -19,26 +10,29 @@ from textwrap import indent
 from datetime import timezone
 from abc import abstractmethod, ABC
 from functools import singledispatch
+from typing import ForwardRef
+from typing_extensions import TypeGuard
+
+from pydantic import BaseModel
+from pydantic.fields import ModelField
 
 from . import fields
 from .types import Serializable
-from .errors import UnknownModelError, UnknownRelationalFieldError
+from .errors import UnknownModelError, UnknownRelationalFieldError, InvalidModelError
 from ._constants import QUERY_BUILDER_ALIASES
+from ._types import PrismaMethod
+
+if TYPE_CHECKING:
+    from .bases import _PrismaModel as PrismaModel
 
 
 log: logging.Logger = logging.getLogger(__name__)
 
 ChildType = Union['AbstractNode', str]
 ITERABLES: Tuple[Type[Any], ...] = (list, tuple, set)
-
-
-DEFAULT_FIELDS_MAPPING: Dict[str, List[str]] = {
+PRISMA_MODELS: Set[str] = {
     {% for model in dmmf.datamodel.models %}
-    '{{ model.name }}': [
-        {% for field in model.scalar_fields %}
-        '{{ field.name }}',
-        {% endfor %}
-    ],
+    '{{ model.name }}',
     {% endfor %}
 }
 
@@ -52,28 +46,81 @@ RELATIONAL_FIELD_MAPPINGS: Dict[str, Dict[str, str]] = {
     {% endfor %}
 }
 
+METHOD_OPERATION_MAPPING: dict[PrismaMethod, Operation] = {
+    'create': 'mutation',
+    'delete': 'mutation',
+    'update': 'mutation',
+    'upsert': 'mutation',
+    'query_raw': 'mutation',
+    'query_first': 'mutation',
+    'create_many': 'mutation',
+    'execute_raw': 'mutation',
+    'delete_many': 'mutation',
+    'update_many': 'mutation',
+
+    'count': 'query',
+    'group_by': 'query',
+    'find_many': 'query',
+    'find_first': 'query',
+    'find_first_or_raise': 'query',
+    'find_unique': 'query',
+    'find_unique_or_raise': 'query',
+}
+
+METHOD_FORMAT_MAPPING: dict[PrismaMethod, str] = {
+    'create': 'createOne{model}',
+    'delete': 'deleteOne{model}',
+    'update': 'updateOne{model}',
+    'upsert': 'upsertOne{model}',
+    'query_raw': 'queryRaw',
+    'query_first': 'queryRaw',
+    'create_many': 'createMany{model}',
+    'execute_raw': 'executeRaw',
+    'delete_many': 'deleteMany{model}',
+    'update_many': 'updateMany{model}',
+
+    'count': 'aggregate{model}',
+    'group_by': 'groupBy{model}',
+    'find_many': 'findMany{model}',
+    'find_first': 'findFirst{model}',
+    'find_first_or_raise': 'findFirst{model}OrThrow',
+    'find_unique': 'findUnique{model}',
+    'find_unique_or_raise': 'findUnique{model}OrThrow',
+}
+
+MISSING = object()
+Operation = Literal['query', 'mutation']
+
+
 
 class QueryBuilder:
-    # prisma method
-    method: str
+    method: PrismaMethod
+    """The name of the actions method that this query is for, e.g. `find_unique`"""
 
-    # GraphQL operation
-    operation: str
+    method_format: str
+    """Template denoting how the internal method name should be constructed, e.g. `findUnique{model}`"""
 
-    # prisma model
-    model: Optional[str]
+    operation: Operation
+    """The GraphQL operatiom e.g. `query`, `mutation`"""
 
-    # mapping of relational fields to include in the result
-    include: Optional[Dict[str, Any]]
+    model: type[PrismaModel] | None
+    """The Pydantic model that will be used to parse the response.
 
-    # arguments to pass to the query
-    arguments: Dict[str, Any]
+    Used to extract the model name & build selections.
+    """
 
-    # list of fields to select
-    root_selection: Optional[List[str]]
+    include: dict[str, Any] | None
+    """Mapping of relational fields to include in the result"""
+
+    arguments: dict[str, Any]
+    """Arguments to pass to the query"""
+
+    root_selection: list[str] | None
+    """List of fields to select"""
 
     __slots__ = (
         'method',
+        'method_format',
         'operation',
         'model',
         'include',
@@ -84,22 +131,33 @@ class QueryBuilder:
     def __init__(
         self,
         *,
-        method: str,
-        operation: str,
-        arguments: Dict[str, Any],
-        model: Optional[str] = None,
-        root_selection: Optional[List[str]] = None
+        method: PrismaMethod,
+        arguments: dict[str, Any],
+        model: type[BaseModel] | None = None,
+        root_selection: list[str] | None = None
     ) -> None:
-        self.model = model
         self.method = method
-        self.operation = operation
+        self.method_format = METHOD_FORMAT_MAPPING[method]
+        self.operation = METHOD_OPERATION_MAPPING[method]
         self.root_selection = root_selection
         self.arguments = args = self._transform_aliases(arguments)
         self.include = args.pop('include', None)
 
+        # Note: we ignore the `model` argument for raw queries as users may want to pass in a model
+        # that isn't a `PrismaModel` because they've defined it manually & enforcing that
+        # they subclass `PrismaModel` doesn't bring any real benefits.
+        if model is None or method in {'execute_raw', 'query_raw', 'query_first'}:
+            self.model = None
+        else:
+            if not _is_prisma_model_type(model) or not hasattr(model, '__prisma_model__'):
+                raise InvalidModelError(model)
+
+            self.model = model
+
+
     def build(self) -> str:
         """Build the payload that should be sent to the QueryEngine"""
-        data = {
+        data: dict[str, object] = {
             'variables': {},
             'operation_name': self.operation,
             'query': self.build_query(),
@@ -146,31 +204,59 @@ class QueryBuilder:
         )
         return root
 
-    def get_default_fields(self, model: str) -> List[str]:
+    def get_default_fields(self, model: type[PrismaModel]) -> list[str]:
         """Returns a list of all the scalar fields of a model
 
         Raises UnknownModelError if the current model cannot be found.
         """
-        try:
-            return DEFAULT_FIELDS_MAPPING[model].copy()
-        except KeyError as exc:
-            raise UnknownModelError(model) from exc
+        name = getattr(model, '__prisma_model__', MISSING)
+        if name is MISSING:
+            raise InvalidModelError(model)
 
-    def get_relational_model(self, current_model: str, field: str) -> str:
+        name = model.__prisma_model__
+        if name not in PRISMA_MODELS:
+            raise UnknownModelError(name)
+
+        # by default we exclude every field that points to a PrismaModel as that indicates that it is a relational field
+        # we explicitly keep fields that point to anything else, even other pydantic.BaseModel types, as they can be used to deserialize JSON
+        return [
+            field
+            for field, info in model.__fields__.items()
+            if not _field_is_prisma_model(info, parent=model)
+        ]
+
+    def get_relational_model(self, current_model: Type[PrismaModel], field: str) -> Type[PrismaModel]:
         """Returns the model that the field is related to.
 
         Raises UnknownModelError if the current model is invalid.
         Raises UnknownRelationalFieldError if the field does not exist.
         """
-        try:
-            mappings = RELATIONAL_FIELD_MAPPINGS[current_model]
-        except KeyError as exc:
-            raise UnknownModelError(current_model) from exc
+        name = getattr(current_model, '__prisma_model__', MISSING)
+        if name is MISSING:
+            raise InvalidModelError(current_model)
+
+        name = cast(str, name)
 
         try:
-            return mappings[field]
+            mappings = RELATIONAL_FIELD_MAPPINGS[name]
         except KeyError as exc:
-            raise UnknownRelationalFieldError(model=current_model, field=field) from exc
+            raise UnknownModelError(name) from exc
+
+        if field not in mappings:
+            raise UnknownRelationalFieldError(model=current_model.__name__, field=field)
+
+        try:
+            info = current_model.__fields__[field]
+        except KeyError as exc:
+            raise UnknownRelationalFieldError(model=current_model.__name__, field=field)
+
+        if not _field_is_prisma_model(info, parent=current_model):
+            raise RuntimeError(
+                f'The `{field}` field doesn\'t appear to be a Prisma Model type. ' +
+                'Is the field a pydantic.BaseModel type and does it have a `__prisma_model__` class variable?'
+            )
+
+        return cast('Type[PrismaModel]', info.type_)
 
     def _transform_aliases(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """Transform dict keys to match global aliases
@@ -192,6 +278,26 @@ class QueryBuilder:
             else:
                 transformed[alias] = value
         return transformed
+
+
+def _field_is_prisma_model(field: ModelField, *, parent: type[BaseModel]) -> bool:
+  """Whether or not the given field info represents a model at the database level.
+
+  This will return `True` for cases where the field represents a list of models or a single model.
+  """
+  if isinstance(field.type_, ForwardRef):
+      cls_name = parent.__name__
+      raise RuntimeError(
+        f'Encountered forward reference for {cls_name}.{field.name}; Forward references must be evaluated using {cls_name}.update_forward_refs()'
+      )
+
+  return hasattr(field.type_, '__prisma_model__')
+
+
+def _is_prisma_model_type(type_: type[BaseModel]) -> TypeGuard[type[PrismaModel]]:
+    from .bases import _PrismaModel
+
+    return issubclass(type_, _PrismaModel)
 
 
 class AbstractNode(ABC):
@@ -371,9 +477,12 @@ class ResultNode(Node):
     def enter(self) -> str:
         model = self.builder.model
         if model is not None:
-            return f'result: {self.builder.method}{model}'
+            model_name = model.__prisma_model__
+        else:
+            model_name = ''
 
-        return f'result: {self.builder.method}'
+        method = self.builder.method_format.format(model=model_name)
+        return f'result: {method}'
 
     def depart(self) -> Optional[str]:
         return None
@@ -429,11 +538,11 @@ class Arguments(Node):
                     Key(arg, node=Data.create(self.builder, data=value))
                 )
             elif isinstance(value, ITERABLES):
-                # NOTE: we have a special case for execute_raw and query_raw
+                # NOTE: we have a special case for execute_raw, query_raw and query_first
                 # here as prisma expects parameters to be passed as a json string
                 # value like "[\"John\",\"123\"]", and we encode twice to ensure
                 # that only the inner quotes are escaped
-                if self.builder.method in {'queryRaw', 'executeRaw'}:
+                if self.builder.method in {'query_raw', 'query_first', 'execute_raw'}:
                     children.append(f'{arg}: {dumps(dumps(value))}')
                 else:
                     children.append(Key(arg, node=ListNode.create(self.builder, data=value)))
@@ -556,9 +665,9 @@ class Selection(Node):
         }
     }
     """
-    model: Optional[str]
-    include: Optional[Dict[str, Any]]
-    root_selection: Optional[List[str]]
+    model: type[PrismaModel] | None
+    include: dict[str, Any] | None
+    root_selection: list[str] | None
 
     __slots__ = (
         'model',
@@ -568,9 +677,9 @@ class Selection(Node):
 
     def __init__(
         self,
-        model: Optional[str] = None,
-        include: Optional[Dict[str, Any]] = None,
-        root_selection: Optional[List[str]] = None,
+        model: type[PrismaModel] | None = None,
+        include: dict[str, Any] | None = None,
+        root_selection: list[str] | None = None,
         **kwargs: Any
     ) -> None:
         super().__init__(**kwargs)
@@ -739,4 +848,3 @@ def dumps(obj: Any, **kwargs: Any) -> str:
 
 # black does not respect the fmt: off comment without this
 # fmt: on
-
