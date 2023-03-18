@@ -1,6 +1,6 @@
 {% set annotations = true %}
 {% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, methods, operations, recursive_types, active_provider with context %}
+{% from '_utils.py.jinja' import is_async, maybe_async_def, maybe_await, recursive_types, active_provider with context %}
 # -- template actions.py.jinja --
 from typing import TypeVar
 import warnings
@@ -171,9 +171,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         ```
         """
         resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.create }}',
             method='create',
-            prisma_method='{{ methods.create }}',
             model=self._model,
             arguments={
                 'data': data,
@@ -237,9 +235,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.create_many }}',
             method='create_many',
-            prisma_method='{{ methods.create_many }}',
             model=self._model,
             arguments={
                 'data': data,
@@ -287,9 +283,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         """
         try:
             resp = {{ maybe_await }}self._client._execute(
-                operation='{{ operations.delete }}',
                 method='delete',
-                prisma_method='{{ methods.delete }}',
                 model=self._model,
                 arguments={
                     'where': where,
@@ -338,9 +332,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         ```
         """
         resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.find_unique }}',
             method='find_unique',
-            prisma_method='{{ methods.find_unique }}',
             model=self._model,
             arguments={
                 'where': where,
@@ -389,8 +381,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         ```
         """
         resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.find_unique_or_raise }}',
-            method='{{ methods.find_unique_or_raise }}',
+            method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
@@ -456,9 +447,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         ```
         """
         resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.find_many }}',
             method='find_many',
-            prisma_method='{{ methods.find_many }}',
             model=self._model,
             arguments={
                 'take': take,
@@ -523,9 +512,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         ```
         """
         resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.find_first }}',
             method='find_first',
-            prisma_method='{{ methods.find_first }}',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -592,8 +579,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         ```
         """
         resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.find_first_or_raise }}',
-            method='{{ methods.find_first_or_raise }}',
+            method='find_first_or_raise',
             model=self._model,
             arguments={
                 'skip': skip,
@@ -649,9 +635,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         """
         try:
             resp = {{ maybe_await }}self._client._execute(
-                operation='{{ operations["update"] }}',
                 method='update',
-                prisma_method='{{ methods["update"] }}',
                 model=self._model,
                 arguments={
                     'data': data,
@@ -736,9 +720,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         ```
         """
         resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.upsert }}',
             method='upsert',
-            prisma_method='{{ methods.upsert }}',
             model=self._model,
             arguments={
                 'where': where,
@@ -786,9 +768,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         ```
         """
         resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.update_many }}',
             method='update_many',
-            prisma_method='{{ methods.update_many }}',
             model=self._model,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
@@ -894,9 +874,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             {% endraw %}
 
         resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.count }}',
             method='count',
-            prisma_method='{{ methods.count }}',
             model=self._model,
             arguments={
                 'take': take,
@@ -940,9 +918,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         ```
         """
         resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.delete_many }}',
             method='delete_many',
-            prisma_method='{{ methods.delete_many }}',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
@@ -1060,9 +1036,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 root_selection.append(_select_fields('_count', count))
 
         resp = {{ maybe_await }}self._client._execute(
-            operation='{{ operations.group_by }}',
             method='group_by',
-            prisma_method='{{ methods.group_by }}',
             model=self._model,
             arguments={
                 'by': by,
@@ -1090,4 +1064,3 @@ def _select_fields(root: str, select: Mapping[str, Any]) -> str:
 
 
 from . import models
-
