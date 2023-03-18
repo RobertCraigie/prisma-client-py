@@ -378,9 +378,9 @@ class Prisma:
     def _execute(
         self,
         method: PrismaMethod,
-        arguments: Dict[str, Any],
-        model: Optional[Type['_PrismaModel']] = None,
-        root_selection: Optional[List[str]] = None
+        arguments: dict[str, Any],
+        model: type[BaseModel] | None = None,
+        root_selection: list[str] | None = None
     ) -> Any:
         builder = QueryBuilder(
             method=method,
