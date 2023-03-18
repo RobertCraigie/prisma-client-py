@@ -77,7 +77,7 @@ jobs:
           path: ".cache/.coverage.*"
 
   benchmark:
-    name: test
+    name: benchmark
     runs-on: ubuntu-latest
 
     steps:
