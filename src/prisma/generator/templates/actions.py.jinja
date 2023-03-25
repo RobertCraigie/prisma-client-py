@@ -6,6 +6,8 @@ from typing import TypeVar
 import warnings
 
 from . import types, errors, bases
+from .errors import RecordNotFoundError
+from .utils import as_list, allow_none
 
 if TYPE_CHECKING:
     from .client import Client
@@ -170,15 +172,16 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute(
             method='create',
             model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     {{ maybe_async_def }}create_many(
         self,
@@ -234,16 +237,17 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
+            parser=int,
+            data_path=['count'],
             root_selection=['count'],
         )
-        return int(resp['data']['result']['count'])
 
     {{ maybe_async_def }}delete(
         self,
@@ -281,19 +285,17 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        try:
-            resp = {{ maybe_await }}self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return {{ maybe_await }}self._client._execute(
+            method='delete',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     {{ maybe_async_def }}find_unique(
         self,
@@ -331,18 +333,16 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute(
             method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     {{ maybe_async_def }}find_unique_or_raise(
         self,
@@ -380,15 +380,16 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute(
             method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     {{ maybe_async_def }}find_many(
         self,
@@ -446,7 +447,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute(
             method='find_many',
             model=self._model,
             arguments={
@@ -458,8 +459,9 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     {{ maybe_async_def }}find_first(
         self,
@@ -511,7 +513,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute(
             method='find_first',
             model=self._model,
             arguments={
@@ -522,11 +524,9 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     {{ maybe_async_def }}find_first_or_raise(
         self,
@@ -578,7 +578,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute(
             method='find_first_or_raise',
             model=self._model,
             arguments={
@@ -589,8 +589,9 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     {{ maybe_async_def }}update(
         self,
@@ -633,20 +634,18 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        try:
-            resp = {{ maybe_await }}self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return {{ maybe_await }}self._client._execute(
+            method='update',
+            model=self._model,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            ignore_exceptions=(errors.RecordNotFoundError,),
+            parser=self._model.parse_obj,
+        )
 
     {{ maybe_async_def }}upsert(
         self,
@@ -719,7 +718,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         {% endif %}
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute(
             method='upsert',
             model=self._model,
             arguments={
@@ -728,8 +727,9 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     {{ maybe_async_def }}update_many(
         self,
@@ -767,13 +767,14 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute(
             method='update_many',
             model=self._model,
-            arguments={'data': data, 'where': where,},
+            arguments={'data': data, 'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     {{ maybe_async_def }}count(
@@ -873,7 +874,13 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             ]
             {% endraw %}
 
-        resp = {{ maybe_await }}self._client._execute(
+        def parse_response(data: Any) -> int | types.{{ model.name }}CountAggregateOutput:
+            if select is None:
+                return int(data['_all'])
+
+            return cast(types.{{ model.name }}CountAggregateOutput, data)
+
+        return {{ maybe_await }}self._client._execute(
             method='count',
             model=self._model,
             arguments={
@@ -883,12 +890,9 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'cursor': cursor,
             },
             root_selection=root_selection,
+            data_path=['_count'],
+            parser=parse_response,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.{{ model.name }}CountAggregateOutput, resp['data']['result']['_count'])
 
     {{ maybe_async_def }}delete_many(
         self,
@@ -917,13 +921,14 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         total = {{ maybe_await }}{{ model.name }}.prisma().delete_many()
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute(
             method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -1035,7 +1040,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             elif isinstance(count, dict):
                 root_selection.append(_select_fields('_count', count))
 
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute(
             method='group_by',
             model=self._model,
             arguments={
@@ -1047,8 +1052,9 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'orderBy': order,
             },
             root_selection=root_selection,
+            data_path=[],
+            parser=lambda v: cast(List['types.{{ model.name }}GroupByOutput'], v)
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 {% endfor %}
 

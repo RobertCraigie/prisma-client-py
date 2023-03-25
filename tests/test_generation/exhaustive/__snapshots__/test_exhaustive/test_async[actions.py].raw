@@ -44,6 +44,8 @@ from typing import TypeVar
 import warnings
 
 from . import types, errors, bases
+from .errors import RecordNotFoundError
+from .utils import as_list, allow_none
 
 if TYPE_CHECKING:
     from .client import Client
@@ -180,15 +182,16 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create',
             model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def create_many(
         self,
@@ -246,16 +249,17 @@ class PostActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
+            parser=int,
+            data_path=['count'],
             root_selection=['count'],
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
@@ -295,19 +299,17 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='delete',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
@@ -347,18 +349,16 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_unique_or_raise(
         self,
@@ -398,15 +398,16 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def find_many(
         self,
@@ -464,7 +465,7 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_many',
             model=self._model,
             arguments={
@@ -476,8 +477,9 @@ class PostActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     async def find_first(
         self,
@@ -529,7 +531,7 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first',
             model=self._model,
             arguments={
@@ -540,11 +542,9 @@ class PostActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_first_or_raise(
         self,
@@ -596,7 +596,7 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first_or_raise',
             model=self._model,
             arguments={
@@ -607,8 +607,9 @@ class PostActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
@@ -652,20 +653,18 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='update',
+            model=self._model,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            ignore_exceptions=(errors.RecordNotFoundError,),
+            parser=self._model.parse_obj,
+        )
 
     async def upsert(
         self,
@@ -717,7 +716,7 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='upsert',
             model=self._model,
             arguments={
@@ -726,8 +725,9 @@ class PostActions(Generic[_PrismaModelT]):
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -765,13 +765,14 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='update_many',
             model=self._model,
-            arguments={'data': data, 'where': where,},
+            arguments={'data': data, 'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -909,7 +910,13 @@ class PostActions(Generic[_PrismaModelT]):
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
 
-        resp = await self._client._execute(
+        def parse_response(data: Any) -> int | types.PostCountAggregateOutput:
+            if select is None:
+                return int(data['_all'])
+
+            return cast(types.PostCountAggregateOutput, data)
+
+        return await self._client._execute(
             method='count',
             model=self._model,
             arguments={
@@ -919,12 +926,9 @@ class PostActions(Generic[_PrismaModelT]):
                 'cursor': cursor,
             },
             root_selection=root_selection,
+            data_path=['_count'],
+            parser=parse_response,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.PostCountAggregateOutput, resp['data']['result']['_count'])
 
     async def delete_many(
         self,
@@ -954,13 +958,14 @@ class PostActions(Generic[_PrismaModelT]):
         total = await Post.prisma().delete_many()
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -1064,7 +1069,7 @@ class PostActions(Generic[_PrismaModelT]):
             elif isinstance(count, dict):
                 root_selection.append(_select_fields('_count', count))
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='group_by',
             model=self._model,
             arguments={
@@ -1076,8 +1081,9 @@ class PostActions(Generic[_PrismaModelT]):
                 'orderBy': order,
             },
             root_selection=root_selection,
+            data_path=[],
+            parser=lambda v: cast(List['types.PostGroupByOutput'], v)
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class UserActions(Generic[_PrismaModelT]):
@@ -1211,15 +1217,16 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create',
             model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def create_many(
         self,
@@ -1285,16 +1292,17 @@ class UserActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
+            parser=int,
+            data_path=['count'],
             root_selection=['count'],
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
@@ -1334,19 +1342,17 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='delete',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
@@ -1386,18 +1392,16 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_unique_or_raise(
         self,
@@ -1437,15 +1441,16 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def find_many(
         self,
@@ -1503,7 +1508,7 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_many',
             model=self._model,
             arguments={
@@ -1515,8 +1520,9 @@ class UserActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     async def find_first(
         self,
@@ -1568,7 +1574,7 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first',
             model=self._model,
             arguments={
@@ -1579,11 +1585,9 @@ class UserActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_first_or_raise(
         self,
@@ -1635,7 +1639,7 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first_or_raise',
             model=self._model,
             arguments={
@@ -1646,8 +1650,9 @@ class UserActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
@@ -1691,20 +1696,18 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='update',
+            model=self._model,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            ignore_exceptions=(errors.RecordNotFoundError,),
+            parser=self._model.parse_obj,
+        )
 
     async def upsert(
         self,
@@ -1764,7 +1767,7 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='upsert',
             model=self._model,
             arguments={
@@ -1773,8 +1776,9 @@ class UserActions(Generic[_PrismaModelT]):
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -1812,13 +1816,14 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='update_many',
             model=self._model,
-            arguments={'data': data, 'where': where,},
+            arguments={'data': data, 'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -1956,7 +1961,13 @@ class UserActions(Generic[_PrismaModelT]):
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
 
-        resp = await self._client._execute(
+        def parse_response(data: Any) -> int | types.UserCountAggregateOutput:
+            if select is None:
+                return int(data['_all'])
+
+            return cast(types.UserCountAggregateOutput, data)
+
+        return await self._client._execute(
             method='count',
             model=self._model,
             arguments={
@@ -1966,12 +1977,9 @@ class UserActions(Generic[_PrismaModelT]):
                 'cursor': cursor,
             },
             root_selection=root_selection,
+            data_path=['_count'],
+            parser=parse_response,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.UserCountAggregateOutput, resp['data']['result']['_count'])
 
     async def delete_many(
         self,
@@ -2001,13 +2009,14 @@ class UserActions(Generic[_PrismaModelT]):
         total = await User.prisma().delete_many()
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -2111,7 +2120,7 @@ class UserActions(Generic[_PrismaModelT]):
             elif isinstance(count, dict):
                 root_selection.append(_select_fields('_count', count))
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='group_by',
             model=self._model,
             arguments={
@@ -2123,8 +2132,9 @@ class UserActions(Generic[_PrismaModelT]):
                 'orderBy': order,
             },
             root_selection=root_selection,
+            data_path=[],
+            parser=lambda v: cast(List['types.UserGroupByOutput'], v)
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class MActions(Generic[_PrismaModelT]):
@@ -2257,15 +2267,16 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create',
             model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def create_many(
         self,
@@ -2329,16 +2340,17 @@ class MActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
+            parser=int,
+            data_path=['count'],
             root_selection=['count'],
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
@@ -2378,19 +2390,17 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='delete',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
@@ -2430,18 +2440,16 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_unique_or_raise(
         self,
@@ -2481,15 +2489,16 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def find_many(
         self,
@@ -2547,7 +2556,7 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_many',
             model=self._model,
             arguments={
@@ -2559,8 +2568,9 @@ class MActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     async def find_first(
         self,
@@ -2612,7 +2622,7 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first',
             model=self._model,
             arguments={
@@ -2623,11 +2633,9 @@ class MActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_first_or_raise(
         self,
@@ -2679,7 +2687,7 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first_or_raise',
             model=self._model,
             arguments={
@@ -2690,8 +2698,9 @@ class MActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
@@ -2735,20 +2744,18 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='update',
+            model=self._model,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            ignore_exceptions=(errors.RecordNotFoundError,),
+            parser=self._model.parse_obj,
+        )
 
     async def upsert(
         self,
@@ -2806,7 +2813,7 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='upsert',
             model=self._model,
             arguments={
@@ -2815,8 +2822,9 @@ class MActions(Generic[_PrismaModelT]):
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -2854,13 +2862,14 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='update_many',
             model=self._model,
-            arguments={'data': data, 'where': where,},
+            arguments={'data': data, 'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -2998,7 +3007,13 @@ class MActions(Generic[_PrismaModelT]):
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
 
-        resp = await self._client._execute(
+        def parse_response(data: Any) -> int | types.MCountAggregateOutput:
+            if select is None:
+                return int(data['_all'])
+
+            return cast(types.MCountAggregateOutput, data)
+
+        return await self._client._execute(
             method='count',
             model=self._model,
             arguments={
@@ -3008,12 +3023,9 @@ class MActions(Generic[_PrismaModelT]):
                 'cursor': cursor,
             },
             root_selection=root_selection,
+            data_path=['_count'],
+            parser=parse_response,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.MCountAggregateOutput, resp['data']['result']['_count'])
 
     async def delete_many(
         self,
@@ -3043,13 +3055,14 @@ class MActions(Generic[_PrismaModelT]):
         total = await M.prisma().delete_many()
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -3153,7 +3166,7 @@ class MActions(Generic[_PrismaModelT]):
             elif isinstance(count, dict):
                 root_selection.append(_select_fields('_count', count))
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='group_by',
             model=self._model,
             arguments={
@@ -3165,8 +3178,9 @@ class MActions(Generic[_PrismaModelT]):
                 'orderBy': order,
             },
             root_selection=root_selection,
+            data_path=[],
+            parser=lambda v: cast(List['types.MGroupByOutput'], v)
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class NActions(Generic[_PrismaModelT]):
@@ -3300,15 +3314,16 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create',
             model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def create_many(
         self,
@@ -3374,16 +3389,17 @@ class NActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
+            parser=int,
+            data_path=['count'],
             root_selection=['count'],
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
@@ -3423,19 +3439,17 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='delete',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
@@ -3475,18 +3489,16 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_unique_or_raise(
         self,
@@ -3526,15 +3538,16 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def find_many(
         self,
@@ -3592,7 +3605,7 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_many',
             model=self._model,
             arguments={
@@ -3604,8 +3617,9 @@ class NActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     async def find_first(
         self,
@@ -3657,7 +3671,7 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first',
             model=self._model,
             arguments={
@@ -3668,11 +3682,9 @@ class NActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_first_or_raise(
         self,
@@ -3724,7 +3736,7 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first_or_raise',
             model=self._model,
             arguments={
@@ -3735,8 +3747,9 @@ class NActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
@@ -3780,20 +3793,18 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='update',
+            model=self._model,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            ignore_exceptions=(errors.RecordNotFoundError,),
+            parser=self._model.parse_obj,
+        )
 
     async def upsert(
         self,
@@ -3853,7 +3864,7 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='upsert',
             model=self._model,
             arguments={
@@ -3862,8 +3873,9 @@ class NActions(Generic[_PrismaModelT]):
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -3901,13 +3913,14 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='update_many',
             model=self._model,
-            arguments={'data': data, 'where': where,},
+            arguments={'data': data, 'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -4045,7 +4058,13 @@ class NActions(Generic[_PrismaModelT]):
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
 
-        resp = await self._client._execute(
+        def parse_response(data: Any) -> int | types.NCountAggregateOutput:
+            if select is None:
+                return int(data['_all'])
+
+            return cast(types.NCountAggregateOutput, data)
+
+        return await self._client._execute(
             method='count',
             model=self._model,
             arguments={
@@ -4055,12 +4074,9 @@ class NActions(Generic[_PrismaModelT]):
                 'cursor': cursor,
             },
             root_selection=root_selection,
+            data_path=['_count'],
+            parser=parse_response,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.NCountAggregateOutput, resp['data']['result']['_count'])
 
     async def delete_many(
         self,
@@ -4090,13 +4106,14 @@ class NActions(Generic[_PrismaModelT]):
         total = await N.prisma().delete_many()
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -4200,7 +4217,7 @@ class NActions(Generic[_PrismaModelT]):
             elif isinstance(count, dict):
                 root_selection.append(_select_fields('_count', count))
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='group_by',
             model=self._model,
             arguments={
@@ -4212,8 +4229,9 @@ class NActions(Generic[_PrismaModelT]):
                 'orderBy': order,
             },
             root_selection=root_selection,
+            data_path=[],
+            parser=lambda v: cast(List['types.NGroupByOutput'], v)
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class OneOptionalActions(Generic[_PrismaModelT]):
@@ -4346,15 +4364,16 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create',
             model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def create_many(
         self,
@@ -4418,16 +4437,17 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
+            parser=int,
+            data_path=['count'],
             root_selection=['count'],
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
@@ -4467,19 +4487,17 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='delete',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
@@ -4519,18 +4537,16 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_unique_or_raise(
         self,
@@ -4570,15 +4586,16 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def find_many(
         self,
@@ -4636,7 +4653,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_many',
             model=self._model,
             arguments={
@@ -4648,8 +4665,9 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     async def find_first(
         self,
@@ -4701,7 +4719,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first',
             model=self._model,
             arguments={
@@ -4712,11 +4730,9 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_first_or_raise(
         self,
@@ -4768,7 +4784,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first_or_raise',
             model=self._model,
             arguments={
@@ -4779,8 +4795,9 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
@@ -4824,20 +4841,18 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='update',
+            model=self._model,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            ignore_exceptions=(errors.RecordNotFoundError,),
+            parser=self._model.parse_obj,
+        )
 
     async def upsert(
         self,
@@ -4895,7 +4910,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='upsert',
             model=self._model,
             arguments={
@@ -4904,8 +4919,9 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -4943,13 +4959,14 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='update_many',
             model=self._model,
-            arguments={'data': data, 'where': where,},
+            arguments={'data': data, 'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -5087,7 +5104,13 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
 
-        resp = await self._client._execute(
+        def parse_response(data: Any) -> int | types.OneOptionalCountAggregateOutput:
+            if select is None:
+                return int(data['_all'])
+
+            return cast(types.OneOptionalCountAggregateOutput, data)
+
+        return await self._client._execute(
             method='count',
             model=self._model,
             arguments={
@@ -5097,12 +5120,9 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'cursor': cursor,
             },
             root_selection=root_selection,
+            data_path=['_count'],
+            parser=parse_response,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.OneOptionalCountAggregateOutput, resp['data']['result']['_count'])
 
     async def delete_many(
         self,
@@ -5132,13 +5152,14 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         total = await OneOptional.prisma().delete_many()
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -5242,7 +5263,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             elif isinstance(count, dict):
                 root_selection.append(_select_fields('_count', count))
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='group_by',
             model=self._model,
             arguments={
@@ -5254,8 +5275,9 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'orderBy': order,
             },
             root_selection=root_selection,
+            data_path=[],
+            parser=lambda v: cast(List['types.OneOptionalGroupByOutput'], v)
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class ManyRequiredActions(Generic[_PrismaModelT]):
@@ -5388,15 +5410,16 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create',
             model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def create_many(
         self,
@@ -5460,16 +5483,17 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
+            parser=int,
+            data_path=['count'],
             root_selection=['count'],
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
@@ -5509,19 +5533,17 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='delete',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
@@ -5561,18 +5583,16 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_unique_or_raise(
         self,
@@ -5612,15 +5632,16 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def find_many(
         self,
@@ -5678,7 +5699,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_many',
             model=self._model,
             arguments={
@@ -5690,8 +5711,9 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     async def find_first(
         self,
@@ -5743,7 +5765,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first',
             model=self._model,
             arguments={
@@ -5754,11 +5776,9 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_first_or_raise(
         self,
@@ -5810,7 +5830,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first_or_raise',
             model=self._model,
             arguments={
@@ -5821,8 +5841,9 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
@@ -5866,20 +5887,18 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='update',
+            model=self._model,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            ignore_exceptions=(errors.RecordNotFoundError,),
+            parser=self._model.parse_obj,
+        )
 
     async def upsert(
         self,
@@ -5937,7 +5956,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='upsert',
             model=self._model,
             arguments={
@@ -5946,8 +5965,9 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -5985,13 +6005,14 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='update_many',
             model=self._model,
-            arguments={'data': data, 'where': where,},
+            arguments={'data': data, 'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -6129,7 +6150,13 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
 
-        resp = await self._client._execute(
+        def parse_response(data: Any) -> int | types.ManyRequiredCountAggregateOutput:
+            if select is None:
+                return int(data['_all'])
+
+            return cast(types.ManyRequiredCountAggregateOutput, data)
+
+        return await self._client._execute(
             method='count',
             model=self._model,
             arguments={
@@ -6139,12 +6166,9 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'cursor': cursor,
             },
             root_selection=root_selection,
+            data_path=['_count'],
+            parser=parse_response,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.ManyRequiredCountAggregateOutput, resp['data']['result']['_count'])
 
     async def delete_many(
         self,
@@ -6174,13 +6198,14 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         total = await ManyRequired.prisma().delete_many()
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -6284,7 +6309,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             elif isinstance(count, dict):
                 root_selection.append(_select_fields('_count', count))
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='group_by',
             model=self._model,
             arguments={
@@ -6296,8 +6321,9 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'orderBy': order,
             },
             root_selection=root_selection,
+            data_path=[],
+            parser=lambda v: cast(List['types.ManyRequiredGroupByOutput'], v)
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class ListsActions(Generic[_PrismaModelT]):
@@ -6425,15 +6451,16 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create',
             model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def create_many(
         self,
@@ -6487,16 +6514,17 @@ class ListsActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
+            parser=int,
+            data_path=['count'],
             root_selection=['count'],
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
@@ -6536,19 +6564,17 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='delete',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
@@ -6588,18 +6614,16 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_unique_or_raise(
         self,
@@ -6639,15 +6663,16 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def find_many(
         self,
@@ -6705,7 +6730,7 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_many',
             model=self._model,
             arguments={
@@ -6717,8 +6742,9 @@ class ListsActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     async def find_first(
         self,
@@ -6770,7 +6796,7 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first',
             model=self._model,
             arguments={
@@ -6781,11 +6807,9 @@ class ListsActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_first_or_raise(
         self,
@@ -6837,7 +6861,7 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first_or_raise',
             model=self._model,
             arguments={
@@ -6848,8 +6872,9 @@ class ListsActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
@@ -6893,20 +6918,18 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='update',
+            model=self._model,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            ignore_exceptions=(errors.RecordNotFoundError,),
+            parser=self._model.parse_obj,
+        )
 
     async def upsert(
         self,
@@ -6954,7 +6977,7 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='upsert',
             model=self._model,
             arguments={
@@ -6963,8 +6986,9 @@ class ListsActions(Generic[_PrismaModelT]):
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -7002,13 +7026,14 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='update_many',
             model=self._model,
-            arguments={'data': data, 'where': where,},
+            arguments={'data': data, 'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -7146,7 +7171,13 @@ class ListsActions(Generic[_PrismaModelT]):
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
 
-        resp = await self._client._execute(
+        def parse_response(data: Any) -> int | types.ListsCountAggregateOutput:
+            if select is None:
+                return int(data['_all'])
+
+            return cast(types.ListsCountAggregateOutput, data)
+
+        return await self._client._execute(
             method='count',
             model=self._model,
             arguments={
@@ -7156,12 +7187,9 @@ class ListsActions(Generic[_PrismaModelT]):
                 'cursor': cursor,
             },
             root_selection=root_selection,
+            data_path=['_count'],
+            parser=parse_response,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.ListsCountAggregateOutput, resp['data']['result']['_count'])
 
     async def delete_many(
         self,
@@ -7191,13 +7219,14 @@ class ListsActions(Generic[_PrismaModelT]):
         total = await Lists.prisma().delete_many()
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -7301,7 +7330,7 @@ class ListsActions(Generic[_PrismaModelT]):
             elif isinstance(count, dict):
                 root_selection.append(_select_fields('_count', count))
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='group_by',
             model=self._model,
             arguments={
@@ -7313,8 +7342,9 @@ class ListsActions(Generic[_PrismaModelT]):
                 'orderBy': order,
             },
             root_selection=root_selection,
+            data_path=[],
+            parser=lambda v: cast(List['types.ListsGroupByOutput'], v)
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class AActions(Generic[_PrismaModelT]):
@@ -7446,15 +7476,16 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create',
             model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def create_many(
         self,
@@ -7516,16 +7547,17 @@ class AActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
+            parser=int,
+            data_path=['count'],
             root_selection=['count'],
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
@@ -7565,19 +7597,17 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='delete',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
@@ -7617,18 +7647,16 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_unique_or_raise(
         self,
@@ -7668,15 +7696,16 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def find_many(
         self,
@@ -7734,7 +7763,7 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_many',
             model=self._model,
             arguments={
@@ -7746,8 +7775,9 @@ class AActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     async def find_first(
         self,
@@ -7799,7 +7829,7 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first',
             model=self._model,
             arguments={
@@ -7810,11 +7840,9 @@ class AActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_first_or_raise(
         self,
@@ -7866,7 +7894,7 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first_or_raise',
             model=self._model,
             arguments={
@@ -7877,8 +7905,9 @@ class AActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
@@ -7922,20 +7951,18 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='update',
+            model=self._model,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            ignore_exceptions=(errors.RecordNotFoundError,),
+            parser=self._model.parse_obj,
+        )
 
     async def upsert(
         self,
@@ -7989,7 +8016,7 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='upsert',
             model=self._model,
             arguments={
@@ -7998,8 +8025,9 @@ class AActions(Generic[_PrismaModelT]):
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -8037,13 +8065,14 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='update_many',
             model=self._model,
-            arguments={'data': data, 'where': where,},
+            arguments={'data': data, 'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -8181,7 +8210,13 @@ class AActions(Generic[_PrismaModelT]):
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
 
-        resp = await self._client._execute(
+        def parse_response(data: Any) -> int | types.ACountAggregateOutput:
+            if select is None:
+                return int(data['_all'])
+
+            return cast(types.ACountAggregateOutput, data)
+
+        return await self._client._execute(
             method='count',
             model=self._model,
             arguments={
@@ -8191,12 +8226,9 @@ class AActions(Generic[_PrismaModelT]):
                 'cursor': cursor,
             },
             root_selection=root_selection,
+            data_path=['_count'],
+            parser=parse_response,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.ACountAggregateOutput, resp['data']['result']['_count'])
 
     async def delete_many(
         self,
@@ -8226,13 +8258,14 @@ class AActions(Generic[_PrismaModelT]):
         total = await A.prisma().delete_many()
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -8336,7 +8369,7 @@ class AActions(Generic[_PrismaModelT]):
             elif isinstance(count, dict):
                 root_selection.append(_select_fields('_count', count))
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='group_by',
             model=self._model,
             arguments={
@@ -8348,8 +8381,9 @@ class AActions(Generic[_PrismaModelT]):
                 'orderBy': order,
             },
             root_selection=root_selection,
+            data_path=[],
+            parser=lambda v: cast(List['types.AGroupByOutput'], v)
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class BActions(Generic[_PrismaModelT]):
@@ -8481,15 +8515,16 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create',
             model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def create_many(
         self,
@@ -8551,16 +8586,17 @@ class BActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
+            parser=int,
+            data_path=['count'],
             root_selection=['count'],
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
@@ -8600,19 +8636,17 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='delete',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
@@ -8652,18 +8686,16 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_unique_or_raise(
         self,
@@ -8703,15 +8735,16 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def find_many(
         self,
@@ -8769,7 +8802,7 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_many',
             model=self._model,
             arguments={
@@ -8781,8 +8814,9 @@ class BActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     async def find_first(
         self,
@@ -8834,7 +8868,7 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first',
             model=self._model,
             arguments={
@@ -8845,11 +8879,9 @@ class BActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_first_or_raise(
         self,
@@ -8901,7 +8933,7 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first_or_raise',
             model=self._model,
             arguments={
@@ -8912,8 +8944,9 @@ class BActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
@@ -8957,20 +8990,18 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='update',
+            model=self._model,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            ignore_exceptions=(errors.RecordNotFoundError,),
+            parser=self._model.parse_obj,
+        )
 
     async def upsert(
         self,
@@ -9026,7 +9057,7 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='upsert',
             model=self._model,
             arguments={
@@ -9035,8 +9066,9 @@ class BActions(Generic[_PrismaModelT]):
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -9074,13 +9106,14 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='update_many',
             model=self._model,
-            arguments={'data': data, 'where': where,},
+            arguments={'data': data, 'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -9218,7 +9251,13 @@ class BActions(Generic[_PrismaModelT]):
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
 
-        resp = await self._client._execute(
+        def parse_response(data: Any) -> int | types.BCountAggregateOutput:
+            if select is None:
+                return int(data['_all'])
+
+            return cast(types.BCountAggregateOutput, data)
+
+        return await self._client._execute(
             method='count',
             model=self._model,
             arguments={
@@ -9228,12 +9267,9 @@ class BActions(Generic[_PrismaModelT]):
                 'cursor': cursor,
             },
             root_selection=root_selection,
+            data_path=['_count'],
+            parser=parse_response,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.BCountAggregateOutput, resp['data']['result']['_count'])
 
     async def delete_many(
         self,
@@ -9263,13 +9299,14 @@ class BActions(Generic[_PrismaModelT]):
         total = await B.prisma().delete_many()
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -9373,7 +9410,7 @@ class BActions(Generic[_PrismaModelT]):
             elif isinstance(count, dict):
                 root_selection.append(_select_fields('_count', count))
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='group_by',
             model=self._model,
             arguments={
@@ -9385,8 +9422,9 @@ class BActions(Generic[_PrismaModelT]):
                 'orderBy': order,
             },
             root_selection=root_selection,
+            data_path=[],
+            parser=lambda v: cast(List['types.BGroupByOutput'], v)
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class CActions(Generic[_PrismaModelT]):
@@ -9520,15 +9558,16 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create',
             model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def create_many(
         self,
@@ -9594,16 +9633,17 @@ class CActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
+            parser=int,
+            data_path=['count'],
             root_selection=['count'],
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
@@ -9644,19 +9684,17 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='delete',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
@@ -9697,18 +9735,16 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_unique_or_raise(
         self,
@@ -9749,15 +9785,16 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def find_many(
         self,
@@ -9815,7 +9852,7 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_many',
             model=self._model,
             arguments={
@@ -9827,8 +9864,9 @@ class CActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     async def find_first(
         self,
@@ -9880,7 +9918,7 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first',
             model=self._model,
             arguments={
@@ -9891,11 +9929,9 @@ class CActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_first_or_raise(
         self,
@@ -9947,7 +9983,7 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first_or_raise',
             model=self._model,
             arguments={
@@ -9958,8 +9994,9 @@ class CActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
@@ -10004,20 +10041,18 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='update',
+            model=self._model,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            ignore_exceptions=(errors.RecordNotFoundError,),
+            parser=self._model.parse_obj,
+        )
 
     async def upsert(
         self,
@@ -10066,7 +10101,7 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='upsert',
             model=self._model,
             arguments={
@@ -10075,8 +10110,9 @@ class CActions(Generic[_PrismaModelT]):
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -10114,13 +10150,14 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='update_many',
             model=self._model,
-            arguments={'data': data, 'where': where,},
+            arguments={'data': data, 'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -10258,7 +10295,13 @@ class CActions(Generic[_PrismaModelT]):
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
 
-        resp = await self._client._execute(
+        def parse_response(data: Any) -> int | types.CCountAggregateOutput:
+            if select is None:
+                return int(data['_all'])
+
+            return cast(types.CCountAggregateOutput, data)
+
+        return await self._client._execute(
             method='count',
             model=self._model,
             arguments={
@@ -10268,12 +10311,9 @@ class CActions(Generic[_PrismaModelT]):
                 'cursor': cursor,
             },
             root_selection=root_selection,
+            data_path=['_count'],
+            parser=parse_response,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.CCountAggregateOutput, resp['data']['result']['_count'])
 
     async def delete_many(
         self,
@@ -10303,13 +10343,14 @@ class CActions(Generic[_PrismaModelT]):
         total = await C.prisma().delete_many()
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -10413,7 +10454,7 @@ class CActions(Generic[_PrismaModelT]):
             elif isinstance(count, dict):
                 root_selection.append(_select_fields('_count', count))
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='group_by',
             model=self._model,
             arguments={
@@ -10425,8 +10466,9 @@ class CActions(Generic[_PrismaModelT]):
                 'orderBy': order,
             },
             root_selection=root_selection,
+            data_path=[],
+            parser=lambda v: cast(List['types.CGroupByOutput'], v)
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class DActions(Generic[_PrismaModelT]):
@@ -10559,15 +10601,16 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create',
             model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def create_many(
         self,
@@ -10631,16 +10674,17 @@ class DActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
+            parser=int,
+            data_path=['count'],
             root_selection=['count'],
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
@@ -10680,19 +10724,17 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='delete',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
@@ -10732,18 +10774,16 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_unique_or_raise(
         self,
@@ -10783,15 +10823,16 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def find_many(
         self,
@@ -10849,7 +10890,7 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_many',
             model=self._model,
             arguments={
@@ -10861,8 +10902,9 @@ class DActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     async def find_first(
         self,
@@ -10914,7 +10956,7 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first',
             model=self._model,
             arguments={
@@ -10925,11 +10967,9 @@ class DActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_first_or_raise(
         self,
@@ -10981,7 +11021,7 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first_or_raise',
             model=self._model,
             arguments={
@@ -10992,8 +11032,9 @@ class DActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
@@ -11037,20 +11078,18 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='update',
+            model=self._model,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            ignore_exceptions=(errors.RecordNotFoundError,),
+            parser=self._model.parse_obj,
+        )
 
     async def upsert(
         self,
@@ -11108,7 +11147,7 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='upsert',
             model=self._model,
             arguments={
@@ -11117,8 +11156,9 @@ class DActions(Generic[_PrismaModelT]):
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -11156,13 +11196,14 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='update_many',
             model=self._model,
-            arguments={'data': data, 'where': where,},
+            arguments={'data': data, 'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -11300,7 +11341,13 @@ class DActions(Generic[_PrismaModelT]):
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
 
-        resp = await self._client._execute(
+        def parse_response(data: Any) -> int | types.DCountAggregateOutput:
+            if select is None:
+                return int(data['_all'])
+
+            return cast(types.DCountAggregateOutput, data)
+
+        return await self._client._execute(
             method='count',
             model=self._model,
             arguments={
@@ -11310,12 +11357,9 @@ class DActions(Generic[_PrismaModelT]):
                 'cursor': cursor,
             },
             root_selection=root_selection,
+            data_path=['_count'],
+            parser=parse_response,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.DCountAggregateOutput, resp['data']['result']['_count'])
 
     async def delete_many(
         self,
@@ -11345,13 +11389,14 @@ class DActions(Generic[_PrismaModelT]):
         total = await D.prisma().delete_many()
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -11455,7 +11500,7 @@ class DActions(Generic[_PrismaModelT]):
             elif isinstance(count, dict):
                 root_selection.append(_select_fields('_count', count))
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='group_by',
             model=self._model,
             arguments={
@@ -11467,8 +11512,9 @@ class DActions(Generic[_PrismaModelT]):
                 'orderBy': order,
             },
             root_selection=root_selection,
+            data_path=[],
+            parser=lambda v: cast(List['types.DGroupByOutput'], v)
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class EActions(Generic[_PrismaModelT]):
@@ -11599,15 +11645,16 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create',
             model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def create_many(
         self,
@@ -11667,16 +11714,17 @@ class EActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
+            parser=int,
+            data_path=['count'],
             root_selection=['count'],
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
@@ -11716,19 +11764,17 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='delete',
+            model=self._model,
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
@@ -11768,18 +11814,16 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_unique_or_raise(
         self,
@@ -11819,15 +11863,16 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_unique_or_raise',
             model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def find_many(
         self,
@@ -11885,7 +11930,7 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_many',
             model=self._model,
             arguments={
@@ -11897,8 +11942,9 @@ class EActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     async def find_first(
         self,
@@ -11950,7 +11996,7 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first',
             model=self._model,
             arguments={
@@ -11961,11 +12007,9 @@ class EActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     async def find_first_or_raise(
         self,
@@ -12017,7 +12061,7 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='find_first_or_raise',
             model=self._model,
             arguments={
@@ -12028,8 +12072,9 @@ class EActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
@@ -12073,20 +12118,18 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute(
+            method='update',
+            model=self._model,
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            ignore_exceptions=(errors.RecordNotFoundError,),
+            parser=self._model.parse_obj,
+        )
 
     async def upsert(
         self,
@@ -12140,7 +12183,7 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='upsert',
             model=self._model,
             arguments={
@@ -12149,8 +12192,9 @@ class EActions(Generic[_PrismaModelT]):
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -12188,13 +12232,14 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='update_many',
             model=self._model,
-            arguments={'data': data, 'where': where,},
+            arguments={'data': data, 'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -12332,7 +12377,13 @@ class EActions(Generic[_PrismaModelT]):
                 '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
             ]
 
-        resp = await self._client._execute(
+        def parse_response(data: Any) -> int | types.ECountAggregateOutput:
+            if select is None:
+                return int(data['_all'])
+
+            return cast(types.ECountAggregateOutput, data)
+
+        return await self._client._execute(
             method='count',
             model=self._model,
             arguments={
@@ -12342,12 +12393,9 @@ class EActions(Generic[_PrismaModelT]):
                 'cursor': cursor,
             },
             root_selection=root_selection,
+            data_path=['_count'],
+            parser=parse_response,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.ECountAggregateOutput, resp['data']['result']['_count'])
 
     async def delete_many(
         self,
@@ -12377,13 +12425,14 @@ class EActions(Generic[_PrismaModelT]):
         total = await E.prisma().delete_many()
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='delete_many',
             model=self._model,
             arguments={'where': where},
             root_selection=['count'],
+            data_path=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -12487,7 +12536,7 @@ class EActions(Generic[_PrismaModelT]):
             elif isinstance(count, dict):
                 root_selection.append(_select_fields('_count', count))
 
-        resp = await self._client._execute(
+        return await self._client._execute(
             method='group_by',
             model=self._model,
             arguments={
@@ -12499,8 +12548,9 @@ class EActions(Generic[_PrismaModelT]):
                 'orderBy': order,
             },
             root_selection=root_selection,
+            data_path=[],
+            parser=lambda v: cast(List['types.EGroupByOutput'], v)
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 

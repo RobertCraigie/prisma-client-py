@@ -68,6 +68,8 @@ __all__ = (
     'get_client',
 )
 
+_T = TypeVar('_T')
+
 SCHEMA_PATH = Path('<absolute-schema-path>')
 PACKAGED_SCHEMA_PATH = Path(__file__).parent.joinpath('schema.prisma')
 ENGINE_TYPE: EngineType = EngineType.binary
@@ -291,15 +293,16 @@ class Prisma:
         self._middlewares.extend(middlewares)
 
     def execute_raw(self, query: LiteralString, *args: Any) -> int:
-        resp = self._execute(
+        return self._execute(
             method='execute_raw',
             arguments={
                 'query': query,
                 'parameters': args,
             },
             model=None,
+            data_path=[],
+            parser=int,
         )
-        return int(resp['data']['result'])
 
     @overload
     def query_first(
@@ -315,7 +318,7 @@ class Prisma:
         query: LiteralString,
         *args: Any,
         model: Type[BaseModelT],
-    ) -> Optional[BaseModelT]:
+    ) -> BaseModelT | None:
         ...
 
     def query_first(
@@ -323,38 +326,36 @@ class Prisma:
         query: LiteralString,
         *args: Any,
         model: Optional[Type[BaseModelT]] = None,
-    ) -> Union[Optional[BaseModelT], dict[str, Any]]:
+    ) -> BaseModelT | dict[str, Any] | None:
         """This function is the exact same as `query_raw()` but returns the first result.
 
         If model is given, the returned record is converted to the pydantic model first,
         otherwise a raw dictionary will be returned.
         """
-        results: Sequence[Union[BaseModelT, dict[str, Any]]]
-        if model is not None:
-            results = self._execute_raw_query(
-                query,
-                *args,
-                model=model,
-                _from_method='query_first',
-            )
-        else:
-            results = self._execute_raw_query(
-                query,
-                *args,
-                _from_method='query_first',
-            )
+        def parse_response(value: Any) -> BaseModelT | dict[str, Any] | None:
+            data = cast('list[Any]', value)
+            if not data:
+                return None
 
-        if not results:
-            return None
+            return deserialize_raw_results(data, model=model)[0]
 
-        return results[0]
+        return self._execute(
+            method='query_first',
+            arguments={
+                'query': query,
+                'parameters': args,
+            },
+            model=model,
+            data_path=[],
+            parser=parse_response,
+        )
 
     @overload
     def query_raw(
         self,
         query: LiteralString,
         *args: Any,
-    ) -> List[dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         ...
 
     @overload
@@ -363,7 +364,7 @@ class Prisma:
         query: LiteralString,
         *args: Any,
         model: Type[BaseModelT],
-    ) -> List[BaseModelT]:
+    ) -> list[BaseModelT]:
         ...
 
     def query_raw(
@@ -371,77 +372,73 @@ class Prisma:
         query: LiteralString,
         *args: Any,
         model: Optional[Type[BaseModelT]] = None,
-    ) -> Union[List[BaseModelT], List[dict[str, Any]]]:
+    ) -> list[BaseModelT] | list[dict[str, Any]]:
         """Execute a raw SQL query against the database.
 
         If model is given, each returned record is converted to the pydantic model first,
         otherwise results will be raw dictionaries.
         """
-        if model is not None:
-            return self._execute_raw_query(
-                query, *args, model=model, _from_method='query_raw'
-            )
+        def parse_response(value: Any) -> list[BaseModelT] | list[dict[str, Any]]:
+            return deserialize_raw_results(value, model=model)
 
-        return self._execute_raw_query(
-            query, *args, _from_method='query_raw'
-        )
-
-
-    @overload
-    def _execute_raw_query(
-        self,
-        query: LiteralString,
-        *args: Any,
-        _from_method: PrismaMethod,
-    ) -> list[dict[str, Any]]:
-        ...
-
-    @overload
-    def _execute_raw_query(
-        self,
-        query: LiteralString,
-        *args: Any,
-        _from_method: PrismaMethod,
-        model: Type[BaseModelT],
-    ) -> list[BaseModelT]:
-        ...
-
-    def _execute_raw_query(
-        self,
-        query: LiteralString,
-        *args: Any,
-        _from_method: PrismaMethod,
-        model: Type[BaseModelT] | None = None,
-    ) -> list[BaseModelT] | list[dict[str, Any]]:
-        resp = self._execute(
-            method=_from_method,
+        return self._execute(
+            method='query_raw',
             arguments={
                 'query': query,
                 'parameters': args,
             },
             model=model,
+            data_path=[],
+            parser=parse_response,
         )
-        result = resp['data']['result']
-        if model is not None:
-            return deserialize_raw_results(result, model=model)
-
-        return deserialize_raw_results(result)
 
 
     def batch_(self) -> 'Batch':
         """Returns a context manager for grouping write queries into a single transaction."""
         return Batch(client=self)
 
-    # TODO: don't return Any
+
+    @overload
     def _execute(
         self,
         *,
         method: PrismaMethod,
         arguments: dict[str, Any],
         model: type[BaseModel] | None,
+        data_path: list[str],
+        parser: Callable[[Any], _T],
         root_selection: list[str] | None = None
-    ) -> Any:
-        def executor(params: MiddlewareParams) -> MiddlewareResult:
+    ) -> _T:
+        ...
+
+    @overload
+    def _execute(
+        self,
+        *,
+        method: PrismaMethod,
+        arguments: dict[str, Any],
+        model: type[BaseModel] | None,
+        data_path: list[str],
+        parser: Callable[[Any], _T],
+        ignore_exceptions: tuple[type[Exception]],
+        root_selection: list[str] | None = None
+    ) -> _T | None:
+        ...
+
+    def _execute(
+        self,
+        *,
+        method: PrismaMethod,
+        arguments: dict[str, Any],
+        model: type[BaseModel] | None,
+        data_path: list[str],
+        parser: Callable[[Any], _T],
+        ignore_exceptions: tuple[type[Exception]] | None = None,
+        root_selection: list[str] | None = None
+    ) -> _T | None:
+        """Execute a GraphQL query against the internal Query Engine"""
+
+        def executor(params: MiddlewareParams) -> _T | None:
             builder = QueryBuilder(
                 method=params.method,
                 model=params.model,
@@ -449,14 +446,28 @@ class Prisma:
                 # TODO: move this to middleware params too
                 root_selection=root_selection,
             )
-            return self._engine.query(builder.build())
+            query = builder.build()
 
-        # TODO: should this also operate on the parsed return type? (yes)
+            if ignore_exceptions is not None:
+                try:
+                    response = self._engine.query(query)
+                except ignore_exceptions:
+                    return None
+            else:
+                response = self._engine.query(query)
+
+            data = response['data']['result']
+
+            for key in data_path:
+                data = data[key]
+
+            return parser(data)
+
         def get_result(params: MiddlewareParams) -> MiddlewareResult:
             try:
                 middleware = next(iterator)
             except StopIteration:
-                return executor(params)
+                return MiddlewareResult(executor(params))
 
             return middleware(params, get_result)
 
@@ -470,7 +481,7 @@ class Prisma:
 
         first, *rest = self._middlewares
         iterator = iter(rest)
-        return first(params, get_result)
+        return cast('_T | None', first(params, get_result))
 
     def _create_engine(self, dml_path: Path = PACKAGED_SCHEMA_PATH) -> AbstractEngine:
         if ENGINE_TYPE == EngineType.binary:
