@@ -109,7 +109,7 @@ def ensure(binary_paths: dict[str, str]) -> Path:
             expected = f'{local_path} or {global_path} to exist but neither'
 
         raise errors.BinaryNotFoundError(
-            f'Expected {expected} were found.\n'
+            f'Expected {expected} were found or could not be executed.\n'
             + 'Try running prisma py fetch'
         )
 

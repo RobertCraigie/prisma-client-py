@@ -98,7 +98,7 @@ def test_engine_binary_does_not_exist(monkeypatch: MonkeyPatch) -> None:
         utils.ensure(BINARY_PATHS.query_engine)
 
     assert exc.match(
-        r'Expected .*, .* or .* to exist but none were found\.\nTry running prisma py fetch'
+        r'Expected .*, .* or .* to exist but none were found or could not be executed\.\nTry running prisma py fetch'
     )
 
 
@@ -116,7 +116,7 @@ def test_engine_binary_does_not_exist_no_binary_paths(
         utils.ensure({})
 
     assert exc.match(
-        r'Expected .* or .* to exist but neither were found\.\nTry running prisma py fetch'
+        r'Expected .* or .* to exist but neither were found or could not be executed\.\nTry running prisma py fetch'
     )
 
 
