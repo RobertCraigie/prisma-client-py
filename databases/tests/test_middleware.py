@@ -91,9 +91,9 @@ async def test_modified_arguments(client: Prisma) -> None:
         params: MiddlewareParams, get_result: NextMiddleware
     ) -> MiddlewareResult:
         data = cast('dict[str, object] | None', params.arguments.get('data'))
-        if data is not None:
+        if data is not None:  # pragma: no branch
             name = data.get('name')
-            if name == 'Robert':
+            if name == 'Robert':  # pragma: no branch
                 data['name'] = 'Tegan'
 
         return await get_result(params)
