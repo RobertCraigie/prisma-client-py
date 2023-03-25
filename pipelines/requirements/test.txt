@@ -5,4 +5,4 @@ pytest-sugar
 mock==5.0.1
 pytest-mock==3.10.0
 pytest-subprocess==1.5.0
-syrupy==3.0.6
+syrupy==4.0.1
