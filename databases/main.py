@@ -71,7 +71,9 @@ def test(
     lint: bool = True,
     test: bool = True,
     coverage: bool = False,
-    for_async: bool = typer.Option(default=True, is_flag=False),
+    for_async: bool = typer.Option(
+        default=True, is_flag=False
+    ),  # pyright: ignore[reportCallInDefaultInitializer]
 ) -> None:
     """Run unit tests and Pyright"""
     session = session_ctx.get()
@@ -120,7 +122,9 @@ def test_inverse(
     coverage: bool = False,
     inplace: bool = False,
     pytest_args: Optional[str] = None,
-    for_async: bool = typer.Option(default=True, is_flag=False),
+    for_async: bool = typer.Option(
+        default=True, is_flag=False
+    ),  # pyright: ignore[reportCallInDefaultInitializer]
 ) -> None:
     """Ensure unsupported features actually result in either:
 
