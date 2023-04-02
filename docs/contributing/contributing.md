@@ -95,15 +95,21 @@ We have a few places where you can write tests:
 
 ### Database Tests
 
-Prisma Client Python uses a custom testing suite to run client API tests against multiple database providers. These tests can be found in the `databases/tests` directory.
+Prisma Client Python uses a custom testing suite to run client API tests against multiple database providers. These tests can be found in the `databases/tests` and `databases/sync_tests` directories.
 
 To be able run these tests you will need to have certain environment variables defined, see [Environment Variables](#environment-variables) for details on setting this up.
 
-You can run these tests with:
+You can run the tests with:
 
 ```
-nox -s databases -- test
+nox -s databases -- test --inplace
 ```
+
+!!! hint
+
+    The `--inplace` flag means that the client will be generated to your local `src/prisma/` directory for easier inspection / development loop.
+
+By default the asynchronous tests will be ran, to run the synchronous database tests you can pass the `--for-async=false` flag.
 
 Or you can explicitly specify the databases to run tests against:
 
