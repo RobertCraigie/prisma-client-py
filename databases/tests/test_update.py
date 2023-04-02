@@ -4,7 +4,7 @@ from prisma import Prisma
 from prisma.models import Unique2, User, Types
 
 from lib.testing import async_fixture
-from .utils import CURRENT_DATABASE
+from ..utils import CURRENT_DATABASE
 
 
 @async_fixture(name='user_id')
