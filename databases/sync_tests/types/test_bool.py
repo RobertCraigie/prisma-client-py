@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_filtering(client: Prisma) -> None:
     """Finding records by a Boolean value"""
     with client.batch_() as batcher:
@@ -51,7 +49,6 @@ def test_filtering(client: Prisma) -> None:
     assert found.bool_ is False
 
 
-@pytest.mark.asyncio
 def test_filtering_nulls(client: Prisma) -> None:
     """None is a valid filter for nullable Boolean fields"""
     client.types.create(

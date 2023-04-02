@@ -1,6 +1,5 @@
 import json
 
-import pytest
 from pydantic import BaseModel
 
 from prisma import Prisma, Json
@@ -33,7 +32,6 @@ RAW_QUERIES: DatabaseMapping[Queries] = {
 }
 
 
-@pytest.mark.asyncio
 def test_query_first(
     client: Prisma,
     database: SupportedDatabase,

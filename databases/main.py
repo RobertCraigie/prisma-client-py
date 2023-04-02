@@ -10,7 +10,6 @@ from pathlib import Path
 from copy import deepcopy
 from contextvars import ContextVar, copy_context
 from typing import (
-    Iterable,
     Optional,
     Iterator,
     cast,
@@ -44,6 +43,7 @@ from .constants import (
     FEATURES_MAPPING,
     PYRIGHT_CONFIG,
     TESTS_DIR,
+    SYNC_TESTS_DIR,
 )
 
 
@@ -71,6 +71,7 @@ def test(
     lint: bool = True,
     test: bool = True,
     coverage: bool = False,
+    for_async: bool = typer.Option(default=True, is_flag=False),
 ) -> None:
     """Run unit tests and Pyright"""
     session = session_ctx.get()
@@ -93,7 +94,9 @@ def test(
             if coverage:  # pragma: no branch
                 setup_coverage(session, identifier=database)
 
-            runner = Runner(database=database, track_coverage=coverage)
+            runner = Runner(
+                database=database, track_coverage=coverage, for_async=for_async
+            )
             runner.setup()
 
             if test:  # pragma: no branch
@@ -117,6 +120,7 @@ def test_inverse(
     coverage: bool = False,
     inplace: bool = False,
     pytest_args: Optional[str] = None,
+    for_async: bool = typer.Option(default=True, is_flag=False),
 ) -> None:
     """Ensure unsupported features actually result in either:
 
@@ -152,6 +156,7 @@ def test_inverse(
                 runner = Runner(
                     database=database,
                     config=new_config,
+                    for_async=for_async,
                     track_coverage=coverage,
                 )
 
@@ -237,16 +242,19 @@ class Runner:
     config: DatabaseConfig
     cache_dir: Path
     track_coverage: bool
+    for_async: bool
 
     def __init__(
         self,
         *,
         database: SupportedDatabase,
         track_coverage: bool,
+        for_async: bool,
         config: DatabaseConfig | None = None,
     ) -> None:
         self.database = database
         self.session = session_ctx.get()
+        self.for_async = for_async
         self.track_coverage = track_coverage
         self.config = config or CONFIG_MAPPING[database]
         self.cache_dir = ROOT_DIR / '.tests_cache' / 'databases' / database
@@ -261,6 +269,7 @@ class Runner:
     def setup(self) -> None:
         # TODO: split up more
         print('database config: ' + self.config.json(indent=2))
+        print('for async: ', self.for_async)
 
         exclude_files = self.exclude_files
         if exclude_files:
@@ -271,7 +280,7 @@ class Runner:
         self._create_cache_dir()
 
         # TODO: only create this if linting
-        create_pyright_config(self.pyright_config, exclude=exclude_files)
+        self._create_pyright_config()
 
         # TODO: only create this if testing
         pytest_config = self.cache_dir / 'pyproject.toml'
@@ -290,6 +299,7 @@ class Runner:
             template.render(
                 # template variables
                 config=self.config,
+                for_async=self.for_async,
                 partial_generator=escape_path(DATABASES_DIR / 'partials.py'),
             )
         )
@@ -339,6 +349,30 @@ class Runner:
     def lint(self) -> None:
         self.session.run('pyright', '-p', str(self.pyright_config.absolute()))
 
+    def _create_pyright_config(self) -> None:
+        pkg_location = os.path.relpath(
+            get_pkg_location(session_ctx.get(), 'prisma'), DATABASES_DIR
+        )
+
+        pyright_config = deepcopy(PYRIGHT_CONFIG)
+        pyright_config['exclude'].extend(self.exclude_files)
+
+        # exclude the mypy plugin so that we don't have to install `mypy`, it is also
+        # not dynamically generated which means it will stay the same across database providers
+        pyright_config['exclude'].append(
+            str(Path(pkg_location).joinpath('mypy.py'))
+        )
+
+        # add the generated client code to Pyright too
+        pyright_config['include'].append(pkg_location)
+
+        # ensure only the tests for sync / async are checked
+        pyright_config['include'].append(
+            tests_reldir(for_async=self.for_async)
+        )
+
+        self.pyright_config.write_text(json.dumps(pyright_config, indent=2))
+
     @cached_property
     def python_args(self) -> list[str]:
         return shlex.split(
@@ -360,7 +394,7 @@ class Runner:
     @cached_property
     def exclude_files(self) -> set[str]:
         files = [
-            tests_relpath(path)
+            tests_relpath(path, for_async=self.for_async)
             for path in flatten(
                 [
                     FEATURES_MAPPING[feature]
@@ -368,6 +402,10 @@ class Runner:
                 ]
             )
         ]
+
+        # ensure the tests for the sync client are not ran during the async tests anc vice versa
+        files.append(tests_reldir(for_async=not self.for_async))
+
         return set(files)
 
 
@@ -394,34 +432,21 @@ def validate_database(database: str) -> SupportedDatabase:
     return cast(SupportedDatabase, database)
 
 
-def tests_relpath(path: str) -> str:
-    return str((TESTS_DIR / path).relative_to(DATABASES_DIR))
+def tests_reldir(*, for_async: bool) -> str:
+    return str(
+        (TESTS_DIR if for_async else SYNC_TESTS_DIR).relative_to(DATABASES_DIR)
+    )
+
+
+def tests_relpath(path: str, *, for_async: bool) -> str:
+    tests_dir = TESTS_DIR if for_async else SYNC_TESTS_DIR
+    return str((tests_dir / path).relative_to(DATABASES_DIR))
 
 
 def title(text: str) -> str:
     # TODO: improve formatting
     dashes = '-' * 30
     return dashes + ' ' + click.style(text, bold=True) + ' ' + dashes
-
-
-def create_pyright_config(file: Path, exclude: Iterable[str]) -> None:
-    pkg_location = os.path.relpath(
-        get_pkg_location(session_ctx.get(), 'prisma'), DATABASES_DIR
-    )
-
-    pyright_config = deepcopy(PYRIGHT_CONFIG)
-    pyright_config['exclude'].extend(exclude)
-
-    # exclude the mypy plugin so that we don't have to install `mypy`, it is also
-    # not dynamically generated which means it will stay the same across database providers
-    pyright_config['exclude'].append(
-        str(Path(pkg_location).joinpath('mypy.py'))
-    )
-
-    # add the generated client code to Pyright too
-    pyright_config['include'].append(pkg_location)
-
-    file.write_text(json.dumps(pyright_config, indent=2))
 
 
 def entrypoint(session: nox.Session) -> None:

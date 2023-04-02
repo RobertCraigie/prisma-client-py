@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from typing import List
 
-import pytest
 from prisma import Prisma
 
 
@@ -19,7 +18,6 @@ def _assert_datelist_equal(
     assert actual == expected
 
 
-@pytest.mark.asyncio
 def test_pushing_datetime(client: Prisma) -> None:
     """Pushing a DateTime[] value"""
     now = _utcnow()

@@ -1,7 +1,7 @@
 import pytest
 from prisma.models import User
 
-from .utils import RawQueries
+from ..utils import RawQueries
 
 
 def create_user() -> User:
@@ -15,7 +15,6 @@ def create_user() -> User:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_create() -> None:
     """Creating a record using model-based access"""
     user = User.prisma().create({'name': 'Robert'})
@@ -43,7 +42,6 @@ def test_create() -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_delete() -> None:
     """Deleting a record using model-based access"""
     deleted = User.prisma().delete(
@@ -66,7 +64,6 @@ def test_delete() -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_find_unique() -> None:
     """Finding a unique record using model-based access"""
     found = User.prisma().find_unique(
@@ -87,7 +84,6 @@ def test_find_unique() -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_find_many() -> None:
     """Finding many records using model-based access"""
     users = [
@@ -112,7 +108,6 @@ def test_find_many() -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_find_first() -> None:
     """Finding a record using model-based access"""
     found = User.prisma().find_first(where={'name': 'Robert'})
@@ -126,7 +121,6 @@ def test_find_first() -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_update() -> None:
     """Updating a record using model-based access"""
     user = create_user()
@@ -146,7 +140,6 @@ def test_update() -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_upsert() -> None:
     """Upserting a record using model-based access"""
     user = create_user()
@@ -167,7 +160,6 @@ def test_upsert() -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_update_many() -> None:
     """Updating many records using model-based access"""
     users = [
@@ -206,7 +198,6 @@ def test_update_many() -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_count() -> None:
     """Counting records using model-based access"""
     assert User.prisma().count() == 0
@@ -218,7 +209,6 @@ def test_count() -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_delete_many() -> None:
     """Deleting many records using model-based access"""
     _ = [
@@ -236,7 +226,6 @@ def test_delete_many() -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_query_raw(raw_queries: RawQueries) -> None:
     """Ensure results are transformed to the expected BaseModel"""
     users = [
@@ -252,7 +241,6 @@ def test_query_raw(raw_queries: RawQueries) -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_query_first(raw_queries: RawQueries) -> None:
     """Ensure results are transformed to the expected BaseModel"""
     users = [
@@ -273,7 +261,6 @@ class MyUser(User):
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_custom_model() -> None:
     """Subclassed prisma model is returned by actions"""
     user = MyUser.prisma().create(

@@ -1,16 +1,13 @@
 import asyncio
-import inspect
 from typing import TYPE_CHECKING, Iterator
 from pathlib import Path
 
 import pytest
 
-import prisma
-from prisma import Prisma
 from prisma.testing import reset_client
 from prisma.utils import get_or_create_event_loop
 
-from lib.testing import async_fixture
+from ._utils import request_has_client
 
 
 if TYPE_CHECKING:
@@ -18,17 +15,13 @@ if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
 
 
+__all__ = (
+    'setup_env',
+    'event_loop',
+    'patch_prisma_fixture',
+)
+
 HOME_DIR = Path.home()
-
-
-@async_fixture(name='client', scope='session')
-async def client_fixture() -> Prisma:
-    client = prisma.get_client()
-    if not client.is_connected():  # pragma: no cover
-        await client.connect()
-
-    await cleanup_client(client)
-    return client
 
 
 @pytest.fixture(scope='session')
@@ -58,33 +51,3 @@ def patch_prisma_fixture(request: 'FixtureRequest') -> Iterator[None]:
 
         with reset_client(_disable_access):  # type: ignore
             yield
-
-
-@async_fixture(name='setup_client', autouse=True)
-async def setup_client_fixture(request: 'FixtureRequest') -> None:
-    if not request_has_client(request):
-        return
-
-    if request.node.get_closest_marker('persist_data') is not None:
-        return
-
-    client = prisma.get_client()
-    if not client.is_connected():  # pragma: no cover
-        await client.connect()
-
-    await cleanup_client(client)
-
-
-def request_has_client(request: 'FixtureRequest') -> bool:
-    """Return whether or not the current request uses the prisma client"""
-    return (
-        request.node.get_closest_marker('prisma') is not None
-        or 'client' in request.fixturenames
-    )
-
-
-async def cleanup_client(client: Prisma) -> None:
-    async with client.batch_() as batcher:
-        for _, item in inspect.getmembers(batcher):
-            if item.__class__.__name__.endswith('Actions'):
-                item.delete_many()

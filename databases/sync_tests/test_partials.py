@@ -15,7 +15,6 @@ class SubclassedPostOnlyPublished(PostOnlyPublished):
         return self.published
 
 
-@pytest.mark.asyncio
 @pytest.mark.prisma
 def test_scalar_fields() -> None:
     """Querying using a partial model that only has scalar fields"""
@@ -28,7 +27,6 @@ def test_scalar_fields() -> None:
     assert not hasattr(post, 'title')
 
 
-@pytest.mark.asyncio
 @pytest.mark.prisma
 def test_relational_fields() -> None:
     """Querying using a partial model that has relational fields defined"""
@@ -59,7 +57,6 @@ def test_relational_fields() -> None:
     assert post2.author.name == 'Robert'
 
 
-@pytest.mark.asyncio
 @pytest.mark.prisma
 def test_include_missing_relational_field() -> None:
     """Specifying a relational field to include that isn't present on the partial model"""
@@ -89,7 +86,6 @@ def test_include_missing_relational_field() -> None:
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.prisma
 def test_custom_relational_fields() -> None:
     """Querying using a partial model that has custom relational fields defined"""
@@ -121,7 +117,6 @@ def test_custom_relational_fields() -> None:
     assert isinstance(post2.author, UserOnlyName)
 
 
-@pytest.mark.asyncio
 @pytest.mark.prisma
 def test_custom_model() -> None:
     """Querying using a partial model that has been subclassed"""

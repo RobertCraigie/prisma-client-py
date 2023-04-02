@@ -1,11 +1,8 @@
 from decimal import Decimal
 
-import pytest
-
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_updating_decimal(client: Prisma) -> None:
     """Updating a Decimal[] value"""
     models = [
@@ -42,7 +39,6 @@ def test_updating_decimal(client: Prisma) -> None:
     assert model.decimals == [Decimal('7')]
 
 
-@pytest.mark.asyncio
 def test_filtering_decimal(client: Prisma) -> None:
     """Searching for records by a Decimal[] value"""
     with client.batch_() as batcher:

@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_case_sensitivity(client: Prisma) -> None:
     """Ensure string fields can be filtered in a case-insensitive manner"""
     client.user.create(

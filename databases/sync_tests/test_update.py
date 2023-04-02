@@ -4,7 +4,7 @@ from prisma import Prisma
 from prisma.models import Unique2, User, Types
 
 from lib.testing import async_fixture
-from .utils import CURRENT_DATABASE
+from ..utils import CURRENT_DATABASE
 
 
 @async_fixture(name='user_id')
@@ -13,7 +13,6 @@ def user_id_fixture(client: Prisma) -> str:
     return user.id
 
 
-@pytest.mark.asyncio
 def test_update(client: Prisma) -> None:
     """Standard usage"""
     post = client.post.create(
@@ -62,7 +61,6 @@ def test_update(client: Prisma) -> None:
     assert updated.author.name == 'Bob'
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize('method', ['disconnect', 'delete'])
 def test_update_with_create_disconnect(
     client: Prisma, user_id: str, method: str
@@ -104,7 +102,6 @@ def test_update_with_create_disconnect(
     assert len(updated.posts) == 0
 
 
-@pytest.mark.asyncio
 def test_atomic_update(client: Prisma) -> None:
     """Atomically incrementing a value by 1"""
     post = client.post.create({'title': 'My Post', 'published': False})
@@ -118,7 +115,6 @@ def test_atomic_update(client: Prisma) -> None:
     assert updated.views == 1
 
 
-@pytest.mark.asyncio
 def test_update_record_not_found(client: Prisma) -> None:
     """Updating a non-existent record returns None"""
     post = client.post.update(
@@ -127,7 +123,6 @@ def test_update_record_not_found(client: Prisma) -> None:
     assert post is None
 
 
-@pytest.mark.asyncio
 def test_setting_field_to_null(client: Prisma) -> None:
     """Updating a field to None sets the database record to None"""
     post = client.post.create(
@@ -150,7 +145,6 @@ def test_setting_field_to_null(client: Prisma) -> None:
     assert updated.description is None
 
 
-@pytest.mark.asyncio
 def test_setting_non_nullable_field_to_null(client: Prisma) -> None:
     """Attempting to set a non-nullable field to null raises an error"""
     post = client.post.create(
@@ -173,7 +167,6 @@ def test_setting_non_nullable_field_to_null(client: Prisma) -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_update_id_field() -> None:
     """Setting an ID field"""
     user = User.prisma().create(
@@ -194,7 +187,6 @@ def test_update_id_field() -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 @pytest.mark.skipif(
     CURRENT_DATABASE == 'cockroachdb',
     reason='https://github.com/prisma/prisma/issues/16612',
@@ -217,7 +209,6 @@ def test_update_id_field_atomic() -> None:
 
 
 @pytest.mark.prisma
-@pytest.mark.asyncio
 def test_update_unique_field() -> None:
     """Setting a unique field"""
     record = Unique2.prisma().create(

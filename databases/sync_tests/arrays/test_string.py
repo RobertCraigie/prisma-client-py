@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_updating_strings(client: Prisma) -> None:
     """Updating a String[] value"""
     models = [
@@ -39,7 +37,6 @@ def test_updating_strings(client: Prisma) -> None:
     assert model.strings == ['f']
 
 
-@pytest.mark.asyncio
 def test_filtering_strings(client: Prisma) -> None:
     """Searching for records by a String[] value"""
     with client.batch_() as batcher:

@@ -1,9 +1,7 @@
-import pytest
 from prisma import Prisma
 from prisma.enums import Role
 
 
-@pytest.mark.asyncio
 def test_pushing_enum(client: Prisma) -> None:
     """Pushing a Role[] enum value"""
     models = [

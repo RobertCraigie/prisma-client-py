@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_pushing_ints(client: Prisma) -> None:
     """Pushing an Int[] value"""
     models = [

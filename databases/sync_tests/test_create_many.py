@@ -3,7 +3,6 @@ import prisma
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_create_many(client: Prisma) -> None:
     """Standard usage"""
     total = client.user.create_many([{'name': 'Robert'}, {'name': 'Tegan'}])
@@ -16,7 +15,6 @@ def test_create_many(client: Prisma) -> None:
     assert client.user.count() == 2
 
 
-@pytest.mark.asyncio
 def test_skip_duplicates(client: Prisma) -> None:
     """Skipping duplcates ignores unique constraint errors"""
     user = client.user.create({'name': 'Robert'})
@@ -33,7 +31,6 @@ def test_skip_duplicates(client: Prisma) -> None:
     assert count == 1
 
 
-@pytest.mark.asyncio
 def test_required_relation_key_field(client: Prisma) -> None:
     """Explicitly passing a field used as a foreign key connects the relations"""
     user = client.user.create(

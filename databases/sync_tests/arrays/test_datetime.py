@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from typing import List
 
-import pytest
 from prisma import Prisma
 
 
@@ -19,7 +18,6 @@ def _assert_datelist_equal(
     assert actual == expected
 
 
-@pytest.mark.asyncio
 def test_updating_datetime(client: Prisma) -> None:
     """Updating a DateTime[] value"""
     now = _utcnow()
@@ -57,7 +55,6 @@ def test_updating_datetime(client: Prisma) -> None:
     _assert_datelist_equal(model.dates, [now + timedelta(hours=999)])
 
 
-@pytest.mark.asyncio
 def test_filtering_datetime(client: Prisma) -> None:
     """Searching for records by a DateTime[] value"""
     now = _utcnow()

@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_pushing_floats(client: Prisma) -> None:
     """Pushing a Float[] value"""
     models = [

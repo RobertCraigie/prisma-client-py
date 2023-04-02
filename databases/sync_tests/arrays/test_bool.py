@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_updating_boolean(client: Prisma) -> None:
     """Updating a Boolean[] value"""
     models = [
@@ -39,7 +37,6 @@ def test_updating_boolean(client: Prisma) -> None:
     assert model.bools == [True]
 
 
-@pytest.mark.asyncio
 def test_filtering_bools(client: Prisma) -> None:
     """Searching for records by a Boolean[] value"""
     with client.batch_() as batcher:

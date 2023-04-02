@@ -2,10 +2,9 @@ import pytest
 from prisma import Prisma
 from prisma.errors import DataError
 
-from ..utils import CURRENT_DATABASE
+from ...utils import CURRENT_DATABASE
 
 
-@pytest.mark.asyncio
 def test_filtering(client: Prisma) -> None:
     """Finding records by a an integer value"""
     with client.batch_() as batcher:
@@ -118,7 +117,6 @@ def test_filtering(client: Prisma) -> None:
     assert found.integer == 2
 
 
-@pytest.mark.asyncio
 def test_atomic_update(client: Prisma) -> None:
     """Atomically updating an integer value"""
     model = client.types.create({'id': 1, 'integer': 1})
@@ -175,7 +173,6 @@ def test_atomic_update(client: Prisma) -> None:
     assert updated.integer == 30
 
 
-@pytest.mark.asyncio
 @pytest.mark.skipif(
     CURRENT_DATABASE == 'cockroachdb',
     reason='https://github.com/prisma/prisma/issues/16511',
@@ -199,7 +196,6 @@ def test_atomic_update_divide(client: Prisma) -> None:
     assert updated.integer == 10
 
 
-@pytest.mark.asyncio
 def test_atomic_update_invalid_input(client: Prisma) -> None:
     """Integer atomic update only allows one field to be passed"""
     with pytest.raises(DataError) as exc:
@@ -220,7 +216,6 @@ def test_atomic_update_invalid_input(client: Prisma) -> None:
     assert 'Expected exactly one field to be present, got 2' in message
 
 
-@pytest.mark.asyncio
 def test_filtering_nulls(client: Prisma) -> None:
     """None is a valid filter for nullable Int fields"""
     client.types.create(

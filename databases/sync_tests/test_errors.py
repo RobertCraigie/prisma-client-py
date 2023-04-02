@@ -5,7 +5,6 @@ from prisma import Prisma
 from prisma.errors import FieldNotFoundError, ForeignKeyViolationError
 
 
-@pytest.mark.asyncio
 def test_field_not_found_error(client: Prisma) -> None:
     """The FieldNotFoundError is raised when an unknown field is passed to
     both queries and mutations.
@@ -34,7 +33,6 @@ def test_field_not_found_error(client: Prisma) -> None:
         )
 
 
-@pytest.mark.asyncio
 def test_foreign_key_violation_error(client: Prisma) -> None:
     """The ForeignKeyViolationError is raised when a foreign key is invalid."""
     with pytest.raises(

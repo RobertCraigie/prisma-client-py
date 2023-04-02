@@ -2,11 +2,9 @@ import pytest
 import prisma
 from prisma import Prisma
 
-from .utils import RawQueries
-from ..utils import DatabaseConfig
+from ..utils import DatabaseConfig, RawQueries
 
 
-@pytest.mark.asyncio
 def test_base_usage(client: Prisma) -> None:
     """Basic non context manager usage"""
     batcher = client.batch_()
@@ -23,7 +21,6 @@ def test_base_usage(client: Prisma) -> None:
     assert user.name == 'Tegan'
 
 
-@pytest.mark.asyncio
 def test_context_manager(client: Prisma) -> None:
     """Basic usage with a context manager"""
     with client.batch_() as batcher:
@@ -39,7 +36,6 @@ def test_context_manager(client: Prisma) -> None:
     assert user.name == 'Tegan'
 
 
-@pytest.mark.asyncio
 def test_batch_error(client: Prisma) -> None:
     """Error while committing does not commit any records"""
     with pytest.raises(prisma.errors.UniqueViolationError) as exc:
@@ -52,7 +48,6 @@ def test_batch_error(client: Prisma) -> None:
     assert client.user.count() == 0
 
 
-@pytest.mark.asyncio
 def test_context_manager_error(client: Prisma) -> None:
     """Error exiting context manager does not commit any records"""
     with pytest.raises(prisma.errors.UniqueViolationError) as exc:
@@ -64,7 +59,6 @@ def test_context_manager_error(client: Prisma) -> None:
     assert client.user.count() == 0
 
 
-@pytest.mark.asyncio
 def test_context_manager_throws_error(client: Prisma) -> None:
     """Context manager respects errors"""
     with pytest.raises(RuntimeError) as exc:
@@ -76,7 +70,6 @@ def test_context_manager_throws_error(client: Prisma) -> None:
     assert client.user.count() == 0
 
 
-@pytest.mark.asyncio
 def test_mixing_models(client: Prisma) -> None:
     """Batching queries to multiple models works as intended"""
     with client.batch_() as batcher:
@@ -104,7 +97,6 @@ def test_mixing_models(client: Prisma) -> None:
     assert client.profile.count() == 1
 
 
-@pytest.mark.asyncio
 def test_mixing_actions(client: Prisma) -> None:
     """Batching queries to different operations works as intended"""
     with client.batch_() as batcher:
@@ -114,7 +106,6 @@ def test_mixing_actions(client: Prisma) -> None:
     assert client.user.count() == 0
 
 
-@pytest.mark.asyncio
 def test_reusing_batcher(client: Prisma) -> None:
     """Reusing the same batcher does not commit the same query multiple times"""
     batcher = client.batch_()
@@ -129,7 +120,6 @@ def test_reusing_batcher(client: Prisma) -> None:
     assert client.user.count() == 2
 
 
-@pytest.mark.asyncio
 def test_large_query(client: Prisma) -> None:
     """Batching a lot of queries works"""
     with client.batch_() as batcher:
@@ -139,7 +129,6 @@ def test_large_query(client: Prisma) -> None:
     assert client.user.count() == 1000
 
 
-@pytest.mark.asyncio
 def test_delete(client: Prisma) -> None:
     """delete action works as suggested"""
     user = client.user.create({'name': 'Robert'})
@@ -151,7 +140,6 @@ def test_delete(client: Prisma) -> None:
     assert client.user.find_first(where={'id': user.id}) is None
 
 
-@pytest.mark.asyncio
 def test_update(client: Prisma) -> None:
     """update action works as suggested"""
     user = client.user.create({'name': 'Robert'})
@@ -166,7 +154,6 @@ def test_update(client: Prisma) -> None:
     assert new.name == 'Roberto'
 
 
-@pytest.mark.asyncio
 def test_upsert(client: Prisma) -> None:
     """upsert action works as suggested"""
     user_id = 'abc123'
@@ -202,7 +189,6 @@ def test_upsert(client: Prisma) -> None:
     assert client.user.count() == 1
 
 
-@pytest.mark.asyncio
 def test_update_many(client: Prisma) -> None:
     """update_many action works as suggested"""
     client.user.create({'name': 'Robert'})
@@ -219,7 +205,6 @@ def test_update_many(client: Prisma) -> None:
     assert users[1].name == 'Robert'
 
 
-@pytest.mark.asyncio
 def test_delete_many(client: Prisma) -> None:
     """delete_many action works as suggested"""
     client.user.create({'name': 'Robert'})
@@ -232,7 +217,6 @@ def test_delete_many(client: Prisma) -> None:
     assert client.user.count() == 0
 
 
-@pytest.mark.asyncio
 def test_execute_raw(client: Prisma, raw_queries: RawQueries) -> None:
     """execute_raw action can be used to execute raw SQL queries"""
     post1 = client.post.create(
@@ -269,7 +253,6 @@ def test_execute_raw(client: Prisma, raw_queries: RawQueries) -> None:
     assert found.title == 'My new title'
 
 
-@pytest.mark.asyncio
 def test_create_many_unsupported(
     client: Prisma,
     config: DatabaseConfig,

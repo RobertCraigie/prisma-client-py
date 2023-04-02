@@ -3,7 +3,6 @@ from prisma import Prisma, errors
 from prisma.types import UserWhereInput
 
 
-@pytest.mark.asyncio
 def test_find_first_or_raise(client: Prisma) -> None:
     """Skips multiple non-matching records"""
     posts = [
@@ -202,7 +201,6 @@ def test_find_first_or_raise(client: Prisma) -> None:
     assert post.title == 'Test post 4'
 
 
-@pytest.mark.asyncio
 def test_filtering_one_to_one_relation(client: Prisma) -> None:
     """Filtering by a 1-1 relational field and negating the filter"""
     with client.batch_() as batcher:
@@ -259,7 +257,6 @@ def test_filtering_one_to_one_relation(client: Prisma) -> None:
     assert user.profile is None
 
 
-@pytest.mark.asyncio
 def test_filtering_and_ordering_one_to_many_relation(
     client: Prisma,
 ) -> None:
@@ -360,7 +357,6 @@ def test_filtering_and_ordering_one_to_many_relation(
     assert user.name == 'Tegan'
 
 
-@pytest.mark.asyncio
 def test_list_wrapper_query_transformation(client: Prisma) -> None:
     """Queries wrapped within a list transform global aliases"""
     query: UserWhereInput = {
@@ -384,7 +380,6 @@ def test_list_wrapper_query_transformation(client: Prisma) -> None:
     assert found.name == '40 robert'
 
 
-@pytest.mark.asyncio
 def test_distinct(client: Prisma) -> None:
     """Filtering by distinct combinations of fields"""
     users = [
@@ -445,7 +440,6 @@ def test_distinct(client: Prisma) -> None:
     assert found.city == 'Edinburgh'
 
 
-@pytest.mark.asyncio
 def test_distinct_relations(client: Prisma) -> None:
     """Using `distinct` across relations"""
     user = client.user.create(

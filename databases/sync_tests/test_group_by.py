@@ -55,7 +55,6 @@ def create_test_data(client: Prisma) -> None:
         )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_group_by(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Basic test grouping by 1 field with no additional filters"""
@@ -79,7 +78,6 @@ def test_group_by(snapshot: SnapshotAssertion, client: Prisma) -> None:
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_docs_example(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Test the example given in the Prisma documentation:
@@ -108,7 +106,6 @@ def test_docs_example(snapshot: SnapshotAssertion, client: Prisma) -> None:
     assert results == snapshot
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 @pytest.mark.parametrize('order', ['asc', 'desc'])
 def test_order(
@@ -121,7 +118,6 @@ def test_order(
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_order_list(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Test ordering results by a list of grouped fields"""
@@ -139,7 +135,6 @@ def test_order_list(snapshot: SnapshotAssertion, client: Prisma) -> None:
     assert results == snapshot
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_order_multiple_fields(client: Prisma) -> None:
     """Test ordering results by multiple fields is not support"""
@@ -153,7 +148,6 @@ def test_order_multiple_fields(client: Prisma) -> None:
         )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_order_mismatched_arguments(client: Prisma) -> None:
     """The order argument only accepts fields that are being grouped"""
@@ -171,7 +165,6 @@ def test_order_mismatched_arguments(client: Prisma) -> None:
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 @pytest.mark.parametrize('order', ['asc', 'desc'])
 def test_take(
@@ -190,7 +183,6 @@ def test_take(
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_take_missing_order_argument(client: Prisma) -> None:
     """The order argument must be provided to use take"""
@@ -202,7 +194,6 @@ def test_take_missing_order_argument(client: Prisma) -> None:
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 @pytest.mark.parametrize('order', ['asc', 'desc'])
 def test_skip(
@@ -221,7 +212,6 @@ def test_skip(
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_skip_missing_order_argument(client: Prisma) -> None:
     """The order argument must be provided to use skip"""
@@ -233,7 +223,6 @@ def test_skip_missing_order_argument(client: Prisma) -> None:
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_where(client: Prisma) -> None:
     """Where argument correctly filters records"""
@@ -264,7 +253,6 @@ def test_where(client: Prisma) -> None:
     assert results[0].get('country') == 'Scotland'
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_having_missing_field_in_by(client: Prisma) -> None:
     """Having filters must be an aggregation filter or be included in by"""
@@ -288,7 +276,6 @@ def test_having_missing_field_in_by(client: Prisma) -> None:
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_having_aggregation(
     snapshot: SnapshotAssertion, client: Prisma
@@ -330,7 +317,6 @@ def test_having_aggregation(
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_having_aggregation_nested(
     snapshot: SnapshotAssertion, client: Prisma
@@ -427,7 +413,6 @@ def test_having_aggregation_nested(
     assert results == snapshot
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_count(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Counting records"""
@@ -480,7 +465,6 @@ def test_count(snapshot: SnapshotAssertion, client: Prisma) -> None:
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_avg(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the average of records"""
@@ -502,7 +486,6 @@ def test_avg(snapshot: SnapshotAssertion, client: Prisma) -> None:
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_sum(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the sum of records"""
@@ -520,7 +503,6 @@ def test_sum(snapshot: SnapshotAssertion, client: Prisma) -> None:
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_min(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the minimum value of records"""
@@ -538,7 +520,6 @@ def test_min(snapshot: SnapshotAssertion, client: Prisma) -> None:
     )
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_max(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Getting the maximum value of records"""

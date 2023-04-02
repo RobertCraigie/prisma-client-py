@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma, Json
 
 
-@pytest.mark.asyncio
 def test_updating_json(client: Prisma) -> None:
     """Updating a Json[] value"""
     models = [
@@ -39,7 +37,6 @@ def test_updating_json(client: Prisma) -> None:
     assert model.json_objects == [{'world': None}]
 
 
-@pytest.mark.asyncio
 def test_filtering_json(client: Prisma) -> None:
     """Searching for records by a Json[] value"""
     expected_raw: list[object] = [[], {'country': 'Scotland'}]

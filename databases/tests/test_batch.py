@@ -2,8 +2,7 @@ import pytest
 import prisma
 from prisma import Prisma
 
-from .utils import RawQueries
-from ..utils import DatabaseConfig
+from ..utils import DatabaseConfig, RawQueries
 
 
 @pytest.mark.asyncio

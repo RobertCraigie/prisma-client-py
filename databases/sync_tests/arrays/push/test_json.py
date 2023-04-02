@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma, Json
 
 
-@pytest.mark.asyncio
 def test_pushing_json(client: Prisma) -> None:
     """Pushing a Json[] value"""
     models = [

@@ -11,6 +11,7 @@ from prisma import Prisma
 from prisma.cli import setup_logging
 
 from lib.testing.shared_conftest import *
+from lib.testing.shared_conftest.async_client import *
 from .utils import Runner, Testdir
 
 

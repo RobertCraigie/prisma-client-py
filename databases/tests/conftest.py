@@ -6,11 +6,9 @@ import prisma
 from prisma import Prisma
 
 from lib.testing.shared_conftest import *
-from .utils import RAW_QUERIES_MAPPING, RawQueries
-from ..utils import DatabaseConfig
+from lib.testing.shared_conftest.async_client import *
+from ..utils import DatabaseConfig, RAW_QUERIES_MAPPING, RawQueries
 
-
-CURRENT_DATABASE = os.environ['PRISMA_DATABASE']
 
 prisma.register(Prisma())
 

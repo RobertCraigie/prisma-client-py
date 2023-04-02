@@ -1,12 +1,10 @@
 from dirty_equals import IsPartialDict
-import pytest
 
 from prisma import Prisma
 from prisma.enums import Role
 from prisma.models import Types
 
 
-@pytest.mark.asyncio
 def test_enum_create(client: Prisma) -> None:
     """Creating a record with an enum value"""
     record = client.types.create({})
@@ -19,7 +17,6 @@ def test_enum_create(client: Prisma) -> None:
 # TODO: all other actions
 
 
-@pytest.mark.asyncio
 def test_id5(client: Prisma) -> None:
     """Combined ID constraint with an Enum field"""
     model = client.id5.create(
@@ -52,7 +49,6 @@ def test_id5(client: Prisma) -> None:
     assert found is None
 
 
-@pytest.mark.asyncio
 def test_unique6(client: Prisma) -> None:
     """Combined unique constraint with an Enum field"""
     model = client.unique6.create(

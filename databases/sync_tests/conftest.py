@@ -4,17 +4,13 @@ import os
 
 import pytest
 
-import prisma
-from prisma import Prisma
-
 from lib.testing.shared_conftest import *
+from lib.testing.shared_conftest.sync_client import *
 
-# from .utils import RAW_QUERIES_MAPPING, RawQueries
-# from ..utils import DatabaseConfig
+from ..utils import RAW_QUERIES_MAPPING, RawQueries, DatabaseConfig
 
 
-CURRENT_DATABASE = os.environ['PRISMA_DATABASE']
-
+# TODO: the async tests conftest.py is imported somehow which breaks this...
 # prisma.register(Prisma())
 
 

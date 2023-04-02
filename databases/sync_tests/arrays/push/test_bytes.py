@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma, Base64
 
 
-@pytest.mark.asyncio
 def test_pushing_byte(client: Prisma) -> None:
     """Pushing values to a Bytes[] field"""
     models = [

@@ -1,9 +1,7 @@
-import pytest
 from prisma import Prisma, Base64
 from prisma.models import Lists
 
 
-@pytest.mark.asyncio
 def test_updating_bytes(client: Prisma) -> None:
     """Updating a Bytes[] value"""
     models = [
@@ -40,7 +38,6 @@ def test_updating_bytes(client: Prisma) -> None:
     assert model.bytes == [Base64.encode(b'e')]
 
 
-@pytest.mark.asyncio
 def test_filtering_bytes(client: Prisma) -> None:
     """Searching for records by a Bytes[] value"""
     expected_objects = [Base64.encode(b'foo'), Base64.encode(b'bar')]
@@ -135,7 +132,6 @@ def test_filtering_bytes(client: Prisma) -> None:
     assert count == 1
 
 
-@pytest.mark.asyncio
 def test_bytes_constructing(client: Prisma) -> None:
     """A list of Base64 fields can be passed to the model constructor"""
     record = client.lists.create({})

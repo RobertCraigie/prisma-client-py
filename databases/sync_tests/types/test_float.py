@@ -3,7 +3,6 @@ from prisma import Prisma
 from prisma.errors import DataError
 
 
-@pytest.mark.asyncio
 def test_filtering(client: Prisma) -> None:
     """Finding records by a a float value"""
     with client.batch_() as batcher:
@@ -116,7 +115,6 @@ def test_filtering(client: Prisma) -> None:
     assert found.float_ == 2
 
 
-@pytest.mark.asyncio
 def test_atomic_update(client: Prisma) -> None:
     """Atomically updating a float value"""
     model = client.types.create({'id': 1, 'float_': 1})
@@ -186,7 +184,6 @@ def test_atomic_update(client: Prisma) -> None:
     assert updated.float_ == 10
 
 
-@pytest.mark.asyncio
 def test_atomic_update_invalid_input(client: Prisma) -> None:
     """Float atomic update only allows one field to be passed"""
     with pytest.raises(DataError) as exc:
@@ -207,7 +204,6 @@ def test_atomic_update_invalid_input(client: Prisma) -> None:
     assert 'Expected exactly one field to be present, got 2' in message
 
 
-@pytest.mark.asyncio
 def test_filtering_nulls(client: Prisma) -> None:
     """None is a valid filter for nullable Float fields"""
     client.types.create(

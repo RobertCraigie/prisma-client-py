@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_pushing_strings(client: Prisma) -> None:
     """Pushing a String[] value"""
     models = [

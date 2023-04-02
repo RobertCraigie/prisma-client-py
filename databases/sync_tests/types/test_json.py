@@ -5,7 +5,6 @@ from prisma import Prisma, Json
 from prisma.models import Types
 
 
-@pytest.mark.asyncio
 def test_create(client: Prisma) -> None:
     """Creating a model with Json data"""
     model = client.types.create(
@@ -65,7 +64,6 @@ def test_create(client: Prisma) -> None:
     assert model.json_obj == 19.3273823
 
 
-@pytest.mark.asyncio
 def test_keys(client: Prisma) -> None:
     """Handling of non-string keys"""
     model = client.types.create(
@@ -105,7 +103,6 @@ def test_keys(client: Prisma) -> None:
     assert model.json_obj['3.1415'] == [1, 2]
 
 
-@pytest.mark.asyncio
 def test_base_filtering(client: Prisma) -> None:
     """Searching for records by Json values without the preview feature enabled"""
     found = client.types.find_first(
@@ -156,7 +153,6 @@ def test_base_filtering(client: Prisma) -> None:
     assert found.json_obj == {'country': 'Scotland'}
 
 
-@pytest.mark.asyncio
 def test_unserializable_type(client: Prisma) -> None:
     """Error is raised when an unserializable type is encountered"""
     with pytest.raises(TypeError) as exc:

@@ -1,9 +1,7 @@
-import pytest
 from prisma import Prisma
 from prisma.enums import Role
 
 
-@pytest.mark.asyncio
 def test_filtering_enums(client: Prisma) -> None:
     """Searching for records by a Role[] enum value"""
     with client.batch_() as batcher:
@@ -97,7 +95,6 @@ def test_filtering_enums(client: Prisma) -> None:
     assert count == 1
 
 
-@pytest.mark.asyncio
 def test_updating_enum(client: Prisma) -> None:
     """Updating a Role[] enum value"""
     models = [

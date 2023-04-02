@@ -1,11 +1,8 @@
 from decimal import Decimal
 
-import pytest
-
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_pushing_decimal(client: Prisma) -> None:
     """Pushing a Decimal[] value"""
     models = [

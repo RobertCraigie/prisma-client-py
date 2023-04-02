@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_upsert(client: Prisma) -> None:
     """Upserting a non-existent and existing model updates fields"""
     user_id = 'asjdhsajd'

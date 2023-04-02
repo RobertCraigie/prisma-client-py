@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_pushing_boolean(client: Prisma) -> None:
     """Pushing values to a Boolean[] field"""
     models = [

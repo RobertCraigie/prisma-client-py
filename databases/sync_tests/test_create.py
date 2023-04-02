@@ -4,7 +4,6 @@ from prisma import errors, Prisma
 from lib.testing import assert_time_like_now
 
 
-@pytest.mark.asyncio
 def test_create(client: Prisma) -> None:
     """Basic record creation"""
     post = client.post.create(
@@ -33,7 +32,6 @@ def test_create(client: Prisma) -> None:
     assert isinstance(user.id, str)
 
 
-@pytest.mark.asyncio
 def test_create_with_relationship(client: Prisma) -> None:
     """Creating a record with a nested relationship record creation"""
     post = client.post.create(
@@ -52,7 +50,6 @@ def test_create_with_relationship(client: Prisma) -> None:
     assert found.name == 'Bob'
 
 
-@pytest.mark.asyncio
 def test_create_missing_required_args(client: Prisma) -> None:
     """Trying to create a record with a missing required field raises an error"""
     with pytest.raises(TypeError):
@@ -66,7 +63,6 @@ def test_create_missing_required_args(client: Prisma) -> None:
         )
 
 
-@pytest.mark.asyncio
 def test_create_unique_violation(client: Prisma) -> None:
     """Creating the same record twice raises an error"""
     user = client.user.create({'name': 'Robert', 'id': 'user-1'})
@@ -77,7 +73,6 @@ def test_create_unique_violation(client: Prisma) -> None:
         client.user.create({'name': 'Robert', 'id': 'user-1'})
 
 
-@pytest.mark.asyncio
 def test_setting_field_to_null(client: Prisma) -> None:
     """Creating a field with a None value sets the database record to None"""
     post = client.post.create(
@@ -90,7 +85,6 @@ def test_setting_field_to_null(client: Prisma) -> None:
     assert post.description is None
 
 
-@pytest.mark.asyncio
 def test_setting_non_nullable_field_to_null(client: Prisma) -> None:
     """Attempting to create a record with a non-nullable field set to null raises an error"""
     with pytest.raises(errors.MissingRequiredValueError) as exc:
@@ -104,7 +98,6 @@ def test_setting_non_nullable_field_to_null(client: Prisma) -> None:
     assert exc.match(r'published')
 
 
-@pytest.mark.asyncio
 def test_nullable_relational_field(client: Prisma) -> None:
     """Relational fields cannot be set to None"""
     with pytest.raises(errors.MissingRequiredValueError) as exc:
@@ -115,7 +108,6 @@ def test_nullable_relational_field(client: Prisma) -> None:
     assert exc.match(r'author')
 
 
-@pytest.mark.asyncio
 def test_required_relation_key_field(client: Prisma) -> None:
     """Explicitly passing a field used as a foreign key connects the relation"""
     user = client.user.create(

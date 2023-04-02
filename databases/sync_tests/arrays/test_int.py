@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_updating_ints(client: Prisma) -> None:
     """Updating an Int[] value"""
     models = [
@@ -39,7 +37,6 @@ def test_updating_ints(client: Prisma) -> None:
     assert model.ints == [6]
 
 
-@pytest.mark.asyncio
 def test_filtering_ints(client: Prisma) -> None:
     """Searching for records by an Int[] value"""
     with client.batch_() as batcher:

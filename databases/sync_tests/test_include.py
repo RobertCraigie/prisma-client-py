@@ -74,7 +74,6 @@ def create_or_get_posts(client: Prisma, user_id: str) -> List[Post]:
     ]
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_find_unique_include(client: Prisma, user_id: str) -> None:
     """Including a one-to-many relationship returns all records as a list of models"""
@@ -100,7 +99,6 @@ def test_find_unique_include(client: Prisma, user_id: str) -> None:
         assert post.title == f'Post {i}'
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_find_unique_include_take(client: Prisma, user_id: str) -> None:
     """Including a one-to-many relationship with take limits amount of returned models"""
@@ -119,7 +117,6 @@ def test_find_unique_include_take(client: Prisma, user_id: str) -> None:
     assert len(user.posts) == 1
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_find_unique_include_where(
     client: Prisma, user_id: str, posts: List[Post]
@@ -135,7 +132,6 @@ def test_find_unique_include_where(
     assert user.posts[0].id == posts[0].id
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_find_unique_include_pagination(
     client: Prisma, user_id: str, posts: List[Post]
@@ -178,7 +174,6 @@ def test_find_unique_include_pagination(
     assert user.posts[0].id == posts[0].id
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_find_unique_include_nested_where_or(
     client: Prisma, user_id: str, posts: List[Post]
@@ -215,7 +210,6 @@ def test_find_unique_include_nested_where_or(
     assert user.posts[2].published is True
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_find_unique_include_nested_include(
     client: Prisma, user_id: str
@@ -237,7 +231,6 @@ def test_find_unique_include_nested_include(
             assert category.posts is not None
 
 
-@pytest.mark.asyncio
 @pytest.mark.persist_data
 def test_create_include(client: Prisma) -> None:
     """Creating a record and including it at the same time"""

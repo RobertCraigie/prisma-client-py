@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_update_many(client: Prisma) -> None:
     """Filters update correct records
 
@@ -56,7 +54,6 @@ def test_update_many(client: Prisma) -> None:
     assert post is None
 
 
-@pytest.mark.asyncio
 def test_setting_to_null(client: Prisma) -> None:
     """Setting a field to None sets the database record to None"""
     post = client.post.create(

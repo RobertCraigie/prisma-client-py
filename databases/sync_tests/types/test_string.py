@@ -1,11 +1,9 @@
-import pytest
 from dirty_equals import IsPartialDict
 
 from prisma import Prisma
 from prisma.models import Types
 
 
-@pytest.mark.asyncio
 def test_filtering(client: Prisma) -> None:
     """Finding records by a String value"""
     start = ord('a')
@@ -119,7 +117,6 @@ def test_filtering(client: Prisma) -> None:
     assert found.string == 'b'
 
 
-@pytest.mark.asyncio
 def test_filtering_nulls(client: Prisma) -> None:
     """None is a valid filter for nullable String fields"""
     client.types.create(

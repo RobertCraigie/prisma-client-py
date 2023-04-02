@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_delete(client: Prisma) -> None:
     """Deleting a record with a relationship does not delete the related record"""
     post = client.post.create(
@@ -35,7 +33,6 @@ def test_delete(client: Prisma) -> None:
     assert user.name == 'Alice'
 
 
-@pytest.mark.asyncio
 def test_delete_record_not_found(client: Prisma) -> None:
     """Deleting a non-existent record returns None"""
     deleted = client.post.delete(where={'id': 'ksdjsdh'})

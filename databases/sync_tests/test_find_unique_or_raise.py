@@ -2,7 +2,6 @@ import pytest
 from prisma import Prisma, errors
 
 
-@pytest.mark.asyncio
 def test_id_field(client: Prisma) -> None:
     """Finding a record by an ID field"""
     post = client.post.create(
@@ -17,7 +16,6 @@ def test_id_field(client: Prisma) -> None:
     assert found == post
 
 
-@pytest.mark.asyncio
 def test_missing_required_args(client: Prisma) -> None:
     """Missing field raises an error"""
     with pytest.raises(TypeError):
@@ -32,7 +30,6 @@ def test_missing_required_args(client: Prisma) -> None:
         )
 
 
-@pytest.mark.asyncio
 def test_no_match(client: Prisma) -> None:
     """Looking for non-existent record raises an error"""
     with pytest.raises(
@@ -42,7 +39,6 @@ def test_no_match(client: Prisma) -> None:
         client.post.find_unique_or_raise(where={'id': 'sjbsjahs'})
 
 
-@pytest.mark.asyncio
 def test_multiple_fields_are_not_allowed(client: Prisma) -> None:
     """Multiple fields cannot be passed at once"""
     with pytest.raises(errors.DataError):
@@ -54,7 +50,6 @@ def test_multiple_fields_are_not_allowed(client: Prisma) -> None:
         )
 
 
-@pytest.mark.asyncio
 def test_unique1(client: Prisma) -> None:
     """Standard combined unique constraint"""
     model = client.unique1.create(
@@ -75,7 +70,6 @@ def test_unique1(client: Prisma) -> None:
     assert found.surname == model.surname
 
 
-@pytest.mark.asyncio
 def test_unique2(client: Prisma) -> None:
     """Combined unique constraint with an aditional unique field"""
     model = client.unique2.create(
@@ -105,7 +99,6 @@ def test_unique2(client: Prisma) -> None:
     assert found.surname == model.surname
 
 
-@pytest.mark.asyncio
 def test_unique3(client: Prisma) -> None:
     """Combined unique constraint with an ID field and a unique field"""
     model = client.unique3.create(
@@ -140,7 +133,6 @@ def test_unique3(client: Prisma) -> None:
     assert found.id == model.id
 
 
-@pytest.mark.asyncio
 def test_unique4(client: Prisma) -> None:
     """Explicitly named unique constraint"""
     model = client.unique4.create(
@@ -162,7 +154,6 @@ def test_unique4(client: Prisma) -> None:
     assert found.surname == model.surname
 
 
-@pytest.mark.asyncio
 def test_unique5(client: Prisma) -> None:
     """Combined unique constraint with 3 fields"""
     model = client.unique5.create(
@@ -187,7 +178,6 @@ def test_unique5(client: Prisma) -> None:
     assert found.surname == model.surname
 
 
-@pytest.mark.asyncio
 def test_id1(client: Prisma) -> None:
     """Standard combined ID constraint"""
     model = client.id1.create(
@@ -208,7 +198,6 @@ def test_id1(client: Prisma) -> None:
     assert found.surname == model.surname
 
 
-@pytest.mark.asyncio
 def test_id2(client: Prisma) -> None:
     """Combined ID constraint with a unique field"""
     model = client.id2.create(
@@ -238,7 +227,6 @@ def test_id2(client: Prisma) -> None:
     assert found.surname == model.surname
 
 
-@pytest.mark.asyncio
 def test_id3(client: Prisma) -> None:
     """Explicitly named combined ID constraint"""
     model = client.id3.create(
@@ -260,7 +248,6 @@ def test_id3(client: Prisma) -> None:
     assert found.surname == model.surname
 
 
-@pytest.mark.asyncio
 def test_id4(client: Prisma) -> None:
     """Combined ID constraint with 3 fields"""
     model = client.id4.create(

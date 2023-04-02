@@ -1,6 +1,5 @@
 from typing import List
 
-import pytest
 from pydantic import BaseModel
 
 from prisma import Prisma
@@ -8,7 +7,6 @@ from prisma.fields import Base64
 from prisma.models import Types
 
 
-@pytest.mark.asyncio
 def test_filtering(client: Prisma) -> None:
     """Finding records by a Bytes value"""
     with client.batch_() as batcher:
@@ -84,7 +82,6 @@ def test_filtering(client: Prisma) -> None:
     assert found_values == {b'b', b'foo bar'}
 
 
-@pytest.mark.asyncio
 def test_json(client: Prisma) -> None:
     """Base64 fields can be serialised to and from JSON"""
     record = client.types.create(
@@ -97,7 +94,6 @@ def test_json(client: Prisma) -> None:
     assert model.bytes.decode() == b'foo'
 
 
-@pytest.mark.asyncio
 def test_constructing(client: Prisma) -> None:
     """Base64 fields can be passed to the model constructor"""
     record = client.types.create({})
@@ -110,7 +106,6 @@ def test_constructing(client: Prisma) -> None:
     assert model.bytes == Base64.encode(b'foo')
 
 
-@pytest.mark.asyncio
 def test_filtering_nulls(client: Prisma) -> None:
     """None is a valid filter for nullable Bytes fields"""
     client.types.create(

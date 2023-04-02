@@ -16,7 +16,6 @@ def setup_decimal_module() -> None:
     getcontext().prec = DEFAULT_PRECISION
 
 
-@pytest.mark.asyncio
 def test_serialising(client: Prisma) -> None:
     """Decimal values of any precision are correctly serialised / deserialised"""
     model = client.types.create(
@@ -41,7 +40,6 @@ def test_serialising(client: Prisma) -> None:
 # TODO: split up this test into multiple tests
 
 
-@pytest.mark.asyncio
 def test_filtering(client: Prisma) -> None:
     """Finding records by a Decimal value"""
     with client.batch_() as batcher:
@@ -202,7 +200,6 @@ def test_filtering(client: Prisma) -> None:
     assert found.decimal_ == Decimal('2.1234')
 
 
-@pytest.mark.asyncio
 def test_filtering_nulls(client: Prisma) -> None:
     """None is a valid filter for nullable Decimal fields"""
     client.types.create(

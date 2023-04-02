@@ -3,7 +3,6 @@ import prisma
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_find_many(client: Prisma) -> None:
     """Filters and ordering work as suggested"""
     posts = [
@@ -48,7 +47,6 @@ def test_find_many(client: Prisma) -> None:
     assert posts[1].title == 'Test post 2'
 
 
-@pytest.mark.asyncio
 def test_cursor(client: Prisma) -> None:
     """Cursor argument correctly paginates results"""
     posts = [
@@ -82,7 +80,6 @@ def test_cursor(client: Prisma) -> None:
     assert found[0].title == 'Foo 4'
 
 
-@pytest.mark.asyncio
 def test_filtering_one_to_one_relation(client: Prisma) -> None:
     """Filtering by a 1-1 relational field and negating the filter"""
     with client.batch_() as batcher:
@@ -158,7 +155,6 @@ def test_filtering_one_to_one_relation(client: Prisma) -> None:
     assert users[0].name == 'Callum'
 
 
-@pytest.mark.asyncio
 def test_filtering_one_to_many_relation(client: Prisma) -> None:
     """Filtering by a 1-M relational field and negating the filter"""
     with client.batch_() as batcher:
@@ -247,7 +243,6 @@ def test_filtering_one_to_many_relation(client: Prisma) -> None:
     assert len(users) == 0
 
 
-@pytest.mark.asyncio
 def test_ordering(client: Prisma) -> None:
     """Ordering by `asc` and `desc` correctly changes the order of the returned records"""
     with client.batch_() as batcher:
@@ -291,7 +286,6 @@ def test_ordering(client: Prisma) -> None:
     )
 
 
-@pytest.mark.asyncio
 def test_order_field_not_nullable(client: Prisma) -> None:
     """Order by fields, if present, cannot be None"""
     with pytest.raises(prisma.errors.FieldNotFoundError) as exc:
@@ -300,7 +294,6 @@ def test_order_field_not_nullable(client: Prisma) -> None:
     assert exc.match(r'desc')
 
 
-@pytest.mark.asyncio
 def test_distinct(client: Prisma) -> None:
     """Filtering by distinct combinations of fields"""
     users = [

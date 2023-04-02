@@ -1,4 +1,3 @@
-import pytest
 from pydantic import BaseModel
 
 from prisma import Prisma, Base64
@@ -31,7 +30,6 @@ RAW_QUERIES: DatabaseMapping[Queries] = {
 }
 
 
-@pytest.mark.asyncio
 def test_query_first(
     client: Prisma,
     database: SupportedDatabase,

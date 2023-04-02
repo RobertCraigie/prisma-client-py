@@ -1,13 +1,11 @@
 import datetime
 from dirty_equals import IsPartialDict
-import pytest
 from prisma import Prisma
 from prisma.models import Types
 
 from lib.testing import assert_similar_time
 
 
-@pytest.mark.asyncio
 def test_filtering(client: Prisma) -> None:
     """Finding records by a DateTime value"""
     now = datetime.datetime.now(datetime.timezone.utc)
@@ -152,7 +150,6 @@ def test_filtering(client: Prisma) -> None:
     assert_similar_time(now + datetime.timedelta(hours=1), found.datetime_)
 
 
-@pytest.mark.asyncio
 def test_finds(client: Prisma) -> None:
     """Adding 1 second timedelta finds the record"""
     record = client.types.create(data={})
@@ -167,7 +164,6 @@ def test_finds(client: Prisma) -> None:
     assert found.id == record.id
 
 
-@pytest.mark.asyncio
 def test_tz_aware(client: Prisma) -> None:
     """Modifying timezone still finds the record"""
     record = client.types.create(data={})
@@ -184,7 +180,6 @@ def test_tz_aware(client: Prisma) -> None:
     assert found.id == record.id
 
 
-@pytest.mark.asyncio
 def test_filtering_nulls(client: Prisma) -> None:
     """None is a valid filter for nullable DateTime fields"""
     now = datetime.datetime.now(datetime.timezone.utc)
@@ -243,7 +238,6 @@ def test_filtering_nulls(client: Prisma) -> None:
     assert count == 2
 
 
-@pytest.mark.asyncio
 def test_precision_loss(client: Prisma) -> None:
     """https://github.com/RobertCraigie/prisma-client-py/issues/129"""
     date = datetime.datetime.utcnow()

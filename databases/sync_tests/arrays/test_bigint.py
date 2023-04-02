@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_updating_bigints(client: Prisma) -> None:
     """Updating a BigInt[] value"""
     models = [
@@ -39,7 +37,6 @@ def test_updating_bigints(client: Prisma) -> None:
     assert model.bigints == [298490675715112960]
 
 
-@pytest.mark.asyncio
 def test_filtering_bigints(client: Prisma) -> None:
     """Searching for records by a BigInt[] value"""
     with client.batch_() as batcher:

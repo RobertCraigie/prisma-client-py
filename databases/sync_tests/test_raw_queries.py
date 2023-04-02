@@ -4,11 +4,9 @@ from prisma import errors, Prisma
 from prisma.models import Post, User
 from prisma.partials import PostOnlyPublished
 
-from .utils import RawQueries
-from ..utils import DatabaseConfig
+from ..utils import DatabaseConfig, RawQueries
 
 
-@pytest.mark.asyncio
 def test_query_raw(
     client: Prisma,
     raw_queries: RawQueries,
@@ -38,7 +36,6 @@ def test_query_raw(
         assert results[0]['published'] is False
 
 
-@pytest.mark.asyncio
 def test_query_raw_model(
     client: Prisma,
     raw_queries: RawQueries,
@@ -60,7 +57,6 @@ def test_query_raw_model(
     assert found.id == post.id
 
 
-@pytest.mark.asyncio
 def test_query_raw_partial_model(
     client: Prisma,
     raw_queries: RawQueries,
@@ -85,7 +81,6 @@ def test_query_raw_partial_model(
     assert results[1].published is False
 
 
-@pytest.mark.asyncio
 def test_query_raw_no_result(
     client: Prisma,
     raw_queries: RawQueries,
@@ -101,7 +96,6 @@ def test_query_raw_no_result(
     assert len(results) == 0
 
 
-@pytest.mark.asyncio
 def test_query_raw_incorrect_params(
     client: Prisma,
     raw_queries: RawQueries,
@@ -128,7 +122,6 @@ def test_query_raw_incorrect_params(
     assert results[0]['count'] == 0
 
 
-@pytest.mark.asyncio
 def test_execute_raw(client: Prisma, raw_queries: RawQueries) -> None:
     """Basic usage"""
     post = client.post.create(
@@ -151,7 +144,6 @@ def test_execute_raw(client: Prisma, raw_queries: RawQueries) -> None:
     assert found.title == 'My edited title'
 
 
-@pytest.mark.asyncio
 def test_execute_raw_no_result(
     client: Prisma,
     raw_queries: RawQueries,
@@ -161,7 +153,6 @@ def test_execute_raw_no_result(
     assert count == 0
 
 
-@pytest.mark.asyncio
 def test_query_first(
     client: Prisma,
     raw_queries: RawQueries,
@@ -174,7 +165,6 @@ def test_query_first(
     assert found['name'] == 'Robert'
 
 
-@pytest.mark.asyncio
 def test_query_first_model(
     client: Prisma,
     raw_queries: RawQueries,

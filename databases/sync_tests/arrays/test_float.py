@@ -1,8 +1,6 @@
-import pytest
 from prisma import Prisma
 
 
-@pytest.mark.asyncio
 def test_updating_floats(client: Prisma) -> None:
     """Updating a Float[] value"""
     models = [
@@ -39,7 +37,6 @@ def test_updating_floats(client: Prisma) -> None:
     assert model.floats == [80]
 
 
-@pytest.mark.asyncio
 def test_filtering_floats(client: Prisma) -> None:
     """Searching for records by a Float[] value"""
     with client.batch_() as batcher:

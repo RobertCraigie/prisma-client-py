@@ -1,11 +1,9 @@
-import pytest
 from prisma import Prisma
 
 
 # TODO: more tests
 
 
-@pytest.mark.asyncio
 def test_delete_many(client: Prisma) -> None:
     """Standard usage"""
     posts = [
