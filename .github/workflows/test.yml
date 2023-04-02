@@ -269,14 +269,14 @@ jobs:
 
       - name: Run sync tests
         run: |
-          coverage run -m nox -s databases -- test --coverage --databases=${{ matrix.name }} --for-async=false
+          coverage run -m nox -s databases -r -- test --coverage --databases=${{ matrix.name }} --for-async=false
         env:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases
 
       - name: Run inverse sync tests
         run: |
-          coverage run -m nox -s databases -- test-inverse --coverage --databases=${{ matrix.name }} --for-async=false
+          coverage run -m nox -s databases -r -- test-inverse --coverage --databases=${{ matrix.name }} --for-async=false
         env:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases
