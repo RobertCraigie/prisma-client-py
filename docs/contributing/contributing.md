@@ -83,15 +83,15 @@ make docs-serve
 
 We use [nox](https://nox.thea.codes/) to run tests written with [pytest](https://docs.pytest.org/)
 
-### Where Whould I Write The Test?
+### Where Would I Write The Test?
 
 We have a few places where you can write tests:
 
 * **Command Line**: `tests/test_cli/`
-* **Datbase Interactions**: `databases/tests`
-* **Client Generation**: `tests/test_generation`
-* **Integration Tests**: `tests/integrations`
-* **Type Tests**: `typesafety`
+* **Database Interactions**: `databases/tests/`
+* **Client Generation**: `tests/test_generation/`
+* **Integration Tests**: `tests/integrations/`
+* **Type Tests**: `typesafety/`
 
 ### Database Tests
 
