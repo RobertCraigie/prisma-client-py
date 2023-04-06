@@ -2,12 +2,18 @@ from __future__ import annotations
 
 import os
 from typing import Set
+from pathlib import Path
 from typing_extensions import Literal, get_args
 
 from pydantic import BaseModel
+from syrupy.extensions.amber import AmberSnapshotExtension
 
 from ._types import DatabaseMapping
 from ._compat import LiteralString
+from .constants import (
+    TESTS_DIR,
+    SYNC_TESTS_DIR,
+)
 
 
 DatabaseFeature = Literal[
@@ -43,6 +49,22 @@ class DatabaseConfig(BaseModel):
 
 
 # ------------------ Test helpers ------------------
+
+SHARED_SNAPSHOTS_DIR = Path(__file__).parent.joinpath('__shared_snapshots__')
+
+
+class AmberSharedExtension(AmberSnapshotExtension):
+    """Syrupy extension that stores the snapshots in a parent __shared_snapshots__ dir"""
+
+    @property
+    def _dirname(self) -> str:
+        test_dir = Path(self.test_location.filepath).parent
+        if test_dir.is_relative_to(SYNC_TESTS_DIR):
+            rel_dir = test_dir.relative_to(SYNC_TESTS_DIR)
+        else:
+            rel_dir = test_dir.relative_to(TESTS_DIR)
+
+        return str(SHARED_SNAPSHOTS_DIR.joinpath(rel_dir))
 
 
 class RawQueries(BaseModel):

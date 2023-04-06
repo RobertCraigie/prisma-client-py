@@ -1,13 +1,19 @@
 import os
 
 import pytest
+from syrupy.assertion import SnapshotAssertion
 
 import prisma
 from prisma import Prisma
 
 from lib.testing.shared_conftest import *
 from lib.testing.shared_conftest.async_client import *
-from ..utils import DatabaseConfig, RAW_QUERIES_MAPPING, RawQueries
+from ..utils import (
+    RAW_QUERIES_MAPPING,
+    RawQueries,
+    DatabaseConfig,
+    AmberSharedExtension,
+)
 
 
 prisma.register(Prisma())
@@ -27,3 +33,8 @@ def raw_queries_fixture(database: str) -> RawQueries:
 @pytest.fixture(name='config', scope='session')
 def config_fixture() -> DatabaseConfig:
     return DatabaseConfig.parse_raw(os.environ['DATABASE_CONFIG'])
+
+
+@pytest.fixture()
+def snapshot(snapshot: SnapshotAssertion) -> SnapshotAssertion:
+    return snapshot.use_extension(AmberSharedExtension)
