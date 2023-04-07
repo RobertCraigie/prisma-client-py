@@ -1,3 +1,5 @@
+-r deps/syrupy.txt
+
 nox==2022.11.21
 wheel==0.40.0
 blue==0.9.1

@@ -10,10 +10,6 @@ from syrupy.extensions.amber import AmberSnapshotExtension
 
 from ._types import DatabaseMapping
 from ._compat import LiteralString
-from .constants import (
-    TESTS_DIR,
-    SYNC_TESTS_DIR,
-)
 
 
 DatabaseFeature = Literal[
@@ -49,6 +45,11 @@ class DatabaseConfig(BaseModel):
 
 
 # ------------------ Test helpers ------------------
+
+from .constants import (
+    TESTS_DIR,
+    SYNC_TESTS_DIR,
+)
 
 SHARED_SNAPSHOTS_DIR = Path(__file__).parent.joinpath('__shared_snapshots__')
 
