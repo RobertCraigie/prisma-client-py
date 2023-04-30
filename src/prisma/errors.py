@@ -179,7 +179,7 @@ class UnsupportedSubclassWarning(PrismaWarning):
 
 
 # TODO: proper types
-def _pick_union_error(errors: list[Any]):
+def _pick_union_error(errors: list[Any]) -> Any:
     # Note: uses the same heuristic as the TS client
     return max(
         errors,
