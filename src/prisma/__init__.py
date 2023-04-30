@@ -12,7 +12,11 @@ from ._config import config as config
 from .utils import setup_logging
 from . import errors as errors
 from .validator import *
-from ._types import PrismaMethod as PrismaMethod
+from ._types import (
+    PrismaMethod as PrismaMethod,
+    NotGiven as NotGiven,
+    NOT_GIVEN as NOT_GIVEN,
+)
 
 
 try:

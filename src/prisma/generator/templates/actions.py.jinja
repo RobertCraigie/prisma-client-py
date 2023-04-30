@@ -5,7 +5,8 @@
 from typing import TypeVar
 import warnings
 
-from . import types, errors, bases
+from . import types, errors, bases, _parsers as p
+from ._types import NotGiven, NotGivenOr, NOT_GIVEN
 
 if TYPE_CHECKING:
     from .client import Client
@@ -170,15 +171,16 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute_json_proto(
             method='create',
-            model=self._model,
             arguments={
                 'data': data,
                 'include': include,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     {{ maybe_async_def }}create_many(
         self,
@@ -331,23 +333,21 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute_json_proto(
             method='find_unique',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            model=self._model,
+            parser=p.allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     {{ maybe_async_def }}find_unique_or_raise(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
-        include: Optional[types.{{ model.name}}Include] = None
+        include: NotGivenOr[Optional[types.{{ model.name}}Include]] = NOT_GIVEN
     ) -> {{ ModelType }}:
         """Find a unique {{ model.name }} record. Raises `RecordNotFoundError` if no record is found.
 
@@ -380,25 +380,26 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute_json_proto(
             method='find_unique_or_raise',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     {{ maybe_async_def }}find_many(
         self,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        where: Optional[types.{{ model.name }}WhereInput] = None,
-        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
-        include: Optional[types.{{ model.name }}Include] = None,
-        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
-        distinct: Optional[List[types.{{ model.name }}ScalarFieldKeys]] = None,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.{{ model.name }}WhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.{{ model.name }}WhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.{{ model.name }}Include | None] = NOT_GIVEN,
+        order: NotGivenOr[types.{{ model.name }}OrderByInput | List[types.{{ model.name }}OrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[List[types.{{ model.name }}ScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> List[{{ ModelType }}]:
         """Find multiple {{ model.name }} records.
 
@@ -446,9 +447,8 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute_json_proto(
             method='find_many',
-            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
@@ -458,17 +458,19 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=p.as_list(self._model.parse_obj),
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
 
     {{ maybe_async_def }}find_first(
         self,
-        skip: Optional[int] = None,
-        where: Optional[types.{{ model.name }}WhereInput] = None,
-        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
-        include: Optional[types.{{ model.name }}Include] = None,
-        order: Optional[Union[types.{{ model.name }}OrderByInput, List[types.{{ model.name }}OrderByInput]]] = None,
-        distinct: Optional[List[types.{{ model.name }}ScalarFieldKeys]] = None,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.{{ model.name }}WhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.{{ model.name }}WhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.{{ model.name }}Include | None] = NOT_GIVEN,
+        order: NotGivenOr[types.{{ model.name }}OrderByInput | List[types.{{ model.name }}OrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[List[types.{{ model.name }}ScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> Optional[{{ ModelType }}]:
         """Find a single {{ model.name }} record.
 
@@ -511,9 +513,8 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute_json_proto(
             method='find_first',
-            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -522,11 +523,10 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=p.allow_none(self._model.parse_obj),
         )
-        result = resp['data']['result']
-        if result is None:
-            return None
-        return self._model.parse_obj(result)
 
     {{ maybe_async_def }}find_first_or_raise(
         self,
@@ -778,11 +778,11 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
     @overload
     {{ maybe_async_def }}count(
         self,
-        select: None = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        where: Optional[types.{{ model.name }}WhereInput] = None,
-        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
+        select: NotGivenOr[None] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.{{ model.name }}WhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.{{ model.name }}WhereUniqueInput | None] = NOT_GIVEN,
     ) -> int:
         {# We add the docstring here as Pylance / VSCode picks up docstrings
            from the overloads of a function.
@@ -843,56 +843,54 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
     {{ maybe_async_def }}count(
         self,
         select: types.{{ model.name }}CountAggregateInput,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        where: Optional[types.{{ model.name }}WhereInput] = None,
-        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.{{ model.name }}WhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.{{ model.name }}WhereUniqueInput | None] = NOT_GIVEN,
     ) -> types.{{ model.name }}CountAggregateOutput:
         ...
 
     {{ maybe_async_def }}count(
         self,
-        select: Optional[types.{{ model.name }}CountAggregateInput] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        where: Optional[types.{{ model.name }}WhereInput] = None,
-        cursor: Optional[types.{{ model.name }}WhereUniqueInput] = None,
+        select: NotGivenOr[types.{{ model.name }}CountAggregateInput | None] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.{{ model.name }}WhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.{{ model.name }}WhereUniqueInput | None] = NOT_GIVEN,
     ) -> Union[int, types.{{ model.name }}CountAggregateOutput]:
         {{ count_doc() }}
-        # TODO: this selection building should be moved to the QueryBuilder
-        #
-        # note the distinction between checking for `not select` here and `select is None`
-        # later is to handle the case that the given select dictionary is empty, this
-        # is a limitation of our types.
-        if not select:
-            root_selection = ['_count { _all }']
-        else:
-            {% raw %}
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
-            {% endraw %}
+        custom_select = not isinstance(select, NotGiven) and select is not None
+        if custom_select:
+            raise RuntimeError('custom select is not supported yet')
 
-        resp = {{ maybe_await }}self._client._execute(
+        def parser(value: Any) -> int | types.{{ model.name }}CountAggregateOutput:
+            if not custom_select:
+                return int(value['_count']['_all'])
+            return value['_count']
+
+        return {{ maybe_await }}self._client._execute_json_proto(
             method='count',
-            model=self._model,
             arguments={
                 'take': take,
                 'skip': skip,
                 'where': where,
                 'cursor': cursor,
+                'include': {
+                    '_count': {
+                        'include': {
+                            '_all': True,
+                        },
+                    },
+                },
             },
-            root_selection=root_selection,
+            data_path=[],
+            model=self._model,
+            parser=parser,
         )
-
-        if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
-        else:
-            return cast(types.{{ model.name }}CountAggregateOutput, resp['data']['result']['_count'])
 
     {{ maybe_async_def }}delete_many(
         self,
-        where: Optional[types.{{ model.name }}WhereInput] = None
+        where: NotGivenOr[types.{{ model.name }}WhereInput | None] = NOT_GIVEN
     ) -> int:
         """Delete multiple {{ model.name }} records.
 
@@ -917,13 +915,15 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         total = {{ maybe_await }}{{ model.name }}.prisma().delete_many()
         ```
         """
-        resp = {{ maybe_await }}self._client._execute(
+        return {{ maybe_await }}self._client._execute_json_proto(
             method='delete_many',
+            arguments={
+                'where': where,
+            },
+            data_path=['count'],
             model=self._model,
-            arguments={'where': where},
-            root_selection=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type

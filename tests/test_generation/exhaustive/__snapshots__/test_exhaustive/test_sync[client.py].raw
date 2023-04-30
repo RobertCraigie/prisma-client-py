@@ -42,14 +42,16 @@ LiteralString = str
 # -- template client.py.jinja --
 from pathlib import Path
 from types import TracebackType
+from typing import Iterable
+from typing_extensions import Unpack
 
 from pydantic import BaseModel
 
 from . import types, models, errors, actions
 from .types import DatasourceOverride, HttpConfig
-from ._types import BaseModelT, PrismaMethod
+from ._types import BaseModelT, PrismaMethod, NotGivenOr, NOT_GIVEN
 from .bases import _PrismaModel
-from .engine import AbstractEngine, QueryEngine
+from .engine import AbstractEngine, QueryEngine, json as json_proto
 from .builder import QueryBuilder
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix
@@ -74,6 +76,8 @@ BINARY_PATHS = '<binary-paths-removed>'
 
 RegisteredClient = Union['Prisma', Callable[[], 'Prisma']]
 _registered_client: Optional[RegisteredClient] = None
+
+_T = TypeVar('_T')
 
 
 class UseClientDefault:
@@ -374,6 +378,41 @@ class Prisma:
         """Returns a context manager for grouping write queries into a single transaction."""
         return Batch(client=self)
 
+    def _execute_json_proto(
+        self,
+        *,
+        method: PrismaMethod,
+        arguments: dict[str, Any],
+        data_path: Iterable[str],
+        parser: Callable[[Any], _T],
+        extend_selection: dict[str, object] | None = None,
+        model: type[_PrismaModel] | None = None,
+    ) -> _T:
+        query = json_proto.serialize_single_query(
+            method=method,
+            model=model,
+            arguments=arguments,
+            extend_selection=extend_selection,
+        )
+
+        response = self._engine.query(query)
+
+        # response is in the structure `{'data': {'findUniqueUser': { ... }}}`
+        data = next(iter(response['data'].values()))
+
+        for key in data_path:
+            data = data[key]
+
+        return parser(json_proto.deserialize(data))
+
+    def _execute_json_proto_batched(
+        self,
+        *,
+        queries: list[json_proto.QueryInput],
+    ) -> object:
+        query = json_proto.serialize_batched_query(queries=queries)
+        return self._engine.query(query)
+
     # TODO: don't return Any
     def _execute(
         self,
@@ -452,7 +491,7 @@ class Batch:
 
     def __init__(self, client: Prisma) -> None:
         self.__client = client
-        self.__queries: List[str] = []
+        self.__queries: list[json_proto.QueryInput] = []
         self._active_provider = client._active_provider
         self.post = PostBatchActions(self)
         self.user = UserBatchActions(self)
@@ -467,29 +506,12 @@ class Batch:
         self.d = DBatchActions(self)
         self.e = EBatchActions(self)
 
-    def _add(self, **kwargs: Any) -> None:
-        builder = QueryBuilder(**kwargs)
-        self.__queries.append(builder.build_query())
+    def _add(self, **query: Unpack[json_proto.QueryInput]) -> None:
+        self.__queries.append(query)
 
     def commit(self) -> None:
         """Execute the queries"""
-        # TODO: normalise this, we should still call client._execute
-        from .builder import dumps
-
-        queries = self.__queries
-        self.__queries = []
-
-        payload = {
-            'batch': [
-                {
-                    'query': query,
-                    'variables': {},
-                }
-                for query in queries
-            ],
-            'transaction': True,
-        }
-        self.__client._engine.query(dumps(payload))
+        self.__client._execute_json_proto_batched(queries=self.__queries)
 
     def execute_raw(self, query: LiteralString, *args: Any) -> None:
         self._add(
@@ -522,7 +544,7 @@ class PostBatchActions:
     def create(
         self,
         data: types.PostCreateInput,
-        include: Optional[types.PostInclude] = None
+        include: NotGivenOr[types.PostInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='create',
@@ -549,7 +571,6 @@ class PostBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
         )
 
     def delete(
@@ -608,18 +629,16 @@ class PostBatchActions:
             method='update_many',
             model=models.Post,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
         )
 
     def delete_many(
         self,
-        where: Optional[types.PostWhereInput] = None,
+        where: NotGivenOr[types.PostWhereInput | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete_many',
             model=models.Post,
             arguments={'where': where},
-            root_selection=['count'],
         )
 
 
@@ -633,7 +652,7 @@ class UserBatchActions:
     def create(
         self,
         data: types.UserCreateInput,
-        include: Optional[types.UserInclude] = None
+        include: NotGivenOr[types.UserInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='create',
@@ -660,7 +679,6 @@ class UserBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
         )
 
     def delete(
@@ -719,18 +737,16 @@ class UserBatchActions:
             method='update_many',
             model=models.User,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
         )
 
     def delete_many(
         self,
-        where: Optional[types.UserWhereInput] = None,
+        where: NotGivenOr[types.UserWhereInput | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete_many',
             model=models.User,
             arguments={'where': where},
-            root_selection=['count'],
         )
 
 
@@ -744,7 +760,7 @@ class MBatchActions:
     def create(
         self,
         data: types.MCreateInput,
-        include: Optional[types.MInclude] = None
+        include: NotGivenOr[types.MInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='create',
@@ -771,7 +787,6 @@ class MBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
         )
 
     def delete(
@@ -830,18 +845,16 @@ class MBatchActions:
             method='update_many',
             model=models.M,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
         )
 
     def delete_many(
         self,
-        where: Optional[types.MWhereInput] = None,
+        where: NotGivenOr[types.MWhereInput | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete_many',
             model=models.M,
             arguments={'where': where},
-            root_selection=['count'],
         )
 
 
@@ -855,7 +868,7 @@ class NBatchActions:
     def create(
         self,
         data: types.NCreateInput,
-        include: Optional[types.NInclude] = None
+        include: NotGivenOr[types.NInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='create',
@@ -882,7 +895,6 @@ class NBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
         )
 
     def delete(
@@ -941,18 +953,16 @@ class NBatchActions:
             method='update_many',
             model=models.N,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
         )
 
     def delete_many(
         self,
-        where: Optional[types.NWhereInput] = None,
+        where: NotGivenOr[types.NWhereInput | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete_many',
             model=models.N,
             arguments={'where': where},
-            root_selection=['count'],
         )
 
 
@@ -966,7 +976,7 @@ class OneOptionalBatchActions:
     def create(
         self,
         data: types.OneOptionalCreateInput,
-        include: Optional[types.OneOptionalInclude] = None
+        include: NotGivenOr[types.OneOptionalInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='create',
@@ -993,7 +1003,6 @@ class OneOptionalBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
         )
 
     def delete(
@@ -1052,18 +1061,16 @@ class OneOptionalBatchActions:
             method='update_many',
             model=models.OneOptional,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
         )
 
     def delete_many(
         self,
-        where: Optional[types.OneOptionalWhereInput] = None,
+        where: NotGivenOr[types.OneOptionalWhereInput | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete_many',
             model=models.OneOptional,
             arguments={'where': where},
-            root_selection=['count'],
         )
 
 
@@ -1077,7 +1084,7 @@ class ManyRequiredBatchActions:
     def create(
         self,
         data: types.ManyRequiredCreateInput,
-        include: Optional[types.ManyRequiredInclude] = None
+        include: NotGivenOr[types.ManyRequiredInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='create',
@@ -1104,7 +1111,6 @@ class ManyRequiredBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
         )
 
     def delete(
@@ -1163,18 +1169,16 @@ class ManyRequiredBatchActions:
             method='update_many',
             model=models.ManyRequired,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
         )
 
     def delete_many(
         self,
-        where: Optional[types.ManyRequiredWhereInput] = None,
+        where: NotGivenOr[types.ManyRequiredWhereInput | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete_many',
             model=models.ManyRequired,
             arguments={'where': where},
-            root_selection=['count'],
         )
 
 
@@ -1188,7 +1192,7 @@ class ListsBatchActions:
     def create(
         self,
         data: types.ListsCreateInput,
-        include: Optional[types.ListsInclude] = None
+        include: NotGivenOr[types.ListsInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='create',
@@ -1215,7 +1219,6 @@ class ListsBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
         )
 
     def delete(
@@ -1274,18 +1277,16 @@ class ListsBatchActions:
             method='update_many',
             model=models.Lists,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
         )
 
     def delete_many(
         self,
-        where: Optional[types.ListsWhereInput] = None,
+        where: NotGivenOr[types.ListsWhereInput | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete_many',
             model=models.Lists,
             arguments={'where': where},
-            root_selection=['count'],
         )
 
 
@@ -1299,7 +1300,7 @@ class ABatchActions:
     def create(
         self,
         data: types.ACreateInput,
-        include: Optional[types.AInclude] = None
+        include: NotGivenOr[types.AInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='create',
@@ -1326,7 +1327,6 @@ class ABatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
         )
 
     def delete(
@@ -1385,18 +1385,16 @@ class ABatchActions:
             method='update_many',
             model=models.A,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
         )
 
     def delete_many(
         self,
-        where: Optional[types.AWhereInput] = None,
+        where: NotGivenOr[types.AWhereInput | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete_many',
             model=models.A,
             arguments={'where': where},
-            root_selection=['count'],
         )
 
 
@@ -1410,7 +1408,7 @@ class BBatchActions:
     def create(
         self,
         data: types.BCreateInput,
-        include: Optional[types.BInclude] = None
+        include: NotGivenOr[types.BInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='create',
@@ -1437,7 +1435,6 @@ class BBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
         )
 
     def delete(
@@ -1496,18 +1493,16 @@ class BBatchActions:
             method='update_many',
             model=models.B,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
         )
 
     def delete_many(
         self,
-        where: Optional[types.BWhereInput] = None,
+        where: NotGivenOr[types.BWhereInput | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete_many',
             model=models.B,
             arguments={'where': where},
-            root_selection=['count'],
         )
 
 
@@ -1521,7 +1516,7 @@ class CBatchActions:
     def create(
         self,
         data: types.CCreateInput,
-        include: Optional[types.CInclude] = None
+        include: NotGivenOr[types.CInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='create',
@@ -1548,7 +1543,6 @@ class CBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
         )
 
     def delete(
@@ -1607,18 +1601,16 @@ class CBatchActions:
             method='update_many',
             model=models.C,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
         )
 
     def delete_many(
         self,
-        where: Optional[types.CWhereInput] = None,
+        where: NotGivenOr[types.CWhereInput | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete_many',
             model=models.C,
             arguments={'where': where},
-            root_selection=['count'],
         )
 
 
@@ -1632,7 +1624,7 @@ class DBatchActions:
     def create(
         self,
         data: types.DCreateInput,
-        include: Optional[types.DInclude] = None
+        include: NotGivenOr[types.DInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='create',
@@ -1659,7 +1651,6 @@ class DBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
         )
 
     def delete(
@@ -1718,18 +1709,16 @@ class DBatchActions:
             method='update_many',
             model=models.D,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
         )
 
     def delete_many(
         self,
-        where: Optional[types.DWhereInput] = None,
+        where: NotGivenOr[types.DWhereInput | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete_many',
             model=models.D,
             arguments={'where': where},
-            root_selection=['count'],
         )
 
 
@@ -1743,7 +1732,7 @@ class EBatchActions:
     def create(
         self,
         data: types.ECreateInput,
-        include: Optional[types.EInclude] = None
+        include: NotGivenOr[types.EInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='create',
@@ -1770,7 +1759,6 @@ class EBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
         )
 
     def delete(
@@ -1829,18 +1817,16 @@ class EBatchActions:
             method='update_many',
             model=models.E,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
         )
 
     def delete_many(
         self,
-        where: Optional[types.EWhereInput] = None,
+        where: NotGivenOr[types.EWhereInput | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete_many',
             model=models.E,
             arguments={'where': where},
-            root_selection=['count'],
         )
 
 
