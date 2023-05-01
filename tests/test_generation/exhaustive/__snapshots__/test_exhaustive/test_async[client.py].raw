@@ -283,15 +283,16 @@ class Prisma:
             self.__engine = None
 
     async def execute_raw(self, query: LiteralString, *args: Any) -> int:
-        resp = await self._execute(
+        return await self._execute_json_proto(
             method='execute_raw',
             arguments={
                 'query': query,
                 'parameters': args,
             },
+            data_path=[],
             model=None,
+            parser=int,
         )
-        return int(resp['data']['result'])
 
     @overload
     async def query_first(
@@ -354,29 +355,56 @@ class Prisma:
         query: LiteralString,
         *args: Any,
         model: Optional[Type[BaseModelT]] = None,
-    ) -> Union[List[BaseModelT], List[dict[str, Any]]]:
+    ) -> list[BaseModelT] | list[dict[str, Any]]:
         """Execute a raw SQL query against the database.
 
         If model is given, each returned record is converted to the pydantic model first,
         otherwise results will be raw dictionaries.
         """
-        resp = await self._execute(
+        def parser(value: Any) -> list[BaseModelT] | list[dict[str, Any]]:
+            if model is not None:
+                return deserialize_raw_results(value, model=model)
+            return deserialize_raw_results(value)
+
+        return await self._execute_json_proto(
             method='query_raw',
             arguments={
                 'query': query,
                 'parameters': args,
             },
-            model=model,
+            data_path=[],
+            model=None,
+            parser=parser,
         )
-        result = resp['data']['result']
-        if model is not None:
-            return deserialize_raw_results(result, model=model)
-
-        return deserialize_raw_results(result)
 
     def batch_(self) -> 'Batch':
         """Returns a context manager for grouping write queries into a single transaction."""
         return Batch(client=self)
+
+    @overload
+    async def _execute_json_proto(
+        self,
+        *,
+        method: PrismaMethod,
+        arguments: dict[str, Any],
+        data_path: Iterable[str],
+        parser: Callable[[Any], _T],
+        model: type[_PrismaModel] | None = None,
+    ) -> _T:
+        ...
+
+    @overload
+    async def _execute_json_proto(
+        self,
+        *,
+        method: PrismaMethod,
+        arguments: dict[str, Any],
+        data_path: Iterable[str],
+        parser: Callable[[Any], _T],
+        ignore_exceptions: tuple[type[Exception]] | None,
+        model: type[_PrismaModel] | None = None,
+    ) -> _T | None:
+        ...
 
     async def _execute_json_proto(
         self,
@@ -385,17 +413,28 @@ class Prisma:
         arguments: dict[str, Any],
         data_path: Iterable[str],
         parser: Callable[[Any], _T],
-        extend_selection: dict[str, object] | None = None,
         model: type[_PrismaModel] | None = None,
-    ) -> _T:
+        ignore_exceptions: tuple[type[Exception]] | None = None,
+    ) -> _T | None:
+        """Execute a query against the query engine.
+
+        If `ignore_exceptions` is given then `None` will be returned if any of the given exceptions
+        are caught while executing the query.
+        """
         query = json_proto.serialize_single_query(
             method=method,
             model=model,
             arguments=arguments,
-            extend_selection=extend_selection,
         )
 
-        response = await self._engine.query(query)
+        if ignore_exceptions is not None:
+            try:
+                response = await self._engine.query(query)
+            except ignore_exceptions:
+                return None
+        else:
+            response = await self._engine.query(query)
+
 
         # response is in the structure `{'data': {'findUniqueUser': { ... }}}`
         data = next(iter(response['data'].values()))
@@ -511,7 +550,9 @@ class Batch:
 
     async def commit(self) -> None:
         """Execute the queries"""
-        await self.__client._execute_json_proto_batched(queries=self.__queries)
+        queries = self.__queries
+        self.__queries = []
+        await self.__client._execute_json_proto_batched(queries=queries)
 
     def execute_raw(self, query: LiteralString, *args: Any) -> None:
         self._add(
@@ -559,7 +600,7 @@ class PostBatchActions:
         self,
         data: List[types.PostCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> None:
         if self._batcher._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
@@ -576,7 +617,7 @@ class PostBatchActions:
     def delete(
         self,
         where: types.PostWhereUniqueInput,
-        include: Optional[types.PostInclude] = None,
+        include: NotGivenOr[types.PostInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete',
@@ -591,7 +632,7 @@ class PostBatchActions:
         self,
         data: types.PostUpdateInput,
         where: types.PostWhereUniqueInput,
-        include: Optional[types.PostInclude] = None
+        include: NotGivenOr[types.PostInclude | None] = NOT_GIVEN
     ) -> None:
         self._batcher._add(
             method='update',
@@ -607,7 +648,7 @@ class PostBatchActions:
         self,
         where: types.PostWhereUniqueInput,
         data: types.PostUpsertInput,
-        include: Optional[types.PostInclude] = None,
+        include: NotGivenOr[types.PostInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='upsert',
@@ -667,7 +708,7 @@ class UserBatchActions:
         self,
         data: List[types.UserCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> None:
         if self._batcher._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
@@ -684,7 +725,7 @@ class UserBatchActions:
     def delete(
         self,
         where: types.UserWhereUniqueInput,
-        include: Optional[types.UserInclude] = None,
+        include: NotGivenOr[types.UserInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete',
@@ -699,7 +740,7 @@ class UserBatchActions:
         self,
         data: types.UserUpdateInput,
         where: types.UserWhereUniqueInput,
-        include: Optional[types.UserInclude] = None
+        include: NotGivenOr[types.UserInclude | None] = NOT_GIVEN
     ) -> None:
         self._batcher._add(
             method='update',
@@ -715,7 +756,7 @@ class UserBatchActions:
         self,
         where: types.UserWhereUniqueInput,
         data: types.UserUpsertInput,
-        include: Optional[types.UserInclude] = None,
+        include: NotGivenOr[types.UserInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='upsert',
@@ -775,7 +816,7 @@ class MBatchActions:
         self,
         data: List[types.MCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> None:
         if self._batcher._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
@@ -792,7 +833,7 @@ class MBatchActions:
     def delete(
         self,
         where: types.MWhereUniqueInput,
-        include: Optional[types.MInclude] = None,
+        include: NotGivenOr[types.MInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete',
@@ -807,7 +848,7 @@ class MBatchActions:
         self,
         data: types.MUpdateInput,
         where: types.MWhereUniqueInput,
-        include: Optional[types.MInclude] = None
+        include: NotGivenOr[types.MInclude | None] = NOT_GIVEN
     ) -> None:
         self._batcher._add(
             method='update',
@@ -823,7 +864,7 @@ class MBatchActions:
         self,
         where: types.MWhereUniqueInput,
         data: types.MUpsertInput,
-        include: Optional[types.MInclude] = None,
+        include: NotGivenOr[types.MInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='upsert',
@@ -883,7 +924,7 @@ class NBatchActions:
         self,
         data: List[types.NCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> None:
         if self._batcher._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
@@ -900,7 +941,7 @@ class NBatchActions:
     def delete(
         self,
         where: types.NWhereUniqueInput,
-        include: Optional[types.NInclude] = None,
+        include: NotGivenOr[types.NInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete',
@@ -915,7 +956,7 @@ class NBatchActions:
         self,
         data: types.NUpdateInput,
         where: types.NWhereUniqueInput,
-        include: Optional[types.NInclude] = None
+        include: NotGivenOr[types.NInclude | None] = NOT_GIVEN
     ) -> None:
         self._batcher._add(
             method='update',
@@ -931,7 +972,7 @@ class NBatchActions:
         self,
         where: types.NWhereUniqueInput,
         data: types.NUpsertInput,
-        include: Optional[types.NInclude] = None,
+        include: NotGivenOr[types.NInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='upsert',
@@ -991,7 +1032,7 @@ class OneOptionalBatchActions:
         self,
         data: List[types.OneOptionalCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> None:
         if self._batcher._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
@@ -1008,7 +1049,7 @@ class OneOptionalBatchActions:
     def delete(
         self,
         where: types.OneOptionalWhereUniqueInput,
-        include: Optional[types.OneOptionalInclude] = None,
+        include: NotGivenOr[types.OneOptionalInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete',
@@ -1023,7 +1064,7 @@ class OneOptionalBatchActions:
         self,
         data: types.OneOptionalUpdateInput,
         where: types.OneOptionalWhereUniqueInput,
-        include: Optional[types.OneOptionalInclude] = None
+        include: NotGivenOr[types.OneOptionalInclude | None] = NOT_GIVEN
     ) -> None:
         self._batcher._add(
             method='update',
@@ -1039,7 +1080,7 @@ class OneOptionalBatchActions:
         self,
         where: types.OneOptionalWhereUniqueInput,
         data: types.OneOptionalUpsertInput,
-        include: Optional[types.OneOptionalInclude] = None,
+        include: NotGivenOr[types.OneOptionalInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='upsert',
@@ -1099,7 +1140,7 @@ class ManyRequiredBatchActions:
         self,
         data: List[types.ManyRequiredCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> None:
         if self._batcher._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
@@ -1116,7 +1157,7 @@ class ManyRequiredBatchActions:
     def delete(
         self,
         where: types.ManyRequiredWhereUniqueInput,
-        include: Optional[types.ManyRequiredInclude] = None,
+        include: NotGivenOr[types.ManyRequiredInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete',
@@ -1131,7 +1172,7 @@ class ManyRequiredBatchActions:
         self,
         data: types.ManyRequiredUpdateInput,
         where: types.ManyRequiredWhereUniqueInput,
-        include: Optional[types.ManyRequiredInclude] = None
+        include: NotGivenOr[types.ManyRequiredInclude | None] = NOT_GIVEN
     ) -> None:
         self._batcher._add(
             method='update',
@@ -1147,7 +1188,7 @@ class ManyRequiredBatchActions:
         self,
         where: types.ManyRequiredWhereUniqueInput,
         data: types.ManyRequiredUpsertInput,
-        include: Optional[types.ManyRequiredInclude] = None,
+        include: NotGivenOr[types.ManyRequiredInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='upsert',
@@ -1207,7 +1248,7 @@ class ListsBatchActions:
         self,
         data: List[types.ListsCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> None:
         if self._batcher._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
@@ -1224,7 +1265,7 @@ class ListsBatchActions:
     def delete(
         self,
         where: types.ListsWhereUniqueInput,
-        include: Optional[types.ListsInclude] = None,
+        include: NotGivenOr[types.ListsInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete',
@@ -1239,7 +1280,7 @@ class ListsBatchActions:
         self,
         data: types.ListsUpdateInput,
         where: types.ListsWhereUniqueInput,
-        include: Optional[types.ListsInclude] = None
+        include: NotGivenOr[types.ListsInclude | None] = NOT_GIVEN
     ) -> None:
         self._batcher._add(
             method='update',
@@ -1255,7 +1296,7 @@ class ListsBatchActions:
         self,
         where: types.ListsWhereUniqueInput,
         data: types.ListsUpsertInput,
-        include: Optional[types.ListsInclude] = None,
+        include: NotGivenOr[types.ListsInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='upsert',
@@ -1315,7 +1356,7 @@ class ABatchActions:
         self,
         data: List[types.ACreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> None:
         if self._batcher._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
@@ -1332,7 +1373,7 @@ class ABatchActions:
     def delete(
         self,
         where: types.AWhereUniqueInput,
-        include: Optional[types.AInclude] = None,
+        include: NotGivenOr[types.AInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete',
@@ -1347,7 +1388,7 @@ class ABatchActions:
         self,
         data: types.AUpdateInput,
         where: types.AWhereUniqueInput,
-        include: Optional[types.AInclude] = None
+        include: NotGivenOr[types.AInclude | None] = NOT_GIVEN
     ) -> None:
         self._batcher._add(
             method='update',
@@ -1363,7 +1404,7 @@ class ABatchActions:
         self,
         where: types.AWhereUniqueInput,
         data: types.AUpsertInput,
-        include: Optional[types.AInclude] = None,
+        include: NotGivenOr[types.AInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='upsert',
@@ -1423,7 +1464,7 @@ class BBatchActions:
         self,
         data: List[types.BCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> None:
         if self._batcher._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
@@ -1440,7 +1481,7 @@ class BBatchActions:
     def delete(
         self,
         where: types.BWhereUniqueInput,
-        include: Optional[types.BInclude] = None,
+        include: NotGivenOr[types.BInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete',
@@ -1455,7 +1496,7 @@ class BBatchActions:
         self,
         data: types.BUpdateInput,
         where: types.BWhereUniqueInput,
-        include: Optional[types.BInclude] = None
+        include: NotGivenOr[types.BInclude | None] = NOT_GIVEN
     ) -> None:
         self._batcher._add(
             method='update',
@@ -1471,7 +1512,7 @@ class BBatchActions:
         self,
         where: types.BWhereUniqueInput,
         data: types.BUpsertInput,
-        include: Optional[types.BInclude] = None,
+        include: NotGivenOr[types.BInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='upsert',
@@ -1531,7 +1572,7 @@ class CBatchActions:
         self,
         data: List[types.CCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> None:
         if self._batcher._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
@@ -1548,7 +1589,7 @@ class CBatchActions:
     def delete(
         self,
         where: types.CWhereUniqueInput,
-        include: Optional[types.CInclude] = None,
+        include: NotGivenOr[types.CInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete',
@@ -1563,7 +1604,7 @@ class CBatchActions:
         self,
         data: types.CUpdateInput,
         where: types.CWhereUniqueInput,
-        include: Optional[types.CInclude] = None
+        include: NotGivenOr[types.CInclude | None] = NOT_GIVEN
     ) -> None:
         self._batcher._add(
             method='update',
@@ -1579,7 +1620,7 @@ class CBatchActions:
         self,
         where: types.CWhereUniqueInput,
         data: types.CUpsertInput,
-        include: Optional[types.CInclude] = None,
+        include: NotGivenOr[types.CInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='upsert',
@@ -1639,7 +1680,7 @@ class DBatchActions:
         self,
         data: List[types.DCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> None:
         if self._batcher._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
@@ -1656,7 +1697,7 @@ class DBatchActions:
     def delete(
         self,
         where: types.DWhereUniqueInput,
-        include: Optional[types.DInclude] = None,
+        include: NotGivenOr[types.DInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete',
@@ -1671,7 +1712,7 @@ class DBatchActions:
         self,
         data: types.DUpdateInput,
         where: types.DWhereUniqueInput,
-        include: Optional[types.DInclude] = None
+        include: NotGivenOr[types.DInclude | None] = NOT_GIVEN
     ) -> None:
         self._batcher._add(
             method='update',
@@ -1687,7 +1728,7 @@ class DBatchActions:
         self,
         where: types.DWhereUniqueInput,
         data: types.DUpsertInput,
-        include: Optional[types.DInclude] = None,
+        include: NotGivenOr[types.DInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='upsert',
@@ -1747,7 +1788,7 @@ class EBatchActions:
         self,
         data: List[types.ECreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> None:
         if self._batcher._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
@@ -1764,7 +1805,7 @@ class EBatchActions:
     def delete(
         self,
         where: types.EWhereUniqueInput,
-        include: Optional[types.EInclude] = None,
+        include: NotGivenOr[types.EInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete',
@@ -1779,7 +1820,7 @@ class EBatchActions:
         self,
         data: types.EUpdateInput,
         where: types.EWhereUniqueInput,
-        include: Optional[types.EInclude] = None
+        include: NotGivenOr[types.EInclude | None] = NOT_GIVEN
     ) -> None:
         self._batcher._add(
             method='update',
@@ -1795,7 +1836,7 @@ class EBatchActions:
         self,
         where: types.EWhereUniqueInput,
         data: types.EUpsertInput,
-        include: Optional[types.EInclude] = None,
+        include: NotGivenOr[types.EInclude | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='upsert',

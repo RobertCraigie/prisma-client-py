@@ -45,10 +45,12 @@ import warnings
 
 from . import types, errors, bases, _parsers as p
 from ._types import NotGiven, NotGivenOr, NOT_GIVEN
+from ._helpers import is_mapping
 
 if TYPE_CHECKING:
     from .client import Client
     from .bases import _PrismaModel
+    from .engine.json.serializer import SelectionSet
 
 
 _PrismaModelT = TypeVar('_PrismaModelT', bound='_PrismaModel')
@@ -145,7 +147,7 @@ class PostActions(Generic[_PrismaModelT]):
     async def create(
         self,
         data: types.PostCreateInput,
-        include: Optional[types.PostInclude] = None
+        include: NotGivenOr[types.PostInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Create a new Post record.
 
@@ -196,7 +198,7 @@ class PostActions(Generic[_PrismaModelT]):
         self,
         data: List[types.PostCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> int:
         """Create multiple Post records at once.
 
@@ -248,21 +250,21 @@ class PostActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='create_many',
-            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            data_path=['count'],
+            model=self._model,
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
         where: types.PostWhereUniqueInput,
-        include: Optional[types.PostInclude] = None
+        include: NotGivenOr[types.PostInclude | None] = NOT_GIVEN,
     ) -> Optional[_PrismaModelT]:
         """Delete a single Post record.
 
@@ -297,24 +299,22 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='delete',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
         where: types.PostWhereUniqueInput,
-        include: Optional[types.PostInclude] = None
+        include: NotGivenOr[types.PostInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Find a unique Post record.
 
@@ -548,12 +548,12 @@ class PostActions(Generic[_PrismaModelT]):
 
     async def find_first_or_raise(
         self,
-        skip: Optional[int] = None,
-        where: Optional[types.PostWhereInput] = None,
-        cursor: Optional[types.PostWhereUniqueInput] = None,
-        include: Optional[types.PostInclude] = None,
-        order: Optional[Union[types.PostOrderByInput, List[types.PostOrderByInput]]] = None,
-        distinct: Optional[List[types.PostScalarFieldKeys]] = None,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.PostWhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.PostWhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.PostInclude | None] = NOT_GIVEN,
+        order: NotGivenOr[types.PostOrderByInput | list[types.PostOrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[list[types.PostScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Find a single Post record. Raises `RecordNotFoundError` if no record was found.
 
@@ -596,9 +596,8 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='find_first_or_raise',
-            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -607,14 +606,16 @@ class PostActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
         data: types.PostUpdateInput,
         where: types.PostWhereUniqueInput,
-        include: Optional[types.PostInclude] = None
+        include: NotGivenOr[types.PostInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Update a single Post record.
 
@@ -652,26 +653,24 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='update',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,),
+        )
 
     async def upsert(
         self,
         where: types.PostWhereUniqueInput,
         data: types.PostUpsertInput,
-        include: Optional[types.PostInclude] = None,
+        include: NotGivenOr[types.PostInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
@@ -717,17 +716,18 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='upsert',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -765,13 +765,16 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='update_many',
+            arguments={
+                'data': data,
+                'where': where,
+            },
+            data_path=['count'],
             model=self._model,
-            arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -896,14 +899,12 @@ class PostActions(Generic[_PrismaModelT]):
         ```
         """
 
-        custom_select = not isinstance(select, NotGiven) and select is not None
-        if custom_select:
-            raise RuntimeError('custom select is not supported yet')
+        selection = select or {'_all': True}
 
         def parser(value: Any) -> int | types.PostCountAggregateOutput:
-            if not custom_select:
-                return int(value['_count']['_all'])
-            return value['_count']
+            if is_mapping(select):
+                return value['_count']
+            return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
             method='count',
@@ -912,11 +913,9 @@ class PostActions(Generic[_PrismaModelT]):
                 'skip': skip,
                 'where': where,
                 'cursor': cursor,
-                'include': {
+                'select': {
                     '_count': {
-                        'include': {
-                            '_all': True,
-                        },
+                        'select': selection,
                     },
                 },
             },
@@ -969,19 +968,19 @@ class PostActions(Generic[_PrismaModelT]):
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.PostScalarFieldKeys'],
+        by: list['types.PostScalarFieldKeys'],
         *,
-        where: Optional['types.PostWhereInput'] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        avg: Optional['types.PostAvgAggregateInput'] = None,
-        sum: Optional['types.PostSumAggregateInput'] = None,
-        min: Optional['types.PostMinAggregateInput'] = None,
-        max: Optional['types.PostMaxAggregateInput'] = None,
-        having: Optional['types.PostScalarWhereWithAggregatesInput'] = None,
-        count: Optional[Union[bool, 'types.PostCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.PostScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.PostScalarFieldKeys', 'types.SortOrder']]]] = None,
-    ) -> List['types.PostGroupByOutput']:
+        where: NotGivenOr['types.PostWhereInput | None'] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        avg: NotGivenOr['types.PostAvgAggregateInput | None'] = NOT_GIVEN,
+        sum: NotGivenOr['types.PostSumAggregateInput | None'] = NOT_GIVEN,
+        min: NotGivenOr['types.PostMinAggregateInput | None'] = NOT_GIVEN,
+        max: NotGivenOr['types.PostMaxAggregateInput | None'] = NOT_GIVEN,
+        having: NotGivenOr['types.PostScalarWhereWithAggregatesInput | None'] = NOT_GIVEN,
+        count: NotGivenOr['bool | types.PostCountAggregateInput | None'] = NOT_GIVEN,
+        order: NotGivenOr[Mapping['types.PostScalarFieldKeys', 'types.SortOrder'] | list[Mapping['types.PostScalarFieldKeys', 'types.SortOrder']] | None] = NOT_GIVEN,
+    ) -> list['types.PostGroupByOutput']:
         """Group Post records by one or more field values and perform aggregations
         each group such as finding the average.
 
@@ -1039,35 +1038,34 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if order is None:
-            if take is not None:
+        if not order:
+            if take:
                 raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
 
-            if skip is not None:
+            if skip:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
-        if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+        selection: SelectionSet = {key: True for key in by}
+        if avg:
+            selection['_avg'] = {'select': avg}
 
-        if min is not None:
-            root_selection.append(_select_fields('_min', min))
+        if min:
+            selection['_min'] = {'select': min}
 
-        if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+        if sum:
+            selection['_sum'] = {'select': sum}
 
-        if max is not None:
-            root_selection.append(_select_fields('_max', max))
+        if max:
+            selection['_max'] = {'select': max}
 
-        if count is not None:
+        if count:
             if count is True:
-                root_selection.append('_count { _all }')
+                selection['_count'] = {'select': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                selection['_count'] = {'select': count}
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='group_by',
-            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -1075,10 +1073,12 @@ class PostActions(Generic[_PrismaModelT]):
                 'where': where,
                 'having': having,
                 'orderBy': order,
+                'select': selection,
             },
-            root_selection=root_selection,
+            model=self._model,
+            data_path=[],
+            parser=lambda v: v,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class UserActions(Generic[_PrismaModelT]):
@@ -1172,7 +1172,7 @@ class UserActions(Generic[_PrismaModelT]):
     async def create(
         self,
         data: types.UserCreateInput,
-        include: Optional[types.UserInclude] = None
+        include: NotGivenOr[types.UserInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Create a new User record.
 
@@ -1227,7 +1227,7 @@ class UserActions(Generic[_PrismaModelT]):
         self,
         data: List[types.UserCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> int:
         """Create multiple User records at once.
 
@@ -1287,21 +1287,21 @@ class UserActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='create_many',
-            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            data_path=['count'],
+            model=self._model,
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
         where: types.UserWhereUniqueInput,
-        include: Optional[types.UserInclude] = None
+        include: NotGivenOr[types.UserInclude | None] = NOT_GIVEN,
     ) -> Optional[_PrismaModelT]:
         """Delete a single User record.
 
@@ -1336,24 +1336,22 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='delete',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
         where: types.UserWhereUniqueInput,
-        include: Optional[types.UserInclude] = None
+        include: NotGivenOr[types.UserInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Find a unique User record.
 
@@ -1587,12 +1585,12 @@ class UserActions(Generic[_PrismaModelT]):
 
     async def find_first_or_raise(
         self,
-        skip: Optional[int] = None,
-        where: Optional[types.UserWhereInput] = None,
-        cursor: Optional[types.UserWhereUniqueInput] = None,
-        include: Optional[types.UserInclude] = None,
-        order: Optional[Union[types.UserOrderByInput, List[types.UserOrderByInput]]] = None,
-        distinct: Optional[List[types.UserScalarFieldKeys]] = None,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.UserWhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.UserWhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.UserInclude | None] = NOT_GIVEN,
+        order: NotGivenOr[types.UserOrderByInput | list[types.UserOrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[list[types.UserScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Find a single User record. Raises `RecordNotFoundError` if no record was found.
 
@@ -1635,9 +1633,8 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='find_first_or_raise',
-            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -1646,14 +1643,16 @@ class UserActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
         data: types.UserUpdateInput,
         where: types.UserWhereUniqueInput,
-        include: Optional[types.UserInclude] = None
+        include: NotGivenOr[types.UserInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Update a single User record.
 
@@ -1691,26 +1690,24 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='update',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,),
+        )
 
     async def upsert(
         self,
         where: types.UserWhereUniqueInput,
         data: types.UserUpsertInput,
-        include: Optional[types.UserInclude] = None,
+        include: NotGivenOr[types.UserInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
@@ -1764,17 +1761,18 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='upsert',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -1812,13 +1810,16 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='update_many',
+            arguments={
+                'data': data,
+                'where': where,
+            },
+            data_path=['count'],
             model=self._model,
-            arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -1943,14 +1944,12 @@ class UserActions(Generic[_PrismaModelT]):
         ```
         """
 
-        custom_select = not isinstance(select, NotGiven) and select is not None
-        if custom_select:
-            raise RuntimeError('custom select is not supported yet')
+        selection = select or {'_all': True}
 
         def parser(value: Any) -> int | types.UserCountAggregateOutput:
-            if not custom_select:
-                return int(value['_count']['_all'])
-            return value['_count']
+            if is_mapping(select):
+                return value['_count']
+            return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
             method='count',
@@ -1959,11 +1958,9 @@ class UserActions(Generic[_PrismaModelT]):
                 'skip': skip,
                 'where': where,
                 'cursor': cursor,
-                'include': {
+                'select': {
                     '_count': {
-                        'include': {
-                            '_all': True,
-                        },
+                        'select': selection,
                     },
                 },
             },
@@ -2016,19 +2013,19 @@ class UserActions(Generic[_PrismaModelT]):
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.UserScalarFieldKeys'],
+        by: list['types.UserScalarFieldKeys'],
         *,
-        where: Optional['types.UserWhereInput'] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        avg: Optional['types.UserAvgAggregateInput'] = None,
-        sum: Optional['types.UserSumAggregateInput'] = None,
-        min: Optional['types.UserMinAggregateInput'] = None,
-        max: Optional['types.UserMaxAggregateInput'] = None,
-        having: Optional['types.UserScalarWhereWithAggregatesInput'] = None,
-        count: Optional[Union[bool, 'types.UserCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.UserScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.UserScalarFieldKeys', 'types.SortOrder']]]] = None,
-    ) -> List['types.UserGroupByOutput']:
+        where: NotGivenOr['types.UserWhereInput | None'] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        avg: NotGivenOr['types.UserAvgAggregateInput | None'] = NOT_GIVEN,
+        sum: NotGivenOr['types.UserSumAggregateInput | None'] = NOT_GIVEN,
+        min: NotGivenOr['types.UserMinAggregateInput | None'] = NOT_GIVEN,
+        max: NotGivenOr['types.UserMaxAggregateInput | None'] = NOT_GIVEN,
+        having: NotGivenOr['types.UserScalarWhereWithAggregatesInput | None'] = NOT_GIVEN,
+        count: NotGivenOr['bool | types.UserCountAggregateInput | None'] = NOT_GIVEN,
+        order: NotGivenOr[Mapping['types.UserScalarFieldKeys', 'types.SortOrder'] | list[Mapping['types.UserScalarFieldKeys', 'types.SortOrder']] | None] = NOT_GIVEN,
+    ) -> list['types.UserGroupByOutput']:
         """Group User records by one or more field values and perform aggregations
         each group such as finding the average.
 
@@ -2086,35 +2083,34 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if order is None:
-            if take is not None:
+        if not order:
+            if take:
                 raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
 
-            if skip is not None:
+            if skip:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
-        if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+        selection: SelectionSet = {key: True for key in by}
+        if avg:
+            selection['_avg'] = {'select': avg}
 
-        if min is not None:
-            root_selection.append(_select_fields('_min', min))
+        if min:
+            selection['_min'] = {'select': min}
 
-        if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+        if sum:
+            selection['_sum'] = {'select': sum}
 
-        if max is not None:
-            root_selection.append(_select_fields('_max', max))
+        if max:
+            selection['_max'] = {'select': max}
 
-        if count is not None:
+        if count:
             if count is True:
-                root_selection.append('_count { _all }')
+                selection['_count'] = {'select': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                selection['_count'] = {'select': count}
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='group_by',
-            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -2122,10 +2118,12 @@ class UserActions(Generic[_PrismaModelT]):
                 'where': where,
                 'having': having,
                 'orderBy': order,
+                'select': selection,
             },
-            root_selection=root_selection,
+            model=self._model,
+            data_path=[],
+            parser=lambda v: v,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class MActions(Generic[_PrismaModelT]):
@@ -2219,7 +2217,7 @@ class MActions(Generic[_PrismaModelT]):
     async def create(
         self,
         data: types.MCreateInput,
-        include: Optional[types.MInclude] = None
+        include: NotGivenOr[types.MInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Create a new M record.
 
@@ -2273,7 +2271,7 @@ class MActions(Generic[_PrismaModelT]):
         self,
         data: List[types.MCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> int:
         """Create multiple M records at once.
 
@@ -2331,21 +2329,21 @@ class MActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='create_many',
-            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            data_path=['count'],
+            model=self._model,
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
         where: types.MWhereUniqueInput,
-        include: Optional[types.MInclude] = None
+        include: NotGivenOr[types.MInclude | None] = NOT_GIVEN,
     ) -> Optional[_PrismaModelT]:
         """Delete a single M record.
 
@@ -2380,24 +2378,22 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='delete',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
         where: types.MWhereUniqueInput,
-        include: Optional[types.MInclude] = None
+        include: NotGivenOr[types.MInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Find a unique M record.
 
@@ -2631,12 +2627,12 @@ class MActions(Generic[_PrismaModelT]):
 
     async def find_first_or_raise(
         self,
-        skip: Optional[int] = None,
-        where: Optional[types.MWhereInput] = None,
-        cursor: Optional[types.MWhereUniqueInput] = None,
-        include: Optional[types.MInclude] = None,
-        order: Optional[Union[types.MOrderByInput, List[types.MOrderByInput]]] = None,
-        distinct: Optional[List[types.MScalarFieldKeys]] = None,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.MWhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.MWhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.MInclude | None] = NOT_GIVEN,
+        order: NotGivenOr[types.MOrderByInput | list[types.MOrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[list[types.MScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Find a single M record. Raises `RecordNotFoundError` if no record was found.
 
@@ -2679,9 +2675,8 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='find_first_or_raise',
-            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -2690,14 +2685,16 @@ class MActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
         data: types.MUpdateInput,
         where: types.MWhereUniqueInput,
-        include: Optional[types.MInclude] = None
+        include: NotGivenOr[types.MInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Update a single M record.
 
@@ -2735,26 +2732,24 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='update',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,),
+        )
 
     async def upsert(
         self,
         where: types.MWhereUniqueInput,
         data: types.MUpsertInput,
-        include: Optional[types.MInclude] = None,
+        include: NotGivenOr[types.MInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
@@ -2806,17 +2801,18 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='upsert',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -2854,13 +2850,16 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='update_many',
+            arguments={
+                'data': data,
+                'where': where,
+            },
+            data_path=['count'],
             model=self._model,
-            arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -2985,14 +2984,12 @@ class MActions(Generic[_PrismaModelT]):
         ```
         """
 
-        custom_select = not isinstance(select, NotGiven) and select is not None
-        if custom_select:
-            raise RuntimeError('custom select is not supported yet')
+        selection = select or {'_all': True}
 
         def parser(value: Any) -> int | types.MCountAggregateOutput:
-            if not custom_select:
-                return int(value['_count']['_all'])
-            return value['_count']
+            if is_mapping(select):
+                return value['_count']
+            return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
             method='count',
@@ -3001,11 +2998,9 @@ class MActions(Generic[_PrismaModelT]):
                 'skip': skip,
                 'where': where,
                 'cursor': cursor,
-                'include': {
+                'select': {
                     '_count': {
-                        'include': {
-                            '_all': True,
-                        },
+                        'select': selection,
                     },
                 },
             },
@@ -3058,19 +3053,19 @@ class MActions(Generic[_PrismaModelT]):
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.MScalarFieldKeys'],
+        by: list['types.MScalarFieldKeys'],
         *,
-        where: Optional['types.MWhereInput'] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        avg: Optional['types.MAvgAggregateInput'] = None,
-        sum: Optional['types.MSumAggregateInput'] = None,
-        min: Optional['types.MMinAggregateInput'] = None,
-        max: Optional['types.MMaxAggregateInput'] = None,
-        having: Optional['types.MScalarWhereWithAggregatesInput'] = None,
-        count: Optional[Union[bool, 'types.MCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.MScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.MScalarFieldKeys', 'types.SortOrder']]]] = None,
-    ) -> List['types.MGroupByOutput']:
+        where: NotGivenOr['types.MWhereInput | None'] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        avg: NotGivenOr['types.MAvgAggregateInput | None'] = NOT_GIVEN,
+        sum: NotGivenOr['types.MSumAggregateInput | None'] = NOT_GIVEN,
+        min: NotGivenOr['types.MMinAggregateInput | None'] = NOT_GIVEN,
+        max: NotGivenOr['types.MMaxAggregateInput | None'] = NOT_GIVEN,
+        having: NotGivenOr['types.MScalarWhereWithAggregatesInput | None'] = NOT_GIVEN,
+        count: NotGivenOr['bool | types.MCountAggregateInput | None'] = NOT_GIVEN,
+        order: NotGivenOr[Mapping['types.MScalarFieldKeys', 'types.SortOrder'] | list[Mapping['types.MScalarFieldKeys', 'types.SortOrder']] | None] = NOT_GIVEN,
+    ) -> list['types.MGroupByOutput']:
         """Group M records by one or more field values and perform aggregations
         each group such as finding the average.
 
@@ -3128,35 +3123,34 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if order is None:
-            if take is not None:
+        if not order:
+            if take:
                 raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
 
-            if skip is not None:
+            if skip:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
-        if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+        selection: SelectionSet = {key: True for key in by}
+        if avg:
+            selection['_avg'] = {'select': avg}
 
-        if min is not None:
-            root_selection.append(_select_fields('_min', min))
+        if min:
+            selection['_min'] = {'select': min}
 
-        if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+        if sum:
+            selection['_sum'] = {'select': sum}
 
-        if max is not None:
-            root_selection.append(_select_fields('_max', max))
+        if max:
+            selection['_max'] = {'select': max}
 
-        if count is not None:
+        if count:
             if count is True:
-                root_selection.append('_count { _all }')
+                selection['_count'] = {'select': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                selection['_count'] = {'select': count}
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='group_by',
-            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -3164,10 +3158,12 @@ class MActions(Generic[_PrismaModelT]):
                 'where': where,
                 'having': having,
                 'orderBy': order,
+                'select': selection,
             },
-            root_selection=root_selection,
+            model=self._model,
+            data_path=[],
+            parser=lambda v: v,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class NActions(Generic[_PrismaModelT]):
@@ -3261,7 +3257,7 @@ class NActions(Generic[_PrismaModelT]):
     async def create(
         self,
         data: types.NCreateInput,
-        include: Optional[types.NInclude] = None
+        include: NotGivenOr[types.NInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Create a new N record.
 
@@ -3316,7 +3312,7 @@ class NActions(Generic[_PrismaModelT]):
         self,
         data: List[types.NCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> int:
         """Create multiple N records at once.
 
@@ -3376,21 +3372,21 @@ class NActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='create_many',
-            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            data_path=['count'],
+            model=self._model,
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
         where: types.NWhereUniqueInput,
-        include: Optional[types.NInclude] = None
+        include: NotGivenOr[types.NInclude | None] = NOT_GIVEN,
     ) -> Optional[_PrismaModelT]:
         """Delete a single N record.
 
@@ -3425,24 +3421,22 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='delete',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
         where: types.NWhereUniqueInput,
-        include: Optional[types.NInclude] = None
+        include: NotGivenOr[types.NInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Find a unique N record.
 
@@ -3676,12 +3670,12 @@ class NActions(Generic[_PrismaModelT]):
 
     async def find_first_or_raise(
         self,
-        skip: Optional[int] = None,
-        where: Optional[types.NWhereInput] = None,
-        cursor: Optional[types.NWhereUniqueInput] = None,
-        include: Optional[types.NInclude] = None,
-        order: Optional[Union[types.NOrderByInput, List[types.NOrderByInput]]] = None,
-        distinct: Optional[List[types.NScalarFieldKeys]] = None,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.NWhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.NWhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.NInclude | None] = NOT_GIVEN,
+        order: NotGivenOr[types.NOrderByInput | list[types.NOrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[list[types.NScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Find a single N record. Raises `RecordNotFoundError` if no record was found.
 
@@ -3724,9 +3718,8 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='find_first_or_raise',
-            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -3735,14 +3728,16 @@ class NActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
         data: types.NUpdateInput,
         where: types.NWhereUniqueInput,
-        include: Optional[types.NInclude] = None
+        include: NotGivenOr[types.NInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Update a single N record.
 
@@ -3780,26 +3775,24 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='update',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,),
+        )
 
     async def upsert(
         self,
         where: types.NWhereUniqueInput,
         data: types.NUpsertInput,
-        include: Optional[types.NInclude] = None,
+        include: NotGivenOr[types.NInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
@@ -3853,17 +3846,18 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='upsert',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -3901,13 +3895,16 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='update_many',
+            arguments={
+                'data': data,
+                'where': where,
+            },
+            data_path=['count'],
             model=self._model,
-            arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -4032,14 +4029,12 @@ class NActions(Generic[_PrismaModelT]):
         ```
         """
 
-        custom_select = not isinstance(select, NotGiven) and select is not None
-        if custom_select:
-            raise RuntimeError('custom select is not supported yet')
+        selection = select or {'_all': True}
 
         def parser(value: Any) -> int | types.NCountAggregateOutput:
-            if not custom_select:
-                return int(value['_count']['_all'])
-            return value['_count']
+            if is_mapping(select):
+                return value['_count']
+            return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
             method='count',
@@ -4048,11 +4043,9 @@ class NActions(Generic[_PrismaModelT]):
                 'skip': skip,
                 'where': where,
                 'cursor': cursor,
-                'include': {
+                'select': {
                     '_count': {
-                        'include': {
-                            '_all': True,
-                        },
+                        'select': selection,
                     },
                 },
             },
@@ -4105,19 +4098,19 @@ class NActions(Generic[_PrismaModelT]):
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.NScalarFieldKeys'],
+        by: list['types.NScalarFieldKeys'],
         *,
-        where: Optional['types.NWhereInput'] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        avg: Optional['types.NAvgAggregateInput'] = None,
-        sum: Optional['types.NSumAggregateInput'] = None,
-        min: Optional['types.NMinAggregateInput'] = None,
-        max: Optional['types.NMaxAggregateInput'] = None,
-        having: Optional['types.NScalarWhereWithAggregatesInput'] = None,
-        count: Optional[Union[bool, 'types.NCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.NScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.NScalarFieldKeys', 'types.SortOrder']]]] = None,
-    ) -> List['types.NGroupByOutput']:
+        where: NotGivenOr['types.NWhereInput | None'] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        avg: NotGivenOr['types.NAvgAggregateInput | None'] = NOT_GIVEN,
+        sum: NotGivenOr['types.NSumAggregateInput | None'] = NOT_GIVEN,
+        min: NotGivenOr['types.NMinAggregateInput | None'] = NOT_GIVEN,
+        max: NotGivenOr['types.NMaxAggregateInput | None'] = NOT_GIVEN,
+        having: NotGivenOr['types.NScalarWhereWithAggregatesInput | None'] = NOT_GIVEN,
+        count: NotGivenOr['bool | types.NCountAggregateInput | None'] = NOT_GIVEN,
+        order: NotGivenOr[Mapping['types.NScalarFieldKeys', 'types.SortOrder'] | list[Mapping['types.NScalarFieldKeys', 'types.SortOrder']] | None] = NOT_GIVEN,
+    ) -> list['types.NGroupByOutput']:
         """Group N records by one or more field values and perform aggregations
         each group such as finding the average.
 
@@ -4175,35 +4168,34 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if order is None:
-            if take is not None:
+        if not order:
+            if take:
                 raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
 
-            if skip is not None:
+            if skip:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
-        if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+        selection: SelectionSet = {key: True for key in by}
+        if avg:
+            selection['_avg'] = {'select': avg}
 
-        if min is not None:
-            root_selection.append(_select_fields('_min', min))
+        if min:
+            selection['_min'] = {'select': min}
 
-        if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+        if sum:
+            selection['_sum'] = {'select': sum}
 
-        if max is not None:
-            root_selection.append(_select_fields('_max', max))
+        if max:
+            selection['_max'] = {'select': max}
 
-        if count is not None:
+        if count:
             if count is True:
-                root_selection.append('_count { _all }')
+                selection['_count'] = {'select': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                selection['_count'] = {'select': count}
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='group_by',
-            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -4211,10 +4203,12 @@ class NActions(Generic[_PrismaModelT]):
                 'where': where,
                 'having': having,
                 'orderBy': order,
+                'select': selection,
             },
-            root_selection=root_selection,
+            model=self._model,
+            data_path=[],
+            parser=lambda v: v,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class OneOptionalActions(Generic[_PrismaModelT]):
@@ -4308,7 +4302,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
     async def create(
         self,
         data: types.OneOptionalCreateInput,
-        include: Optional[types.OneOptionalInclude] = None
+        include: NotGivenOr[types.OneOptionalInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Create a new OneOptional record.
 
@@ -4362,7 +4356,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         self,
         data: List[types.OneOptionalCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> int:
         """Create multiple OneOptional records at once.
 
@@ -4420,21 +4414,21 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='create_many',
-            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            data_path=['count'],
+            model=self._model,
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
         where: types.OneOptionalWhereUniqueInput,
-        include: Optional[types.OneOptionalInclude] = None
+        include: NotGivenOr[types.OneOptionalInclude | None] = NOT_GIVEN,
     ) -> Optional[_PrismaModelT]:
         """Delete a single OneOptional record.
 
@@ -4469,24 +4463,22 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='delete',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
         where: types.OneOptionalWhereUniqueInput,
-        include: Optional[types.OneOptionalInclude] = None
+        include: NotGivenOr[types.OneOptionalInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Find a unique OneOptional record.
 
@@ -4720,12 +4712,12 @@ class OneOptionalActions(Generic[_PrismaModelT]):
 
     async def find_first_or_raise(
         self,
-        skip: Optional[int] = None,
-        where: Optional[types.OneOptionalWhereInput] = None,
-        cursor: Optional[types.OneOptionalWhereUniqueInput] = None,
-        include: Optional[types.OneOptionalInclude] = None,
-        order: Optional[Union[types.OneOptionalOrderByInput, List[types.OneOptionalOrderByInput]]] = None,
-        distinct: Optional[List[types.OneOptionalScalarFieldKeys]] = None,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.OneOptionalWhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.OneOptionalWhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.OneOptionalInclude | None] = NOT_GIVEN,
+        order: NotGivenOr[types.OneOptionalOrderByInput | list[types.OneOptionalOrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[list[types.OneOptionalScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Find a single OneOptional record. Raises `RecordNotFoundError` if no record was found.
 
@@ -4768,9 +4760,8 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='find_first_or_raise',
-            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -4779,14 +4770,16 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
         data: types.OneOptionalUpdateInput,
         where: types.OneOptionalWhereUniqueInput,
-        include: Optional[types.OneOptionalInclude] = None
+        include: NotGivenOr[types.OneOptionalInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Update a single OneOptional record.
 
@@ -4824,26 +4817,24 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='update',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,),
+        )
 
     async def upsert(
         self,
         where: types.OneOptionalWhereUniqueInput,
         data: types.OneOptionalUpsertInput,
-        include: Optional[types.OneOptionalInclude] = None,
+        include: NotGivenOr[types.OneOptionalInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
@@ -4895,17 +4886,18 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='upsert',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -4943,13 +4935,16 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='update_many',
+            arguments={
+                'data': data,
+                'where': where,
+            },
+            data_path=['count'],
             model=self._model,
-            arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -5074,14 +5069,12 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```
         """
 
-        custom_select = not isinstance(select, NotGiven) and select is not None
-        if custom_select:
-            raise RuntimeError('custom select is not supported yet')
+        selection = select or {'_all': True}
 
         def parser(value: Any) -> int | types.OneOptionalCountAggregateOutput:
-            if not custom_select:
-                return int(value['_count']['_all'])
-            return value['_count']
+            if is_mapping(select):
+                return value['_count']
+            return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
             method='count',
@@ -5090,11 +5083,9 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'skip': skip,
                 'where': where,
                 'cursor': cursor,
-                'include': {
+                'select': {
                     '_count': {
-                        'include': {
-                            '_all': True,
-                        },
+                        'select': selection,
                     },
                 },
             },
@@ -5147,19 +5138,19 @@ class OneOptionalActions(Generic[_PrismaModelT]):
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.OneOptionalScalarFieldKeys'],
+        by: list['types.OneOptionalScalarFieldKeys'],
         *,
-        where: Optional['types.OneOptionalWhereInput'] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        avg: Optional['types.OneOptionalAvgAggregateInput'] = None,
-        sum: Optional['types.OneOptionalSumAggregateInput'] = None,
-        min: Optional['types.OneOptionalMinAggregateInput'] = None,
-        max: Optional['types.OneOptionalMaxAggregateInput'] = None,
-        having: Optional['types.OneOptionalScalarWhereWithAggregatesInput'] = None,
-        count: Optional[Union[bool, 'types.OneOptionalCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.OneOptionalScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.OneOptionalScalarFieldKeys', 'types.SortOrder']]]] = None,
-    ) -> List['types.OneOptionalGroupByOutput']:
+        where: NotGivenOr['types.OneOptionalWhereInput | None'] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        avg: NotGivenOr['types.OneOptionalAvgAggregateInput | None'] = NOT_GIVEN,
+        sum: NotGivenOr['types.OneOptionalSumAggregateInput | None'] = NOT_GIVEN,
+        min: NotGivenOr['types.OneOptionalMinAggregateInput | None'] = NOT_GIVEN,
+        max: NotGivenOr['types.OneOptionalMaxAggregateInput | None'] = NOT_GIVEN,
+        having: NotGivenOr['types.OneOptionalScalarWhereWithAggregatesInput | None'] = NOT_GIVEN,
+        count: NotGivenOr['bool | types.OneOptionalCountAggregateInput | None'] = NOT_GIVEN,
+        order: NotGivenOr[Mapping['types.OneOptionalScalarFieldKeys', 'types.SortOrder'] | list[Mapping['types.OneOptionalScalarFieldKeys', 'types.SortOrder']] | None] = NOT_GIVEN,
+    ) -> list['types.OneOptionalGroupByOutput']:
         """Group OneOptional records by one or more field values and perform aggregations
         each group such as finding the average.
 
@@ -5217,35 +5208,34 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if order is None:
-            if take is not None:
+        if not order:
+            if take:
                 raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
 
-            if skip is not None:
+            if skip:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
-        if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+        selection: SelectionSet = {key: True for key in by}
+        if avg:
+            selection['_avg'] = {'select': avg}
 
-        if min is not None:
-            root_selection.append(_select_fields('_min', min))
+        if min:
+            selection['_min'] = {'select': min}
 
-        if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+        if sum:
+            selection['_sum'] = {'select': sum}
 
-        if max is not None:
-            root_selection.append(_select_fields('_max', max))
+        if max:
+            selection['_max'] = {'select': max}
 
-        if count is not None:
+        if count:
             if count is True:
-                root_selection.append('_count { _all }')
+                selection['_count'] = {'select': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                selection['_count'] = {'select': count}
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='group_by',
-            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -5253,10 +5243,12 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'where': where,
                 'having': having,
                 'orderBy': order,
+                'select': selection,
             },
-            root_selection=root_selection,
+            model=self._model,
+            data_path=[],
+            parser=lambda v: v,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class ManyRequiredActions(Generic[_PrismaModelT]):
@@ -5350,7 +5342,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
     async def create(
         self,
         data: types.ManyRequiredCreateInput,
-        include: Optional[types.ManyRequiredInclude] = None
+        include: NotGivenOr[types.ManyRequiredInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Create a new ManyRequired record.
 
@@ -5404,7 +5396,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         self,
         data: List[types.ManyRequiredCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> int:
         """Create multiple ManyRequired records at once.
 
@@ -5462,21 +5454,21 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='create_many',
-            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            data_path=['count'],
+            model=self._model,
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
         where: types.ManyRequiredWhereUniqueInput,
-        include: Optional[types.ManyRequiredInclude] = None
+        include: NotGivenOr[types.ManyRequiredInclude | None] = NOT_GIVEN,
     ) -> Optional[_PrismaModelT]:
         """Delete a single ManyRequired record.
 
@@ -5511,24 +5503,22 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='delete',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
         where: types.ManyRequiredWhereUniqueInput,
-        include: Optional[types.ManyRequiredInclude] = None
+        include: NotGivenOr[types.ManyRequiredInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Find a unique ManyRequired record.
 
@@ -5762,12 +5752,12 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
 
     async def find_first_or_raise(
         self,
-        skip: Optional[int] = None,
-        where: Optional[types.ManyRequiredWhereInput] = None,
-        cursor: Optional[types.ManyRequiredWhereUniqueInput] = None,
-        include: Optional[types.ManyRequiredInclude] = None,
-        order: Optional[Union[types.ManyRequiredOrderByInput, List[types.ManyRequiredOrderByInput]]] = None,
-        distinct: Optional[List[types.ManyRequiredScalarFieldKeys]] = None,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.ManyRequiredWhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.ManyRequiredWhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.ManyRequiredInclude | None] = NOT_GIVEN,
+        order: NotGivenOr[types.ManyRequiredOrderByInput | list[types.ManyRequiredOrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[list[types.ManyRequiredScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Find a single ManyRequired record. Raises `RecordNotFoundError` if no record was found.
 
@@ -5810,9 +5800,8 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='find_first_or_raise',
-            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -5821,14 +5810,16 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
         data: types.ManyRequiredUpdateInput,
         where: types.ManyRequiredWhereUniqueInput,
-        include: Optional[types.ManyRequiredInclude] = None
+        include: NotGivenOr[types.ManyRequiredInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Update a single ManyRequired record.
 
@@ -5866,26 +5857,24 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='update',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,),
+        )
 
     async def upsert(
         self,
         where: types.ManyRequiredWhereUniqueInput,
         data: types.ManyRequiredUpsertInput,
-        include: Optional[types.ManyRequiredInclude] = None,
+        include: NotGivenOr[types.ManyRequiredInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
@@ -5937,17 +5926,18 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='upsert',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -5985,13 +5975,16 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='update_many',
+            arguments={
+                'data': data,
+                'where': where,
+            },
+            data_path=['count'],
             model=self._model,
-            arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -6116,14 +6109,12 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```
         """
 
-        custom_select = not isinstance(select, NotGiven) and select is not None
-        if custom_select:
-            raise RuntimeError('custom select is not supported yet')
+        selection = select or {'_all': True}
 
         def parser(value: Any) -> int | types.ManyRequiredCountAggregateOutput:
-            if not custom_select:
-                return int(value['_count']['_all'])
-            return value['_count']
+            if is_mapping(select):
+                return value['_count']
+            return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
             method='count',
@@ -6132,11 +6123,9 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'skip': skip,
                 'where': where,
                 'cursor': cursor,
-                'include': {
+                'select': {
                     '_count': {
-                        'include': {
-                            '_all': True,
-                        },
+                        'select': selection,
                     },
                 },
             },
@@ -6189,19 +6178,19 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.ManyRequiredScalarFieldKeys'],
+        by: list['types.ManyRequiredScalarFieldKeys'],
         *,
-        where: Optional['types.ManyRequiredWhereInput'] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        avg: Optional['types.ManyRequiredAvgAggregateInput'] = None,
-        sum: Optional['types.ManyRequiredSumAggregateInput'] = None,
-        min: Optional['types.ManyRequiredMinAggregateInput'] = None,
-        max: Optional['types.ManyRequiredMaxAggregateInput'] = None,
-        having: Optional['types.ManyRequiredScalarWhereWithAggregatesInput'] = None,
-        count: Optional[Union[bool, 'types.ManyRequiredCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.ManyRequiredScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.ManyRequiredScalarFieldKeys', 'types.SortOrder']]]] = None,
-    ) -> List['types.ManyRequiredGroupByOutput']:
+        where: NotGivenOr['types.ManyRequiredWhereInput | None'] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        avg: NotGivenOr['types.ManyRequiredAvgAggregateInput | None'] = NOT_GIVEN,
+        sum: NotGivenOr['types.ManyRequiredSumAggregateInput | None'] = NOT_GIVEN,
+        min: NotGivenOr['types.ManyRequiredMinAggregateInput | None'] = NOT_GIVEN,
+        max: NotGivenOr['types.ManyRequiredMaxAggregateInput | None'] = NOT_GIVEN,
+        having: NotGivenOr['types.ManyRequiredScalarWhereWithAggregatesInput | None'] = NOT_GIVEN,
+        count: NotGivenOr['bool | types.ManyRequiredCountAggregateInput | None'] = NOT_GIVEN,
+        order: NotGivenOr[Mapping['types.ManyRequiredScalarFieldKeys', 'types.SortOrder'] | list[Mapping['types.ManyRequiredScalarFieldKeys', 'types.SortOrder']] | None] = NOT_GIVEN,
+    ) -> list['types.ManyRequiredGroupByOutput']:
         """Group ManyRequired records by one or more field values and perform aggregations
         each group such as finding the average.
 
@@ -6259,35 +6248,34 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if order is None:
-            if take is not None:
+        if not order:
+            if take:
                 raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
 
-            if skip is not None:
+            if skip:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
-        if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+        selection: SelectionSet = {key: True for key in by}
+        if avg:
+            selection['_avg'] = {'select': avg}
 
-        if min is not None:
-            root_selection.append(_select_fields('_min', min))
+        if min:
+            selection['_min'] = {'select': min}
 
-        if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+        if sum:
+            selection['_sum'] = {'select': sum}
 
-        if max is not None:
-            root_selection.append(_select_fields('_max', max))
+        if max:
+            selection['_max'] = {'select': max}
 
-        if count is not None:
+        if count:
             if count is True:
-                root_selection.append('_count { _all }')
+                selection['_count'] = {'select': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                selection['_count'] = {'select': count}
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='group_by',
-            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -6295,10 +6283,12 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'where': where,
                 'having': having,
                 'orderBy': order,
+                'select': selection,
             },
-            root_selection=root_selection,
+            model=self._model,
+            data_path=[],
+            parser=lambda v: v,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class ListsActions(Generic[_PrismaModelT]):
@@ -6392,7 +6382,7 @@ class ListsActions(Generic[_PrismaModelT]):
     async def create(
         self,
         data: types.ListsCreateInput,
-        include: Optional[types.ListsInclude] = None
+        include: NotGivenOr[types.ListsInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Create a new Lists record.
 
@@ -6441,7 +6431,7 @@ class ListsActions(Generic[_PrismaModelT]):
         self,
         data: List[types.ListsCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> int:
         """Create multiple Lists records at once.
 
@@ -6489,21 +6479,21 @@ class ListsActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='create_many',
-            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            data_path=['count'],
+            model=self._model,
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
         where: types.ListsWhereUniqueInput,
-        include: Optional[types.ListsInclude] = None
+        include: NotGivenOr[types.ListsInclude | None] = NOT_GIVEN,
     ) -> Optional[_PrismaModelT]:
         """Delete a single Lists record.
 
@@ -6538,24 +6528,22 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='delete',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
         where: types.ListsWhereUniqueInput,
-        include: Optional[types.ListsInclude] = None
+        include: NotGivenOr[types.ListsInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Find a unique Lists record.
 
@@ -6789,12 +6777,12 @@ class ListsActions(Generic[_PrismaModelT]):
 
     async def find_first_or_raise(
         self,
-        skip: Optional[int] = None,
-        where: Optional[types.ListsWhereInput] = None,
-        cursor: Optional[types.ListsWhereUniqueInput] = None,
-        include: Optional[types.ListsInclude] = None,
-        order: Optional[Union[types.ListsOrderByInput, List[types.ListsOrderByInput]]] = None,
-        distinct: Optional[List[types.ListsScalarFieldKeys]] = None,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.ListsWhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.ListsWhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.ListsInclude | None] = NOT_GIVEN,
+        order: NotGivenOr[types.ListsOrderByInput | list[types.ListsOrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[list[types.ListsScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Find a single Lists record. Raises `RecordNotFoundError` if no record was found.
 
@@ -6837,9 +6825,8 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='find_first_or_raise',
-            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -6848,14 +6835,16 @@ class ListsActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
         data: types.ListsUpdateInput,
         where: types.ListsWhereUniqueInput,
-        include: Optional[types.ListsInclude] = None
+        include: NotGivenOr[types.ListsInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Update a single Lists record.
 
@@ -6893,26 +6882,24 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='update',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,),
+        )
 
     async def upsert(
         self,
         where: types.ListsWhereUniqueInput,
         data: types.ListsUpsertInput,
-        include: Optional[types.ListsInclude] = None,
+        include: NotGivenOr[types.ListsInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
@@ -6954,17 +6941,18 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='upsert',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -7002,13 +6990,16 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='update_many',
+            arguments={
+                'data': data,
+                'where': where,
+            },
+            data_path=['count'],
             model=self._model,
-            arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -7133,14 +7124,12 @@ class ListsActions(Generic[_PrismaModelT]):
         ```
         """
 
-        custom_select = not isinstance(select, NotGiven) and select is not None
-        if custom_select:
-            raise RuntimeError('custom select is not supported yet')
+        selection = select or {'_all': True}
 
         def parser(value: Any) -> int | types.ListsCountAggregateOutput:
-            if not custom_select:
-                return int(value['_count']['_all'])
-            return value['_count']
+            if is_mapping(select):
+                return value['_count']
+            return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
             method='count',
@@ -7149,11 +7138,9 @@ class ListsActions(Generic[_PrismaModelT]):
                 'skip': skip,
                 'where': where,
                 'cursor': cursor,
-                'include': {
+                'select': {
                     '_count': {
-                        'include': {
-                            '_all': True,
-                        },
+                        'select': selection,
                     },
                 },
             },
@@ -7206,19 +7193,19 @@ class ListsActions(Generic[_PrismaModelT]):
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.ListsScalarFieldKeys'],
+        by: list['types.ListsScalarFieldKeys'],
         *,
-        where: Optional['types.ListsWhereInput'] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        avg: Optional['types.ListsAvgAggregateInput'] = None,
-        sum: Optional['types.ListsSumAggregateInput'] = None,
-        min: Optional['types.ListsMinAggregateInput'] = None,
-        max: Optional['types.ListsMaxAggregateInput'] = None,
-        having: Optional['types.ListsScalarWhereWithAggregatesInput'] = None,
-        count: Optional[Union[bool, 'types.ListsCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.ListsScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.ListsScalarFieldKeys', 'types.SortOrder']]]] = None,
-    ) -> List['types.ListsGroupByOutput']:
+        where: NotGivenOr['types.ListsWhereInput | None'] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        avg: NotGivenOr['types.ListsAvgAggregateInput | None'] = NOT_GIVEN,
+        sum: NotGivenOr['types.ListsSumAggregateInput | None'] = NOT_GIVEN,
+        min: NotGivenOr['types.ListsMinAggregateInput | None'] = NOT_GIVEN,
+        max: NotGivenOr['types.ListsMaxAggregateInput | None'] = NOT_GIVEN,
+        having: NotGivenOr['types.ListsScalarWhereWithAggregatesInput | None'] = NOT_GIVEN,
+        count: NotGivenOr['bool | types.ListsCountAggregateInput | None'] = NOT_GIVEN,
+        order: NotGivenOr[Mapping['types.ListsScalarFieldKeys', 'types.SortOrder'] | list[Mapping['types.ListsScalarFieldKeys', 'types.SortOrder']] | None] = NOT_GIVEN,
+    ) -> list['types.ListsGroupByOutput']:
         """Group Lists records by one or more field values and perform aggregations
         each group such as finding the average.
 
@@ -7276,35 +7263,34 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if order is None:
-            if take is not None:
+        if not order:
+            if take:
                 raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
 
-            if skip is not None:
+            if skip:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
-        if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+        selection: SelectionSet = {key: True for key in by}
+        if avg:
+            selection['_avg'] = {'select': avg}
 
-        if min is not None:
-            root_selection.append(_select_fields('_min', min))
+        if min:
+            selection['_min'] = {'select': min}
 
-        if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+        if sum:
+            selection['_sum'] = {'select': sum}
 
-        if max is not None:
-            root_selection.append(_select_fields('_max', max))
+        if max:
+            selection['_max'] = {'select': max}
 
-        if count is not None:
+        if count:
             if count is True:
-                root_selection.append('_count { _all }')
+                selection['_count'] = {'select': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                selection['_count'] = {'select': count}
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='group_by',
-            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -7312,10 +7298,12 @@ class ListsActions(Generic[_PrismaModelT]):
                 'where': where,
                 'having': having,
                 'orderBy': order,
+                'select': selection,
             },
-            root_selection=root_selection,
+            model=self._model,
+            data_path=[],
+            parser=lambda v: v,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class AActions(Generic[_PrismaModelT]):
@@ -7409,7 +7397,7 @@ class AActions(Generic[_PrismaModelT]):
     async def create(
         self,
         data: types.ACreateInput,
-        include: Optional[types.AInclude] = None
+        include: NotGivenOr[types.AInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Create a new A record.
 
@@ -7462,7 +7450,7 @@ class AActions(Generic[_PrismaModelT]):
         self,
         data: List[types.ACreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> int:
         """Create multiple A records at once.
 
@@ -7518,21 +7506,21 @@ class AActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='create_many',
-            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            data_path=['count'],
+            model=self._model,
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
         where: types.AWhereUniqueInput,
-        include: Optional[types.AInclude] = None
+        include: NotGivenOr[types.AInclude | None] = NOT_GIVEN,
     ) -> Optional[_PrismaModelT]:
         """Delete a single A record.
 
@@ -7567,24 +7555,22 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='delete',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
         where: types.AWhereUniqueInput,
-        include: Optional[types.AInclude] = None
+        include: NotGivenOr[types.AInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Find a unique A record.
 
@@ -7818,12 +7804,12 @@ class AActions(Generic[_PrismaModelT]):
 
     async def find_first_or_raise(
         self,
-        skip: Optional[int] = None,
-        where: Optional[types.AWhereInput] = None,
-        cursor: Optional[types.AWhereUniqueInput] = None,
-        include: Optional[types.AInclude] = None,
-        order: Optional[Union[types.AOrderByInput, List[types.AOrderByInput]]] = None,
-        distinct: Optional[List[types.AScalarFieldKeys]] = None,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.AWhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.AWhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.AInclude | None] = NOT_GIVEN,
+        order: NotGivenOr[types.AOrderByInput | list[types.AOrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[list[types.AScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Find a single A record. Raises `RecordNotFoundError` if no record was found.
 
@@ -7866,9 +7852,8 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='find_first_or_raise',
-            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -7877,14 +7862,16 @@ class AActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
         data: types.AUpdateInput,
         where: types.AWhereUniqueInput,
-        include: Optional[types.AInclude] = None
+        include: NotGivenOr[types.AInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Update a single A record.
 
@@ -7922,26 +7909,24 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='update',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,),
+        )
 
     async def upsert(
         self,
         where: types.AWhereUniqueInput,
         data: types.AUpsertInput,
-        include: Optional[types.AInclude] = None,
+        include: NotGivenOr[types.AInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
@@ -7989,17 +7974,18 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='upsert',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -8037,13 +8023,16 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='update_many',
+            arguments={
+                'data': data,
+                'where': where,
+            },
+            data_path=['count'],
             model=self._model,
-            arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -8168,14 +8157,12 @@ class AActions(Generic[_PrismaModelT]):
         ```
         """
 
-        custom_select = not isinstance(select, NotGiven) and select is not None
-        if custom_select:
-            raise RuntimeError('custom select is not supported yet')
+        selection = select or {'_all': True}
 
         def parser(value: Any) -> int | types.ACountAggregateOutput:
-            if not custom_select:
-                return int(value['_count']['_all'])
-            return value['_count']
+            if is_mapping(select):
+                return value['_count']
+            return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
             method='count',
@@ -8184,11 +8171,9 @@ class AActions(Generic[_PrismaModelT]):
                 'skip': skip,
                 'where': where,
                 'cursor': cursor,
-                'include': {
+                'select': {
                     '_count': {
-                        'include': {
-                            '_all': True,
-                        },
+                        'select': selection,
                     },
                 },
             },
@@ -8241,19 +8226,19 @@ class AActions(Generic[_PrismaModelT]):
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.AScalarFieldKeys'],
+        by: list['types.AScalarFieldKeys'],
         *,
-        where: Optional['types.AWhereInput'] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        avg: Optional['types.AAvgAggregateInput'] = None,
-        sum: Optional['types.ASumAggregateInput'] = None,
-        min: Optional['types.AMinAggregateInput'] = None,
-        max: Optional['types.AMaxAggregateInput'] = None,
-        having: Optional['types.AScalarWhereWithAggregatesInput'] = None,
-        count: Optional[Union[bool, 'types.ACountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.AScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.AScalarFieldKeys', 'types.SortOrder']]]] = None,
-    ) -> List['types.AGroupByOutput']:
+        where: NotGivenOr['types.AWhereInput | None'] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        avg: NotGivenOr['types.AAvgAggregateInput | None'] = NOT_GIVEN,
+        sum: NotGivenOr['types.ASumAggregateInput | None'] = NOT_GIVEN,
+        min: NotGivenOr['types.AMinAggregateInput | None'] = NOT_GIVEN,
+        max: NotGivenOr['types.AMaxAggregateInput | None'] = NOT_GIVEN,
+        having: NotGivenOr['types.AScalarWhereWithAggregatesInput | None'] = NOT_GIVEN,
+        count: NotGivenOr['bool | types.ACountAggregateInput | None'] = NOT_GIVEN,
+        order: NotGivenOr[Mapping['types.AScalarFieldKeys', 'types.SortOrder'] | list[Mapping['types.AScalarFieldKeys', 'types.SortOrder']] | None] = NOT_GIVEN,
+    ) -> list['types.AGroupByOutput']:
         """Group A records by one or more field values and perform aggregations
         each group such as finding the average.
 
@@ -8311,35 +8296,34 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if order is None:
-            if take is not None:
+        if not order:
+            if take:
                 raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
 
-            if skip is not None:
+            if skip:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
-        if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+        selection: SelectionSet = {key: True for key in by}
+        if avg:
+            selection['_avg'] = {'select': avg}
 
-        if min is not None:
-            root_selection.append(_select_fields('_min', min))
+        if min:
+            selection['_min'] = {'select': min}
 
-        if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+        if sum:
+            selection['_sum'] = {'select': sum}
 
-        if max is not None:
-            root_selection.append(_select_fields('_max', max))
+        if max:
+            selection['_max'] = {'select': max}
 
-        if count is not None:
+        if count:
             if count is True:
-                root_selection.append('_count { _all }')
+                selection['_count'] = {'select': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                selection['_count'] = {'select': count}
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='group_by',
-            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -8347,10 +8331,12 @@ class AActions(Generic[_PrismaModelT]):
                 'where': where,
                 'having': having,
                 'orderBy': order,
+                'select': selection,
             },
-            root_selection=root_selection,
+            model=self._model,
+            data_path=[],
+            parser=lambda v: v,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class BActions(Generic[_PrismaModelT]):
@@ -8444,7 +8430,7 @@ class BActions(Generic[_PrismaModelT]):
     async def create(
         self,
         data: types.BCreateInput,
-        include: Optional[types.BInclude] = None
+        include: NotGivenOr[types.BInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Create a new B record.
 
@@ -8497,7 +8483,7 @@ class BActions(Generic[_PrismaModelT]):
         self,
         data: List[types.BCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> int:
         """Create multiple B records at once.
 
@@ -8553,21 +8539,21 @@ class BActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='create_many',
-            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            data_path=['count'],
+            model=self._model,
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
         where: types.BWhereUniqueInput,
-        include: Optional[types.BInclude] = None
+        include: NotGivenOr[types.BInclude | None] = NOT_GIVEN,
     ) -> Optional[_PrismaModelT]:
         """Delete a single B record.
 
@@ -8602,24 +8588,22 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='delete',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
         where: types.BWhereUniqueInput,
-        include: Optional[types.BInclude] = None
+        include: NotGivenOr[types.BInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Find a unique B record.
 
@@ -8853,12 +8837,12 @@ class BActions(Generic[_PrismaModelT]):
 
     async def find_first_or_raise(
         self,
-        skip: Optional[int] = None,
-        where: Optional[types.BWhereInput] = None,
-        cursor: Optional[types.BWhereUniqueInput] = None,
-        include: Optional[types.BInclude] = None,
-        order: Optional[Union[types.BOrderByInput, List[types.BOrderByInput]]] = None,
-        distinct: Optional[List[types.BScalarFieldKeys]] = None,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.BWhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.BWhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.BInclude | None] = NOT_GIVEN,
+        order: NotGivenOr[types.BOrderByInput | list[types.BOrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[list[types.BScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Find a single B record. Raises `RecordNotFoundError` if no record was found.
 
@@ -8901,9 +8885,8 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='find_first_or_raise',
-            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -8912,14 +8895,16 @@ class BActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
         data: types.BUpdateInput,
         where: types.BWhereUniqueInput,
-        include: Optional[types.BInclude] = None
+        include: NotGivenOr[types.BInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Update a single B record.
 
@@ -8957,26 +8942,24 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='update',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,),
+        )
 
     async def upsert(
         self,
         where: types.BWhereUniqueInput,
         data: types.BUpsertInput,
-        include: Optional[types.BInclude] = None,
+        include: NotGivenOr[types.BInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
@@ -9026,17 +9009,18 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='upsert',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -9074,13 +9058,16 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='update_many',
+            arguments={
+                'data': data,
+                'where': where,
+            },
+            data_path=['count'],
             model=self._model,
-            arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -9205,14 +9192,12 @@ class BActions(Generic[_PrismaModelT]):
         ```
         """
 
-        custom_select = not isinstance(select, NotGiven) and select is not None
-        if custom_select:
-            raise RuntimeError('custom select is not supported yet')
+        selection = select or {'_all': True}
 
         def parser(value: Any) -> int | types.BCountAggregateOutput:
-            if not custom_select:
-                return int(value['_count']['_all'])
-            return value['_count']
+            if is_mapping(select):
+                return value['_count']
+            return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
             method='count',
@@ -9221,11 +9206,9 @@ class BActions(Generic[_PrismaModelT]):
                 'skip': skip,
                 'where': where,
                 'cursor': cursor,
-                'include': {
+                'select': {
                     '_count': {
-                        'include': {
-                            '_all': True,
-                        },
+                        'select': selection,
                     },
                 },
             },
@@ -9278,19 +9261,19 @@ class BActions(Generic[_PrismaModelT]):
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.BScalarFieldKeys'],
+        by: list['types.BScalarFieldKeys'],
         *,
-        where: Optional['types.BWhereInput'] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        avg: Optional['types.BAvgAggregateInput'] = None,
-        sum: Optional['types.BSumAggregateInput'] = None,
-        min: Optional['types.BMinAggregateInput'] = None,
-        max: Optional['types.BMaxAggregateInput'] = None,
-        having: Optional['types.BScalarWhereWithAggregatesInput'] = None,
-        count: Optional[Union[bool, 'types.BCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.BScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.BScalarFieldKeys', 'types.SortOrder']]]] = None,
-    ) -> List['types.BGroupByOutput']:
+        where: NotGivenOr['types.BWhereInput | None'] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        avg: NotGivenOr['types.BAvgAggregateInput | None'] = NOT_GIVEN,
+        sum: NotGivenOr['types.BSumAggregateInput | None'] = NOT_GIVEN,
+        min: NotGivenOr['types.BMinAggregateInput | None'] = NOT_GIVEN,
+        max: NotGivenOr['types.BMaxAggregateInput | None'] = NOT_GIVEN,
+        having: NotGivenOr['types.BScalarWhereWithAggregatesInput | None'] = NOT_GIVEN,
+        count: NotGivenOr['bool | types.BCountAggregateInput | None'] = NOT_GIVEN,
+        order: NotGivenOr[Mapping['types.BScalarFieldKeys', 'types.SortOrder'] | list[Mapping['types.BScalarFieldKeys', 'types.SortOrder']] | None] = NOT_GIVEN,
+    ) -> list['types.BGroupByOutput']:
         """Group B records by one or more field values and perform aggregations
         each group such as finding the average.
 
@@ -9348,35 +9331,34 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if order is None:
-            if take is not None:
+        if not order:
+            if take:
                 raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
 
-            if skip is not None:
+            if skip:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
-        if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+        selection: SelectionSet = {key: True for key in by}
+        if avg:
+            selection['_avg'] = {'select': avg}
 
-        if min is not None:
-            root_selection.append(_select_fields('_min', min))
+        if min:
+            selection['_min'] = {'select': min}
 
-        if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+        if sum:
+            selection['_sum'] = {'select': sum}
 
-        if max is not None:
-            root_selection.append(_select_fields('_max', max))
+        if max:
+            selection['_max'] = {'select': max}
 
-        if count is not None:
+        if count:
             if count is True:
-                root_selection.append('_count { _all }')
+                selection['_count'] = {'select': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                selection['_count'] = {'select': count}
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='group_by',
-            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -9384,10 +9366,12 @@ class BActions(Generic[_PrismaModelT]):
                 'where': where,
                 'having': having,
                 'orderBy': order,
+                'select': selection,
             },
-            root_selection=root_selection,
+            model=self._model,
+            data_path=[],
+            parser=lambda v: v,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class CActions(Generic[_PrismaModelT]):
@@ -9481,7 +9465,7 @@ class CActions(Generic[_PrismaModelT]):
     async def create(
         self,
         data: types.CCreateInput,
-        include: Optional[types.CInclude] = None
+        include: NotGivenOr[types.CInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Create a new C record.
 
@@ -9536,7 +9520,7 @@ class CActions(Generic[_PrismaModelT]):
         self,
         data: List[types.CCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> int:
         """Create multiple C records at once.
 
@@ -9596,21 +9580,21 @@ class CActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='create_many',
-            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            data_path=['count'],
+            model=self._model,
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
         where: types.CWhereUniqueInput,
-        include: Optional[types.CInclude] = None
+        include: NotGivenOr[types.CInclude | None] = NOT_GIVEN,
     ) -> Optional[_PrismaModelT]:
         """Delete a single C record.
 
@@ -9646,24 +9630,22 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='delete',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
         where: types.CWhereUniqueInput,
-        include: Optional[types.CInclude] = None
+        include: NotGivenOr[types.CInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Find a unique C record.
 
@@ -9899,12 +9881,12 @@ class CActions(Generic[_PrismaModelT]):
 
     async def find_first_or_raise(
         self,
-        skip: Optional[int] = None,
-        where: Optional[types.CWhereInput] = None,
-        cursor: Optional[types.CWhereUniqueInput] = None,
-        include: Optional[types.CInclude] = None,
-        order: Optional[Union[types.COrderByInput, List[types.COrderByInput]]] = None,
-        distinct: Optional[List[types.CScalarFieldKeys]] = None,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.CWhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.CWhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.CInclude | None] = NOT_GIVEN,
+        order: NotGivenOr[types.COrderByInput | list[types.COrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[list[types.CScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Find a single C record. Raises `RecordNotFoundError` if no record was found.
 
@@ -9947,9 +9929,8 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='find_first_or_raise',
-            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -9958,14 +9939,16 @@ class CActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
         data: types.CUpdateInput,
         where: types.CWhereUniqueInput,
-        include: Optional[types.CInclude] = None
+        include: NotGivenOr[types.CInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Update a single C record.
 
@@ -10004,26 +9987,24 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='update',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,),
+        )
 
     async def upsert(
         self,
         where: types.CWhereUniqueInput,
         data: types.CUpsertInput,
-        include: Optional[types.CInclude] = None,
+        include: NotGivenOr[types.CInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
@@ -10066,17 +10047,18 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='upsert',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -10114,13 +10096,16 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='update_many',
+            arguments={
+                'data': data,
+                'where': where,
+            },
+            data_path=['count'],
             model=self._model,
-            arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -10245,14 +10230,12 @@ class CActions(Generic[_PrismaModelT]):
         ```
         """
 
-        custom_select = not isinstance(select, NotGiven) and select is not None
-        if custom_select:
-            raise RuntimeError('custom select is not supported yet')
+        selection = select or {'_all': True}
 
         def parser(value: Any) -> int | types.CCountAggregateOutput:
-            if not custom_select:
-                return int(value['_count']['_all'])
-            return value['_count']
+            if is_mapping(select):
+                return value['_count']
+            return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
             method='count',
@@ -10261,11 +10244,9 @@ class CActions(Generic[_PrismaModelT]):
                 'skip': skip,
                 'where': where,
                 'cursor': cursor,
-                'include': {
+                'select': {
                     '_count': {
-                        'include': {
-                            '_all': True,
-                        },
+                        'select': selection,
                     },
                 },
             },
@@ -10318,19 +10299,19 @@ class CActions(Generic[_PrismaModelT]):
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.CScalarFieldKeys'],
+        by: list['types.CScalarFieldKeys'],
         *,
-        where: Optional['types.CWhereInput'] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        avg: Optional['types.CAvgAggregateInput'] = None,
-        sum: Optional['types.CSumAggregateInput'] = None,
-        min: Optional['types.CMinAggregateInput'] = None,
-        max: Optional['types.CMaxAggregateInput'] = None,
-        having: Optional['types.CScalarWhereWithAggregatesInput'] = None,
-        count: Optional[Union[bool, 'types.CCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.CScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.CScalarFieldKeys', 'types.SortOrder']]]] = None,
-    ) -> List['types.CGroupByOutput']:
+        where: NotGivenOr['types.CWhereInput | None'] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        avg: NotGivenOr['types.CAvgAggregateInput | None'] = NOT_GIVEN,
+        sum: NotGivenOr['types.CSumAggregateInput | None'] = NOT_GIVEN,
+        min: NotGivenOr['types.CMinAggregateInput | None'] = NOT_GIVEN,
+        max: NotGivenOr['types.CMaxAggregateInput | None'] = NOT_GIVEN,
+        having: NotGivenOr['types.CScalarWhereWithAggregatesInput | None'] = NOT_GIVEN,
+        count: NotGivenOr['bool | types.CCountAggregateInput | None'] = NOT_GIVEN,
+        order: NotGivenOr[Mapping['types.CScalarFieldKeys', 'types.SortOrder'] | list[Mapping['types.CScalarFieldKeys', 'types.SortOrder']] | None] = NOT_GIVEN,
+    ) -> list['types.CGroupByOutput']:
         """Group C records by one or more field values and perform aggregations
         each group such as finding the average.
 
@@ -10388,35 +10369,34 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if order is None:
-            if take is not None:
+        if not order:
+            if take:
                 raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
 
-            if skip is not None:
+            if skip:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
-        if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+        selection: SelectionSet = {key: True for key in by}
+        if avg:
+            selection['_avg'] = {'select': avg}
 
-        if min is not None:
-            root_selection.append(_select_fields('_min', min))
+        if min:
+            selection['_min'] = {'select': min}
 
-        if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+        if sum:
+            selection['_sum'] = {'select': sum}
 
-        if max is not None:
-            root_selection.append(_select_fields('_max', max))
+        if max:
+            selection['_max'] = {'select': max}
 
-        if count is not None:
+        if count:
             if count is True:
-                root_selection.append('_count { _all }')
+                selection['_count'] = {'select': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                selection['_count'] = {'select': count}
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='group_by',
-            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -10424,10 +10404,12 @@ class CActions(Generic[_PrismaModelT]):
                 'where': where,
                 'having': having,
                 'orderBy': order,
+                'select': selection,
             },
-            root_selection=root_selection,
+            model=self._model,
+            data_path=[],
+            parser=lambda v: v,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class DActions(Generic[_PrismaModelT]):
@@ -10521,7 +10503,7 @@ class DActions(Generic[_PrismaModelT]):
     async def create(
         self,
         data: types.DCreateInput,
-        include: Optional[types.DInclude] = None
+        include: NotGivenOr[types.DInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Create a new D record.
 
@@ -10575,7 +10557,7 @@ class DActions(Generic[_PrismaModelT]):
         self,
         data: List[types.DCreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> int:
         """Create multiple D records at once.
 
@@ -10633,21 +10615,21 @@ class DActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='create_many',
-            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            data_path=['count'],
+            model=self._model,
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
         where: types.DWhereUniqueInput,
-        include: Optional[types.DInclude] = None
+        include: NotGivenOr[types.DInclude | None] = NOT_GIVEN,
     ) -> Optional[_PrismaModelT]:
         """Delete a single D record.
 
@@ -10682,24 +10664,22 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='delete',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
         where: types.DWhereUniqueInput,
-        include: Optional[types.DInclude] = None
+        include: NotGivenOr[types.DInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Find a unique D record.
 
@@ -10933,12 +10913,12 @@ class DActions(Generic[_PrismaModelT]):
 
     async def find_first_or_raise(
         self,
-        skip: Optional[int] = None,
-        where: Optional[types.DWhereInput] = None,
-        cursor: Optional[types.DWhereUniqueInput] = None,
-        include: Optional[types.DInclude] = None,
-        order: Optional[Union[types.DOrderByInput, List[types.DOrderByInput]]] = None,
-        distinct: Optional[List[types.DScalarFieldKeys]] = None,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.DWhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.DWhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.DInclude | None] = NOT_GIVEN,
+        order: NotGivenOr[types.DOrderByInput | list[types.DOrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[list[types.DScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Find a single D record. Raises `RecordNotFoundError` if no record was found.
 
@@ -10981,9 +10961,8 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='find_first_or_raise',
-            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -10992,14 +10971,16 @@ class DActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
         data: types.DUpdateInput,
         where: types.DWhereUniqueInput,
-        include: Optional[types.DInclude] = None
+        include: NotGivenOr[types.DInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Update a single D record.
 
@@ -11037,26 +11018,24 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='update',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,),
+        )
 
     async def upsert(
         self,
         where: types.DWhereUniqueInput,
         data: types.DUpsertInput,
-        include: Optional[types.DInclude] = None,
+        include: NotGivenOr[types.DInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
@@ -11108,17 +11087,18 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='upsert',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -11156,13 +11136,16 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='update_many',
+            arguments={
+                'data': data,
+                'where': where,
+            },
+            data_path=['count'],
             model=self._model,
-            arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -11287,14 +11270,12 @@ class DActions(Generic[_PrismaModelT]):
         ```
         """
 
-        custom_select = not isinstance(select, NotGiven) and select is not None
-        if custom_select:
-            raise RuntimeError('custom select is not supported yet')
+        selection = select or {'_all': True}
 
         def parser(value: Any) -> int | types.DCountAggregateOutput:
-            if not custom_select:
-                return int(value['_count']['_all'])
-            return value['_count']
+            if is_mapping(select):
+                return value['_count']
+            return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
             method='count',
@@ -11303,11 +11284,9 @@ class DActions(Generic[_PrismaModelT]):
                 'skip': skip,
                 'where': where,
                 'cursor': cursor,
-                'include': {
+                'select': {
                     '_count': {
-                        'include': {
-                            '_all': True,
-                        },
+                        'select': selection,
                     },
                 },
             },
@@ -11360,19 +11339,19 @@ class DActions(Generic[_PrismaModelT]):
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.DScalarFieldKeys'],
+        by: list['types.DScalarFieldKeys'],
         *,
-        where: Optional['types.DWhereInput'] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        avg: Optional['types.DAvgAggregateInput'] = None,
-        sum: Optional['types.DSumAggregateInput'] = None,
-        min: Optional['types.DMinAggregateInput'] = None,
-        max: Optional['types.DMaxAggregateInput'] = None,
-        having: Optional['types.DScalarWhereWithAggregatesInput'] = None,
-        count: Optional[Union[bool, 'types.DCountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.DScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.DScalarFieldKeys', 'types.SortOrder']]]] = None,
-    ) -> List['types.DGroupByOutput']:
+        where: NotGivenOr['types.DWhereInput | None'] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        avg: NotGivenOr['types.DAvgAggregateInput | None'] = NOT_GIVEN,
+        sum: NotGivenOr['types.DSumAggregateInput | None'] = NOT_GIVEN,
+        min: NotGivenOr['types.DMinAggregateInput | None'] = NOT_GIVEN,
+        max: NotGivenOr['types.DMaxAggregateInput | None'] = NOT_GIVEN,
+        having: NotGivenOr['types.DScalarWhereWithAggregatesInput | None'] = NOT_GIVEN,
+        count: NotGivenOr['bool | types.DCountAggregateInput | None'] = NOT_GIVEN,
+        order: NotGivenOr[Mapping['types.DScalarFieldKeys', 'types.SortOrder'] | list[Mapping['types.DScalarFieldKeys', 'types.SortOrder']] | None] = NOT_GIVEN,
+    ) -> list['types.DGroupByOutput']:
         """Group D records by one or more field values and perform aggregations
         each group such as finding the average.
 
@@ -11430,35 +11409,34 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if order is None:
-            if take is not None:
+        if not order:
+            if take:
                 raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
 
-            if skip is not None:
+            if skip:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
-        if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+        selection: SelectionSet = {key: True for key in by}
+        if avg:
+            selection['_avg'] = {'select': avg}
 
-        if min is not None:
-            root_selection.append(_select_fields('_min', min))
+        if min:
+            selection['_min'] = {'select': min}
 
-        if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+        if sum:
+            selection['_sum'] = {'select': sum}
 
-        if max is not None:
-            root_selection.append(_select_fields('_max', max))
+        if max:
+            selection['_max'] = {'select': max}
 
-        if count is not None:
+        if count:
             if count is True:
-                root_selection.append('_count { _all }')
+                selection['_count'] = {'select': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                selection['_count'] = {'select': count}
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='group_by',
-            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -11466,10 +11444,12 @@ class DActions(Generic[_PrismaModelT]):
                 'where': where,
                 'having': having,
                 'orderBy': order,
+                'select': selection,
             },
-            root_selection=root_selection,
+            model=self._model,
+            data_path=[],
+            parser=lambda v: v,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
 
 class EActions(Generic[_PrismaModelT]):
@@ -11563,7 +11543,7 @@ class EActions(Generic[_PrismaModelT]):
     async def create(
         self,
         data: types.ECreateInput,
-        include: Optional[types.EInclude] = None
+        include: NotGivenOr[types.EInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Create a new E record.
 
@@ -11615,7 +11595,7 @@ class EActions(Generic[_PrismaModelT]):
         self,
         data: List[types.ECreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> int:
         """Create multiple E records at once.
 
@@ -11669,21 +11649,21 @@ class EActions(Generic[_PrismaModelT]):
         if self._client._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='create_many',
-            model=self._model,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            data_path=['count'],
+            model=self._model,
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     async def delete(
         self,
         where: types.EWhereUniqueInput,
-        include: Optional[types.EInclude] = None
+        include: NotGivenOr[types.EInclude | None] = NOT_GIVEN,
     ) -> Optional[_PrismaModelT]:
         """Delete a single E record.
 
@@ -11718,24 +11698,22 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='delete',
-                model=self._model,
-                arguments={
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='delete',
+            arguments={
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,)
+        )
 
     async def find_unique(
         self,
         where: types.EWhereUniqueInput,
-        include: Optional[types.EInclude] = None
+        include: NotGivenOr[types.EInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Find a unique E record.
 
@@ -11969,12 +11947,12 @@ class EActions(Generic[_PrismaModelT]):
 
     async def find_first_or_raise(
         self,
-        skip: Optional[int] = None,
-        where: Optional[types.EWhereInput] = None,
-        cursor: Optional[types.EWhereUniqueInput] = None,
-        include: Optional[types.EInclude] = None,
-        order: Optional[Union[types.EOrderByInput, List[types.EOrderByInput]]] = None,
-        distinct: Optional[List[types.EScalarFieldKeys]] = None,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        where: NotGivenOr[types.EWhereInput | None] = NOT_GIVEN,
+        cursor: NotGivenOr[types.EWhereUniqueInput | None] = NOT_GIVEN,
+        include: NotGivenOr[types.EInclude | None] = NOT_GIVEN,
+        order: NotGivenOr[types.EOrderByInput | list[types.EOrderByInput] | None] = NOT_GIVEN,
+        distinct: NotGivenOr[list[types.EScalarFieldKeys] | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Find a single E record. Raises `RecordNotFoundError` if no record was found.
 
@@ -12017,9 +11995,8 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='find_first_or_raise',
-            model=self._model,
             arguments={
                 'skip': skip,
                 'where': where,
@@ -12028,14 +12005,16 @@ class EActions(Generic[_PrismaModelT]):
                 'include': include,
                 'distinct': distinct,
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update(
         self,
         data: types.EUpdateInput,
         where: types.EWhereUniqueInput,
-        include: Optional[types.EInclude] = None
+        include: NotGivenOr[types.EInclude | None] = NOT_GIVEN
     ) -> Optional[_PrismaModelT]:
         """Update a single E record.
 
@@ -12073,26 +12052,24 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        try:
-            resp = await self._client._execute(
-                method='update',
-                model=self._model,
-                arguments={
-                    'data': data,
-                    'where': where,
-                    'include': include,
-                },
-            )
-        except errors.RecordNotFoundError:
-            return None
-
-        return self._model.parse_obj(resp['data']['result'])
+        return await self._client._execute_json_proto(
+            method='update',
+            arguments={
+                'data': data,
+                'where': where,
+                'include': include,
+            },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
+            ignore_exceptions=(errors.RecordNotFoundError,),
+        )
 
     async def upsert(
         self,
         where: types.EWhereUniqueInput,
         data: types.EUpsertInput,
-        include: Optional[types.EInclude] = None,
+        include: NotGivenOr[types.EInclude | None] = NOT_GIVEN,
     ) -> _PrismaModelT:
         """Updates an existing record or create a new one
 
@@ -12140,17 +12117,18 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='upsert',
-            model=self._model,
             arguments={
                 'where': where,
                 'include': include,
                 'create': data.get('create'),
                 'update': data.get('update'),
             },
+            data_path=[],
+            model=self._model,
+            parser=self._model.parse_obj,
         )
-        return self._model.parse_obj(resp['data']['result'])
 
     async def update_many(
         self,
@@ -12188,13 +12166,16 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='update_many',
+            arguments={
+                'data': data,
+                'where': where,
+            },
+            data_path=['count'],
             model=self._model,
-            arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            parser=int,
         )
-        return int(resp['data']['result']['count'])
 
     @overload
     async def count(
@@ -12319,14 +12300,12 @@ class EActions(Generic[_PrismaModelT]):
         ```
         """
 
-        custom_select = not isinstance(select, NotGiven) and select is not None
-        if custom_select:
-            raise RuntimeError('custom select is not supported yet')
+        selection = select or {'_all': True}
 
         def parser(value: Any) -> int | types.ECountAggregateOutput:
-            if not custom_select:
-                return int(value['_count']['_all'])
-            return value['_count']
+            if is_mapping(select):
+                return value['_count']
+            return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
             method='count',
@@ -12335,11 +12314,9 @@ class EActions(Generic[_PrismaModelT]):
                 'skip': skip,
                 'where': where,
                 'cursor': cursor,
-                'include': {
+                'select': {
                     '_count': {
-                        'include': {
-                            '_all': True,
-                        },
+                        'select': selection,
                     },
                 },
             },
@@ -12392,19 +12369,19 @@ class EActions(Generic[_PrismaModelT]):
     # TODO: statically type that the order argument is required when take or skip are present
     async def group_by(
         self,
-        by: List['types.EScalarFieldKeys'],
+        by: list['types.EScalarFieldKeys'],
         *,
-        where: Optional['types.EWhereInput'] = None,
-        take: Optional[int] = None,
-        skip: Optional[int] = None,
-        avg: Optional['types.EAvgAggregateInput'] = None,
-        sum: Optional['types.ESumAggregateInput'] = None,
-        min: Optional['types.EMinAggregateInput'] = None,
-        max: Optional['types.EMaxAggregateInput'] = None,
-        having: Optional['types.EScalarWhereWithAggregatesInput'] = None,
-        count: Optional[Union[bool, 'types.ECountAggregateInput']] = None,
-        order: Optional[Union[Mapping['types.EScalarFieldKeys', 'types.SortOrder'], List[Mapping['types.EScalarFieldKeys', 'types.SortOrder']]]] = None,
-    ) -> List['types.EGroupByOutput']:
+        where: NotGivenOr['types.EWhereInput | None'] = NOT_GIVEN,
+        take: NotGivenOr[int | None] = NOT_GIVEN,
+        skip: NotGivenOr[int | None] = NOT_GIVEN,
+        avg: NotGivenOr['types.EAvgAggregateInput | None'] = NOT_GIVEN,
+        sum: NotGivenOr['types.ESumAggregateInput | None'] = NOT_GIVEN,
+        min: NotGivenOr['types.EMinAggregateInput | None'] = NOT_GIVEN,
+        max: NotGivenOr['types.EMaxAggregateInput | None'] = NOT_GIVEN,
+        having: NotGivenOr['types.EScalarWhereWithAggregatesInput | None'] = NOT_GIVEN,
+        count: NotGivenOr['bool | types.ECountAggregateInput | None'] = NOT_GIVEN,
+        order: NotGivenOr[Mapping['types.EScalarFieldKeys', 'types.SortOrder'] | list[Mapping['types.EScalarFieldKeys', 'types.SortOrder']] | None] = NOT_GIVEN,
+    ) -> list['types.EGroupByOutput']:
         """Group E records by one or more field values and perform aggregations
         each group such as finding the average.
 
@@ -12462,35 +12439,34 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if order is None:
-            if take is not None:
+        if not order:
+            if take:
                 raise TypeError('Missing argument: \'order\' which is required when \'take\' is present')
 
-            if skip is not None:
+            if skip:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
-        if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+        selection: SelectionSet = {key: True for key in by}
+        if avg:
+            selection['_avg'] = {'select': avg}
 
-        if min is not None:
-            root_selection.append(_select_fields('_min', min))
+        if min:
+            selection['_min'] = {'select': min}
 
-        if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+        if sum:
+            selection['_sum'] = {'select': sum}
 
-        if max is not None:
-            root_selection.append(_select_fields('_max', max))
+        if max:
+            selection['_max'] = {'select': max}
 
-        if count is not None:
+        if count:
             if count is True:
-                root_selection.append('_count { _all }')
+                selection['_count'] = {'select': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                selection['_count'] = {'select': count}
 
-        resp = await self._client._execute(
+        return await self._client._execute_json_proto(
             method='group_by',
-            model=self._model,
             arguments={
                 'by': by,
                 'take': take,
@@ -12498,20 +12474,13 @@ class EActions(Generic[_PrismaModelT]):
                 'where': where,
                 'having': having,
                 'orderBy': order,
+                'select': selection,
             },
-            root_selection=root_selection,
+            model=self._model,
+            data_path=[],
+            parser=lambda v: v,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
 
-
-
-def _select_fields(root: str, select: Mapping[str, Any]) -> str:
-    """Helper to build a GraphQL selection string
-
-    This is a work around until field selection is added to the query builder.
-    """
-
-    return root + ' {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
 
 
 from . import models

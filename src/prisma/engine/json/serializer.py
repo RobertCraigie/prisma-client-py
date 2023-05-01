@@ -3,7 +3,9 @@ from __future__ import annotations
 import json
 import inspect
 import logging
+import decimal
 import warnings
+from datetime import datetime, timezone
 from functools import singledispatch
 from typing import Any, Dict, Mapping
 from typing_extensions import TypedDict, Required
@@ -14,6 +16,8 @@ from ..._helpers import is_mapping
 from ..._types import PrismaMethod, NotGiven
 
 # Note: this is a codegen'd module
+from ... import fields
+from ...types import Serializable
 from ...bases import _PrismaModel
 
 
@@ -74,13 +78,11 @@ def serialize_single_query(
     method: PrismaMethod,
     arguments: dict[str, object],
     model: type['_PrismaModel'] | None = None,
-    extend_selection: dict[str, object] | None = None,
 ) -> str:
     query = build_single_query(
         method=method,
         arguments=arguments,
         model=model,
-        extend_selection=extend_selection,
     )
     return dumps(query, indent=2 if DEBUG else None)
 
@@ -101,13 +103,10 @@ def build_single_query(
     method: PrismaMethod,
     arguments: dict[str, object],
     model: type['_PrismaModel'] | None = None,
-    extend_selection: dict[str, object] | None = None,
 ) -> SingleQuery:
     request: SingleQuery = {
         'action': _method_to_action(method),
-        'query': _build_query(
-            _transform_aliases(arguments), extend_selection=extend_selection
-        ),
+        'query': _build_query(_transform_aliases(arguments)),
     }
 
     if model is not None:
@@ -117,31 +116,49 @@ def build_single_query(
     return request
 
 
-def _build_query(
-    args: Mapping[str, object],
-    *,
-    extend_selection: dict[str, object] | None = None,
-) -> FieldQuery:
+def _build_query(args: Mapping[str, object]) -> FieldQuery:
     data = _strip_not_given_args(args)
     include = data.pop('include', None)
+    select = data.pop('select', None)
 
     return {
         'arguments': data,
-        'selection': _build_selection(
-            include=include, extend_selection=extend_selection
-        ),
+        'selection': _build_selection(include=include, select=select),
     }
 
 
 def _build_selection(
     *,
     include: object | None,
-    extend_selection: dict[str, object] | None,
+    select: object | None,
 ) -> SelectionSet:
+    if select and include:
+        # TODO: special error
+        raise RuntimeError('select & include not supported')
+
+    if is_mapping(select):
+        return _build_explicit_selection(select=select)
+
+    return _build_implicit_selection(include=include)
+
+
+def _build_explicit_selection(*, select: Mapping[str, object]) -> SelectionSet:
+    selection: SelectionSet = {}
+
+    for key, value in select.items():
+        if value is True:
+            selection[key] = True
+        elif is_mapping(value):
+            selection[key] = _build_query(value)
+
+    return selection
+
+
+def _build_implicit_selection(*, include: object | None) -> SelectionSet:
     selection: SelectionSet = {
+        # TODO: don't include these for raw queries
         '$scalars': True,
         '$composites': True,
-        **(extend_selection or {}),
     }
 
     if is_mapping(include):
@@ -198,7 +215,7 @@ def _strip_not_given_args(args: Mapping[str, object]) -> dict[str, object]:
 
 
 @singledispatch
-def serializer(obj: object) -> str:
+def serializer(obj: object) -> Serializable:
     """Single dispatch generic function for serializing objects to JSON"""
     if inspect.isclass(obj):
         typ = obj
@@ -206,6 +223,45 @@ def serializer(obj: object) -> str:
         typ = type(obj)
 
     raise TypeError(f'Type {typ} not serializable')
+
+
+@serializer.register(datetime)
+def serialize_datetime(dt: datetime) -> str:
+    """Format a datetime object to an ISO8601 string with a timezone.
+
+    This assumes naive datetime objects are in UTC.
+    """
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    elif dt.tzinfo != timezone.utc:
+        dt = dt.astimezone(timezone.utc)
+
+    # truncate microseconds to 3 decimal places
+    # https://github.com/RobertCraigie/prisma-client-py/issues/129
+    dt = dt.replace(microsecond=int(dt.microsecond / 1000) * 1000)
+    return dt.isoformat()
+
+
+@serializer.register(fields.Json)
+def serialize_json(obj: fields.Json) -> Serializable:
+    """Serialize a Json wrapper to JSON.
+
+    Note: this serializer doesn't actually do anything - this is because
+    the `Json` wrapper is now redundant!
+    """
+    return obj.data
+
+
+@serializer.register(fields.Base64)
+def serialize_base64(obj: fields.Base64) -> str:
+    """Serialize a Base64 wrapper object to raw binary data"""
+    return str(obj)
+
+
+@serializer.register(decimal.Decimal)
+def serialize_decimal(obj: decimal.Decimal) -> str:
+    """Serialize a Decimal object to a string"""
+    return str(obj)
 
 
 def dumps(obj: object, **kwargs: object) -> str:

@@ -37,6 +37,9 @@ class NotGiven:
     Useful when `None` is not a possible default value.
     """
 
+    def __bool__(self) -> bool:
+        return False
+
     def __repr__(self) -> str:
         return 'NOT_GIVEN'
 

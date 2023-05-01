@@ -244,15 +244,16 @@ class Prisma:
 
     {% if active_provider != 'mongodb' %}
     {{ maybe_async_def }}execute_raw(self, query: LiteralString, *args: Any) -> int:
-        resp = {{ maybe_await }}self._execute(
+        return {{ maybe_await }}self._execute_json_proto(
             method='execute_raw',
             arguments={
                 'query': query,
                 'parameters': args,
             },
+            data_path=[],
             model=None,
+            parser=int,
         )
-        return int(resp['data']['result'])
 
     @overload
     {{ maybe_async_def }}query_first(
@@ -315,30 +316,57 @@ class Prisma:
         query: LiteralString,
         *args: Any,
         model: Optional[Type[BaseModelT]] = None,
-    ) -> Union[List[BaseModelT], List[dict[str, Any]]]:
+    ) -> list[BaseModelT] | list[dict[str, Any]]:
         """Execute a raw SQL query against the database.
 
         If model is given, each returned record is converted to the pydantic model first,
         otherwise results will be raw dictionaries.
         """
-        resp = {{ maybe_await }}self._execute(
+        def parser(value: Any) -> list[BaseModelT] | list[dict[str, Any]]:
+            if model is not None:
+                return deserialize_raw_results(value, model=model)
+            return deserialize_raw_results(value)
+
+        return {{ maybe_await }}self._execute_json_proto(
             method='query_raw',
             arguments={
                 'query': query,
                 'parameters': args,
             },
-            model=model,
+            data_path=[],
+            model=None,
+            parser=parser,
         )
-        result = resp['data']['result']
-        if model is not None:
-            return deserialize_raw_results(result, model=model)
-
-        return deserialize_raw_results(result)
     {% endif %}
 
     def batch_(self) -> 'Batch':
         """Returns a context manager for grouping write queries into a single transaction."""
         return Batch(client=self)
+
+    @overload
+    {{ maybe_async_def }}_execute_json_proto(
+        self,
+        *,
+        method: PrismaMethod,
+        arguments: dict[str, Any],
+        data_path: Iterable[str],
+        parser: Callable[[Any], _T],
+        model: type[_PrismaModel] | None = None,
+    ) -> _T:
+        ...
+
+    @overload
+    {{ maybe_async_def }}_execute_json_proto(
+        self,
+        *,
+        method: PrismaMethod,
+        arguments: dict[str, Any],
+        data_path: Iterable[str],
+        parser: Callable[[Any], _T],
+        ignore_exceptions: tuple[type[Exception]] | None,
+        model: type[_PrismaModel] | None = None,
+    ) -> _T | None:
+        ...
 
     {{ maybe_async_def }}_execute_json_proto(
         self,
@@ -347,17 +375,28 @@ class Prisma:
         arguments: dict[str, Any],
         data_path: Iterable[str],
         parser: Callable[[Any], _T],
-        extend_selection: dict[str, object] | None = None,
         model: type[_PrismaModel] | None = None,
-    ) -> _T:
+        ignore_exceptions: tuple[type[Exception]] | None = None,
+    ) -> _T | None:
+        """Execute a query against the query engine.
+
+        If `ignore_exceptions` is given then `None` will be returned if any of the given exceptions
+        are caught while executing the query.
+        """
         query = json_proto.serialize_single_query(
             method=method,
             model=model,
             arguments=arguments,
-            extend_selection=extend_selection,
         )
 
-        response = {{ maybe_await }}self._engine.query(query)
+        if ignore_exceptions is not None:
+            try:
+                response = {{ maybe_await }}self._engine.query(query)
+            except ignore_exceptions:
+                return None
+        else:
+            response = {{ maybe_await }}self._engine.query(query)
+
 
         # response is in the structure `{'data': {'findUniqueUser': { ... }}}`
         data = next(iter(response['data'].values()))
@@ -455,7 +494,9 @@ class Batch:
 
     {{ maybe_async_def }}commit(self) -> None:
         """Execute the queries"""
-        {{ maybe_await }}self.__client._execute_json_proto_batched(queries=self.__queries)
+        queries = self.__queries
+        self.__queries = []
+        {{ maybe_await }}self.__client._execute_json_proto_batched(queries=queries)
 
     {% if active_provider != 'mongodb' %}
     def execute_raw(self, query: LiteralString, *args: Any) -> None:
@@ -520,7 +561,7 @@ class {{ model.name }}BatchActions:
         self,
         data: List[types.{{ model.name }}CreateWithoutRelationsInput],
         *,
-        skip_duplicates: Optional[bool] = None,
+        skip_duplicates: NotGivenOr[bool | None] = NOT_GIVEN,
     ) -> None:
         if self._batcher._active_provider == 'sqlite':
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
@@ -537,7 +578,7 @@ class {{ model.name }}BatchActions:
     def delete(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
-        include: Optional[types.{{ model.name}}Include] = None,
+        include: NotGivenOr[types.{{ model.name}}Include | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='delete',
@@ -552,7 +593,7 @@ class {{ model.name }}BatchActions:
         self,
         data: types.{{ model.name }}UpdateInput,
         where: types.{{ model.name }}WhereUniqueInput,
-        include: Optional[types.{{ model.name}}Include] = None
+        include: NotGivenOr[types.{{ model.name}}Include | None] = NOT_GIVEN
     ) -> None:
         self._batcher._add(
             method='update',
@@ -568,7 +609,7 @@ class {{ model.name }}BatchActions:
         self,
         where: types.{{ model.name }}WhereUniqueInput,
         data: types.{{ model.name }}UpsertInput,
-        include: Optional[types.{{ model.name}}Include] = None,
+        include: NotGivenOr[types.{{ model.name}}Include | None] = NOT_GIVEN,
     ) -> None:
         self._batcher._add(
             method='upsert',
