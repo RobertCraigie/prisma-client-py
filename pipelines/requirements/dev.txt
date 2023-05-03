@@ -6,4 +6,3 @@ twine==4.0.2
 typer==0.7.0
 rtoml==0.9.0
 GitPython
-distro

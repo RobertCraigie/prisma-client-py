@@ -2,7 +2,6 @@
 coverage==7.2.2
 syrupy==3.0.6
 dirty-equals==0.5.0
-distro
 
 -r ../pipelines/requirements/deps/pyright.txt
 -r ../pipelines/requirements/deps/pytest.txt
