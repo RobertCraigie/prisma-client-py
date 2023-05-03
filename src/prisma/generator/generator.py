@@ -7,16 +7,16 @@ import traceback
 from pathlib import Path
 from abc import ABC, abstractmethod
 from contextvars import ContextVar
-from typing import Generic, Dict, Type, Any, Optional, cast
+from typing import Generic, Dict, Type, List, Any, Optional, cast
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, StrictUndefined
 from pydantic import BaseModel, ValidationError
 
 from . import jsonrpc
 from .jsonrpc import Manifest
 from .filters import quote
 from .models import DefaultData, PythonData
-from .types import PartialModelFields
+from .types import PartialModel
 from .utils import (
     copy_tree,
     is_same_path,
@@ -50,6 +50,7 @@ DEFAULT_ENV = Environment(
     trim_blocks=True,
     lstrip_blocks=True,
     loader=FileSystemLoader(Path(__file__).parent / 'templates'),
+    undefined=StrictUndefined,
 )
 
 # the type: ignore is required because Jinja2 filters are not typed
@@ -57,8 +58,8 @@ DEFAULT_ENV = Environment(
 # results in an overly restrictive type
 DEFAULT_ENV.filters['quote'] = quote  # pyright: ignore
 
-partial_models_ctx: ContextVar[Dict[str, PartialModelFields]] = ContextVar(
-    'partial_models_ctx', default={}
+partial_models_ctx: ContextVar[List[PartialModel]] = ContextVar(
+    'partial_models_ctx', default=[]
 )
 
 
@@ -173,8 +174,7 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
                 f'JSON RPC received unexpected method: {request.method}'
             )
 
-        if response is not None:
-            jsonrpc.reply(response)
+        jsonrpc.reply(response)
 
     @cached_property
     def data_class(self) -> Type[BaseModelT]:

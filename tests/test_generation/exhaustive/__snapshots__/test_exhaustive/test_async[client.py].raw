@@ -20,6 +20,9 @@ from typing import (
     Iterator,
     Sequence,
     Callable,
+    ClassVar,
+    NoReturn,
+    TypeVar,
     Generic,
     Mapping,
     Tuple,
@@ -40,9 +43,12 @@ LiteralString = str
 from pathlib import Path
 from types import TracebackType
 
+from pydantic import BaseModel
+
 from . import types, models, errors, actions
 from .types import DatasourceOverride, HttpConfig
-from ._types import BaseModelT
+from ._types import BaseModelT, PrismaMethod
+from .bases import _PrismaModel
 from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
@@ -148,18 +154,18 @@ def get_client() -> 'Prisma':
 
 
 class Prisma:
-    post: 'actions.PostActions'
-    user: 'actions.UserActions'
-    m: 'actions.MActions'
-    n: 'actions.NActions'
-    oneoptional: 'actions.OneOptionalActions'
-    manyrequired: 'actions.ManyRequiredActions'
-    lists: 'actions.ListsActions'
-    a: 'actions.AActions'
-    b: 'actions.BActions'
-    c: 'actions.CActions'
-    d: 'actions.DActions'
-    e: 'actions.EActions'
+    post: 'actions.PostActions[models.Post]'
+    user: 'actions.UserActions[models.User]'
+    m: 'actions.MActions[models.M]'
+    n: 'actions.NActions[models.N]'
+    oneoptional: 'actions.OneOptionalActions[models.OneOptional]'
+    manyrequired: 'actions.ManyRequiredActions[models.ManyRequired]'
+    lists: 'actions.ListsActions[models.Lists]'
+    a: 'actions.AActions[models.A]'
+    b: 'actions.BActions[models.B]'
+    c: 'actions.CActions[models.C]'
+    d: 'actions.DActions[models.D]'
+    e: 'actions.EActions[models.E]'
 
     __slots__ = (
         'post',
@@ -192,18 +198,18 @@ class Prisma:
         connect_timeout: int = 10,
         http: Optional[HttpConfig] = None,
     ) -> None:
-        self.post = actions.PostActions(self, models.Post)
-        self.user = actions.UserActions(self, models.User)
-        self.m = actions.MActions(self, models.M)
-        self.n = actions.NActions(self, models.N)
-        self.oneoptional = actions.OneOptionalActions(self, models.OneOptional)
-        self.manyrequired = actions.ManyRequiredActions(self, models.ManyRequired)
-        self.lists = actions.ListsActions(self, models.Lists)
-        self.a = actions.AActions(self, models.A)
-        self.b = actions.BActions(self, models.B)
-        self.c = actions.CActions(self, models.C)
-        self.d = actions.DActions(self, models.D)
-        self.e = actions.EActions(self, models.E)
+        self.post = actions.PostActions[models.Post](self, models.Post)
+        self.user = actions.UserActions[models.User](self, models.User)
+        self.m = actions.MActions[models.M](self, models.M)
+        self.n = actions.NActions[models.N](self, models.N)
+        self.oneoptional = actions.OneOptionalActions[models.OneOptional](self, models.OneOptional)
+        self.manyrequired = actions.ManyRequiredActions[models.ManyRequired](self, models.ManyRequired)
+        self.lists = actions.ListsActions[models.Lists](self, models.Lists)
+        self.a = actions.AActions[models.A](self, models.A)
+        self.b = actions.BActions[models.B](self, models.B)
+        self.c = actions.CActions[models.C](self, models.C)
+        self.d = actions.DActions[models.D](self, models.D)
+        self.e = actions.EActions[models.E](self, models.E)
         self.__engine: Optional[AbstractEngine] = None
         self._active_provider = 'postgresql'
         self._log_queries = log_queries
@@ -265,21 +271,21 @@ class Prisma:
             datasources=datasources,
         )
 
-    async def disconnect(self) -> None:
+    async def disconnect(self, timeout: Optional[float] = None) -> None:
         """Disconnect the Prisma query engine."""
         if self.__engine is not None:
-            self.__engine.close()
-            await self.__engine.aclose()
+            await self.__engine.aclose(timeout=timeout)
+            self.__engine.stop(timeout=timeout)
             self.__engine = None
 
     async def execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = await self._execute(
-            operation='mutation',
-            method='executeRaw',
+            method='execute_raw',
             arguments={
                 'query': query,
                 'parameters': args,
-            }
+            },
+            model=None,
         )
         return int(resp['data']['result'])
 
@@ -351,12 +357,12 @@ class Prisma:
         otherwise results will be raw dictionaries.
         """
         resp = await self._execute(
-            operation='mutation',
-            method='queryRaw',
+            method='query_raw',
             arguments={
                 'query': query,
                 'parameters': args,
-            }
+            },
+            model=model,
         )
         result = resp['data']['result']
         if model is not None:
@@ -371,14 +377,12 @@ class Prisma:
     # TODO: don't return Any
     async def _execute(
         self,
-        method: str,
-        operation: str,
-        arguments: Dict[str, Any],
-        model: Optional[str] = None,
-        root_selection: Optional[List[str]] = None
+        method: PrismaMethod,
+        arguments: dict[str, Any],
+        model: type[BaseModel] | None = None,
+        root_selection: list[str] | None = None
     ) -> Any:
         builder = QueryBuilder(
-            operation=operation,
             method=method,
             model=model,
             arguments=arguments,
@@ -489,8 +493,7 @@ class Batch:
 
     def execute_raw(self, query: LiteralString, *args: Any) -> None:
         self._add(
-            operation='mutation',
-            method='executeRaw',
+            method='execute_raw',
             arguments={
                 'query': query,
                 'parameters': args,
@@ -522,9 +525,8 @@ class PostBatchActions:
         include: Optional[types.PostInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='createOne',
-            model='Post',
+            method='create',
+            model=models.Post,
             arguments={
                 'data': data,
                 'include': include,
@@ -541,9 +543,8 @@ class PostBatchActions:
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         self._batcher._add(
-            operation='mutation',
-            method='createMany',
-            model='Post',
+            method='create_many',
+            model=models.Post,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -557,9 +558,8 @@ class PostBatchActions:
         include: Optional[types.PostInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteOne',
-            model='Post',
+            method='delete',
+            model=models.Post,
             arguments={
                 'where': where,
                 'include': include,
@@ -573,9 +573,8 @@ class PostBatchActions:
         include: Optional[types.PostInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateOne',
-            model='Post',
+            method='update',
+            model=models.Post,
             arguments={
                 'data': data,
                 'where': where,
@@ -590,9 +589,8 @@ class PostBatchActions:
         include: Optional[types.PostInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='upsertOne',
-            model='Post',
+            method='upsert',
+            model=models.Post,
             arguments={
                 'where': where,
                 'include': include,
@@ -607,9 +605,8 @@ class PostBatchActions:
         where: types.PostWhereInput,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateMany',
-            model='Post',
+            method='update_many',
+            model=models.Post,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -619,9 +616,8 @@ class PostBatchActions:
         where: Optional[types.PostWhereInput] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteMany',
-            model='Post',
+            method='delete_many',
+            model=models.Post,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -640,9 +636,8 @@ class UserBatchActions:
         include: Optional[types.UserInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='createOne',
-            model='User',
+            method='create',
+            model=models.User,
             arguments={
                 'data': data,
                 'include': include,
@@ -659,9 +654,8 @@ class UserBatchActions:
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         self._batcher._add(
-            operation='mutation',
-            method='createMany',
-            model='User',
+            method='create_many',
+            model=models.User,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -675,9 +669,8 @@ class UserBatchActions:
         include: Optional[types.UserInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteOne',
-            model='User',
+            method='delete',
+            model=models.User,
             arguments={
                 'where': where,
                 'include': include,
@@ -691,9 +684,8 @@ class UserBatchActions:
         include: Optional[types.UserInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateOne',
-            model='User',
+            method='update',
+            model=models.User,
             arguments={
                 'data': data,
                 'where': where,
@@ -708,9 +700,8 @@ class UserBatchActions:
         include: Optional[types.UserInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='upsertOne',
-            model='User',
+            method='upsert',
+            model=models.User,
             arguments={
                 'where': where,
                 'include': include,
@@ -725,9 +716,8 @@ class UserBatchActions:
         where: types.UserWhereInput,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateMany',
-            model='User',
+            method='update_many',
+            model=models.User,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -737,9 +727,8 @@ class UserBatchActions:
         where: Optional[types.UserWhereInput] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteMany',
-            model='User',
+            method='delete_many',
+            model=models.User,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -758,9 +747,8 @@ class MBatchActions:
         include: Optional[types.MInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='createOne',
-            model='M',
+            method='create',
+            model=models.M,
             arguments={
                 'data': data,
                 'include': include,
@@ -777,9 +765,8 @@ class MBatchActions:
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         self._batcher._add(
-            operation='mutation',
-            method='createMany',
-            model='M',
+            method='create_many',
+            model=models.M,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -793,9 +780,8 @@ class MBatchActions:
         include: Optional[types.MInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteOne',
-            model='M',
+            method='delete',
+            model=models.M,
             arguments={
                 'where': where,
                 'include': include,
@@ -809,9 +795,8 @@ class MBatchActions:
         include: Optional[types.MInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateOne',
-            model='M',
+            method='update',
+            model=models.M,
             arguments={
                 'data': data,
                 'where': where,
@@ -826,9 +811,8 @@ class MBatchActions:
         include: Optional[types.MInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='upsertOne',
-            model='M',
+            method='upsert',
+            model=models.M,
             arguments={
                 'where': where,
                 'include': include,
@@ -843,9 +827,8 @@ class MBatchActions:
         where: types.MWhereInput,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateMany',
-            model='M',
+            method='update_many',
+            model=models.M,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -855,9 +838,8 @@ class MBatchActions:
         where: Optional[types.MWhereInput] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteMany',
-            model='M',
+            method='delete_many',
+            model=models.M,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -876,9 +858,8 @@ class NBatchActions:
         include: Optional[types.NInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='createOne',
-            model='N',
+            method='create',
+            model=models.N,
             arguments={
                 'data': data,
                 'include': include,
@@ -895,9 +876,8 @@ class NBatchActions:
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         self._batcher._add(
-            operation='mutation',
-            method='createMany',
-            model='N',
+            method='create_many',
+            model=models.N,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -911,9 +891,8 @@ class NBatchActions:
         include: Optional[types.NInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteOne',
-            model='N',
+            method='delete',
+            model=models.N,
             arguments={
                 'where': where,
                 'include': include,
@@ -927,9 +906,8 @@ class NBatchActions:
         include: Optional[types.NInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateOne',
-            model='N',
+            method='update',
+            model=models.N,
             arguments={
                 'data': data,
                 'where': where,
@@ -944,9 +922,8 @@ class NBatchActions:
         include: Optional[types.NInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='upsertOne',
-            model='N',
+            method='upsert',
+            model=models.N,
             arguments={
                 'where': where,
                 'include': include,
@@ -961,9 +938,8 @@ class NBatchActions:
         where: types.NWhereInput,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateMany',
-            model='N',
+            method='update_many',
+            model=models.N,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -973,9 +949,8 @@ class NBatchActions:
         where: Optional[types.NWhereInput] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteMany',
-            model='N',
+            method='delete_many',
+            model=models.N,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -994,9 +969,8 @@ class OneOptionalBatchActions:
         include: Optional[types.OneOptionalInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='createOne',
-            model='OneOptional',
+            method='create',
+            model=models.OneOptional,
             arguments={
                 'data': data,
                 'include': include,
@@ -1013,9 +987,8 @@ class OneOptionalBatchActions:
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         self._batcher._add(
-            operation='mutation',
-            method='createMany',
-            model='OneOptional',
+            method='create_many',
+            model=models.OneOptional,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1029,9 +1002,8 @@ class OneOptionalBatchActions:
         include: Optional[types.OneOptionalInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteOne',
-            model='OneOptional',
+            method='delete',
+            model=models.OneOptional,
             arguments={
                 'where': where,
                 'include': include,
@@ -1045,9 +1017,8 @@ class OneOptionalBatchActions:
         include: Optional[types.OneOptionalInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateOne',
-            model='OneOptional',
+            method='update',
+            model=models.OneOptional,
             arguments={
                 'data': data,
                 'where': where,
@@ -1062,9 +1033,8 @@ class OneOptionalBatchActions:
         include: Optional[types.OneOptionalInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='upsertOne',
-            model='OneOptional',
+            method='upsert',
+            model=models.OneOptional,
             arguments={
                 'where': where,
                 'include': include,
@@ -1079,9 +1049,8 @@ class OneOptionalBatchActions:
         where: types.OneOptionalWhereInput,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateMany',
-            model='OneOptional',
+            method='update_many',
+            model=models.OneOptional,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1091,9 +1060,8 @@ class OneOptionalBatchActions:
         where: Optional[types.OneOptionalWhereInput] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteMany',
-            model='OneOptional',
+            method='delete_many',
+            model=models.OneOptional,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1112,9 +1080,8 @@ class ManyRequiredBatchActions:
         include: Optional[types.ManyRequiredInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='createOne',
-            model='ManyRequired',
+            method='create',
+            model=models.ManyRequired,
             arguments={
                 'data': data,
                 'include': include,
@@ -1131,9 +1098,8 @@ class ManyRequiredBatchActions:
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         self._batcher._add(
-            operation='mutation',
-            method='createMany',
-            model='ManyRequired',
+            method='create_many',
+            model=models.ManyRequired,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1147,9 +1113,8 @@ class ManyRequiredBatchActions:
         include: Optional[types.ManyRequiredInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteOne',
-            model='ManyRequired',
+            method='delete',
+            model=models.ManyRequired,
             arguments={
                 'where': where,
                 'include': include,
@@ -1163,9 +1128,8 @@ class ManyRequiredBatchActions:
         include: Optional[types.ManyRequiredInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateOne',
-            model='ManyRequired',
+            method='update',
+            model=models.ManyRequired,
             arguments={
                 'data': data,
                 'where': where,
@@ -1180,9 +1144,8 @@ class ManyRequiredBatchActions:
         include: Optional[types.ManyRequiredInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='upsertOne',
-            model='ManyRequired',
+            method='upsert',
+            model=models.ManyRequired,
             arguments={
                 'where': where,
                 'include': include,
@@ -1197,9 +1160,8 @@ class ManyRequiredBatchActions:
         where: types.ManyRequiredWhereInput,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateMany',
-            model='ManyRequired',
+            method='update_many',
+            model=models.ManyRequired,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1209,9 +1171,8 @@ class ManyRequiredBatchActions:
         where: Optional[types.ManyRequiredWhereInput] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteMany',
-            model='ManyRequired',
+            method='delete_many',
+            model=models.ManyRequired,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1230,9 +1191,8 @@ class ListsBatchActions:
         include: Optional[types.ListsInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='createOne',
-            model='Lists',
+            method='create',
+            model=models.Lists,
             arguments={
                 'data': data,
                 'include': include,
@@ -1249,9 +1209,8 @@ class ListsBatchActions:
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         self._batcher._add(
-            operation='mutation',
-            method='createMany',
-            model='Lists',
+            method='create_many',
+            model=models.Lists,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1265,9 +1224,8 @@ class ListsBatchActions:
         include: Optional[types.ListsInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteOne',
-            model='Lists',
+            method='delete',
+            model=models.Lists,
             arguments={
                 'where': where,
                 'include': include,
@@ -1281,9 +1239,8 @@ class ListsBatchActions:
         include: Optional[types.ListsInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateOne',
-            model='Lists',
+            method='update',
+            model=models.Lists,
             arguments={
                 'data': data,
                 'where': where,
@@ -1298,9 +1255,8 @@ class ListsBatchActions:
         include: Optional[types.ListsInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='upsertOne',
-            model='Lists',
+            method='upsert',
+            model=models.Lists,
             arguments={
                 'where': where,
                 'include': include,
@@ -1315,9 +1271,8 @@ class ListsBatchActions:
         where: types.ListsWhereInput,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateMany',
-            model='Lists',
+            method='update_many',
+            model=models.Lists,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1327,9 +1282,8 @@ class ListsBatchActions:
         where: Optional[types.ListsWhereInput] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteMany',
-            model='Lists',
+            method='delete_many',
+            model=models.Lists,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1348,9 +1302,8 @@ class ABatchActions:
         include: Optional[types.AInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='createOne',
-            model='A',
+            method='create',
+            model=models.A,
             arguments={
                 'data': data,
                 'include': include,
@@ -1367,9 +1320,8 @@ class ABatchActions:
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         self._batcher._add(
-            operation='mutation',
-            method='createMany',
-            model='A',
+            method='create_many',
+            model=models.A,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1383,9 +1335,8 @@ class ABatchActions:
         include: Optional[types.AInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteOne',
-            model='A',
+            method='delete',
+            model=models.A,
             arguments={
                 'where': where,
                 'include': include,
@@ -1399,9 +1350,8 @@ class ABatchActions:
         include: Optional[types.AInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateOne',
-            model='A',
+            method='update',
+            model=models.A,
             arguments={
                 'data': data,
                 'where': where,
@@ -1416,9 +1366,8 @@ class ABatchActions:
         include: Optional[types.AInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='upsertOne',
-            model='A',
+            method='upsert',
+            model=models.A,
             arguments={
                 'where': where,
                 'include': include,
@@ -1433,9 +1382,8 @@ class ABatchActions:
         where: types.AWhereInput,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateMany',
-            model='A',
+            method='update_many',
+            model=models.A,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1445,9 +1393,8 @@ class ABatchActions:
         where: Optional[types.AWhereInput] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteMany',
-            model='A',
+            method='delete_many',
+            model=models.A,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1466,9 +1413,8 @@ class BBatchActions:
         include: Optional[types.BInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='createOne',
-            model='B',
+            method='create',
+            model=models.B,
             arguments={
                 'data': data,
                 'include': include,
@@ -1485,9 +1431,8 @@ class BBatchActions:
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         self._batcher._add(
-            operation='mutation',
-            method='createMany',
-            model='B',
+            method='create_many',
+            model=models.B,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1501,9 +1446,8 @@ class BBatchActions:
         include: Optional[types.BInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteOne',
-            model='B',
+            method='delete',
+            model=models.B,
             arguments={
                 'where': where,
                 'include': include,
@@ -1517,9 +1461,8 @@ class BBatchActions:
         include: Optional[types.BInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateOne',
-            model='B',
+            method='update',
+            model=models.B,
             arguments={
                 'data': data,
                 'where': where,
@@ -1534,9 +1477,8 @@ class BBatchActions:
         include: Optional[types.BInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='upsertOne',
-            model='B',
+            method='upsert',
+            model=models.B,
             arguments={
                 'where': where,
                 'include': include,
@@ -1551,9 +1493,8 @@ class BBatchActions:
         where: types.BWhereInput,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateMany',
-            model='B',
+            method='update_many',
+            model=models.B,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1563,9 +1504,8 @@ class BBatchActions:
         where: Optional[types.BWhereInput] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteMany',
-            model='B',
+            method='delete_many',
+            model=models.B,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1584,9 +1524,8 @@ class CBatchActions:
         include: Optional[types.CInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='createOne',
-            model='C',
+            method='create',
+            model=models.C,
             arguments={
                 'data': data,
                 'include': include,
@@ -1603,9 +1542,8 @@ class CBatchActions:
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         self._batcher._add(
-            operation='mutation',
-            method='createMany',
-            model='C',
+            method='create_many',
+            model=models.C,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1619,9 +1557,8 @@ class CBatchActions:
         include: Optional[types.CInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteOne',
-            model='C',
+            method='delete',
+            model=models.C,
             arguments={
                 'where': where,
                 'include': include,
@@ -1635,9 +1572,8 @@ class CBatchActions:
         include: Optional[types.CInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateOne',
-            model='C',
+            method='update',
+            model=models.C,
             arguments={
                 'data': data,
                 'where': where,
@@ -1652,9 +1588,8 @@ class CBatchActions:
         include: Optional[types.CInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='upsertOne',
-            model='C',
+            method='upsert',
+            model=models.C,
             arguments={
                 'where': where,
                 'include': include,
@@ -1669,9 +1604,8 @@ class CBatchActions:
         where: types.CWhereInput,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateMany',
-            model='C',
+            method='update_many',
+            model=models.C,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1681,9 +1615,8 @@ class CBatchActions:
         where: Optional[types.CWhereInput] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteMany',
-            model='C',
+            method='delete_many',
+            model=models.C,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1702,9 +1635,8 @@ class DBatchActions:
         include: Optional[types.DInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='createOne',
-            model='D',
+            method='create',
+            model=models.D,
             arguments={
                 'data': data,
                 'include': include,
@@ -1721,9 +1653,8 @@ class DBatchActions:
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         self._batcher._add(
-            operation='mutation',
-            method='createMany',
-            model='D',
+            method='create_many',
+            model=models.D,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1737,9 +1668,8 @@ class DBatchActions:
         include: Optional[types.DInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteOne',
-            model='D',
+            method='delete',
+            model=models.D,
             arguments={
                 'where': where,
                 'include': include,
@@ -1753,9 +1683,8 @@ class DBatchActions:
         include: Optional[types.DInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateOne',
-            model='D',
+            method='update',
+            model=models.D,
             arguments={
                 'data': data,
                 'where': where,
@@ -1770,9 +1699,8 @@ class DBatchActions:
         include: Optional[types.DInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='upsertOne',
-            model='D',
+            method='upsert',
+            model=models.D,
             arguments={
                 'where': where,
                 'include': include,
@@ -1787,9 +1715,8 @@ class DBatchActions:
         where: types.DWhereInput,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateMany',
-            model='D',
+            method='update_many',
+            model=models.D,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1799,9 +1726,8 @@ class DBatchActions:
         where: Optional[types.DWhereInput] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteMany',
-            model='D',
+            method='delete_many',
+            model=models.D,
             arguments={'where': where},
             root_selection=['count'],
         )
@@ -1820,9 +1746,8 @@ class EBatchActions:
         include: Optional[types.EInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='createOne',
-            model='E',
+            method='create',
+            model=models.E,
             arguments={
                 'data': data,
                 'include': include,
@@ -1839,9 +1764,8 @@ class EBatchActions:
             raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         self._batcher._add(
-            operation='mutation',
-            method='createMany',
-            model='E',
+            method='create_many',
+            model=models.E,
             arguments={
                 'data': data,
                 'skipDuplicates': skip_duplicates,
@@ -1855,9 +1779,8 @@ class EBatchActions:
         include: Optional[types.EInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteOne',
-            model='E',
+            method='delete',
+            model=models.E,
             arguments={
                 'where': where,
                 'include': include,
@@ -1871,9 +1794,8 @@ class EBatchActions:
         include: Optional[types.EInclude] = None
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateOne',
-            model='E',
+            method='update',
+            model=models.E,
             arguments={
                 'data': data,
                 'where': where,
@@ -1888,9 +1810,8 @@ class EBatchActions:
         include: Optional[types.EInclude] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='upsertOne',
-            model='E',
+            method='upsert',
+            model=models.E,
             arguments={
                 'where': where,
                 'include': include,
@@ -1905,9 +1826,8 @@ class EBatchActions:
         where: types.EWhereInput,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='updateMany',
-            model='E',
+            method='update_many',
+            model=models.E,
             arguments={'data': data, 'where': where,},
             root_selection=['count'],
         )
@@ -1917,9 +1837,8 @@ class EBatchActions:
         where: Optional[types.EWhereInput] = None,
     ) -> None:
         self._batcher._add(
-            operation='mutation',
-            method='deleteMany',
-            model='E',
+            method='delete_many',
+            model=models.E,
             arguments={'where': where},
             root_selection=['count'],
         )

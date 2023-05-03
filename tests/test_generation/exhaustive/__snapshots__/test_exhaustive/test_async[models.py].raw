@@ -19,6 +19,9 @@ from typing import (
     Iterator,
     Sequence,
     Callable,
+    ClassVar,
+    NoReturn,
+    TypeVar,
     Generic,
     Mapping,
     Tuple,
@@ -44,60 +47,16 @@ from collections import OrderedDict
 
 from pydantic import BaseConfig, BaseModel, Field, validator
 
-from . import types, enums, errors, fields
-from ._types import BaseModelT, FuncType
+from . import types, enums, errors, fields, bases
+from ._types import FuncType
 from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
-
-
-class Config(BaseConfig):
-    use_enum_values: bool = True
-    arbitrary_types_allowed: bool = True
-    allow_population_by_field_name: bool = True
-    json_encoders: Dict[Any, FuncType] = {
-        fields.Base64: serialize_base64,
-    }
 
 
 log: logging.Logger = logging.getLogger(__name__)
 _created_partial_types: Set[str] = set()
 
-# packages that implicitly subclass models
-# this should not raise any warnings as users
-# of these packages cannot do anything about it
-_implicit_subclass_packages: Set[str] = {
-    'fastapi',
-}
-
-
-def _maybe_warn_subclassing(new_model: str, base_model: str, *, stacklevel: int = 3) -> None:
-    # at least 3 frames are guaranteed to exist if we are being called from __init_subclass__
-    # stack: 1 = __init_subclass__, 2 = abc, 3 = <caller>
-    try:
-        frame = inspect.stack()[stacklevel]
-        module = inspect.getmodule(frame[0])
-        if module is not None:
-            name, *_ = module.__name__.split('.')
-            if name in _implicit_subclass_packages:
-                return
-    except Exception as exc:
-        # disabling subclass warnings depending on the caller module is not a mission critical
-        # feature, users can disable these warnings themselves
-        # https://github.com/RobertCraigie/prisma-client-py/issues/278#issuecomment-1031421561
-        log.debug('Ignoring exception encountered during stack inspection check: %s', str(exc))
-
-    message = (
-        'Subclassing models while using pseudo-recursive types may cause unexpected '
-        'errors when static type checking;\n'
-        'You can disable this warning by generating fully recursive types: \n'
-        'https://prisma-client-py.readthedocs.io/en/stable/reference/config/#recursive\n'
-        'or if that is not possible you can pass warn_subclass=False e.g.\n'
-        f'  class {new_model}(prisma.models.{base_model}, warn_subclass=False):'
-    )
-    warnings.warn(message, errors.UnsupportedSubclassWarning, stacklevel=4)
-
-
-class Post(BaseModel):
+class Post(bases.BasePost):
     """Post model documentation
     """
 
@@ -116,24 +75,20 @@ class Post(BaseModel):
 
     author_id: _int
 
-    Config = Config
-
-    @classmethod
-    def prisma(cls) -> 'actions.PostActions':
-        from .client import get_client
-
-        return actions.PostActions(get_client(), cls)
-
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'Post', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -233,15 +188,17 @@ class Post(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'Post',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class User(BaseModel):
+class User(bases.BaseUser):
     """User model documentation
 
     Third line comment
@@ -261,24 +218,20 @@ class User(BaseModel):
     optional_boolean: Optional[_bool]
     posts: Optional[List['models.Post']]
 
-    Config = Config
-
-    @classmethod
-    def prisma(cls) -> 'actions.UserActions':
-        from .client import get_client
-
-        return actions.UserActions(get_client(), cls)
-
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'User', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -378,15 +331,17 @@ class User(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'User',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class M(BaseModel):
+class M(bases.BaseM):
     """Represents a M record"""
 
     id: _int
@@ -402,24 +357,20 @@ class M(BaseModel):
     boolean: _bool
     optional_boolean: Optional[_bool]
 
-    Config = Config
-
-    @classmethod
-    def prisma(cls) -> 'actions.MActions':
-        from .client import get_client
-
-        return actions.MActions(get_client(), cls)
-
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'M', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -519,15 +470,17 @@ class M(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'M',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class N(BaseModel):
+class N(bases.BaseN):
     """Represents a N record"""
 
     id: _int
@@ -545,24 +498,20 @@ class N(BaseModel):
     boolean: _bool
     optional_boolean: Optional[_bool]
 
-    Config = Config
-
-    @classmethod
-    def prisma(cls) -> 'actions.NActions':
-        from .client import get_client
-
-        return actions.NActions(get_client(), cls)
-
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'N', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -662,15 +611,17 @@ class N(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'N',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class OneOptional(BaseModel):
+class OneOptional(bases.BaseOneOptional):
     """Represents a OneOptional record"""
 
     id: _int
@@ -686,24 +637,20 @@ class OneOptional(BaseModel):
     boolean: _bool
     optional_boolean: Optional[_bool]
 
-    Config = Config
-
-    @classmethod
-    def prisma(cls) -> 'actions.OneOptionalActions':
-        from .client import get_client
-
-        return actions.OneOptionalActions(get_client(), cls)
-
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'OneOptional', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -803,15 +750,17 @@ class OneOptional(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'OneOptional',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class ManyRequired(BaseModel):
+class ManyRequired(bases.BaseManyRequired):
     """Represents a ManyRequired record"""
 
     id: _int
@@ -828,24 +777,20 @@ class ManyRequired(BaseModel):
     boolean: _bool
     optional_boolean: Optional[_bool]
 
-    Config = Config
-
-    @classmethod
-    def prisma(cls) -> 'actions.ManyRequiredActions':
-        from .client import get_client
-
-        return actions.ManyRequiredActions(get_client(), cls)
-
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'ManyRequired', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -945,15 +890,17 @@ class ManyRequired(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'ManyRequired',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class Lists(BaseModel):
+class Lists(bases.BaseLists):
     """Represents a Lists record"""
 
     id: _str
@@ -967,24 +914,20 @@ class Lists(BaseModel):
     json_objects: List['fields.Json']
     decimals: List[decimal.Decimal]
 
-    Config = Config
-
-    @classmethod
-    def prisma(cls) -> 'actions.ListsActions':
-        from .client import get_client
-
-        return actions.ListsActions(get_client(), cls)
-
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'Lists', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
     @validator('strings', 'bytes', 'dates', 'bools', 'ints', 'floats', 'bigints', 'json_objects', 'decimals', pre=True, allow_reuse=True)
     @classmethod
@@ -1073,15 +1016,17 @@ class Lists(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'Lists',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class A(BaseModel):
+class A(bases.BaseA):
     """Represents a A record"""
 
     email: _str
@@ -1094,24 +1039,20 @@ class A(BaseModel):
     inc_bInt: _int
     enum: 'enums.ABeautifulEnum'
 
-    Config = Config
-
-    @classmethod
-    def prisma(cls) -> 'actions.AActions':
-        from .client import get_client
-
-        return actions.AActions(get_client(), cls)
-
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'A', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -1187,15 +1128,17 @@ class A(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'A',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class B(BaseModel):
+class B(bases.BaseB):
     """Represents a B record"""
 
     id: _str
@@ -1204,24 +1147,20 @@ class B(BaseModel):
     decFloat: decimal.Decimal
     numFloat: decimal.Decimal
 
-    Config = Config
-
-    @classmethod
-    def prisma(cls) -> 'actions.BActions':
-        from .client import get_client
-
-        return actions.BActions(get_client(), cls)
-
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'B', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -1297,15 +1236,17 @@ class B(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'B',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class C(BaseModel):
+class C(bases.BaseC):
     """Represents a C record"""
 
     char: _str
@@ -1315,24 +1256,20 @@ class C(BaseModel):
     v_bit: _str
     uuid: _str
 
-    Config = Config
-
-    @classmethod
-    def prisma(cls) -> 'actions.CActions':
-        from .client import get_client
-
-        return actions.CActions(get_client(), cls)
-
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'C', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -1408,15 +1345,17 @@ class C(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'C',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class D(BaseModel):
+class D(bases.BaseD):
     """Represents a D record"""
 
     id: _str
@@ -1426,24 +1365,20 @@ class D(BaseModel):
     jsonb: 'fields.Json'
     binary: 'fields.Base64'
 
-    Config = Config
-
-    @classmethod
-    def prisma(cls) -> 'actions.DActions':
-        from .client import get_client
-
-        return actions.DActions(get_client(), cls)
-
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'D', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -1519,15 +1454,17 @@ class D(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'D',
+            }
+        )
         _created_partial_types.add(name)
 
 
-class E(BaseModel):
+class E(bases.BaseE):
     """Represents a E record"""
 
     id: _str
@@ -1535,24 +1472,20 @@ class E(BaseModel):
     time: datetime.datetime
     ts: datetime.datetime
 
-    Config = Config
-
-    @classmethod
-    def prisma(cls) -> 'actions.EActions':
-        from .client import get_client
-
-        return actions.EActions(get_client(), cls)
-
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
         cls,
         *args: Any,
-        warn_subclass: bool = True,
+        warn_subclass: Optional[bool] = None,
         **kwargs: Any,
     ) -> None:
         super().__init_subclass__()
-        if warn_subclass:
-            _maybe_warn_subclassing(cls.__name__, 'E', stacklevel=3)
+        if warn_subclass is not None:
+            warnings.warn(
+                'The `warn_subclass` argument is deprecated as it is no longer necessary and will be removed in the next release',
+                DeprecationWarning,
+                stacklevel=3,
+            )
 
 
     @staticmethod
@@ -1628,11 +1561,13 @@ class E(BaseModel):
             ) from None
 
         models = partial_models_ctx.get()
-
-        # mypy does not like this as we are assigning a
-        # Dict[Literal[str]] to a Dict[str] but this is fine
-        models[name] = fields  # type: ignore[assignment]
-        partial_models_ctx.set(models)
+        models.append(
+            {
+                'name': name,
+                'fields': cast(Mapping[str, PartialModelField], fields),
+                'from_model': 'E',
+            }
+        )
         _created_partial_types.add(name)
 
 

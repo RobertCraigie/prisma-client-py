@@ -1,6 +1,6 @@
 import asyncio
 import inspect
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING, Iterator, Iterable
 from pathlib import Path
 
 import pytest
@@ -32,8 +32,10 @@ async def client_fixture() -> Prisma:
 
 
 @pytest.fixture(scope='session')
-def event_loop() -> asyncio.AbstractEventLoop:
-    return get_or_create_event_loop()
+def event_loop() -> Iterable[asyncio.AbstractEventLoop]:
+    loop = get_or_create_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest.fixture(autouse=True)

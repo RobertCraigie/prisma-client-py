@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+import signal
 from pathlib import Path
 from typing import Iterator, Optional
 
@@ -14,7 +15,7 @@ from prisma.engine import errors, utils
 from prisma.engine.query import QueryEngine
 from prisma._compat import get_running_loop
 
-from .utils import Testdir
+from .utils import Testdir, skipif_windows
 
 
 @contextlib.contextmanager
@@ -48,6 +49,36 @@ async def test_engine_connects() -> None:
     await db.disconnect()
 
 
+@pytest.mark.asyncio
+@skipif_windows
+async def test_engine_process_sigint_mask() -> None:
+    """Block SIGINT in current process"""
+    signal.pthread_sigmask(signal.SIG_BLOCK, [signal.SIGINT])
+    db = Prisma()
+    await db.connect()
+
+    with pytest.raises(errors.AlreadyConnectedError):
+        await db.connect()
+
+    await asyncio.wait_for(db.disconnect(), timeout=5)
+    signal.pthread_sigmask(signal.SIG_UNBLOCK, [signal.SIGINT])
+
+
+@pytest.mark.asyncio
+@skipif_windows
+async def test_engine_process_sigterm_mask() -> None:
+    """Block SIGTERM in current process"""
+    signal.pthread_sigmask(signal.SIG_BLOCK, [signal.SIGTERM])
+    db = Prisma()
+    await db.connect()
+
+    with pytest.raises(errors.AlreadyConnectedError):
+        await db.connect()
+
+    await asyncio.wait_for(db.disconnect(), timeout=5)
+    signal.pthread_sigmask(signal.SIG_UNBLOCK, [signal.SIGTERM])
+
+
 def test_stopping_engine_on_closed_loop() -> None:
     """Stopping the engine with no event loop available does not raise an error"""
     with no_event_loop():
@@ -67,7 +98,7 @@ def test_engine_binary_does_not_exist(monkeypatch: MonkeyPatch) -> None:
         utils.ensure(BINARY_PATHS.query_engine)
 
     assert exc.match(
-        r'Expected .*, .* or .* to exist but none were found\.\nTry running prisma py fetch'
+        r'Expected .*, .* or .* to exist but none were found or could not be executed\.\nTry running prisma py fetch'
     )
 
 
@@ -85,7 +116,7 @@ def test_engine_binary_does_not_exist_no_binary_paths(
         utils.ensure({})
 
     assert exc.match(
-        r'Expected .* or .* to exist but neither were found\.\nTry running prisma py fetch'
+        r'Expected .* or .* to exist but neither were found or could not be executed\.\nTry running prisma py fetch'
     )
 
 

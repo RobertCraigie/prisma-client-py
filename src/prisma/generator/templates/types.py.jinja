@@ -618,6 +618,7 @@ class {{ name }}(TypedDict, total=False):
     order_by: Union['{{ related.name }}OrderByInput', List['{{ related.name }}OrderByInput']]
     where: '{{ related.name }}WhereInput'
     cursor: '{{ related.name }}WhereUniqueInput'
+    distinct: List['{{ related.name }}ScalarFieldKeys']
     {%+ if next != '' -%}
         include: '{{ related.name }}IncludeFrom{{ related.name + iteration}}'
     {% endif %}

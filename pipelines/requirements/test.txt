@@ -2,8 +2,7 @@
 -r deps/pytest-asyncio.txt
 -r deps/pytest.txt
 pytest-sugar
-mock==4.0.3
+mock==5.0.1
 pytest-mock==3.10.0
-pytest-subprocess==1.4.2
+pytest-subprocess==1.5.0
 syrupy==3.0.6
-fastapi==0.88.0

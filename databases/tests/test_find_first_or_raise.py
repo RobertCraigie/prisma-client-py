@@ -1,10 +1,10 @@
 import pytest
-from prisma import Prisma
+from prisma import Prisma, errors
 from prisma.types import UserWhereInput
 
 
 @pytest.mark.asyncio
-async def test_find_first(client: Prisma) -> None:
+async def test_find_first_or_raise(client: Prisma) -> None:
     """Skips multiple non-matching records"""
     posts = [
         await client.post.create(
@@ -47,7 +47,7 @@ async def test_find_first(client: Prisma) -> None:
         ),
     ]
 
-    post = await client.post.find_first(
+    post = await client.post.find_first_or_raise(
         where={
             'published': True,
         },
@@ -55,21 +55,23 @@ async def test_find_first(client: Prisma) -> None:
             'title': 'asc',
         },
     )
-    assert post is not None
     assert post.id == posts[3].id
     assert post.title == 'Test post 4'
     assert post.published is True
 
-    post = await client.post.find_first(
-        where={
-            'title': {
-                'contains': 'not found',
+    with pytest.raises(
+        errors.RecordNotFoundError,
+        match=r'depends on one or more records that were required but not found',
+    ):
+        await client.post.find_first_or_raise(
+            where={
+                'title': {
+                    'contains': 'not found',
+                }
             }
-        }
-    )
-    assert post is None
+        )
 
-    post = await client.post.find_first(
+    post = await client.post.find_first_or_raise(
         where={
             'published': True,
         },
@@ -78,12 +80,11 @@ async def test_find_first(client: Prisma) -> None:
         },
         skip=1,
     )
-    assert post is not None
     assert post.id == posts[5].id
     assert post.title == 'Test post 6'
     assert post.published is True
 
-    post = await client.post.find_first(
+    post = await client.post.find_first_or_raise(
         where={
             'NOT': [
                 {
@@ -95,10 +96,9 @@ async def test_find_first(client: Prisma) -> None:
             'created_at': 'asc',
         },
     )
-    assert post is not None
     assert post.title == 'Test post 1'
 
-    post = await client.post.find_first(
+    post = await client.post.find_first_or_raise(
         where={
             'NOT': [
                 {
@@ -117,10 +117,9 @@ async def test_find_first(client: Prisma) -> None:
             'created_at': 'asc',
         },
     )
-    assert post is not None
     assert post.title == 'Test post 3'
 
-    post = await client.post.find_first(
+    post = await client.post.find_first_or_raise(
         where={
             'title': {
                 'contains': 'Test',
@@ -135,10 +134,9 @@ async def test_find_first(client: Prisma) -> None:
             'created_at': 'asc',
         },
     )
-    assert post is not None
     assert post.title == 'Test post 4'
 
-    post = await client.post.find_first(
+    post = await client.post.find_first_or_raise(
         where={
             'AND': [
                 {
@@ -155,24 +153,23 @@ async def test_find_first(client: Prisma) -> None:
             'created_at': 'asc',
         },
     )
-    assert post is not None
     assert post.title == 'Test post 4'
 
-    post = await client.post.find_first(
-        where={
-            'views': {
-                'gt': 100,
-            },
-            'OR': [
-                {
-                    'published': False,
+    with pytest.raises(errors.RecordNotFoundError):
+        await client.post.find_first_or_raise(
+            where={
+                'views': {
+                    'gt': 100,
                 },
-            ],
-        }
-    )
-    assert post is None
+                'OR': [
+                    {
+                        'published': False,
+                    },
+                ],
+            }
+        )
 
-    post = await client.post.find_first(
+    post = await client.post.find_first_or_raise(
         where={
             'OR': [
                 {
@@ -189,10 +186,9 @@ async def test_find_first(client: Prisma) -> None:
             'created_at': 'asc',
         },
     )
-    assert post is not None
     assert post.title == 'Test post 1'
 
-    post = await client.post.find_first(
+    post = await client.post.find_first_or_raise(
         where={
             'OR': [
                 {
@@ -203,7 +199,6 @@ async def test_find_first(client: Prisma) -> None:
             ]
         }
     )
-    assert post is not None
     assert post.title == 'Test post 4'
 
 
@@ -235,7 +230,7 @@ async def test_filtering_one_to_one_relation(client: Prisma) -> None:
         )
         batcher.user.create({'name': 'Callum'})
 
-    user = await client.user.find_first(
+    user = await client.user.find_first_or_raise(
         where={
             'profile': {
                 'is': {
@@ -246,11 +241,10 @@ async def test_filtering_one_to_one_relation(client: Prisma) -> None:
             }
         }
     )
-    assert user is not None
     assert user.name == 'Robert'
     assert user.profile is None
 
-    user = await client.user.find_first(
+    user = await client.user.find_first_or_raise(
         where={
             'profile': {
                 'is_not': {
@@ -261,7 +255,6 @@ async def test_filtering_one_to_one_relation(client: Prisma) -> None:
             }
         }
     )
-    assert user is not None
     assert user.name == 'Callum'
     assert user.profile is None
 
@@ -296,7 +289,7 @@ async def test_filtering_and_ordering_one_to_many_relation(
         )
         batcher.user.create({'name': 'Callum'})
 
-    user = await client.user.find_first(
+    user = await client.user.find_first_or_raise(
         where={
             'posts': {
                 'every': {
@@ -307,10 +300,9 @@ async def test_filtering_and_ordering_one_to_many_relation(
             }
         },
     )
-    assert user is not None
     assert user.name == 'Robert'
 
-    user = await client.user.find_first(
+    user = await client.user.find_first_or_raise(
         where={
             'posts': {
                 'none': {
@@ -324,23 +316,22 @@ async def test_filtering_and_ordering_one_to_many_relation(
             'name': 'asc',
         },
     )
-    assert user is not None
     assert user.name == 'Callum'
 
-    user = await client.user.find_first(
-        where={
-            'posts': {
-                'some': {
-                    'title': 'foo',
+    with pytest.raises(errors.RecordNotFoundError):
+        await client.user.find_first_or_raise(
+            where={
+                'posts': {
+                    'some': {
+                        'title': 'foo',
+                    }
                 }
             }
-        }
-    )
-    assert user is None
+        )
 
     # ordering
 
-    user = await client.user.find_first(
+    user = await client.user.find_first_or_raise(
         where={
             'posts': {
                 'some': {
@@ -352,10 +343,9 @@ async def test_filtering_and_ordering_one_to_many_relation(
         },
         order={'name': 'asc'},
     )
-    assert user is not None
     assert user.name == 'Robert'
 
-    user = await client.user.find_first(
+    user = await client.user.find_first_or_raise(
         where={
             'posts': {
                 'some': {
@@ -367,7 +357,6 @@ async def test_filtering_and_ordering_one_to_many_relation(
         },
         order={'name': 'desc'},
     )
-    assert user is not None
     assert user.name == 'Tegan'
 
 
@@ -383,17 +372,15 @@ async def test_list_wrapper_query_transformation(client: Prisma) -> None:
     }
 
     await client.user.create({'name': 'Robert house'})
-    found = await client.user.find_first(
+    found = await client.user.find_first_or_raise(
         where=query, order={'created_at': 'asc'}
     )
-    assert found is not None
     assert found.name == 'Robert house'
 
     await client.user.create({'name': '40 robert'})
-    found = await client.user.find_first(
+    found = await client.user.find_first_or_raise(
         skip=1, where=query, order={'created_at': 'asc'}
     )
-    assert found is not None
     assert found.name == '40 robert'
 
 
@@ -443,20 +430,18 @@ async def test_distinct(client: Prisma) -> None:
             }
         )
 
-    found = await client.profile.find_first(
+    found = await client.profile.find_first_or_raise(
         where={'country': 'Scotland'},
         distinct=['city'],
         order={'city': 'asc'},
     )
-    assert found is not None
     assert found.city == 'Dundee'
 
-    found = await client.profile.find_first(
+    found = await client.profile.find_first_or_raise(
         where={'country': 'Scotland'},
         distinct=['city'],
         order={'city': 'desc'},
     )
-    assert found is not None
     assert found.city == 'Edinburgh'
 
 
@@ -485,7 +470,7 @@ async def test_distinct_relations(client: Prisma) -> None:
         }
     )
 
-    found = await client.user.find_first(
+    found = await client.user.find_first_or_raise(
         where={
             'id': user.id,
         },
@@ -496,7 +481,6 @@ async def test_distinct_relations(client: Prisma) -> None:
             }
         },
     )
-    assert found is not None
     assert found.posts is not None
     assert len(found.posts) == 2
     assert found.posts[0].published is True

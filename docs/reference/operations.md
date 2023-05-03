@@ -85,6 +85,11 @@ user = await db.user.create(
 
 ### Unique Records
 
+There are two different methods you can use here to find a unique record. Which one you use depends on the context surrounding the query:
+
+- Use `find_unique` if it is *expected* for the record to not exist in the database
+- Use `find_unique_or_raise` if it is *unexpected* for the record to not exist in the database
+
 ```py
 user = await db.user.find_unique(
     where={
@@ -93,7 +98,7 @@ user = await db.user.find_unique(
 )
 ```
 ```py
-user = await db.user.find_unique(
+user = await db.user.find_unique_or_raise(
     where={
         'id': '2',
     },
@@ -105,8 +110,18 @@ user = await db.user.find_unique(
 
 ### A Single Record
 
+There are two different methods you can use here to find a single record. Which one you use depends on the context surrounding the query:
+
+- Use `find_first` if it is *expected* for the record to not exist in the database
+- Use `find_first_or_raise` if it is *unexpected* for the record to not exist in the database
+
 ```py
 post = await db.post.find_first(
+    where={
+        'title': {'contains': 'Post'},
+    },
+)
+post = await db.post.find_first_or_raise(
     where={
         'title': {'contains': 'Post'},
     },
@@ -159,6 +174,35 @@ posts = await db.post.find_many(
     }
 )
 ```
+
+### Distinct Records
+
+The following query will find all `Profile` records that have a distinct `city` field.
+
+```py
+profiles = await db.profiles.find_many(
+    distinct=['city'],
+)
+# [
+#  { city: 'Paris' },
+#  { city: 'Lyon' },
+# ]
+```
+
+You can also filter by distinct combinations, for example the following query will return all records that have a distinct `city` *and* `country` combination.
+
+```py
+profiles = await db.profiles.find_many(
+    distinct=['city', 'country'],
+)
+# [
+#  { city: 'Paris', country: 'France' },
+#  { city: 'Paris', country: 'Denmark' },
+#  { city: 'Lyon', country: 'France' },
+# ]
+```
+
+You can currently only use `distinct` with `find_many()` and `find_first()` queries.
 
 ### Filtering by Relational Fields
 

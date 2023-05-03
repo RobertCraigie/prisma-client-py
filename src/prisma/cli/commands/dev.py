@@ -16,7 +16,7 @@ def _cli() -> None:
 # for some reason. Fixing the errors for one type checker causes errors in an another
 # so just switch to Any for the time being as this is internal and only used once, directly
 # below this line.
-cli = cast(Any, _cli)
+cli: Any = cast(Any, _cli)
 
 
 @cli.command()  # type: ignore[misc]

@@ -104,10 +104,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Run tests
-        # TODO: run mypy too
+      - name: Run Pyright tests
         run: |
           nox -s typesafety-pyright
+
+      - name: Run mypy tests
+        run: |
+          nox -s typesafety-mypy
+
 
   lint:
     name: lint
@@ -140,6 +144,12 @@ jobs:
       - name: Check linters
         run: |
           nox -s lint
+
+      # Ensure that all Prisma Schema files are up to date
+      - name: Check formatting
+        run: |
+          nox -s format
+          git diff --exit-code
 
   mypy:
     name: mypy
@@ -207,7 +217,6 @@ jobs:
             env: POSTGRESQL_URL
             url: postgresql://postgres:prisma@localhost:5438/postgres
 
-          # Temporarily disabled due to https://github.com/RobertCraigie/prisma-client-py/issues/636
           - name: CockroachDB
             version: '22'
             env: COCKROACHDB_URL
@@ -337,7 +346,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Docker Build
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         # https://github.com/docker/build-push-action/#inputs
         # Test each platform individually for easier testing
         with:

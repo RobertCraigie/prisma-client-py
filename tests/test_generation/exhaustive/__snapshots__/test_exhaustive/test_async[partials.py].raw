@@ -19,6 +19,9 @@ from typing import (
     Iterator,
     Sequence,
     Callable,
+    ClassVar,
+    NoReturn,
+    TypeVar,
     Generic,
     Mapping,
     Tuple,
@@ -36,49 +39,39 @@ from typing_extensions import TypedDict, Literal
 
 LiteralString = str
 # -- template partials.py.jinja --
-from pydantic import BaseModel, Field, validator
-from . import types, models, fields, enums
+from pydantic import validator
+from . import types, fields, enums, actions, models, bases
 
 
-class PostWithAuthor(BaseModel):
+class PostWithAuthor(bases.BasePost):
     id: _str
     title: _str
     author: Optional[models.User]
 
-    Config = models.Config
 
 
-
-class UserOnlyName(BaseModel):
+class UserOnlyName(bases.BaseUser):
     name: _str
 
-    Config = models.Config
 
 
-
-class PostWithCustomAuthor(BaseModel):
+class PostWithCustomAuthor(bases.BasePost):
     id: _str
     title: _str
     author: Optional['partials.UserOnlyName']
 
-    Config = models.Config
 
 
-
-class UserWithPosts(BaseModel):
+class UserWithPosts(bases.BaseUser):
     name: _str
     posts: Optional[List['models.Post']]
 
-    Config = models.Config
 
 
-
-class PostWithNestedRelations(BaseModel):
+class PostWithNestedRelations(bases.BasePost):
     id: _str
     title: _str
     author: Optional['partials.UserWithPosts']
-
-    Config = models.Config
 
 
 

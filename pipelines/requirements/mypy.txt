@@ -1,4 +1,4 @@
 -r test.txt
 -r node.txt
-mypy==0.950
+mypy==1.0.1
 types-mock

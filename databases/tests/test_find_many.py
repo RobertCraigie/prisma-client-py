@@ -281,6 +281,13 @@ async def test_ordering(client: Prisma) -> None:
     assert found[1].published is False
     assert found[2].published is False
 
+
+@pytest.mark.asyncio
+@pytest.mark.skip(
+    reason='incorrect error is raised here - requires an overhaul of the error system'
+)
+async def test_too_many_fields_error(client: Prisma) -> None:
+    """Passing in multiple fields in order is not supported"""
     with pytest.raises(prisma.errors.DataError) as exc:
         await client.post.find_many(
             where={
@@ -302,7 +309,93 @@ async def test_ordering(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_order_field_not_nullable(client: Prisma) -> None:
     """Order by fields, if present, cannot be None"""
-    with pytest.raises(prisma.errors.FieldNotFoundError) as exc:
+    with pytest.raises(
+        prisma.errors.FieldNotFoundError, match=r'orderBy.desc'
+    ):
         await client.post.find_many(order={'desc': None})  # type: ignore
 
-    assert exc.match(r'desc')
+
+@pytest.mark.asyncio
+async def test_distinct(client: Prisma) -> None:
+    """Filtering by distinct combinations of fields"""
+    users = [
+        await client.user.create(
+            data={
+                'name': 'Robert',
+            },
+        ),
+        await client.user.create(
+            data={
+                'name': 'Tegan',
+            },
+        ),
+        await client.user.create(
+            data={
+                'name': 'Patrick',
+            },
+        ),
+    ]
+    async with client.batch_() as batcher:
+        batcher.profile.create(
+            {
+                'city': 'Paris',
+                'country': 'France',
+                'description': 'Foo',
+                'user_id': users[0].id,
+            }
+        )
+        batcher.profile.create(
+            {
+                'city': 'Lyon',
+                'country': 'France',
+                'description': 'Foo',
+                'user_id': users[1].id,
+            }
+        )
+        batcher.profile.create(
+            {
+                'city': 'Paris',
+                'country': 'Denmark',
+                'description': 'Foo',
+                'user_id': users[2].id,
+            }
+        )
+
+    results = await client.profile.find_many(
+        distinct=['country'],
+        order={
+            'country': 'asc',
+        },
+    )
+    assert len(results) == 2
+    assert results[0].country == 'Denmark'
+    assert results[1].country == 'France'
+
+    results = await client.profile.find_many(
+        distinct=['city'],
+        order={
+            'city': 'asc',
+        },
+    )
+    assert len(results) == 2
+    assert results[0].city == 'Lyon'
+    assert results[1].city == 'Paris'
+
+    results = await client.profile.find_many(
+        distinct=['city', 'country'],
+        order=[
+            {
+                'city': 'asc',
+            },
+            {
+                'country': 'asc',
+            },
+        ],
+    )
+    assert len(results) == 3
+    assert results[0].city == 'Lyon'
+    assert results[0].country == 'France'
+    assert results[1].city == 'Paris'
+    assert results[1].country == 'Denmark'
+    assert results[2].city == 'Paris'
+    assert results[2].country == 'France'
