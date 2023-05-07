@@ -23,7 +23,9 @@ def start_database(
         raise ValueError('Cannot start a server for SQLite.')
 
     if database == 'mongodb':
-        session.run_always(str(SCRIPTS / 'start-mongodb.sh'))
+        script = SCRIPTS / 'start-mongodb.sh'
+        session.log(f'Running script at {script}')
+        session.run_always(str(script))
         return
 
     args = shlex.split(
