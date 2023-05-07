@@ -31,6 +31,12 @@ ERROR_MAPPING: Dict[str, Type[Exception]] = {
     'P2025': prisma_errors.RecordNotFoundError,
 }
 
+META_ERROR_MAPPING: dict[str, type[Exception]] = {
+    'UnknownArgument': prisma_errors.FieldNotFoundError,
+    'UnknownInputField': prisma_errors.FieldNotFoundError,
+    'UnknownSelectionField': prisma_errors.FieldNotFoundError,
+}
+
 
 def query_engine_name() -> str:
     return f'prisma-query-engine-{platform.check_for_extension(platform.binary_platform())}'
@@ -109,7 +115,7 @@ def ensure(binary_paths: dict[str, str]) -> Path:
             expected = f'{local_path} or {global_path} to exist but neither'
 
         raise errors.BinaryNotFoundError(
-            f'Expected {expected} were found.\n'
+            f'Expected {expected} were found or could not be executed.\n'
             + 'Try running prisma py fetch'
         )
 
@@ -164,10 +170,21 @@ def handle_response_errors(resp: AbstractResponse[Any], data: Any) -> NoReturn:
             if 'A value is required but not set' in message:
                 raise prisma_errors.MissingRequiredValueError(error)
 
-            exc = ERROR_MAPPING.get(code)
+            exc: type[Exception] | None = None
+
+            kind = user_facing.get('meta', {}).get('kind')
+            if kind is not None:
+                exc = META_ERROR_MAPPING.get(kind)
+
+            if exc is None:
+                exc = ERROR_MAPPING.get(code)
+
             if exc is not None:
                 raise exc(error)
-        except (KeyError, TypeError):
+        except (KeyError, TypeError) as err:
+            log.debug(
+                'Ignoring error while constructing specialized error %s', err
+            )
             continue
 
     try:

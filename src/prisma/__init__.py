@@ -22,6 +22,7 @@ try:
         models as models,
         partials as partials,
         types as types,
+        bases as bases,
     )
 except ModuleNotFoundError:
     # code has not been generated yet
