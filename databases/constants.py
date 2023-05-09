@@ -80,7 +80,23 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
             'case_sensitivity',
         },
     ),
+    'sqlserver': DatabaseConfig(
+        id='sqlserver',
+        name='SQL Server',
+        env_var='SQLSERVER_URL',
+        default_date_func='CURRENT_DATE',
+        autoincrement_id='Int @id @default(autoincrement())',
+        bools_are_ints=False,
+        unsupported_features={
+            'enum',
+            'json',
+            'arrays',
+            'case_sensitivity',
+            'create_many_skip_duplicates',
+        },
+    ),
 }
+NAME_TO_ID = {config.name: config.id for config in CONFIG_MAPPING.values()}
 SUPPORTED_DATABASES = cast(
     List[SupportedDatabase], list(get_args(SupportedDatabase))
 )
@@ -103,7 +119,8 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     'json_arrays': ['arrays/test_json.py', 'arrays/push/test_json.py'],
     # not yet implemented
     'date': [],
-    'create_many': ['test_create_many.py'],
+    'create_many': _fromdir('create_many'),
+    'create_many_skip_duplicates': ['create_many/test_skip_duplicates.py'],
     'raw_queries': ['test_raw_queries.py', *_fromdir('types/raw_queries')],
     'case_sensitivity': ['test_case_sensitivity.py'],
 }

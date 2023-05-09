@@ -121,12 +121,12 @@ async def test_filtering(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_atomic_update(client: Prisma) -> None:
     """Atomically updating an integer value"""
-    model = await client.types.create({'id': 1, 'integer': 1})
+    model = await client.types.create({'integer': 1})
     assert model.integer == 1
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'integer': {'increment': 5},
@@ -137,7 +137,7 @@ async def test_atomic_update(client: Prisma) -> None:
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'integer': {
@@ -150,7 +150,7 @@ async def test_atomic_update(client: Prisma) -> None:
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'integer': {
@@ -163,7 +163,7 @@ async def test_atomic_update(client: Prisma) -> None:
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'integer': {
@@ -182,12 +182,12 @@ async def test_atomic_update(client: Prisma) -> None:
 )
 async def test_atomic_update_divide(client: Prisma) -> None:
     """Atomically dividing an integer value"""
-    model = await client.types.create({'id': 1, 'integer': 30})
+    model = await client.types.create({'integer': 30})
     assert model.integer == 30
 
     updated = await client.types.update(
         where={
-            'id': 1,
+            'id': model.id,
         },
         data={
             'integer': {

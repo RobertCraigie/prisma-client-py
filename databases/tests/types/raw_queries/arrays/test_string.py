@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 from pydantic import BaseModel
 
@@ -28,6 +30,9 @@ RAW_QUERIES: DatabaseMapping[Queries] = {
     ),
     'postgresql': _postgresql_queries,
     'cockroachdb': _postgresql_queries,
+    'sqlserver': Queries(
+        select='SELECT * FROM Lists WHERE id = @P1',
+    ),
 }
 
 
@@ -46,6 +51,7 @@ async def test_query_first(
         ),
     ]
     queries = RAW_QUERIES[database]
+    assert queries is not None
 
     model = await client.query_first(queries.select, models[0].id, model=Lists)
     assert model is not None

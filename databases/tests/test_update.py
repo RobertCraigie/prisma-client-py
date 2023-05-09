@@ -208,8 +208,11 @@ async def test_update_id_field() -> None:
 @pytest.mark.prisma
 @pytest.mark.asyncio
 @pytest.mark.skipif(
-    CURRENT_DATABASE == 'cockroachdb',
-    reason='https://github.com/prisma/prisma/issues/16612',
+    CURRENT_DATABASE in {'cockroachdb', 'sqlserver'},
+    reason="""
+        CockroachDB: https://github.com/prisma/prisma/issues/16612
+        SQL Server: https://github.com/prisma/prisma/issues/15305
+    """,
 )
 async def test_update_id_field_atomic() -> None:
     """Setting an ID field atomically"""

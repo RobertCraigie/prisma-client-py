@@ -227,6 +227,11 @@ jobs:
             env: MARIADB_URL
             url: mysql://root:prisma@localhost:3308/prisma?connect_timeout=20&socket_timeout=60
 
+          - name: SQL Server
+            version: '2022'
+            env: SQLSERVER_URL
+            url: sqlserver://localhost:1435;database=master;user=SA;password=<YourStrong@Passw0rd>;trustServerCertificate=true;socket_timeout=60;isolationLevel=READ UNCOMMITTED
+
     steps:
       - uses: actions/checkout@v3
 
@@ -250,11 +255,11 @@ jobs:
       - name: Start ${{ matrix.name }}
         if: matrix.name != 'SQLite'
         run: |
-          coverage run -m nox -s databases -- serve ${{ matrix.name }} --version=${{ matrix.version }}
+          coverage run -m nox -s databases -- serve '${{ matrix.name }}' --version=${{ matrix.version }}
 
       - name: Run tests
         run: |
-          coverage run -m nox -s databases -- test --coverage --databases=${{ matrix.name }}
+          coverage run -m nox -s databases -- test --coverage --databases='${{ matrix.name }}'
         env:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases

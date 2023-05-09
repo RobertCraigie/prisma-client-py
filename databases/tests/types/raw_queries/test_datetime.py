@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 
 import pytest
@@ -30,6 +32,9 @@ RAW_QUERIES: DatabaseMapping[Queries] = {
     ),
     'postgresql': _postgresql_queries,
     'cockroachdb': _postgresql_queries,
+    'sqlserver': Queries(
+        select='SELECT * FROM Types WHERE id = @P1',
+    ),
 }
 
 
@@ -40,6 +45,7 @@ async def test_query_first(
 ) -> None:
     """Standard usage of a DateTime field in raw SELECT queries"""
     queries = RAW_QUERIES[database]
+    assert queries is not None
 
     datetime_ = datetime.datetime(
         year=2022,

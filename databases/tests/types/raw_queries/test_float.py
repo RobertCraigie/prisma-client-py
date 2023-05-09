@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 from pydantic import BaseModel
 
@@ -28,6 +30,9 @@ RAW_QUERIES: DatabaseMapping[Queries] = {
     ),
     'postgresql': _postgresql_queries,
     'cockroachdb': _postgresql_queries,
+    'sqlserver': Queries(
+        select='SELECT * FROM Types WHERE float_ = @P1',
+    ),
 }
 
 
@@ -38,6 +43,7 @@ async def test_query_first(
 ) -> None:
     """Standard usage of float_ in raw SELECT queries"""
     queries = RAW_QUERIES[database]
+    assert queries is not None
 
     record = await client.types.create({'float_': 10.5})
 

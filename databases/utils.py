@@ -13,6 +13,7 @@ DatabaseFeature = Literal[
     'json_arrays',
     'raw_queries',
     'create_many',
+    'create_many_skip_duplicates',
     'case_sensitivity',
 ]
 

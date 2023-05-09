@@ -44,6 +44,7 @@ from .constants import (
     FEATURES_MAPPING,
     PYRIGHT_CONFIG,
     TESTS_DIR,
+    NAME_TO_ID,
 )
 
 
@@ -387,7 +388,7 @@ def validate_databases(databases: list[str]) -> list[SupportedDatabase]:
 def validate_database(database: str) -> SupportedDatabase:
     # We convert the input to lowercase so that we don't have to define
     # two separate names in the CI matrix.
-    database = database.lower()
+    database = NAME_TO_ID.get(database) or database.lower()
     if database not in SUPPORTED_DATABASES:  # pragma: no cover
         raise ValueError(f'Unknown database: {database}')
 
