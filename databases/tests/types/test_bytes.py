@@ -42,6 +42,9 @@ async def test_filtering(client: Prisma) -> None:
                 'not': Base64.encode(b'a'),
             },
         },
+        order={
+            'bytes': 'asc',
+        },
     )
     assert found is not None
     assert found.bytes.decode() == b'b'

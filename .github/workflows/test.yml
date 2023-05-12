@@ -227,6 +227,11 @@ jobs:
             env: MARIADB_URL
             url: mysql://root:prisma@localhost:3308/prisma?connect_timeout=20&socket_timeout=60
 
+          - name: MongoDB
+            version: ''
+            env: MONGODB_URL
+            url: mongodb://127.0.0.1:42069/prisma_py
+
     steps:
       - uses: actions/checkout@v3
 

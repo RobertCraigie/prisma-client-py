@@ -13,6 +13,7 @@ SupportedDatabase = Literal[
     'mysql',
     'sqlite',
     'mariadb',
+    'mongodb',
     'postgresql',
     'cockroachdb',
 ]
@@ -27,5 +28,6 @@ class DatabaseMapping(TypedDict, Generic[_T]):
     mysql: _T
     sqlite: _T
     mariadb: _T
+    mongodb: _T
     postgresql: _T
     cockroachdb: _T

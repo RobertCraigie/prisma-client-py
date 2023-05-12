@@ -26,7 +26,11 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         bools_are_ints=False,
         unsupported_features=set(),
         default_date_func='CURRENT_DATE',
-        autoincrement_id='Int @id @default(autoincrement())',
+        id_declarations={
+            'base': '@id',
+            'cuid': '@id @default(cuid())',
+            'autoincrement': '@id @default(autoincrement())',
+        },
     ),
     'cockroachdb': DatabaseConfig(
         id='cockroachdb',
@@ -34,10 +38,14 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         env_var='COCKROACHDB_URL',
         bools_are_ints=False,
         default_date_func='CURRENT_DATE',
-        autoincrement_id='BigInt @id @default(sequence())',
         unsupported_features={
             'json_arrays',
             'array_push',
+        },
+        id_declarations={
+            'base': '@id',
+            'cuid': '@id @default(cuid())',
+            'autoincrement': '@id @default(autoincrement())',
         },
     ),
     'sqlite': DatabaseConfig(
@@ -46,7 +54,6 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         env_var='SQLITE_URL',
         bools_are_ints=False,
         default_date_func='',
-        autoincrement_id='Int @id @default(autoincrement())',
         unsupported_features={
             'enum',
             'json',
@@ -55,6 +62,11 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
             'create_many',
             'case_sensitivity',
         },
+        id_declarations={
+            'base': '@id',
+            'cuid': '@id @default(cuid())',
+            'autoincrement': '@id @default(autoincrement())',
+        },
     ),
     'mysql': DatabaseConfig(
         id='mysql',
@@ -62,10 +74,14 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         env_var='MYSQL_URL',
         bools_are_ints=True,
         default_date_func='(CURRENT_DATE)',
-        autoincrement_id='Int @id @default(autoincrement())',
         unsupported_features={
             'arrays',
             'case_sensitivity',
+        },
+        id_declarations={
+            'base': '@id',
+            'cuid': '@id @default(cuid())',
+            'autoincrement': '@id @default(autoincrement())',
         },
     ),
     'mariadb': DatabaseConfig(
@@ -74,11 +90,33 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         env_var='MARIADB_URL',
         bools_are_ints=True,
         default_date_func='CURRENT_DATE',
-        autoincrement_id='Int @id @default(autoincrement())',
         unsupported_features={
             'arrays',
             'case_sensitivity',
         },
+        id_declarations={
+            'base': '@id',
+            'cuid': '@id @default(cuid())',
+            'autoincrement': '@id @default(autoincrement())',
+        },
+    ),
+    'mongodb': DatabaseConfig(
+        id='mongodb',
+        name='MongoDB',
+        env_var='MONGODB_URL',
+        bools_are_ints=False,
+        unsupported_features={
+            'decimal',
+            'sql_raw_queries',
+            'composite_keys',
+        },
+        id_declarations={
+            'cuid': '@id @default(cuid()) @map("_id")',
+            'autoincrement': '@id @map("_id")',
+            'base': '@id @map("_id")',
+        },
+        # TODO
+        default_date_func='',
     ),
 }
 SUPPORTED_DATABASES = cast(
@@ -92,7 +130,11 @@ DATABASES_DIR = Path(__file__).parent
 # database features
 TESTS_DIR = DATABASES_DIR / 'tests'
 FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
-    'enum': ['test_enum.py', 'test_arrays/test_enum.py'],
+    'enum': [
+        'test_enum.py',
+        'test_arrays/test_enum.py',
+        'composite_keys/test_enum.py',
+    ],
     'json': [
         'types/test_json.py',
         'test_arrays/test_json.py',
@@ -104,8 +146,19 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     # not yet implemented
     'date': [],
     'create_many': ['test_create_many.py'],
-    'raw_queries': ['test_raw_queries.py', *_fromdir('types/raw_queries')],
+    'sql_raw_queries': [
+        'test_raw_queries.py',
+        'models/test_raw_queries.py',
+        *_fromdir('types/raw_queries'),
+    ],
     'case_sensitivity': ['test_case_sensitivity.py'],
+    'composite_keys': _fromdir('composite_keys'),
+    'decimal': [
+        'types/test_decimal.py',
+        'arrays/test_decimal.py',
+        'arrays/push/test_decimal.py',
+        'types/raw_queries/test_decimal.py',
+    ],
 }
 
 # config files

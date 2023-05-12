@@ -1,5 +1,5 @@
 from typing import Set
-from typing_extensions import Literal, get_args
+from typing_extensions import Literal, TypedDict, get_args
 
 from pydantic import BaseModel
 
@@ -9,12 +9,21 @@ DatabaseFeature = Literal[
     'json',
     'date',
     'arrays',
+    'decimal',
     'array_push',
     'json_arrays',
-    'raw_queries',
     'create_many',
+    'composite_keys',
+    'sql_raw_queries',
     'case_sensitivity',
 ]
+
+
+class IDDeclarations(TypedDict):
+    # TODO: refactor this
+    cuid: str
+    autoincrement: str
+    base: str
 
 
 class DatabaseConfig(BaseModel):
@@ -22,7 +31,7 @@ class DatabaseConfig(BaseModel):
     name: str
     env_var: str
     bools_are_ints: bool
-    autoincrement_id: str
+    id_declarations: IDDeclarations
     unsupported_features: Set[DatabaseFeature]
     default_date_func: str
 

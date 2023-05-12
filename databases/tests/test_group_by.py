@@ -6,6 +6,7 @@ from prisma import Prisma
 from prisma.types import SortOrder
 
 from lib.testing import async_fixture
+from .utils import CURRENT_DATABASE
 
 
 # TODO: test all types
@@ -79,6 +80,9 @@ async def test_group_by(snapshot: SnapshotAssertion, client: Prisma) -> None:
     )
 
 
+@pytest.mark.skipif(
+    CURRENT_DATABASE == 'mongodb', reason='TODO: query engine panics'
+)
 @pytest.mark.asyncio
 @pytest.mark.persist_data
 async def test_docs_example(

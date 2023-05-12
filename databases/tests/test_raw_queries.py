@@ -192,3 +192,42 @@ async def test_query_first_model(
     assert found is not None
     assert found.id == user.id
     assert found.name == 'Robert'
+
+
+@pytest.mark.asyncio
+async def test_batch_execute_raw(
+    client: Prisma, raw_queries: RawQueries
+) -> None:
+    """execute_raw action can be used to execute raw SQL queries"""
+    post1 = await client.post.create(
+        {
+            'title': 'My first post!',
+            'published': False,
+        }
+    )
+    post2 = await client.post.create(
+        {
+            'title': 'My 2nd post.',
+            'published': False,
+        }
+    )
+
+    async with client.batch_() as batcher:
+        batcher.execute_raw(
+            raw_queries.update_unique_post_title,
+            post1.id,
+        )
+        batcher.execute_raw(
+            raw_queries.update_unique_post_new_title,
+            post2.id,
+        )
+
+    found = await client.post.find_unique(where={'id': post1.id})
+    assert found is not None
+    assert found.id == post1.id
+    assert found.title == 'My edited title'
+
+    found = await client.post.find_unique(where={'id': post2.id})
+    assert found is not None
+    assert found.id == post2.id
+    assert found.title == 'My new title'

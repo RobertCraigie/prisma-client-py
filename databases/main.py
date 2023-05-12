@@ -290,6 +290,7 @@ class Runner:
             template.render(
                 # template variables
                 config=self.config,
+                id_declarations=self.config.id_declarations,
                 partial_generator=escape_path(DATABASES_DIR / 'partials.py'),
             )
         )
