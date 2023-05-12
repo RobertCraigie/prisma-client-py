@@ -1,0 +1,1 @@
+pytest-codspeed==1.2.2
