@@ -83,18 +83,17 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
         from pydantic import BaseModel
         from prisma import Base64
         from prisma.partials import (  # type: ignore[attr-defined]
-            # pyright: reportGeneralTypeIssues = false
-            PostWithoutDesc,
-            PostOptionalPublished,
-            PostRequiredDesc,
-            PostOnlyId,
-            PostNoRelations,
-            PostOptionalInclude,
-            PostRequiredAuthor,
-            PostModifiedAuthor,
-            UserModifiedPosts,
-            UserBytesList,
-            PostNoRelationsAndExclude,
+            PostWithoutDesc,  # pyright: ignore
+            PostOptionalPublished,  # pyright: ignore
+            PostRequiredDesc,  # pyright: ignore
+            PostOnlyId,  # pyright: ignore
+            PostNoRelations,  # pyright: ignore
+            PostOptionalInclude,  # pyright: ignore
+            PostRequiredAuthor,  # pyright: ignore
+            PostModifiedAuthor,  # pyright: ignore
+            UserModifiedPosts,  # pyright: ignore
+            UserBytesList,  # pyright: ignore
+            PostNoRelationsAndExclude,  # pyright: ignore
         )
 
         base_fields = {
