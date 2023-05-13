@@ -18,13 +18,13 @@ class DefaultConfig(BaseSettings):
     #       doesn't change then the CLI is incorrectly cached
     prisma_version: str = Field(
         env='PRISMA_VERSION',
-        default='4.13.0',
+        default='4.14.0',
     )
 
     # Engine binary versions can be found under https://github.com/prisma/prisma-engine/commits/main
     expected_engine_version: str = Field(
         env='PRISMA_EXPECTED_ENGINE_VERSION',
-        default='1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a',
+        default='d9a4c5988f480fa576d43970d5a23641aa77bc9c',
     )
 
     # Home directory, used to build the `binary_cache_dir` option by default, useful in multi-user
