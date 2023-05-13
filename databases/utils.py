@@ -52,6 +52,7 @@ from .constants import (
 )
 
 SHARED_SNAPSHOTS_DIR = Path(__file__).parent.joinpath('__shared_snapshots__')
+CURRENT_DATABASE = os.environ.get('PRISMA_DATABASE')
 
 
 class AmberSharedExtension(AmberSnapshotExtension):
@@ -247,6 +248,3 @@ RAW_QUERIES_MAPPING: DatabaseMapping[RawQueries] = {
         """,
     ),
 }
-
-
-CURRENT_DATABASE = os.environ.get('PRISMA_DATABASE')

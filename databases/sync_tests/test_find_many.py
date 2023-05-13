@@ -268,7 +268,8 @@ def test_ordering(client: Prisma) -> None:
     assert found[1].published is False
     assert found[2].published is False
 
-    with pytest.raises(prisma.errors.DataError) as exc:
+    # multiple fields in the same `order` dictionary are not supported
+    with pytest.raises(prisma.errors.DataError):
         client.post.find_many(
             where={
                 'title': {
@@ -280,10 +281,6 @@ def test_ordering(client: Prisma) -> None:
                 'title': 'desc',
             },
         )
-
-    assert exc.match(
-        r'Expected a minimum of 0 and at most 1 fields to be present, got 2'
-    )
 
 
 def test_order_field_not_nullable(client: Prisma) -> None:

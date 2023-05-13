@@ -82,18 +82,30 @@ def test_update_with_create_disconnect(
     assert updated.posts is not None
     assert len(updated.posts) == 1
 
+    post_id = updated.posts[0].id
+
     if method == 'disconnect':
-        # pyright: reportOptionalSubscript=false
         updated = client.user.update(
             where={'id': user_id},
-            data={'posts': {'disconnect': [{'id': updated.posts[0].id}]}},
+            data={
+                'posts': {
+                    'disconnect': [
+                        {'id': post_id},
+                    ]
+                }
+            },
             include={'posts': True},
         )
     else:
-        # pyright: reportOptionalSubscript=false
         updated = client.user.update(
             where={'id': user_id},
-            data={'posts': {'delete': [{'id': updated.posts[0].id}]}},
+            data={
+                'posts': {
+                    'delete': [
+                        {'id': post_id},
+                    ],
+                }
+            },
             include={'posts': True},
         )
 
