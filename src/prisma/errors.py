@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Optional
 
 
@@ -104,7 +106,21 @@ class FieldNotFoundError(DataError):
     # currently we cannot easily resolve the erroneous field as Prisma
     # returns different results for unknown fields in different situations
     # e.g. root query, nested query and mutation queries
-    ...
+    def __init__(self, data: Any, *, message: str | None = None) -> None:
+        if message is None:
+            meta = data.get('user_facing_error', {}).get('meta', {})
+            if meta.get('kind') == 'Union':
+                error = _pick_union_error(meta.get('errors', []))
+            else:
+                error = meta
+
+            argument_path = error.get('argumentPath')
+            selection_path = error.get('selectionPath')
+
+            if argument_path:
+                message = f'Could not find field at `{".".join(selection_path)}.{".".join(argument_path)}`'
+
+        super().__init__(data, message=message)
 
 
 class RecordNotFoundError(DataError):
@@ -176,3 +192,14 @@ class PrismaWarning(Warning):
 # Note: this is currently unused but not worth removing
 class UnsupportedSubclassWarning(PrismaWarning):
     pass
+
+
+# TODO: proper types
+def _pick_union_error(errors: list[Any]) -> Any:
+    # Note: uses the same heuristic as the TS client
+    return max(
+        errors,
+        key=lambda e: (
+            len(e.get('argumentPath', [])) + len(e.get('selectionPath'))
+        ),
+    )
