@@ -2,7 +2,7 @@ import pytest
 from prisma import Prisma
 from prisma.errors import DataError
 
-from ..utils import CURRENT_DATABASE
+from ...utils import CURRENT_DATABASE
 
 
 @pytest.mark.asyncio

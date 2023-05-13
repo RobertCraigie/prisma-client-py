@@ -1,7 +1,7 @@
 import pytest
 from prisma.models import User
 
-from .utils import RawQueries
+from ..utils import RawQueries
 
 
 async def create_user() -> User:

@@ -7,6 +7,7 @@ include = [
 ignore = [
     # these are type checked separately
     "databases/tests",
+    "databases/sync_tests",
     # TODO: this should not ignore tests/integrations/conftest.py
     "tests/integrations/**/*",
 ]

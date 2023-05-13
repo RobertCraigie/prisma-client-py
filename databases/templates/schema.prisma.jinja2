@@ -5,7 +5,11 @@ datasource db {
 
 generator client {
   provider                    = "coverage run -m prisma"
+  {% if for_async %}
   interface                   = "asyncio"
+  {% else %}
+  interface                   = "sync"
+  {% endif %}
   recursive_type_depth        = -1
   engineType                  = "binary"
   enable_experimental_decimal = true

@@ -91,6 +91,7 @@ DATABASES_DIR = Path(__file__).parent
 
 # database features
 TESTS_DIR = DATABASES_DIR / 'tests'
+SYNC_TESTS_DIR = DATABASES_DIR / 'sync_tests'
 FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     'enum': ['test_enum.py', 'test_arrays/test_enum.py'],
     'json': [
@@ -110,9 +111,7 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
 
 # config files
 PYRIGHT_CONFIG: pyright.Config = {
-    'include': [
-        'tests',
-    ],
+    'include': [],
     'exclude': [],
     # required so that Pyright can resolve the `lib` module
     'extraPaths': ['../'],
