@@ -6,10 +6,9 @@ def test_field_map(testdir: Testdir) -> None:
     # NOTE: this just tests that map can be used with Prisma Client Python
     #       prisma handles mapping for us
     def tests() -> None:  # mark: filedef
-        # pyright: reportUnusedFunction = false, reportGeneralTypeIssues = false
         from prisma.models import User
 
-        def test_field_map() -> None:
+        def test_field_map() -> None:  # pyright: ignore[reportUnusedFunction]
             """Correct model field name access"""
             user = User(id='1', my_field='bar', foo_field='baz')  # type: ignore[call-arg]
             assert user.id == '1'
