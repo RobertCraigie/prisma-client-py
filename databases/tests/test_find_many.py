@@ -281,6 +281,20 @@ async def test_ordering(client: Prisma) -> None:
     assert found[1].published is False
     assert found[2].published is False
 
+    # multiple fields in the same `order` dictionary are not supported
+    with pytest.raises(prisma.errors.DataError):
+        await client.post.find_many(
+            where={
+                'title': {
+                    'contains': 'Test',
+                },
+            },
+            order={  # type: ignore
+                'published': 'desc',
+                'title': 'desc',
+            },
+        )
+
 
 @pytest.mark.asyncio
 @pytest.mark.skip(
