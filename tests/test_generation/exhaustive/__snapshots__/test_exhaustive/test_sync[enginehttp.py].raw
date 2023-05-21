@@ -74,10 +74,10 @@ class HTTPEngine(AbstractEngine):
     def __del__(self) -> None:
         self.stop()
 
-    def close(self) -> None:
+    def close(self, *, timeout: Optional[float] = None) -> None:
         self._close_session()
 
-    async def aclose(self) -> None:
+    async def aclose(self, *, timeout: Optional[float] = None) -> None:
         pass
 
     def _close_session(self) -> None:

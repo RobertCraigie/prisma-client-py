@@ -4,8 +4,7 @@ from prisma import errors, Prisma
 from prisma.models import Post, User
 from prisma.partials import PostOnlyPublished
 
-from .utils import RawQueries
-from ..utils import DatabaseConfig
+from ..utils import DatabaseConfig, RawQueries
 
 
 @pytest.mark.asyncio
