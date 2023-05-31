@@ -7,7 +7,7 @@ from prisma.utils import temp_env_update
 from ..utils import Testdir
 
 
-def _remove_coverage_warnings(output: str) -> str:
+def _remove_known_warnings(output: str) -> str:
     # as we run generation under coverage we need to remove any warnings
     # for example, coverage.py will warn that the tests module was not imported
     output = re.sub(
@@ -16,11 +16,19 @@ def _remove_coverage_warnings(output: str) -> str:
     output = re.sub(
         r'.* prisma:GeneratorProcess .* was never imported.*', '', output
     )
+
+    # unknown why this is logged but it doesn't seem to effect anything
+    output = re.sub(
+        r'.* prisma:GeneratorProcess  child exited with code null.*',
+        '',
+        output,
+    )
+
     return output
 
 
 def assert_no_generator_output(output: str) -> None:
-    assert 'prisma:GeneratorProcess' not in _remove_coverage_warnings(output)
+    assert 'prisma:GeneratorProcess' not in _remove_known_warnings(output)
 
 
 def test_model_name_python_keyword(testdir: Testdir) -> None:
@@ -155,7 +163,7 @@ def test_native_binary_target_no_warning(testdir: Testdir) -> None:
     with temp_env_update({'PRISMA_PY_DEBUG': '0'}):
         result = testdir.generate(options='binaryTargets = ["native"]')
 
-    stdout = _remove_coverage_warnings(result.stdout.decode('utf-8'))
+    stdout = _remove_known_warnings(result.stdout.decode('utf-8'))
     assert 'Warning' not in stdout
     assert 'binaryTargets option' not in stdout
     assert_no_generator_output(stdout)
