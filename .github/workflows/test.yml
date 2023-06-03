@@ -18,13 +18,17 @@ on:
       - "mkdocs.yml"
 jobs:
   test:
-    name: test
+    name: test${{ matrix.pydantic-v2 && " / Pydantic V2" }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: [3.7, 3.8, 3.9, "3.10", "3.11.0-rc.1"]
+      include:
+        - os: ubuntu-latest
+          python-version: "3.10"
+          pydantic-v2: 'true'
 
     steps:
       - uses: actions/checkout@v3
@@ -66,7 +70,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python scripts/ci.py -s test --no-error-on-missing-interpreters
+          python scripts/ci.py -s test --no-error-on-missing-interpreters -- pydantic-v2=${{ matrix.pydantic-v2 }}
         env:
           TARGET_PYTHON: ${{ matrix.python-version }}
 
