@@ -29,7 +29,7 @@ jobs:
           - os: ubuntu-latest
             python-version: "3.10"
             pydantic-v2: 'true'
-            job-description: ' / Pydantic V2'
+            job-description: ' (Pydantic V2)'
 
     steps:
       - uses: actions/checkout@v3
@@ -71,7 +71,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python scripts/ci.py -s test --no-error-on-missing-interpreters -- pydantic-v2=${{ matrix.pydantic-v2 }}
+          python scripts/ci.py -s test --no-error-on-missing-interpreters -- --pydantic-v2=${{ matrix.pydantic-v2 }}
         env:
           TARGET_PYTHON: ${{ matrix.python-version }}
 
