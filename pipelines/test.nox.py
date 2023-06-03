@@ -11,6 +11,9 @@ def test(session: nox.Session) -> None:
     session.install('.')
     maybe_install_nodejs_bin(session)
 
+    if '--pydantic-v2=true' in session.posargs:
+        session.install('pydantic==2.0b2')
+
     generate(session)
 
     session.run(
