@@ -655,7 +655,7 @@ post = await db.post.upsert(
         'create': {
             'title': 'This post was created!',
             'published': False,
-        }
+        },
         'update': {
             'title': 'This post was updated',
             'published': True,
