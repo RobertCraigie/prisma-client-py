@@ -1,7 +1,7 @@
 import sys
 import logging
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
 
 import click
 import pydantic
@@ -38,7 +38,14 @@ log: logging.Logger = logging.getLogger(__name__)
     type=int,
     help='Depth to generate pseudo-recursive types to; -1 signifies fully recursive types',
 )
-def cli(schema: Optional[Path], watch: bool, **kwargs: Any) -> None:
+@click.option(
+    '--generator',
+    multiple=True,
+    help='Specifies which generator to use. Can be specified multiple times. By default, all generators will be ran',
+)
+def cli(
+    schema: Optional[Path], watch: bool, generator: Tuple[str], **kwargs: Any
+) -> None:
     """Generate prisma artifacts with modified config options"""
     if pydantic.VERSION.split('.') < ['1', '8']:
         warning(
@@ -52,6 +59,10 @@ def cli(schema: Optional[Path], watch: bool, **kwargs: Any) -> None:
 
     if watch:
         args.append('--watch')
+
+    if generator:
+        for name in generator:
+            args.append(f'--generator={name}')
 
     env: Dict[str, str] = {}
     prefix = 'PRISMA_PY_CONFIG_'
