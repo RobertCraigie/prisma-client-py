@@ -233,18 +233,14 @@ class Prisma:
             register(self)
 
     def __del__(self) -> None:
-        if self.__engine is not None:
-            self.__engine.decref()
-
-            # we only actually want to stop the engine if there are no longer any references to it.
-            #
-            # this can happen if a transaction manager has been created but stil exists after
-            # the lifetime of the original Prisma instance.
-            if self.__engine.should_stop():
-                self.__engine.stop()
-
+        # Note: as the transaction manager holds a reference to the original
+        # client as well as the transaction client the original client cannot
+        # be `free`d before the transaction is finished. So stopping the engine
+        # here should be safe.
+        if self.__engine is not None and not self.is_transaction():
+            engine = self.__engine
             self.__engine = None
-
+            engine.stop()
 
     async def __aenter__(self) -> 'Prisma':
         await self.connect()
@@ -291,9 +287,10 @@ class Prisma:
     async def disconnect(self, timeout: Optional[float] = None) -> None:
         """Disconnect the Prisma query engine."""
         if self.__engine is not None:
-            await self.__engine.aclose(timeout=timeout)
-            self.__engine.stop(timeout=timeout)
+            engine = self.__engine
             self.__engine = None
+            await engine.aclose(timeout=timeout)
+            engine.stop(timeout=timeout)
 
     async def execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = await self._execute(
