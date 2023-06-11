@@ -1,5 +1,5 @@
 import inspect
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterator
 
 import pytest
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture(name='_cleanup_session', scope='session', autouse=True)
-def cleanup_session() -> AsyncIterator[None]:
+def cleanup_session() -> Iterator[None]:
     yield
 
     client = prisma.get_client()
