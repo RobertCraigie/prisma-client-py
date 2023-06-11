@@ -173,6 +173,7 @@ class Prisma:
         # be `free`d before the transaction is finished. So stopping the engine
         # here should be safe.
         if self.__engine is not None and not self.is_transaction():
+            log.debug('unclosed client - stopping engine')
             engine = self.__engine
             self.__engine = None
             engine.stop()
