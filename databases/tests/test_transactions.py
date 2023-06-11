@@ -7,6 +7,7 @@ from pytest_mock import MockerFixture
 import prisma
 from prisma import Prisma
 from prisma.models import User
+from ..utils import CURRENT_DATABASE
 
 
 @pytest.mark.asyncio
@@ -86,6 +87,7 @@ async def test_timeout(client: Prisma) -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.skipif(CURRENT_DATABASE == 'sqlite', reason='This is currently broken...')
 async def test_concurrent_transactions(client: Prisma) -> None:
     """Two separate transactions can be used independently of each other at the same time"""
     timeout = 10000

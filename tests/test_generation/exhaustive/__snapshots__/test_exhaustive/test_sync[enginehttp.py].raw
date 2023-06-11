@@ -111,7 +111,9 @@ class HTTPEngine(AbstractEngine):
             kwargs['content'] = content
 
         url = self.url + path
-        log.debug('Sending %s request to %s with content: %s', method, url, content)
+        log.debug('Sending %s request to %s', method, url)
+        log.debug('Request headers: %s', kwargs['headers'])
+        log.debug('Request content: %s', content)
 
         resp = self.session.request(method, url, **kwargs)
         log.debug('%s %s returned status %s', method, url, resp.status)
