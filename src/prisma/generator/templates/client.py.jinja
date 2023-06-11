@@ -129,6 +129,7 @@ class Prisma:
         '{{ model.name.lower() }}',
         {% endfor %}
         '__engine',
+        '__copied',
         '_tx_id',
         '_datasource',
         '_log_queries',
@@ -160,6 +161,7 @@ class Prisma:
         self._connect_timeout = connect_timeout
         self._http_config: HttpConfig = http or {}
         self._tx_id: Optional[TransactionId] = None
+        self.__copied: bool = False
 
         if use_dotenv:
             load_env()
@@ -172,7 +174,7 @@ class Prisma:
         # client as well as the transaction client the original client cannot
         # be `free`d before the transaction is finished. So stopping the engine
         # here should be safe.
-        if self.__engine is not None and not self.is_transaction():
+        if self.__engine is not None and not self.__copied:
             log.debug('unclosed client - stopping engine')
             engine = self.__engine
             self.__engine = None
@@ -408,6 +410,7 @@ class Prisma:
             log_queries=self._log_queries,
             connect_timeout=self._connect_timeout,
         )
+        new.__copied = True
 
         if self.__engine is not None:
             new._engine = self.__engine

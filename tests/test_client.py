@@ -230,3 +230,15 @@ async def test_copy() -> None:
     assert client1.is_connected()
     client3 = client1._copy()
     assert client3.is_connected()
+
+
+@pytest.mark.asyncio
+async def test_copied_client_does_not_close_engine(client: Prisma) -> None:
+    """Deleting a Prisma._copy()'d client does not cause the engine to be stopped"""
+    copied = client._copy()
+    assert copied.is_connected()
+    assert client.is_connected()
+
+    del copied
+
+    assert client.is_connected()
