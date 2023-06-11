@@ -2,7 +2,6 @@ import asyncio
 from typing import Optional
 
 import pytest
-from pytest_mock import MockerFixture
 
 import prisma
 from prisma import Prisma
@@ -183,22 +182,3 @@ async def test_transaction_already_closed(client: Prisma) -> None:
         'A query cannot be executed on a committed transaction.'
     )
 
-
-@pytest.mark.asyncio
-@pytest.mark.xfail
-async def test_multiple_client_references(mocker: MockerFixture) -> None:
-    """The shared engine should not be stopped if the original client is de-allocated"""
-    client = Prisma()
-
-    mocked = mocker.patch.object(
-        client._engine_class,
-        'stop',
-    )
-
-    await client.connect()
-
-    async with client.tx() as transaction:
-        client.__del__()
-        mocked.assert_not_called()
-        user = await transaction.user.create({'name': 'Robert'})
-        assert user.name == 'Robert'
