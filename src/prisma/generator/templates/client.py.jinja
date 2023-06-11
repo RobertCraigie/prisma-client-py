@@ -409,7 +409,7 @@ class Prisma:
         )
 
         if self.__engine is not None:
-            new._engine = self.__engine.new_ref()
+            new._engine = self.__engine
 
         return new
 
