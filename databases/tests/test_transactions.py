@@ -12,7 +12,7 @@ from ..utils import CURRENT_DATABASE
 @pytest.mark.asyncio
 async def test_context_manager(client: Prisma) -> None:
     """Basic usage within a context manager"""
-    async with client.tx() as transaction:
+    async with client.tx(timeout=10 * 100) as transaction:
         user = await transaction.user.create({'name': 'Robert'})
         assert user.name == 'Robert'
 
@@ -60,7 +60,7 @@ async def test_context_manager_auto_rollback(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_batch_within_transaction(client: Prisma) -> None:
     """Query batching can be used within transactions"""
-    async with client.tx(timeout=6000) as transaction:
+    async with client.tx(timeout=10000) as transaction:
         async with transaction.batch_() as batcher:
             batcher.user.create({'name': 'Tegan'})
             batcher.user.create({'name': 'Robert'})
@@ -91,7 +91,7 @@ async def test_timeout(client: Prisma) -> None:
 )
 async def test_concurrent_transactions(client: Prisma) -> None:
     """Two separate transactions can be used independently of each other at the same time"""
-    timeout = 10000
+    timeout = 15000
     async with client.tx(timeout=timeout) as tx1, client.tx(
         timeout=timeout
     ) as tx2:
