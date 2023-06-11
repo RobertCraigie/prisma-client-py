@@ -87,7 +87,9 @@ async def test_timeout(client: Prisma) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.skipif(CURRENT_DATABASE == 'sqlite', reason='This is currently broken...')
+@pytest.mark.skipif(
+    CURRENT_DATABASE == 'sqlite', reason='This is currently broken...'
+)
 async def test_concurrent_transactions(client: Prisma) -> None:
     """Two separate transactions can be used independently of each other at the same time"""
     timeout = 10000
