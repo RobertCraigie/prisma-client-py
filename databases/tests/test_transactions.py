@@ -181,4 +181,3 @@ async def test_transaction_already_closed(client: Prisma) -> None:
         'Transaction API error: Transaction already closed: '
         'A query cannot be executed on a committed transaction.'
     )
-
