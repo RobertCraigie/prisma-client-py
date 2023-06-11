@@ -46,7 +46,16 @@ class QueryEngine(HTTPEngine):
 
     def close(self, *, timeout: Optional[float] = None) -> None:
         import traceback
-        log.debug('\n'.join(traceback.format_stack()))
+        
+        from pathlib import Path
+
+        p = Path('debug.txt')
+        stack = '\n'.join(traceback.format_stack())
+        with p.open('a') as f:
+            sep = '-' * 40
+            f.write(sep + '\n' + stack + f'\n http is closed: {self.session.closed}' + '\n\n')
+
+        log.debug(stack)
         log.debug('Disconnecting query engine...')
 
         if self.process is not None:
@@ -68,8 +77,8 @@ class QueryEngine(HTTPEngine):
         log.debug('Disconnected query engine')
 
     async def aclose(self, *, timeout: Optional[float] = None) -> None:
-        self.close(timeout=timeout)
         {{ maybe_await }}self._close_session()
+        self.close(timeout=timeout)
 
     {{ maybe_async_def }}_close_session(self) -> None:
         if self.session and not self.session.closed:

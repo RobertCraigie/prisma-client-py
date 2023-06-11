@@ -258,6 +258,11 @@ jobs:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases
 
+      - name: Debug
+        if: always()
+        run: |
+          cat databases/debug.txt
+
       # these tests ensure that unsupported features, e.g. enums on SQLite actually fail
       - name: Run inverse async tests
         run: |

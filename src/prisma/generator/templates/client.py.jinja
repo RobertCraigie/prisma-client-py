@@ -170,6 +170,16 @@ class Prisma:
             register(self)
 
     def __del__(self) -> None:
+        import traceback
+        from pathlib import Path
+
+        p = Path('debug.txt')
+        stack = '\n'.join(traceback.format_stack())
+        with p.open('a') as f:
+            sep = '-' * 40
+            is_closed = self.__engine is None or cast(Any, self.__engine).session.closed
+            f.write(sep + 'from client __del__:\n' + stack + '\n' + f'http is closed: {is_closed}' + '\n\n')
+
         # Note: as the transaction manager holds a reference to the original
         # client as well as the transaction client the original client cannot
         # be `free`d before the transaction is finished. So stopping the engine
