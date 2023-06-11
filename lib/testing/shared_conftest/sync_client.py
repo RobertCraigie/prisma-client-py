@@ -12,6 +12,15 @@ if TYPE_CHECKING:
     from _pytest.fixtures import FixtureRequest
 
 
+@pytest.fixture(name='_cleanup_session', scope='session', autouse=True)
+def cleanup_session() -> AsyncIterator[None]:
+    yield
+
+    client = prisma.get_client()
+    if client.is_connected():
+        client.disconnect()
+
+
 @pytest.fixture(name='client', scope='session')
 def client_fixture() -> Prisma:
     client = prisma.get_client()
