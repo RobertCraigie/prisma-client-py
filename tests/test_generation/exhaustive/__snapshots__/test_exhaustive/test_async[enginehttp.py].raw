@@ -72,9 +72,6 @@ class HTTPEngine(AbstractEngine):
         self.session = HTTP(**kwargs)
         self.headers = headers if headers is not None else {}
 
-    def __del__(self) -> None:
-        self.stop()
-
     def close(self, *, timeout: Optional[float] = None) -> None:
         pass
 

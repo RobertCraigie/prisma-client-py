@@ -44,9 +44,6 @@ class QueryEngine(HTTPEngine):
         # ensure the query engine process is terminated when we are
         atexit.register(self.stop)
 
-    def __del__(self) -> None:
-        self.stop()
-
     def close(self, *, timeout: Optional[float] = None) -> None:
         import traceback
         log.debug('\n'.join(traceback.format_stack()))
