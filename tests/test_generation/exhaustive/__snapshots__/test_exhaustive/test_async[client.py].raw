@@ -564,8 +564,11 @@ class TransactionManager:
         exc_tb: Optional[TracebackType],
     ) -> None:
         if exc is None:
+            log.debug('Transaction exited with no exception - commiting')
             await self.commit()
             return
+
+        log.debug('Transaction exited with exc type: %s - rolling back', exc_type)
 
         try:
             await self.rollback()
