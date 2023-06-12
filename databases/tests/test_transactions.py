@@ -119,6 +119,14 @@ async def test_concurrent_transactions(client: Prisma) -> None:
 
 
 @pytest.mark.asyncio
+async def test_transaction_raises_original_error(client: Prisma) -> None:
+    """If an error is raised during the execution of the transaction, it is raised"""
+    with pytest.raises(RuntimeError, match=r'Test error!'):
+        async with client.tx():
+            raise RuntimeError('Test error!')
+
+
+@pytest.mark.asyncio
 async def test_transaction_within_transaction_warning(client: Prisma) -> None:
     """A warning is raised if a transaction is started from another transaction client"""
     tx1 = await client.tx().start()

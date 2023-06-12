@@ -111,6 +111,13 @@ def test_concurrent_transactions(client: Prisma) -> None:
     assert client.user.count() == 2
 
 
+def test_transaction_raises_original_error(client: Prisma) -> None:
+    """If an error is raised during the execution of the transaction, it is raised"""
+    with pytest.raises(RuntimeError, match=r'Test error!'):
+        with client.tx():
+            raise RuntimeError('Test error!')
+
+
 def test_transaction_within_transaction_warning(client: Prisma) -> None:
     """A warning is raised if a transaction is started from another transaction client"""
     tx1 = client.tx().start()
