@@ -510,7 +510,7 @@ class TransactionManager:
     through the Prisma.tx() method.
     """
 
-    def __init__(self, client: Prisma, max_wait: int, timeout: int) -> None:
+    def __init__(self, *, client: Prisma, max_wait: int, timeout: int) -> None:
         self.__client = client
         self._max_wait = max_wait
         self._timeout = timeout

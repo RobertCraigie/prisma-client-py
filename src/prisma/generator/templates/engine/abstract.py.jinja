@@ -2,7 +2,6 @@
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import maybe_async_def with context %}
 # -- template engine/abstract.py.jinja --
-from typing import TypeVar
 from abc import ABC, abstractmethod
 from ._types import TransactionId
 from ..types import DatasourceOverride
