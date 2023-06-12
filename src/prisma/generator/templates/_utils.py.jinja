@@ -3,9 +3,11 @@
 
 {% if is_async %}
     {% set maybe_await = 'await ' %}
+    {% set maybe_async = 'async ' %}
     {% set maybe_async_def = 'async def ' %}
 {% else %}
     {% set maybe_await = '' %}
+    {% set maybe_async = '' %}
     {% set maybe_async_def = 'def ' %}
 {% endif %}
 

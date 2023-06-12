@@ -58,6 +58,7 @@ from ..binaries import platform
 from ..utils import time_since, _env_bool
 from ..types import DatasourceOverride
 from ..builder import dumps
+from ._types import TransactionId
 
 
 __all__ = ('QueryEngine',)
@@ -80,9 +81,6 @@ class QueryEngine(HTTPEngine):
 
         # ensure the query engine process is terminated when we are
         atexit.register(self.stop)
-
-    def __del__(self) -> None:
-        self.stop()
 
     def close(self, *, timeout: Optional[float] = None) -> None:
         log.debug('Disconnecting query engine...')
@@ -216,9 +214,40 @@ class QueryEngine(HTTPEngine):
                 'Could not connect to the query engine'
             ) from last_exc
 
-    def query(self, content: str) -> Any:
-        return self.request('POST', '/', content=content)
+    def query(
+        self,
+        content: str,
+        *,
+        tx_id: TransactionId | None,
+    ) -> Any:
+        headers: Dict[str, str] = {}
+        if tx_id is not None:
+            headers['X-transaction-id'] = tx_id
 
+        return self.request(
+            'POST',
+            '/',
+            content=content,
+            headers=headers,
+        )
+
+    def start_transaction(self, *, content: str) -> TransactionId:
+        result = self.request(
+            'POST',
+            '/transaction/start',
+            content=content,
+        )
+        return TransactionId(result['id'])
+
+    def commit_transaction(self, tx_id: TransactionId) -> None:
+        self.request(
+            'POST', f'/transaction/{tx_id}/commit'
+        )
+
+    def rollback_transaction(self, tx_id: TransactionId) -> None:
+        self.request(
+            'POST', f'/transaction/{tx_id}/rollback'
+        )
 
 # black does not respect the fmt: off comment without this
 # fmt: on
