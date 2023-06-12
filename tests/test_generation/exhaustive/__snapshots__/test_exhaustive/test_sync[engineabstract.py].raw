@@ -52,9 +52,6 @@ __all__ = (
 )
 
 
-_EngineT = TypeVar('_EngineT', bound='AbstractEngine')
-
-
 class AbstractEngine(ABC):
     dml: str
 
