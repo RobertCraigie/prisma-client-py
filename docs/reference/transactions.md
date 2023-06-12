@@ -1,15 +1,12 @@
 # Interactive Transactions
 
+!!! warning
+
+    Transactions are not fully tested against CockroachDB.
+
 Prisma Client Python supports interactive transactions, this is a generic solution allowing you to run multiple operations as a single, atomic operation - if any operation fails, or any other error is raised during the transaction, Prisma will roll back the entire transaction.
 
 This differs from [batch queries](./batching.md) as you can perform operations that are dependent on the results of previous operations.
-
-!!! warning
-
-    Transactions support alongside [model based queries](./model-actions.md) is not stable.
-
-    Do **not** rely on `Model.prisma()` always using the default `Prisma` instance.
-    This may be changed in the future.
 
 ## Usage
 

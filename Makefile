@@ -2,7 +2,7 @@
 bootstrap:
 	pip install -U wheel
 	pip install -U -e .
-	pip install -U -r pipelines/requirements/lint.txt
+	pip install -U -r pipelines/requirements/all.txt
 	python -m prisma_cleanup
 	prisma db push --schema=tests/data/schema.prisma
 	cp tests/data/dev.db dev.db
