@@ -170,9 +170,7 @@ def handle_response_errors(resp: AbstractResponse[Any], data: Any) -> NoReturn:
             message = user_facing.get('message', '')
 
             if code == 'P2028':
-                if base_error_message.startswith(
-                    'Transaction already closed: A query cannot be executed on an expired transaction'
-                ):
+                if base_error_message.startswith('Transaction already closed'):
                     raise prisma_errors.TransactionExpiredError(
                         base_error_message
                     )
