@@ -180,7 +180,7 @@ class QueryEngine(HTTPEngine):
         self,
         content: str,
         *,
-        tx_id: Optional[TransactionId] = None
+        tx_id: TransactionId | None,
     ) -> Any:
         headers: Dict[str, str] = {}
         if tx_id is not None:
