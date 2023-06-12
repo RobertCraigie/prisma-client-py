@@ -242,3 +242,4 @@ async def test_copied_client_does_not_close_engine(client: Prisma) -> None:
     del copied
 
     assert client.is_connected()
+    await client.user.count()  # ensure queries can still be executed
