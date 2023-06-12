@@ -45,8 +45,6 @@ class QueryEngine(HTTPEngine):
         atexit.register(self.stop)
 
     def close(self, *, timeout: Optional[float] = None) -> None:
-        import traceback
-        log.debug('\n'.join(traceback.format_stack()))
         log.debug('Disconnecting query engine...')
 
         if self.process is not None:
