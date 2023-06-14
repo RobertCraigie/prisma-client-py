@@ -11,14 +11,14 @@ All Prisma Client Python methods are fully[^1] statically typed, in this page we
 
 Python has support for _hinting_[^2] at the types of objects.
 
-For example, heres a function without any type hints.
+For example, here's a function without any type hints.
 
 ```py
 def add_numbers(a, b):
     return a + b
 ```
 
-And heres the same function with type hints.
+And here's the same function with type hints.
 
 ```py
 def add_numbers(a: int, b: int) -> int:

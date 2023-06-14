@@ -127,7 +127,7 @@ A prisma schema can define one or more generators, defined by the `generator` bl
 
 A generator determines what assets are created when you run the `prisma generate` command. The `provider` value defines which Prisma Client will be created. In this case, as we want to generate Prisma Client Python, we use the `prisma-client-py` value.
 
-You can also define where the client will be generated to with the `output` option. By default Prisma Client Python will be generated to the same location it was installed to, whether thats inside a virtual environment, the global python installation or anywhere else that python packages can be imported from.
+You can also define where the client will be generated to with the `output` option. By default Prisma Client Python will be generated to the same location it was installed to, whether that's inside a virtual environment, the global python installation or anywhere else that python packages can be imported from.
 
 For more options see [configuring Prisma Client Python](https://prisma-client-py.readthedocs.io/en/stable/reference/config/).
 
