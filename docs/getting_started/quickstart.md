@@ -101,7 +101,6 @@ found post: {
   "title": "Hello from prisma!",
   "updated_at": "2021-01-04T00:30:35.921000+00:00"
 }
-post description is "Prisma is a database toolkit and makes databases easy.""
 ```
 
 ## Static type checking
