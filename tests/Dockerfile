@@ -30,7 +30,7 @@ ENV DOCKER_TARGETARCH=${TARGETARCH}
 
 # TODO: Using the slim variant is a bit hackier. Better to
 # cat and grep /etc/*release*. Also, the [[ ]] command
-# is a bash thing so thats why we subshell for the test
+# is a bash thing so that's why we subshell for the test
 RUN \
     if [[ $OS_DISTRO =~ alpine ]]; then \
       adduser -u ${PRISMA_USER_ID} -D prisma; \

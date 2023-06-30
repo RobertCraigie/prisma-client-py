@@ -121,7 +121,7 @@ Prisma also allows you to fetch multiple things at once. Instead of doing compli
 few of their comments in just a few lines and with full type-safety:
 
 ```py
-# fetch a post and 3 of it's comments
+# fetch a post and 3 of its comments
 post = await db.post.find_unique(
     where={
         'id': post.id,

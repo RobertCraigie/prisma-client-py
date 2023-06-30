@@ -38,6 +38,7 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         unsupported_features={
             'json_arrays',
             'array_push',
+            'transactions',
         },
     ),
     'sqlite': DatabaseConfig(
@@ -102,6 +103,7 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     'arrays': [*_fromdir('arrays'), *_fromdir('types/raw_queries/arrays')],
     'array_push': _fromdir('arrays/push'),
     'json_arrays': ['arrays/test_json.py', 'arrays/push/test_json.py'],
+    'transactions': ['test_transactions.py'],
     # not yet implemented
     'date': [],
     'create_many': ['test_create_many.py'],

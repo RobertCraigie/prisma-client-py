@@ -3,7 +3,7 @@ jinja2>=2.11.2
 pydantic>=1.8.0
 click>=7.1.2
 python-dotenv>=0.12.0
-typing-extensions>=3.7
+typing-extensions>=4.0.1
 tomlkit
 nodeenv
 cached-property; python_version < '3.8'

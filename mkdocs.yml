@@ -37,7 +37,8 @@ markdown_extensions:
   - pymdownx.highlight:
       use_pygments: false
   - pymdownx.extra
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.details
   - pymdownx.snippets
   - pymdownx.superfences
@@ -58,6 +59,7 @@ nav:
   - Reference:
       - Query Operations: reference/operations.md
       - Client: reference/client.md
+      - Transactions: reference/transactions.md
       - Selecting Fields: reference/selecting-fields.md
       - Model Based Access: reference/model-actions.md
       - Batching Queries: reference/batching.md
