@@ -59,7 +59,8 @@ class _Config(BaseConfig):
 
 
 class _PrismaModel(BaseModel):
-    Config = _Config
+    class Config(_Config):
+        ...
 
     # TODO: ensure this is required by subclasses
     __prisma_model__: ClassVar[str]

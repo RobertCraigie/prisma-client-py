@@ -14,7 +14,7 @@ from typing import ForwardRef
 from typing_extensions import TypeGuard
 
 from pydantic import BaseModel
-from pydantic.fields import ModelField
+from pydantic.fields import FieldInfo
 
 from . import fields
 from .types import Serializable
@@ -280,7 +280,7 @@ class QueryBuilder:
         return transformed
 
 
-def _field_is_prisma_model(field: ModelField, *, parent: type[BaseModel]) -> bool:
+def _field_is_prisma_model(field: FieldInfo, *, parent: type[BaseModel]) -> bool:
   """Whether or not the given field info represents a model at the database level.
 
   This will return `True` for cases where the field represents a list of models or a single model.

@@ -3,9 +3,9 @@ from types import ModuleType
 from functools import lru_cache
 from typing import Type, TypeVar, Any, cast
 
-from pydantic import BaseModel, Extra, create_model_from_typeddict
-from pydantic.typing import is_typeddict
+from pydantic import BaseModel, Extra
 
+from ._compat import is_typeddict
 from ._types import Protocol, runtime_checkable
 
 

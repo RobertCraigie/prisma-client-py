@@ -28,17 +28,14 @@ from typing import (
 import click
 from pydantic import (
     BaseModel as PydanticBaseModel,
-    BaseSettings,
     Extra,
     Field as FieldInfo,
 )
 from pydantic.fields import PrivateAttr
-from pydantic.generics import GenericModel as PydanticGenericModel
-
 from .utils import Faker, Sampler, clean_multiline
 from .. import config
 from ..utils import DEBUG_GENERATOR, assert_never
-from .._compat import validator, root_validator, cached_property
+from .._compat import BaseSettings, BaseSettingsConfig, GenericModel, validator, root_validator, cached_property
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
 
@@ -221,10 +218,6 @@ class BaseModel(PydanticBaseModel):
         keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
 
 
-class GenericModel(PydanticGenericModel, BaseModel):
-    pass
-
-
 class InterfaceChoices(str, enum.Enum):
     sync = 'sync'
     asyncio = 'asyncio'
@@ -333,7 +326,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
 
         return params
 
-    @root_validator(pre=True, allow_reuse=True)
+    @root_validator(pre=True, allow_reuse=True, skip_on_failure=True)
     @classmethod
     def validate_version(cls, values: Dict[Any, Any]) -> Dict[Any, Any]:
         # TODO: test this
@@ -474,7 +467,7 @@ class Config(BaseSettings):
             super().__init__(**kwargs)
             config_ctx.set(self)
 
-    class Config(BaseSettings.Config):
+    class Config(BaseSettingsConfig):
         extra: Extra = Extra.forbid
         use_enum_values: bool = True
         env_prefix: str = 'prisma_py_config_'
@@ -490,7 +483,7 @@ class Config(BaseSettings):
             # prioritise env settings over init settings
             return env_settings, init_settings, file_secret_settings
 
-    @root_validator(pre=True)
+    @root_validator(pre=True, skip_on_failure=True)
     @classmethod
     def transform_engine_type(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         # prioritise env variable over schema option
@@ -505,7 +498,7 @@ class Config(BaseSettings):
 
         return values
 
-    @root_validator(pre=True)
+    @root_validator(pre=True, skip_on_failure=True)
     @classmethod
     def removed_http_option_validator(
         cls, values: Dict[str, Any]
@@ -711,7 +704,7 @@ class Constraint(BaseModel):
     name: str
     fields: List[str]
 
-    @root_validator(pre=True, allow_reuse=True)
+    @root_validator(pre=True, allow_reuse=True, skip_on_failure=True)
     @classmethod
     def resolve_name(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         name = values.get('name')
@@ -746,21 +739,23 @@ class Field(BaseModel):
     is_generated: bool = FieldInfo(alias='isGenerated')
     is_updated_at: bool = FieldInfo(alias='isUpdatedAt')
 
-    default: Optional[Union['DefaultValue', str, List[object]]]
+    default: Optional[Union['DefaultValue', object, List[object]]] = None
     has_default_value: bool = FieldInfo(alias='hasDefaultValue')
 
-    relation_name: Optional[str] = FieldInfo(alias='relationName')
-    relation_on_delete: Optional[str] = FieldInfo(alias='relationOnDelete')
+    relation_name: Optional[str] = FieldInfo(alias='relationName', default=None)
+    relation_on_delete: Optional[str] = FieldInfo(alias='relationOnDelete', default=None)
     relation_to_fields: Optional[List[str]] = FieldInfo(
-        alias='relationToFields'
+        alias='relationToFields',
+        default=None,
     )
     relation_from_fields: Optional[List[str]] = FieldInfo(
-        alias='relationFromFields'
+        alias='relationFromFields',
+        default=None,
     )
 
     _last_sampled: Optional[str] = PrivateAttr()
 
-    @root_validator()
+    @root_validator(skip_on_failure=True)
     @classmethod
     def scalar_type_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         kind = values.get('kind')

@@ -11,13 +11,11 @@ from abc import ABC, abstractmethod
 from typing import IO, Union, Any, Mapping, cast
 from typing_extensions import Literal
 
-from pydantic.typing import get_args
-
 from .. import config
 from .._proxy import LazyProxy
 from ..binaries import platform
 from ..errors import PrismaError
-from .._compat import nodejs
+from .._compat import nodejs, get_args
 
 
 log: logging.Logger = logging.getLogger(__name__)

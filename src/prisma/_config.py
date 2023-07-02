@@ -4,9 +4,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Union, Optional, List
 
 import tomlkit
-from pydantic import BaseSettings, Extra, Field
+from pydantic import Extra
 
 from ._proxy import LazyProxy
+from ._compat import BaseSettings, BaseSettingsConfig, Field, pydantic_extra_ignore
 
 if TYPE_CHECKING:
     from pydantic.env_settings import SettingsSourceCallable
@@ -67,8 +68,8 @@ class DefaultConfig(BaseSettings):
         / 'nodeenv',
     )
 
-    class Config(BaseSettings.Config):
-        extra: Extra = Extra.ignore
+    class Config(BaseSettingsConfig):
+        extra: Extra = pydantic_extra_ignore
 
         @classmethod
         def customise_sources(
@@ -82,7 +83,7 @@ class DefaultConfig(BaseSettings):
 
 
 class Config(DefaultConfig):
-    binary_cache_dir: Path = Field(env='PRISMA_BINARY_CACHE_DIR')
+    binary_cache_dir: Path = Field()
 
     @classmethod
     def from_base(cls, config: DefaultConfig) -> Config:

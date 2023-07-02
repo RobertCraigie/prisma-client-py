@@ -1,6 +1,11 @@
+from __future__ import annotations
+
 import sys
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable, cast
 from asyncio import get_running_loop as get_running_loop
+
+import pydantic
+from pydantic import BaseConfig, BaseModel
 
 from ._types import CallableT
 from .utils import make_optional
@@ -38,6 +43,69 @@ else:
         root_validator as root_validator,
     )
 
+
+# Pydantic v2 compat
+pydantic_major_version = int(pydantic.VERSION.split('.')[0])
+
+if TYPE_CHECKING:
+    from pydantic import BaseSettings as BaseSettings
+
+    # TODO: just copy these in
+    from pydantic.typing import (
+        is_typeddict as is_typeddict,
+        get_args as get_args,
+    )
+
+    BaseSettingsConfig = BaseSettings.Config
+
+    class GenericModel(BaseModel):
+        ...
+
+else:
+    try:
+        from pydantic_settings import BaseSettings
+    except ImportError:
+        # TODO: helpful error here in v2
+        from pydantic import BaseSettings
+
+    try:
+        BaseSettingsConfig = BaseSettings.Config
+    except AttributeError:
+        BaseSettingsConfig = BaseConfig
+
+    try:
+        from pydantic.v1.typing import is_typeddict, get_args
+    except ImportError:
+        from pydantic.typing import is_typeddict, get_args
+
+    try:
+        from pydantic.generics import GenericModel as PydanticGenericModel
+
+        class GenericModel(PydanticGenericModel, BaseModel):
+            ...
+
+    except ImportError:
+        # note: there no longer needs to be a distinction between these in v2
+        from pydantic import BaseModel as GenericModel
+
+
+def model_json(model: BaseModel, indent: int) -> str:
+    if pydantic_major_version == 1:
+        return model.json(indent=indent)
+
+    return model.model_dump_json(indent=indent)  # type: ignore
+
+
+def Field(*, env: str | None = None, **extra: Any) -> Any:
+    if pydantic_major_version == 1:
+        return pydantic.Field(**extra, env=env)  # type: ignore
+    return pydantic.Field(**extra, validation_alias=env)
+
+
+if pydantic_major_version == 1:
+    pydantic_extra_ignore = pydantic.Extra.ignore
+else:
+    pydantic_extra_ignore = cast(Any, 'ignore')
 
 if sys.version_info[:2] < (3, 8):
     # cached_property doesn't define type hints so just ignore it

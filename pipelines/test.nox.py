@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import nox
 
 from pipelines.utils import setup_env, maybe_install_nodejs_bin
@@ -11,9 +13,20 @@ def test(session: nox.Session) -> None:
     session.install('.')
     maybe_install_nodejs_bin(session)
 
-    if '--pydantic-v2=true' in session.posargs:
-        session.posargs.pop(session.posargs.index('--pydantic-v2=true'))
-        session.install('pydantic==2.0b2')
+    needs_pydantic_settings = True
+
+    pytest_args: list[str] = []
+    for arg in session.posargs:
+        if arg.startswith('--pydantic-v2='):
+            _, value = arg.split('=')
+            if value == 'false':
+                needs_pydantic_settings = False
+                session.install('pydantic<2')
+        else:
+            pytest_args.append(arg)
+
+    if needs_pydantic_settings:
+        session.install('pydantic-settings==2.0.0')
 
     generate(session)
 
@@ -23,7 +36,7 @@ def test(session: nox.Session) -> None:
         '-m',
         'pytest',
         '--ignore=databases',
-        *session.posargs,
+        *pytest_args,
         env={
             'PYTEST_PLUGINS': 'pytester',
         },
