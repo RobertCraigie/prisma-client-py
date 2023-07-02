@@ -65,8 +65,11 @@ else:
     try:
         from pydantic_settings import BaseSettings
     except ImportError:
-        # TODO: helpful error here in v2
-        from pydantic import BaseSettings
+        try:
+            from pydantic.v1 import BaseSettings
+        except ImportError:
+            # TODO: helpful error here in v2
+            from pydantic import BaseSettings
 
     try:
         BaseSettingsConfig = BaseSettings.Config
