@@ -9,3 +9,6 @@ typer==0.9.0
 rtoml==0.9.0
 GitPython
 distro
+
+# TODO
+pydantic-settings
