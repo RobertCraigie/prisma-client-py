@@ -35,7 +35,14 @@ from pydantic.fields import PrivateAttr
 from .utils import Faker, Sampler, clean_multiline
 from .. import config
 from ..utils import DEBUG_GENERATOR, assert_never
-from .._compat import BaseSettings, BaseSettingsConfig, GenericModel, validator, root_validator, cached_property
+from .._compat import (
+    BaseSettings,
+    BaseSettingsConfig,
+    GenericModel,
+    validator,
+    root_validator,
+    cached_property,
+)
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
 
@@ -742,8 +749,12 @@ class Field(BaseModel):
     default: Optional[Union['DefaultValue', object, List[object]]] = None
     has_default_value: bool = FieldInfo(alias='hasDefaultValue')
 
-    relation_name: Optional[str] = FieldInfo(alias='relationName', default=None)
-    relation_on_delete: Optional[str] = FieldInfo(alias='relationOnDelete', default=None)
+    relation_name: Optional[str] = FieldInfo(
+        alias='relationName', default=None
+    )
+    relation_on_delete: Optional[str] = FieldInfo(
+        alias='relationOnDelete', default=None
+    )
     relation_to_fields: Optional[List[str]] = FieldInfo(
         alias='relationToFields',
         default=None,

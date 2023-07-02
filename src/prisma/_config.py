@@ -7,7 +7,12 @@ import tomlkit
 from pydantic import Extra
 
 from ._proxy import LazyProxy
-from ._compat import BaseSettings, BaseSettingsConfig, Field, pydantic_extra_ignore
+from ._compat import (
+    BaseSettings,
+    BaseSettingsConfig,
+    Field,
+    pydantic_extra_ignore,
+)
 
 if TYPE_CHECKING:
     from pydantic.env_settings import SettingsSourceCallable
