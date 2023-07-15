@@ -499,7 +499,7 @@ class Prisma:
                 except ignore_exceptions:
                     return None
             else:
-                response = await self._engine.query(query)
+                response = await self._engine.query(query, tx_id=self._tx_id)
 
             data = response['data']['result']
 

@@ -1,15 +1,14 @@
+from __future__ import annotations
+
+import os
 import sys
 import logging
 from enum import Enum
 from pathlib import Path
 from typing import (
-    Optional,
-    List,
-    Union,
     NoReturn,
     Mapping,
     Any,
-    Type,
     overload,
     cast,
 )
@@ -29,8 +28,8 @@ class PrismaCLI(click.MultiCommand):
     base_package: str = 'prisma.cli.commands'
     folder: Path = Path(__file__).parent / 'commands'
 
-    def list_commands(self, ctx: click.Context) -> List[str]:
-        commands: List[str] = []
+    def list_commands(self, ctx: click.Context) -> list[str]:
+        commands: list[str] = []
 
         for path in self.folder.iterdir():
             name = path.name
@@ -47,7 +46,7 @@ class PrismaCLI(click.MultiCommand):
 
     def get_command(
         self, ctx: click.Context, cmd_name: str
-    ) -> Optional[click.Command]:
+    ) -> click.Command | None:
         name = f'{self.base_package}.{cmd_name}'
         if not module_exists(name):
             # command not found
@@ -71,9 +70,9 @@ class PathlibPath(click.Path):
 
     def convert(
         self,
-        value: str,
-        param: Optional[click.Parameter],
-        ctx: Optional[click.Context],
+        value: str | os.PathLike[str],
+        param: click.Parameter | None,
+        ctx: click.Context | None,
     ) -> Path:
         return Path(str(super().convert(value, param, ctx)))
 
@@ -89,7 +88,7 @@ class EnumChoice(click.Choice):
     results in click.Choice(['bar'])
     """
 
-    def __init__(self, enum: Type[Enum]) -> None:
+    def __init__(self, enum: type[Enum]) -> None:
         if str not in enum.__mro__:
             raise TypeError('Enum does not subclass `str`')
 
@@ -99,8 +98,8 @@ class EnumChoice(click.Choice):
     def convert(
         self,
         value: str,
-        param: Optional[click.Parameter],
-        ctx: Optional[click.Context],
+        param: click.Parameter | None,
+        ctx: click.Context | None,
     ) -> str:
         return str(
             cast(Any, self.__enum(super().convert(value, param, ctx)).value)
@@ -118,7 +117,7 @@ def maybe_exit(retcode: int) -> None:
 
 
 def generate_client(
-    schema: Optional[str] = None, *, reload: bool = False
+    schema: str | None = None, *, reload: bool = False
 ) -> None:
     """Run `prisma generate` and update sys.modules"""
     args = ['generate']
@@ -155,7 +154,7 @@ def error(message: str, exit_: Literal[False]) -> None:
     ...
 
 
-def error(message: str, exit_: bool = True) -> Union[None, NoReturn]:
+def error(message: str, exit_: bool = True) -> None | NoReturn:
     click.echo(click.style(message, fg='bright_red', bold=True), err=True)
     if exit_:
         sys.exit(1)
