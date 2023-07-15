@@ -48,3 +48,4 @@ generator py {
   provider = "prisma-client-py"
   output   = "app/prisma"
 }
+```

@@ -1,5 +1,5 @@
 import inspect
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, AsyncIterator
 
 import prisma
 from prisma import Prisma
@@ -9,6 +9,15 @@ from ._utils import request_has_client
 
 if TYPE_CHECKING:
     from _pytest.fixtures import FixtureRequest
+
+
+@async_fixture(name='_cleanup_session', scope='session', autouse=True)
+async def cleanup_session() -> AsyncIterator[None]:
+    yield
+
+    client = prisma.get_client()
+    if client.is_connected():
+        await client.disconnect()
 
 
 @async_fixture(name='client', scope='session')

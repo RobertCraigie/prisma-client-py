@@ -131,6 +131,22 @@ class InputError(DataError):
     pass
 
 
+class TransactionError(PrismaError):
+    pass
+
+
+class TransactionExpiredError(TransactionError):
+    pass
+
+
+class TransactionNotStartedError(TransactionError):
+    def __init__(self) -> None:
+        super().__init__(
+            'Transaction has not been started yet.\n'
+            'Transactions must be used within a context manager or started manually.'
+        )
+
+
 class BuilderError(PrismaError):
     pass
 

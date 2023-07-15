@@ -112,7 +112,6 @@ jobs:
         run: |
           nox -s typesafety-mypy
 
-
   lint:
     name: lint
     runs-on: ubuntu-latest
