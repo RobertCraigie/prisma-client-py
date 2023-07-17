@@ -8,7 +8,7 @@
         <img src="https://img.shields.io/discord/933860922039099444?color=blue&label=chat&logo=discord" alt="Chat on Discord">
     </a>
     <a href="https://prisma.io">
-        <img src="https://img.shields.io/static/v1?label=prisma&message=4.14.0&color=blue&logo=prisma" alt="Supported Prisma version is 4.14.0">
+        <img src="https://img.shields.io/static/v1?label=prisma&message=4.15.0&color=blue&logo=prisma" alt="Supported Prisma version is 4.15.0">
     </a>
     <a href="https://github.com/grantjenks/blue">
         <img src="https://camo.githubusercontent.com/dbdbcf26db37abfa1f2ab7e6c28c8b3a199f2dad98e4ef53a50e9c45c7e4ace8/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636f64652532307374796c652d626c75652d626c75652e737667" alt="Code style: blue">
@@ -127,7 +127,7 @@ A prisma schema can define one or more generators, defined by the `generator` bl
 
 A generator determines what assets are created when you run the `prisma generate` command. The `provider` value defines which Prisma Client will be created. In this case, as we want to generate Prisma Client Python, we use the `prisma-client-py` value.
 
-You can also define where the client will be generated to with the `output` option. By default Prisma Client Python will be generated to the same location it was installed to, whether thats inside a virtual environment, the global python installation or anywhere else that python packages can be imported from.
+You can also define where the client will be generated to with the `output` option. By default Prisma Client Python will be generated to the same location it was installed to, whether that's inside a virtual environment, the global python installation or anywhere else that python packages can be imported from.
 
 For more options see [configuring Prisma Client Python](https://prisma-client-py.readthedocs.io/en/stable/reference/config/).
 

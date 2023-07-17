@@ -1,0 +1,2 @@
+-r lint.txt
+-r docs.txt

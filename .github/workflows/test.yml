@@ -112,7 +112,6 @@ jobs:
         run: |
           nox -s typesafety-mypy
 
-
   lint:
     name: lint
     runs-on: ubuntu-latest
@@ -252,7 +251,7 @@ jobs:
         run: |
           coverage run -m nox -s databases -- serve ${{ matrix.name }} --version=${{ matrix.version }}
 
-      - name: Run tests
+      - name: Run async tests
         run: |
           coverage run -m nox -s databases -- test --coverage --databases=${{ matrix.name }}
         env:
@@ -260,9 +259,23 @@ jobs:
           COVERAGE_FILE: .cache/.coverage.databases
 
       # these tests ensure that unsupported features, e.g. enums on SQLite actually fail
-      - name: Run inverse tests
+      - name: Run inverse async tests
         run: |
           coverage run -m nox -s databases -- test-inverse --coverage --databases=${{ matrix.name }}
+        env:
+          ${{ matrix.env }}: ${{ matrix.url }}
+          COVERAGE_FILE: .cache/.coverage.databases
+
+      - name: Run sync tests
+        run: |
+          coverage run -m nox -s databases -r -- test --coverage --databases=${{ matrix.name }} --for-async=false
+        env:
+          ${{ matrix.env }}: ${{ matrix.url }}
+          COVERAGE_FILE: .cache/.coverage.databases
+
+      - name: Run inverse sync tests
+        run: |
+          coverage run -m nox -s databases -r -- test-inverse --coverage --databases=${{ matrix.name }} --for-async=false
         env:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases

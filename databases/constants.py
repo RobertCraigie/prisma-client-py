@@ -38,6 +38,7 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         unsupported_features={
             'json_arrays',
             'array_push',
+            'transactions',
         },
     ),
     'sqlite': DatabaseConfig(
@@ -91,6 +92,7 @@ DATABASES_DIR = Path(__file__).parent
 
 # database features
 TESTS_DIR = DATABASES_DIR / 'tests'
+SYNC_TESTS_DIR = DATABASES_DIR / 'sync_tests'
 FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     'enum': ['test_enum.py', 'test_arrays/test_enum.py'],
     'json': [
@@ -101,6 +103,7 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     'arrays': [*_fromdir('arrays'), *_fromdir('types/raw_queries/arrays')],
     'array_push': _fromdir('arrays/push'),
     'json_arrays': ['arrays/test_json.py', 'arrays/push/test_json.py'],
+    'transactions': ['test_transactions.py'],
     # not yet implemented
     'date': [],
     'create_many': ['test_create_many.py'],
@@ -110,9 +113,7 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
 
 # config files
 PYRIGHT_CONFIG: pyright.Config = {
-    'include': [
-        'tests',
-    ],
+    'include': [],
     'exclude': [],
     # required so that Pyright can resolve the `lib` module
     'extraPaths': ['../'],

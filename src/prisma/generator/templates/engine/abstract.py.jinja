@@ -1,13 +1,17 @@
+{% set annotations = true %}
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import maybe_async_def with context %}
 # -- template engine/abstract.py.jinja --
 from abc import ABC, abstractmethod
+from ._types import TransactionId
 from ..types import DatasourceOverride
 from .._compat import get_running_loop
+
 
 __all__ = (
     'AbstractEngine',
 )
+
 
 class AbstractEngine(ABC):
     dml: str
@@ -54,7 +58,7 @@ class AbstractEngine(ABC):
         ...
 
     @abstractmethod
-    {{ maybe_async_def }}query(self, content: str) -> Any:
+    {{ maybe_async_def }}query(self, content: str, *, tx_id: TransactionId | None) -> Any:
         """Execute a GraphQL query.
 
         This method expects a JSON object matching this structure:
@@ -65,4 +69,19 @@ class AbstractEngine(ABC):
             'query': str,
         }
         """
+        ...
+
+    @abstractmethod
+    {{ maybe_async_def }}start_transaction(self, *, content: str) -> TransactionId:
+        """Start an interactive transaction, returns the transaction ID that can be used to perform subsequent operations"""
+        ...
+
+    @abstractmethod
+    {{ maybe_async_def }}commit_transaction(self, tx_id: TransactionId) -> None:
+        """Commit an interactive transaction, the given transaction will no longer be usable"""
+        ...
+
+    @abstractmethod
+    {{ maybe_async_def }}rollback_transaction(self, tx_id: TransactionId) -> None:
+        """Rollback an interactive transaction, the given transaction will no longer be usable"""
         ...

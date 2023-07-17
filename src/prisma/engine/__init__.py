@@ -1,4 +1,5 @@
 from .errors import *
+from ._types import TransactionId as TransactionId
 
 try:
     from .query import *

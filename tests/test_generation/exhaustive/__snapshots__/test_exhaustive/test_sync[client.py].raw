@@ -40,6 +40,8 @@ from typing_extensions import TypedDict, Literal
 
 LiteralString = str
 # -- template client.py.jinja --
+import warnings
+import logging
 from pathlib import Path
 from types import TracebackType
 from typing import Iterable
@@ -51,8 +53,8 @@ from . import types, models, errors, actions
 from .types import DatasourceOverride, HttpConfig
 from ._types import BaseModelT, PrismaMethod, NotGivenOr, NOT_GIVEN
 from .bases import _PrismaModel
-from .engine import AbstractEngine, QueryEngine, json as json_proto
-from .builder import QueryBuilder
+from .engine import AbstractEngine, QueryEngine, TransactionId, json as json_proto
+from .builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix
 from ._raw_query import deserialize_raw_results
@@ -68,6 +70,8 @@ __all__ = (
     'register',
     'get_client',
 )
+
+log: logging.Logger = logging.getLogger(__name__)
 
 SCHEMA_PATH = Path('<absolute-schema-path>')
 PACKAGED_SCHEMA_PATH = Path(__file__).parent.joinpath('schema.prisma')
@@ -185,11 +189,13 @@ class Prisma:
         'd',
         'e',
         '__engine',
-        '_active_provider',
-        '_log_queries',
+        '__copied',
+        '_tx_id',
         '_datasource',
-        '_connect_timeout',
+        '_log_queries',
         '_http_config',
+        '_connect_timeout',
+        '_active_provider',
     )
 
     def __init__(
@@ -214,12 +220,17 @@ class Prisma:
         self.c = actions.CActions[models.C](self, models.C)
         self.d = actions.DActions[models.D](self, models.D)
         self.e = actions.EActions[models.E](self, models.E)
+
+        # NOTE: if you add any more properties here then you may also need to forward
+        # them in the `_copy()` method.
         self.__engine: Optional[AbstractEngine] = None
         self._active_provider = 'postgresql'
         self._log_queries = log_queries
         self._datasource = datasource
         self._connect_timeout = connect_timeout
         self._http_config: HttpConfig = http or {}
+        self._tx_id: Optional[TransactionId] = None
+        self.__copied: bool = False
 
         if use_dotenv:
             load_env()
@@ -228,10 +239,15 @@ class Prisma:
             register(self)
 
     def __del__(self) -> None:
-        if self.__engine is not None:
-            self.__engine.stop()
+        # Note: as the transaction manager holds a reference to the original
+        # client as well as the transaction client the original client cannot
+        # be `free`d before the transaction is finished. So stopping the engine
+        # here should be safe.
+        if self.__engine is not None and not self.__copied:
+            log.debug('unclosed client - stopping engine')
+            engine = self.__engine
             self.__engine = None
-
+            engine.stop()
 
     def __enter__(self) -> 'Prisma':
         self.connect()
@@ -278,9 +294,10 @@ class Prisma:
     def disconnect(self, timeout: Optional[float] = None) -> None:
         """Disconnect the Prisma query engine."""
         if self.__engine is not None:
-            self.__engine.close(timeout=timeout)
-            self.__engine.stop(timeout=timeout)
+            engine = self.__engine
             self.__engine = None
+            engine.close(timeout=timeout)
+            engine.stop(timeout=timeout)
 
     def execute_raw(self, query: LiteralString, *args: Any) -> int:
         return self._execute_json_proto(
@@ -377,6 +394,35 @@ class Prisma:
             parser=parser,
         )
 
+    def tx(self, *, max_wait: int = 2000, timeout: int = 5000) -> 'TransactionManager':
+        """Returns a context manager for executing queries within a database transaction.
+
+        Entering the context manager returns a new Prisma instance wrapping all
+        actions within a transaction, queries will be isolated to the Prisma instance and
+        will not be commited to the database until the context manager exits.
+
+        By default, Prisma will wait a maximum of 2 seconds to acquire a transaction from the database. You can modify this
+        defualt with the `max_wait` argument which accepts a value in milliseconds.
+
+        By default, Prisma will cancel and rollback ay transactions that last longer than 5 seconds. You can modify this timeout
+        with the `timeout` argument which accepts a value in milliseconds.
+
+        Example usage:
+
+        ```py
+        with client.tx() as transaction:
+            user1 = client.user.create({'name': 'Robert'})
+            user2 = client.user.create({'name': 'Tegan'})
+        ```
+
+        In the above example, if the first database call succeeds but the second does not then neither of the records will be created.
+        """
+        return TransactionManager(client=self, max_wait=max_wait, timeout=timeout)
+
+    def is_transaction(self) -> bool:
+        """Returns True if the client is wrapped within a transaction"""
+        return self._tx_id is not None
+
     def batch_(self) -> 'Batch':
         """Returns a context manager for grouping write queries into a single transaction."""
         return Batch(client=self)
@@ -429,11 +475,11 @@ class Prisma:
 
         if ignore_exceptions is not None:
             try:
-                response = self._engine.query(query)
+                response = self._engine.query(query, tx_id=self._tx_id)
             except ignore_exceptions:
                 return None
         else:
-            response = self._engine.query(query)
+            response = self._engine.query(query, tx_id=self._tx_id)
 
 
         # response is in the structure `{'data': {'findUniqueUser': { ... }}}`
@@ -450,7 +496,7 @@ class Prisma:
         queries: list[json_proto.QueryInput],
     ) -> object:
         query = json_proto.serialize_batched_query(queries=queries)
-        return self._engine.query(query)
+        return self._engine.query(query, tx_id=self._tx_id)
 
     # TODO: don't return Any
     def _execute(
@@ -466,7 +512,26 @@ class Prisma:
             arguments=arguments,
             root_selection=root_selection,
         )
-        return self._engine.query(builder.build())
+        return self._engine.query(builder.build(), tx_id=self._tx_id)
+
+    def _copy(self) -> 'Prisma':
+        """Return a new Prisma instance using the same engine process (if connected).
+
+        This is only intended for private usage, there are no guarantees around this API.
+        """
+        new = Prisma(
+            use_dotenv=False,
+            http=self._http_config,
+            datasource=self._datasource,
+            log_queries=self._log_queries,
+            connect_timeout=self._connect_timeout,
+        )
+        new.__copied = True
+
+        if self.__engine is not None:
+            new._engine = self.__engine
+
+        return new
 
     def _create_engine(self, dml_path: Path = PACKAGED_SCHEMA_PATH) -> AbstractEngine:
         if ENGINE_TYPE == EngineType.binary:
@@ -487,6 +552,10 @@ class Prisma:
         if engine is None:
             raise errors.ClientNotConnectedError()
         return engine
+
+    @_engine.setter
+    def _engine(self, engine: AbstractEngine) -> None:
+        self.__engine = engine
 
     def _make_sqlite_datasource(self) -> DatasourceOverride:
         return {
@@ -510,6 +579,82 @@ class Prisma:
             'name': 'db',
             'url': OptionalValueFromEnvVar(**{'value': None, 'fromEnvVar': 'DB_URL'}).resolve(),
         }
+
+
+class TransactionManager:
+    """Context manager for wrapping a Prisma instance within a transaction.
+
+    This should never be created manually, instead it should be used
+    through the Prisma.tx() method.
+    """
+
+    def __init__(self, *, client: Prisma, max_wait: int, timeout: int) -> None:
+        self.__client = client
+        self._max_wait = max_wait
+        self._timeout = timeout
+        self._tx_id: Optional[TransactionId] = None
+
+    def start(self, *, _from_context: bool = False) -> Prisma:
+        """Start the transaction and return the wrapped Prisma instance"""
+        if self.__client.is_transaction():
+            # if we were called from the context manager then the stacklevel
+            # needs to be one higher to warn on the actual offending code
+            warnings.warn(
+                'The current client is already in a transaction. This can lead to surprising behaviour.',
+                UserWarning,
+                stacklevel=3 if _from_context else 2
+            )
+
+        tx_id = self.__client._engine.start_transaction(
+            content=dumps(
+                {
+                    'timeout': self._timeout,
+                    'max_wait': self._max_wait,
+                }
+            ),
+        )
+        self._tx_id = tx_id
+        client = self.__client._copy()
+        client._tx_id = tx_id
+        return client
+
+    def commit(self) -> None:
+        """Commit the transaction to the database, this transaction will no longer be usable"""
+        if self._tx_id is None:
+            raise errors.TransactionNotStartedError()
+
+        self.__client._engine.commit_transaction(self._tx_id)
+
+    def rollback(self) -> None:
+        """Do not commit the changes to the database, this transaction will no longer be usable"""
+        if self._tx_id is None:
+            raise errors.TransactionNotStartedError()
+
+        self.__client._engine.rollback_transaction(self._tx_id)
+
+    def __enter__(self) -> Prisma:
+        return self.start(_from_context=True)
+
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
+        if exc is None:
+            log.debug('Transaction exited with no exception - commiting')
+            self.commit()
+            return
+
+        log.debug('Transaction exited with exc type: %s - rolling back', exc_type)
+
+        try:
+            self.rollback()
+        except Exception as exc:
+            log.warning(
+                'Encountered exc `%s` while rolling back a transaction. Ignoring and raising original exception',
+                exc
+            )
 
 
 # TODO: this should return the results as well

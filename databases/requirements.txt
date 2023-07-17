@@ -1,9 +1,10 @@
 # TODO: merge with other dev requirements
 coverage==7.2.5
-syrupy==3.0.6
 dirty-equals==0.6.0
 distro
 
 -r ../pipelines/requirements/deps/pyright.txt
 -r ../pipelines/requirements/deps/pytest.txt
+-r ../pipelines/requirements/deps/pytest-mock.txt
 -r ../pipelines/requirements/deps/pytest-asyncio.txt
+-r ../pipelines/requirements/deps/syrupy.txt
