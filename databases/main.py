@@ -62,7 +62,9 @@ cli = typer.Typer(
 @cli.command()
 def test(
     *,
-    databases: list[str] = cast('list[str]', SUPPORTED_DATABASES),
+    databases: list[str] = cast(
+        'list[str]', SUPPORTED_DATABASES
+    ),  # pyright: ignore[reportCallInDefaultInitializer]
     exclude_databases: list[
         str
     ] = [],  # pyright: ignore[reportCallInDefaultInitializer]
@@ -118,7 +120,9 @@ def serve(database: str, *, version: Optional[str] = None) -> None:
 @cli.command(name='test-inverse')
 def test_inverse(
     *,
-    databases: list[str] = cast('list[str]', SUPPORTED_DATABASES),
+    databases: list[str] = cast(
+        'list[str]', SUPPORTED_DATABASES
+    ),  # pyright: ignore[reportCallInDefaultInitializer]
     coverage: bool = False,
     inplace: bool = False,
     pytest_args: Optional[str] = None,
@@ -433,7 +437,7 @@ def validate_database(database: str) -> SupportedDatabase:
     if database not in SUPPORTED_DATABASES:  # pragma: no cover
         raise ValueError(f'Unknown database: {database}')
 
-    return cast(SupportedDatabase, database)
+    return database
 
 
 def tests_reldir(*, for_async: bool) -> str:
