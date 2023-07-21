@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import os
 import sys
 import logging
 from enum import Enum
@@ -71,9 +74,9 @@ class PathlibPath(click.Path):
 
     def convert(
         self,
-        value: str,
-        param: Optional[click.Parameter],
-        ctx: Optional[click.Context],
+        value: str | os.PathLike[str],
+        param: click.Parameter | None,
+        ctx: click.Context | None,
     ) -> Path:
         return Path(str(super().convert(value, param, ctx)))
 

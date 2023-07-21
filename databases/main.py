@@ -62,7 +62,7 @@ cli = typer.Typer(
 @cli.command()
 def test(
     *,
-    databases: list[str] = SUPPORTED_DATABASES,
+    databases: list[str] = cast('list[str]', SUPPORTED_DATABASES),
     exclude_databases: list[
         str
     ] = [],  # pyright: ignore[reportCallInDefaultInitializer]
@@ -118,7 +118,7 @@ def serve(database: str, *, version: Optional[str] = None) -> None:
 @cli.command(name='test-inverse')
 def test_inverse(
     *,
-    databases: list[str] = SUPPORTED_DATABASES,
+    databases: list[str] = cast('list[str]', SUPPORTED_DATABASES),
     coverage: bool = False,
     inplace: bool = False,
     pytest_args: Optional[str] = None,
@@ -132,12 +132,12 @@ def test_inverse(
     - Our unit tests & linters fail
     """
     session = session_ctx.get()
-    databases = validate_databases(databases)
+    validated_databases = validate_databases(databases)
 
     with session.chdir(DATABASES_DIR):
         _setup_test_env(session, inplace=inplace)
 
-        for database in databases:
+        for database in validated_databases:
             config = CONFIG_MAPPING[database]
             print(title(config.name))
 
