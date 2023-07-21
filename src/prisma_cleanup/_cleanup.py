@@ -27,7 +27,7 @@ def cleanup(pkg_name: str = 'prisma') -> None:
     spec = find_spec(pkg_name)
     if spec is None:
         raise RuntimeError(f'Could not resolve package: {pkg_name}')
-    
+
     loader = spec.loader
     if loader is None:
         raise RuntimeError(f'No loader defined for: {pkg_name}')
