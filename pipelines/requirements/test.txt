@@ -4,6 +4,6 @@
 -r deps/pytest-mock.txt
 -r deps/syrupy.txt
 pytest-sugar
-mock==5.0.2
-pytest-mock==3.10.0
+mock==5.1.0
+pytest-mock==3.11.1
 pytest-subprocess==1.5.0

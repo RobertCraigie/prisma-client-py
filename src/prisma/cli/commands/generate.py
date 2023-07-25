@@ -19,7 +19,8 @@ ARG_TO_CONFIG_KEY = {
 log: logging.Logger = logging.getLogger(__name__)
 
 
-@click.command('generate')  # pyright: ignore - not sure why this is necessary
+# not sure why this type ignore is needed
+@click.command('generate')  # type: ignore
 @options.schema
 @options.watch
 @click.option(
