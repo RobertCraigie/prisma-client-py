@@ -4,14 +4,14 @@ from prisma.models import User
 
 async def main(client: Prisma) -> None:
     users = await client.query_raw('', model=User)
-    reveal_type(users)  # T: List[User]
+    reveal_type(users)  # T: list[User]
     reveal_type(users[0])  # T: User
     reveal_type(users[0].id)  # T: str
 
     users[0].foo  # E: Cannot access member "foo" for type "User"
 
     result = await client.query_raw('')
-    reveal_type(result)  # T: List[dict[str, Any]]
+    reveal_type(result)  # T: list[dict[str, Any]]
 
     query = 'safe StringLiteral query'
     await client.query_raw(query, model=User)

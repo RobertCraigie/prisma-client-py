@@ -8,7 +8,16 @@ import logging
 import warnings
 import contextlib
 from importlib.util import find_spec
-from typing import Any, TypeVar, Union, Dict, Iterator, Coroutine, NoReturn
+from typing import (
+    Any,
+    TypeVar,
+    Union,
+    Dict,
+    Iterator,
+    Coroutine,
+    NoReturn,
+    Callable,
+)
 
 from ._types import FuncType, CoroType, TypeGuard
 
@@ -135,3 +144,29 @@ def make_optional(value: _T) -> _T | None:
     but want to mark it as potentially None.
     """
     return value
+
+
+# TODO: use ParamSpec for more accurate types
+def allow_none(func: Callable[[object], _T]) -> Callable[[object], _T | None]:
+    """Wrap the given function with a `None` check on the first argument"""
+
+    def inner(value: object) -> _T | None:
+        if value is None:
+            return None
+        return func(value)
+
+    return inner
+
+
+# TODO: use ParamSpec for more accurate types
+def as_list(func: Callable[[object], _T]) -> Callable[[object], list[_T]]:
+    """Given a `list`, run the given function for each entry in the list"""
+
+    def inner(value: object) -> list[_T]:
+        if not isinstance(value, list):
+            raise TypeError(
+                f'Expected the first argument given to be a list but received {type(value)}'
+            )
+        return [func(entry) for entry in value]
+
+    return inner

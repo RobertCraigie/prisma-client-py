@@ -50,6 +50,14 @@ def deserialize_raw_results(
     ...
 
 
+@overload
+def deserialize_raw_results(
+    raw_list: list[dict[str, object]],
+    model: type[BaseModelT] | None,
+) -> list[BaseModelT] | list[dict[str, Any]]:
+    ...
+
+
 def deserialize_raw_results(
     raw_list: list[dict[str, Any]],
     model: type[BaseModelT] | None = None,
