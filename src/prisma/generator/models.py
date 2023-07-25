@@ -51,6 +51,7 @@ __all__ = (
     'PythonData',
     'DefaultData',
     'GenericData',
+    'BaseConfig',
 )
 
 # NOTE: this does not represent all the data that is passed by prisma
@@ -101,7 +102,7 @@ For more information see: https://prisma-client-py.readthedocs.io/en/stable/refe
 FAKER: Faker = Faker()
 
 
-ConfigT = TypeVar('ConfigT', bound=PydanticBaseModel)
+ConfigT = TypeVar('ConfigT', bound='BaseConfig')
 
 # Although we should just be able to access the config from the datamodel
 # we have to do some validation that requires access to the config, this is difficult
@@ -110,7 +111,7 @@ ConfigT = TypeVar('ConfigT', bound=PydanticBaseModel)
 # a separate config context.
 # TODO: better solution
 data_ctx: ContextVar['AnyData'] = ContextVar('data_ctx')
-config_ctx: ContextVar['Config'] = ContextVar('config_ctx')
+config_ctx: ContextVar['BaseConfig'] = ContextVar('config_ctx')
 
 
 def get_datamodel() -> 'Datamodel':
@@ -302,7 +303,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
     dmmf: 'DMMF' = FieldInfo(alias='dmmf')
     schema_path: Path = FieldInfo(alias='schemaPath')
     datasources: List['Datasource'] = FieldInfo(alias='datasources')
-    other_generators: List['Generator[_ModelAllowAll]'] = FieldInfo(
+    other_generators: List['Generator[_AnyConfig]'] = FieldInfo(
         alias='otherGenerators'
     )
     binary_paths: 'BinaryPaths' = FieldInfo(
@@ -449,7 +450,20 @@ class OptionalValueFromEnvVar(BaseModel):
         return value
 
 
-class Config(BaseSettings):
+class BaseConfig(PydanticBaseModel):
+    # this seems to be the only good method for setting the contextvar as
+    # we don't control the actual construction of the object like we do for
+    # the Data model.
+    # we do not expose this to type checkers so that the generated __init__
+    # signature is preserved.
+    if not TYPE_CHECKING:
+
+        def __init__(self, **kwargs: object) -> None:
+            super().__init__(**kwargs)
+            config_ctx.set(self)
+
+
+class Config(BaseConfig, BaseSettings):
     """Custom generator config options."""
 
     interface: InterfaceChoices = InterfaceChoices.asyncio
@@ -462,17 +476,6 @@ class Config(BaseSettings):
     # this should be a list of experimental features
     # https://github.com/prisma/prisma/issues/12442
     enable_experimental_decimal: bool = FieldInfo(default=False)
-
-    # this seems to be the only good method for setting the contextvar as
-    # we don't control the actual construction of the object like we do for
-    # the Data model.
-    # we do not expose this to type checkers so that the generated __init__
-    # signature is preserved.
-    if not TYPE_CHECKING:
-
-        def __init__(self, **kwargs: object) -> None:
-            super().__init__(**kwargs)
-            config_ctx.set(self)
 
     class Config(BaseSettings.Config):
         extra: Extra = Extra.forbid
@@ -1025,13 +1028,13 @@ class DefaultValue(BaseModel):
     name: str
 
 
-class _EmptyModel(BaseModel):
-    class Config(BaseModel.Config):
+class _EmptyModel(BaseConfig):
+    class Config(BaseConfig.Config):
         extra: Extra = Extra.forbid
 
 
-class _ModelAllowAll(BaseModel):
-    class Config(BaseModel.Config):
+class _AnyConfig(BaseConfig):
+    class Config(BaseConfig.Config):
         extra: Extra = Extra.allow
 
 

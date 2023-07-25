@@ -1,9 +1,13 @@
 from pathlib import Path
-from pydantic import BaseModel
-from prisma.generator import GenericGenerator, GenericData, Manifest
+from prisma.generator import (
+    GenericGenerator,
+    GenericData,
+    Manifest,
+    BaseConfig,
+)
 
 
-class Config(BaseModel):
+class Config(BaseConfig):
     header: str = '# My Prisma Models'
 
 
