@@ -1,6 +1,6 @@
 # Pyright
 
-[Pyright](https://github.com/microsoft/pyright) is a static type checker for python created my microsoft and designed for speed and configurability.
+[Pyright](https://github.com/microsoft/pyright) is a static type checker for python created by Microsoft and designed for speed and configurability.
 
 ## Installing
 
