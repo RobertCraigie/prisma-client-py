@@ -45,6 +45,9 @@ from . import fields, actions
 from ._types import FuncType
 from .builder import serialize_base64
 
+if TYPE_CHECKING:
+    from .client import Prisma
+
 
 _PrismaModelT = TypeVar('_PrismaModelT', bound='_PrismaModel')
 
@@ -69,120 +72,120 @@ class BasePost(_PrismaModel):
     __prisma_model__: ClassVar[Literal['Post']] = 'Post'
 
     @classmethod
-    def prisma(cls: Type[_PrismaModelT]) -> 'actions.PostActions[_PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.PostActions[_PrismaModelT]':
         from .client import get_client
 
-        return actions.PostActions[_PrismaModelT](get_client(), cls)
+        return actions.PostActions[_PrismaModelT](client or get_client(), cls)
 
 
 class BaseUser(_PrismaModel):
     __prisma_model__: ClassVar[Literal['User']] = 'User'
 
     @classmethod
-    def prisma(cls: Type[_PrismaModelT]) -> 'actions.UserActions[_PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.UserActions[_PrismaModelT]':
         from .client import get_client
 
-        return actions.UserActions[_PrismaModelT](get_client(), cls)
+        return actions.UserActions[_PrismaModelT](client or get_client(), cls)
 
 
 class BaseM(_PrismaModel):
     __prisma_model__: ClassVar[Literal['M']] = 'M'
 
     @classmethod
-    def prisma(cls: Type[_PrismaModelT]) -> 'actions.MActions[_PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.MActions[_PrismaModelT]':
         from .client import get_client
 
-        return actions.MActions[_PrismaModelT](get_client(), cls)
+        return actions.MActions[_PrismaModelT](client or get_client(), cls)
 
 
 class BaseN(_PrismaModel):
     __prisma_model__: ClassVar[Literal['N']] = 'N'
 
     @classmethod
-    def prisma(cls: Type[_PrismaModelT]) -> 'actions.NActions[_PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.NActions[_PrismaModelT]':
         from .client import get_client
 
-        return actions.NActions[_PrismaModelT](get_client(), cls)
+        return actions.NActions[_PrismaModelT](client or get_client(), cls)
 
 
 class BaseOneOptional(_PrismaModel):
     __prisma_model__: ClassVar[Literal['OneOptional']] = 'OneOptional'
 
     @classmethod
-    def prisma(cls: Type[_PrismaModelT]) -> 'actions.OneOptionalActions[_PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.OneOptionalActions[_PrismaModelT]':
         from .client import get_client
 
-        return actions.OneOptionalActions[_PrismaModelT](get_client(), cls)
+        return actions.OneOptionalActions[_PrismaModelT](client or get_client(), cls)
 
 
 class BaseManyRequired(_PrismaModel):
     __prisma_model__: ClassVar[Literal['ManyRequired']] = 'ManyRequired'
 
     @classmethod
-    def prisma(cls: Type[_PrismaModelT]) -> 'actions.ManyRequiredActions[_PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.ManyRequiredActions[_PrismaModelT]':
         from .client import get_client
 
-        return actions.ManyRequiredActions[_PrismaModelT](get_client(), cls)
+        return actions.ManyRequiredActions[_PrismaModelT](client or get_client(), cls)
 
 
 class BaseLists(_PrismaModel):
     __prisma_model__: ClassVar[Literal['Lists']] = 'Lists'
 
     @classmethod
-    def prisma(cls: Type[_PrismaModelT]) -> 'actions.ListsActions[_PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.ListsActions[_PrismaModelT]':
         from .client import get_client
 
-        return actions.ListsActions[_PrismaModelT](get_client(), cls)
+        return actions.ListsActions[_PrismaModelT](client or get_client(), cls)
 
 
 class BaseA(_PrismaModel):
     __prisma_model__: ClassVar[Literal['A']] = 'A'
 
     @classmethod
-    def prisma(cls: Type[_PrismaModelT]) -> 'actions.AActions[_PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.AActions[_PrismaModelT]':
         from .client import get_client
 
-        return actions.AActions[_PrismaModelT](get_client(), cls)
+        return actions.AActions[_PrismaModelT](client or get_client(), cls)
 
 
 class BaseB(_PrismaModel):
     __prisma_model__: ClassVar[Literal['B']] = 'B'
 
     @classmethod
-    def prisma(cls: Type[_PrismaModelT]) -> 'actions.BActions[_PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.BActions[_PrismaModelT]':
         from .client import get_client
 
-        return actions.BActions[_PrismaModelT](get_client(), cls)
+        return actions.BActions[_PrismaModelT](client or get_client(), cls)
 
 
 class BaseC(_PrismaModel):
     __prisma_model__: ClassVar[Literal['C']] = 'C'
 
     @classmethod
-    def prisma(cls: Type[_PrismaModelT]) -> 'actions.CActions[_PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.CActions[_PrismaModelT]':
         from .client import get_client
 
-        return actions.CActions[_PrismaModelT](get_client(), cls)
+        return actions.CActions[_PrismaModelT](client or get_client(), cls)
 
 
 class BaseD(_PrismaModel):
     __prisma_model__: ClassVar[Literal['D']] = 'D'
 
     @classmethod
-    def prisma(cls: Type[_PrismaModelT]) -> 'actions.DActions[_PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.DActions[_PrismaModelT]':
         from .client import get_client
 
-        return actions.DActions[_PrismaModelT](get_client(), cls)
+        return actions.DActions[_PrismaModelT](client or get_client(), cls)
 
 
 class BaseE(_PrismaModel):
     __prisma_model__: ClassVar[Literal['E']] = 'E'
 
     @classmethod
-    def prisma(cls: Type[_PrismaModelT]) -> 'actions.EActions[_PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.EActions[_PrismaModelT]':
         from .client import get_client
 
-        return actions.EActions[_PrismaModelT](get_client(), cls)
+        return actions.EActions[_PrismaModelT](client or get_client(), cls)
 
 
 

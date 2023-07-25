@@ -5,8 +5,38 @@ import pytest
 
 import prisma
 from prisma import Prisma
-from prisma.models import User
+from prisma.models import User, Profile
 from ..utils import CURRENT_DATABASE
+
+
+def test_model_query(client: Prisma) -> None:
+    """Basic usage within model queries"""
+    with client.tx(timeout=10 * 100) as tx:
+        user = User.prisma(tx).create({'name': 'Robert'})
+        assert user.name == 'Robert'
+
+        # ensure not commited outside transaction
+        assert client.user.count() == 0
+
+        Profile.prisma(tx).create(
+            {
+                'description': 'Hello, there!',
+                'country': 'Scotland',
+                'user': {
+                    'connect': {
+                        'id': user.id,
+                    },
+                },
+            },
+        )
+
+    found = client.user.find_unique(
+        where={'id': user.id}, include={'profile': True}
+    )
+    assert found is not None
+    assert found.name == 'Robert'
+    assert found.profile is not None
+    assert found.profile.description == 'Hello, there!'
 
 
 def test_context_manager(client: Prisma) -> None:

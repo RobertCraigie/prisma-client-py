@@ -5,8 +5,39 @@ import pytest
 
 import prisma
 from prisma import Prisma
-from prisma.models import User
+from prisma.models import User, Profile
 from ..utils import CURRENT_DATABASE
+
+
+@pytest.mark.asyncio
+async def test_model_query(client: Prisma) -> None:
+    """Basic usage within model queries"""
+    async with client.tx(timeout=10 * 100) as tx:
+        user = await User.prisma(tx).create({'name': 'Robert'})
+        assert user.name == 'Robert'
+
+        # ensure not commited outside transaction
+        assert await client.user.count() == 0
+
+        await Profile.prisma(tx).create(
+            {
+                'description': 'Hello, there!',
+                'country': 'Scotland',
+                'user': {
+                    'connect': {
+                        'id': user.id,
+                    },
+                },
+            },
+        )
+
+    found = await client.user.find_unique(
+        where={'id': user.id}, include={'profile': True}
+    )
+    assert found is not None
+    assert found.name == 'Robert'
+    assert found.profile is not None
+    assert found.profile.description == 'Hello, there!'
 
 
 @pytest.mark.asyncio
