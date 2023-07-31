@@ -258,6 +258,13 @@ class Prisma:
         if self.is_connected():
             await self.disconnect()
 
+    def is_registered(self) -> bool:
+        """Returns True if this client instance is registered"""
+        try:
+            return get_client() is self
+        except errors.ClientNotRegisteredError:
+            return False
+
     def is_connected(self) -> bool:
         """Returns True if the client is connected to the query engine, False otherwise."""
         return self.__engine is not None
