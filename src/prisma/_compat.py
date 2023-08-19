@@ -1,14 +1,19 @@
 from __future__ import annotations
 
+import os
 import sys
-from typing import TYPE_CHECKING, Any, Callable, cast
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 from asyncio import get_running_loop as get_running_loop
 
 import pydantic
-from pydantic import BaseConfig, BaseModel
+from pydantic import BaseModel
+from pydantic.fields import FieldInfo
 
 from ._types import CallableT
 from .utils import make_optional
+
+
+_ModelT = TypeVar('_ModelT', bound=BaseModel)
 
 
 if TYPE_CHECKING:
@@ -45,37 +50,22 @@ else:
 
 
 # Pydantic v2 compat
-pydantic_major_version = int(pydantic.VERSION.split('.')[0])
+PYDANTIC_V2 = pydantic.VERSION.startswith('2.')
 
 if TYPE_CHECKING:
-    from pydantic import BaseSettings as BaseSettings
-
     # TODO: just copy these in
     from pydantic.typing import (
         is_typeddict as is_typeddict,
         get_args as get_args,
     )
 
-    BaseSettingsConfig = BaseSettings.Config
+    BaseSettings = BaseModel
+    BaseSettingsConfig = pydantic.BaseConfig  # type: ignore
 
     class GenericModel(BaseModel):
         ...
 
 else:
-    try:
-        from pydantic_settings import BaseSettings
-    except ImportError:
-        try:
-            from pydantic.v1 import BaseSettings
-        except ImportError:
-            # TODO: helpful error here in v2
-            from pydantic import BaseSettings
-
-    try:
-        BaseSettingsConfig = BaseSettings.Config
-    except AttributeError:
-        BaseSettingsConfig = BaseConfig
-
     try:
         from pydantic.v1.typing import is_typeddict, get_args
     except ImportError:
@@ -91,24 +81,104 @@ else:
         # note: there no longer needs to be a distinction between these in v2
         from pydantic import BaseModel as GenericModel
 
+    if PYDANTIC_V2:
+        from pydantic import ValidationInfo, model_validator
 
-def model_json(model: BaseModel, indent: int) -> str:
-    if pydantic_major_version == 1:
-        return model.json(indent=indent)
+        class BaseSettings(BaseModel):
+            @model_validator(mode='before')
+            def root_validator(cls, values: Any, info: ValidationInfo) -> Any:
+                return _env_var_resolver(cls, values)
 
-    return model.model_dump_json(indent=indent)  # type: ignore
+    else:
+        from pydantic import BaseSettings
+
+
+# refactored config
+if TYPE_CHECKING:
+    from pydantic import ConfigDict as ConfigDict
+else:
+    if PYDANTIC_V2:
+        from pydantic import ConfigDict
+    else:
+        ConfigDict = None
+
+
+ENV_VAR_KEY = '$env'
+
+def _env_var_resolver(
+    model_cls: type[BaseModel], values: Any
+) -> dict[str, Any]:
+    assert isinstance(values, dict)
+
+    for key, field_info in model_cls.model_fields.items():
+        extra = _resolve_json_schema_extra(field_info)
+        env_var = extra.get(ENV_VAR_KEY)
+        if not env_var:
+            continue
+
+        assert isinstance(env_var, str)
+        if key in values:
+            continue
+
+        value = os.environ.get(env_var)
+        if value is not None:
+            values[key] = value
+
+    return values
+
+
+def _resolve_json_schema_extra(field: FieldInfo) -> dict[str, Any]:
+    extra = field.json_schema_extra
+    if callable(extra):
+        raise RuntimeError('Unexpected field json schema is a function')
+
+    return extra or {}
+
+
+def model_json(model: BaseModel, indent: int | None = None) -> str:
+    if PYDANTIC_V2:
+        return model.model_dump_json(indent=indent)
+
+    return model.json(indent=indent)  # type: ignore
+
+
+def model_dict(
+    model: BaseModel,
+    exclude_unset: bool = False,
+) -> dict[str, Any]:
+    if PYDANTIC_V2:
+        return model.model_dump(exclude_unset=exclude_unset)
+
+    return model.dict(exclude_unset=exclude_unset)  # type: ignore
+
+
+def model_rebuild(model: type[BaseModel]) -> None:
+    if PYDANTIC_V2:
+        model.model_rebuild()
+    else:
+        model.update_forward_refs()  # type: ignore
+
+
+def model_parse(model: type[_ModelT], obj: Any) -> _ModelT:
+    if PYDANTIC_V2:
+        return model.model_validate(obj)
+    else:
+        return model.parse_obj(obj)  # type: ignore
 
 
 def Field(*, env: str | None = None, **extra: Any) -> Any:
-    if pydantic_major_version == 1:
-        return pydantic.Field(**extra, env=env)  # type: ignore
-    return pydantic.Field(**extra, validation_alias=env)
+    if PYDANTIC_V2:
+        # we store environment variable metadata in $env
+        # as a workaround to support BaseSettings behaviour ourselves
+        # as we can't depend on pydantic-settings
+        json_schema_extra = None
+        if env:
+            json_schema_extra = {ENV_VAR_KEY: env}
 
+        return pydantic.Field(**extra, json_schema_extra=json_schema_extra)
 
-if pydantic_major_version == 1:
-    pydantic_extra_ignore = pydantic.Extra.ignore
-else:
-    pydantic_extra_ignore = cast(Any, 'ignore')
+    return pydantic.Field(**extra, env=env)  # type: ignore
+
 
 if sys.version_info[:2] < (3, 8):
     # cached_property doesn't define type hints so just ignore it

@@ -5,7 +5,7 @@ from typing import Type, TypeVar, Any, cast
 
 from pydantic import BaseModel, Extra
 
-from ._compat import is_typeddict
+from ._compat import is_typeddict, model_parse, model_dict
 from ._types import Protocol, runtime_checkable
 
 
@@ -84,5 +84,5 @@ def validate(type: Type[T], data: Any) -> T:
         model.update_forward_refs(**vars(_get_module(type)))
         type.__pydantic_model__ = model  # type: ignore
 
-    instance = model.parse_obj(data)
-    return cast(T, instance.dict(exclude_unset=True))
+    instance = model_parse(model, data)
+    return cast(T, model_dict(instance, exclude_unset=True))

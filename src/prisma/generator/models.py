@@ -12,6 +12,7 @@ from contextvars import ContextVar
 from typing import (
     TYPE_CHECKING,
     Any,
+    ClassVar,
     Generic,
     Iterable,
     NoReturn,
@@ -26,28 +27,29 @@ from typing import (
 )
 
 import click
+import pydantic
 from pydantic import (
     BaseModel as PydanticBaseModel,
     Extra,
-    Field as FieldInfo,
 )
 from pydantic.fields import PrivateAttr
 from .utils import Faker, Sampler, clean_multiline
 from .. import config
 from ..utils import DEBUG_GENERATOR, assert_never
 from .._compat import (
+    PYDANTIC_V2,
+    ConfigDict,
     BaseSettings,
     BaseSettingsConfig,
     GenericModel,
+    Field as FieldInfo,
     validator,
     root_validator,
     cached_property,
+    model_rebuild,
 )
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
-
-if TYPE_CHECKING:
-    from pydantic.env_settings import SettingsSourceCallable
 
 
 __all__ = (
@@ -56,6 +58,8 @@ __all__ = (
     'DefaultData',
     'GenericData',
 )
+
+_ModelT = TypeVar('_ModelT', bound=pydantic.BaseModel)
 
 # NOTE: this does not represent all the data that is passed by prisma
 
@@ -309,11 +313,33 @@ class GenericData(GenericModel, Generic[ConfigT]):
         alias='binaryPaths', default_factory=lambda: BinaryPaths()
     )
 
-    @classmethod
-    def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
-        data = super().parse_obj(obj)
-        data_ctx.set(data)
-        return data
+    if PYDANTIC_V2:
+
+        @classmethod
+        def model_validate(
+            cls: type[_ModelT],
+            obj: Any,
+            *,
+            strict: 'bool | None' = None,
+            from_attributes: 'bool | None' = None,
+            context: 'dict[str, Any] | None' = None,
+        ) -> '_ModelT':
+            data = super().model_validate(
+                obj,
+                strict=strict,
+                from_attributes=from_attributes,
+                context=context,
+            )
+            data_ctx.set(data)
+            return data
+
+    else:
+
+        @classmethod
+        def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
+            data = super().parse_obj(obj)  # type: ignore
+            data_ctx.set(data)
+            return data
 
     def to_params(self) -> Dict[str, Any]:
         """Get the parameters that should be sent to Jinja templates"""
@@ -387,8 +413,12 @@ class BinaryPaths(BaseModel):
         alias='prismaFmt',
     )
 
-    class Config(BaseModel.Config):
-        extra: Extra = Extra.ignore
+    if PYDANTIC_V2:
+        model_config: ClassVar[ConfigDict] = ConfigDict(extra='allow')
+    else:
+
+        class Config(pydantic.BaseConfig):  # pyright: ignore[reportDeprecated]
+            extra: Any = Extra.allow  # type: ignore
 
 
 class Datasource(BaseModel):
@@ -452,16 +482,25 @@ class OptionalValueFromEnvVar(BaseModel):
 class Config(BaseSettings):
     """Custom generator config options."""
 
-    interface: InterfaceChoices = InterfaceChoices.asyncio
-    partial_type_generator: Optional[Module] = None
-    recursive_type_depth: int = FieldInfo(
-        default_factory=_recursive_type_depth_factory
+    interface: InterfaceChoices = FieldInfo(
+        default=InterfaceChoices.asyncio, env='PRISMA_PY_CONFIG_INTERFACE'
     )
-    engine_type: EngineType = FieldInfo(default=EngineType.binary)
+    partial_type_generator: Optional[Module] = FieldInfo(
+        default=None, env='PRISMA_PY_CONFIG_PARTIAL_TYPE_GENERATOR'
+    )
+    recursive_type_depth: int = FieldInfo(
+        default_factory=_recursive_type_depth_factory,
+        env='PRISMA_PY_CONFIG_RECURSIVE_TYPE_DEPTH',
+    )
+    engine_type: EngineType = FieldInfo(
+        default=EngineType.binary, env='PRISMA_PY_CONFIG_ENGINE_TYPE'
+    )
 
     # this should be a list of experimental features
     # https://github.com/prisma/prisma/issues/12442
-    enable_experimental_decimal: bool = FieldInfo(default=False)
+    enable_experimental_decimal: bool = FieldInfo(
+        default=False, env='PRISMA_PY_CONFIG_ENABLE_EXPERIMENTAL_DECIMAL'
+    )
 
     # this seems to be the only good method for setting the contextvar as
     # we don't control the actual construction of the object like we do for
@@ -474,21 +513,27 @@ class Config(BaseSettings):
             super().__init__(**kwargs)
             config_ctx.set(self)
 
-    class Config(BaseSettingsConfig):
-        extra: Extra = Extra.forbid
-        use_enum_values: bool = True
-        env_prefix: str = 'prisma_py_config_'
-        allow_population_by_field_name: bool = True
+    if PYDANTIC_V2:
+        model_config: ClassVar[ConfigDict] = ConfigDict(
+            extra='forbid',
+            use_enum_values=True,
+            populate_by_name=True,
+        )
+    else:
+        if not TYPE_CHECKING:
 
-        @classmethod
-        def customise_sources(
-            cls,
-            init_settings: 'SettingsSourceCallable',
-            env_settings: 'SettingsSourceCallable',
-            file_secret_settings: 'SettingsSourceCallable',
-        ) -> Tuple['SettingsSourceCallable', ...]:
-            # prioritise env settings over init settings
-            return env_settings, init_settings, file_secret_settings
+            class Config(BaseSettingsConfig):
+                extra: Extra = pydantic.Extra.forbid
+                use_enum_values: bool = True
+                env_prefix: str = 'prisma_py_config_'
+                allow_population_by_field_name: bool = True
+
+                @classmethod
+                def customise_sources(
+                    cls, init_settings, env_settings, file_secret_settings
+                ):
+                    # prioritise env settings over init settings
+                    return env_settings, init_settings, file_secret_settings
 
     @root_validator(pre=True, skip_on_failure=True)
     @classmethod
@@ -1032,13 +1077,21 @@ class DefaultValue(BaseModel):
 
 
 class _EmptyModel(BaseModel):
-    class Config(BaseModel.Config):
-        extra: Extra = Extra.forbid
+    if PYDANTIC_V2:
+        model_config = ConfigDict(extra='forbid')
+    elif not TYPE_CHECKING:
+
+        class Config(BaseModel.Config):
+            extra: Extra = pydantic.Extra.forbid
 
 
 class _ModelAllowAll(BaseModel):
-    class Config(BaseModel.Config):
-        extra: Extra = Extra.allow
+    if PYDANTIC_V2:
+        model_config = ConfigDict(extra='allow')
+    elif not TYPE_CHECKING:
+
+        class Config(BaseModel.Config):
+            extra: Extra = pydantic.Extra.allow
 
 
 class PythonData(GenericData[Config]):
@@ -1053,14 +1106,14 @@ class DefaultData(GenericData[_EmptyModel]):
 # as its purpose is to signify that the data is config agnostic
 AnyData = GenericData[Any]
 
-Enum.update_forward_refs()
-DMMF.update_forward_refs()
-GenericData.update_forward_refs()
-Field.update_forward_refs()
-Model.update_forward_refs()
-Datamodel.update_forward_refs()
-Generator.update_forward_refs()
-Datasource.update_forward_refs()
+model_rebuild(Enum)
+model_rebuild(DMMF)
+model_rebuild(GenericData)
+model_rebuild(Field)
+model_rebuild(Model)
+model_rebuild(Datamodel)
+model_rebuild(Generator)
+model_rebuild(Datasource)
 
 
 from .schema import Schema

@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Tuple, Type, Union
 from pydantic import BaseModel
 
 from .models import AnyData, Model as ModelInfo, PrimaryKey
-from .._compat import root_validator, cached_property
+from .._compat import root_validator, cached_property, model_rebuild
 
 
 class Kind(str, Enum):
@@ -141,7 +141,7 @@ class Model(BaseModel):
         return PrismaType.from_subtypes(subtypes, name=f'{model}OrderByInput')
 
 
-Schema.update_forward_refs()
-PrismaType.update_forward_refs()
-PrismaDict.update_forward_refs()
-PrismaAlias.update_forward_refs()
+model_rebuild(Schema)
+model_rebuild(PrismaType)
+model_rebuild(PrismaDict)
+model_rebuild(PrismaAlias)

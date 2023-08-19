@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from prisma import Prisma
 from prisma.fields import Base64
 from prisma.models import Types
+from prisma._compat import model_parse
 
 
 def test_filtering(client: Prisma) -> None:
@@ -97,7 +98,8 @@ def test_json(client: Prisma) -> None:
 def test_constructing(client: Prisma) -> None:
     """Base64 fields can be passed to the model constructor"""
     record = client.types.create({})
-    model = Types.parse_obj(
+    model = model_parse(
+        Types,
         {
             **record.dict(exclude={'json_obj'}),
             'bytes': Base64.encode(b'foo'),

@@ -1,21 +1,21 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Union, Optional, List
+from typing import TYPE_CHECKING, Union, Optional, List, ClassVar
 
 import tomlkit
-from pydantic import Extra
+import pydantic
 
 from ._proxy import LazyProxy
 from ._compat import (
+    PYDANTIC_V2,
     BaseSettings,
     BaseSettingsConfig,
+    ConfigDict,
     Field,
-    pydantic_extra_ignore,
+    model_parse,
+    model_dict,
 )
-
-if TYPE_CHECKING:
-    from pydantic.env_settings import SettingsSourceCallable
 
 
 class DefaultConfig(BaseSettings):
@@ -73,22 +73,24 @@ class DefaultConfig(BaseSettings):
         / 'nodeenv',
     )
 
-    class Config(BaseSettingsConfig):
-        extra: Extra = pydantic_extra_ignore
+    if PYDANTIC_V2:
+        model_config: ClassVar[ConfigDict] = ConfigDict(extra='ignore')
+    else:
+        if not TYPE_CHECKING:
 
-        @classmethod
-        def customise_sources(
-            cls,
-            init_settings: SettingsSourceCallable,
-            env_settings: SettingsSourceCallable,
-            file_secret_settings: SettingsSourceCallable,
-        ) -> tuple[SettingsSourceCallable, ...]:
-            # prioritise env settings over init settings
-            return env_settings, init_settings, file_secret_settings
+            class Config(BaseSettingsConfig):
+                extra: Extra = pydantic.Extra.ignore
+
+                @classmethod
+                def customise_sources(
+                    cls, init_settings, env_settings, file_secret_settings
+                ):
+                    # prioritise env settings over init settings
+                    return env_settings, init_settings, file_secret_settings
 
 
 class Config(DefaultConfig):
-    binary_cache_dir: Path = Field()
+    binary_cache_dir: Path = Field(env='PRISMA_BINARY_CACHE_DIR')
 
     @classmethod
     def from_base(cls, config: DefaultConfig) -> Config:
@@ -102,7 +104,7 @@ class Config(DefaultConfig):
                 / config.expected_engine_version
             )
 
-        return cls.parse_obj(config.dict())
+        return model_parse(cls, model_dict(config))
 
     @classmethod
     def load(cls, path: Path | None = None) -> Config:
@@ -122,7 +124,7 @@ class Config(DefaultConfig):
 
     @classmethod
     def parse(cls, **kwargs: object) -> Config:
-        return cls.from_base(DefaultConfig.parse_obj(kwargs))
+        return cls.from_base(model_parse(DefaultConfig, kwargs))
 
 
 class LazyConfigProxy(LazyProxy[Config]):
