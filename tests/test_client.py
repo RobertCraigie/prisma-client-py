@@ -243,3 +243,17 @@ async def test_copied_client_does_not_close_engine(client: Prisma) -> None:
 
     assert client.is_connected()
     await client.user.count()  # ensure queries can still be executed
+
+
+def test_is_registered(client: Prisma) -> None:
+    """The Prisma.is_registered() method can be used both when the client is registered
+    and when there is no client registered at all.
+    """
+    assert client.is_registered()
+
+    other_client = Prisma()
+    assert not other_client.is_registered()
+
+    with reset_client():
+        assert not client.is_registered()
+        assert not other_client.is_registered()
