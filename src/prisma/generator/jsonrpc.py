@@ -30,13 +30,13 @@ class Request(BaseModel):
     method: str
 
     # request payload
-    params: Optional[Dict[str, Any]]
+    params: Optional[Dict[str, Any]] = None
 
 
 class SuccessResponse(BaseModel):
     id: int
     jsonrpc: str = '2.0'
-    result: Optional[Dict[str, Any]]
+    result: Optional[Dict[str, Any]] = None
 
 
 class ErrorData(TypedDict):

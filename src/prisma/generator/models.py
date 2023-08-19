@@ -28,10 +28,9 @@ from typing import (
 
 import click
 import pydantic
-from pydantic import (
-    BaseModel as PydanticBaseModel,
-    Extra,
-)
+
+# TODO(before merge): remove
+from pydantic import BaseModel as PydanticBaseModel
 from pydantic.fields import PrivateAttr
 from .utils import Faker, Sampler, clean_multiline
 from .. import config
@@ -43,8 +42,8 @@ from .._compat import (
     BaseSettingsConfig,
     GenericModel,
     Field as FieldInfo,
-    validator,
     root_validator,
+    field_validator,
     cached_property,
     model_rebuild,
 )
@@ -220,13 +219,21 @@ def _recursive_type_depth_factory() -> int:
 
 
 class BaseModel(PydanticBaseModel):
-    class Config:
-        arbitrary_types_allowed: bool = True
-        json_encoders: Dict[Type[Any], Any] = {
-            Path: _pathlib_serializer,
-            machinery.ModuleSpec: _module_spec_serializer,
-        }
-        keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
+    if PYDANTIC_V2:
+        model_config = ConfigDict(
+            arbitrary_types_allowed=True,
+            # TODO(before merge): replicate json_encoders
+            ignored_types=(cached_property,),
+        )
+    else:
+
+        class Config:
+            arbitrary_types_allowed: bool = True
+            json_encoders: Dict[Type[Any], Any] = {
+                Path: _pathlib_serializer,
+                machinery.ModuleSpec: _module_spec_serializer,
+            }
+            keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
 
 
 class InterfaceChoices(str, enum.Enum):
@@ -243,10 +250,14 @@ class EngineType(str, enum.Enum):
 class Module(BaseModel):
     spec: machinery.ModuleSpec
 
-    class Config(BaseModel.Config):
-        arbitrary_types_allowed: bool = True
+    if PYDANTIC_V2:
+        model_config = ConfigDict(arbitrary_types_allowed=True)
+    else:
 
-    @validator('spec', pre=True, allow_reuse=True)
+        class Config(BaseModel.Config):
+            arbitrary_types_allowed: bool = True
+
+    @field_validator('spec', pre=True, allow_reuse=True)
     @classmethod
     def spec_validator(cls, value: Optional[str]) -> machinery.ModuleSpec:
         spec: Optional[machinery.ModuleSpec] = None
@@ -437,7 +448,7 @@ class Generator(GenericModel, Generic[ConfigT]):
     binary_targets: List['ValueFromEnvVar'] = FieldInfo(alias='binaryTargets')
     preview_features: List[str] = FieldInfo(alias='previewFeatures')
 
-    @validator('binary_targets')
+    @field_validator('binary_targets')
     @classmethod
     def warn_binary_targets(
         cls, targets: List['ValueFromEnvVar']
@@ -462,7 +473,7 @@ class ValueFromEnvVar(BaseModel):
 
 
 class OptionalValueFromEnvVar(BaseModel):
-    value: Optional[str]
+    value: Optional[str] = None
     from_env_var: Optional[str] = FieldInfo(alias='fromEnvVar')
 
     def resolve(self) -> str:
@@ -572,7 +583,7 @@ class Config(BaseSettings):
             )
         return values
 
-    @validator(
+    @field_validator(
         'partial_type_generator', pre=True, always=True, allow_reuse=True
     )
     @classmethod
@@ -589,14 +600,14 @@ class Config(BaseSettings):
                 return None
             raise
 
-    @validator('recursive_type_depth', always=True, allow_reuse=True)
+    @field_validator('recursive_type_depth', always=True, allow_reuse=True)
     @classmethod
     def recursive_type_depth_validator(cls, value: int) -> int:
         if value < -1 or value in {0, 1}:
             raise ValueError('Value must equal -1 or be greater than 1.')
         return value
 
-    @validator('engine_type', always=True, allow_reuse=True)
+    @field_validator('engine_type', always=True, allow_reuse=True)
     @classmethod
     def engine_type_validator(cls, value: EngineType) -> EngineType:
         if value == EngineType.binary:
@@ -628,7 +639,7 @@ class Datamodel(BaseModel):
     # not implemented yet
     types: List[object]
 
-    @validator('types')
+    @field_validator('types')
     @classmethod
     def no_composite_types_validator(cls, types: List[object]) -> object:
         if types:
@@ -667,7 +678,7 @@ class Model(BaseModel):
         super().__init__(**data)
         self._sampler = Sampler(self)
 
-    @validator('name')
+    @field_validator('name')
     @classmethod
     def name_validator(cls, name: str) -> str:
         if iskeyword(name):
@@ -811,7 +822,8 @@ class Field(BaseModel):
 
     _last_sampled: Optional[str] = PrivateAttr()
 
-    @root_validator(skip_on_failure=True)
+    # TODO(before merge): verify this
+    @root_validator(pre=True, skip_on_failure=True)
     @classmethod
     def scalar_type_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         kind = values.get('kind')
@@ -823,7 +835,7 @@ class Field(BaseModel):
 
         return values
 
-    @validator('type')
+    @field_validator('type')
     @classmethod
     def experimental_decimal_validator(cls, typ: str) -> str:
         if typ == 'Decimal':
@@ -843,7 +855,7 @@ class Field(BaseModel):
 
         return typ
 
-    @validator('name')
+    @field_validator('name')
     @classmethod
     def name_validator(cls, name: str) -> str:
         if getattr(BaseModel, name, None):
@@ -1072,7 +1084,7 @@ class Field(BaseModel):
 
 
 class DefaultValue(BaseModel):
-    args: Any
+    args: Any = None
     name: str
 
 

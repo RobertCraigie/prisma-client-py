@@ -2,55 +2,69 @@ from __future__ import annotations
 
 import os
 import sys
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 from asyncio import get_running_loop as get_running_loop
 
 import pydantic
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 
-from ._types import CallableT
 from .utils import make_optional
 
 
+_T = TypeVar('_T')
 _ModelT = TypeVar('_ModelT', bound=BaseModel)
-
-
-if TYPE_CHECKING:
-    # in pyright >= 1.190 classmethod is a generic type, this causes errors when
-    # verifying type completeness as pydantic validators are typed to return a
-    # classmethod without any generic parameters.
-    # we fix these errors by overriding the typing of these validator functions
-    # to simply return the callable back unchanged.
-
-    def root_validator(
-        *,
-        pre: bool = False,
-        allow_reuse: bool = False,
-        skip_on_failure: bool = False,
-    ) -> Callable[[CallableT], CallableT]:
-        ...
-
-    def validator(
-        *fields: str,
-        pre: bool = ...,
-        each_item: bool = ...,
-        always: bool = ...,
-        check_fields: bool = ...,
-        whole: bool = ...,
-        allow_reuse: bool = ...,
-    ) -> Callable[[CallableT], CallableT]:
-        ...
-
-else:
-    from pydantic import (
-        validator as validator,
-        root_validator as root_validator,
-    )
 
 
 # Pydantic v2 compat
 PYDANTIC_V2 = pydantic.VERSION.startswith('2.')
+
+# ---- validators ----
+
+
+def field_validator(
+    __field: str,
+    *fields: str,
+    pre: bool = False,
+    check_fields: bool | None = None,
+    always: bool | None = None,
+    allow_reuse: bool | None = None,
+) -> Callable[[_T], _T]:
+    if PYDANTIC_V2:
+        mode = 'before' if pre else 'after'
+        return cast(
+            Any,
+            pydantic.field_validator(
+                __field, *fields, mode=mode, check_fields=check_fields
+            ),
+        )
+
+    kwargs = {}
+    if always is not None:
+        kwargs['always'] = always
+    if allow_reuse is not None:
+        kwargs['allow_reuse'] = allow_reuse
+
+    return pydantic.validator(__field, *fields, **kwargs)  # type: ignore
+
+
+def root_validator(
+    *__args: Any,
+    pre: bool = False,
+    skip_on_failure: bool = False,
+    allow_reuse: bool = False,
+) -> Any:
+    if PYDANTIC_V2:
+        mode = 'before' if pre else 'after'
+        return pydantic.model_validator(mode=mode)
+
+    return cast(Any, pydantic.root_validator)(
+        *__args,
+        pre=pre,
+        skip_on_failure=skip_on_failure,
+        allow_reuse=allow_reuse,
+    )
+
 
 if TYPE_CHECKING:
     # TODO: just copy these in
@@ -62,6 +76,8 @@ if TYPE_CHECKING:
     BaseSettings = BaseModel
     BaseSettingsConfig = pydantic.BaseConfig  # type: ignore
 
+    BaseConfig = pydantic.BaseModel  # type: ignore
+
     class GenericModel(BaseModel):
         ...
 
@@ -71,15 +87,13 @@ else:
     except ImportError:
         from pydantic.typing import is_typeddict, get_args
 
-    try:
+    if PYDANTIC_V2:
+        GenericModel = BaseModel
+    else:
         from pydantic.generics import GenericModel as PydanticGenericModel
 
         class GenericModel(PydanticGenericModel, BaseModel):
             ...
-
-    except ImportError:
-        # note: there no longer needs to be a distinction between these in v2
-        from pydantic import BaseModel as GenericModel
 
     if PYDANTIC_V2:
         from pydantic import ValidationInfo, model_validator
@@ -89,8 +103,16 @@ else:
             def root_validator(cls, values: Any, info: ValidationInfo) -> Any:
                 return _env_var_resolver(cls, values)
 
+        BaseSettingsConfig = None
+
+        BaseConfig = None
+
     else:
         from pydantic import BaseSettings
+
+        BaseSettingsConfig = BaseSettings.Config
+
+        BaseConfig = BaseModel.Config
 
 
 # refactored config
@@ -104,6 +126,7 @@ else:
 
 
 ENV_VAR_KEY = '$env'
+
 
 def _env_var_resolver(
     model_cls: type[BaseModel], values: Any
