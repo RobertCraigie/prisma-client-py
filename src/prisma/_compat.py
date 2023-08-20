@@ -72,16 +72,20 @@ if TYPE_CHECKING:
 
     BaseConfig = pydantic.BaseModel  # type: ignore
 
-    from pydantic_core import CoreSchema as CoreSchema
+    from pydantic import GetCoreSchemaHandler as GetCoreSchemaHandler
+    from pydantic_core import CoreSchema as CoreSchema, core_schema as core_schema
 
     class GenericModel(BaseModel):
         ...
 
 else:
     if PYDANTIC_V2:
-        from pydantic_core import CoreSchema
+        from pydantic_core import CoreSchema, core_schema
+        from pydantic import GetCoreSchemaHandler
     else:
+        core_schema = None
         CoreSchema = None
+        GetCoreSchemaHandler = None
 
     if PYDANTIC_V2:
         GenericModel = BaseModel
