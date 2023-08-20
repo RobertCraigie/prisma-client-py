@@ -429,7 +429,7 @@ class BinaryPaths(BaseModel):
     else:
 
         class Config(pydantic.BaseConfig):  # pyright: ignore[reportDeprecated]
-            extra: Any = Extra.allow  # type: ignore
+            extra: Any = pydantic.Extra.allow  # type: ignore
 
 
 class Datasource(BaseModel):
@@ -534,7 +534,7 @@ class Config(BaseSettings):
         if not TYPE_CHECKING:
 
             class Config(BaseSettingsConfig):
-                extra: Extra = pydantic.Extra.forbid
+                extra: pydantic.Extra = pydantic.Extra.forbid
                 use_enum_values: bool = True
                 env_prefix: str = 'prisma_py_config_'
                 allow_population_by_field_name: bool = True
@@ -1094,7 +1094,7 @@ class _EmptyModel(BaseModel):
     elif not TYPE_CHECKING:
 
         class Config(BaseModel.Config):
-            extra: Extra = pydantic.Extra.forbid
+            extra: pydantic.Extra = pydantic.Extra.forbid
 
 
 class _ModelAllowAll(BaseModel):
@@ -1103,7 +1103,7 @@ class _ModelAllowAll(BaseModel):
     elif not TYPE_CHECKING:
 
         class Config(BaseModel.Config):
-            extra: Extra = pydantic.Extra.allow
+            extra: pydantic.Extra = pydantic.Extra.allow
 
 
 class PythonData(GenericData[Config]):
