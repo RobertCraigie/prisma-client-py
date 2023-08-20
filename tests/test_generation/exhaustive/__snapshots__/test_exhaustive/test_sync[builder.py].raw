@@ -59,7 +59,8 @@ from .types import Serializable
 from .errors import UnknownModelError, UnknownRelationalFieldError, InvalidModelError
 from ._constants import QUERY_BUILDER_ALIASES
 from ._types import PrismaMethod
-from ._compat import model_fields, model_field_type
+from ._typing import is_list_type
+from ._compat import model_fields, model_field_type, is_union, get_args, get_origin, model_field_type
 
 if TYPE_CHECKING:
     from .bases import _PrismaModel as PrismaModel
@@ -321,13 +322,14 @@ class QueryBuilder:
         except KeyError as exc:
             raise UnknownRelationalFieldError(model=current_model.__name__, field=field)
 
-        if not _field_is_prisma_model(info, parent=current_model):
+        model = _prisma_model_for_field(info, parent=current_model)
+        if not model:
             raise RuntimeError(
                 f'The `{field}` field doesn\'t appear to be a Prisma Model type. ' +
                 'Is the field a pydantic.BaseModel type and does it have a `__prisma_model__` class variable?'
             )
 
-        return cast('Type[PrismaModel]', info.type_)
+        return model
 
     def _transform_aliases(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
         """Transform dict keys to match global aliases
@@ -351,18 +353,36 @@ class QueryBuilder:
         return transformed
 
 
+def _prisma_model_for_field(field: FieldInfo, *, parent: type[BaseModel]) -> type[PrismaModel] | None:
+    type_ = model_field_type(field)
+
+    if is_union(get_origin(type_)):
+        types = get_args(type_)
+    else:
+        types = [type_]
+
+    for type_ in types:
+        if isinstance(type_, ForwardRef):
+            cls_name = parent.__name__
+            raise RuntimeError(
+                f'Encountered forward reference for {cls_name}.{field.name}; Forward references must be evaluated using {cls_name}.update_forward_refs()'
+            )
+
+        if is_list_type(type_):
+            type_ = get_args(type_)[0]
+
+        if hasattr(type_, '__prisma_model__'):
+            return type_
+
+    return None
+    
+
 def _field_is_prisma_model(field: FieldInfo, *, parent: type[BaseModel]) -> bool:
-  """Whether or not the given field info represents a model at the database level.
+    """Whether or not the given field info represents a model at the database level.
 
-  This will return `True` for cases where the field represents a list of models or a single model.
-  """
-  if isinstance(field.type_, ForwardRef):
-      cls_name = parent.__name__
-      raise RuntimeError(
-        f'Encountered forward reference for {cls_name}.{field.name}; Forward references must be evaluated using {cls_name}.update_forward_refs()'
-      )
-
-  return hasattr(field.type_, '__prisma_model__')
+    This will return `True` for cases where the field represents a list of models or a single model.
+    """
+    return _prisma_model_for_field(field, parent=parent) is not None
 
 
 def _is_prisma_model_type(type_: type[BaseModel]) -> TypeGuard[type[PrismaModel]]:
