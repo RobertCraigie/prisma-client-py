@@ -82,7 +82,14 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
         from typing import Type, Dict, Iterator, Tuple, Set, Optional, TypeVar
         from pydantic import BaseModel
         from prisma import Base64
-        from prisma._compat import model_fields, is_field_required, model_parse
+        from prisma._compat import (
+            PYDANTIC_V2,
+            model_fields,
+            is_field_required,
+            model_parse,
+            model_field_type,
+            get_args,
+        )
         from prisma.partials import (  # type: ignore[attr-defined]
             PostWithoutDesc,  # pyright: ignore
             PostOptionalPublished,  # pyright: ignore

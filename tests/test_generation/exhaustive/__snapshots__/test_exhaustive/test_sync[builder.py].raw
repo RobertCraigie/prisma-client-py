@@ -364,6 +364,7 @@ def _prisma_model_for_field(
     if type_ is None:
         raise RuntimeError(f'Unexpected field type is None for {cls_name}.{name}')
 
+    types: Iterable[type]
     if is_union(get_origin(type_)):
         types = get_args(type_)
     else:
@@ -375,7 +376,7 @@ def _prisma_model_for_field(
                 f'Encountered forward reference for {cls_name}.{name}; Forward references must be evaluated using {cls_name}.update_forward_refs()'
             )
 
-        if is_list_type(type_):
+        if is_list_type(type_) and type_ is not None:
             type_ = get_args(type_)[0]
 
         if hasattr(type_, '__prisma_model__'):

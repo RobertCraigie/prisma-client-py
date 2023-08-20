@@ -24,6 +24,7 @@ from typing import (
     Iterator,
     Dict,
     Type,
+    cast,
 )
 
 import click
@@ -331,29 +332,29 @@ class GenericData(GenericModel, Generic[ConfigT]):
 
         @classmethod
         def model_validate(
-            cls: 'type[_ModelT]',
+            cls: Type[_ModelT],
             obj: Any,
             *,
             strict: 'bool | None' = None,
             from_attributes: 'bool | None' = None,
             context: 'dict[str, Any] | None' = None,
-        ) -> '_ModelT':
+        ) -> _ModelT:
             data = super().model_validate(
                 obj,
                 strict=strict,
                 from_attributes=from_attributes,
                 context=context,
             )
-            data_ctx.set(data)
+            data_ctx.set(cast('GenericData[ConfigT]', data))
             return data
 
     else:
 
         @classmethod
         def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
-            data = super().parse_obj(obj)  # type: ignore
+            data = super().parse_obj(obj)  # pyright: ignore[reportDeprecated]
             data_ctx.set(data)
-            return data
+            return data  # type: ignore[no-any-return]
 
     def to_params(self) -> Dict[str, Any]:
         """Get the parameters that should be sent to Jinja templates"""
@@ -431,8 +432,8 @@ class BinaryPaths(BaseModel):
         model_config: ClassVar[ConfigDict] = ConfigDict(extra='allow')
     else:
 
-        class Config(pydantic.BaseConfig):  # pyright: ignore[reportDeprecated]
-            extra: Any = pydantic.Extra.allow  # type: ignore
+        class Config(BaseModel.Config):  # pyright: ignore[reportDeprecated]
+            extra: Any = pydantic.Extra.allow  # pyright: ignore[reportDeprecated]
 
 
 class Datasource(BaseModel):

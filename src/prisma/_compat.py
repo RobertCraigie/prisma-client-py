@@ -31,11 +31,13 @@ def field_validator(
     allow_reuse: bool | None = None,
 ) -> Callable[[_T], _T]:
     if PYDANTIC_V2:
-        mode = 'before' if pre else 'after'
-        return cast(
+        return cast(  # type: ignore[no-any-return]
             Any,
             pydantic.field_validator(
-                __field, *fields, mode=mode, check_fields=check_fields
+                __field,
+                *fields,
+                mode='before' if pre else 'after',
+                check_fields=check_fields,
             ),
         )
 
@@ -53,12 +55,13 @@ def root_validator(
     pre: bool = False,
     skip_on_failure: bool = False,
     allow_reuse: bool = False,
-) -> Any:
+) -> Callable[[_T], _T]:
     if PYDANTIC_V2:
-        mode = 'before' if pre else 'after'
-        return pydantic.model_validator(mode=mode)
+        return pydantic.model_validator(  # type: ignore
+            mode='before' if pre else 'after',
+        )
 
-    return cast(Any, pydantic.root_validator)(
+    return cast(Any, pydantic.root_validator)(  # type: ignore[no-any-return]
         *__args,
         pre=pre,
         skip_on_failure=skip_on_failure,
@@ -68,9 +71,10 @@ def root_validator(
 
 if TYPE_CHECKING:
     BaseSettings = BaseModel
-    BaseSettingsConfig = pydantic.BaseConfig  # type: ignore
-
-    BaseConfig = pydantic.BaseModel  # type: ignore
+    BaseSettingsConfig = (
+        pydantic.BaseConfig  # pyright: ignore[reportDeprecated]
+    )
+    BaseConfig = pydantic.BaseConfig  # pyright: ignore[reportDeprecated]
 
     from pydantic import GetCoreSchemaHandler as GetCoreSchemaHandler
     from pydantic_core import (
@@ -255,28 +259,28 @@ def model_rebuild(model: type[BaseModel]) -> None:
     if PYDANTIC_V2:
         model.model_rebuild()
     else:
-        model.update_forward_refs()  # type: ignore
+        model.update_forward_refs()  # pyright: ignore[reportDeprecated]
 
 
 def model_parse(model: type[_ModelT], obj: Any) -> _ModelT:
     if PYDANTIC_V2:
         return model.model_validate(obj)
     else:
-        return model.parse_obj(obj)  # type: ignore
+        return model.parse_obj(obj)  # type: ignore[no-any-return]  # pyright: ignore[reportDeprecated]
 
 
 def model_parse_json(model: type[_ModelT], obj: str) -> _ModelT:
     if PYDANTIC_V2:
         return model.model_validate_json(obj)
     else:
-        return model.parse_raw(obj)  # type: ignore
+        return model.parse_raw(obj)  # type: ignore[no-any-return]  # pyright: ignore[reportDeprecated]
 
 
 def model_json_schema(model: type[BaseModel]) -> dict[str, Any]:
     if PYDANTIC_V2:
         return model.model_json_schema()
     else:
-        return model.schema()  # type: ignore
+        return model.schema()  # type: ignore[no-any-return]  # pyright: ignore[reportDeprecated]
 
 
 def Field(*, env: str | None = None, **extra: Any) -> Any:
@@ -288,7 +292,7 @@ def Field(*, env: str | None = None, **extra: Any) -> Any:
         if env:
             json_schema_extra = {ENV_VAR_KEY: env}
 
-        return pydantic.Field(**extra, json_schema_extra=json_schema_extra)
+        return pydantic.Field(**extra, json_schema_extra=json_schema_extra)  # type: ignore[pydantic-field]
 
     return pydantic.Field(**extra, env=env)  # type: ignore
 

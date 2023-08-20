@@ -39,17 +39,17 @@ def patch_pydantic() -> None:
     if PYDANTIC_V2:
         from pydantic.v1 import annotated_types
     else:
-        from pydantic import annotated_types
+        from pydantic import annotated_types  # type: ignore[no-redef]
 
-    create_model = annotated_types.create_model_from_typeddict  # type: ignore
+    create_model = annotated_types.create_model_from_typeddict
 
     def patched_create_model(
         typeddict_cls: Any, **kwargs: Any
     ) -> Type[BaseModel]:
         kwargs.setdefault('__module__', typeddict_cls.__module__)
-        return create_model(typeddict_cls, **kwargs)
+        return create_model(typeddict_cls, **kwargs)  # type: ignore[no-any-return]
 
-    annotated_types.create_model_from_typeddict = patched_create_model  # type: ignore
+    annotated_types.create_model_from_typeddict = patched_create_model
 
 
 def validate(type: Type[T], data: Any) -> T:

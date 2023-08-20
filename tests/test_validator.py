@@ -12,7 +12,7 @@ class Foo:
 if PYDANTIC_V2:
     from pydantic.v1 import ValidationError
 else:
-    from pydantic import ValidationError
+    from pydantic import ValidationError  # type: ignore[assignment]
 
 
 def test_valid() -> None:

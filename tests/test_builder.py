@@ -226,7 +226,7 @@ def test_select(snapshot: SnapshotAssertion) -> None:
         __prisma_model__ = 'Post'
 
     if not PYDANTIC_V2:
-        CustomModel.update_forward_refs(**locals())  # type: ignore
+        CustomModel.update_forward_refs(**locals())  # pyright: ignore[reportDeprecated]
 
     query = QueryBuilder(
         method='find_first',
@@ -283,7 +283,7 @@ def test_select_non_prisma_model_basemodel(snapshot: SnapshotAssertion) -> None:
         __prisma_model__ = 'Post'
 
     if not PYDANTIC_V2:
-        CustomModel.update_forward_refs(**locals())  # type: ignore
+        CustomModel.update_forward_refs(**locals())  # pyright: ignore[reportDeprecated]
 
     query = QueryBuilder(
         method='find_first',
