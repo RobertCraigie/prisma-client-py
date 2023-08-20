@@ -65,7 +65,7 @@ def test_allows_extra_keys(testdir: Testdir) -> None:
             """
             [tool.prisma]
             foo = 'bar'
-            prisma_version = 0.3
+            prisma_version = '0.3'
             """
         ),
     )

@@ -181,9 +181,9 @@ def _env_var_resolver(
             continue
 
         assert isinstance(env_var, str)
-        if key in values:
-            continue
 
+        # Note: we always want to prioritise the env var
+        # over the value given due to how config loading works
         value = os.environ.get(env_var)
         if value is not None:
             values[key] = value
