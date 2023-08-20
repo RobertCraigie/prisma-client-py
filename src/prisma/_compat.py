@@ -45,7 +45,7 @@ def field_validator(
     if allow_reuse is not None:
         kwargs['allow_reuse'] = allow_reuse
 
-    return pydantic.validator(__field, *fields, **kwargs)  # type: ignore
+    return pydantic.validator(__field, *fields, pre=pre, **kwargs)  # type: ignore
 
 
 def root_validator(
