@@ -287,7 +287,7 @@ jobs:
           COVERAGE_FILE: .cache/.coverage.databases
 
       - name: Run pydantic v1 tests
-        if: {{ matrix.name == 'PostgreSQL' }}
+        if: matrix.name == 'PostgreSQL'
         run: |
           coverage run -m nox -s databases -- test --coverage --databases=${{ matrix.name }} --no-pydantic-v2
         env:
