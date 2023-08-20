@@ -26,6 +26,7 @@ from typing import (
     Type,
     cast,
 )
+from typing_extensions import Annotated
 
 import click
 import pydantic
@@ -41,6 +42,7 @@ from .._compat import (
     ConfigDict,
     BaseSettings,
     BaseSettingsConfig,
+    PlainSerializer,
     GenericModel,
     Field as FieldInfo,
     root_validator,
@@ -252,7 +254,16 @@ class EngineType(str, enum.Enum):
 
 
 class Module(BaseModel):
-    spec: machinery.ModuleSpec
+    if TYPE_CHECKING:
+        spec: machinery.ModuleSpec
+    else:
+        if PYDANTIC_V2:
+            spec: Annotated[
+                machinery.ModuleSpec,
+                PlainSerializer(lambda x: _module_spec_serializer(x), return_type=str)
+            ]
+        else:
+            spec: machinery.ModuleSpec
 
     if PYDANTIC_V2:
         model_config: ClassVar[ConfigDict] = ConfigDict(

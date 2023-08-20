@@ -9,6 +9,7 @@ import pydantic
 from .. import prisma, options
 from ..utils import EnumChoice, PathlibPath, warning
 from ...generator.models import InterfaceChoices
+from ..._compat import PYDANTIC_V2
 
 
 ARG_TO_CONFIG_KEY = {
@@ -80,7 +81,8 @@ def cli(
 
 
 def serialize(key: str, obj: Any) -> str:
-    if key == 'partials':
-        # partials has to be JSON serializable
-        return f'"{obj}"'
+    if not PYDANTIC_V2:
+        if key == 'partials':
+            # partials has to be JSON serializable
+            return f'"{obj}"'
     return str(obj)
