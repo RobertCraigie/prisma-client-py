@@ -375,7 +375,7 @@ def _prisma_model_for_field(field: FieldInfo, *, parent: type[BaseModel]) -> typ
             return type_
 
     return None
-    
+
 
 def _field_is_prisma_model(field: FieldInfo, *, parent: type[BaseModel]) -> bool:
     """Whether or not the given field info represents a model at the database level.
