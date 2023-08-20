@@ -2,7 +2,7 @@ from dirty_equals import IsPartialDict
 
 from prisma import Prisma
 from prisma.models import Types
-from prisma._compat import model_json_schema
+from prisma._compat import PYDANTIC_V2, model_json_schema
 
 
 def test_filtering(client: Prisma) -> None:
@@ -178,17 +178,34 @@ def test_filtering_nulls(client: Prisma) -> None:
 
 def test_json_schema() -> None:
     """Ensure a JSON Schema definition can be created"""
-    assert model_json_schema(Types) == IsPartialDict(
-        properties=IsPartialDict(
-            {
-                'string': {
-                    'title': 'String',
-                    'type': 'string',
-                },
-                'optional_string': {
-                    'title': 'Optional String',
-                    'type': 'string',
-                },
-            }
+    if PYDANTIC_V2:
+        assert model_json_schema(Types) == IsPartialDict(
+            properties=IsPartialDict(
+                {
+                    'string': {
+                        'title': 'String',
+                        'type': 'string',
+                    },
+                    'optional_string': {
+                        'title': 'Optional String',
+                        'anyOf': [{'type': 'string'}, {'type': 'null'}],
+                        'default': None,
+                    },
+                }
+            )
         )
-    )
+    else:
+        assert model_json_schema(Types) == IsPartialDict(
+            properties=IsPartialDict(
+                {
+                    'string': {
+                        'title': 'String',
+                        'type': 'string',
+                    },
+                    'optional_string': {
+                        'title': 'Optional String',
+                        'type': 'string',
+                    },
+                }
+            )
+        )

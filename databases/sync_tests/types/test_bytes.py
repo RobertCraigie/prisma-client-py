@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from prisma import Prisma
 from prisma.fields import Base64
 from prisma.models import Types
-from prisma._compat import model_parse, model_parse_json
+from prisma._compat import model_parse, model_parse_json, model_json, model_dict
 
 
 def test_filtering(client: Prisma) -> None:
@@ -90,7 +90,7 @@ def test_json(client: Prisma) -> None:
             'bytes': Base64.encode(b'foo'),
         },
     )
-    model = model_parse_json(Types, record.json(exclude={'json_obj'}))
+    model = model_parse_json(Types, model_json(record, exclude={'json_obj'}))
     assert isinstance(model.bytes, Base64)
     assert model.bytes.decode() == b'foo'
 
@@ -101,7 +101,7 @@ def test_constructing(client: Prisma) -> None:
     model = model_parse(
         Types,
         {
-            **record.dict(exclude={'json_obj'}),
+            **model_dict(record, exclude={'json_obj'}),
             'bytes': Base64.encode(b'foo'),
         },
     )
@@ -171,12 +171,12 @@ class Base64Model(BaseModel):
 
 def test_pydantic_conversion() -> None:
     """Raw inputs are converted to Base64 objects at the Pydantic level"""
-    record = Base64Model.parse_obj({'value': 'foo', 'array': []})
+    record = model_parse(Base64Model, {'value': 'foo', 'array': []})
     assert isinstance(record.value, Base64)
     assert record.value._raw == b'foo'
     assert record.array == []
 
-    record = Base64Model.parse_obj(
+    record = model_parse(Base64Model, 
         {
             'value': Base64.encode(b'foo'),
             'array': ['foo', b'bar', Base64.encode(b'baz')],
