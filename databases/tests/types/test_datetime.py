@@ -3,7 +3,7 @@ from dirty_equals import IsPartialDict
 import pytest
 from prisma import Prisma
 from prisma.models import Types
-from prisma._compat import model_json_schema
+from prisma._compat import PYDANTIC_V2, model_json_schema
 
 from lib.testing import assert_similar_time
 
@@ -282,8 +282,11 @@ def test_json_schema() -> None:
                 },
                 'optional_datetime': {
                     'title': 'Optional Datetime',
-                    'type': 'string',
-                    'format': 'date-time',
+                    'anyOf': [
+                        {'format': 'date-time', 'type': 'string'},
+                        {'type': 'null'},
+                    ],
+                    'default': None,
                 },
             }
         )
