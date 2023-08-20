@@ -195,6 +195,12 @@ def _get_field_env_var(field: FieldInfo) -> str | None:
     return extra.get(ENV_VAR_KEY)
 
 
+def is_field_required(field: FieldInfo) -> bool:
+    if PYDANTIC_V2:
+        return field.is_required()
+    return field.required  # type: ignore
+
+
 def model_fields(model: type[BaseModel]) -> dict[str, FieldInfo]:
     if PYDANTIC_V2:
         return model.model_fields

@@ -21,6 +21,7 @@ from .types import Serializable
 from .errors import UnknownModelError, UnknownRelationalFieldError, InvalidModelError
 from ._constants import QUERY_BUILDER_ALIASES
 from ._types import PrismaMethod
+from ._compat import model_fields, model_field_type
 
 if TYPE_CHECKING:
     from .bases import _PrismaModel as PrismaModel
@@ -221,7 +222,7 @@ class QueryBuilder:
         # we explicitly keep fields that point to anything else, even other pydantic.BaseModel types, as they can be used to deserialize JSON
         return [
             field
-            for field, info in model.__fields__.items()
+            for field, info in model_fields(model).items()
             if not _field_is_prisma_model(info, parent=model)
         ]
 
@@ -246,7 +247,7 @@ class QueryBuilder:
             raise UnknownRelationalFieldError(model=current_model.__name__, field=field)
 
         try:
-            info = current_model.__fields__[field]
+            info = model_fields(current_model)[field]
         except KeyError as exc:
             raise UnknownRelationalFieldError(model=current_model.__name__, field=field)
 

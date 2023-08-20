@@ -1,11 +1,12 @@
 {% include '_header.py.jinja' %}
 {% from '_utils.py.jinja' import recursive_types with context %}
 # -- template models.py.jinja --
-from pydantic import BaseModel, BaseConfig
+from pydantic import BaseModel
 
 from . import fields, actions
 from ._types import FuncType
 from .builder import serialize_base64
+from ._compat import PYDANTIC_V2, ConfigDict, BaseConfig
 
 if TYPE_CHECKING:
     from .client import Prisma
@@ -14,18 +15,22 @@ if TYPE_CHECKING:
 _PrismaModelT = TypeVar('_PrismaModelT', bound='_PrismaModel')
 
 
-class _Config(BaseConfig):
-    use_enum_values: bool = True
-    arbitrary_types_allowed: bool = True
-    allow_population_by_field_name: bool = True
-    json_encoders: Dict[Any, FuncType] = {
-        fields.Base64: serialize_base64,
-    }
-
-
 class _PrismaModel(BaseModel):
-    class Config(_Config):
-        ...
+    if PYDANTIC_V2:
+        model_config = ConfigDict(
+            use_enum_values=True,
+            arbitrary_types_allowed=True,
+            populate_by_name=True,
+        )
+        # TODO(before merge): emulate json_encoders behaviour
+    else:
+        class Config(BaseConfig):
+            use_enum_values: bool = True
+            arbitrary_types_allowed: bool = True
+            allow_population_by_field_name: bool = True
+            json_encoders: Dict[Any, FuncType] = {
+                fields.Base64: serialize_base64,
+            }
 
     # TODO: ensure this is required by subclasses
     __prisma_model__: ClassVar[str]

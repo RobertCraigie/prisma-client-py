@@ -79,9 +79,10 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
     def tests() -> None:  # mark: filedef
         import sys
         import datetime
-        from typing import Type, Dict, Iterator, Any, Tuple, Set, Optional
+        from typing import Type, Dict, Iterator, Tuple, Set, Optional, TypeVar
         from pydantic import BaseModel
         from prisma import Base64
+        from prisma._compat import model_fields, is_field_required, model_parse
         from prisma.partials import (  # type: ignore[attr-defined]
             PostWithoutDesc,  # pyright: ignore
             PostOptionalPublished,  # pyright: ignore
@@ -110,9 +111,12 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             'thumbnail': False,
         }
 
+        _T = TypeVar('_T')
+        _T2 = TypeVar('_T2')
+
         def common_entries(
-            dct: Dict[str, Any], other: Dict[str, Any]
-        ) -> Iterator[Tuple[str, Any, Any]]:
+            dct: Dict[str, _T], other: Dict[str, _T2]
+        ) -> Iterator[Tuple[str, _T, _T2]]:
             for key in dct.keys() & other.keys():
                 yield key, dct[key], other[key]
 
@@ -121,16 +125,15 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             fields: Dict[str, bool],
             removed: Optional[Set[str]],
         ) -> None:
-            for field, required, info in common_entries(
-                fields, model.__fields__
+            for _, required, info in common_entries(
+                fields, model_fields(model)
             ):
-                assert info.name == field
-                assert info.required == required
+                assert is_field_required(info) == required
 
             if removed is None:
                 removed = set()
 
-            assert fields.keys() - model.__fields__.keys() == removed
+            assert fields.keys() - model_fields(model).keys() == removed
 
         def test_without_desc() -> None:
             """Removing one field"""
@@ -202,7 +205,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             """Changing one-to-one relational field type"""
             assert_expected(PostModifiedAuthor, base_fields, None)
 
-            field = PostModifiedAuthor.__fields__['author']
+            field = model_fields(PostModifiedAuthor)['author']
             assert field.type_.__name__ == 'UserOnlyName'
             assert field.type_.__module__ == 'prisma.partials'
 
@@ -238,7 +241,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
                 updated_at=datetime.datetime.utcnow(),
                 posts=[PostOnlyId(id='2')],
             )
-            field = UserModifiedPosts.__fields__['posts']
+            field = model_fields(UserModifiedPosts)['posts']
             assert field.type_.__name__ == 'PostOnlyId'
             assert field.type_.__module__ == 'prisma.partials'
 
@@ -252,7 +255,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
         def test_bytes() -> None:
             """Ensure Base64 fields can be used"""
             # mock prisma behaviour
-            model = UserBytesList.parse_obj(
+            model = model_parse(UserBytesList, 
                 {
                     'bytes': str(Base64.encode(b'bar')),
                     'bytes_list': [

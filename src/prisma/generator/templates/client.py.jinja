@@ -16,7 +16,7 @@ from .bases import _PrismaModel
 from .engine import AbstractEngine, QueryEngine, TransactionId
 from .builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
-from ._compat import removeprefix
+from ._compat import removeprefix, model_parse
 from ._raw_query import deserialize_raw_results
 
 __all__ = (
@@ -35,8 +35,8 @@ log: logging.Logger = logging.getLogger(__name__)
 
 SCHEMA_PATH = Path('{{ schema_path.as_posix() }}')
 PACKAGED_SCHEMA_PATH = Path(__file__).parent.joinpath('schema.prisma')
-ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
-BINARY_PATHS = BinaryPaths.parse_obj({{ binary_paths.dict(by_alias=True) }})
+ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type.value }}
+BINARY_PATHS = model_parse(BinaryPaths, {{ binary_paths.dict(by_alias=True) }})
 
 RegisteredClient = Union['Prisma', Callable[[], 'Prisma']]
 _registered_client: Optional[RegisteredClient] = None
