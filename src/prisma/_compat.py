@@ -74,7 +74,9 @@ if TYPE_CHECKING:
     BaseSettingsConfig = (
         pydantic.BaseConfig  # pyright: ignore[reportDeprecated]
     )
-    BaseConfig = pydantic.BaseConfig  # pyright: ignore[reportDeprecated]
+
+    class BaseConfig:
+        ...
 
     from pydantic import (
         GetCoreSchemaHandler as GetCoreSchemaHandler,
@@ -119,11 +121,10 @@ else:
         BaseConfig = None
 
     else:
-        from pydantic import BaseSettings
+        from pydantic import BaseSettings, BaseConfig
 
         BaseSettingsConfig = BaseSettings.Config
 
-        BaseConfig = BaseModel.Config
 
 # v1 re-exports
 if TYPE_CHECKING:

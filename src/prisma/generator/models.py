@@ -39,6 +39,7 @@ from .. import config
 from ..utils import DEBUG_GENERATOR, assert_never
 from .._compat import (
     PYDANTIC_V2,
+    BaseConfig,
     ConfigDict,
     BaseSettings,
     BaseSettingsConfig,
@@ -210,6 +211,14 @@ def _pathlib_serializer(path: Path) -> str:
     return str(path.absolute())
 
 
+# TODO: don't monkeypatch globally
+# TODO: why did our previous code break???
+if not PYDANTIC_V2:
+    from pydantic import json as _json
+
+    _json.ENCODERS_BY_TYPE[machinery.ModuleSpec] = _module_spec_serializer
+
+
 def _recursive_type_depth_factory() -> int:
     click.echo(
         click.style(
@@ -230,7 +239,7 @@ class BaseModel(PydanticBaseModel):
         )
     else:
 
-        class Config:
+        class Config(BaseConfig):
             arbitrary_types_allowed: bool = True
             json_encoders: Dict[Type[Any], Any] = {
                 Path: _pathlib_serializer,
