@@ -73,7 +73,10 @@ if TYPE_CHECKING:
     BaseConfig = pydantic.BaseModel  # type: ignore
 
     from pydantic import GetCoreSchemaHandler as GetCoreSchemaHandler
-    from pydantic_core import CoreSchema as CoreSchema, core_schema as core_schema
+    from pydantic_core import (
+        CoreSchema as CoreSchema,
+        core_schema as core_schema,
+    )
 
     class GenericModel(BaseModel):
         ...
@@ -212,6 +215,7 @@ def model_field_type(field: FieldInfo) -> type | None:
         return field.annotation
 
     return field.type_  # type: ignore
+
 
 def model_json(model: BaseModel, indent: int | None = None) -> str:
     if PYDANTIC_V2:

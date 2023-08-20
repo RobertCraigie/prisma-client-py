@@ -255,14 +255,15 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
         def test_bytes() -> None:
             """Ensure Base64 fields can be used"""
             # mock prisma behaviour
-            model = model_parse(UserBytesList, 
+            model = model_parse(
+                UserBytesList,
                 {
                     'bytes': str(Base64.encode(b'bar')),
                     'bytes_list': [
                         str(Base64.encode(b'foo')),
                         str(Base64.encode(b'baz')),
                     ],
-                }
+                },
             )
             assert model.bytes == Base64.encode(b'bar')
             assert model.bytes_list == [
