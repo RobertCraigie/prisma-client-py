@@ -89,6 +89,8 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             model_parse,
             model_field_type,
             get_args,
+            get_origin,
+            is_union,
         )
         from prisma.partials import (  # type: ignore[attr-defined]
             PostWithoutDesc,  # pyright: ignore
@@ -213,8 +215,13 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             assert_expected(PostModifiedAuthor, base_fields, None)
 
             field = model_fields(PostModifiedAuthor)['author']
-            assert field.type_.__name__ == 'UserOnlyName'
-            assert field.type_.__module__ == 'prisma.partials'
+            type_ = model_field_type(field)
+            assert type_ is not None
+            assert is_union(get_origin(type_) or type_)
+
+            inner_type, _ = get_args(type_)
+            assert inner_type.__name__ == 'UserOnlyName'
+            assert inner_type.__module__ == 'prisma.partials'
 
         def test_exclude_relations() -> None:
             """Removing all relational fields using `exclude_relations`"""
@@ -249,15 +256,35 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
                 posts=[PostOnlyId(id='2')],
             )
             field = model_fields(UserModifiedPosts)['posts']
-            assert field.type_.__name__ == 'PostOnlyId'
-            assert field.type_.__module__ == 'prisma.partials'
+            type_ = model_field_type(field)
+            assert type_ is not None
 
-            if sys.version_info >= (3, 7):
-                assert field.outer_type_._name == 'List'
+            if PYDANTIC_V2:
+                assert is_union(get_origin(type_) or type_)
+
+                posts_type, none_type = get_args(type_)
+
+                assert none_type.__name__ == 'NoneType'
+
+                assert posts_type.__module__ == 'typing'  # type: ignore
+                if sys.version_info >= (3, 7):
+                    assert posts_type._name == 'List'  # type: ignore
+                else:
+                    assert posts_type.__name__ == 'List'
+
+                items_type = get_args(posts_type)[0]
+                assert items_type.__name__ == 'PostOnlyId'
+                assert items_type.__module__ == 'prisma.partials'
             else:
-                assert field.outer_type_.__name__ == 'List'
+                assert type_.__name__ == 'PostOnlyId'
+                assert type_.__module__ == 'prisma.partials'
 
-            assert field.outer_type_.__module__ == 'typing'
+                if sys.version_info >= (3, 7):
+                    assert field.outer_type_._name == 'List'  # type: ignore
+                else:
+                    assert field.outer_type_.__name__ == 'List'
+
+                assert field.outer_type_.__module__ == 'typing'  # type: ignore
 
         def test_bytes() -> None:
             """Ensure Base64 fields can be used"""
