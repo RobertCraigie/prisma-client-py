@@ -76,7 +76,10 @@ if TYPE_CHECKING:
     )
     BaseConfig = pydantic.BaseConfig  # pyright: ignore[reportDeprecated]
 
-    from pydantic import GetCoreSchemaHandler as GetCoreSchemaHandler, PlainSerializer as PlainSerializer
+    from pydantic import (
+        GetCoreSchemaHandler as GetCoreSchemaHandler,
+        PlainSerializer as PlainSerializer,
+    )
     from pydantic_core import (
         CoreSchema as CoreSchema,
         core_schema as core_schema,

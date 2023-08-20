@@ -260,7 +260,9 @@ class Module(BaseModel):
         if PYDANTIC_V2:
             spec: Annotated[
                 machinery.ModuleSpec,
-                PlainSerializer(lambda x: _module_spec_serializer(x), return_type=str)
+                PlainSerializer(
+                    lambda x: _module_spec_serializer(x), return_type=str
+                ),
             ]
         else:
             spec: machinery.ModuleSpec
