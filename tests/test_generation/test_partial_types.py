@@ -228,7 +228,6 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
                 assert type_.__name__ == 'UserOnlyName'
                 assert type_.__module__ == 'prisma.partials'
 
-
         def test_exclude_relations() -> None:
             """Removing all relational fields using `exclude_relations`"""
             assert_expected(
