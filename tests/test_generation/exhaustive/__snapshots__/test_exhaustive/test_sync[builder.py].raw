@@ -60,7 +60,7 @@ from .errors import UnknownModelError, UnknownRelationalFieldError, InvalidModel
 from ._constants import QUERY_BUILDER_ALIASES
 from ._types import PrismaMethod
 from ._typing import is_list_type
-from ._compat import model_fields, model_field_type, is_union, get_args, get_origin, model_field_type
+from ._compat import model_fields, model_field_type, is_union, get_args, get_origin
 
 if TYPE_CHECKING:
     from .bases import _PrismaModel as PrismaModel
@@ -294,7 +294,7 @@ class QueryBuilder:
         return [
             field
             for field, info in model_fields(model).items()
-            if not _field_is_prisma_model(info, parent=model)
+            if not _field_is_prisma_model(info, name=field, parent=model)
         ]
 
     def get_relational_model(self, current_model: Type[PrismaModel], field: str) -> Type[PrismaModel]:
@@ -322,7 +322,7 @@ class QueryBuilder:
         except KeyError as exc:
             raise UnknownRelationalFieldError(model=current_model.__name__, field=field)
 
-        model = _prisma_model_for_field(info, parent=current_model)
+        model = _prisma_model_for_field(info, name=field, parent=current_model)
         if not model:
             raise RuntimeError(
                 f'The `{field}` field doesn\'t appear to be a Prisma Model type. ' +
@@ -353,8 +353,16 @@ class QueryBuilder:
         return transformed
 
 
-def _prisma_model_for_field(field: FieldInfo, *, parent: type[BaseModel]) -> type[PrismaModel] | None:
+def _prisma_model_for_field(
+    field: FieldInfo,
+    *,
+    name: str,
+    parent: type[BaseModel],
+) -> type[PrismaModel] | None:
+    cls_name = parent.__name__
     type_ = model_field_type(field)
+    if type_ is None:
+        raise RuntimeError(f'Unexpected field type is None for {cls_name}.{name}')
 
     if is_union(get_origin(type_)):
         types = get_args(type_)
@@ -363,9 +371,8 @@ def _prisma_model_for_field(field: FieldInfo, *, parent: type[BaseModel]) -> typ
 
     for type_ in types:
         if isinstance(type_, ForwardRef):
-            cls_name = parent.__name__
             raise RuntimeError(
-                f'Encountered forward reference for {cls_name}.{field.name}; Forward references must be evaluated using {cls_name}.update_forward_refs()'
+                f'Encountered forward reference for {cls_name}.{name}; Forward references must be evaluated using {cls_name}.update_forward_refs()'
             )
 
         if is_list_type(type_):
@@ -377,12 +384,12 @@ def _prisma_model_for_field(field: FieldInfo, *, parent: type[BaseModel]) -> typ
     return None
 
 
-def _field_is_prisma_model(field: FieldInfo, *, parent: type[BaseModel]) -> bool:
+def _field_is_prisma_model(field: FieldInfo, *, name: str, parent: type[BaseModel]) -> bool:
     """Whether or not the given field info represents a model at the database level.
 
     This will return `True` for cases where the field represents a list of models or a single model.
     """
-    return _prisma_model_for_field(field, parent=parent) is not None
+    return _prisma_model_for_field(field, name=name, parent=parent) is not None
 
 
 def _is_prisma_model_type(type_: type[BaseModel]) -> TypeGuard[type[PrismaModel]]:

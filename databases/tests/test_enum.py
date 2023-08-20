@@ -4,6 +4,7 @@ import pytest
 from prisma import Prisma
 from prisma.enums import Role
 from prisma.models import Types
+from prisma._compat import model_json_schema
 
 
 @pytest.mark.asyncio
@@ -87,7 +88,7 @@ async def test_unique6(client: Prisma) -> None:
 
 def test_json_schema() -> None:
     """Ensure a JSON Schema definition can be created"""
-    assert Types.schema() == IsPartialDict(
+    assert model_json_schema(Types) == IsPartialDict(
         definitions={
             'Role': {
                 'title': 'Role',

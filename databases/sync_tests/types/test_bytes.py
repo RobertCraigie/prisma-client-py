@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from prisma import Prisma
 from prisma.fields import Base64
 from prisma.models import Types
-from prisma._compat import model_parse
+from prisma._compat import model_parse, model_parse_json
 
 
 def test_filtering(client: Prisma) -> None:
@@ -90,7 +90,7 @@ def test_json(client: Prisma) -> None:
             'bytes': Base64.encode(b'foo'),
         },
     )
-    model = Types.parse_raw(record.json(exclude={'json_obj'}))
+    model = model_parse_json(Types, record.json(exclude={'json_obj'}))
     assert isinstance(model.bytes, Base64)
     assert model.bytes.decode() == b'foo'
 

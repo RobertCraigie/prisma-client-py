@@ -1,6 +1,7 @@
 import pytest
 from prisma import Prisma, Base64
 from prisma.models import Lists
+from prisma._compat import model_parse, model_dict
 
 
 @pytest.mark.asyncio
@@ -139,13 +140,14 @@ async def test_filtering_bytes(client: Prisma) -> None:
 async def test_bytes_constructing(client: Prisma) -> None:
     """A list of Base64 fields can be passed to the model constructor"""
     record = await client.lists.create({})
-    model = Lists.parse_obj(
+    model = model_parse(
+        Lists,
         {
-            **record.dict(),
+            **model_dict(record),
             'bytes': [
                 Base64.encode(b'foo'),
                 Base64.encode(b'bar'),
             ],
-        }
+        },
     )
     assert model.bytes == [Base64.encode(b'foo'), Base64.encode(b'bar')]

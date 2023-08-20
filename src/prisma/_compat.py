@@ -224,21 +224,28 @@ def model_copy(model: _ModelT, deep: bool = False) -> _ModelT:
     return model.copy(deep=deep)  # type: ignore
 
 
-def model_json(model: BaseModel, indent: int | None = None) -> str:
+def model_json(
+    model: BaseModel,
+    *,
+    indent: int | None = None,
+    exclude: set[str] | None = None
+) -> str:
     if PYDANTIC_V2:
-        return model.model_dump_json(indent=indent)
+        return model.model_dump_json(indent=indent, exclude=exclude)
 
-    return model.json(indent=indent)  # type: ignore
+    return model.json(indent=indent, exclude=exclude)  # type: ignore
 
 
 def model_dict(
     model: BaseModel,
+    *,
+    exclude: set[str] | None = None,
     exclude_unset: bool = False,
 ) -> dict[str, Any]:
     if PYDANTIC_V2:
-        return model.model_dump(exclude_unset=exclude_unset)
+        return model.model_dump(exclude_unset=exclude_unset, exclude=exclude)
 
-    return model.dict(exclude_unset=exclude_unset)  # type: ignore
+    return model.dict(exclude=exclude, exclude_unset=exclude_unset)  # type: ignore
 
 
 def model_rebuild(model: type[BaseModel]) -> None:
@@ -253,6 +260,20 @@ def model_parse(model: type[_ModelT], obj: Any) -> _ModelT:
         return model.model_validate(obj)
     else:
         return model.parse_obj(obj)  # type: ignore
+
+
+def model_parse_json(model: type[_ModelT], obj: str) -> _ModelT:
+    if PYDANTIC_V2:
+        return model.model_validate_json(obj)
+    else:
+        return model.parse_raw(obj)  # type: ignore
+
+
+def model_json_schema(model: type[BaseModel]) -> dict[str, Any]:
+    if PYDANTIC_V2:
+        return model.model_json_schema()
+    else:
+        return model.schema()  # type: ignore
 
 
 def Field(*, env: str | None = None, **extra: Any) -> Any:

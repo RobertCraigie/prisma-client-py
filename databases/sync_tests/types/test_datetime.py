@@ -2,6 +2,7 @@ import datetime
 from dirty_equals import IsPartialDict
 from prisma import Prisma
 from prisma.models import Types
+from prisma._compat import model_json_schema
 
 from lib.testing import assert_similar_time
 
@@ -265,7 +266,7 @@ def test_precision_loss(client: Prisma) -> None:
 
 def test_json_schema() -> None:
     """Ensure a JSON Schema definition can be created"""
-    assert Types.schema() == IsPartialDict(
+    assert model_json_schema(Types) == IsPartialDict(
         properties=IsPartialDict(
             {
                 'datetime_': {

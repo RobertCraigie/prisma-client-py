@@ -3,6 +3,7 @@ from dirty_equals import IsPartialDict
 
 from prisma import Prisma
 from prisma.models import Types
+from prisma._compat import model_json_schema
 
 
 @pytest.mark.asyncio
@@ -180,7 +181,7 @@ async def test_filtering_nulls(client: Prisma) -> None:
 
 def test_json_schema() -> None:
     """Ensure a JSON Schema definition can be created"""
-    assert Types.schema() == IsPartialDict(
+    assert model_json_schema(Types) == IsPartialDict(
         properties=IsPartialDict(
             {
                 'string': {
