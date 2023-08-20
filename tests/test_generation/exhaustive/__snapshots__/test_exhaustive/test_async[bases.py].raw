@@ -44,7 +44,7 @@ from pydantic import BaseModel
 from . import fields, actions
 from ._types import FuncType
 from .builder import serialize_base64
-from ._compat import PYDANTIC_V2, ConfigDict, BaseConfig
+from ._compat import PYDANTIC_V2, ConfigDict
 
 if TYPE_CHECKING:
     from .client import Prisma
@@ -61,7 +61,9 @@ class _PrismaModel(BaseModel):
             populate_by_name=True,
         )
         # TODO(before merge): emulate json_encoders behaviour
-    else:
+    elif not TYPE_CHECKING:
+        from ._compat import BaseConfig
+
         class Config(BaseConfig):
             use_enum_values: bool = True
             arbitrary_types_allowed: bool = True
