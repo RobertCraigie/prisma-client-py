@@ -246,6 +246,9 @@ class EngineType(str, enum.Enum):
     library = 'library'
     dataproxy = 'dataproxy'
 
+    def __str__(self) -> str:
+        return self.value
+
 
 class Module(BaseModel):
     spec: machinery.ModuleSpec
