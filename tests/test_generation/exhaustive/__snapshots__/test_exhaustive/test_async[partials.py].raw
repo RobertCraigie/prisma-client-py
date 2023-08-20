@@ -39,9 +39,8 @@ from typing_extensions import TypedDict, Literal
 
 LiteralString = str
 # -- template partials.py.jinja --
-from pydantic import validator
 from . import types, fields, enums, actions, models, bases
-from ._compat import model_rebuild
+from ._compat import model_rebuild, field_validator
 
 
 class PostWithAuthor(bases.BasePost):

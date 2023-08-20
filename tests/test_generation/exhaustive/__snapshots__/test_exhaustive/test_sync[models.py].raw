@@ -45,11 +45,11 @@ import inspect
 import warnings
 from collections import OrderedDict
 
-from pydantic import BaseConfig, BaseModel, Field, validator
+from pydantic import BaseConfig, BaseModel, Field
 
 from . import types, enums, errors, fields, bases
 from ._types import FuncType
-from ._compat import model_rebuild
+from ._compat import model_rebuild, field_validator
 from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
 
@@ -930,7 +930,7 @@ class Lists(bases.BaseLists):
                 stacklevel=3,
             )
 
-    @validator('strings', 'bytes', 'dates', 'bools', 'ints', 'floats', 'bigints', 'json_objects', 'decimals', pre=True, allow_reuse=True)
+    @field_validator('strings', 'bytes', 'dates', 'bools', 'ints', 'floats', 'bigints', 'json_objects', 'decimals', pre=True, allow_reuse=True)
     @classmethod
     def _transform_required_list_fields(cls, value: object) -> object:
         # When using raw queries, some databases will return `None` for an array field that has not been set yet.
