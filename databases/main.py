@@ -29,7 +29,7 @@ from pipelines.utils import (
     get_pkg_location,
     maybe_install_nodejs_bin,
 )
-from prisma._compat import cached_property
+from prisma._compat import cached_property, model_json, model_copy
 
 from .utils import DatabaseConfig
 from ._types import SupportedDatabase
@@ -158,7 +158,7 @@ def test_inverse(
             for feature in config.unsupported_features:
                 print(title(f'Testing {feature} feature'))
 
-                new_config = config.copy(deep=True)
+                new_config = model_copy(config, deep=True)
                 new_config.unsupported_features.remove(feature)
 
                 runner = Runner(
@@ -276,7 +276,7 @@ class Runner:
 
     def setup(self) -> None:
         # TODO: split up more
-        print('database config: ' + self.config.json(indent=2))
+        print('database config: ' + model_json(self.config, indent=2))
         print('for async: ', self.for_async)
 
         exclude_files = self.exclude_files
@@ -350,7 +350,7 @@ class Runner:
             env={
                 'PRISMA_DATABASE': self.database,
                 # TODO: this should be accessible in the core client
-                'DATABASE_CONFIG': self.config.json(),
+                'DATABASE_CONFIG': model_json(self.config),
             },
         )
 

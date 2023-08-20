@@ -217,6 +217,13 @@ def model_field_type(field: FieldInfo) -> type | None:
     return field.type_  # type: ignore
 
 
+def model_copy(model: _ModelT, deep: bool = False) -> _ModelT:
+    if PYDANTIC_V2:
+        return model.model_copy(deep=deep)
+
+    return model.copy(deep=deep)  # type: ignore
+
+
 def model_json(model: BaseModel, indent: int | None = None) -> str:
     if PYDANTIC_V2:
         return model.model_dump_json(indent=indent)
