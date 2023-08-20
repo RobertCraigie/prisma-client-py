@@ -119,6 +119,7 @@ else:
 
 # v1 re-exports
 if TYPE_CHECKING:
+    from pydantic.v1 import Extra as Extra
 
     def get_args(t: type[Any]) -> tuple[Any, ...]:
         ...
@@ -137,12 +138,14 @@ if TYPE_CHECKING:
 
 else:
     if PYDANTIC_V2:
+        from pydantic.v1 import Extra as Extra
         from pydantic.v1.typing import get_args as get_args
         from pydantic.v1.typing import is_union as is_union
         from pydantic.v1.typing import get_origin as get_origin
         from pydantic.v1.typing import is_typeddict as is_typeddict
         from pydantic.v1.typing import is_literal_type as is_literal_type
     else:
+        from pydantic import Extra as Extra
         from pydantic.typing import get_args as get_args
         from pydantic.typing import is_union as is_union
         from pydantic.typing import get_origin as get_origin

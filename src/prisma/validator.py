@@ -3,9 +3,9 @@ from types import ModuleType
 from functools import lru_cache
 from typing import Type, TypeVar, Any, cast
 
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel
 
-from ._compat import is_typeddict, model_parse, model_dict
+from ._compat import PYDANTIC_V2, Extra, is_typeddict
 from ._types import Protocol, runtime_checkable
 
 
@@ -34,9 +34,14 @@ def patch_pydantic() -> None:
 
     see https://github.com/samuelcolvin/pydantic/pull/2761
     """
-    from pydantic import annotated_types
 
-    create_model = annotated_types.create_model_from_typeddict
+    annotated_types: Any
+    if PYDANTIC_V2:
+        from pydantic.v1 import annotated_types
+    else:
+        from pydantic import annotated_types
+
+    create_model = annotated_types.create_model_from_typeddict  # type: ignore
 
     def patched_create_model(
         typeddict_cls: Any, **kwargs: Any
@@ -44,7 +49,7 @@ def patch_pydantic() -> None:
         kwargs.setdefault('__module__', typeddict_cls.__module__)
         return create_model(typeddict_cls, **kwargs)
 
-    annotated_types.create_model_from_typeddict = patched_create_model
+    annotated_types.create_model_from_typeddict = patched_create_model  # type: ignore
 
 
 def validate(type: Type[T], data: Any) -> T:
@@ -59,6 +64,12 @@ def validate(type: Type[T], data: Any) -> T:
         validated = validate(types.UserCreateInput, data)
         user = await User.prisma().create(data=validated)
     """
+    create_model_from_typeddict: Any
+    if PYDANTIC_V2:
+        from pydantic.v1 import create_model_from_typeddict
+    else:
+        from pydantic import create_model_from_typeddict  # type: ignore
+
     # avoid patching pydantic until we know we need to in case our
     # monkey patching fails
     patch_pydantic()
@@ -84,5 +95,5 @@ def validate(type: Type[T], data: Any) -> T:
         model.update_forward_refs(**vars(_get_module(type)))
         type.__pydantic_model__ = model  # type: ignore
 
-    instance = model_parse(model, data)
-    return cast(T, model_dict(instance, exclude_unset=True))
+    instance = model.parse_obj(data)
+    return cast(T, instance.dict(exclude_unset=True))
