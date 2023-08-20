@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import get_origin
+from ._compat import get_origin
 
 
 def is_list_type(typ: type) -> bool:
