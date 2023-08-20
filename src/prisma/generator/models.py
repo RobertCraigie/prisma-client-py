@@ -328,7 +328,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
 
         @classmethod
         def model_validate(
-            cls: type[_ModelT],
+            cls: 'type[_ModelT]',
             obj: Any,
             *,
             strict: 'bool | None' = None,

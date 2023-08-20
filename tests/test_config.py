@@ -1,9 +1,12 @@
+import warnings
+from mock import MagicMock
 from pathlib import Path
 from typing import cast
 from textwrap import dedent
 
 from pytest_mock import MockerFixture
 from prisma._config import Config, LazyConfigProxy
+from prisma._compat import model_fields, _get_field_env_var
 from prisma.utils import temp_env_update
 
 from .utils import Testdir
@@ -12,7 +15,12 @@ from .utils import Testdir
 def test_lazy_proxy(mocker: MockerFixture) -> None:
     """Laxy proxy only instantiates Config once"""
     proxy = cast(Config, LazyConfigProxy())
-    mocked = mocker.patch.object(Config, 'load', spec=Config)
+
+    mocked = cast(MagicMock, None)
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        mocked = mocker.patch.object(Config, 'load', spec=Config)
+
     print(proxy.binary_cache_dir)
     mocked.assert_called_once()
 
@@ -89,7 +97,7 @@ def test_every_option_loads_from_the_environment() -> None:
     """Every config option must explicitly specify an  environment variable to load from
     to ensure that it can be easily set dynamically
     """
-    for name, field in Config.__fields__.items():
+    for name, field in model_fields(Config).items():
         assert (
-            'env' in field.field_info.extra
+            _get_field_env_var(field) is not None
         ), f'The {name} option does not specify an environment variable to load from'

@@ -67,25 +67,21 @@ def root_validator(
 
 
 if TYPE_CHECKING:
-    # TODO: just copy these in
-    from pydantic.typing import (
-        is_typeddict as is_typeddict,
-        get_args as get_args,
-    )
-
     BaseSettings = BaseModel
     BaseSettingsConfig = pydantic.BaseConfig  # type: ignore
 
     BaseConfig = pydantic.BaseModel  # type: ignore
 
+    from pydantic_core import CoreSchema as CoreSchema
+
     class GenericModel(BaseModel):
         ...
 
 else:
-    try:
-        from pydantic.v1.typing import is_typeddict, get_args
-    except ImportError:
-        from pydantic.typing import is_typeddict, get_args
+    if PYDANTIC_V2:
+        from pydantic_core import CoreSchema
+    else:
+        CoreSchema = None
 
     if PYDANTIC_V2:
         GenericModel = BaseModel
@@ -114,6 +110,38 @@ else:
 
         BaseConfig = BaseModel.Config
 
+# v1 re-exports
+if TYPE_CHECKING:
+
+    def get_args(t: type[Any]) -> tuple[Any, ...]:
+        ...
+
+    def is_union(tp: type[Any] | None) -> bool:
+        ...
+
+    def get_origin(t: type[Any]) -> type[Any] | None:
+        ...
+
+    def is_literal_type(type_: type[Any]) -> bool:
+        ...
+
+    def is_typeddict(type_: type[Any]) -> bool:
+        ...
+
+else:
+    if PYDANTIC_V2:
+        from pydantic.v1.typing import get_args as get_args
+        from pydantic.v1.typing import is_union as is_union
+        from pydantic.v1.typing import get_origin as get_origin
+        from pydantic.v1.typing import is_typeddict as is_typeddict
+        from pydantic.v1.typing import is_literal_type as is_literal_type
+    else:
+        from pydantic.typing import get_args as get_args
+        from pydantic.typing import is_union as is_union
+        from pydantic.typing import get_origin as get_origin
+        from pydantic.typing import is_typeddict as is_typeddict
+        from pydantic.typing import is_literal_type as is_literal_type
+
 
 # refactored config
 if TYPE_CHECKING:
@@ -134,8 +162,7 @@ def _env_var_resolver(
     assert isinstance(values, dict)
 
     for key, field_info in model_cls.model_fields.items():
-        extra = _resolve_json_schema_extra(field_info)
-        env_var = extra.get(ENV_VAR_KEY)
+        env_var = _get_field_env_var(field_info)
         if not env_var:
             continue
 
@@ -150,13 +177,31 @@ def _env_var_resolver(
     return values
 
 
-def _resolve_json_schema_extra(field: FieldInfo) -> dict[str, Any]:
+def _get_field_env_var(field: FieldInfo) -> str | None:
+    if not PYDANTIC_V2:
+        return field.field_info.extra.get('env')  # type: ignore
+
     extra = field.json_schema_extra
+    if not extra:
+        return None
+
     if callable(extra):
         raise RuntimeError('Unexpected field json schema is a function')
 
-    return extra or {}
+    return extra.get(ENV_VAR_KEY)
 
+
+def model_fields(model: type[BaseModel]) -> dict[str, FieldInfo]:
+    if PYDANTIC_V2:
+        return model.model_fields
+    return model.__fields__  # type: ignore
+
+
+def model_field_type(field: FieldInfo) -> type | None:
+    if PYDANTIC_V2:
+        return field.annotation
+
+    return field.type_  # type: ignore
 
 def model_json(model: BaseModel, indent: int | None = None) -> str:
     if PYDANTIC_V2:

@@ -11,6 +11,7 @@ from pydantic import BaseConfig, BaseModel, Field, validator
 
 from . import types, enums, errors, fields, bases
 from ._types import FuncType
+from ._compat import model_rebuild
 from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
 
@@ -31,7 +32,7 @@ class {{ model.name }}(bases.Base{{ model.name }}):
             {%- if field.is_required and not field.relation_name -%}
                 {{ ' ' }}{{ field.python_type }}
             {% else -%}
-                {{ ' ' }}Optional[{{ field.python_type }}]
+                {{ ' ' }}Optional[{{ field.python_type }}] = None
             {% endif %}
     {% if not field.documentation is none %}
     """{{ format_documentation(field.documentation) }}"""
@@ -221,5 +222,5 @@ from . import models, actions
 
 # required to support relationships between models
 {% for model in dmmf.datamodel.models %}
-{{ model.name }}.update_forward_refs()
+model_rebuild({{ model.name }})
 {% endfor %}

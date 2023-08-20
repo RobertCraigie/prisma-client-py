@@ -2,6 +2,7 @@
 # -- template partials.py.jinja --
 from pydantic import validator
 from . import types, fields, enums, actions, models, bases
+from ._compat import model_rebuild
 
 
 {% for partial in partial_models %}
@@ -9,7 +10,7 @@ class {{ partial.name }}(bases.Base{{ partial.from_model }}):
     {% for field in partial.fields.values() %}
     {{ field.name }}:
             {%- if field.optional -%}
-                {{ ' ' }}Optional[{{ field.type }}]
+                {{ ' ' }}Optional[{{ field.type }}] = None
             {% else -%}
                 {{ ' ' }}{{ field.type }}
             {% endif %}
@@ -40,7 +41,7 @@ class {{ partial.name }}(bases.Base{{ partial.from_model }}):
 from . import partials
 
 {% for partial in partial_models %}
-{{ partial.name }}.update_forward_refs()
+model_rebuild({{ partial.name }})
 {% endfor %}
 
 # fmt: on
