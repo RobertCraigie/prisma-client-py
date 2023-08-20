@@ -196,7 +196,9 @@ def test_inverse(
             )
 
 
-def _setup_test_env(session: nox.Session, *, pydantic_v2: bool, inplace: bool) -> None:
+def _setup_test_env(
+    session: nox.Session, *, pydantic_v2: bool, inplace: bool
+) -> None:
     if pydantic_v2:
         session.install('-r', '../pipelines/requirements/deps/pydantic.txt')
     else:
