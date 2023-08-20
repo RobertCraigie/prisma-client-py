@@ -272,22 +272,41 @@ async def test_precision_loss(client: Prisma) -> None:
 
 def test_json_schema() -> None:
     """Ensure a JSON Schema definition can be created"""
-    assert model_json_schema(Types) == IsPartialDict(
-        properties=IsPartialDict(
-            {
-                'datetime_': {
-                    'title': 'Datetime ',
-                    'type': 'string',
-                    'format': 'date-time',
-                },
-                'optional_datetime': {
-                    'title': 'Optional Datetime',
-                    'anyOf': [
-                        {'format': 'date-time', 'type': 'string'},
-                        {'type': 'null'},
-                    ],
-                    'default': None,
-                },
-            }
+    if PYDANTIC_V2:
+        assert model_json_schema(Types) == IsPartialDict(
+            properties=IsPartialDict(
+                {
+                    'datetime_': {
+                        'title': 'Datetime ',
+                        'type': 'string',
+                        'format': 'date-time',
+                    },
+                    'optional_datetime': {
+                        'title': 'Optional Datetime',
+                        'anyOf': [
+                            {'format': 'date-time', 'type': 'string'},
+                            {'type': 'null'},
+                        ],
+                        'default': None,
+                    },
+                }
+            )
         )
-    )
+    else:
+        assert model_json_schema(Types) == IsPartialDict(
+            properties=IsPartialDict(
+                {
+                    'datetime_': {
+                        'title': 'Datetime ',
+                        'type': 'string',
+                        'format': 'date-time',
+                    },
+                    'optional_datetime': {
+                        'title': 'Optional Datetime',
+                        'type': 'string',
+                        'format': 'date-time',
+                        'default': None,
+                    },
+                }
+            )
+        )
