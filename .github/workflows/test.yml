@@ -18,7 +18,7 @@ on:
       - "mkdocs.yml"
 jobs:
   test:
-    name: test${{ matrix.job-description }}
+    name: test${{ matrix.job-description || format(" ({0}, {1})", matrix.python-version, matrix.os) }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
