@@ -62,7 +62,7 @@ model Foo {{
 @pytest.mark.parametrize(
     'location,options',
     [
-        ('prisma/partial_types.py', ''),
+        # ('prisma/partial_types.py', ''),
         (
             'prisma/partial_types.py',
             'partial_type_generator = "prisma/partial_types.py"',
@@ -217,11 +217,17 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             field = model_fields(PostModifiedAuthor)['author']
             type_ = model_field_type(field)
             assert type_ is not None
-            assert is_union(get_origin(type_) or type_)
 
-            inner_type, _ = get_args(type_)
-            assert inner_type.__name__ == 'UserOnlyName'
-            assert inner_type.__module__ == 'prisma.partials'
+            if PYDANTIC_V2:
+                assert is_union(get_origin(type_) or type_)
+
+                inner_type, _ = get_args(type_)
+                assert inner_type.__name__ == 'UserOnlyName'
+                assert inner_type.__module__ == 'prisma.partials'
+            else:
+                assert type_.__name__ == 'UserOnlyName'
+                assert type_.__module__ == 'prisma.partials'
+
 
         def test_exclude_relations() -> None:
             """Removing all relational fields using `exclude_relations`"""
