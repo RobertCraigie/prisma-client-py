@@ -5,7 +5,12 @@ from pydantic import BaseModel
 from prisma import Prisma
 from prisma.fields import Base64
 from prisma.models import Types
-from prisma._compat import model_parse, model_parse_json, model_json, model_dict
+from prisma._compat import (
+    model_parse,
+    model_parse_json,
+    model_json,
+    model_dict,
+)
 
 
 def test_filtering(client: Prisma) -> None:
@@ -176,11 +181,12 @@ def test_pydantic_conversion() -> None:
     assert record.value._raw == b'foo'
     assert record.array == []
 
-    record = model_parse(Base64Model, 
+    record = model_parse(
+        Base64Model,
         {
             'value': Base64.encode(b'foo'),
             'array': ['foo', b'bar', Base64.encode(b'baz')],
-        }
+        },
     )
     assert isinstance(record.value, Base64)
     assert record.value.decode() == b'foo'
