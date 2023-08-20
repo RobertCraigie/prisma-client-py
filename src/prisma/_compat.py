@@ -228,7 +228,7 @@ def model_json(
     model: BaseModel,
     *,
     indent: int | None = None,
-    exclude: set[str] | None = None
+    exclude: set[str] | None = None,
 ) -> str:
     if PYDANTIC_V2:
         return model.model_dump_json(indent=indent, exclude=exclude)

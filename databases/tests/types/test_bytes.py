@@ -6,7 +6,12 @@ from pydantic import BaseModel
 from prisma import Prisma
 from prisma.fields import Base64
 from prisma.models import Types
-from prisma._compat import model_parse_json, model_json, model_parse, model_dict
+from prisma._compat import (
+    model_parse_json,
+    model_json,
+    model_parse,
+    model_dict,
+)
 
 
 @pytest.mark.asyncio
@@ -102,7 +107,8 @@ async def test_json(client: Prisma) -> None:
 async def test_constructing(client: Prisma) -> None:
     """Base64 fields can be passed to the model constructor"""
     record = await client.types.create({})
-    model = model_parse(Types,
+    model = model_parse(
+        Types,
         {
             **model_dict(record, exclude={'json_obj'}),
             'bytes': Base64.encode(b'foo'),
@@ -180,11 +186,12 @@ def test_pydantic_conversion() -> None:
     assert record.value._raw == b'foo'
     assert record.array == []
 
-    record = model_parse(Base64Model, 
+    record = model_parse(
+        Base64Model,
         {
             'value': Base64.encode(b'foo'),
             'array': ['foo', b'bar', Base64.encode(b'baz')],
-        }
+        },
     )
     assert isinstance(record.value, Base64)
     assert record.value.decode() == b'foo'

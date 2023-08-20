@@ -12,7 +12,10 @@ def test_module_serialization() -> None:
         'scripts/partial_type_generator.py'
     )
     module = model_parse(Module, {'spec': str(path)})
-    assert model_parse_json(Module,model_json(module)).spec.name == module.spec.name
+    assert (
+        model_parse_json(Module, model_json(module)).spec.name
+        == module.spec.name
+    )
 
 
 def test_recursive_type_depth() -> None:
