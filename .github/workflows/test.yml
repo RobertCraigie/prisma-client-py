@@ -286,6 +286,14 @@ jobs:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases
 
+      - name: Run pydantic v1 tests
+        if: {{ matrix.name == 'PostgreSQL' }}
+        run: |
+          coverage run -m nox -s databases -- test --coverage --databases=${{ matrix.name }} --no-pydantic-v2
+        env:
+          ${{ matrix.env }}: ${{ matrix.url }}
+          COVERAGE_FILE: .cache/.coverage.databases
+
       - name: Upload coverage
         uses: actions/upload-artifact@v3
         with:

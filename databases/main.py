@@ -73,11 +73,15 @@ def test(
     lint: bool = True,
     test: bool = True,
     coverage: bool = False,
+    pydantic_v2: bool = True,
     for_async: bool = typer.Option(
         default=True, is_flag=False
     ),  # pyright: ignore[reportCallInDefaultInitializer]
 ) -> None:
     """Run unit tests and Pyright"""
+    if not pydantic_v2:
+        lint = False
+
     session = session_ctx.get()
 
     exclude = set(validate_databases(exclude_databases))
@@ -88,7 +92,7 @@ def test(
     ]
 
     with session.chdir(DATABASES_DIR):
-        _setup_test_env(session, inplace=inplace)
+        _setup_test_env(session, pydantic_v2=pydantic_v2, inplace=inplace)
 
         for database in validated_databases:
             print(title(CONFIG_MAPPING[database].name))
@@ -126,6 +130,7 @@ def test_inverse(
     coverage: bool = False,
     inplace: bool = False,
     pytest_args: Optional[str] = None,
+    pydantic_v2: bool = True,
     for_async: bool = typer.Option(
         default=True, is_flag=False
     ),  # pyright: ignore[reportCallInDefaultInitializer]
@@ -139,7 +144,7 @@ def test_inverse(
     validated_databases = validate_databases(databases)
 
     with session.chdir(DATABASES_DIR):
-        _setup_test_env(session, inplace=inplace)
+        _setup_test_env(session, pydantic_v2=pydantic_v2, inplace=inplace)
 
         for database in validated_databases:
             config = CONFIG_MAPPING[database]
@@ -191,7 +196,12 @@ def test_inverse(
             )
 
 
-def _setup_test_env(session: nox.Session, *, inplace: bool) -> None:
+def _setup_test_env(session: nox.Session, *, pydantic_v2: bool, inplace: bool) -> None:
+    if pydantic_v2:
+        session.install('-r', '../pipelines/requirements/deps/pydantic.txt')
+    else:
+        session.install('pydantic<2')
+
     session.install('-r', 'requirements.txt')
     maybe_install_nodejs_bin(session)
 

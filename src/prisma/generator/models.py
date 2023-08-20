@@ -434,8 +434,8 @@ class BinaryPaths(BaseModel):
 
         class Config(BaseModel.Config):  # pyright: ignore[reportDeprecated]
             extra: Any = (
-                pydantic.Extra.allow
-            )  # pyright: ignore[reportDeprecated]
+                pydantic.Extra.allow  # pyright: ignore[reportDeprecated]
+            )
 
 
 class Datasource(BaseModel):

@@ -305,7 +305,6 @@ def test_json_schema() -> None:
                         'title': 'Optional Datetime',
                         'type': 'string',
                         'format': 'date-time',
-                        'default': None,
                     },
                 }
             )
