@@ -221,7 +221,7 @@ def _recursive_type_depth_factory() -> int:
 
 class BaseModel(PydanticBaseModel):
     if PYDANTIC_V2:
-        model_config = ConfigDict(
+        model_config: ClassVar[ConfigDict] = ConfigDict(
             arbitrary_types_allowed=True,
             # TODO(before merge): replicate json_encoders
             ignored_types=(cached_property,),
@@ -255,7 +255,9 @@ class Module(BaseModel):
     spec: machinery.ModuleSpec
 
     if PYDANTIC_V2:
-        model_config = ConfigDict(arbitrary_types_allowed=True)
+        model_config: ClassVar[ConfigDict] = ConfigDict(
+            arbitrary_types_allowed=True
+        )
     else:
 
         class Config(BaseModel.Config):
@@ -337,7 +339,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
             *,
             strict: 'bool | None' = None,
             from_attributes: 'bool | None' = None,
-            context: 'dict[str, Any] | None' = None,
+            context: 'Dict[str, Any] | None' = None,
         ) -> _ModelT:
             data = super().model_validate(
                 obj,
@@ -1096,7 +1098,7 @@ class DefaultValue(BaseModel):
 
 class _EmptyModel(BaseModel):
     if PYDANTIC_V2:
-        model_config = ConfigDict(extra='forbid')
+        model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
     elif not TYPE_CHECKING:
 
         class Config(BaseModel.Config):
@@ -1105,7 +1107,7 @@ class _EmptyModel(BaseModel):
 
 class _ModelAllowAll(BaseModel):
     if PYDANTIC_V2:
-        model_config = ConfigDict(extra='allow')
+        model_config: ClassVar[ConfigDict] = ConfigDict(extra='allow')
     elif not TYPE_CHECKING:
 
         class Config(BaseModel.Config):

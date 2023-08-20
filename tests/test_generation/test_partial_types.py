@@ -266,9 +266,9 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
 
                 assert none_type.__name__ == 'NoneType'
 
-                assert posts_type.__module__ == 'typing'  # type: ignore
+                assert posts_type.__module__ == 'typing'
                 if sys.version_info >= (3, 7):
-                    assert posts_type._name == 'List'  # type: ignore
+                    assert posts_type._name == 'List'
                 else:
                     assert posts_type.__name__ == 'List'
 

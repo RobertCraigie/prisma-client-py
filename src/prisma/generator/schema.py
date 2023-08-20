@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Any, Dict, List, Tuple, Type, Union
+from typing_extensions import ClassVar
 
 from pydantic import BaseModel
 
@@ -78,7 +79,9 @@ class Model(BaseModel):
     info: ModelInfo
 
     if PYDANTIC_V2:
-        model_config = ConfigDict(ignored_types=(cached_property,))
+        model_config: ClassVar[ConfigDict] = ConfigDict(
+            ignored_types=(cached_property,)
+        )
     else:
 
         class Config:

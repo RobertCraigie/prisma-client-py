@@ -55,7 +55,7 @@ _PrismaModelT = TypeVar('_PrismaModelT', bound='_PrismaModel')
 
 class _PrismaModel(BaseModel):
     if PYDANTIC_V2:
-        model_config = ConfigDict(
+        model_config: ClassVar[ConfigDict] = ConfigDict(
             use_enum_values=True,
             arbitrary_types_allowed=True,
             populate_by_name=True,
