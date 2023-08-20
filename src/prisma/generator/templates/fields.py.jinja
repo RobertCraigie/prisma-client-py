@@ -136,13 +136,14 @@ class Base64:
 
     # Support converting objects into Base64 at the Pydantic level
     if PYDANTIC_V2:
+        @classmethod
         def __get_pydantic_core_schema__(
-            self,
+            cls,
             source_type: Any,
             *args: Any,
             **kwargs: Any,
         ) -> CoreSchema:
-            return core_schema.no_info_before_validator_function(self._validate, core_schema.any_schema())
+            return core_schema.no_info_before_validator_function(cls._validate, core_schema.any_schema())
     else:
         @classmethod
         def __get_validators__(cls) -> Iterator[object]:

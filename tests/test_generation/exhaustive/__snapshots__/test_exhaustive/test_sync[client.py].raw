@@ -54,7 +54,7 @@ from .bases import _PrismaModel
 from .engine import AbstractEngine, QueryEngine, TransactionId
 from .builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
-from ._compat import removeprefix
+from ._compat import removeprefix, model_parse
 from ._raw_query import deserialize_raw_results
 
 __all__ = (
