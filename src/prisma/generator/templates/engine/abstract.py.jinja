@@ -18,11 +18,8 @@ __all__ = (
 class AbstractEngine(ABC):
     dml: str
 
-    def stop(self, *, timeout: Optional[float] = None) -> None:
-        """Wrapper for synchronously calling close() and aclose()
-
-        The `timeout` argument is in seconds.
-        """
+    def stop(self, *, timeout: Optional[timedelta] = None) -> None:
+        """Wrapper for synchronously calling close() and aclose()"""
         self.close(timeout=timeout)
         try:
             loop = get_running_loop()
@@ -34,20 +31,13 @@ class AbstractEngine(ABC):
                 loop.create_task(self.aclose(timeout=timeout))
 
     @abstractmethod
-    def close(self, *, timeout: Optional[float] = None) -> None:
-        """Synchronous method for closing the engine, useful if the underlying engine uses a subprocess
-
-        The `timeout` argument is in seconds.
-        """
+    def close(self, *, timeout: Optional[timedelta] = None) -> None:
+        """Synchronous method for closing the engine, useful if the underlying engine uses a subprocess"""
         ...
 
     @abstractmethod
-    async def aclose(self, *, timeout: Optional[float] = None) -> None:
-        """Asynchronous method for closing the engine, only used if an
-        asynchronous client is generated.
-
-        The `timeout` argument is in seconds.
-        """
+    async def aclose(self, *, timeout: Optional[timedelta] = None) -> None:
+        """Asynchronous method for closing the engine, only used if an asynchronous client is generated"""
         ...
 
     @abstractmethod

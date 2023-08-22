@@ -46,8 +46,11 @@ class QueryEngine(HTTPEngine):
         # ensure the query engine process is terminated when we are
         atexit.register(self.stop)
 
-    def close(self, *, timeout: Optional[float] = None) -> None:
+    def close(self, *, timeout: Optional[timedelta] = None) -> None:
         log.debug('Disconnecting query engine...')
+
+        if timeout is not None:
+            timeout = timeout.total_seconds()
 
         if self.process is not None:
             if platform.name() == 'windows':
@@ -67,7 +70,7 @@ class QueryEngine(HTTPEngine):
         {% endif %}
         log.debug('Disconnected query engine')
 
-    async def aclose(self, *, timeout: Optional[float] = None) -> None:
+    async def aclose(self, *, timeout: Optional[timedelta] = None) -> None:
         self.close(timeout=timeout)
         {{ maybe_await }}self._close_session()
 
