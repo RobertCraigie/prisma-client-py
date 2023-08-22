@@ -92,7 +92,9 @@ async def test_context_manager_auto_rollback(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_batch_within_transaction(client: Prisma) -> None:
     """Query batching can be used within transactions"""
-    async with client.tx(timeout=timedelta(milliseconds=10_000)) as transaction:
+    async with client.tx(
+        timeout=timedelta(milliseconds=10_000)
+    ) as transaction:
         async with transaction.batch_() as batcher:
             batcher.user.create({'name': 'Tegan'})
             batcher.user.create({'name': 'Robert'})
@@ -109,7 +111,9 @@ async def test_timeout(client: Prisma) -> None:
     # this outer block is necessary becuse to the context manager it appears that no error
     # ocurred so it will attempt to commit the transaction, triggering the expired error again
     with pytest.raises(prisma.errors.TransactionExpiredError):
-        async with client.tx(timeout=timedelta(milliseconds=50)) as transaction:
+        async with client.tx(
+            timeout=timedelta(milliseconds=50)
+        ) as transaction:
             await asyncio.sleep(0.05)
 
             with pytest.raises(prisma.errors.TransactionExpiredError) as exc:
