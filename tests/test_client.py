@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Mapping
 
@@ -54,7 +55,7 @@ async def test_datasource_overwriting(
     other = Prisma(
         datasource={'url': 'file:./tmp.db'},
     )
-    await other.connect(timeout=1)
+    await other.connect(timeout=timedelta(seconds=1))
 
     user = await other.user.create({'name': 'Robert'})
     assert user.name == 'Robert'
@@ -98,7 +99,7 @@ def test_engine_type() -> None:
 @pytest.mark.asyncio
 async def test_connect_timeout(mocker: MockerFixture) -> None:
     """Setting the timeout on a client and a per-call basis works"""
-    client = Prisma(connect_timeout=7)
+    client = Prisma(connect_timeout=timedelta(seconds=7))
     mocked = mocker.patch.object(
         client._engine_class,
         'connect',
@@ -107,14 +108,14 @@ async def test_connect_timeout(mocker: MockerFixture) -> None:
 
     await client.connect()
     mocked.assert_called_once_with(
-        timeout=7,
+        timeout=timedelta(seconds=7),
         datasources=[client._make_sqlite_datasource()],
     )
     mocked.reset_mock()
 
-    await client.connect(timeout=5)
+    await client.connect(timeout=timedelta(seconds=5))
     mocked.assert_called_once_with(
-        timeout=5,
+        timeout=timedelta(seconds=5),
         datasources=[client._make_sqlite_datasource()],
     )
 
@@ -214,7 +215,7 @@ async def test_copy() -> None:
         datasource={
             'url': 'file:foo.db',
         },
-        connect_timeout=15,
+        connect_timeout=timedelta(seconds=15),
         http={
             'trust_env': False,
         },
@@ -223,7 +224,7 @@ async def test_copy() -> None:
     assert not client2.is_connected() is None
     assert client2._log_queries is True
     assert client2._datasource == {'url': 'file:foo.db'}
-    assert client2._connect_timeout == 15
+    assert client2._connect_timeout == timedelta(seconds=15)
     assert client2._http_config == {'trust_env': False}
 
     await client1.connect()

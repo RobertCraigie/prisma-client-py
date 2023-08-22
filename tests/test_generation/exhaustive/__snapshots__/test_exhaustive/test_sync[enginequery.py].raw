@@ -48,6 +48,7 @@ import signal
 import asyncio
 import logging
 import subprocess
+from datetime import timedelta
 from pathlib import Path
 
 from . import utils, errors
@@ -58,6 +59,7 @@ from ..binaries import platform
 from ..utils import time_since, _env_bool
 from ..types import DatasourceOverride
 from ..builder import dumps
+from .._constants import DEFAULT_CONNECT_TIMEOUT
 from ._types import TransactionId
 
 
@@ -117,7 +119,7 @@ class QueryEngine(HTTPEngine):
 
     def connect(
         self,
-        timeout: int = 10,
+        timeout: timedelta = DEFAULT_CONNECT_TIMEOUT,
         datasources: Optional[List[DatasourceOverride]] = None,
     ) -> None:
         log.debug('Connecting to query engine')
@@ -138,7 +140,7 @@ class QueryEngine(HTTPEngine):
     def spawn(
         self,
         file: Path,
-        timeout: int = 10,
+        timeout: timedelta = DEFAULT_CONNECT_TIMEOUT,
         datasources: Optional[List[DatasourceOverride]] = None,
     ) -> None:
         port = utils.get_open_port()
@@ -190,7 +192,7 @@ class QueryEngine(HTTPEngine):
         )
 
         last_exc = None
-        for _ in range(int(timeout / 0.1)):
+        for _ in range(int(timeout.total_seconds() / 0.1)):
             try:
                 data = self.request('GET', '/status')
             except Exception as exc:
