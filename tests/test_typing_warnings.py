@@ -26,7 +26,7 @@ async def test_warn_when_calling_connect_with_int_timeout() -> None:
 
 @pytest.mark.asyncio
 async def test_warn_when_calling_disconnect_with_float_timeout() -> None:
-    """Ensure that calling `client.disconnect(timeout:int)` emit a warning
+    """Ensure that calling `client.disconnect(timeout:float)` emit a warning
 
     https://github.com/RobertCraigie/prisma-client-py/issues/167
     """
