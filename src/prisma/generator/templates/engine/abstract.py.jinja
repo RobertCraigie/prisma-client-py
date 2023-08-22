@@ -3,9 +3,11 @@
 {% from '_utils.py.jinja' import maybe_async_def with context %}
 # -- template engine/abstract.py.jinja --
 from abc import ABC, abstractmethod
+from datetime import timedelta
 from ._types import TransactionId
 from ..types import DatasourceOverride
 from .._compat import get_running_loop
+from .._constants import DEFAULT_CONNECT_TIMEOUT
 
 
 __all__ = (
@@ -51,7 +53,7 @@ class AbstractEngine(ABC):
     @abstractmethod
     {{ maybe_async_def }}connect(
         self,
-        timeout: int = 10,
+        timeout: timedelta = DEFAULT_CONNECT_TIMEOUT,
         datasources: Optional[List[DatasourceOverride]] = None,
     ) -> None:
         """Connect to the engine"""
