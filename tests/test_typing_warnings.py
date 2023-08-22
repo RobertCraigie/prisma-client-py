@@ -45,7 +45,7 @@ async def test_warn_when_calling_tx_with_int_max_wait() -> None:
     client = Prisma()
     await client.connect()
     with pytest.warns(DeprecationWarning):
-       client.tx(max_wait=2000)
+        client.tx(max_wait=2000)
 
 
 @pytest.mark.asyncio
@@ -57,4 +57,4 @@ async def test_warn_when_calling_tx_with_int_timeout() -> None:
     client = Prisma()
     await client.connect()
     with pytest.warns(DeprecationWarning):
-       client.tx(timeout=5000)
+        client.tx(timeout=5000)
