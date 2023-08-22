@@ -92,9 +92,7 @@ async def test_context_manager_auto_rollback(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_batch_within_transaction(client: Prisma) -> None:
     """Query batching can be used within transactions"""
-    async with client.tx(
-        timeout=timedelta(milliseconds=10000)
-    ) as transaction:
+    async with client.tx(timeout=timedelta(milliseconds=10000)) as transaction:
         async with transaction.batch_() as batcher:
             batcher.user.create({'name': 'Tegan'})
             batcher.user.create({'name': 'Robert'})
