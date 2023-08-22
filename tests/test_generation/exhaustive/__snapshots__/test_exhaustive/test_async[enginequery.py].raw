@@ -88,16 +88,18 @@ class QueryEngine(HTTPEngine):
         log.debug('Disconnecting query engine...')
 
         if timeout is not None:
-            timeout = timeout.total_seconds()
+            total_seconds = timeout.total_seconds()
+        else:
+            total_seconds = None
 
         if self.process is not None:
             if platform.name() == 'windows':
                 self.process.kill()
-                self.process.wait(timeout=timeout)
+                self.process.wait(timeout=total_seconds)
             else:
                 self.process.send_signal(signal.SIGINT)
                 try:
-                    self.process.wait(timeout=timeout)
+                    self.process.wait(timeout=total_seconds)
                 except subprocess.TimeoutExpired:
                     self.process.send_signal(signal.SIGKILL)
 
