@@ -41,6 +41,7 @@ LiteralString = str
 # -- template engine/http.py.jinja --
 
 import logging
+from datetime import timedelta
 
 from . import utils, errors
 from .abstract import AbstractEngine
@@ -72,10 +73,10 @@ class HTTPEngine(AbstractEngine):
         self.session = HTTP(**kwargs)
         self.headers = headers if headers is not None else {}
 
-    def close(self, *, timeout: Optional[float] = None) -> None:
+    def close(self, *, timeout: Optional[timedelta] = None) -> None:
         self._close_session()
 
-    async def aclose(self, *, timeout: Optional[float] = None) -> None:
+    async def aclose(self, *, timeout: Optional[timedelta] = None) -> None:
         pass
 
     def _close_session(self) -> None:

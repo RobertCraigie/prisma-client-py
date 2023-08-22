@@ -311,11 +311,18 @@ class Prisma:
             datasources=datasources,
         )
 
-    def disconnect(self, timeout: Optional[float] = None) -> None:
+    def disconnect(self, timeout: Union[float, timedelta, None] = None) -> None:
         """Disconnect the Prisma query engine."""
         if self.__engine is not None:
             engine = self.__engine
             self.__engine = None
+            if isinstance(timeout, float):
+                warnings.warn(
+                    'Passing a float as `timeout` argument is deprecated. Use datetime.timedelta instance instead.',
+                    DeprecationWarning,
+                    stacklevel=3,
+                )
+                timeout = timedelta(seconds=timeout)
             engine.close(timeout=timeout)
             engine.stop(timeout=timeout)
 
