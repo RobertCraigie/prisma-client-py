@@ -13,7 +13,7 @@ from ..utils import CURRENT_DATABASE
 @pytest.mark.asyncio
 async def test_model_query(client: Prisma) -> None:
     """Basic usage within model queries"""
-    async with client.tx(timeout=timedelta(milliseconds=1_000)) as tx:
+    async with client.tx(timeout=timedelta(milliseconds=1000)) as tx:
         user = await User.prisma(tx).create({'name': 'Robert'})
         assert user.name == 'Robert'
 
@@ -44,7 +44,7 @@ async def test_model_query(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_context_manager(client: Prisma) -> None:
     """Basic usage within a context manager"""
-    async with client.tx(timeout=timedelta(milliseconds=1_000)) as transaction:
+    async with client.tx(timeout=timedelta(milliseconds=1000)) as transaction:
         user = await transaction.user.create({'name': 'Robert'})
         assert user.name == 'Robert'
 
@@ -93,7 +93,7 @@ async def test_context_manager_auto_rollback(client: Prisma) -> None:
 async def test_batch_within_transaction(client: Prisma) -> None:
     """Query batching can be used within transactions"""
     async with client.tx(
-        timeout=timedelta(milliseconds=10_000)
+        timeout=timedelta(milliseconds=10000)
     ) as transaction:
         async with transaction.batch_() as batcher:
             batcher.user.create({'name': 'Tegan'})
@@ -128,7 +128,7 @@ async def test_timeout(client: Prisma) -> None:
 )
 async def test_concurrent_transactions(client: Prisma) -> None:
     """Two separate transactions can be used independently of each other at the same time"""
-    timeout = timedelta(milliseconds=15_000)
+    timeout = timedelta(milliseconds=15000)
     async with client.tx(timeout=timeout) as tx1, client.tx(
         timeout=timeout
     ) as tx2:
