@@ -8,7 +8,7 @@
         <img src="https://img.shields.io/discord/933860922039099444?color=blue&label=chat&logo=discord" alt="Chat on Discord">
     </a>
     <a href="https://prisma.io">
-        <img src="https://img.shields.io/static/v1?label=prisma&message=5.0.0&color=blue&logo=prisma" alt="Supported Prisma version is 5.0.0">
+        <img src="https://img.shields.io/static/v1?label=prisma&message=5.2.0&color=blue&logo=prisma" alt="Supported Prisma version is 5.2.0">
     </a>
     <a href="https://github.com/grantjenks/blue">
         <img src="https://camo.githubusercontent.com/dbdbcf26db37abfa1f2ab7e6c28c8b3a199f2dad98e4ef53a50e9c45c7e4ace8/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636f64652532307374796c652d626c75652d626c75652e737667" alt="Code style: blue">
