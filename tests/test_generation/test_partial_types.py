@@ -4,7 +4,6 @@ import subprocess
 from typing_extensions import Literal
 
 import pytest
-from syrupy.assertion import SnapshotAssertion
 from prisma._compat import PYDANTIC_V2
 from ..utils import Testdir
 
@@ -423,9 +422,7 @@ def test_partial_types_excluded_required(testdir: Testdir) -> None:
     )
 
 
-def test_partial_type_generator_not_found(
-    testdir: Testdir, snapshot: SnapshotAssertion
-) -> None:
+def test_partial_type_generator_not_found(testdir: Testdir) -> None:
     """Unknown partial type generator option value raises an error"""
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA, 'partial_type_generator = "foo.bar.baz"')
@@ -435,7 +432,10 @@ def test_partial_type_generator_not_found(
 
     if PYDANTIC_V2:
         line = output.splitlines()[-4]
-        assert line == snapshot
+        assert (
+            line
+            == "  Value error, Could not find a python file or module at foo.bar.baz [type=value_error, input_value='foo.bar.baz', input_type=str]"
+        )
     else:
         assert 'generator -> config -> partial_type_generator' in output
         assert (

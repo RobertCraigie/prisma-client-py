@@ -16,7 +16,6 @@ from prisma.generator import (
 )
 from prisma.generator.utils import Faker, copy_tree
 from prisma._compat import PYDANTIC_V2
-from syrupy.assertion import SnapshotAssertion
 
 from .utils import assert_module_is_clean, assert_module_not_clean
 from ..utils import Testdir
@@ -141,15 +140,18 @@ def test_generator_subclass_mismatch() -> None:
     assert 'BaseGenerator' in message
 
 
-def test_error_handling(testdir: Testdir, snapshot: SnapshotAssertion) -> None:
+def test_error_handling(testdir: Testdir) -> None:
     """Config validation errors are returned through JSONRPC without a stack trace"""
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(options='partial_type_generator = "foo"')
 
     output = cast(bytes, exc.value.output).decode('utf-8').strip()
     if PYDANTIC_V2:
-        trimmed = output.splitlines()[-4:-1]
-        assert trimmed == snapshot
+        line = output.splitlines()[-4]
+        assert (
+            line
+            == "  Value error, Could not find a python file or module at foo [type=value_error, input_value='foo', input_type=str]"
+        )
     else:
         assert output.endswith(
             '\nError: \n'

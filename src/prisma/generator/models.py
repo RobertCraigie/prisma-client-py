@@ -621,27 +621,45 @@ class Config(BaseSettings):
             )
         return values
 
-    @root_validator(pre=True, skip_on_failure=True)
-    @classmethod
-    def partial_type_generator_converter(
-        cls, values: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        if PYDANTIC_V2:
+    if PYDANTIC_V2:
+        @root_validator(pre=True, skip_on_failure=True)
+        @classmethod
+        def partial_type_generator_converter(
+            cls, values: Dict[str, Any]
+        ) -> Dict[str, Any]:
+            # ensure env resolving happens
             values = cast(Dict[str, Any], cls.root_validator(values))  # type: ignore
 
-        value = values.get('partial_type_generator')
+            value = values.get('partial_type_generator')
 
-        try:
-            values['partial_type_generator'] = Module(
-                spec=value  # pyright: ignore[reportGeneralTypeIssues]
-            )
-        except ValueError:
-            if value is None:
-                # no config value passed and the default location was not found
-                return values
-            raise
+            try:
+                values['partial_type_generator'] = Module(
+                    spec=value  # pyright: ignore[reportGeneralTypeIssues]
+                )
+            except ValueError:
+                if value is None:
+                    # no config value passed and the default location was not found
+                    return values
+                raise
 
-        return values
+            return values
+    else:
+        @field_validator(
+            'partial_type_generator', pre=True, always=True, allow_reuse=True
+        )
+        @classmethod
+        def _partial_type_generator_converter(
+            cls, value: Optional[str]
+        ) -> Optional[Module]:
+            try:
+                return Module(
+                    spec=value  # pyright: ignore[reportGeneralTypeIssues]
+                )
+            except ValueError:
+                if value is None:
+                    # no config value passed and the default location was not found
+                    return None
+                raise
 
     @field_validator('recursive_type_depth', always=True, allow_reuse=True)
     @classmethod

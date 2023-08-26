@@ -1,3 +1,0 @@
-# name: test_partial_type_generator_not_found
-  "  Value error, Could not find a python file or module at foo.bar.baz [type=value_error, input_value='foo.bar.baz', input_type=str]"
-# ---
