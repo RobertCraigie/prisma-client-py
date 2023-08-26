@@ -69,10 +69,9 @@ jobs:
         run: |
           nox -s setup
 
-      # TODO: remove `-W ignore`
       - name: Run tests
         run: |
-          python scripts/ci.py -s test --no-error-on-missing-interpreters -- --pydantic-v2=${{ matrix.pydantic-v2 }} -W ignore
+          python scripts/ci.py -s test --no-error-on-missing-interpreters -- --pydantic-v2=${{ matrix.pydantic-v2 }}
         env:
           TARGET_PYTHON: ${{ matrix.python-version }}
 
