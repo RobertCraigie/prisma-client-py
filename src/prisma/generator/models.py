@@ -622,6 +622,7 @@ class Config(BaseSettings):
         return values
 
     if PYDANTIC_V2:
+
         @root_validator(pre=True, skip_on_failure=True)
         @classmethod
         def partial_type_generator_converter(
@@ -643,7 +644,9 @@ class Config(BaseSettings):
                 raise
 
             return values
+
     else:
+
         @field_validator(
             'partial_type_generator', pre=True, always=True, allow_reuse=True
         )
