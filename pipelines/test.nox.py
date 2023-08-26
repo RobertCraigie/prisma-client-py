@@ -13,14 +13,21 @@ def test(session: nox.Session) -> None:
     session.install('.')
     maybe_install_nodejs_bin(session)
 
+    pydantic_v2 = True
+
     pytest_args: list[str] = []
     for arg in session.posargs:
         if arg.startswith('--pydantic-v2='):
             _, value = arg.split('=')
             if value == 'false':
-                session.install('pydantic<2')
+                pydantic_v2 = False
         else:
             pytest_args.append(arg)
+
+    if pydantic_v2:
+        session.install('-r', 'pipelines/requirements/deps/pydantic.txt')
+    else:
+        session.install('pydantic<2')
 
     generate(session)
 
