@@ -434,8 +434,8 @@ def test_partial_type_generator_not_found(
     assert 'ValidationError' in output
 
     if PYDANTIC_V2:
-        trimmed = output.splitlines()[-4:-1]
-        assert trimmed == snapshot
+        line = output.splitlines()[-4]
+        assert line == snapshot
     else:
         assert 'generator -> config -> partial_type_generator' in output
         assert (

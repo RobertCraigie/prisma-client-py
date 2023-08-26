@@ -1,7 +1,3 @@
 # name: test_partial_type_generator_not_found
-  list([
-    "  Value error, Could not find a python file or module at foo.bar.baz [type=value_error, input_value='foo.bar.baz', input_type=str]",
-    '    For further information visit https://errors.pydantic.dev/2.2/v/value_error',
-    '',
-  ])
+  "  Value error, Could not find a python file or module at foo.bar.baz [type=value_error, input_value='foo.bar.baz', input_type=str]"
 # ---

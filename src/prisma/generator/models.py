@@ -285,6 +285,14 @@ class Module(BaseModel):
         class Config(BaseModel.Config):
             arbitrary_types_allowed: bool = True
 
+    # for some reason this is needed in Pydantic v2
+    @root_validator(pre=True, skip_on_failure=True)
+    @classmethod
+    def partial_type_generator_converter(cls, values: object) -> Any:
+        if isinstance(values, str):
+            return {'spec': values}
+        return values
+
     @field_validator('spec', pre=True, allow_reuse=True)
     @classmethod
     def spec_validator(cls, value: Optional[str]) -> machinery.ModuleSpec:
@@ -618,6 +626,9 @@ class Config(BaseSettings):
     def partial_type_generator_converter(
         cls, values: Dict[str, Any]
     ) -> Dict[str, Any]:
+        if PYDANTIC_V2:
+            values = cast(Dict[str, Any], cls.root_validator(values))  # type: ignore
+
         value = values.get('partial_type_generator')
 
         try:

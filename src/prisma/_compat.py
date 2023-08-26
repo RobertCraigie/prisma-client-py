@@ -109,11 +109,11 @@ else:
             ...
 
     if PYDANTIC_V2:
-        from pydantic import ValidationInfo, model_validator
+        from pydantic import model_validator
 
         class BaseSettings(BaseModel):
             @model_validator(mode='before')
-            def root_validator(cls, values: Any, info: ValidationInfo) -> Any:
+            def root_validator(cls, values: Any) -> Any:
                 return _env_var_resolver(cls, values)
 
         BaseSettingsConfig = None
