@@ -613,22 +613,24 @@ class Config(BaseSettings):
             )
         return values
 
-    @field_validator(
-        'partial_type_generator', pre=True, always=True, allow_reuse=True
-    )
+    @root_validator(pre=True, skip_on_failure=True)
     @classmethod
     def partial_type_generator_converter(
-        cls, value: Optional[str]
-    ) -> Optional[Module]:
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        value = values.get('partial_type_generator')
+
         try:
-            return Module(
+            values['partial_type_generator'] = Module(
                 spec=value  # pyright: ignore[reportGeneralTypeIssues]
             )
         except ValueError:
             if value is None:
                 # no config value passed and the default location was not found
-                return None
+                return values
             raise
+
+        return values
 
     @field_validator('recursive_type_depth', always=True, allow_reuse=True)
     @classmethod
