@@ -1,0 +1,7 @@
+# name: test_error_handling
+  list([
+    '1 validation error for Config',
+    'partial_type_generator.spec',
+    "  Value error, Could not find a python file or module at foo [type=value_error, input_value='foo', input_type=str]",
+  ])
+# ---
