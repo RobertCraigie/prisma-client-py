@@ -52,6 +52,9 @@ def patch_pydantic() -> None:
     annotated_types.create_model_from_typeddict = patched_create_model
 
 
+# Note: we can't just use TypeAdapter in v2 due to this issue
+# https://github.com/pydantic/pydantic/issues/7111
+
 def validate(type: Type[T], data: Any) -> T:
     """Validate untrusted data matches a given TypedDict
 
