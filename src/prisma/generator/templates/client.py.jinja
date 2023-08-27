@@ -166,7 +166,7 @@ class Prisma:
                 ' and will be removed in the next major release.\n'
                 'Use datetime.timedelta instance instead.'
             )
-            warnings.warn(message, DeprecationWarning, stacklevel=4)
+            warnings.warn(message, DeprecationWarning, stacklevel=2)
             connect_timeout = timedelta(seconds=connect_timeout)
         self._connect_timeout = connect_timeout
         self._http_config: HttpConfig = http or {}
@@ -246,7 +246,7 @@ class Prisma:
                 ' and will be removed in the next major release.\n'
                 'Use datetime.timedelta instance instead.'
             )
-            warnings.warn(message, DeprecationWarning, stacklevel=4)
+            warnings.warn(message, DeprecationWarning, stacklevel=2)
             timeout = timedelta(seconds=timeout)
 
         if self.__engine is None:
@@ -280,7 +280,7 @@ class Prisma:
                     ' and will be removed in the next major release.\n'
                     'Use datetime.timedelta instance instead.'
                 )
-                warnings.warn(message, DeprecationWarning, stacklevel=4)
+                warnings.warn(message, DeprecationWarning, stacklevel=2)
                 timeout = timedelta(seconds=timeout)
             {% if is_async %}
             await engine.aclose(timeout=timeout)
@@ -519,7 +519,7 @@ class TransactionManager:
                 ' and will be removed in the next major release.\n'
                 'Use datetime.timedelta instance instead.'
             )
-            warnings.warn(message, DeprecationWarning, stacklevel=4)
+            warnings.warn(message, DeprecationWarning, stacklevel=3)
             max_wait = timedelta(milliseconds=max_wait)
         self._max_wait = max_wait
         if isinstance(timeout, int):
@@ -528,7 +528,7 @@ class TransactionManager:
                 ' and will be removed in the next major release.\n'
                 'Use datetime.timedelta instance instead.'
             )
-            warnings.warn(message, DeprecationWarning, stacklevel=4)
+            warnings.warn(message, DeprecationWarning, stacklevel=3)
             timeout = timedelta(milliseconds=timeout)
         self._timeout = timeout
         self._tx_id: Optional[TransactionId] = None
