@@ -175,13 +175,14 @@ else:
 ENV_VAR_KEY = '$env'
 
 
+# minimal re-implementation of BaseSettings for v2
 def _env_var_resolver(
     model_cls: type[BaseModel], values: Any
 ) -> dict[str, Any]:
     assert isinstance(values, dict)
 
     for key, field_info in model_cls.model_fields.items():
-        env_var = _get_field_env_var(field_info)
+        env_var = _get_field_env_var(field_info, name=key)
         if not env_var:
             continue
 
@@ -196,7 +197,7 @@ def _env_var_resolver(
     return values
 
 
-def _get_field_env_var(field: FieldInfo) -> str | None:
+def _get_field_env_var(field: FieldInfo, name: str) -> str | None:
     if not PYDANTIC_V2:
         return field.field_info.extra.get('env')  # type: ignore
 
@@ -205,7 +206,7 @@ def _get_field_env_var(field: FieldInfo) -> str | None:
         return None
 
     if callable(extra):
-        raise RuntimeError('Unexpected field json schema is a function')
+        raise RuntimeError(f'Unexpected json schema for field "{name}" is a function')
 
     return extra.get(ENV_VAR_KEY)
 

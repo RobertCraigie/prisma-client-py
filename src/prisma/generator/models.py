@@ -209,14 +209,6 @@ def _pathlib_serializer(path: Path) -> str:
     return str(path.absolute())
 
 
-# TODO: don't monkeypatch globally
-# TODO: why did our previous code break???
-if not PYDANTIC_V2:
-    from pydantic import json as _json
-
-    _json.ENCODERS_BY_TYPE[machinery.ModuleSpec] = _module_spec_serializer
-
-
 def _recursive_type_depth_factory() -> int:
     click.echo(
         click.style(
@@ -359,23 +351,10 @@ class GenericData(GenericModel, Generic[ConfigT]):
 
     if PYDANTIC_V2:
 
-        @classmethod
-        def model_validate(
-            cls: Type[_ModelT],
-            obj: Any,
-            *,
-            strict: 'bool | None' = None,
-            from_attributes: 'bool | None' = None,
-            context: 'Dict[str, Any] | None' = None,
-        ) -> _ModelT:
-            data = super().model_validate(
-                obj,
-                strict=strict,
-                from_attributes=from_attributes,
-                context=context,
-            )
-            data_ctx.set(cast('GenericData[ConfigT]', data))
-            return data
+        @root_validator(pre=False)
+        def _set_ctx(self: _ModelT) -> _ModelT:
+            data_ctx.set(cast('GenericData[ConfigT]', self))
+            return self
 
     else:
 

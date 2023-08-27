@@ -100,5 +100,5 @@ def test_every_option_loads_from_the_environment() -> None:
     """
     for name, field in model_fields(Config).items():
         assert (
-            _get_field_env_var(field) is not None
+            _get_field_env_var(field, name=name) is not None
         ), f'The {name} option does not specify an environment variable to load from'
