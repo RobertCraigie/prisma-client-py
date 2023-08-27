@@ -16,12 +16,13 @@ def test_lazy_proxy(mocker: MockerFixture) -> None:
     """Laxy proxy only instantiates Config once"""
     proxy = cast(Config, LazyConfigProxy())
 
+    # ignore deprecation warnings as the mocker implicitly accesses deprecated properties
     mocked = cast(MagicMock, None)
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
         mocked = mocker.patch.object(Config, 'load', spec=Config)
 
-    print(proxy.binary_cache_dir)
+    print(proxy.binary_cache_dir)  # implicitly load the config
     mocked.assert_called_once()
 
     for _ in range(10):

@@ -63,7 +63,7 @@ model Foo {{
 @pytest.mark.parametrize(
     'location,options',
     [
-        # ('prisma/partial_types.py', ''),
+        ('prisma/partial_types.py', ''),
         (
             'prisma/partial_types.py',
             'partial_type_generator = "prisma/partial_types.py"',
