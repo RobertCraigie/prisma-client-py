@@ -1148,6 +1148,15 @@ class _ModelAllowAll(BaseModel):
 class PythonData(GenericData[Config]):
     """Data class including the default Prisma Client Python config"""
 
+    if not PYDANTIC_V2:
+        class Config(BaseConfig):
+            arbitrary_types_allowed: bool = True
+            json_encoders: Dict[Type[Any], Any] = {
+                Path: _pathlib_serializer,
+                machinery.ModuleSpec: _module_spec_serializer,
+            }
+            keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
+
 
 class DefaultData(GenericData[_EmptyModel]):
     """Data class without any config options"""
