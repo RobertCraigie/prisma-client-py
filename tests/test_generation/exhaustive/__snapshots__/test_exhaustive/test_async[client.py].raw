@@ -225,14 +225,16 @@ class Prisma:
         self._active_provider = 'postgresql'
         self._log_queries = log_queries
         self._datasource = datasource
+
         if isinstance(connect_timeout, int):
             message = (
-                'Passing a int as `connect_timeout` argument is deprecated'
-                ' and will be removed in the next major release.\n'
-                'Use datetime.timedelta instance instead.'
+                'Passing an int as `connect_timeout` argument is deprecated '
+                'and will be removed in the next major release. '
+                'Use a `datetime.timedelta` instance instead.'
             )
-            warnings.warn(message, DeprecationWarning, stacklevel=4)
+            warnings.warn(message, DeprecationWarning, stacklevel=2)
             connect_timeout = timedelta(seconds=connect_timeout)
+
         self._connect_timeout = connect_timeout
         self._http_config: HttpConfig = http or {}
         self._tx_id: Optional[TransactionId] = None
@@ -292,11 +294,11 @@ class Prisma:
 
         if isinstance(timeout, int):
             message = (
-                'Passing a int as `timeout` argument is deprecated'
-                ' and will be removed in the next major release.\n'
-                'Use datetime.timedelta instance instead.'
+                'Passing an int as `timeout` argument is deprecated '
+                'and will be removed in the next major release. '
+                'Use a `datetime.timedelta` instance instead.'
             )
-            warnings.warn(message, DeprecationWarning, stacklevel=4)
+            warnings.warn(message, DeprecationWarning, stacklevel=2)
             timeout = timedelta(seconds=timeout)
 
         if self.__engine is None:
@@ -320,11 +322,11 @@ class Prisma:
             self.__engine = None
             if isinstance(timeout, float):
                 message = (
-                    'Passing a float as `timeout` argument is deprecated'
-                    ' and will be removed in the next major release.\n'
-                    'Use datetime.timedelta instance instead.'
+                    'Passing a float as `timeout` argument is deprecated '
+                    'and will be removed in the next major release. '
+                    'Use a `datetime.timedelta` instead.'
                 )
-                warnings.warn(message, DeprecationWarning, stacklevel=4)
+                warnings.warn(message, DeprecationWarning, stacklevel=2)
                 timeout = timedelta(seconds=timeout)
             await engine.aclose(timeout=timeout)
             engine.stop(timeout=timeout)
@@ -438,7 +440,7 @@ class Prisma:
         will not be commited to the database until the context manager exits.
 
         By default, Prisma will wait a maximum of 2 seconds to acquire a transaction from the database. You can modify this
-        defualt with the `max_wait` argument which accepts a value in milliseconds or `datetime.timedelta`.
+        default with the `max_wait` argument which accepts a value in milliseconds or `datetime.timedelta`.
 
         By default, Prisma will cancel and rollback ay transactions that last longer than 5 seconds. You can modify this timeout
         with the `timeout` argument which accepts a value in milliseconds or `datetime.timedelta`.
@@ -551,24 +553,29 @@ class TransactionManager:
 
     def __init__(self, *, client: Prisma, max_wait: Union[int, timedelta], timeout: Union[int, timedelta]) -> None:
         self.__client = client
+
         if isinstance(max_wait, int):
             message = (
-                'Passing a int as `max_wait` argument is deprecated'
-                ' and will be removed in the next major release.\n'
-                'Use datetime.timedelta instance instead.'
+                'Passing an int as `max_wait` argument is deprecated '
+                'and will be removed in the next major release. '
+                'Use a `datetime.timedelta` instance instead.'
             )
-            warnings.warn(message, DeprecationWarning, stacklevel=4)
+            warnings.warn(message, DeprecationWarning, stacklevel=3)
             max_wait = timedelta(milliseconds=max_wait)
+
         self._max_wait = max_wait
+
         if isinstance(timeout, int):
             message = (
-                'Passing a int as `timeout` argument is deprecated'
-                ' and will be removed in the next major release.\n'
-                'Use datetime.timedelta instance instead.'
+                'Passing an int as `timeout` argument is deprecated '
+                'and will be removed in the next major release. '
+                'Use a `datetime.timedelta` instance instead.'
             )
-            warnings.warn(message, DeprecationWarning, stacklevel=4)
+            warnings.warn(message, DeprecationWarning, stacklevel=3)
             timeout = timedelta(milliseconds=timeout)
+
         self._timeout = timeout
+
         self._tx_id: Optional[TransactionId] = None
 
     async def start(self, *, _from_context: bool = False) -> Prisma:
