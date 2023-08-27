@@ -2,11 +2,14 @@ from typing import List
 
 import pytest
 from pydantic import BaseModel
+from dirty_equals import IsPartialDict
 
 from prisma import Prisma
 from prisma.fields import Base64
 from prisma.models import Types
 from prisma._compat import (
+    PYDANTIC_V2,
+    model_json_schema,
     model_parse_json,
     model_json,
     model_parse,
@@ -199,3 +202,44 @@ def test_pydantic_conversion() -> None:
     assert record.array[0]._raw == b'foo'
     assert record.array[1]._raw == b'bar'
     assert record.array[2].decode_str() == 'baz'
+
+
+def test_json_schema() -> None:
+    """Ensure a JSON Schema definition can be created"""
+    if PYDANTIC_V2:
+        assert model_json_schema(Types) == IsPartialDict(
+            properties=IsPartialDict(
+                {
+                    'bytes': {
+                        'format': 'byte',
+                        'title': 'Bytes',
+                        'type': 'string',
+                    },
+                    'optional_bytes': {
+                        'anyOf': [
+                            {'format': 'byte', 'type': 'string'},
+                            {'type': 'null'},
+                        ],
+                        'default': null,
+                        'title': 'Optional Bytes',
+                    },
+                }
+            )
+        )
+    else:
+        assert model_json_schema(Types) == IsPartialDict(
+            properties=IsPartialDict(
+                {
+                    'bytes': {
+                        'title': 'Bytes',
+                        'type': 'string',
+                        'format': 'byte',
+                    },
+                    'optional_bytes': {
+                        'title': 'Optional Bytes',
+                        'type': 'string',
+                        'format': 'byte',
+                    },
+                }
+            )
+        )
