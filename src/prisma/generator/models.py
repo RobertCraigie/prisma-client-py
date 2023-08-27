@@ -1149,6 +1149,7 @@ class PythonData(GenericData[Config]):
     """Data class including the default Prisma Client Python config"""
 
     if not PYDANTIC_V2:
+
         class Config(BaseConfig):
             arbitrary_types_allowed: bool = True
             json_encoders: Dict[Type[Any], Any] = {
