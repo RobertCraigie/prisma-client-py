@@ -220,7 +220,7 @@ def test_json_schema() -> None:
                             {'format': 'byte', 'type': 'string'},
                             {'type': 'null'},
                         ],
-                        'default': null,
+                        'default': None,
                         'title': 'Optional Bytes',
                     },
                 }
