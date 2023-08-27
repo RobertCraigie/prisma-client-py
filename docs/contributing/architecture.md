@@ -58,7 +58,7 @@ Control flow:
 
 When the `generate` message is sent, prisma includes a DMMF which is the Prisma Schema AST which represents the Prisma Schema File in JSON form.
 
-We then parse the DMMF into pydantic [models](https://pydantic-docs.helpmanual.io/usage/models/), this ensures our code is expecting the same DMMF structure that prisma is providing. The DMMF models can be found in `src/prisma/generator/models.py`.
+We then parse the DMMF into pydantic [models](https://docs.pydantic.dev/latest/usage/models/), this ensures our code is expecting the same DMMF structure that prisma is providing. The DMMF models can be found in `src/prisma/generator/models.py`.
 
 We then use [Jinja2](https://jinja.palletsprojects.com/en/3.0.x/) to render the python files and then write them to the output location.
 

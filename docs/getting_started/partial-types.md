@@ -84,7 +84,7 @@ class UserWithoutRelations(BaseModel):
 
 ### Example Usage
 
-Just like normal prisma models, partial models can be used anywhere that accepts a [pydantic BaseModel](https://pydantic-docs.helpmanual.io/usage/models).
+Just like normal prisma models, partial models can be used anywhere that accepts a [pydantic BaseModel](https://docs.pydantic.dev/latest/usage/models/).
 
 One situation where partial types are particularly useful is in FastAPI endpoints
 
