@@ -147,7 +147,7 @@ def test_error_handling(testdir: Testdir) -> None:
 
     output = cast(bytes, exc.value.output).decode('utf-8').strip()
     if PYDANTIC_V2:
-        line = output.splitlines()[-4]
+        line = output.splitlines()[-2]
         assert (
             line
             == "  Value error, Could not find a python file or module at foo [type=value_error, input_value='foo', input_type=str]"
