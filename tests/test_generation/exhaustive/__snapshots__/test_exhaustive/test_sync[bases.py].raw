@@ -60,7 +60,6 @@ class _PrismaModel(BaseModel):
             arbitrary_types_allowed=True,
             populate_by_name=True,
         )
-        # TODO(before merge): emulate json_encoders behaviour
     elif not TYPE_CHECKING:
         from ._compat import BaseConfig
 

@@ -30,10 +30,8 @@ from typing_extensions import Annotated
 
 import click
 import pydantic
-
-# TODO(before merge): remove
-from pydantic import BaseModel as PydanticBaseModel
 from pydantic.fields import PrivateAttr
+
 from .utils import Faker, Sampler, clean_multiline
 from .. import config
 from ..utils import DEBUG_GENERATOR, assert_never
@@ -112,7 +110,7 @@ For more information see: https://prisma-client-py.readthedocs.io/en/stable/refe
 FAKER: Faker = Faker()
 
 
-ConfigT = TypeVar('ConfigT', bound=PydanticBaseModel)
+ConfigT = TypeVar('ConfigT', bound=pydantic.BaseModel)
 
 # Although we should just be able to access the config from the datamodel
 # we have to do some validation that requires access to the config, this is difficult
@@ -131,7 +129,7 @@ def get_datamodel() -> 'Datamodel':
 # typed to ensure the caller has to handle the cases where:
 # - a custom generator config is being used
 # - the config is invalid and therefore could not be set
-def get_config() -> Union[None, PydanticBaseModel, 'Config']:
+def get_config() -> Union[None, pydantic.BaseModel, 'Config']:
     return config_ctx.get(None)
 
 
@@ -230,11 +228,10 @@ def _recursive_type_depth_factory() -> int:
     return 5
 
 
-class BaseModel(PydanticBaseModel):
+class BaseModel(pydantic.BaseModel):
     if PYDANTIC_V2:
         model_config: ClassVar[ConfigDict] = ConfigDict(
             arbitrary_types_allowed=True,
-            # TODO(before merge): replicate json_encoders
             ignored_types=(cached_property,),
         )
     else:
@@ -886,7 +883,6 @@ class Field(BaseModel):
 
     _last_sampled: Optional[str] = PrivateAttr()
 
-    # TODO(before merge): verify this
     @root_validator(pre=True, skip_on_failure=True)
     @classmethod
     def scalar_type_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
