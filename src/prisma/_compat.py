@@ -206,7 +206,9 @@ def _get_field_env_var(field: FieldInfo, name: str) -> str | None:
         return None
 
     if callable(extra):
-        raise RuntimeError(f'Unexpected json schema for field "{name}" is a function')
+        raise RuntimeError(
+            f'Unexpected json schema for field "{name}" is a function'
+        )
 
     return extra.get(ENV_VAR_KEY)
 
