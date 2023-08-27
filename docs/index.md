@@ -226,7 +226,7 @@ if __name__ == '__main__':
 
 For a more complete list of queries you can perform with Prisma Client Python see the [documentation](https://prisma-client-py.readthedocs.io/en/stable/reference/operations/).
 
-All query methods return [pydantic models](https://docs.pydantic.dev/latest/usage/models/).
+All query methods return [pydantic models](https://pydantic-docs.helpmanual.io/usage/models/).
 
 **Retrieve all `User` records from the database**
 
