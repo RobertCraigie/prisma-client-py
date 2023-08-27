@@ -41,9 +41,11 @@ from typing_extensions import TypedDict, Literal
 LiteralString = str
 # -- template engine/abstract.py.jinja --
 from abc import ABC, abstractmethod
+from datetime import timedelta
 from ._types import TransactionId
 from ..types import DatasourceOverride
 from .._compat import get_running_loop
+from .._constants import DEFAULT_CONNECT_TIMEOUT
 
 
 __all__ = (
@@ -54,11 +56,8 @@ __all__ = (
 class AbstractEngine(ABC):
     dml: str
 
-    def stop(self, *, timeout: Optional[float] = None) -> None:
-        """Wrapper for synchronously calling close() and aclose()
-
-        The `timeout` argument is in seconds.
-        """
+    def stop(self, *, timeout: Optional[timedelta] = None) -> None:
+        """Wrapper for synchronously calling close() and aclose()"""
         self.close(timeout=timeout)
         try:
             loop = get_running_loop()
@@ -70,26 +69,19 @@ class AbstractEngine(ABC):
                 loop.create_task(self.aclose(timeout=timeout))
 
     @abstractmethod
-    def close(self, *, timeout: Optional[float] = None) -> None:
-        """Synchronous method for closing the engine, useful if the underlying engine uses a subprocess
-
-        The `timeout` argument is in seconds.
-        """
+    def close(self, *, timeout: Optional[timedelta] = None) -> None:
+        """Synchronous method for closing the engine, useful if the underlying engine uses a subprocess"""
         ...
 
     @abstractmethod
-    async def aclose(self, *, timeout: Optional[float] = None) -> None:
-        """Asynchronous method for closing the engine, only used if an
-        asynchronous client is generated.
-
-        The `timeout` argument is in seconds.
-        """
+    async def aclose(self, *, timeout: Optional[timedelta] = None) -> None:
+        """Asynchronous method for closing the engine, only used if an asynchronous client is generated"""
         ...
 
     @abstractmethod
     async def connect(
         self,
-        timeout: int = 10,
+        timeout: timedelta = DEFAULT_CONNECT_TIMEOUT,
         datasources: Optional[List[DatasourceOverride]] = None,
     ) -> None:
         """Connect to the engine"""

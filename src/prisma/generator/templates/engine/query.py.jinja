@@ -10,6 +10,7 @@ import signal
 import asyncio
 import logging
 import subprocess
+from datetime import timedelta
 from pathlib import Path
 
 from . import utils, errors
@@ -20,6 +21,7 @@ from ..binaries import platform
 from ..utils import time_since, _env_bool
 from ..types import DatasourceOverride
 from ..builder import dumps
+from .._constants import DEFAULT_CONNECT_TIMEOUT
 from ._types import TransactionId
 
 
@@ -44,17 +46,22 @@ class QueryEngine(HTTPEngine):
         # ensure the query engine process is terminated when we are
         atexit.register(self.stop)
 
-    def close(self, *, timeout: Optional[float] = None) -> None:
+    def close(self, *, timeout: Optional[timedelta] = None) -> None:
         log.debug('Disconnecting query engine...')
+
+        if timeout is not None:
+            total_seconds = timeout.total_seconds()
+        else:
+            total_seconds = None
 
         if self.process is not None:
             if platform.name() == 'windows':
                 self.process.kill()
-                self.process.wait(timeout=timeout)
+                self.process.wait(timeout=total_seconds)
             else:
                 self.process.send_signal(signal.SIGINT)
                 try:
-                    self.process.wait(timeout=timeout)
+                    self.process.wait(timeout=total_seconds)
                 except subprocess.TimeoutExpired:
                     self.process.send_signal(signal.SIGKILL)
 
@@ -65,7 +72,7 @@ class QueryEngine(HTTPEngine):
         {% endif %}
         log.debug('Disconnected query engine')
 
-    async def aclose(self, *, timeout: Optional[float] = None) -> None:
+    async def aclose(self, *, timeout: Optional[timedelta] = None) -> None:
         self.close(timeout=timeout)
         {{ maybe_await }}self._close_session()
 
@@ -81,7 +88,7 @@ class QueryEngine(HTTPEngine):
 
     {{ maybe_async_def }}connect(
         self,
-        timeout: int = 10,
+        timeout: timedelta = DEFAULT_CONNECT_TIMEOUT,
         datasources: Optional[List[DatasourceOverride]] = None,
     ) -> None:
         log.debug('Connecting to query engine')
@@ -102,7 +109,7 @@ class QueryEngine(HTTPEngine):
     {{ maybe_async_def }}spawn(
         self,
         file: Path,
-        timeout: int = 10,
+        timeout: timedelta = DEFAULT_CONNECT_TIMEOUT,
         datasources: Optional[List[DatasourceOverride]] = None,
     ) -> None:
         port = utils.get_open_port()
@@ -154,7 +161,7 @@ class QueryEngine(HTTPEngine):
         )
 
         last_exc = None
-        for _ in range(int(timeout / 0.1)):
+        for _ in range(int(timeout.total_seconds() / 0.1)):
             try:
                 data = {{ maybe_await }}self.request('GET', '/status')
             except Exception as exc:
