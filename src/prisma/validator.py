@@ -55,6 +55,7 @@ def patch_pydantic() -> None:
 # Note: we can't just use TypeAdapter in v2 due to this issue
 # https://github.com/pydantic/pydantic/issues/7111
 
+
 def validate(type: Type[T], data: Any) -> T:
     """Validate untrusted data matches a given TypedDict
 
