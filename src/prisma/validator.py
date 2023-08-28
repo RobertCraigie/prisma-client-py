@@ -3,9 +3,9 @@ from types import ModuleType
 from functools import lru_cache
 from typing import Type, TypeVar, Any, cast
 
-from pydantic import BaseModel, Extra, create_model_from_typeddict
-from pydantic.typing import is_typeddict
+from pydantic import BaseModel
 
+from ._compat import PYDANTIC_V2, Extra, is_typeddict
 from ._types import Protocol, runtime_checkable
 
 
@@ -34,7 +34,12 @@ def patch_pydantic() -> None:
 
     see https://github.com/samuelcolvin/pydantic/pull/2761
     """
-    from pydantic import annotated_types
+
+    annotated_types: Any
+    if PYDANTIC_V2:
+        from pydantic.v1 import annotated_types
+    else:
+        from pydantic import annotated_types  # type: ignore[no-redef]
 
     create_model = annotated_types.create_model_from_typeddict
 
@@ -42,9 +47,13 @@ def patch_pydantic() -> None:
         typeddict_cls: Any, **kwargs: Any
     ) -> Type[BaseModel]:
         kwargs.setdefault('__module__', typeddict_cls.__module__)
-        return create_model(typeddict_cls, **kwargs)
+        return create_model(typeddict_cls, **kwargs)  # type: ignore[no-any-return]
 
     annotated_types.create_model_from_typeddict = patched_create_model
+
+
+# Note: we can't just use TypeAdapter in v2 due to this issue
+# https://github.com/pydantic/pydantic/issues/7111
 
 
 def validate(type: Type[T], data: Any) -> T:
@@ -59,6 +68,12 @@ def validate(type: Type[T], data: Any) -> T:
         validated = validate(types.UserCreateInput, data)
         user = await User.prisma().create(data=validated)
     """
+    create_model_from_typeddict: Any
+    if PYDANTIC_V2:
+        from pydantic.v1 import create_model_from_typeddict
+    else:
+        from pydantic import create_model_from_typeddict  # type: ignore
+
     # avoid patching pydantic until we know we need to in case our
     # monkey patching fails
     patch_pydantic()

@@ -5,6 +5,7 @@ from syrupy.assertion import SnapshotAssertion
 
 import prisma
 from prisma import Prisma
+from prisma._compat import model_parse_json
 
 from lib.testing.shared_conftest import *
 from lib.testing.shared_conftest.async_client import *
@@ -32,7 +33,7 @@ def raw_queries_fixture(database: str) -> RawQueries:
 
 @pytest.fixture(name='config', scope='session')
 def config_fixture() -> DatabaseConfig:
-    return DatabaseConfig.parse_raw(os.environ['DATABASE_CONFIG'])
+    return model_parse_json(DatabaseConfig, os.environ['DATABASE_CONFIG'])
 
 
 @pytest.fixture()

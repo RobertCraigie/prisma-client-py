@@ -1,7 +1,7 @@
 {% include '_header.py.jinja' %}
 # -- template partials.py.jinja --
-from pydantic import validator
 from . import types, fields, enums, actions, models, bases
+from ._compat import model_rebuild, field_validator
 
 
 {% for partial in partial_models %}
@@ -9,7 +9,7 @@ class {{ partial.name }}(bases.Base{{ partial.from_model }}):
     {% for field in partial.fields.values() %}
     {{ field.name }}:
             {%- if field.optional -%}
-                {{ ' ' }}Optional[{{ field.type }}]
+                {{ ' ' }}Optional[{{ field.type }}] = None
             {% else -%}
                 {{ ' ' }}{{ field.type }}
             {% endif %}
@@ -21,7 +21,7 @@ class {{ partial.name }}(bases.Base{{ partial.from_model }}):
 
     {% for field in partial.fields.values() %}
     {% if field.is_list and not field.is_relational and not field.optional %}
-    @validator('{{ field.name }}', pre=True, allow_reuse=True)
+    @field_validator('{{ field.name }}', pre=True, allow_reuse=True)
     @classmethod
     def _transform_required_{{ field.name }}_list(cls, value: object) -> object:
         # See the `_transform_required_list_fields()` function in `prisma/models.py` for context
@@ -40,7 +40,7 @@ class {{ partial.name }}(bases.Base{{ partial.from_model }}):
 from . import partials
 
 {% for partial in partial_models %}
-{{ partial.name }}.update_forward_refs()
+model_rebuild({{ partial.name }})
 {% endfor %}
 
 # fmt: on

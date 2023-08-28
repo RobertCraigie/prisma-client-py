@@ -6,6 +6,7 @@ from typing import TypeVar
 import warnings
 
 from . import types, errors, bases
+from ._compat import model_parse
 
 if TYPE_CHECKING:
     from .client import Client
@@ -178,7 +179,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'include': include,
             },
         )
-        return self._model.parse_obj(resp['data']['result'])
+        return model_parse(self._model, resp['data']['result'])
 
     {{ maybe_async_def }}create_many(
         self,
@@ -293,7 +294,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         except errors.RecordNotFoundError:
             return None
 
-        return self._model.parse_obj(resp['data']['result'])
+        return model_parse(self._model, resp['data']['result'])
 
     {{ maybe_async_def }}find_unique(
         self,
@@ -342,7 +343,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         result = resp['data']['result']
         if result is None:
             return None
-        return self._model.parse_obj(result)
+        return model_parse(self._model, result)
 
     {{ maybe_async_def }}find_unique_or_raise(
         self,
@@ -388,7 +389,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'include': include,
             },
         )
-        return self._model.parse_obj(resp['data']['result'])
+        return model_parse(self._model, resp['data']['result'])
 
     {{ maybe_async_def }}find_many(
         self,
@@ -459,7 +460,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'distinct': distinct,
             },
         )
-        return [self._model.parse_obj(r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['result']]
 
     {{ maybe_async_def }}find_first(
         self,
@@ -526,7 +527,8 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         result = resp['data']['result']
         if result is None:
             return None
-        return self._model.parse_obj(result)
+
+        return model_parse(self._model, result)
 
     {{ maybe_async_def }}find_first_or_raise(
         self,
@@ -590,7 +592,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'distinct': distinct,
             },
         )
-        return self._model.parse_obj(resp['data']['result'])
+        return model_parse(self._model, resp['data']['result'])
 
     {{ maybe_async_def }}update(
         self,
@@ -646,7 +648,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         except errors.RecordNotFoundError:
             return None
 
-        return self._model.parse_obj(resp['data']['result'])
+        return model_parse(self._model, resp['data']['result'])
 
     {{ maybe_async_def }}upsert(
         self,
@@ -729,7 +731,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'update': data.get('update'),
             },
         )
-        return self._model.parse_obj(resp['data']['result'])
+        return model_parse(self._model, resp['data']['result'])
 
     {{ maybe_async_def }}update_many(
         self,

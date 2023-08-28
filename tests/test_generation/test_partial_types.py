@@ -4,6 +4,7 @@ import subprocess
 from typing_extensions import Literal
 
 import pytest
+from prisma._compat import PYDANTIC_V2
 from ..utils import Testdir
 
 
@@ -79,9 +80,19 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
     def tests() -> None:  # mark: filedef
         import sys
         import datetime
-        from typing import Type, Dict, Iterator, Any, Tuple, Set, Optional
+        from typing import Type, Dict, Iterator, Tuple, Set, Optional, TypeVar
         from pydantic import BaseModel
         from prisma import Base64
+        from prisma._compat import (
+            PYDANTIC_V2,
+            model_fields,
+            is_field_required,
+            model_parse,
+            model_field_type,
+            get_args,
+            get_origin,
+            is_union,
+        )
         from prisma.partials import (  # type: ignore[attr-defined]
             PostWithoutDesc,  # pyright: ignore
             PostOptionalPublished,  # pyright: ignore
@@ -110,9 +121,12 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             'thumbnail': False,
         }
 
+        _T = TypeVar('_T')
+        _T2 = TypeVar('_T2')
+
         def common_entries(
-            dct: Dict[str, Any], other: Dict[str, Any]
-        ) -> Iterator[Tuple[str, Any, Any]]:
+            dct: Dict[str, _T], other: Dict[str, _T2]
+        ) -> Iterator[Tuple[str, _T, _T2]]:
             for key in dct.keys() & other.keys():
                 yield key, dct[key], other[key]
 
@@ -121,16 +135,15 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             fields: Dict[str, bool],
             removed: Optional[Set[str]],
         ) -> None:
-            for field, required, info in common_entries(
-                fields, model.__fields__
+            for _, required, info in common_entries(
+                fields, model_fields(model)
             ):
-                assert info.name == field
-                assert info.required == required
+                assert is_field_required(info) == required
 
             if removed is None:
                 removed = set()
 
-            assert fields.keys() - model.__fields__.keys() == removed
+            assert fields.keys() - model_fields(model).keys() == removed
 
         def test_without_desc() -> None:
             """Removing one field"""
@@ -202,9 +215,19 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             """Changing one-to-one relational field type"""
             assert_expected(PostModifiedAuthor, base_fields, None)
 
-            field = PostModifiedAuthor.__fields__['author']
-            assert field.type_.__name__ == 'UserOnlyName'
-            assert field.type_.__module__ == 'prisma.partials'
+            field = model_fields(PostModifiedAuthor)['author']
+            type_ = model_field_type(field)
+            assert type_ is not None
+
+            if PYDANTIC_V2:
+                assert is_union(get_origin(type_) or type_)
+
+                inner_type, _ = get_args(type_)
+                assert inner_type.__name__ == 'UserOnlyName'
+                assert inner_type.__module__ == 'prisma.partials'
+            else:
+                assert type_.__name__ == 'UserOnlyName'
+                assert type_.__module__ == 'prisma.partials'
 
         def test_exclude_relations() -> None:
             """Removing all relational fields using `exclude_relations`"""
@@ -238,28 +261,49 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
                 updated_at=datetime.datetime.utcnow(),
                 posts=[PostOnlyId(id='2')],
             )
-            field = UserModifiedPosts.__fields__['posts']
-            assert field.type_.__name__ == 'PostOnlyId'
-            assert field.type_.__module__ == 'prisma.partials'
+            field = model_fields(UserModifiedPosts)['posts']
+            type_ = model_field_type(field)
+            assert type_ is not None
 
-            if sys.version_info >= (3, 7):
-                assert field.outer_type_._name == 'List'
+            if PYDANTIC_V2:
+                assert is_union(get_origin(type_) or type_)
+
+                posts_type, none_type = get_args(type_)
+
+                assert none_type.__name__ == 'NoneType'
+
+                assert posts_type.__module__ == 'typing'
+                if sys.version_info >= (3, 7):
+                    assert posts_type._name == 'List'
+                else:
+                    assert posts_type.__name__ == 'List'
+
+                items_type = get_args(posts_type)[0]
+                assert items_type.__name__ == 'PostOnlyId'
+                assert items_type.__module__ == 'prisma.partials'
             else:
-                assert field.outer_type_.__name__ == 'List'
+                assert type_.__name__ == 'PostOnlyId'
+                assert type_.__module__ == 'prisma.partials'
 
-            assert field.outer_type_.__module__ == 'typing'
+                if sys.version_info >= (3, 7):
+                    assert field.outer_type_._name == 'List'  # type: ignore
+                else:
+                    assert field.outer_type_.__name__ == 'List'
+
+                assert field.outer_type_.__module__ == 'typing'  # type: ignore
 
         def test_bytes() -> None:
             """Ensure Base64 fields can be used"""
             # mock prisma behaviour
-            model = UserBytesList.parse_obj(
+            model = model_parse(
+                UserBytesList,
                 {
                     'bytes': str(Base64.encode(b'bar')),
                     'bytes_list': [
                         str(Base64.encode(b'foo')),
                         str(Base64.encode(b'baz')),
                     ],
-                }
+                },
             )
             assert model.bytes == Base64.encode(b'bar')
             assert model.bytes_list == [
@@ -383,10 +427,20 @@ def test_partial_type_generator_not_found(testdir: Testdir) -> None:
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA, 'partial_type_generator = "foo.bar.baz"')
 
-    output = str(exc.value.output)
+    output = exc.value.output.decode('utf8')
     assert 'ValidationError' in output
-    assert 'generator -> config -> partial_type_generator' in output
-    assert 'Could not find a python file or module at foo.bar.baz' in output
+
+    if PYDANTIC_V2:
+        line = output.splitlines()[-4]
+        assert (
+            line
+            == "  Value error, Could not find a python file or module at foo.bar.baz [type=value_error, input_value='foo.bar.baz', input_type=str]"
+        )
+    else:
+        assert 'generator -> config -> partial_type_generator' in output
+        assert (
+            'Could not find a python file or module at foo.bar.baz' in output
+        )
 
 
 def test_partial_type_generator_error_while_running(testdir: Testdir) -> None:

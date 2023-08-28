@@ -18,13 +18,18 @@ on:
       - "mkdocs.yml"
 jobs:
   test:
-    name: test
+    name: test${{ matrix.job-description || format(' ({0}, {1})', matrix.python-version, matrix.os) }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: [3.7, 3.8, 3.9, "3.10", "3.11.0-rc.1"]
+        include:
+          - os: ubuntu-latest
+            python-version: "3.10"
+            pydantic-v2: 'false'
+            job-description: ' (pydantic v1)'
 
     steps:
       - uses: actions/checkout@v3
@@ -66,7 +71,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python scripts/ci.py -s test --no-error-on-missing-interpreters
+          python scripts/ci.py -s test --no-error-on-missing-interpreters -- --pydantic-v2=${{ matrix.pydantic-v2 }}
         env:
           TARGET_PYTHON: ${{ matrix.python-version }}
 
@@ -276,6 +281,13 @@ jobs:
       - name: Run inverse sync tests
         run: |
           coverage run -m nox -s databases -r -- test-inverse --coverage --databases=${{ matrix.name }} --for-async=false
+        env:
+          ${{ matrix.env }}: ${{ matrix.url }}
+          COVERAGE_FILE: .cache/.coverage.databases
+
+      - name: Run pydantic v1 tests
+        run: |
+          coverage run -m nox -s databases -- test --coverage --databases=${{ matrix.name }} --no-pydantic-v2
         env:
           ${{ matrix.env }}: ${{ matrix.url }}
           COVERAGE_FILE: .cache/.coverage.databases

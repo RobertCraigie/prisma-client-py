@@ -4,6 +4,7 @@ from dirty_equals import IsPartialDict
 import pytest
 from prisma import Prisma
 from prisma.models import Types
+from prisma._compat import PYDANTIC_V2, model_json_schema
 
 
 DEFAULT_PRECISION = getcontext().prec
@@ -258,17 +259,38 @@ def test_filtering_nulls(client: Prisma) -> None:
 
 def test_json_schema() -> None:
     """Ensure a JSON Schema definition can be created"""
-    assert Types.schema() == IsPartialDict(
-        properties=IsPartialDict(
-            {
-                'decimal_': {
-                    'title': 'Decimal ',
-                    'type': 'number',
-                },
-                'optional_decimal': {
-                    'title': 'Optional Decimal',
-                    'type': 'number',
-                },
-            }
+    if PYDANTIC_V2:
+        assert model_json_schema(Types) == IsPartialDict(
+            properties=IsPartialDict(
+                {
+                    'decimal_': {
+                        'title': 'Decimal ',
+                        'anyOf': [{'type': 'number'}, {'type': 'string'}],
+                    },
+                    'optional_decimal': {
+                        'title': 'Optional Decimal',
+                        'anyOf': [
+                            {'type': 'number'},
+                            {'type': 'string'},
+                            {'type': 'null'},
+                        ],
+                        'default': None,
+                    },
+                }
+            )
         )
-    )
+    else:
+        assert model_json_schema(Types) == IsPartialDict(
+            properties=IsPartialDict(
+                {
+                    'decimal_': {
+                        'title': 'Decimal ',
+                        'type': 'number',
+                    },
+                    'optional_decimal': {
+                        'title': 'Optional Decimal',
+                        'type': 'number',
+                    },
+                }
+            )
+        )
