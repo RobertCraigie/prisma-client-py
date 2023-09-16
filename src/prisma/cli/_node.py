@@ -170,18 +170,25 @@ class NodeBinaryStrategy(Strategy):
             )
         else:
             log.debug('Installing nodeenv to %s', cache_dir)
-            subprocess.run(
-                [
-                    sys.executable,
-                    '-m',
-                    'nodeenv',
-                    str(cache_dir),
-                    *config.nodeenv_extra_args,
-                ],
-                check=True,
-                stdout=sys.stdout,
-                stderr=sys.stderr,
-            )
+            try:
+                subprocess.run(
+                    [
+                        sys.executable,
+                        '-m',
+                        'nodeenv',
+                        str(cache_dir),
+                        *config.nodeenv_extra_args,
+                    ],
+                    check=True,
+                    stdout=sys.stdout,
+                    stderr=sys.stderr,
+                )
+            except Exception as exc:
+                print(
+                    'nodeenv installation failed; You may want to try installing `nodejs-bin` as it is more reliable.',
+                    file=sys.stderr,
+                )
+                raise exc
 
         if not cache_dir.exists():
             raise RuntimeError(
