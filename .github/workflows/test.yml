@@ -32,7 +32,7 @@ jobs:
             job-description: ' (pydantic v1)'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -90,7 +90,7 @@ jobs:
           - python-version: 3.9
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -125,7 +125,7 @@ jobs:
         python-version: [3.7]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -163,7 +163,7 @@ jobs:
         python-version: [3.11]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -232,7 +232,7 @@ jobs:
             url: mysql://root:prisma@localhost:3308/prisma?connect_timeout=20&socket_timeout=60
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
@@ -303,7 +303,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [databases, test]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
@@ -356,17 +356,17 @@ jobs:
           - docker-platform: linux/arm64
             python-os-distro: alpine
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # https://github.com/docker/build-push-action/
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Docker Build
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         # https://github.com/docker/build-push-action/#inputs
         # Test each platform individually for easier testing
         with:
@@ -383,7 +383,7 @@ jobs:
     name: docker (windows)
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Docker Build
         # Use --% to allow double hyphen
         # Caching not currently working since we don't use buildx yet, windows
