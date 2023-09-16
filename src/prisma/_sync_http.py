@@ -46,6 +46,10 @@ class Response(AbstractResponse[httpx.Response]):
     def status(self) -> int:
         return self.original.status_code
 
+    @property
+    def headers(self) -> httpx.Headers:
+        return self.original.headers
+
     def json(self, **kwargs: Any) -> Any:
         return self.original.json(**kwargs)
 
