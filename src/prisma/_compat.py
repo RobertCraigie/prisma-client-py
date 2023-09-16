@@ -236,7 +236,7 @@ def model_copy(model: _ModelT, deep: bool = False) -> _ModelT:
     if PYDANTIC_V2:
         return model.model_copy(deep=deep)
 
-    return model.copy(deep=deep)  # type: ignore
+    return model.copy(deep=deep)  # pyright: ignore[reportDeprecated]
 
 
 def model_json(
@@ -248,7 +248,10 @@ def model_json(
     if PYDANTIC_V2:
         return model.model_dump_json(indent=indent, exclude=exclude)
 
-    return model.json(indent=indent, exclude=exclude)  # type: ignore
+    return model.json(  # pyright: ignore[reportDeprecated]
+        indent=indent,
+        exclude=exclude,
+    )
 
 
 def model_dict(
@@ -260,7 +263,10 @@ def model_dict(
     if PYDANTIC_V2:
         return model.model_dump(exclude_unset=exclude_unset, exclude=exclude)
 
-    return model.dict(exclude=exclude, exclude_unset=exclude_unset)  # type: ignore
+    return model.dict(  # pyright: ignore[reportDeprecated]
+        exclude=exclude,
+        exclude_unset=exclude_unset,
+    )
 
 
 def model_rebuild(model: type[BaseModel]) -> None:
@@ -274,21 +280,21 @@ def model_parse(model: type[_ModelT], obj: Any) -> _ModelT:
     if PYDANTIC_V2:
         return model.model_validate(obj)
     else:
-        return model.parse_obj(obj)  # type: ignore[no-any-return]  # pyright: ignore[reportDeprecated]
+        return model.parse_obj(obj)  # pyright: ignore[reportDeprecated]
 
 
 def model_parse_json(model: type[_ModelT], obj: str) -> _ModelT:
     if PYDANTIC_V2:
         return model.model_validate_json(obj)
     else:
-        return model.parse_raw(obj)  # type: ignore[no-any-return]  # pyright: ignore[reportDeprecated]
+        return model.parse_raw(obj)  # pyright: ignore[reportDeprecated]
 
 
 def model_json_schema(model: type[BaseModel]) -> dict[str, Any]:
     if PYDANTIC_V2:
         return model.model_json_schema()
     else:
-        return model.schema()  # type: ignore[no-any-return]  # pyright: ignore[reportDeprecated]
+        return model.schema()  # pyright: ignore[reportDeprecated]
 
 
 def Field(*, env: str | None = None, **extra: Any) -> Any:

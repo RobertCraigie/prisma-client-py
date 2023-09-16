@@ -362,7 +362,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
         def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
             data = super().parse_obj(obj)  # pyright: ignore[reportDeprecated]
             data_ctx.set(data)
-            return data  # type: ignore[no-any-return]
+            return data
 
     def to_params(self) -> Dict[str, Any]:
         """Get the parameters that should be sent to Jinja templates"""
@@ -661,8 +661,7 @@ class Config(BaseSettings):
                 'Prisma Client Python does not support native engine bindings yet.'
             )
         else:  # pragma: no cover
-            # NOTE: the exhaustiveness check is broken for mypy
-            assert_never(value)  # type: ignore
+            assert_never(value)
 
 
 class DMMF(BaseModel):
