@@ -1,4 +1,4 @@
 -r test.txt
 -r node.txt
-mypy==1.0.1
+-r deps/mypy.txt
 types-mock

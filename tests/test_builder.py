@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from syrupy.assertion import SnapshotAssertion
 
 from prisma import models, PrismaMethod
+from prisma._compat import PYDANTIC_V2
 from prisma.utils import _NoneType
 from prisma.bases import _PrismaModel as PrismaModel
 from prisma.builder import QueryBuilder, serializer
@@ -224,7 +225,8 @@ def test_select(snapshot: SnapshotAssertion) -> None:
 
         __prisma_model__ = 'Post'
 
-    CustomModel.update_forward_refs(**locals())
+    if not PYDANTIC_V2:
+        CustomModel.update_forward_refs(**locals())  # pyright: ignore[reportDeprecated]
 
     query = QueryBuilder(
         method='find_first',
@@ -280,7 +282,8 @@ def test_select_non_prisma_model_basemodel(snapshot: SnapshotAssertion) -> None:
 
         __prisma_model__ = 'Post'
 
-    CustomModel.update_forward_refs(**locals())
+    if not PYDANTIC_V2:
+        CustomModel.update_forward_refs(**locals())  # pyright: ignore[reportDeprecated]
 
     query = QueryBuilder(
         method='find_first',
@@ -294,6 +297,7 @@ def test_select_non_prisma_model_basemodel(snapshot: SnapshotAssertion) -> None:
     assert query == snapshot
 
 
+@pytest.mark.skipif(PYDANTIC_V2, reason='Pydantic v2 has better forward refs support')
 def test_forward_reference_error() -> None:
     """If a Model has forward references and doesn't call `update_forward_refs()` then we can't
     tell if a given field should be included by default. Hence the sanity check here.

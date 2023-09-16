@@ -39,14 +39,14 @@ from typing_extensions import TypedDict, Literal
 
 LiteralString = str
 # -- template partials.py.jinja --
-from pydantic import validator
 from . import types, fields, enums, actions, models, bases
+from ._compat import model_rebuild, field_validator
 
 
 class PostWithAuthor(bases.BasePost):
     id: _str
     title: _str
-    author: Optional[models.User]
+    author: Optional[models.User] = None
 
 
 
@@ -58,20 +58,20 @@ class UserOnlyName(bases.BaseUser):
 class PostWithCustomAuthor(bases.BasePost):
     id: _str
     title: _str
-    author: Optional['partials.UserOnlyName']
+    author: Optional['partials.UserOnlyName'] = None
 
 
 
 class UserWithPosts(bases.BaseUser):
     name: _str
-    posts: Optional[List['models.Post']]
+    posts: Optional[List['models.Post']] = None
 
 
 
 class PostWithNestedRelations(bases.BasePost):
     id: _str
     title: _str
-    author: Optional['partials.UserWithPosts']
+    author: Optional['partials.UserWithPosts'] = None
 
 
 
@@ -80,11 +80,11 @@ class PostWithNestedRelations(bases.BasePost):
 # so we have to import ourselves in order to resolve forward references
 from . import partials
 
-PostWithAuthor.update_forward_refs()
-UserOnlyName.update_forward_refs()
-PostWithCustomAuthor.update_forward_refs()
-UserWithPosts.update_forward_refs()
-PostWithNestedRelations.update_forward_refs()
+model_rebuild(PostWithAuthor)
+model_rebuild(UserOnlyName)
+model_rebuild(PostWithCustomAuthor)
+model_rebuild(UserWithPosts)
+model_rebuild(PostWithNestedRelations)
 
 # fmt: on
 

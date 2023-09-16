@@ -15,6 +15,7 @@ from prisma.generator import (
     cleanup_templates,
 )
 from prisma.generator.utils import Faker, copy_tree
+from prisma._compat import PYDANTIC_V2
 
 from .utils import assert_module_is_clean, assert_module_not_clean
 from ..utils import Testdir
@@ -145,12 +146,19 @@ def test_error_handling(testdir: Testdir) -> None:
         testdir.generate(options='partial_type_generator = "foo"')
 
     output = cast(bytes, exc.value.output).decode('utf-8').strip()
-    assert output.endswith(
-        '\nError: \n'
-        '1 validation error for PythonData\n'
-        'generator -> config -> partial_type_generator -> spec\n'
-        '  Could not find a python file or module at foo (type=value_error)'
-    )
+    if PYDANTIC_V2:
+        line = output.splitlines()[-2]
+        assert (
+            line
+            == "  Value error, Could not find a python file or module at foo [type=value_error, input_value='foo', input_type=str]"
+        )
+    else:
+        assert output.endswith(
+            '\nError: \n'
+            '1 validation error for PythonData\n'
+            'generator -> config -> partial_type_generator -> spec\n'
+            '  Could not find a python file or module at foo (type=value_error)'
+        )
 
 
 def test_schema_path_same_path(testdir: Testdir) -> None:

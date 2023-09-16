@@ -3,6 +3,7 @@ from dirty_equals import IsPartialDict
 
 from prisma import Prisma, Json
 from prisma.models import Types
+from prisma._compat import PYDANTIC_V2, model_json_schema
 
 
 def test_create(client: Prisma) -> None:
@@ -167,14 +168,34 @@ def test_unserializable_type(client: Prisma) -> None:
 
 def test_json_schema() -> None:
     """Ensure a JSON Schema definition can be created"""
-    assert Types.schema() == IsPartialDict(
-        properties=IsPartialDict(
-            {
-                'json_obj': {
-                    'title': 'Json Obj',
-                    'type': 'string',
-                    'format': 'json-string',
+    if PYDANTIC_V2:
+        assert model_json_schema(Types) == IsPartialDict(
+            properties=IsPartialDict(
+                {
+                    'json_obj': {
+                        'anyOf': [
+                            {
+                                'contentMediaType': 'application/json',
+                                'contentSchema': {},
+                                'type': 'string',
+                            },
+                            {'type': 'null'},
+                        ],
+                        'default': None,
+                        'title': 'Json Obj',
+                    }
                 }
-            }
-        ),
-    )
+            ),
+        )
+    else:
+        assert model_json_schema(Types) == IsPartialDict(
+            properties=IsPartialDict(
+                {
+                    'json_obj': {
+                        'title': 'Json Obj',
+                        'type': 'string',
+                        'format': 'json-string',
+                    }
+                }
+            ),
+        )

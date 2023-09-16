@@ -3,6 +3,7 @@ from dirty_equals import IsPartialDict
 from prisma import Prisma
 from prisma.enums import Role
 from prisma.models import Types
+from prisma._compat import PYDANTIC_V2, model_json_schema
 
 
 def test_enum_create(client: Prisma) -> None:
@@ -83,20 +84,37 @@ def test_unique6(client: Prisma) -> None:
 
 def test_json_schema() -> None:
     """Ensure a JSON Schema definition can be created"""
-    assert Types.schema() == IsPartialDict(
-        definitions={
-            'Role': {
+    defs = {
+        'Role': IsPartialDict(
+            {
                 'title': 'Role',
-                'description': 'An enumeration.',
                 'enum': ['USER', 'ADMIN', 'EDITOR'],
                 'type': 'string',
             }
-        },
-        properties=IsPartialDict(
+        )
+    }
+
+    if PYDANTIC_V2:
+        assert model_json_schema(Types) == IsPartialDict(
             {
-                'enum': {
-                    '$ref': '#/definitions/Role',
+                '$defs': defs,
+                'properties': IsPartialDict(
+                    {
+                        'enum': {
+                            '$ref': '#/$defs/Role',
+                        }
+                    }
+                ),
+            },
+        )
+    else:
+        assert model_json_schema(Types) == IsPartialDict(
+            definitions=defs,
+            properties=IsPartialDict(
+                {
+                    'enum': {
+                        '$ref': '#/definitions/Role',
+                    }
                 }
-            }
-        ),
-    )
+            ),
+        )

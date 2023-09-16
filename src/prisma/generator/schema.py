@@ -1,10 +1,17 @@
 from enum import Enum
 from typing import Any, Dict, List, Tuple, Type, Union
+from typing_extensions import ClassVar
 
 from pydantic import BaseModel
 
 from .models import AnyData, Model as ModelInfo, PrimaryKey
-from .._compat import root_validator, cached_property
+from .._compat import (
+    PYDANTIC_V2,
+    ConfigDict,
+    root_validator,
+    cached_property,
+    model_rebuild,
+)
 
 
 class Kind(str, Enum):
@@ -71,8 +78,14 @@ class Schema(BaseModel):
 class Model(BaseModel):
     info: ModelInfo
 
-    class Config:
-        keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
+    if PYDANTIC_V2:
+        model_config: ClassVar[ConfigDict] = ConfigDict(
+            ignored_types=(cached_property,)
+        )
+    else:
+
+        class Config:
+            keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
 
     @cached_property
     def where_unique(self) -> PrismaType:
@@ -141,7 +154,7 @@ class Model(BaseModel):
         return PrismaType.from_subtypes(subtypes, name=f'{model}OrderByInput')
 
 
-Schema.update_forward_refs()
-PrismaType.update_forward_refs()
-PrismaDict.update_forward_refs()
-PrismaAlias.update_forward_refs()
+model_rebuild(Schema)
+model_rebuild(PrismaType)
+model_rebuild(PrismaDict)
+model_rebuild(PrismaAlias)

@@ -25,7 +25,7 @@ from .utils import (
 from .errors import PartialTypeGeneratorError
 from .. import __version__
 from ..utils import DEBUG, DEBUG_GENERATOR
-from .._compat import cached_property
+from .._compat import cached_property, model_json, model_parse
 from .._types import BaseModelT, InheritsGeneric, get_args
 
 
@@ -162,10 +162,10 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
                     'params', json.dumps(request.params, indent=2)
                 )
 
-            data = self.data_class.parse_obj(request.params)
+            data = model_parse(self.data_class, request.params)
 
             if DEBUG_GENERATOR:
-                _write_debug_data('data', data.json(indent=2))
+                _write_debug_data('data', model_json(data, indent=2))
 
             self.generate(data)
             response = jsonrpc.SuccessResponse(id=request.id, result=None)

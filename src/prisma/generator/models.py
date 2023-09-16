@@ -12,6 +12,7 @@ from contextvars import ContextVar
 from typing import (
     TYPE_CHECKING,
     Any,
+    ClassVar,
     Generic,
     Iterable,
     NoReturn,
@@ -23,27 +24,33 @@ from typing import (
     Iterator,
     Dict,
     Type,
+    cast,
 )
+from typing_extensions import Annotated
 
 import click
-from pydantic import (
-    BaseModel as PydanticBaseModel,
-    BaseSettings,
-    Extra,
-    Field as FieldInfo,
-)
+import pydantic
 from pydantic.fields import PrivateAttr
-from pydantic.generics import GenericModel as PydanticGenericModel
 
 from .utils import Faker, Sampler, clean_multiline
 from .. import config
 from ..utils import DEBUG_GENERATOR, assert_never
-from .._compat import validator, root_validator, cached_property
+from .._compat import (
+    PYDANTIC_V2,
+    BaseConfig,
+    ConfigDict,
+    BaseSettings,
+    BaseSettingsConfig,
+    PlainSerializer,
+    GenericModel,
+    Field as FieldInfo,
+    root_validator,
+    field_validator,
+    cached_property,
+    model_rebuild,
+)
 from .._constants import QUERY_BUILDER_ALIASES
 from ..errors import UnsupportedListTypeError
-
-if TYPE_CHECKING:
-    from pydantic.env_settings import SettingsSourceCallable
 
 
 __all__ = (
@@ -52,6 +59,8 @@ __all__ = (
     'DefaultData',
     'GenericData',
 )
+
+_ModelT = TypeVar('_ModelT', bound=pydantic.BaseModel)
 
 # NOTE: this does not represent all the data that is passed by prisma
 
@@ -101,7 +110,7 @@ For more information see: https://prisma-client-py.readthedocs.io/en/stable/refe
 FAKER: Faker = Faker()
 
 
-ConfigT = TypeVar('ConfigT', bound=PydanticBaseModel)
+ConfigT = TypeVar('ConfigT', bound=pydantic.BaseModel)
 
 # Although we should just be able to access the config from the datamodel
 # we have to do some validation that requires access to the config, this is difficult
@@ -120,7 +129,7 @@ def get_datamodel() -> 'Datamodel':
 # typed to ensure the caller has to handle the cases where:
 # - a custom generator config is being used
 # - the config is invalid and therefore could not be set
-def get_config() -> Union[None, PydanticBaseModel, 'Config']:
+def get_config() -> Union[None, pydantic.BaseModel, 'Config']:
     return config_ctx.get(None)
 
 
@@ -211,18 +220,21 @@ def _recursive_type_depth_factory() -> int:
     return 5
 
 
-class BaseModel(PydanticBaseModel):
-    class Config:
-        arbitrary_types_allowed: bool = True
-        json_encoders: Dict[Type[Any], Any] = {
-            Path: _pathlib_serializer,
-            machinery.ModuleSpec: _module_spec_serializer,
-        }
-        keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
+class BaseModel(pydantic.BaseModel):
+    if PYDANTIC_V2:
+        model_config: ClassVar[ConfigDict] = ConfigDict(
+            arbitrary_types_allowed=True,
+            ignored_types=(cached_property,),
+        )
+    else:
 
-
-class GenericModel(PydanticGenericModel, BaseModel):
-    pass
+        class Config(BaseConfig):
+            arbitrary_types_allowed: bool = True
+            json_encoders: Dict[Type[Any], Any] = {
+                Path: _pathlib_serializer,
+                machinery.ModuleSpec: _module_spec_serializer,
+            }
+            keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
 
 
 class InterfaceChoices(str, enum.Enum):
@@ -235,14 +247,42 @@ class EngineType(str, enum.Enum):
     library = 'library'
     dataproxy = 'dataproxy'
 
+    def __str__(self) -> str:
+        return self.value
+
 
 class Module(BaseModel):
-    spec: machinery.ModuleSpec
+    if TYPE_CHECKING:
+        spec: machinery.ModuleSpec
+    else:
+        if PYDANTIC_V2:
+            spec: Annotated[
+                machinery.ModuleSpec,
+                PlainSerializer(
+                    lambda x: _module_spec_serializer(x), return_type=str
+                ),
+            ]
+        else:
+            spec: machinery.ModuleSpec
 
-    class Config(BaseModel.Config):
-        arbitrary_types_allowed: bool = True
+    if PYDANTIC_V2:
+        model_config: ClassVar[ConfigDict] = ConfigDict(
+            arbitrary_types_allowed=True
+        )
+    else:
 
-    @validator('spec', pre=True, allow_reuse=True)
+        class Config(BaseModel.Config):
+            arbitrary_types_allowed: bool = True
+
+    # for some reason this is needed in Pydantic v2
+    @root_validator(pre=True, skip_on_failure=True)
+    @classmethod
+    def partial_type_generator_converter(cls, values: object) -> Any:
+        if isinstance(values, str):
+            return {'spec': values}
+        return values
+
+    @field_validator('spec', pre=True, allow_reuse=True)
     @classmethod
     def spec_validator(cls, value: Optional[str]) -> machinery.ModuleSpec:
         spec: Optional[machinery.ModuleSpec] = None
@@ -309,11 +349,20 @@ class GenericData(GenericModel, Generic[ConfigT]):
         alias='binaryPaths', default_factory=lambda: BinaryPaths()
     )
 
-    @classmethod
-    def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
-        data = super().parse_obj(obj)
-        data_ctx.set(data)
-        return data
+    if PYDANTIC_V2:
+
+        @root_validator(pre=False)
+        def _set_ctx(self: _ModelT) -> _ModelT:
+            data_ctx.set(cast('GenericData[ConfigT]', self))
+            return self
+
+    else:
+
+        @classmethod
+        def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
+            data = super().parse_obj(obj)  # pyright: ignore[reportDeprecated]
+            data_ctx.set(data)
+            return data
 
     def to_params(self) -> Dict[str, Any]:
         """Get the parameters that should be sent to Jinja templates"""
@@ -333,7 +382,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
 
         return params
 
-    @root_validator(pre=True, allow_reuse=True)
+    @root_validator(pre=True, allow_reuse=True, skip_on_failure=True)
     @classmethod
     def validate_version(cls, values: Dict[Any, Any]) -> Dict[Any, Any]:
         # TODO: test this
@@ -387,8 +436,14 @@ class BinaryPaths(BaseModel):
         alias='prismaFmt',
     )
 
-    class Config(BaseModel.Config):
-        extra: Extra = Extra.ignore
+    if PYDANTIC_V2:
+        model_config: ClassVar[ConfigDict] = ConfigDict(extra='allow')
+    else:
+
+        class Config(BaseModel.Config):  # pyright: ignore[reportDeprecated]
+            extra: Any = (
+                pydantic.Extra.allow  # pyright: ignore[reportDeprecated]
+            )
 
 
 class Datasource(BaseModel):
@@ -407,7 +462,7 @@ class Generator(GenericModel, Generic[ConfigT]):
     binary_targets: List['ValueFromEnvVar'] = FieldInfo(alias='binaryTargets')
     preview_features: List[str] = FieldInfo(alias='previewFeatures')
 
-    @validator('binary_targets')
+    @field_validator('binary_targets')
     @classmethod
     def warn_binary_targets(
         cls, targets: List['ValueFromEnvVar']
@@ -432,7 +487,7 @@ class ValueFromEnvVar(BaseModel):
 
 
 class OptionalValueFromEnvVar(BaseModel):
-    value: Optional[str]
+    value: Optional[str] = None
     from_env_var: Optional[str] = FieldInfo(alias='fromEnvVar')
 
     def resolve(self) -> str:
@@ -452,16 +507,25 @@ class OptionalValueFromEnvVar(BaseModel):
 class Config(BaseSettings):
     """Custom generator config options."""
 
-    interface: InterfaceChoices = InterfaceChoices.asyncio
-    partial_type_generator: Optional[Module] = None
-    recursive_type_depth: int = FieldInfo(
-        default_factory=_recursive_type_depth_factory
+    interface: InterfaceChoices = FieldInfo(
+        default=InterfaceChoices.asyncio, env='PRISMA_PY_CONFIG_INTERFACE'
     )
-    engine_type: EngineType = FieldInfo(default=EngineType.binary)
+    partial_type_generator: Optional[Module] = FieldInfo(
+        default=None, env='PRISMA_PY_CONFIG_PARTIAL_TYPE_GENERATOR'
+    )
+    recursive_type_depth: int = FieldInfo(
+        default_factory=_recursive_type_depth_factory,
+        env='PRISMA_PY_CONFIG_RECURSIVE_TYPE_DEPTH',
+    )
+    engine_type: EngineType = FieldInfo(
+        default=EngineType.binary, env='PRISMA_PY_CONFIG_ENGINE_TYPE'
+    )
 
     # this should be a list of experimental features
     # https://github.com/prisma/prisma/issues/12442
-    enable_experimental_decimal: bool = FieldInfo(default=False)
+    enable_experimental_decimal: bool = FieldInfo(
+        default=False, env='PRISMA_PY_CONFIG_ENABLE_EXPERIMENTAL_DECIMAL'
+    )
 
     # this seems to be the only good method for setting the contextvar as
     # we don't control the actual construction of the object like we do for
@@ -474,23 +538,29 @@ class Config(BaseSettings):
             super().__init__(**kwargs)
             config_ctx.set(self)
 
-    class Config(BaseSettings.Config):
-        extra: Extra = Extra.forbid
-        use_enum_values: bool = True
-        env_prefix: str = 'prisma_py_config_'
-        allow_population_by_field_name: bool = True
+    if PYDANTIC_V2:
+        model_config: ClassVar[ConfigDict] = ConfigDict(
+            extra='forbid',
+            use_enum_values=True,
+            populate_by_name=True,
+        )
+    else:
+        if not TYPE_CHECKING:
 
-        @classmethod
-        def customise_sources(
-            cls,
-            init_settings: 'SettingsSourceCallable',
-            env_settings: 'SettingsSourceCallable',
-            file_secret_settings: 'SettingsSourceCallable',
-        ) -> Tuple['SettingsSourceCallable', ...]:
-            # prioritise env settings over init settings
-            return env_settings, init_settings, file_secret_settings
+            class Config(BaseSettingsConfig):
+                extra: pydantic.Extra = pydantic.Extra.forbid
+                use_enum_values: bool = True
+                env_prefix: str = 'prisma_py_config_'
+                allow_population_by_field_name: bool = True
 
-    @root_validator(pre=True)
+                @classmethod
+                def customise_sources(
+                    cls, init_settings, env_settings, file_secret_settings
+                ):
+                    # prioritise env settings over init settings
+                    return env_settings, init_settings, file_secret_settings
+
+    @root_validator(pre=True, skip_on_failure=True)
     @classmethod
     def transform_engine_type(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         # prioritise env variable over schema option
@@ -505,7 +575,7 @@ class Config(BaseSettings):
 
         return values
 
-    @root_validator(pre=True)
+    @root_validator(pre=True, skip_on_failure=True)
     @classmethod
     def removed_http_option_validator(
         cls, values: Dict[str, Any]
@@ -527,31 +597,57 @@ class Config(BaseSettings):
             )
         return values
 
-    @validator(
-        'partial_type_generator', pre=True, always=True, allow_reuse=True
-    )
-    @classmethod
-    def partial_type_generator_converter(
-        cls, value: Optional[str]
-    ) -> Optional[Module]:
-        try:
-            return Module(
-                spec=value  # pyright: ignore[reportGeneralTypeIssues]
-            )
-        except ValueError:
-            if value is None:
-                # no config value passed and the default location was not found
-                return None
-            raise
+    if PYDANTIC_V2:
 
-    @validator('recursive_type_depth', always=True, allow_reuse=True)
+        @root_validator(pre=True, skip_on_failure=True)
+        @classmethod
+        def partial_type_generator_converter(
+            cls, values: Dict[str, Any]
+        ) -> Dict[str, Any]:
+            # ensure env resolving happens
+            values = cast(Dict[str, Any], cls.root_validator(values))  # type: ignore
+
+            value = values.get('partial_type_generator')
+
+            try:
+                values['partial_type_generator'] = Module(
+                    spec=value  # pyright: ignore[reportGeneralTypeIssues]
+                )
+            except ValueError:
+                if value is None:
+                    # no config value passed and the default location was not found
+                    return values
+                raise
+
+            return values
+
+    else:
+
+        @field_validator(
+            'partial_type_generator', pre=True, always=True, allow_reuse=True
+        )
+        @classmethod
+        def _partial_type_generator_converter(
+            cls, value: Optional[str]
+        ) -> Optional[Module]:
+            try:
+                return Module(
+                    spec=value  # pyright: ignore[reportGeneralTypeIssues]
+                )
+            except ValueError:
+                if value is None:
+                    # no config value passed and the default location was not found
+                    return None
+                raise
+
+    @field_validator('recursive_type_depth', always=True, allow_reuse=True)
     @classmethod
     def recursive_type_depth_validator(cls, value: int) -> int:
         if value < -1 or value in {0, 1}:
             raise ValueError('Value must equal -1 or be greater than 1.')
         return value
 
-    @validator('engine_type', always=True, allow_reuse=True)
+    @field_validator('engine_type', always=True, allow_reuse=True)
     @classmethod
     def engine_type_validator(cls, value: EngineType) -> EngineType:
         if value == EngineType.binary:
@@ -565,8 +661,7 @@ class Config(BaseSettings):
                 'Prisma Client Python does not support native engine bindings yet.'
             )
         else:  # pragma: no cover
-            # NOTE: the exhaustiveness check is broken for mypy
-            assert_never(value)  # type: ignore
+            assert_never(value)
 
 
 class DMMF(BaseModel):
@@ -583,7 +678,7 @@ class Datamodel(BaseModel):
     # not implemented yet
     types: List[object]
 
-    @validator('types')
+    @field_validator('types')
     @classmethod
     def no_composite_types_validator(cls, types: List[object]) -> object:
         if types:
@@ -622,7 +717,7 @@ class Model(BaseModel):
         super().__init__(**data)
         self._sampler = Sampler(self)
 
-    @validator('name')
+    @field_validator('name')
     @classmethod
     def name_validator(cls, name: str) -> str:
         if iskeyword(name):
@@ -711,7 +806,7 @@ class Constraint(BaseModel):
     name: str
     fields: List[str]
 
-    @root_validator(pre=True, allow_reuse=True)
+    @root_validator(pre=True, allow_reuse=True, skip_on_failure=True)
     @classmethod
     def resolve_name(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         name = values.get('name')
@@ -746,21 +841,27 @@ class Field(BaseModel):
     is_generated: bool = FieldInfo(alias='isGenerated')
     is_updated_at: bool = FieldInfo(alias='isUpdatedAt')
 
-    default: Optional[Union['DefaultValue', str, List[object]]]
+    default: Optional[Union['DefaultValue', object, List[object]]] = None
     has_default_value: bool = FieldInfo(alias='hasDefaultValue')
 
-    relation_name: Optional[str] = FieldInfo(alias='relationName')
-    relation_on_delete: Optional[str] = FieldInfo(alias='relationOnDelete')
+    relation_name: Optional[str] = FieldInfo(
+        alias='relationName', default=None
+    )
+    relation_on_delete: Optional[str] = FieldInfo(
+        alias='relationOnDelete', default=None
+    )
     relation_to_fields: Optional[List[str]] = FieldInfo(
-        alias='relationToFields'
+        alias='relationToFields',
+        default=None,
     )
     relation_from_fields: Optional[List[str]] = FieldInfo(
-        alias='relationFromFields'
+        alias='relationFromFields',
+        default=None,
     )
 
     _last_sampled: Optional[str] = PrivateAttr()
 
-    @root_validator()
+    @root_validator(pre=True, skip_on_failure=True)
     @classmethod
     def scalar_type_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         kind = values.get('kind')
@@ -772,7 +873,7 @@ class Field(BaseModel):
 
         return values
 
-    @validator('type')
+    @field_validator('type')
     @classmethod
     def experimental_decimal_validator(cls, typ: str) -> str:
         if typ == 'Decimal':
@@ -792,7 +893,7 @@ class Field(BaseModel):
 
         return typ
 
-    @validator('name')
+    @field_validator('name')
     @classmethod
     def name_validator(cls, name: str) -> str:
         if getattr(BaseModel, name, None):
@@ -1021,22 +1122,40 @@ class Field(BaseModel):
 
 
 class DefaultValue(BaseModel):
-    args: Any
+    args: Any = None
     name: str
 
 
 class _EmptyModel(BaseModel):
-    class Config(BaseModel.Config):
-        extra: Extra = Extra.forbid
+    if PYDANTIC_V2:
+        model_config: ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+    elif not TYPE_CHECKING:
+
+        class Config(BaseModel.Config):
+            extra: pydantic.Extra = pydantic.Extra.forbid
 
 
 class _ModelAllowAll(BaseModel):
-    class Config(BaseModel.Config):
-        extra: Extra = Extra.allow
+    if PYDANTIC_V2:
+        model_config: ClassVar[ConfigDict] = ConfigDict(extra='allow')
+    elif not TYPE_CHECKING:
+
+        class Config(BaseModel.Config):
+            extra: pydantic.Extra = pydantic.Extra.allow
 
 
 class PythonData(GenericData[Config]):
     """Data class including the default Prisma Client Python config"""
+
+    if not PYDANTIC_V2:
+
+        class Config(BaseConfig):
+            arbitrary_types_allowed: bool = True
+            json_encoders: Dict[Type[Any], Any] = {
+                Path: _pathlib_serializer,
+                machinery.ModuleSpec: _module_spec_serializer,
+            }
+            keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
 
 
 class DefaultData(GenericData[_EmptyModel]):
@@ -1047,14 +1166,14 @@ class DefaultData(GenericData[_EmptyModel]):
 # as its purpose is to signify that the data is config agnostic
 AnyData = GenericData[Any]
 
-Enum.update_forward_refs()
-DMMF.update_forward_refs()
-GenericData.update_forward_refs()
-Field.update_forward_refs()
-Model.update_forward_refs()
-Datamodel.update_forward_refs()
-Generator.update_forward_refs()
-Datasource.update_forward_refs()
+model_rebuild(Enum)
+model_rebuild(DMMF)
+model_rebuild(GenericData)
+model_rebuild(Field)
+model_rebuild(Model)
+model_rebuild(Datamodel)
+model_rebuild(Generator)
+model_rebuild(Datasource)
 
 
 from .schema import Schema
