@@ -165,10 +165,14 @@ class QueryEngine(HTTPEngine):
             try:
                 data = {{ maybe_await }}self.request('GET', '/status')
             except Exception as exc:
+                # TODO(someday): only retry on ConnectionError
+                if isinstance(exc, AttributeError):
+                    raise
+
                 last_exc = exc
                 log.debug(
                     'Could not connect to query engine due to %s; retrying...',
-                    type(exc).__name__,
+                    exc,
                 )
                 {{ sleep(0.1) }}
                 continue

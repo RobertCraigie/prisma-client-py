@@ -40,6 +40,7 @@ from typing_extensions import TypedDict, Literal
 LiteralString = str
 # -- template engine/http.py.jinja --
 
+import json
 import logging
 from datetime import timedelta
 
@@ -119,6 +120,10 @@ class HTTPEngine(AbstractEngine):
         if 300 > resp.status >= 200:
             response = resp.json()
             log.debug('%s %s returned %s', method, url, response)
+
+            if isinstance(response, str):
+                # workaround for https://github.com/prisma/prisma-engines/pull/4246
+                response = json.loads(response)
 
             errors_data = response.get('errors')
             if errors_data:

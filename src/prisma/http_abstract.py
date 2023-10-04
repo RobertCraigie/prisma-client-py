@@ -11,7 +11,7 @@ from typing import (
     cast,
 )
 
-from httpx import Limits, Timeout
+from httpx import Headers, Limits, Timeout
 
 from ._types import Method
 from .utils import _NoneType
@@ -111,6 +111,11 @@ class AbstractResponse(ABC, Generic[Response]):
     @property
     @abstractmethod
     def status(self) -> int:
+        ...
+
+    @property
+    @abstractmethod
+    def headers(self) -> Headers:
         ...
 
     @abstractmethod

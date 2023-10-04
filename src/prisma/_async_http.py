@@ -50,6 +50,10 @@ class Response(AbstractResponse[httpx.Response]):
     def status(self) -> int:
         return self.original.status_code
 
+    @property
+    def headers(self) -> httpx.Headers:
+        return self.original.headers
+
     async def json(self, **kwargs: Any) -> Any:
         return json.loads(await self.original.aread(), **kwargs)
 

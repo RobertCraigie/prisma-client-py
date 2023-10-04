@@ -201,10 +201,14 @@ class QueryEngine(HTTPEngine):
             try:
                 data = self.request('GET', '/status')
             except Exception as exc:
+                # TODO(someday): only retry on ConnectionError
+                if isinstance(exc, AttributeError):
+                    raise
+
                 last_exc = exc
                 log.debug(
                     'Could not connect to query engine due to %s; retrying...',
-                    type(exc).__name__,
+                    exc,
                 )
                 time.sleep(0.1)
 
