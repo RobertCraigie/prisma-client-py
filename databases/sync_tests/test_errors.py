@@ -5,7 +5,7 @@ from prisma import Prisma
 from prisma.errors import FieldNotFoundError, ForeignKeyViolationError
 
 
-@pytest.xfail(
+@pytes.mark.xfail(
     reason='This was broken in v5, we now raise a different error - nobody should be relying on this behaviour and its tricky to fix'
 )
 def test_field_not_found_error(client: Prisma) -> None:
