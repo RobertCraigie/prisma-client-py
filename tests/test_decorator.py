@@ -23,8 +23,10 @@ async def test_use_prisma_decorator():
     await _create_user()
     await _get_user()
     await _delete_user()
-    await _with_client_name_arg()
-    await _with_connect_timeout_arg()
+    await _with_custom_client_name()
+    await _with_custom_client_name_and_timeout()
+    await _with_multiple_args(1, True)
+    await _with_multiple_args_and_custom_client_name(1, True, arg_3='test')
     await _with_invalid_prisma_arg()
 
 
@@ -45,16 +47,33 @@ async def _delete_user(db: Prisma):
 
 
 @use_prisma(name='client')
-async def _with_client_name_arg(client: Prisma):
+async def _with_custom_client_name(client: Prisma):
     assert isinstance(client, Prisma)
     assert client.is_connected()
 
 
 @use_prisma(connect_timeout=timedelta(seconds=42), name='prisma')
-async def _with_connect_timeout_arg(prisma: Prisma):
+async def _with_custom_client_name_and_timeout(prisma: Prisma):
     assert isinstance(prisma, Prisma)
     assert prisma.is_connected()
     assert prisma._connect_timeout == timedelta(seconds=42)
+
+
+@use_prisma
+async def _with_multiple_args(arg_1: int, arg_2: bool, db: Prisma):
+    assert arg_1 == 1 and arg_2 is True and isinstance(db, Prisma)
+
+
+@use_prisma(name='client')
+async def _with_multiple_args_and_custom_client_name(
+    arg_1: int, arg_2: bool, client: Prisma, arg_3: str
+):
+    assert (
+        arg_1 == 1
+        and arg_2 is True
+        and arg_3 == 'test'
+        and isinstance(client, Prisma)
+    )
 
 
 async def _with_invalid_prisma_arg():
