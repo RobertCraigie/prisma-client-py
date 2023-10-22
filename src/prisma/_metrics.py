@@ -22,8 +22,8 @@ _T = TypeVar('_T')
 
 
 class Metrics(BaseModel):
-    counters: List[Metric[int]]   # TODO
-    gauges: List[Metric[float]]  # TODO
+    counters: List[Metric[int]]
+    gauges: List[Metric[float]]
     histograms: List[Metric[MetricHistogram]]
 
 
@@ -35,14 +35,14 @@ class Metric(GenericModel, Generic[_T]):
 
 
 class MetricHistogram(BaseModel):
-    sum: float  # TODO
-    count: int  # TODO
+    sum: float
+    count: int
     buckets: List[HistogramBucket]
 
 
 class HistogramBucket(NamedTuple):
-    max_value: float   # TODO
-    total_count: int   # TODO
+    max_value: float
+    total_count: int
 
 
 model_rebuild(Metric)
