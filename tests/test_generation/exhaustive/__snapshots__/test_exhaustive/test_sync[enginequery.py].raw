@@ -276,7 +276,7 @@ class QueryEngine(HTTPEngine):
         ...
 
     def metrics(self, *, format: MetricsFormat) -> str | dict[str, Any]:
-        return self.request(
+        return self.request(  # type: ignore[no-any-return]
             'GET',
             f'/metrics?format={format}',
             parse_response=format == 'json',

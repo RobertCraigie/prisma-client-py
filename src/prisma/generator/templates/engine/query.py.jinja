@@ -238,7 +238,7 @@ class QueryEngine(HTTPEngine):
         ...
 
     {{ maybe_async_def }}metrics(self, *, format: MetricsFormat) -> str | dict[str, Any]:
-        return {{ maybe_await }}self.request(
+        return {{ maybe_await }}self.request(  # type: ignore[no-any-return]
             'GET',
             f'/metrics?format={format}',
             parse_response=format == 'json',
