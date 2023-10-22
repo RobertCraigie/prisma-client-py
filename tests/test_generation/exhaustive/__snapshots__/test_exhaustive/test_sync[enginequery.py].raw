@@ -57,7 +57,7 @@ from .. import config
 from ..utils import DEBUG
 from ..binaries import platform
 from ..utils import time_since, _env_bool
-from ..types import DatasourceOverride
+from ..types import DatasourceOverride, MetricsFormat
 from ..builder import dumps
 from .._constants import DEFAULT_CONNECT_TIMEOUT
 from ._types import TransactionId
@@ -172,7 +172,13 @@ class QueryEngine(HTTPEngine):
         if self._log_queries:
             env.update(LOG_QUERIES='y')
 
-        args: List[str] = [str(file.absolute()), '-p', str(port), '--enable-raw-queries']
+        args: List[str] = [
+            str(file.absolute()),
+            '-p',
+            str(port),
+            '--enable-metrics',
+            '--enable-raw-queries',
+        ]
         if _env_bool('__PRISMA_PY_PLAYGROUND'):
             env.update(RUST_LOG='info')
             args.append('--enable-playground')
@@ -259,6 +265,21 @@ class QueryEngine(HTTPEngine):
     def rollback_transaction(self, tx_id: TransactionId) -> None:
         self.request(
             'POST', f'/transaction/{tx_id}/rollback'
+        )
+
+    @overload
+    def metrics(self, *, format: Literal['json']) -> dict[str, Any]:
+        ...
+
+    @overload
+    def metrics(self, *, format: Literal['prometheus']) -> str:
+        ...
+
+    def metrics(self, *, format: MetricsFormat) -> str | dict[str, Any]:
+        return self.request(
+            'GET',
+            f'/metrics?format={format}',
+            parse_response=format == 'json',
         )
 
 # black does not respect the fmt: off comment without this

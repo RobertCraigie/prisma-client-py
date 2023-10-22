@@ -39,20 +39,20 @@ model Profile {
 }
 
 model Post {
-  id          String   @id @default(uuid())
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id          String     @id @default(uuid())
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
   title       String
   description String?
-  published   Boolean  @default(false)
-  views       Int      @default(0)
-  author      User?    @relation(fields: [author_id], references: [id])
+  published   Boolean    @default(false)
+  views       Int        @default(0)
+  author      User?      @relation(fields: [author_id], references: [id])
   author_id   String?
-  categories Category[]
+  categories  Category[]
 }
 
 model Category {
-  id          String   @id @default(uuid())
+  id    String @id @default(uuid())
   posts Post[]
   name  String
 }
@@ -80,10 +80,10 @@ model Types {
 
   // TODO: optional for these too
   {% if config.supports_feature('enum') %}
-  enum     Role   @default(USER)
+  enum     Role  @default(USER)
   {% endif %}
   {% if config.supports_feature('json') %}
-  json_obj Json?  @default("{}")
+  json_obj Json? @default("{}")
   {% endif %}
 }
 
@@ -123,6 +123,7 @@ model ListsDefaults {
   roles        Role[]     @default([USER])
   {% endif %}
 }
+
 {% endif %}
 
 // these models are here for testing different combinations of unique constraints
@@ -173,6 +174,7 @@ model Unique6 {
 
   @@unique([name, role])
 }
+
 {% endif %}
 
 model Id1 {
@@ -211,6 +213,7 @@ model Id5 {
 
   @@unique([name, role])
 }
+
 {% endif %}
 
 {% if config.supports_feature('enum') %}
@@ -219,4 +222,5 @@ enum Role {
   ADMIN
   EDITOR
 }
+
 {% endif %}

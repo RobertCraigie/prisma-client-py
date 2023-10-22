@@ -13,6 +13,11 @@ from .utils import setup_logging
 from . import errors as errors
 from .validator import *
 from ._types import PrismaMethod as PrismaMethod
+from ._metrics import (
+    Metric as Metric,
+    Metrics as Metrics,
+    MetricHistogram as MetricHistogram,
+)
 
 
 try:
