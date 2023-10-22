@@ -54,6 +54,7 @@ class HTTPEngine(AbstractEngine):
         if self.session and not self.session.closed:
             {{ maybe_await }}self.session.close()
 
+    # TODO: improve return types
     {{ maybe_async_def }}request(
         self,
         method: Method,
@@ -61,17 +62,19 @@ class HTTPEngine(AbstractEngine):
         *,
         content: Any = None,
         headers: Optional[Dict[str, str]] = None,
+        parse_response: bool = True,
     ) -> Any:
         if self.url is None:
             raise errors.NotConnectedError('Not connected to the query engine')
 
         kwargs = {
             'headers': {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
                 **self.headers,
             }
         }
+
+        if parse_response:
+            kwargs['headers']['Accept'] = 'application/json'
 
         if headers is not None:
             kwargs['headers'].update(headers)
@@ -88,6 +91,15 @@ class HTTPEngine(AbstractEngine):
         log.debug('%s %s returned status %s', method, url, resp.status)
 
         if 300 > resp.status >= 200:
+            # In certain cases we just want to return the response content as-is.
+            #
+            # This is useful for metrics which can be returned in a Prometheus format
+            # which is incompatible with JSON.
+            if not parse_response:
+                text = {{ maybe_await }}resp.text()
+                log.debug('%s %s returned text: %s', method, url, text)
+                return text
+
             response = {{ maybe_await }}resp.json()
             log.debug('%s %s returned %s', method, url, response)
 
