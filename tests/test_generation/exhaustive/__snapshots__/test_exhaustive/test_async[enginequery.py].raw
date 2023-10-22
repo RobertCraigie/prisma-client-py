@@ -42,6 +42,7 @@ LiteralString = str
 # -- template engine/query.py.jinja --
 
 import os
+import json
 import time
 import atexit
 import signal
@@ -267,17 +268,38 @@ class QueryEngine(HTTPEngine):
         )
 
     @overload
-    async def metrics(self, *, format: Literal['json']) -> dict[str, Any]:
+    async def metrics(
+        self,
+        *,
+        format: Literal['json'],
+        global_labels: dict[str, str] | None,
+    ) -> dict[str, Any]:
         ...
 
     @overload
-    async def metrics(self, *, format: Literal['prometheus']) -> str:
+    async def metrics(
+        self,
+        *,
+        format: Literal['prometheus'],
+        global_labels: dict[str, str] | None,
+    ) -> str:
         ...
 
-    async def metrics(self, *, format: MetricsFormat) -> str | dict[str, Any]:
+    async def metrics(
+        self,
+        *,
+        format: MetricsFormat,
+        global_labels: dict[str, str] | None,
+    ) -> str | dict[str, Any]:
+        if global_labels is not None:
+            content = json.dumps(global_labels)
+        else:
+            content = None
+
         return await self.request(  # type: ignore[no-any-return]
             'GET',
             f'/metrics?format={format}',
+            content=content,
             parse_response=format == 'json',
         )
 

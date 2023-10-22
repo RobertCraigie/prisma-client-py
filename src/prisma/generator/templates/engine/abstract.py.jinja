@@ -80,14 +80,29 @@ class AbstractEngine(ABC):
 
     @overload
     @abstractmethod
-    {{ maybe_async_def }}metrics(self, *, format: Literal['json']) -> dict[str, Any]:
+    {{ maybe_async_def }}metrics(
+        self,
+        *,
+        format: Literal['json'],
+        global_labels: dict[str, str] | None,
+    ) -> dict[str, Any]:
         ...
 
     @overload
     @abstractmethod
-    {{ maybe_async_def }}metrics(self, *, format: Literal['prometheus']) -> str:
+    {{ maybe_async_def }}metrics(
+        self,
+        *,
+        format: Literal['prometheus'],
+        global_labels: dict[str, str] | None,
+    ) -> str:
         ...
 
     @abstractmethod
-    {{ maybe_async_def }}metrics(self, *, format: MetricsFormat) -> str | dict[str, Any]:
+    {{ maybe_async_def }}metrics(
+        self,
+        *,
+        format: MetricsFormat,
+        global_labels: dict[str, str] | None,
+    ) -> str | dict[str, Any]:
         ...

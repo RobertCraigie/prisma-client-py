@@ -462,23 +462,37 @@ class Prisma:
         """Returns True if the client is wrapped within a transaction"""
         return self._tx_id is not None
 
-    # TODO: global labels option
     @overload
-    async def get_metrics(self, format: Literal['json'] = 'json') -> Metrics:
+    async def get_metrics(
+        self,
+        format: Literal['json'] = 'json',
+        *,
+        global_labels: dict[str, str] | None = None,
+    ) -> Metrics:
         ...
 
     @overload
-    async def get_metrics(self, format: Literal['prometheus']) -> str:
+    async def get_metrics(
+        self,
+        format: Literal['prometheus'],
+        *,
+        global_labels: dict[str, str] | None = None,
+    ) -> str:
         ...
 
-    async def get_metrics(self, format: MetricsFormat = 'json') -> str | Metrics:
+    async def get_metrics(
+        self,
+        format: MetricsFormat = 'json',
+        *,
+        global_labels: dict[str, str] | None = None,
+    ) -> str | Metrics:
         """Metrics give you a detailed insight into how the Prisma Client interacts with your database.
 
         You can retrieve metrics in either JSON or Prometheus formats.
 
         For more details see https://www.prisma.io/docs/concepts/components/prisma-client/metrics.
         """
-        response = await self._engine.metrics(format=format)
+        response = await self._engine.metrics(format=format, global_labels=global_labels)
         if format == 'prometheus':
             # For the prometheus format we return the response as-is
             assert isinstance(response, str)

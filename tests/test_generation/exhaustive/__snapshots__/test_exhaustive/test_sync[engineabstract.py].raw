@@ -118,15 +118,30 @@ class AbstractEngine(ABC):
 
     @overload
     @abstractmethod
-    def metrics(self, *, format: Literal['json']) -> dict[str, Any]:
+    def metrics(
+        self,
+        *,
+        format: Literal['json'],
+        global_labels: dict[str, str] | None,
+    ) -> dict[str, Any]:
         ...
 
     @overload
     @abstractmethod
-    def metrics(self, *, format: Literal['prometheus']) -> str:
+    def metrics(
+        self,
+        *,
+        format: Literal['prometheus'],
+        global_labels: dict[str, str] | None,
+    ) -> str:
         ...
 
     @abstractmethod
-    def metrics(self, *, format: MetricsFormat) -> str | dict[str, Any]:
+    def metrics(
+        self,
+        *,
+        format: MetricsFormat,
+        global_labels: dict[str, str] | None,
+    ) -> str | dict[str, Any]:
         ...
 '''

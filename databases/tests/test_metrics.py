@@ -53,3 +53,9 @@ async def test_json(client: Prisma) -> None:
     for bucket in metrics.histograms[0].value.buckets:
         assert bucket.max_value >= 0
         assert bucket.total_count >= 0
+
+
+@pytest.mark.asyncio
+async def test_global_labels(client: Prisma) -> None:
+    metrics = await client.get_metrics(global_labels={'foo': 'bar'})
+    assert metrics.counters[0].labels == {'foo': 'bar'}
