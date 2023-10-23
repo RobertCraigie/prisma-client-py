@@ -13,6 +13,6 @@ mkdocs:
   configuration: mkdocs.yml
 
 python:
-   version: "3.8"
+   version: "3.11"
    install:
    - requirements: pipelines/requirements/docs.txt
