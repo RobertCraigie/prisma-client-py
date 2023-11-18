@@ -265,7 +265,7 @@ def serialize_decimal(obj: decimal.Decimal) -> str:
     return str(obj)
 
 
-def dumps(obj: object, **kwargs: object) -> str:
+def dumps(obj: object, **kwargs: Any) -> str:
     kwargs.setdefault('default', serializer)
     kwargs.setdefault('ensure_ascii', False)
     return json.dumps(obj, **kwargs)
