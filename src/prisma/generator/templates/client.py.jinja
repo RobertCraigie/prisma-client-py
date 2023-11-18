@@ -191,7 +191,7 @@ class Prisma:
         # client as well as the transaction client the original client cannot
         # be `free`d before the transaction is finished. So stopping the engine
         # here should be safe.
-        if self.__engine is not None and not self.__copied:
+        if hasattr(self, '__engine') and self.__engine is not None and not self.__copied:
             log.debug('unclosed client - stopping engine')
             engine = self.__engine
             self.__engine = None
