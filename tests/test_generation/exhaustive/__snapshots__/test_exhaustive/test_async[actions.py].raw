@@ -42,10 +42,12 @@ LiteralString = str
 # -- template actions.py.jinja --
 from typing import TypeVar
 import warnings
+import functools as _functools
 
-from . import types, errors, bases, _parsers as p
+from . import types, errors, bases, _parsers
 from ._types import NotGiven, NotGivenOr, NOT_GIVEN
 from ._helpers import is_mapping
+from ._compat import model_parse
 
 if TYPE_CHECKING:
     from .client import Client
@@ -60,11 +62,13 @@ class PostActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
+        '_model_parser',
     )
 
     def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
+        self._model_parser = _functools.partial(model_parse, self._model)
 
     async def query_raw(
         self,
@@ -191,7 +195,7 @@ class PostActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def create_many(
@@ -307,7 +311,7 @@ class PostActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,)
         )
 
@@ -357,7 +361,7 @@ class PostActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_unique_or_raise(
@@ -406,7 +410,7 @@ class PostActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def find_many(
@@ -478,7 +482,7 @@ class PostActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.as_list(self._model.parse_obj),
+            parser=_parsers.as_list(self._model_parser),
         )
 
     async def find_first(
@@ -543,7 +547,7 @@ class PostActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_first_or_raise(
@@ -608,7 +612,7 @@ class PostActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update(
@@ -662,7 +666,7 @@ class PostActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,),
         )
 
@@ -726,7 +730,7 @@ class PostActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update_many(
@@ -1085,11 +1089,13 @@ class UserActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
+        '_model_parser',
     )
 
     def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
+        self._model_parser = _functools.partial(model_parse, self._model)
 
     async def query_raw(
         self,
@@ -1220,7 +1226,7 @@ class UserActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def create_many(
@@ -1344,7 +1350,7 @@ class UserActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,)
         )
 
@@ -1394,7 +1400,7 @@ class UserActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_unique_or_raise(
@@ -1443,7 +1449,7 @@ class UserActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def find_many(
@@ -1515,7 +1521,7 @@ class UserActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.as_list(self._model.parse_obj),
+            parser=_parsers.as_list(self._model_parser),
         )
 
     async def find_first(
@@ -1580,7 +1586,7 @@ class UserActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_first_or_raise(
@@ -1645,7 +1651,7 @@ class UserActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update(
@@ -1699,7 +1705,7 @@ class UserActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,),
         )
 
@@ -1771,7 +1777,7 @@ class UserActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update_many(
@@ -2130,11 +2136,13 @@ class MActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
+        '_model_parser',
     )
 
     def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
+        self._model_parser = _functools.partial(model_parse, self._model)
 
     async def query_raw(
         self,
@@ -2264,7 +2272,7 @@ class MActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def create_many(
@@ -2386,7 +2394,7 @@ class MActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,)
         )
 
@@ -2436,7 +2444,7 @@ class MActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_unique_or_raise(
@@ -2485,7 +2493,7 @@ class MActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def find_many(
@@ -2557,7 +2565,7 @@ class MActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.as_list(self._model.parse_obj),
+            parser=_parsers.as_list(self._model_parser),
         )
 
     async def find_first(
@@ -2622,7 +2630,7 @@ class MActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_first_or_raise(
@@ -2687,7 +2695,7 @@ class MActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update(
@@ -2741,7 +2749,7 @@ class MActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,),
         )
 
@@ -2811,7 +2819,7 @@ class MActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update_many(
@@ -3170,11 +3178,13 @@ class NActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
+        '_model_parser',
     )
 
     def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
+        self._model_parser = _functools.partial(model_parse, self._model)
 
     async def query_raw(
         self,
@@ -3305,7 +3315,7 @@ class NActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def create_many(
@@ -3429,7 +3439,7 @@ class NActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,)
         )
 
@@ -3479,7 +3489,7 @@ class NActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_unique_or_raise(
@@ -3528,7 +3538,7 @@ class NActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def find_many(
@@ -3600,7 +3610,7 @@ class NActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.as_list(self._model.parse_obj),
+            parser=_parsers.as_list(self._model_parser),
         )
 
     async def find_first(
@@ -3665,7 +3675,7 @@ class NActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_first_or_raise(
@@ -3730,7 +3740,7 @@ class NActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update(
@@ -3784,7 +3794,7 @@ class NActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,),
         )
 
@@ -3856,7 +3866,7 @@ class NActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update_many(
@@ -4215,11 +4225,13 @@ class OneOptionalActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
+        '_model_parser',
     )
 
     def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
+        self._model_parser = _functools.partial(model_parse, self._model)
 
     async def query_raw(
         self,
@@ -4349,7 +4361,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def create_many(
@@ -4471,7 +4483,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,)
         )
 
@@ -4521,7 +4533,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_unique_or_raise(
@@ -4570,7 +4582,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def find_many(
@@ -4642,7 +4654,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.as_list(self._model.parse_obj),
+            parser=_parsers.as_list(self._model_parser),
         )
 
     async def find_first(
@@ -4707,7 +4719,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_first_or_raise(
@@ -4772,7 +4784,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update(
@@ -4826,7 +4838,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,),
         )
 
@@ -4896,7 +4908,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update_many(
@@ -5255,11 +5267,13 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
+        '_model_parser',
     )
 
     def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
+        self._model_parser = _functools.partial(model_parse, self._model)
 
     async def query_raw(
         self,
@@ -5389,7 +5403,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def create_many(
@@ -5511,7 +5525,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,)
         )
 
@@ -5561,7 +5575,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_unique_or_raise(
@@ -5610,7 +5624,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def find_many(
@@ -5682,7 +5696,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.as_list(self._model.parse_obj),
+            parser=_parsers.as_list(self._model_parser),
         )
 
     async def find_first(
@@ -5747,7 +5761,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_first_or_raise(
@@ -5812,7 +5826,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update(
@@ -5866,7 +5880,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,),
         )
 
@@ -5936,7 +5950,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update_many(
@@ -6295,11 +6309,13 @@ class ListsActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
+        '_model_parser',
     )
 
     def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
+        self._model_parser = _functools.partial(model_parse, self._model)
 
     async def query_raw(
         self,
@@ -6424,7 +6440,7 @@ class ListsActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def create_many(
@@ -6536,7 +6552,7 @@ class ListsActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,)
         )
 
@@ -6586,7 +6602,7 @@ class ListsActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_unique_or_raise(
@@ -6635,7 +6651,7 @@ class ListsActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def find_many(
@@ -6707,7 +6723,7 @@ class ListsActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.as_list(self._model.parse_obj),
+            parser=_parsers.as_list(self._model_parser),
         )
 
     async def find_first(
@@ -6772,7 +6788,7 @@ class ListsActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_first_or_raise(
@@ -6837,7 +6853,7 @@ class ListsActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update(
@@ -6891,7 +6907,7 @@ class ListsActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,),
         )
 
@@ -6951,7 +6967,7 @@ class ListsActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update_many(
@@ -7310,11 +7326,13 @@ class AActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
+        '_model_parser',
     )
 
     def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
+        self._model_parser = _functools.partial(model_parse, self._model)
 
     async def query_raw(
         self,
@@ -7443,7 +7461,7 @@ class AActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def create_many(
@@ -7563,7 +7581,7 @@ class AActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,)
         )
 
@@ -7613,7 +7631,7 @@ class AActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_unique_or_raise(
@@ -7662,7 +7680,7 @@ class AActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def find_many(
@@ -7734,7 +7752,7 @@ class AActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.as_list(self._model.parse_obj),
+            parser=_parsers.as_list(self._model_parser),
         )
 
     async def find_first(
@@ -7799,7 +7817,7 @@ class AActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_first_or_raise(
@@ -7864,7 +7882,7 @@ class AActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update(
@@ -7918,7 +7936,7 @@ class AActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,),
         )
 
@@ -7984,7 +8002,7 @@ class AActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update_many(
@@ -8343,11 +8361,13 @@ class BActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
+        '_model_parser',
     )
 
     def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
+        self._model_parser = _functools.partial(model_parse, self._model)
 
     async def query_raw(
         self,
@@ -8476,7 +8496,7 @@ class BActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def create_many(
@@ -8596,7 +8616,7 @@ class BActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,)
         )
 
@@ -8646,7 +8666,7 @@ class BActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_unique_or_raise(
@@ -8695,7 +8715,7 @@ class BActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def find_many(
@@ -8767,7 +8787,7 @@ class BActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.as_list(self._model.parse_obj),
+            parser=_parsers.as_list(self._model_parser),
         )
 
     async def find_first(
@@ -8832,7 +8852,7 @@ class BActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_first_or_raise(
@@ -8897,7 +8917,7 @@ class BActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update(
@@ -8951,7 +8971,7 @@ class BActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,),
         )
 
@@ -9019,7 +9039,7 @@ class BActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update_many(
@@ -9378,11 +9398,13 @@ class CActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
+        '_model_parser',
     )
 
     def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
+        self._model_parser = _functools.partial(model_parse, self._model)
 
     async def query_raw(
         self,
@@ -9513,7 +9535,7 @@ class CActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def create_many(
@@ -9638,7 +9660,7 @@ class CActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,)
         )
 
@@ -9689,7 +9711,7 @@ class CActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_unique_or_raise(
@@ -9739,7 +9761,7 @@ class CActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def find_many(
@@ -9811,7 +9833,7 @@ class CActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.as_list(self._model.parse_obj),
+            parser=_parsers.as_list(self._model_parser),
         )
 
     async def find_first(
@@ -9876,7 +9898,7 @@ class CActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_first_or_raise(
@@ -9941,7 +9963,7 @@ class CActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update(
@@ -9996,7 +10018,7 @@ class CActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,),
         )
 
@@ -10057,7 +10079,7 @@ class CActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update_many(
@@ -10416,11 +10438,13 @@ class DActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
+        '_model_parser',
     )
 
     def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
+        self._model_parser = _functools.partial(model_parse, self._model)
 
     async def query_raw(
         self,
@@ -10550,7 +10574,7 @@ class DActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def create_many(
@@ -10672,7 +10696,7 @@ class DActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,)
         )
 
@@ -10722,7 +10746,7 @@ class DActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_unique_or_raise(
@@ -10771,7 +10795,7 @@ class DActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def find_many(
@@ -10843,7 +10867,7 @@ class DActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.as_list(self._model.parse_obj),
+            parser=_parsers.as_list(self._model_parser),
         )
 
     async def find_first(
@@ -10908,7 +10932,7 @@ class DActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_first_or_raise(
@@ -10973,7 +10997,7 @@ class DActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update(
@@ -11027,7 +11051,7 @@ class DActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,),
         )
 
@@ -11097,7 +11121,7 @@ class DActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update_many(
@@ -11456,11 +11480,13 @@ class EActions(Generic[_PrismaModelT]):
     __slots__ = (
         '_client',
         '_model',
+        '_model_parser',
     )
 
     def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
+        self._model_parser = _functools.partial(model_parse, self._model)
 
     async def query_raw(
         self,
@@ -11588,7 +11614,7 @@ class EActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def create_many(
@@ -11706,7 +11732,7 @@ class EActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,)
         )
 
@@ -11756,7 +11782,7 @@ class EActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_unique_or_raise(
@@ -11805,7 +11831,7 @@ class EActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def find_many(
@@ -11877,7 +11903,7 @@ class EActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.as_list(self._model.parse_obj),
+            parser=_parsers.as_list(self._model_parser),
         )
 
     async def find_first(
@@ -11942,7 +11968,7 @@ class EActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     async def find_first_or_raise(
@@ -12007,7 +12033,7 @@ class EActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update(
@@ -12061,7 +12087,7 @@ class EActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,),
         )
 
@@ -12127,7 +12153,7 @@ class EActions(Generic[_PrismaModelT]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     async def update_many(
