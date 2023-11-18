@@ -210,7 +210,11 @@ def _get_field_env_var(field: FieldInfo, name: str) -> str | None:
             f'Unexpected json schema for field "{name}" is a function'
         )
 
-    return extra.get(ENV_VAR_KEY)
+    env = extra.get(ENV_VAR_KEY)
+    if env and isinstance(env, str):
+        return env
+
+    return None
 
 
 def is_field_required(field: FieldInfo) -> bool:
@@ -306,7 +310,7 @@ def Field(*, env: str | None = None, **extra: Any) -> Any:
         if env:
             json_schema_extra = {ENV_VAR_KEY: env}
 
-        return pydantic.Field(**extra, json_schema_extra=json_schema_extra)  # type: ignore[pydantic-field]
+        return pydantic.Field(**extra, json_schema_extra=json_schema_extra)  # type: ignore
 
     return pydantic.Field(**extra, env=env)  # type: ignore
 
