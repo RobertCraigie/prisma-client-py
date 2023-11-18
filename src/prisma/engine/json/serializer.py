@@ -246,10 +246,11 @@ def serialize_datetime(dt: datetime) -> str:
 def serialize_json(obj: fields.Json) -> Serializable:
     """Serialize a Json wrapper to JSON.
 
-    Note: this serializer doesn't actually do anything - this is because
-    the `Json` wrapper is now redundant!
+    We must tag the data as `Json` so that the query engine knows
+    which section of the query is just raw JSON, otherwise it may
+    mis-interpret it.
     """
-    return obj.data
+    return {'$type': 'Json', 'value': dumps(obj.data)}
 
 
 @serializer.register(fields.Base64)
