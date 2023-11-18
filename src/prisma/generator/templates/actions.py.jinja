@@ -4,10 +4,12 @@
 # -- template actions.py.jinja --
 from typing import TypeVar
 import warnings
+import functools as _functools
 
-from . import types, errors, bases, _parsers as p
+from . import types, errors, bases, _parsers
 from ._types import NotGiven, NotGivenOr, NOT_GIVEN
 from ._helpers import is_mapping
+from ._compat import model_parse
 
 if TYPE_CHECKING:
     from .client import Client
@@ -47,11 +49,13 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
     __slots__ = (
         '_client',
         '_model',
+        '_model_parser',
     )
 
     def __init__(self, client: 'Client', model: Type[{{ ModelType }}]) -> None:
         self._client = client
         self._model = model
+        self._model_parser = _functools.partial(model_parse, self._model)
 
     {% if active_provider != 'mongodb' %}
     {{ maybe_async_def }}query_raw(
@@ -181,7 +185,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     {{ maybe_async_def }}create_many(
@@ -293,7 +297,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,)
         )
 
@@ -341,7 +345,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     {{ maybe_async_def }}find_unique_or_raise(
@@ -388,7 +392,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     {{ maybe_async_def }}find_many(
@@ -460,7 +464,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             },
             data_path=[],
             model=self._model,
-            parser=p.as_list(self._model.parse_obj),
+            parser=_parsers.as_list(self._model_parser),
         )
 
     {{ maybe_async_def }}find_first(
@@ -525,7 +529,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             },
             data_path=[],
             model=self._model,
-            parser=p.allow_none(self._model.parse_obj),
+            parser=_parsers.allow_none(self._model_parser),
         )
 
     {{ maybe_async_def }}find_first_or_raise(
@@ -590,7 +594,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     {{ maybe_async_def }}update(
@@ -643,7 +647,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
             ignore_exceptions=(errors.RecordNotFoundError,),
         )
 
@@ -728,7 +732,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             },
             data_path=[],
             model=self._model,
-            parser=self._model.parse_obj,
+            parser=self._model_parser,
         )
 
     {{ maybe_async_def }}update_many(

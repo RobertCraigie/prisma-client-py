@@ -1,18 +1,50 @@
 import asyncio
+from datetime import timedelta
 from typing import Optional
 
 import pytest
 
 import prisma
 from prisma import Prisma
-from prisma.models import User
+from prisma.models import User, Profile
 from ..utils import CURRENT_DATABASE
+
+
+@pytest.mark.asyncio
+async def test_model_query(client: Prisma) -> None:
+    """Basic usage within model queries"""
+    async with client.tx(timeout=timedelta(milliseconds=1000)) as tx:
+        user = await User.prisma(tx).create({'name': 'Robert'})
+        assert user.name == 'Robert'
+
+        # ensure not commited outside transaction
+        assert await client.user.count() == 0
+
+        await Profile.prisma(tx).create(
+            {
+                'description': 'Hello, there!',
+                'country': 'Scotland',
+                'user': {
+                    'connect': {
+                        'id': user.id,
+                    },
+                },
+            },
+        )
+
+    found = await client.user.find_unique(
+        where={'id': user.id}, include={'profile': True}
+    )
+    assert found is not None
+    assert found.name == 'Robert'
+    assert found.profile is not None
+    assert found.profile.description == 'Hello, there!'
 
 
 @pytest.mark.asyncio
 async def test_context_manager(client: Prisma) -> None:
     """Basic usage within a context manager"""
-    async with client.tx(timeout=10 * 100) as transaction:
+    async with client.tx(timeout=timedelta(milliseconds=1000)) as transaction:
         user = await transaction.user.create({'name': 'Robert'})
         assert user.name == 'Robert'
 
@@ -60,7 +92,7 @@ async def test_context_manager_auto_rollback(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_batch_within_transaction(client: Prisma) -> None:
     """Query batching can be used within transactions"""
-    async with client.tx(timeout=10000) as transaction:
+    async with client.tx(timeout=timedelta(milliseconds=10000)) as transaction:
         async with transaction.batch_() as batcher:
             batcher.user.create({'name': 'Tegan'})
             batcher.user.create({'name': 'Robert'})
@@ -77,7 +109,9 @@ async def test_timeout(client: Prisma) -> None:
     # this outer block is necessary becuse to the context manager it appears that no error
     # ocurred so it will attempt to commit the transaction, triggering the expired error again
     with pytest.raises(prisma.errors.TransactionExpiredError):
-        async with client.tx(timeout=50) as transaction:
+        async with client.tx(
+            timeout=timedelta(milliseconds=50)
+        ) as transaction:
             await asyncio.sleep(0.05)
 
             with pytest.raises(prisma.errors.TransactionExpiredError) as exc:
@@ -92,7 +126,7 @@ async def test_timeout(client: Prisma) -> None:
 )
 async def test_concurrent_transactions(client: Prisma) -> None:
     """Two separate transactions can be used independently of each other at the same time"""
-    timeout = 15000
+    timeout = timedelta(milliseconds=15000)
     async with client.tx(timeout=timeout) as tx1, client.tx(
         timeout=timeout
     ) as tx2:

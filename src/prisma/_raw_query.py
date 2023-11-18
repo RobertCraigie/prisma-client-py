@@ -8,6 +8,7 @@ from typing import (
 )
 
 from ._types import BaseModelT
+from ._compat import model_parse
 
 
 # From: https://github.com/prisma/prisma/blob/main/packages/client/src/runtime/utils/deserializeRawResults.ts
@@ -117,7 +118,7 @@ def _deserialize_prisma_object(
         )
 
     if model is not None:
-        return model.parse_obj(new_obj)
+        return model_parse(model, new_obj)
 
     return new_obj
 

@@ -121,3 +121,13 @@ You can pass the following options to configure how timeouts are applied to your
 `max_wait` - The maximum amount of time Prisma will wait to acquire a transaction from the database. This defaults to `2 seconds`.
 
 `timeout` - The maximum amount of time the transaction can run before being cancelled and rolled back. This defaults to `5 seconds`.
+
+
+```py
+from datetime import timedelta
+
+prisma.tx(
+    max_wait=timedelta(seconds=2),
+    timeout=timedelta(seconds=10),
+)
+```

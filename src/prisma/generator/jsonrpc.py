@@ -10,6 +10,7 @@ from typing_extensions import TypedDict, Literal
 from pydantic import Field
 
 from .models import BaseModel
+from .._compat import model_json
 
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -29,13 +30,13 @@ class Request(BaseModel):
     method: str
 
     # request payload
-    params: Optional[Dict[str, Any]]
+    params: Optional[Dict[str, Any]] = None
 
 
 class SuccessResponse(BaseModel):
     id: int
     jsonrpc: str = '2.0'
-    result: Optional[Dict[str, Any]]
+    result: Optional[Dict[str, Any]] = None
 
 
 class ErrorData(TypedDict):
@@ -108,6 +109,6 @@ def parse(line: str) -> Request:
 
 
 def reply(response: Response) -> None:
-    dumped = response.json() + '\n'
+    dumped = model_json(response) + '\n'
     print(dumped, file=sys.stderr, flush=True)
     log.debug('Replied with %s', dumped)

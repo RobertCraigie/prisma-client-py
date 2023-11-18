@@ -16,12 +16,19 @@ def raw() -> None:
     Json({'foo': {'bar': {'baz': 1}}})
 
     # case: no other arguments
-    Json('bar', 'foo')  # E: Expected 1 positional argument
-    Json('foo', item=1)  # E: No parameter named "item"
+    # TODO: these error messages are weird...
+    Json(
+        'bar',  # E: Argument of type "Literal['bar']" cannot be assigned to parameter "object" of type "ReadableBuffer" in function "__new__"
+        'foo',
+    )
+    Json(  # E: No overloads for "__new__" match the provided arguments
+        'foo',
+        item=1,
+    )
 
     # case: invalid recursive type
     Json(
-        {  # E: Argument of type "dict[str, dict[str, dict[str, Type[Json]]]]" cannot be assigned to parameter "data" of type "Serializable" in function "__init__"
+        {  # E: Argument of type "dict[str, dict[str, dict[str, type[Json]]]]" cannot be assigned to parameter "data" of type "Serializable" in function "__init__"
             'foo': {
                 'bar': {
                     'baz': Json,
@@ -54,7 +61,7 @@ def keys() -> None:
 
     # case: invalid recursive type
     Json.keys(
-        item={  # E: Argument of type "dict[str, dict[str, dict[str, Type[Json]]]]" cannot be assigned to parameter "item" of type "Serializable" in function "keys"
+        item={  # E: Argument of type "dict[str, dict[str, dict[str, type[Json]]]]" cannot be assigned to parameter "item" of type "Serializable" in function "keys"
             'foo': {
                 'bar': {
                     'baz': Json,

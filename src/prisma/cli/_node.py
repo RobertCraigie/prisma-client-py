@@ -11,13 +11,11 @@ from abc import ABC, abstractmethod
 from typing import IO, Union, Any, Mapping, cast
 from typing_extensions import Literal
 
-from pydantic.typing import get_args
-
 from .. import config
 from .._proxy import LazyProxy
 from ..binaries import platform
 from ..errors import PrismaError
-from .._compat import nodejs
+from .._compat import nodejs, get_args
 
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -172,18 +170,25 @@ class NodeBinaryStrategy(Strategy):
             )
         else:
             log.debug('Installing nodeenv to %s', cache_dir)
-            subprocess.run(
-                [
-                    sys.executable,
-                    '-m',
-                    'nodeenv',
-                    str(cache_dir),
-                    *config.nodeenv_extra_args,
-                ],
-                check=True,
-                stdout=sys.stdout,
-                stderr=sys.stderr,
-            )
+            try:
+                subprocess.run(
+                    [
+                        sys.executable,
+                        '-m',
+                        'nodeenv',
+                        str(cache_dir),
+                        *config.nodeenv_extra_args,
+                    ],
+                    check=True,
+                    stdout=sys.stdout,
+                    stderr=sys.stderr,
+                )
+            except Exception as exc:
+                print(
+                    'nodeenv installation failed; You may want to try installing `nodejs-bin` as it is more reliable.',
+                    file=sys.stderr,
+                )
+                raise exc
 
         if not cache_dir.exists():
             raise RuntimeError(

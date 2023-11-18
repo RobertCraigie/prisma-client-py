@@ -3,7 +3,7 @@
 -r dev.txt
 -r deps/pyright.txt
 -r deps/blue.txt
+-r deps/mypy.txt
 -r ../../databases/requirements.txt
 interrogate==1.5.0
-mypy==1.0.1
 slotscheck==0.16.5

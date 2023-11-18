@@ -1,2 +1,2 @@
 -r test.txt
-pytest-mypy-plugins==1.10.1
+pytest-mypy-plugins==3.0.0

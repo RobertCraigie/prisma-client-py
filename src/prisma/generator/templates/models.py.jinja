@@ -7,10 +7,11 @@ import inspect
 import warnings
 from collections import OrderedDict
 
-from pydantic import BaseConfig, BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 from . import types, enums, errors, fields, bases
 from ._types import FuncType
+from ._compat import model_rebuild, field_validator
 from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
 
@@ -31,7 +32,7 @@ class {{ model.name }}(bases.Base{{ model.name }}):
             {%- if field.is_required and not field.relation_name -%}
                 {{ ' ' }}{{ field.python_type }}
             {% else -%}
-                {{ ' ' }}Optional[{{ field.python_type }}]
+                {{ ' ' }}Optional[{{ field.python_type }}] = None
             {% endif %}
     {% if not field.documentation is none %}
     """{{ format_documentation(field.documentation) }}"""
@@ -57,7 +58,7 @@ class {{ model.name }}(bases.Base{{ model.name }}):
     {% endif %}
 
     {% if model.required_array_fields|list|length > 0 %}
-    @validator({{ model.required_array_fields | map(attribute="name") | map('quote') | join(", ") }}, pre=True, allow_reuse=True)
+    @field_validator({{ model.required_array_fields | map(attribute="name") | map('quote') | join(", ") }}, pre=True, allow_reuse=True)
     @classmethod
     def _transform_required_list_fields(cls, value: object) -> object:
         # When using raw queries, some databases will return `None` for an array field that has not been set yet.
@@ -221,5 +222,5 @@ from . import models, actions
 
 # required to support relationships between models
 {% for model in dmmf.datamodel.models %}
-{{ model.name }}.update_forward_refs()
+model_rebuild({{ model.name }})
 {% endfor %}

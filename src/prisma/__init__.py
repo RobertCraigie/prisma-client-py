@@ -4,7 +4,7 @@ __title__ = 'prisma'
 __author__ = 'RobertCraigie'
 __license__ = 'APACHE'
 __copyright__ = 'Copyright 2020-2023 RobertCraigie'
-__version__ = '0.9.1'
+__version__ = '0.11.0'
 
 from typing import TYPE_CHECKING
 
@@ -16,6 +16,11 @@ from ._types import (
     PrismaMethod as PrismaMethod,
     NotGiven as NotGiven,
     NOT_GIVEN as NOT_GIVEN,
+)
+from ._metrics import (
+    Metric as Metric,
+    Metrics as Metrics,
+    MetricHistogram as MetricHistogram,
 )
 
 

@@ -4,12 +4,14 @@
 # -- template engine/query.py.jinja --
 
 import os
+import json
 import time
 import atexit
 import signal
 import asyncio
 import logging
 import subprocess
+from datetime import timedelta
 from pathlib import Path
 
 from . import utils, errors
@@ -18,8 +20,9 @@ from .. import config
 from ..utils import DEBUG
 from ..binaries import platform
 from ..utils import time_since, _env_bool
-from ..types import DatasourceOverride
+from ..types import DatasourceOverride, MetricsFormat
 from ..builder import dumps
+from .._constants import DEFAULT_CONNECT_TIMEOUT
 from ._types import TransactionId
 
 
@@ -44,17 +47,22 @@ class QueryEngine(HTTPEngine):
         # ensure the query engine process is terminated when we are
         atexit.register(self.stop)
 
-    def close(self, *, timeout: Optional[float] = None) -> None:
+    def close(self, *, timeout: Optional[timedelta] = None) -> None:
         log.debug('Disconnecting query engine...')
+
+        if timeout is not None:
+            total_seconds = timeout.total_seconds()
+        else:
+            total_seconds = None
 
         if self.process is not None:
             if platform.name() == 'windows':
                 self.process.kill()
-                self.process.wait(timeout=timeout)
+                self.process.wait(timeout=total_seconds)
             else:
                 self.process.send_signal(signal.SIGINT)
                 try:
-                    self.process.wait(timeout=timeout)
+                    self.process.wait(timeout=total_seconds)
                 except subprocess.TimeoutExpired:
                     self.process.send_signal(signal.SIGKILL)
 
@@ -65,7 +73,7 @@ class QueryEngine(HTTPEngine):
         {% endif %}
         log.debug('Disconnected query engine')
 
-    async def aclose(self, *, timeout: Optional[float] = None) -> None:
+    async def aclose(self, *, timeout: Optional[timedelta] = None) -> None:
         self.close(timeout=timeout)
         {{ maybe_await }}self._close_session()
 
@@ -81,7 +89,7 @@ class QueryEngine(HTTPEngine):
 
     {{ maybe_async_def }}connect(
         self,
-        timeout: int = 10,
+        timeout: timedelta = DEFAULT_CONNECT_TIMEOUT,
         datasources: Optional[List[DatasourceOverride]] = None,
     ) -> None:
         log.debug('Connecting to query engine')
@@ -102,7 +110,7 @@ class QueryEngine(HTTPEngine):
     {{ maybe_async_def }}spawn(
         self,
         file: Path,
-        timeout: int = 10,
+        timeout: timedelta = DEFAULT_CONNECT_TIMEOUT,
         datasources: Optional[List[DatasourceOverride]] = None,
     ) -> None:
         port = utils.get_open_port()
@@ -129,7 +137,13 @@ class QueryEngine(HTTPEngine):
         if self._log_queries:
             env.update(LOG_QUERIES='y')
 
-        args: List[str] = [str(file.absolute()), '-p', str(port), '--enable-raw-queries']
+        args: List[str] = [
+            str(file.absolute()),
+            '-p',
+            str(port),
+            '--enable-metrics',
+            '--enable-raw-queries',
+        ]
         if _env_bool('__PRISMA_PY_PLAYGROUND'):
             env.update(RUST_LOG='info')
             args.append('--enable-playground')
@@ -154,14 +168,18 @@ class QueryEngine(HTTPEngine):
         )
 
         last_exc = None
-        for _ in range(int(timeout / 0.1)):
+        for _ in range(int(timeout.total_seconds() / 0.1)):
             try:
                 data = {{ maybe_await }}self.request('GET', '/status')
             except Exception as exc:
+                # TODO(someday): only retry on ConnectionError
+                if isinstance(exc, AttributeError):
+                    raise
+
                 last_exc = exc
                 log.debug(
                     'Could not connect to query engine due to %s; retrying...',
-                    type(exc).__name__,
+                    exc,
                 )
                 {{ sleep(0.1) }}
                 continue
@@ -210,6 +228,42 @@ class QueryEngine(HTTPEngine):
     {{ maybe_async_def }}rollback_transaction(self, tx_id: TransactionId) -> None:
         {{ maybe_await }}self.request(
             'POST', f'/transaction/{tx_id}/rollback'
+        )
+
+    @overload
+    {{ maybe_async_def }}metrics(
+        self,
+        *,
+        format: Literal['json'],
+        global_labels: dict[str, str] | None,
+    ) -> dict[str, Any]:
+        ...
+
+    @overload
+    {{ maybe_async_def }}metrics(
+        self,
+        *,
+        format: Literal['prometheus'],
+        global_labels: dict[str, str] | None,
+    ) -> str:
+        ...
+
+    {{ maybe_async_def }}metrics(
+        self,
+        *,
+        format: MetricsFormat,
+        global_labels: dict[str, str] | None,
+    ) -> str | dict[str, Any]:
+        if global_labels is not None:
+            content = json.dumps(global_labels)
+        else:
+            content = None
+
+        return {{ maybe_await }}self.request(  # type: ignore[no-any-return]
+            'GET',
+            f'/metrics?format={format}',
+            content=content,
+            parse_response=format == 'json',
         )
 
 # black does not respect the fmt: off comment without this

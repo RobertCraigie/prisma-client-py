@@ -45,10 +45,11 @@ import inspect
 import warnings
 from collections import OrderedDict
 
-from pydantic import BaseConfig, BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 from . import types, enums, errors, fields, bases
 from ._types import FuncType
+from ._compat import model_rebuild, field_validator
 from .builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
 
@@ -63,12 +64,12 @@ class Post(bases.BasePost):
     id: _int
     created_at: datetime.datetime
     title: _str
-    content: Optional[_str]
+    content: Optional[_str] = None
     published: _bool
     """Has the post been made public yet?
     """
 
-    author: Optional['models.User']
+    author: Optional['models.User'] = None
     """Relation to the User model
     Second line comment with ' and "
     """
@@ -207,16 +208,16 @@ class User(bases.BaseUser):
     id: _int
     email: _str
     int: _int
-    optional_int: Optional[_int]
+    optional_int: Optional[_int] = None
     float: _float
-    optional_float: Optional[_float]
+    optional_float: Optional[_float] = None
     string: _str
-    optional_string: Optional[_str]
+    optional_string: Optional[_str] = None
     enum: 'enums.ABeautifulEnum'
-    optional_enum: Optional['enums.ABeautifulEnum']
+    optional_enum: Optional['enums.ABeautifulEnum'] = None
     boolean: _bool
-    optional_boolean: Optional[_bool]
-    posts: Optional[List['models.Post']]
+    optional_boolean: Optional[_bool] = None
+    posts: Optional[List['models.Post']] = None
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -345,17 +346,17 @@ class M(bases.BaseM):
     """Represents a M record"""
 
     id: _int
-    n: Optional[List['models.N']]
+    n: Optional[List['models.N']] = None
     int: _int
-    optional_int: Optional[_int]
+    optional_int: Optional[_int] = None
     float: _float
-    optional_float: Optional[_float]
+    optional_float: Optional[_float] = None
     string: _str
-    optional_string: Optional[_str]
+    optional_string: Optional[_str] = None
     enum: 'enums.ABeautifulEnum'
-    optional_enum: Optional['enums.ABeautifulEnum']
+    optional_enum: Optional['enums.ABeautifulEnum'] = None
     boolean: _bool
-    optional_boolean: Optional[_bool]
+    optional_boolean: Optional[_bool] = None
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -484,19 +485,19 @@ class N(bases.BaseN):
     """Represents a N record"""
 
     id: _int
-    m: Optional[List['models.M']]
+    m: Optional[List['models.M']] = None
     int: _int
-    optional_int: Optional[_int]
+    optional_int: Optional[_int] = None
     float: _float
-    optional_float: Optional[_float]
+    optional_float: Optional[_float] = None
     string: _str
-    optional_string: Optional[_str]
+    optional_string: Optional[_str] = None
     json_: 'fields.Json'
-    optional_json: Optional['fields.Json']
+    optional_json: Optional['fields.Json'] = None
     enum: 'enums.ABeautifulEnum'
-    optional_enum: Optional['enums.ABeautifulEnum']
+    optional_enum: Optional['enums.ABeautifulEnum'] = None
     boolean: _bool
-    optional_boolean: Optional[_bool]
+    optional_boolean: Optional[_bool] = None
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -625,17 +626,17 @@ class OneOptional(bases.BaseOneOptional):
     """Represents a OneOptional record"""
 
     id: _int
-    many: Optional[List['models.ManyRequired']]
+    many: Optional[List['models.ManyRequired']] = None
     int: _int
-    optional_int: Optional[_int]
+    optional_int: Optional[_int] = None
     float: _float
-    optional_float: Optional[_float]
+    optional_float: Optional[_float] = None
     string: _str
-    optional_string: Optional[_str]
+    optional_string: Optional[_str] = None
     enum: 'enums.ABeautifulEnum'
-    optional_enum: Optional['enums.ABeautifulEnum']
+    optional_enum: Optional['enums.ABeautifulEnum'] = None
     boolean: _bool
-    optional_boolean: Optional[_bool]
+    optional_boolean: Optional[_bool] = None
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -764,18 +765,18 @@ class ManyRequired(bases.BaseManyRequired):
     """Represents a ManyRequired record"""
 
     id: _int
-    one: Optional['models.OneOptional']
-    one_optional_id: Optional[_int]
+    one: Optional['models.OneOptional'] = None
+    one_optional_id: Optional[_int] = None
     int: _int
-    optional_int: Optional[_int]
+    optional_int: Optional[_int] = None
     float: _float
-    optional_float: Optional[_float]
+    optional_float: Optional[_float] = None
     string: _str
-    optional_string: Optional[_str]
+    optional_string: Optional[_str] = None
     enum: 'enums.ABeautifulEnum'
-    optional_enum: Optional['enums.ABeautifulEnum']
+    optional_enum: Optional['enums.ABeautifulEnum'] = None
     boolean: _bool
-    optional_boolean: Optional[_bool]
+    optional_boolean: Optional[_bool] = None
 
     # take *args and **kwargs so that other metaclasses can define arguments
     def __init_subclass__(
@@ -929,7 +930,7 @@ class Lists(bases.BaseLists):
                 stacklevel=3,
             )
 
-    @validator('strings', 'bytes', 'dates', 'bools', 'ints', 'floats', 'bigints', 'json_objects', 'decimals', pre=True, allow_reuse=True)
+    @field_validator('strings', 'bytes', 'dates', 'bools', 'ints', 'floats', 'bigints', 'json_objects', 'decimals', pre=True, allow_reuse=True)
     @classmethod
     def _transform_required_list_fields(cls, value: object) -> object:
         # When using raw queries, some databases will return `None` for an array field that has not been set yet.
@@ -1030,7 +1031,7 @@ class A(bases.BaseA):
     """Represents a A record"""
 
     email: _str
-    name: Optional[_str]
+    name: Optional[_str] = None
     int: _int
     sInt: _int
     inc_int: _int
@@ -2552,17 +2553,17 @@ _E_fields: Dict['types.EKeys', PartialModelField] = OrderedDict(
 from . import models, actions
 
 # required to support relationships between models
-Post.update_forward_refs()
-User.update_forward_refs()
-M.update_forward_refs()
-N.update_forward_refs()
-OneOptional.update_forward_refs()
-ManyRequired.update_forward_refs()
-Lists.update_forward_refs()
-A.update_forward_refs()
-B.update_forward_refs()
-C.update_forward_refs()
-D.update_forward_refs()
-E.update_forward_refs()
+model_rebuild(Post)
+model_rebuild(User)
+model_rebuild(M)
+model_rebuild(N)
+model_rebuild(OneOptional)
+model_rebuild(ManyRequired)
+model_rebuild(Lists)
+model_rebuild(A)
+model_rebuild(B)
+model_rebuild(C)
+model_rebuild(D)
+model_rebuild(E)
 
 '''

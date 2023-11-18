@@ -2,6 +2,12 @@ from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
+from prisma._compat import (
+    PYDANTIC_V2,
+    model_parse,
+    model_parse_json,
+    model_json,
+)
 from prisma.generator.models import Module, Config
 
 
@@ -10,8 +16,11 @@ def test_module_serialization() -> None:
     path = Path(__file__).parent.parent.joinpath(
         'scripts/partial_type_generator.py'
     )
-    module = Module.parse_obj({'spec': str(path)})
-    assert Module.parse_raw(module.json()).spec.name == module.spec.name
+    module = model_parse(Module, {'spec': str(path)})
+    assert (
+        model_parse_json(Module, model_json(module)).spec.name
+        == module.spec.name
+    )
 
 
 def test_recursive_type_depth() -> None:
@@ -27,7 +36,12 @@ def test_recursive_type_depth() -> None:
             recursive_type_depth='a'  # pyright: ignore[reportGeneralTypeIssues]
         )
 
-    assert exc.match('value is not a valid integer')
+    if PYDANTIC_V2:
+        assert exc.match(
+            'Input should be a valid integer, unable to parse string as an integer'
+        )
+    else:
+        assert exc.match('value is not a valid integer')
 
     for value in [-1, 2, 3, 10, 99]:
         config = Config(recursive_type_depth=value)

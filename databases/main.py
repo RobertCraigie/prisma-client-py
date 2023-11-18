@@ -29,7 +29,7 @@ from pipelines.utils import (
     get_pkg_location,
     maybe_install_nodejs_bin,
 )
-from prisma._compat import cached_property
+from prisma._compat import cached_property, model_json, model_copy
 
 from .utils import DatabaseConfig
 from ._types import SupportedDatabase
@@ -62,7 +62,9 @@ cli = typer.Typer(
 @cli.command()
 def test(
     *,
-    databases: list[str] = SUPPORTED_DATABASES,
+    databases: list[str] = cast(
+        'list[str]', SUPPORTED_DATABASES
+    ),  # pyright: ignore[reportCallInDefaultInitializer]
     exclude_databases: list[
         str
     ] = [],  # pyright: ignore[reportCallInDefaultInitializer]
@@ -71,11 +73,15 @@ def test(
     lint: bool = True,
     test: bool = True,
     coverage: bool = False,
+    pydantic_v2: bool = True,
     for_async: bool = typer.Option(
         default=True, is_flag=False
     ),  # pyright: ignore[reportCallInDefaultInitializer]
 ) -> None:
     """Run unit tests and Pyright"""
+    if not pydantic_v2:
+        lint = False
+
     session = session_ctx.get()
 
     exclude = set(validate_databases(exclude_databases))
@@ -86,7 +92,7 @@ def test(
     ]
 
     with session.chdir(DATABASES_DIR):
-        _setup_test_env(session, inplace=inplace)
+        _setup_test_env(session, pydantic_v2=pydantic_v2, inplace=inplace)
 
         for database in validated_databases:
             print(title(CONFIG_MAPPING[database].name))
@@ -118,10 +124,13 @@ def serve(database: str, *, version: Optional[str] = None) -> None:
 @cli.command(name='test-inverse')
 def test_inverse(
     *,
-    databases: list[str] = SUPPORTED_DATABASES,
+    databases: list[str] = cast(
+        'list[str]', SUPPORTED_DATABASES
+    ),  # pyright: ignore[reportCallInDefaultInitializer]
     coverage: bool = False,
     inplace: bool = False,
     pytest_args: Optional[str] = None,
+    pydantic_v2: bool = True,
     for_async: bool = typer.Option(
         default=True, is_flag=False
     ),  # pyright: ignore[reportCallInDefaultInitializer]
@@ -132,12 +141,12 @@ def test_inverse(
     - Our unit tests & linters fail
     """
     session = session_ctx.get()
-    databases = validate_databases(databases)
+    validated_databases = validate_databases(databases)
 
     with session.chdir(DATABASES_DIR):
-        _setup_test_env(session, inplace=inplace)
+        _setup_test_env(session, pydantic_v2=pydantic_v2, inplace=inplace)
 
-        for database in databases:
+        for database in validated_databases:
             config = CONFIG_MAPPING[database]
             print(title(config.name))
 
@@ -154,7 +163,7 @@ def test_inverse(
             for feature in config.unsupported_features:
                 print(title(f'Testing {feature} feature'))
 
-                new_config = config.copy(deep=True)
+                new_config = model_copy(config, deep=True)
                 new_config.unsupported_features.remove(feature)
 
                 runner = Runner(
@@ -187,7 +196,14 @@ def test_inverse(
             )
 
 
-def _setup_test_env(session: nox.Session, *, inplace: bool) -> None:
+def _setup_test_env(
+    session: nox.Session, *, pydantic_v2: bool, inplace: bool
+) -> None:
+    if pydantic_v2:
+        session.install('-r', '../pipelines/requirements/deps/pydantic.txt')
+    else:
+        session.install('pydantic<2')
+
     session.install('-r', 'requirements.txt')
     maybe_install_nodejs_bin(session)
 
@@ -272,7 +288,7 @@ class Runner:
 
     def setup(self) -> None:
         # TODO: split up more
-        print('database config: ' + self.config.json(indent=2))
+        print('database config: ' + model_json(self.config, indent=2))
         print('for async: ', self.for_async)
 
         exclude_files = self.exclude_files
@@ -346,7 +362,7 @@ class Runner:
             env={
                 'PRISMA_DATABASE': self.database,
                 # TODO: this should be accessible in the core client
-                'DATABASE_CONFIG': self.config.json(),
+                'DATABASE_CONFIG': model_json(self.config),
             },
         )
 
@@ -433,7 +449,7 @@ def validate_database(database: str) -> SupportedDatabase:
     if database not in SUPPORTED_DATABASES:  # pragma: no cover
         raise ValueError(f'Unknown database: {database}')
 
-    return cast(SupportedDatabase, database)
+    return database
 
 
 def tests_reldir(*, for_async: bool) -> str:

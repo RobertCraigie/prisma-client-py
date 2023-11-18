@@ -1,12 +1,18 @@
 import pytest
-from pydantic import ValidationError
 from syrupy.assertion import SnapshotAssertion
 
 from prisma import validate, types
+from prisma._compat import PYDANTIC_V2
 
 
 class Foo:
     pass
+
+
+if PYDANTIC_V2:
+    from pydantic.v1 import ValidationError
+else:
+    from pydantic import ValidationError  # type: ignore[assignment]
 
 
 def test_valid() -> None:
