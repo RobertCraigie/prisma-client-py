@@ -870,7 +870,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
 
         def parser(value: Any) -> int | types.{{ model.name }}CountAggregateOutput:
             if is_mapping(select):
-                return value['_count']
+                return cast(types.{{ model.name }}CountAggregateOutput, value['_count'])
             return int(value['_count']['_all'])
 
         return {{ maybe_await }}self._client._execute_json_proto(

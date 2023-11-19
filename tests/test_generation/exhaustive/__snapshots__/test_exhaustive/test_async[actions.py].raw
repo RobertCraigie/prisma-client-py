@@ -907,7 +907,7 @@ class PostActions(Generic[_PrismaModelT]):
 
         def parser(value: Any) -> int | types.PostCountAggregateOutput:
             if is_mapping(select):
-                return value['_count']
+                return cast(types.PostCountAggregateOutput, value['_count'])
             return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
@@ -1954,7 +1954,7 @@ class UserActions(Generic[_PrismaModelT]):
 
         def parser(value: Any) -> int | types.UserCountAggregateOutput:
             if is_mapping(select):
-                return value['_count']
+                return cast(types.UserCountAggregateOutput, value['_count'])
             return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
@@ -2996,7 +2996,7 @@ class MActions(Generic[_PrismaModelT]):
 
         def parser(value: Any) -> int | types.MCountAggregateOutput:
             if is_mapping(select):
-                return value['_count']
+                return cast(types.MCountAggregateOutput, value['_count'])
             return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
@@ -4043,7 +4043,7 @@ class NActions(Generic[_PrismaModelT]):
 
         def parser(value: Any) -> int | types.NCountAggregateOutput:
             if is_mapping(select):
-                return value['_count']
+                return cast(types.NCountAggregateOutput, value['_count'])
             return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
@@ -5085,7 +5085,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
 
         def parser(value: Any) -> int | types.OneOptionalCountAggregateOutput:
             if is_mapping(select):
-                return value['_count']
+                return cast(types.OneOptionalCountAggregateOutput, value['_count'])
             return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
@@ -6127,7 +6127,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
 
         def parser(value: Any) -> int | types.ManyRequiredCountAggregateOutput:
             if is_mapping(select):
-                return value['_count']
+                return cast(types.ManyRequiredCountAggregateOutput, value['_count'])
             return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
@@ -7144,7 +7144,7 @@ class ListsActions(Generic[_PrismaModelT]):
 
         def parser(value: Any) -> int | types.ListsCountAggregateOutput:
             if is_mapping(select):
-                return value['_count']
+                return cast(types.ListsCountAggregateOutput, value['_count'])
             return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
@@ -8179,7 +8179,7 @@ class AActions(Generic[_PrismaModelT]):
 
         def parser(value: Any) -> int | types.ACountAggregateOutput:
             if is_mapping(select):
-                return value['_count']
+                return cast(types.ACountAggregateOutput, value['_count'])
             return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
@@ -9216,7 +9216,7 @@ class BActions(Generic[_PrismaModelT]):
 
         def parser(value: Any) -> int | types.BCountAggregateOutput:
             if is_mapping(select):
-                return value['_count']
+                return cast(types.BCountAggregateOutput, value['_count'])
             return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
@@ -10256,7 +10256,7 @@ class CActions(Generic[_PrismaModelT]):
 
         def parser(value: Any) -> int | types.CCountAggregateOutput:
             if is_mapping(select):
-                return value['_count']
+                return cast(types.CCountAggregateOutput, value['_count'])
             return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
@@ -11298,7 +11298,7 @@ class DActions(Generic[_PrismaModelT]):
 
         def parser(value: Any) -> int | types.DCountAggregateOutput:
             if is_mapping(select):
-                return value['_count']
+                return cast(types.DCountAggregateOutput, value['_count'])
             return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
@@ -12330,7 +12330,7 @@ class EActions(Generic[_PrismaModelT]):
 
         def parser(value: Any) -> int | types.ECountAggregateOutput:
             if is_mapping(select):
-                return value['_count']
+                return cast(types.ECountAggregateOutput, value['_count'])
             return int(value['_count']['_all'])
 
         return await self._client._execute_json_proto(
