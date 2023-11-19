@@ -12,7 +12,7 @@ __all__ = ('HTTP', 'Response', 'client')
 class HTTP(AbstractHTTP[httpx.Client, httpx.Response]):
     session: httpx.Client
 
-    __slots__ = ()
+    __slots__ = ('session',)
 
     def download(self, url: str, dest: str) -> None:
         with self.session.stream('GET', url, timeout=None) as resp:
