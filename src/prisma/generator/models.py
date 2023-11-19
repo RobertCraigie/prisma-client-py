@@ -480,6 +480,9 @@ class Generator(GenericModel, Generic[ConfigT]):
 
         return targets
 
+    def has_preview_feature(self, feature: str) -> bool:
+        return feature in self.preview_features
+
 
 class ValueFromEnvVar(BaseModel):
     value: str

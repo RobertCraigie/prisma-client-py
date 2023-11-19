@@ -43,7 +43,7 @@ LiteralString = str
 from abc import ABC, abstractmethod
 from datetime import timedelta
 from ._types import TransactionId
-from ..types import DatasourceOverride
+from ..types import DatasourceOverride, MetricsFormat
 from .._compat import get_running_loop
 from .._constants import DEFAULT_CONNECT_TIMEOUT
 
@@ -114,5 +114,34 @@ class AbstractEngine(ABC):
     @abstractmethod
     def rollback_transaction(self, tx_id: TransactionId) -> None:
         """Rollback an interactive transaction, the given transaction will no longer be usable"""
+        ...
+
+    @overload
+    @abstractmethod
+    def metrics(
+        self,
+        *,
+        format: Literal['json'],
+        global_labels: dict[str, str] | None,
+    ) -> dict[str, Any]:
+        ...
+
+    @overload
+    @abstractmethod
+    def metrics(
+        self,
+        *,
+        format: Literal['prometheus'],
+        global_labels: dict[str, str] | None,
+    ) -> str:
+        ...
+
+    @abstractmethod
+    def metrics(
+        self,
+        *,
+        format: MetricsFormat,
+        global_labels: dict[str, str] | None,
+    ) -> str | dict[str, Any]:
         ...
 '''
