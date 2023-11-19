@@ -51,6 +51,7 @@ def mypy(session: nox.Session) -> None:
         '-m',
         'mypy',
         '--show-traceback',
+        '--enable-incomplete-feature=Unpack',
         '--namespace-packages',
         '--package',
         'prisma',
