@@ -13,8 +13,6 @@ __all__ = ('HTTP', 'Response', 'client')
 class HTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
     session: httpx.AsyncClient
 
-    __slots__ = ('session',)
-
     async def download(self, url: str, dest: str) -> None:
         async with self.session.stream('GET', url, timeout=None) as resp:
             resp.raise_for_status()
