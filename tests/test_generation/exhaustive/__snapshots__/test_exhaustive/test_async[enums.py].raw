@@ -39,10 +39,10 @@ from typing_extensions import TypedDict, Literal
 
 LiteralString = str
 # -- template enums.py.jinja --
-from enum import Enum
+from ._compat import StrEnum
 
 
-class ABeautifulEnum(str, Enum):
+class ABeautifulEnum(StrEnum):
     A = 'A'
     B = 'B'
     C = 'C'
