@@ -2,7 +2,9 @@
 include = [
     "src",
     "tests",
-    "scripts"
+    "scripts",
+    "databases",
+    "pipelines",
 ]
 ignore = [
     # these are type checked separately

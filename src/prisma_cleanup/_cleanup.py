@@ -29,7 +29,7 @@ def cleanup(pkg_name: str = 'prisma') -> None:
     # the packages source location. We should provide an easy to understand error
     # for this case even if it is incredibly unlikey (if not impossible)
     # to happen in our use case
-    loader = pkgutil.get_loader(pkg_name)
+    loader = pkgutil.get_loader(pkg_name)  # pyright: ignore[reportDeprecated]
     if loader is None:
         raise RuntimeError(f'Could not resolve package: {pkg_name}')
 
