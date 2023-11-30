@@ -195,7 +195,7 @@ jobs:
           nox -s mypy
 
   databases:
-    name: ${{ matrix.name }} ${{ matrix.version }}
+    name: ${{ matrix.name }} ${{ matrix.version }} / ${{ matrix.python }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -205,39 +205,51 @@ jobs:
             version: '8.0'
             env: MYSQL_URL
             url: mysql://prisma:prisma@localhost:3307/prisma
+            python: '3.10'
 
           - name: SQLite
             version: ''
             env: SQLITE_URL
             url: file:dev.db
+            python: '3.10'
 
           - name: PostgreSQL
             version: '10'
             env: POSTGRESQL_URL
             url: postgresql://postgres:prisma@localhost:5432/postgres
+            python: '3.10'
 
           - name: PostgreSQL
             version: '15'
             env: POSTGRESQL_URL
             url: postgresql://postgres:prisma@localhost:5438/postgres
+            python: '3.10'
+
+          - name: PostgreSQL
+            version: '15'
+            env: POSTGRESQL_URL
+            url: postgresql://postgres:prisma@localhost:5438/postgres
+            python: '3.11'
 
           - name: CockroachDB
             version: '22'
             env: COCKROACHDB_URL
             url: postgresql://prisma@localhost:26257/postgres
+            python: '3.10'
 
           - name: MariaDB
             version: '10.0'
             env: MARIADB_URL
             url: mysql://root:prisma@localhost:3308/prisma?connect_timeout=20&socket_timeout=60
+            python: '3.10'
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
+      - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: ${{ matrix.python }}
 
       - name: Install dependencies
         run: |
