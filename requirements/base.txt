@@ -7,3 +7,4 @@ typing-extensions>=4.0.1
 tomlkit
 nodeenv
 cached-property; python_version < '3.8'
+StrEnum; python_version < '3.11'
