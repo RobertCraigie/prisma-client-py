@@ -337,6 +337,17 @@ else:
         nodejs = None
 
 
+if TYPE_CHECKING:
+    from enum import Enum
+
+    StrEnum = Enum
+else:
+    try:
+        from enum import StrEnum
+    except ImportError:
+        from strenum import StrEnum
+
+
 def removeprefix(string: str, prefix: str) -> str:
     if string.startswith(prefix):
         return string[len(prefix) :]
