@@ -229,6 +229,12 @@ jobs:
             version: '15'
             env: POSTGRESQL_URL
             url: postgresql://postgres:prisma@localhost:5438/postgres
+            python: '3.9'
+
+          - name: PostgreSQL
+            version: '15'
+            env: POSTGRESQL_URL
+            url: postgresql://postgres:prisma@localhost:5438/postgres
             python: '3.11'
 
           - name: CockroachDB
