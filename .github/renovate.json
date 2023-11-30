@@ -3,6 +3,10 @@
   "extends": [
     "config:base"
   ],
+  "ignoreDeps": [
+    "coverage",
+    "pytest-mock"
+  ],
   "ignorePaths": ["databases/docker-compose.yml", "examples/**"],
   "pip_requirements": {
     "fileMatch": ["requirements/.*\\.txt", "deps/.*\\.txt"]
