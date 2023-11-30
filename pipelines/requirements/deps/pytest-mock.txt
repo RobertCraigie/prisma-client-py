@@ -1,1 +1,1 @@
-pytest-mock==3.12.0
+pytest-mock==3.11.1
