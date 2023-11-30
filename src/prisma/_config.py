@@ -1,3 +1,5 @@
+# (we don't need to care about this check in this file)
+# pyright: reportIncompatibleVariableOverride=false
 from __future__ import annotations
 
 from pathlib import Path

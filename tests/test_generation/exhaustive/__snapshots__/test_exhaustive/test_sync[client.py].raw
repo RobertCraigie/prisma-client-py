@@ -321,9 +321,9 @@ class Prisma:
         if self.__engine is not None:
             engine = self.__engine
             self.__engine = None
-            if isinstance(timeout, float):
+            if isinstance(timeout, (int, float)):
                 message = (
-                    'Passing a float as `timeout` argument is deprecated '
+                    'Passing a number as `timeout` argument is deprecated '
                     'and will be removed in the next major release. '
                     'Use a `datetime.timedelta` instead.'
                 )

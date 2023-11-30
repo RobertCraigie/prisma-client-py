@@ -39,7 +39,7 @@ class _PrismaModel(BaseModel):
 
 {% for model in dmmf.datamodel.models %}
 class Base{{ model.name }}(_PrismaModel):
-    __prisma_model__: ClassVar[Literal['{{ model.name }}']] = '{{ model.name }}'
+    __prisma_model__: ClassVar[Literal['{{ model.name }}']] = '{{ model.name }}'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
     def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.{{ model.name }}Actions[_PrismaModelT]':

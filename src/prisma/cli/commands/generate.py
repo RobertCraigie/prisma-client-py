@@ -49,7 +49,8 @@ def cli(
     schema: Optional[Path], watch: bool, generator: Tuple[str], **kwargs: Any
 ) -> None:
     """Generate prisma artifacts with modified config options"""
-    if pydantic.VERSION.split('.') < ['1', '8']:
+    # context https://github.com/microsoft/pyright/issues/6099
+    if pydantic.VERSION.split('.') < ['1', '8']:  # pyright: ignore
         warning(
             'Unsupported version of pydantic installed, this command may not work as intended\n'
             'Please update pydantic to 1.8 or greater.\n'

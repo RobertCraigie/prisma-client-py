@@ -51,8 +51,6 @@ class MissingNodejsBinError(PrismaError):
 
 
 class Strategy(ABC):
-    resolver: Literal['nodejs-bin', 'global', 'nodeenv']
-
     # TODO: support more options
     def run(
         self,
