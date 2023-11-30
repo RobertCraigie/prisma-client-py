@@ -19,11 +19,11 @@ async def test_enum_create(client: Prisma) -> None:
     # ensure consistent format
     assert str(record.enum) == 'ADMIN'
     assert f'{record.enum}' == 'ADMIN'
-    assert "%s" % record.enum == 'ADMIN'
+    assert '%s' % record.enum == 'ADMIN'
 
     assert str(Role.ADMIN) == 'ADMIN'
     assert f'{Role.ADMIN}' == 'ADMIN'
-    assert "%s" % Role.ADMIN == 'ADMIN'
+    assert '%s' % Role.ADMIN == 'ADMIN'
 
 
 # TODO: all other actions
