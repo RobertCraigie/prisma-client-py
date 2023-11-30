@@ -2,7 +2,7 @@ from pathlib import Path
 
 import nox
 
-from pipelines.utils import get_pkg_location, setup_env
+from pipelines.utils import setup_env
 from pipelines.utils.prisma import generate
 
 
@@ -10,17 +10,14 @@ from pipelines.utils.prisma import generate
 def lint(session: nox.Session) -> None:
     setup_env(session)
     session.install('-r', 'pipelines/requirements/lint.txt')
-    session.install('.')
+
+    # TODO: pyright doesn't resolve types correctly if we don't install inplace
+    session.install('-e', '.')
 
     generate(session)
 
     session.run('blue', '--check', '.')
-    session.run(
-        'pyright',
-        get_pkg_location(session, 'prisma'),
-        'tests',
-        'databases',
-    )
+    session.run('pyright')
     session.run('pyright', '--ignoreexternal', '--verifytypes', 'prisma')
     session.run(
         'interrogate',

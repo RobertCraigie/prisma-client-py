@@ -1,7 +1,7 @@
 -r deps/syrupy.txt
 
 nox==2022.11.21
-wheel==0.40.0
+wheel==0.42.0
 blue==0.9.1
 pre-commit==2.21.0
 twine==4.0.2

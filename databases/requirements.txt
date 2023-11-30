@@ -1,8 +1,8 @@
 # TODO: merge with other dev requirements
-coverage==7.2.7
-dirty-equals==0.6.0
+dirty-equals==0.7.1.post0
 distro
 
+-r ../pipelines/requirements/deps/coverage.txt
 -r ../pipelines/requirements/deps/pyright.txt
 -r ../pipelines/requirements/deps/pytest.txt
 -r ../pipelines/requirements/deps/pytest-mock.txt

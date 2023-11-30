@@ -76,7 +76,7 @@ class _PrismaModel(BaseModel):
 
 
 class BasePost(_PrismaModel):
-    __prisma_model__: ClassVar[Literal['Post']] = 'Post'
+    __prisma_model__: ClassVar[Literal['Post']] = 'Post'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
     def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.PostActions[_PrismaModelT]':
@@ -86,7 +86,7 @@ class BasePost(_PrismaModel):
 
 
 class BaseUser(_PrismaModel):
-    __prisma_model__: ClassVar[Literal['User']] = 'User'
+    __prisma_model__: ClassVar[Literal['User']] = 'User'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
     def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.UserActions[_PrismaModelT]':
@@ -96,7 +96,7 @@ class BaseUser(_PrismaModel):
 
 
 class BaseM(_PrismaModel):
-    __prisma_model__: ClassVar[Literal['M']] = 'M'
+    __prisma_model__: ClassVar[Literal['M']] = 'M'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
     def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.MActions[_PrismaModelT]':
@@ -106,7 +106,7 @@ class BaseM(_PrismaModel):
 
 
 class BaseN(_PrismaModel):
-    __prisma_model__: ClassVar[Literal['N']] = 'N'
+    __prisma_model__: ClassVar[Literal['N']] = 'N'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
     def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.NActions[_PrismaModelT]':
@@ -116,7 +116,7 @@ class BaseN(_PrismaModel):
 
 
 class BaseOneOptional(_PrismaModel):
-    __prisma_model__: ClassVar[Literal['OneOptional']] = 'OneOptional'
+    __prisma_model__: ClassVar[Literal['OneOptional']] = 'OneOptional'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
     def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.OneOptionalActions[_PrismaModelT]':
@@ -126,7 +126,7 @@ class BaseOneOptional(_PrismaModel):
 
 
 class BaseManyRequired(_PrismaModel):
-    __prisma_model__: ClassVar[Literal['ManyRequired']] = 'ManyRequired'
+    __prisma_model__: ClassVar[Literal['ManyRequired']] = 'ManyRequired'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
     def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.ManyRequiredActions[_PrismaModelT]':
@@ -136,7 +136,7 @@ class BaseManyRequired(_PrismaModel):
 
 
 class BaseLists(_PrismaModel):
-    __prisma_model__: ClassVar[Literal['Lists']] = 'Lists'
+    __prisma_model__: ClassVar[Literal['Lists']] = 'Lists'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
     def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.ListsActions[_PrismaModelT]':
@@ -146,7 +146,7 @@ class BaseLists(_PrismaModel):
 
 
 class BaseA(_PrismaModel):
-    __prisma_model__: ClassVar[Literal['A']] = 'A'
+    __prisma_model__: ClassVar[Literal['A']] = 'A'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
     def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.AActions[_PrismaModelT]':
@@ -156,7 +156,7 @@ class BaseA(_PrismaModel):
 
 
 class BaseB(_PrismaModel):
-    __prisma_model__: ClassVar[Literal['B']] = 'B'
+    __prisma_model__: ClassVar[Literal['B']] = 'B'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
     def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.BActions[_PrismaModelT]':
@@ -166,7 +166,7 @@ class BaseB(_PrismaModel):
 
 
 class BaseC(_PrismaModel):
-    __prisma_model__: ClassVar[Literal['C']] = 'C'
+    __prisma_model__: ClassVar[Literal['C']] = 'C'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
     def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.CActions[_PrismaModelT]':
@@ -176,7 +176,7 @@ class BaseC(_PrismaModel):
 
 
 class BaseD(_PrismaModel):
-    __prisma_model__: ClassVar[Literal['D']] = 'D'
+    __prisma_model__: ClassVar[Literal['D']] = 'D'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
     def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.DActions[_PrismaModelT]':
@@ -186,7 +186,7 @@ class BaseD(_PrismaModel):
 
 
 class BaseE(_PrismaModel):
-    __prisma_model__: ClassVar[Literal['E']] = 'E'
+    __prisma_model__: ClassVar[Literal['E']] = 'E'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
     def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.EActions[_PrismaModelT]':

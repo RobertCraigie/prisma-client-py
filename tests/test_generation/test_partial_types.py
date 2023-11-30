@@ -316,9 +316,13 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
 
         User.create_partial('UserOnlyName', include={'name'})
 
-        Post.create_partial('PostWithoutDesc', exclude=['desc'])
+        Post.create_partial(
+            'PostWithoutDesc', exclude=['desc']  # pyright: ignore
+        )  # pyright: ignore
         Post.create_partial('PostOptionalPublished', optional=['published'])
-        Post.create_partial('PostRequiredDesc', required=['desc'])
+        Post.create_partial(
+            'PostRequiredDesc', required=['desc']  # pyright: ignore
+        )  # pyright: ignore
         Post.create_partial('PostOnlyId', include={'id'})
         Post.create_partial(
             'PostOptionalInclude', include={'title'}, optional={'title'}
@@ -339,7 +343,9 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             exclude={'bytes', 'bytes_list'},  # type: ignore
             relations={'posts': 'PostOnlyId'},
         )
-        User.create_partial('UserBytesList', include={'bytes', 'bytes_list'})  # type: ignore
+        User.create_partial(
+            'UserBytesList', include={'bytes', 'bytes_list'}  # type: ignore
+        )  # pyright: ignore
 
     testdir.make_from_function(generator, name=location)
     testdir.generate(SCHEMA, options)
@@ -381,9 +387,9 @@ def test_partial_types_same_required_and_optional(testdir: Testdir) -> None:
 
         Post.create_partial(
             'PostPartial',
-            required={'desc', 'published', 'title'},
+            required={'desc', 'published', 'title'},  # pyright: ignore
             optional={
-                'desc',
+                'desc',  # pyright: ignore
                 'published',
             },
         )
@@ -406,9 +412,9 @@ def test_partial_types_excluded_required(testdir: Testdir) -> None:
 
         Post.create_partial(
             'PostPartial',
-            exclude={'desc'},
+            exclude={'desc'},  # pyright: ignore
             required={
-                'desc',
+                'desc',  # pyright: ignore
             },
         )
 
@@ -472,7 +478,7 @@ def test_partial_type_already_created(testdir: Testdir) -> None:
         for _ in range(2):
             Post.create_partial(
                 'PostPartial',
-                exclude={'desc'},
+                exclude={'desc'},  # pyright: ignore
             )
 
     testdir.make_from_function(generator, name='prisma/partial_types.py')
