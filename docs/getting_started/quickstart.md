@@ -1,14 +1,14 @@
 # Quickstart
 
 !!! note
-    Adapted from the Prisma Client Go [documentation](https://github.com/prisma/prisma-client-go/blob/master/docs/quickstart.md)
+    Adapted from the [Prisma Client Go documentation](https://goprisma.org/docs/getting-started/quickstart)
 
 In this page, you will learn how to send queries to an SQLite database using Prisma Client Python and
 run static type checks.
 
 ## Setup
 
-1) Setup a Python project with a [virtual environment](https://docs.python.org/3/library/venv.html)
+1) Set up a Python project with a [virtual environment](https://docs.python.org/3/library/venv.html)
 
 ```sh
 mkdir demo && cd demo
@@ -57,15 +57,15 @@ prisma db push
 If you make changes to your prisma schema, you need to run this command again.
 
 !!! note
-    The `db push` command also generates the client for you, if you want to generate the client without
-    modifying your database, use the following command
+    The `db push` command also generates the client for you. If you want to generate the client without
+    modifying your database, use the following command:
 
     ```sh
     prisma generate
     ```
 
 !!! hint
-    you can add the `--watch` flag to re-generate the client whenever you modify the `schema.prisma` file
+    You can add the `--watch` flag to re-generate the client whenever you modify the `schema.prisma` file:
     ```sh
     prisma generate --watch
     ```
@@ -108,7 +108,7 @@ found post: {
 ### Setup
 
 !!! note
-    I am the maintainer of the [pyright PyPI package](https://pypi.org/project/pyright/) which is a wrapper over the [official version](https://github.com/microsoft/pyright) which is maintained by microsoft
+    I am the maintainer of the [pyright PyPI package](https://pypi.org/project/pyright/) which is a wrapper over the [official version](https://github.com/microsoft/pyright) which is maintained by Microsoft.
 
 1) Install pyright
 
@@ -140,7 +140,7 @@ Completed in 1.322sec
 
 ### Error reporting
 
-For example, add the following line to the end of the main() function
+For example, add the following line to the end of the `main()` function
 
 ```py
 async def main() -> None:
