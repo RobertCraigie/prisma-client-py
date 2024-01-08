@@ -10,41 +10,31 @@ def test_update_many(client: Prisma) -> None:
         client.post.create({'title': 'Test post 1', 'published': False}),
         client.post.create({'title': 'Test post 2', 'published': False}),
     ]
-    count = client.post.update_many(
-        where={'published': False}, data={'published': True}
-    )
+    count = client.post.update_many(where={'published': False}, data={'published': True})
     assert count == 2
 
     post = client.post.find_unique(where={'id': posts[0].id})
     assert post is not None
     assert post.published is True
 
-    count = client.post.update_many(
-        where={'published': False}, data={'published': True}
-    )
+    count = client.post.update_many(where={'published': False}, data={'published': True})
     assert count == 0
 
-    count = client.post.update_many(
-        where={'id': posts[0].id}, data={'published': False}
-    )
+    count = client.post.update_many(where={'id': posts[0].id}, data={'published': False})
     assert count == 1
 
     post = client.post.find_unique(where={'id': posts[0].id})
     assert post is not None
     assert post.published is False
 
-    count = client.post.update_many(
-        where={'published': False}, data={'views': 10}
-    )
+    count = client.post.update_many(where={'published': False}, data={'views': 10})
     assert count == 1
 
     post = client.post.find_unique(where={'id': posts[0].id})
     assert post is not None
     assert post.views == 10
 
-    count = client.post.update_many(
-        where={'id': posts[0].id}, data={'id': 'sdhajd'}
-    )
+    count = client.post.update_many(where={'id': posts[0].id}, data={'id': 'sdhajd'})
     assert count == 1
 
     post = client.post.find_unique(where={'id': 'sdhajd'})

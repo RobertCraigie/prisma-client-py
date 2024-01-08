@@ -45,11 +45,7 @@ def run(
 
     if args and args[0] in {'--help', '-h'}:
         click.echo(click.style('Python Commands\n', bold=True))
-        click.echo(
-            '  '
-            + 'For Prisma Client Python commands run '
-            + click.style('prisma py --help', bold=True)
-        )
+        click.echo('  ' + 'For Prisma Client Python commands run ' + click.style('prisma py --help', bold=True))
 
     return process.returncode
 

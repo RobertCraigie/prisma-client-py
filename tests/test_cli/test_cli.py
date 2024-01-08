@@ -35,10 +35,7 @@ def test_custom_help(runner: Runner, args: List[str]) -> None:
     """Correct program name is output for help message"""
     result = runner.invoke(args)
     assert 'Usage: prisma py' in result.output
-    assert (
-        'Custom command line arguments specifically for Prisma Client Python.'
-        in result.output
-    )
+    assert 'Custom command line arguments specifically for Prisma Client Python.' in result.output
 
 
 @pytest.mark.parametrize('args', [['-h'], ['--help']])
@@ -46,10 +43,7 @@ def test_outputs_custom_commands_info(runner: Runner, args: List[str]) -> None:
     """Running `prisma --help` also outputs a message for our help command"""
     result = runner.invoke(args)
     assert 'Python Commands' in result.output
-    assert (
-        'For Prisma Client Python commands run prisma py --help'
-        in result.output
-    )
+    assert 'For Prisma Client Python commands run prisma py --help' in result.output
 
 
 def test_int_enum_choice() -> None:

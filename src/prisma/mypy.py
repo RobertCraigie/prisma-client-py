@@ -41,9 +41,7 @@ from mypy.plugin import Plugin, MethodContext, CheckerPluginInterface
 
 
 # match any direct children of an actions class
-CLIENT_ACTION_CHILD = re.compile(
-    r'prisma\.actions\.(.*)Actions\.(?P<name>(((?!\.).)*$))'
-)
+CLIENT_ACTION_CHILD = re.compile(r'prisma\.actions\.(.*)Actions\.(?P<name>(((?!\.).)*$))')
 ACTIONS = [
     'create',
     'find_unique',
@@ -83,9 +81,7 @@ class PrismaPluginConfig:
         plugin_config = ConfigParser()
         plugin_config.read(options.config_file)
         for key in self.__slots__:
-            setting = plugin_config.getboolean(
-                CONFIGFILE_KEY, key, fallback=True
-            )
+            setting = plugin_config.getboolean(CONFIGFILE_KEY, key, fallback=True)
             setattr(self, key, setting)
 
 
@@ -96,9 +92,7 @@ class PrismaPlugin(Plugin):
         self.config = PrismaPluginConfig(options)
         super().__init__(options)
 
-    def get_method_hook(
-        self, fullname: str
-    ) -> Optional[Callable[[MethodContext], Type]]:
+    def get_method_hook(self, fullname: str) -> Optional[Callable[[MethodContext], Type]]:
         match = CLIENT_ACTION_CHILD.match(fullname)
         if not match:
             return None
@@ -179,23 +173,17 @@ class PrismaPlugin(Plugin):
 
         if is_optional:
             actual_ret = cast(UnionType, actual_ret)
-            modified_ret = self.copy_modified_optional_type(
-                actual_ret, new_model
-            )
+            modified_ret = self.copy_modified_optional_type(actual_ret, new_model)
         else:
             modified_ret = new_model  # type: ignore
 
         if is_coroutine:
             arg1, arg2, _ = ctx.default_return_type.args
-            return ctx.default_return_type.copy_modified(
-                args=[arg1, arg2, modified_ret]
-            )
+            return ctx.default_return_type.copy_modified(args=[arg1, arg2, modified_ret])
 
         return modified_ret
 
-    def modify_model_from_include(
-        self, model: Instance, data: Dict[Any, Any]
-    ) -> Instance:
+    def modify_model_from_include(self, model: Instance, data: Dict[Any, Any]) -> Instance:
         names = model.type.names.copy()
         for key, node in model.type.names.items():
             names[key] = self.maybe_modify_included_field(key, node, data)
@@ -242,16 +230,12 @@ class PrismaPlugin(Plugin):
             and isinstance(new.node.type, Instance)
             and isinstance(new.node.type.args[0], Instance)
         ):
-            model = self.modify_model_from_include(
-                new.node.type.args[0], value['include']
-            )
+            model = self.modify_model_from_include(new.node.type.args[0], value['include'])
             new.node.type.args = (model, *new.node.type.args)
 
         return new
 
-    def get_arg_named(
-        self, name: str, ctx: MethodContext
-    ) -> Optional[Expression]:
+    def get_arg_named(self, name: str, ctx: MethodContext) -> Optional[Expression]:
         """Return the expression for an argument."""
         # keyword arguments
         for i, names in enumerate(ctx.arg_names):
@@ -278,9 +262,7 @@ class PrismaPlugin(Plugin):
         return bool(typ.type.fullname == 'typing.Coroutine')
 
     def is_list_type(self, typ: Type) -> bool:
-        return (
-            isinstance(typ, Instance) and typ.type.fullname == 'builtins.list'
-        )
+        return isinstance(typ, Instance) and typ.type.fullname == 'builtins.list'
 
     def is_dict_call_type(self, expr: NameExpr) -> bool:
         # statically wise, TypedDicts do not inherit from dict
@@ -293,9 +275,7 @@ class PrismaPlugin(Plugin):
             and expr.node.bases[0].type.fullname.lower().endswith('dict')
         )
 
-    def copy_modified_instance(
-        self, instance: Instance, names: SymbolTable
-    ) -> Instance:
+    def copy_modified_instance(self, instance: Instance, names: SymbolTable) -> Instance:
         new = copy.copy(instance)
         new.type = TypeInfo(names, new.type.defn, new.type.module_name)
         new.type.mro = [new.type, *instance.type.mro]
@@ -303,26 +283,20 @@ class PrismaPlugin(Plugin):
         new.type.metaclass_type = instance.type.metaclass_type
         return new
 
-    def copy_modified_optional_type(
-        self, original: UnionType, typ: Type
-    ) -> UnionType:
+    def copy_modified_optional_type(self, original: UnionType, typ: Type) -> UnionType:
         new = copy.copy(original)
         new.items = new.items.copy()
         new.items[0] = typ
         return new
 
-    def parse_expression_to_dict(
-        self, expression: Expression
-    ) -> Dict[Any, Any]:
+    def parse_expression_to_dict(self, expression: Expression) -> Dict[Any, Any]:
         if isinstance(expression, DictExpr):
             return self._dictexpr_to_dict(expression)
 
         if isinstance(expression, CallExpr):
             return self._callexpr_to_dict(expression)
 
-        raise TypeError(
-            f'Cannot parse expression of type={type(expression).__name__} to a dictionary.'
-        )
+        raise TypeError(f'Cannot parse expression of type={type(expression).__name__} to a dictionary.')
 
     def _dictexpr_to_dict(self, expr: DictExpr) -> Dict[Any, Any]:
         parsed = {}
@@ -337,18 +311,12 @@ class PrismaPlugin(Plugin):
 
         return parsed
 
-    def _callexpr_to_dict(
-        self, expr: CallExpr, strict: bool = True
-    ) -> Dict[str, Any]:
+    def _callexpr_to_dict(self, expr: CallExpr, strict: bool = True) -> Dict[str, Any]:
         if not isinstance(expr.callee, NameExpr):
-            raise TypeError(
-                f'Expected CallExpr.callee to be a NameExpr but got {type(expr.callee)} instead.'
-            )
+            raise TypeError(f'Expected CallExpr.callee to be a NameExpr but got {type(expr.callee)} instead.')
 
         if strict and not self.is_dict_call_type(expr.callee):
-            raise TypeError(
-                f'Expected builtins.dict to be called but got {expr.callee.fullname} instead'
-            )
+            raise TypeError(f'Expected builtins.dict to be called but got {expr.callee.fullname} instead')
 
         parsed = {}
         for arg_name, value_expr in zip(expr.arg_names, expr.args):
@@ -399,20 +367,14 @@ class UnparsedExpression(Exception):
 
     def __init__(self, context: Union[Expression, Node]) -> None:
         self.context = context
-        super().__init__(
-            f'Tried to access a ({type(context).__name__}) expression that was not parsed.'
-        )
+        super().__init__(f'Tried to access a ({type(context).__name__}) expression that was not parsed.')
 
 
 ERROR_PARSING = ErrorCode('prisma-parsing', 'Unable to parse', 'Prisma')
 
 
-def error_unable_to_parse(
-    api: CheckerPluginInterface, context: Context, detail: str
-) -> None:
-    link = (
-        'https://github.com/RobertCraigie/prisma-client-py/issues/new/choose'
-    )
+def error_unable_to_parse(api: CheckerPluginInterface, context: Context, detail: str) -> None:
+    link = 'https://github.com/RobertCraigie/prisma-client-py/issues/new/choose'
     full_message = f'The prisma mypy plugin was unable to parse: {detail}\n'
     full_message += f'Please consider reporting this bug at {link} so we can try to fix it!'
     api.fail(full_message, context, code=ERROR_PARSING)

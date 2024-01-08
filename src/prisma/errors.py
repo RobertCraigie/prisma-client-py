@@ -25,9 +25,7 @@ class PrismaError(Exception):
 
 class ClientNotRegisteredError(PrismaError):
     def __init__(self) -> None:
-        super().__init__(
-            'No client instance registered; You must call prisma.register(prisma.Prisma())'
-        )
+        super().__init__('No client instance registered; You must call prisma.register(prisma.Prisma())')
 
 
 class ClientAlreadyRegisteredError(PrismaError):
@@ -38,8 +36,7 @@ class ClientAlreadyRegisteredError(PrismaError):
 class ClientNotConnectedError(PrismaError):
     def __init__(self) -> None:
         super().__init__(
-            'Client is not connected to the query engine, '
-            'you must call `connect()` before attempting to query data.'
+            'Client is not connected to the query engine, ' 'you must call `connect()` before attempting to query data.'
         )
 
 
@@ -89,9 +86,7 @@ class MissingRequiredValueError(DataError):
 class RawQueryError(DataError):
     def __init__(self, data: Any) -> None:
         try:
-            super().__init__(
-                data, message=data['user_facing_error']['meta']['message']
-            )
+            super().__init__(data, message=data['user_facing_error']['meta']['message'])
         except KeyError:
             super().__init__(data)
 
@@ -153,9 +148,7 @@ class BuilderError(PrismaError):
 
 class InvalidModelError(BuilderError):
     def __init__(self, model: type) -> None:
-        super().__init__(
-            f'Expected the {model} type to have a `__prisma_model__` class variable set'
-        )
+        super().__init__(f'Expected the {model} type to have a `__prisma_model__` class variable set')
 
 
 class UnknownModelError(BuilderError):
@@ -165,9 +158,7 @@ class UnknownModelError(BuilderError):
 
 class UnknownRelationalFieldError(BuilderError):
     def __init__(self, model: str, field: str) -> None:
-        super().__init__(
-            f'Field: "{field}" either does not exist or is not a relational field on the {model} model'
-        )
+        super().__init__(f'Field: "{field}" either does not exist or is not a relational field on the {model} model')
 
 
 class GeneratorError(PrismaError):
@@ -199,7 +190,5 @@ def _pick_union_error(errors: list[Any]) -> Any:
     # Note: uses the same heuristic as the TS client
     return max(
         errors,
-        key=lambda e: (
-            len(e.get('argumentPath', [])) + len(e.get('selectionPath'))
-        ),
+        key=lambda e: (len(e.get('argumentPath', [])) + len(e.get('selectionPath'))),
     )

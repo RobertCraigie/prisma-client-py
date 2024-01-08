@@ -33,8 +33,7 @@ def test_missing_cli_attr(runner: Runner) -> None:
     result = runner.invoke(['missing_cli_attr'])
     assert isinstance(result.exception, AssertionError)
     assert str(result.exception) == (
-        'Expected command module tests.test_cli.commands.missing_cli_attr '
-        'to contain a "cli" attribute'
+        'Expected command module tests.test_cli.commands.missing_cli_attr ' 'to contain a "cli" attribute'
     )
 
 

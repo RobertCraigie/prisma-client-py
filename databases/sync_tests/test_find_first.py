@@ -383,9 +383,7 @@ def test_list_wrapper_query_transformation(client: Prisma) -> None:
     assert found.name == 'Robert house'
 
     client.user.create({'name': '40 robert'})
-    found = client.user.find_first(
-        skip=1, where=query, order={'created_at': 'asc'}
-    )
+    found = client.user.find_first(skip=1, where=query, order={'created_at': 'asc'})
     assert found is not None
     assert found.name == '40 robert'
 

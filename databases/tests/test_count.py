@@ -48,9 +48,7 @@ async def test_select(client: Prisma) -> None:
     """Selecting a field counts non-null values"""
     async with client.batch_() as batcher:
         batcher.post.create({'title': 'Foo', 'published': False})
-        batcher.post.create(
-            {'title': 'Foo 2', 'published': False, 'description': 'A'}
-        )
+        batcher.post.create({'title': 'Foo 2', 'published': False, 'description': 'A'})
 
     count = await client.post.count(
         select={},

@@ -41,9 +41,7 @@ def cleanup(pkg_name: str = 'prisma') -> None:
     # a non Prisma Client Python package
     pkg_path = Path(loader.get_filename())
     if PRISMA_INIT_CONTENTS not in pkg_path.read_text():
-        raise RuntimeError(
-            'The given package does not appear to be a Prisma Client Python package.'
-        )
+        raise RuntimeError('The given package does not appear to be a Prisma Client Python package.')
 
     # as we rely on prisma to cleanup the templates for us
     # we have to make sure that prisma is importable and

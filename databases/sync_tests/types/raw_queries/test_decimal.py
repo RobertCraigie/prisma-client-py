@@ -51,9 +51,7 @@ def test_query_first(
     assert found['id'] == record2.id
     assert found['decimal_'] == 1.24343336464224
 
-    model = client.query_first(
-        queries.select, Decimal('1.24343336464224'), model=Types
-    )
+    model = client.query_first(queries.select, Decimal('1.24343336464224'), model=Types)
     assert model is not None
     assert model.id == record2.id
     assert model.decimal_ == Decimal('1.24343336464224')

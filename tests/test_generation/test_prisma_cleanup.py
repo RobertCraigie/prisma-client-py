@@ -97,10 +97,7 @@ def test_cleanup_non_prisma_package(testdir: Testdir) -> None:
     with pytest.raises(RuntimeError) as exc:
         cleanup('prisma_custom')
 
-    assert (
-        exc.value.args[0]
-        == 'The given package does not appear to be a Prisma Client Python package.'
-    )
+    assert exc.value.args[0] == 'The given package does not appear to be a Prisma Client Python package.'
 
 
 def test_cleanup_package_not_found(testdir: Testdir) -> None:

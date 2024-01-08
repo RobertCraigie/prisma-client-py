@@ -81,9 +81,7 @@ async def test_group_by(snapshot: SnapshotAssertion, client: Prisma) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_docs_example(
-    snapshot: SnapshotAssertion, client: Prisma
-) -> None:
+async def test_docs_example(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Test the example given in the Prisma documentation:
     https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#groupby
     """
@@ -113,14 +111,9 @@ async def test_docs_example(
 @pytest.mark.asyncio
 @pytest.mark.persist_data
 @pytest.mark.parametrize('order', ['asc', 'desc'])
-async def test_order(
-    snapshot: SnapshotAssertion, client: Prisma, order: SortOrder
-) -> None:
+async def test_order(snapshot: SnapshotAssertion, client: Prisma, order: SortOrder) -> None:
     """Test ordering results by a grouped field"""
-    assert (
-        await client.profile.group_by(['country'], order={'country': order})
-        == snapshot
-    )
+    assert await client.profile.group_by(['country'], order={'country': order}) == snapshot
 
 
 @pytest.mark.asyncio
@@ -168,8 +161,7 @@ async def test_order_mismatched_arguments(client: Prisma) -> None:
         )
 
     assert exc.match(
-        r'Every field used for orderBy must be included in the by-arguments of the query\. '
-        r'Missing fields: country'
+        r'Every field used for orderBy must be included in the by-arguments of the query\. ' r'Missing fields: country'
     )
 
 
@@ -199,9 +191,7 @@ async def test_take_missing_order_argument(client: Prisma) -> None:
     with pytest.raises(TypeError) as exc:
         await client.profile.group_by(['country'], take=1)
 
-    assert exc.match(
-        "Missing argument: 'order' which is required when 'take' is present"
-    )
+    assert exc.match("Missing argument: 'order' which is required when 'take' is present")
 
 
 @pytest.mark.asyncio
@@ -230,9 +220,7 @@ async def test_skip_missing_order_argument(client: Prisma) -> None:
     with pytest.raises(TypeError) as exc:
         await client.profile.group_by(['country'], skip=1)
 
-    assert exc.match(
-        "Missing argument: 'order' which is required when 'skip' is present"
-    )
+    assert exc.match("Missing argument: 'order' which is required when 'skip' is present")
 
 
 @pytest.mark.asyncio
@@ -292,9 +280,7 @@ async def test_having_missing_field_in_by(client: Prisma) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_having_aggregation(
-    snapshot: SnapshotAssertion, client: Prisma
-) -> None:
+async def test_having_aggregation(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Having aggregation filters records correctly"""
     assert (
         await client.profile.group_by(
@@ -334,9 +320,7 @@ async def test_having_aggregation(
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_having_aggregation_nested(
-    snapshot: SnapshotAssertion, client: Prisma
-) -> None:
+async def test_having_aggregation_nested(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Having aggregation filters nested within statements correctly filters records"""
     results = await client.profile.group_by(
         by=['country'],

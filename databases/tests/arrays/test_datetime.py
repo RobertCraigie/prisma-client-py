@@ -11,9 +11,7 @@ def _utcnow() -> datetime:
     return now.replace(microsecond=int(now.microsecond / 1000) * 1000)
 
 
-def _assert_datelist_equal(
-    actual: List[datetime], expected: List[datetime]
-) -> None:
+def _assert_datelist_equal(actual: List[datetime], expected: List[datetime]) -> None:
     actual = [dt.replace(tzinfo=None) for dt in actual]
     expected = [dt.replace(tzinfo=None) for dt in expected]
     assert actual == expected

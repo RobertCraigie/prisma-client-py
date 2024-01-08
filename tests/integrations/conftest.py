@@ -22,9 +22,7 @@ ROOTDIR = Path(__file__).parent.parent.parent
 
 
 class IntegrationError(AssertionError):
-    def __init__(
-        self, message: Optional[str] = None, lineno: int = 0
-    ) -> None:  # pragma: no cover
+    def __init__(self, message: Optional[str] = None, lineno: int = 0) -> None:  # pragma: no cover
         self.message = message or ''
         self.lineno = lineno
         super().__init__()
@@ -42,9 +40,7 @@ def is_integration_test_file(path: Path) -> bool:
     return False
 
 
-def pytest_ignore_collect(
-    collection_path: Path, config: Config
-) -> Optional[bool]:
+def pytest_ignore_collect(collection_path: Path, config: Config) -> Optional[bool]:
     """We need to ignore any integration test sub-paths
 
     For example we need to include
@@ -71,15 +67,9 @@ def pytest_ignore_collect(
     return path.parts[-1] != 'test.sh'
 
 
-def pytest_collect_file(
-    file_path: Path, parent: Node
-) -> Optional['IntegrationTestFile']:
+def pytest_collect_file(file_path: Path, parent: Node) -> Optional['IntegrationTestFile']:
     path = resolve_path(file_path)
-    if (
-        path.suffix == '.sh'
-        and is_integration_test_file(path)
-        and sys.platform != 'win32'
-    ):
+    if path.suffix == '.sh' and is_integration_test_file(path) and sys.platform != 'win32':
         return IntegrationTestFile.from_parent(parent, path=path)
 
     return None
@@ -135,9 +125,7 @@ class IntegrationTestItem(pytest.Item):
         )
         print(result.stdout.decode('utf-8'))
         if result.returncode != 0:  # pragma: no cover
-            raise IntegrationError(
-                f'Executing `{self.path}` returned non-zero exit code {result.returncode}'
-            )
+            raise IntegrationError(f'Executing `{self.path}` returned non-zero exit code {result.returncode}')
 
     def repr_failure(
         self,
@@ -163,6 +151,4 @@ class IntegrationTestFile(pytest.File):
 
     def collect(self) -> Iterator[IntegrationTestItem]:
         path = Path(self.fspath)
-        yield IntegrationTestItem.from_parent(
-            parent=self, name=path.parent.name, path=path
-        )
+        yield IntegrationTestItem.from_parent(parent=self, name=path.parent.name, path=path)

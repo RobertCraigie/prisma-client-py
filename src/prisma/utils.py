@@ -123,9 +123,7 @@ def assert_never(value: NoReturn) -> NoReturn:
 
     https://github.com/microsoft/pyright/issues/767
     """
-    assert False, 'Unhandled type: {}'.format(
-        type(value).__name__
-    )  # pragma: no cover
+    assert False, 'Unhandled type: {}'.format(type(value).__name__)  # pragma: no cover
 
 
 def make_optional(value: _T) -> _T | None:

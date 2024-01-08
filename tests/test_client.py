@@ -41,15 +41,11 @@ async def test_create_many_invalid_provider(client: Prisma) -> None:
 
 
 @pytest.mark.asyncio
-async def test_datasource_overwriting(
-    testdir: Testdir, client: Prisma
-) -> None:
+async def test_datasource_overwriting(testdir: Testdir, client: Prisma) -> None:
     """Ensure the client can connect and query to a custom datasource"""
     # we have to do this messing with the schema so that we can run db push on the new database
     schema = Path(__file__).parent / 'data' / 'schema.prisma'
-    testdir.path.joinpath('schema.prisma').write_text(
-        schema.read_text().replace('"file:dev.db"', 'env("_PY_DB")')
-    )
+    testdir.path.joinpath('schema.prisma').write_text(schema.read_text().replace('"file:dev.db"', 'env("_PY_DB")'))
     run(['db', 'push', '--skip-generate'], env={'_PY_DB': 'file:./tmp.db'})
 
     other = Prisma(
@@ -128,9 +124,7 @@ async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
         # pass to real __init__ method to ensure types passed will actually work at runtime
         real__init__(*args, **kwargs)
 
-    getter = patch_method(
-        monkeypatch, httpx.AsyncClient, '__init__', mock___init__
-    )
+    getter = patch_method(monkeypatch, httpx.AsyncClient, '__init__', mock___init__)
 
     def mock_app(args: Mapping[str, object], data: object) -> object:
         ...

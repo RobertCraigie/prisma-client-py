@@ -40,8 +40,7 @@ def main(
         else:
             if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
                 error(
-                    'This command is only intended to be invoked internally. '
-                    'Please run the following instead:',
+                    'This command is only intended to be invoked internally. ' 'Please run the following instead:',
                     exit_=False,
                 )
                 click.echo('prisma <command>')

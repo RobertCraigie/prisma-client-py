@@ -247,9 +247,7 @@ def test_query_first(raw_queries: RawQueries) -> None:
         User.prisma().create({'name': 'Robert'}),
         User.prisma().create({'name': 'Tegan'}),
     ]
-    user = User.prisma().query_first(
-        raw_queries.find_user_by_id_limit_1, users[1].id
-    )
+    user = User.prisma().query_first(raw_queries.find_user_by_id_limit_1, users[1].id)
     assert user is not None
     assert user.name == 'Tegan'
 

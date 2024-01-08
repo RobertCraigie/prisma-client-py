@@ -62,18 +62,11 @@ def run_test(
     do_assert(data)
 
 
-def from_enum(
-    enum: Type[Enum], arg: str
-) -> Generator[Tuple[str, str, None], None, None]:
-    return (
-        (item.value, arg + item.value, None)
-        for item in enum.__members__.values()
-    )
+def from_enum(enum: Type[Enum], arg: str) -> Generator[Tuple[str, str, None], None, None]:
+    return ((item.value, arg + item.value, None) for item in enum.__members__.values())
 
 
-def test_unsupported_pydantic_version(
-    runner: Runner, monkeypatch: MonkeyPatch
-) -> None:
+def test_unsupported_pydantic_version(runner: Runner, monkeypatch: MonkeyPatch) -> None:
     """Using an older version of pydantic outputs warning
 
     We need to use pydantic>=1.8.2 as that added the customise_sources config option to
@@ -97,9 +90,7 @@ def test_bad_interface_option(runner: Runner) -> None:
     assert 'asyncio' in result.output
 
 
-def test_prisma_error_non_zero_exit_code(
-    testdir: Testdir, runner: Runner
-) -> None:
+def test_prisma_error_non_zero_exit_code(testdir: Testdir, runner: Runner) -> None:
     """Exits non-zero when the prisma process exits non-zero"""
     path = testdir.make_schema(schema=testdir.default_schema + 'foo')
     result = runner.invoke(['py', 'generate', f'--schema={path}'])
@@ -111,10 +102,7 @@ def test_schema_not_found(runner: Runner) -> None:
     """Passing non-existent schema raises an error"""
     result = runner.invoke(['py', 'generate', '--schema=foo'])
     assert result.exit_code != 0
-    assert (
-        "Error: Invalid value for '--schema': File 'foo' does not exist."
-        in result.output
-    )
+    assert "Error: Invalid value for '--schema': File 'foo' does not exist." in result.output
 
 
 @pytest.mark.parametrize(
@@ -166,9 +154,7 @@ def test_partials_option(
     """partial type generator option is overrided correctly"""
 
     def do_assert(data: Dict[str, Any]) -> None:
-        partial_type_generator = data['generator']['config'][
-            'partial_type_generator'
-        ]
+        partial_type_generator = data['generator']['config']['partial_type_generator']
         if target is None:
             assert partial_type_generator is None
         else:

@@ -41,9 +41,7 @@ def playground(schema: Optional[str], skip_generate: bool) -> None:
 
         # TODO: this is the result of a badly designed class
         engine = cast(QueryEngine, client._engine)
-        assert (
-            engine.process is not None
-        ), 'Engine process unavailable for some reason'
+        assert engine.process is not None, 'Engine process unavailable for some reason'
         engine.process.wait()
     else:  # pragma: no cover
         error(f'Unsupported engine type: "{engine_class}"')

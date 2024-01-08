@@ -64,13 +64,9 @@ async def test_update(client: Prisma) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('method', ['disconnect', 'delete'])
-async def test_update_with_create_disconnect(
-    client: Prisma, user_id: str, method: str
-) -> None:
+async def test_update_with_create_disconnect(client: Prisma, user_id: str, method: str) -> None:
     """Removing a relational field"""
-    user = await client.user.find_unique(
-        where={'id': user_id}, include={'posts': True}
-    )
+    user = await client.user.find_unique(where={'id': user_id}, include={'posts': True})
     assert user is not None
     assert user.posts is not None
     assert len(user.posts) == 0
@@ -123,9 +119,7 @@ async def test_atomic_update(client: Prisma) -> None:
     assert post.title == 'My Post'
     assert post.views == 0
 
-    updated = await client.post.update(
-        where={'id': post.id}, data={'views': {'increment': 1}}
-    )
+    updated = await client.post.update(where={'id': post.id}, data={'views': {'increment': 1}})
     assert updated is not None
     assert updated.views == 1
 
@@ -133,9 +127,7 @@ async def test_atomic_update(client: Prisma) -> None:
 @pytest.mark.asyncio
 async def test_update_record_not_found(client: Prisma) -> None:
     """Updating a non-existent record returns None"""
-    post = await client.post.update(
-        where={'id': 'wow'}, data={'title': 'Hi from Update!'}
-    )
+    post = await client.post.update(where={'id': 'wow'}, data={'title': 'Hi from Update!'})
     assert post is None
 
 

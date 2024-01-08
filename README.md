@@ -10,8 +10,8 @@
     <a href="https://prisma.io">
         <img src="https://img.shields.io/static/v1?label=prisma&message=5.7.1&color=blue&logo=prisma" alt="Supported Prisma version is 5.7.1">
     </a>
-    <a href="https://github.com/grantjenks/blue">
-        <img src="https://camo.githubusercontent.com/dbdbcf26db37abfa1f2ab7e6c28c8b3a199f2dad98e4ef53a50e9c45c7e4ace8/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636f64652532307374796c652d626c75652d626c75652e737667" alt="Code style: blue">
+    <a href="https://github.com/astral-sh/ruff">
+        <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2FJacobCoffee%2Fbfb02a83c8da3cbf53f7772f2cee02ec%2Fraw%2Facb94daa3aedecda67e2c7d8c5aec9765db0734d%2Fformat-badge.json" alt="Code style: ruff">
     </a>
     <a href="https://robertcraigie.github.io/prisma-client-py/htmlcov/index.html">
         <img src="https://raw.githubusercontent.com/RobertCraigie/prisma-client-py/static/coverage/coverage.svg" alt="Code coverage report">

@@ -12,13 +12,9 @@ def test_filtering(client: Prisma) -> None:
     now = datetime.datetime.now(datetime.timezone.utc)
     with client.batch_() as batcher:
         for i in range(10):
-            batcher.types.create(
-                {'datetime_': now + datetime.timedelta(hours=i)}
-            )
+            batcher.types.create({'datetime_': now + datetime.timedelta(hours=i)})
 
-    total = client.types.count(
-        where={'datetime_': {'gte': now + datetime.timedelta(hours=5)}}
-    )
+    total = client.types.count(where={'datetime_': {'gte': now + datetime.timedelta(hours=5)}})
     assert total == 5
 
     found = client.types.find_first(
@@ -46,12 +42,8 @@ def test_filtering(client: Prisma) -> None:
         },
     )
     assert len(results) == 2
-    assert_similar_time(
-        results[0].datetime_, now + datetime.timedelta(hours=1)
-    )
-    assert_similar_time(
-        results[1].datetime_, now + datetime.timedelta(hours=4)
-    )
+    assert_similar_time(results[0].datetime_, now + datetime.timedelta(hours=1))
+    assert_similar_time(results[1].datetime_, now + datetime.timedelta(hours=4))
 
     found = client.types.find_first(
         where={
@@ -169,13 +161,7 @@ def test_tz_aware(client: Prisma) -> None:
     """Modifying timezone still finds the record"""
     record = client.types.create(data={})
     found = client.types.find_first(
-        where={
-            'datetime_': {
-                'lt': (
-                    record.datetime_ + datetime.timedelta(hours=1)
-                ).astimezone(datetime.timezone.max)
-            }
-        }
+        where={'datetime_': {'lt': (record.datetime_ + datetime.timedelta(hours=1)).astimezone(datetime.timezone.max)}}
     )
     assert found is not None
     assert found.id == record.id

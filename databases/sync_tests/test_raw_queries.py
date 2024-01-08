@@ -73,9 +73,7 @@ def test_query_raw_partial_model(
         model=PostOnlyPublished,
     )
     assert len(results) == 2
-    assert {p.id for p in results} == {
-        p.id for p in posts if p.published is False
-    }
+    assert {p.id for p in results} == {p.id for p in posts if p.published is False}
     assert not hasattr(results[0], 'title')
     assert results[0].published is False
     assert results[1].published is False

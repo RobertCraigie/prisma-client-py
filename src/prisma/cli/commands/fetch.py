@@ -17,6 +17,4 @@ def cli(force: bool) -> None:
         shutil.rmtree(config.binary_cache_dir)
 
     directory = ensure_cached().cache_dir
-    click.echo(
-        f'Downloaded binaries to {click.style(str(directory), fg="green")}'
-    )
+    click.echo(f'Downloaded binaries to {click.style(str(directory), fg="green")}')

@@ -91,9 +91,7 @@ async def test_mixing_models(client: Prisma) -> None:
             }
         )
 
-    user = await client.user.find_first(
-        where={'name': 'Robert'}, include={'profile': True}
-    )
+    user = await client.user.find_first(where={'name': 'Robert'}, include={'profile': True})
     assert user is not None
     assert user.name == 'Robert'
     assert user.profile is not None
@@ -208,9 +206,7 @@ async def test_update_many(client: Prisma) -> None:
     await client.user.create({'name': 'Robert 2'})
 
     async with client.batch_() as batcher:
-        batcher.user.update_many(
-            where={'name': {'startswith': 'Robert'}}, data={'name': 'Robert'}
-        )
+        batcher.user.update_many(where={'name': {'startswith': 'Robert'}}, data={'name': 'Robert'})
 
     users = await client.user.find_many()
     assert len(users) == 2
@@ -275,9 +271,7 @@ async def test_create_many_unsupported(
 ) -> None:
     """Cannot call create_many on databases that do not support it"""
     if 'create_many' not in config.unsupported_features:
-        pytest.skip(
-            'The create_many method is supported by the current behaviour'
-        )
+        pytest.skip('The create_many method is supported by the current behaviour')
 
     with pytest.raises(prisma.errors.UnsupportedDatabaseError) as exc:
         async with client.batch_() as batcher:

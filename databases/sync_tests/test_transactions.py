@@ -31,9 +31,7 @@ def test_model_query(client: Prisma) -> None:
             },
         )
 
-    found = client.user.find_unique(
-        where={'id': user.id}, include={'profile': True}
-    )
+    found = client.user.find_unique(where={'id': user.id}, include={'profile': True})
     assert found is not None
     assert found.name == 'Robert'
     assert found.profile is not None
@@ -61,9 +59,7 @@ def test_context_manager(client: Prisma) -> None:
             },
         )
 
-    found = client.user.find_unique(
-        where={'id': user.id}, include={'profile': True}
-    )
+    found = client.user.find_unique(where={'id': user.id}, include={'profile': True})
     assert found is not None
     assert found.name == 'Robert'
     assert found.profile is not None
@@ -113,9 +109,7 @@ def test_timeout(client: Prisma) -> None:
             raise exc.value
 
 
-@pytest.mark.skipif(
-    CURRENT_DATABASE == 'sqlite', reason='This is currently broken...'
-)
+@pytest.mark.skipif(CURRENT_DATABASE == 'sqlite', reason='This is currently broken...')
 def test_concurrent_transactions(client: Prisma) -> None:
     """Two separate transactions can be used independently of each other at the same time"""
     timeout = timedelta(milliseconds=15000)

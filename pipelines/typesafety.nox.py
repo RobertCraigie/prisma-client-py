@@ -12,12 +12,7 @@ def mypy(session: nox.Session) -> None:
 
     generate(session, schema='typesafety/mypy/schema.prisma')
 
-    session.run(
-        'pytest',
-        '--mypy-ini-file=tests/data/mypy.ini',
-        'typesafety/mypy',
-        *session.posargs
-    )
+    session.run('pytest', '--mypy-ini-file=tests/data/mypy.ini', 'typesafety/mypy', *session.posargs)
 
 
 @nox.session(name='typesafety-pyright')
@@ -28,9 +23,4 @@ def pyright(session: nox.Session) -> None:
 
     generate(session, schema='typesafety/pyright/schema.prisma')
 
-    session.run(
-        'pytest',
-        '--pyright-dir=typesafety/pyright',
-        'typesafety/pyright',
-        *session.posargs
-    )
+    session.run('pytest', '--pyright-dir=typesafety/pyright', 'typesafety/pyright', *session.posargs)

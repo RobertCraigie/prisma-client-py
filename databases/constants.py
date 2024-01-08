@@ -12,9 +12,7 @@ from .utils import DatabaseConfig, DatabaseFeature
 def _fromdir(path: str) -> list[str]:
     """Get the contents of a subdirectory within the `` directory"""
     # TODO: recurse subdirs
-    return [
-        str(f.relative_to(TESTS_DIR)) for f in (TESTS_DIR / path).iterdir()
-    ]
+    return [str(f.relative_to(TESTS_DIR)) for f in (TESTS_DIR / path).iterdir()]
 
 
 # databases
@@ -82,9 +80,7 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         },
     ),
 }
-SUPPORTED_DATABASES = cast(
-    List[SupportedDatabase], list(get_args(SupportedDatabase))
-)
+SUPPORTED_DATABASES = cast(List[SupportedDatabase], list(get_args(SupportedDatabase)))
 
 # paths
 ROOT_DIR = Path(__file__).parent.parent
