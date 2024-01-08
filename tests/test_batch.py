@@ -16,16 +16,10 @@ def test_ensure_batch_and_action_signatures_are_equal(client: Prisma) -> None:
     have found a method that you think is good please make an issue/PR.
     """
     actions = client.user
-    for name, meth in inspect.getmembers(
-        client.batch_().user, inspect.ismethod
-    ):
+    for name, meth in inspect.getmembers(client.batch_().user, inspect.ismethod):
         if name.startswith('_'):
             continue
 
-        actual = inspect.signature(meth).replace(
-            return_annotation=inspect.Signature.empty
-        )
-        expected = inspect.signature(getattr(actions, name)).replace(
-            return_annotation=inspect.Signature.empty
-        )
+        actual = inspect.signature(meth).replace(return_annotation=inspect.Signature.empty)
+        expected = inspect.signature(getattr(actions, name)).replace(return_annotation=inspect.Signature.empty)
         assert actual == expected, f'{name} methods are inconsistent'

@@ -43,9 +43,7 @@ def patch_pydantic() -> None:
 
     create_model = annotated_types.create_model_from_typeddict
 
-    def patched_create_model(
-        typeddict_cls: Any, **kwargs: Any
-    ) -> Type[BaseModel]:
+    def patched_create_model(typeddict_cls: Any, **kwargs: Any) -> Type[BaseModel]:
         kwargs.setdefault('__module__', typeddict_cls.__module__)
         return create_model(typeddict_cls, **kwargs)  # type: ignore[no-any-return]
 
@@ -79,9 +77,7 @@ def validate(type: Type[T], data: Any) -> T:
     patch_pydantic()
 
     if not is_typeddict(type):
-        raise TypeError(
-            f'Only TypedDict types are supported, got: {type} instead.'
-        )
+        raise TypeError(f'Only TypedDict types are supported, got: {type} instead.')
 
     # we cannot use pydantic's builtin type -> model resolver
     # as we need to be able to update forward references
@@ -94,7 +90,8 @@ def validate(type: Type[T], data: Any) -> T:
         # incorrectly inferred type as we have verified that the given type
         # is indeed a TypedDict
         model = create_model_from_typeddict(
-            type, __config__=Config  # pyright: ignore[reportGeneralTypeIssues]
+            type,
+            __config__=Config,  # pyright: ignore[reportGeneralTypeIssues]
         )
         model.update_forward_refs(**vars(_get_module(type)))
         type.__pydantic_model__ = model  # type: ignore

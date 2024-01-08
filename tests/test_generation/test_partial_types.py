@@ -124,9 +124,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
         _T = TypeVar('_T')
         _T2 = TypeVar('_T2')
 
-        def common_entries(
-            dct: Dict[str, _T], other: Dict[str, _T2]
-        ) -> Iterator[Tuple[str, _T, _T2]]:
+        def common_entries(dct: Dict[str, _T], other: Dict[str, _T2]) -> Iterator[Tuple[str, _T, _T2]]:
             for key in dct.keys() & other.keys():
                 yield key, dct[key], other[key]
 
@@ -135,9 +133,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             fields: Dict[str, bool],
             removed: Optional[Set[str]],
         ) -> None:
-            for _, required, info in common_entries(
-                fields, model_fields(model)
-            ):
+            for _, required, info in common_entries(fields, model_fields(model)):
                 assert is_field_required(info) == required
 
             if removed is None:
@@ -317,20 +313,18 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
         User.create_partial('UserOnlyName', include={'name'})
 
         Post.create_partial(
-            'PostWithoutDesc', exclude=['desc']  # pyright: ignore
+            'PostWithoutDesc',
+            exclude=['desc'],  # pyright: ignore
         )  # pyright: ignore
         Post.create_partial('PostOptionalPublished', optional=['published'])
         Post.create_partial(
-            'PostRequiredDesc', required=['desc']  # pyright: ignore
+            'PostRequiredDesc',
+            required=['desc'],  # pyright: ignore
         )  # pyright: ignore
         Post.create_partial('PostOnlyId', include={'id'})
-        Post.create_partial(
-            'PostOptionalInclude', include={'title'}, optional={'title'}
-        )
+        Post.create_partial('PostOptionalInclude', include={'title'}, optional={'title'})
         Post.create_partial('PostRequiredAuthor', required=['author'])
-        Post.create_partial(
-            'PostModifiedAuthor', relations={'author': 'UserOnlyName'}
-        )
+        Post.create_partial('PostModifiedAuthor', relations={'author': 'UserOnlyName'})
         Post.create_partial('PostNoRelations', exclude_relational_fields=True)
         Post.create_partial(
             'PostNoRelationsAndExclude',
@@ -344,7 +338,8 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             relations={'posts': 'PostOnlyId'},
         )
         User.create_partial(
-            'UserBytesList', include={'bytes', 'bytes_list'}  # type: ignore
+            'UserBytesList',
+            include={'bytes', 'bytes_list'},  # type: ignore
         )  # pyright: ignore
 
     testdir.make_from_function(generator, name=location)
@@ -353,9 +348,7 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
     testdir.runpytest().assert_outcomes(passed=11)
 
 
-@pytest.mark.parametrize(
-    'argument', ['exclude', 'include', 'required', 'optional']
-)
+@pytest.mark.parametrize('argument', ['exclude', 'include', 'required', 'optional'])
 def test_partial_types_incorrect_key(
     testdir: Testdir,
     argument: Literal['exclude', 'include', 'required', 'optional'],
@@ -367,16 +360,12 @@ def test_partial_types_incorrect_key(
 
         Post.create_partial('PostWithoutFoo', **{argument: ['foo']})  # type: ignore
 
-    testdir.make_from_function(
-        generator, name='prisma/partial_types.py', argument=argument
-    )
+    testdir.make_from_function(generator, name='prisma/partial_types.py', argument=argument)
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
 
-    assert 'foo is not a valid Post / PostWithoutFoo field' in str(
-        exc.value.output
-    )
+    assert 'foo is not a valid Post / PostWithoutFoo field' in str(exc.value.output)
 
 
 def test_partial_types_same_required_and_optional(testdir: Testdir) -> None:
@@ -399,9 +388,7 @@ def test_partial_types_same_required_and_optional(testdir: Testdir) -> None:
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
 
-    assert 'Cannot make the same field(s) required and optional' in str(
-        exc.value.output
-    )
+    assert 'Cannot make the same field(s) required and optional' in str(exc.value.output)
 
 
 def test_partial_types_excluded_required(testdir: Testdir) -> None:
@@ -423,9 +410,7 @@ def test_partial_types_excluded_required(testdir: Testdir) -> None:
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(SCHEMA)
 
-    assert 'desc is not a valid Post / PostPartial field' in str(
-        exc.value.output
-    )
+    assert 'desc is not a valid Post / PostPartial field' in str(exc.value.output)
 
 
 def test_partial_type_generator_not_found(testdir: Testdir) -> None:
@@ -444,9 +429,7 @@ def test_partial_type_generator_not_found(testdir: Testdir) -> None:
         )
     else:
         assert 'generator -> config -> partial_type_generator' in output
-        assert (
-            'Could not find a python file or module at foo.bar.baz' in output
-        )
+        assert 'Could not find a python file or module at foo.bar.baz' in output
 
 
 def test_partial_type_generator_error_while_running(testdir: Testdir) -> None:
@@ -463,10 +446,7 @@ def test_partial_type_generator_error_while_running(testdir: Testdir) -> None:
     output = str(exc.value.output)
     assert 'prisma/partial_types.py' in output
     assert "No module named \\'foo\\'" in output
-    assert (
-        'An exception ocurred while running the partial type generator'
-        in output
-    )
+    assert 'An exception ocurred while running the partial type generator' in output
 
 
 def test_partial_type_already_created(testdir: Testdir) -> None:
@@ -489,10 +469,7 @@ def test_partial_type_already_created(testdir: Testdir) -> None:
     output = str(exc.value.output)
     assert 'prisma/partial_types.py' in output
     assert 'Partial type "PostPartial" has already been created.' in output
-    assert (
-        'An exception ocurred while running the partial type generator'
-        in output
-    )
+    assert 'An exception ocurred while running the partial type generator' in output
 
 
 def test_unknown_partial_type(testdir: Testdir) -> None:
@@ -512,14 +489,8 @@ def test_unknown_partial_type(testdir: Testdir) -> None:
     assert 'ValueError' in output
     assert 'prisma/partial_types.py' in output
     assert 'Unknown partial type: "UnknownUser"' in output
-    assert (
-        'An exception ocurred while running the partial type generator'
-        in output
-    )
-    assert (
-        'Did you remember to generate the UnknownUser type before this one?'
-        in output
-    )
+    assert 'An exception ocurred while running the partial type generator' in output
+    assert 'Did you remember to generate the UnknownUser type before this one?' in output
 
 
 def test_passing_type_for_excluded_field(testdir: Testdir) -> None:
@@ -544,10 +515,7 @@ def test_passing_type_for_excluded_field(testdir: Testdir) -> None:
     assert 'ValueError' in output
     assert 'prisma/partial_types.py' in output
     assert 'author is not a valid Post / PostPartial field' in output
-    assert (
-        'An exception ocurred while running the partial type generator'
-        in output
-    )
+    assert 'An exception ocurred while running the partial type generator' in output
 
 
 def test_partial_type_types_non_relational(testdir: Testdir) -> None:
@@ -570,14 +538,8 @@ def test_partial_type_types_non_relational(testdir: Testdir) -> None:
     output = str(exc.value.output)
     assert 'prisma/partial_types.py' in output
     assert 'prisma.errors.UnknownRelationalFieldError' in output
-    assert (
-        'An exception ocurred while running the partial type generator'
-        in output
-    )
-    assert (
-        'Field: "published" either does not exist or is not a relational field on the Post model'
-        in output
-    )
+    assert 'An exception ocurred while running the partial type generator' in output
+    assert 'Field: "published" either does not exist or is not a relational field on the Post model' in output
 
 
 def test_partial_type_relations_no_relational_fields(testdir: Testdir) -> None:
@@ -596,10 +558,7 @@ def test_partial_type_relations_no_relational_fields(testdir: Testdir) -> None:
     output = exc.value.output.decode('utf-8')
     assert 'prisma/partial_types.py' in output
     assert 'ValueError' in output
-    assert (
-        'An exception ocurred while running the partial type generator'
-        in output
-    )
+    assert 'An exception ocurred while running the partial type generator' in output
     assert 'Model: "Foo" has no relational fields.' in output
 
 
@@ -625,14 +584,8 @@ def test_exclude_relational_fields_and_relations_exclusive(
     output = exc.value.output.decode('utf-8')
     assert 'prisma/partial_types.py' in output
     assert 'ValueError' in output
-    assert (
-        'An exception ocurred while running the partial type generator'
-        in output
-    )
-    assert (
-        'exclude_relational_fields and relations are mutually exclusive'
-        in output
-    )
+    assert 'An exception ocurred while running the partial type generator' in output
+    assert 'exclude_relational_fields and relations are mutually exclusive' in output
 
 
 def test_exclude_relational_fields_and_include_exclusive(
@@ -657,11 +610,5 @@ def test_exclude_relational_fields_and_include_exclusive(
     output = exc.value.output.decode('utf-8')
     assert 'prisma/partial_types.py' in output
     assert 'TypeError' in output
-    assert (
-        'An exception ocurred while running the partial type generator'
-        in output
-    )
-    assert (
-        'Include and exclude_relational_fields=True are mutually exclusive.'
-        in output
-    )
+    assert 'An exception ocurred while running the partial type generator' in output
+    assert 'Include and exclude_relational_fields=True are mutually exclusive.' in output

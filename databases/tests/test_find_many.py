@@ -14,30 +14,20 @@ async def test_find_many(client: Prisma) -> None:
     assert len(found) == 1
     assert found[0].id == posts[0].id
 
-    posts = await client.post.find_many(
-        where={'OR': [{'title': 'Test post 1'}, {'title': 'Test post 2'}]}
-    )
+    posts = await client.post.find_many(where={'OR': [{'title': 'Test post 1'}, {'title': 'Test post 2'}]})
     assert len(posts) == 2
 
-    posts = await client.post.find_many(
-        where={'title': {'contains': 'Test post'}}
-    )
+    posts = await client.post.find_many(where={'title': {'contains': 'Test post'}})
     assert len(posts) == 2
 
-    posts = await client.post.find_many(
-        where={'title': {'startswith': 'Test post'}}
-    )
+    posts = await client.post.find_many(where={'title': {'startswith': 'Test post'}})
     assert len(posts) == 2
 
-    posts = await client.post.find_many(
-        where={'title': {'not_in': ['Test post 1']}}
-    )
+    posts = await client.post.find_many(where={'title': {'not_in': ['Test post 1']}})
     assert len(posts) == 1
     assert posts[0].title == 'Test post 2'
 
-    posts = await client.post.find_many(
-        where={'title': {'equals': 'Test post 2'}}
-    )
+    posts = await client.post.find_many(where={'title': {'equals': 'Test post 2'}})
     assert len(posts) == 1
     assert posts[0].title == 'Test post 2'
 
@@ -297,9 +287,7 @@ async def test_ordering(client: Prisma) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(
-    reason='incorrect error is raised here - requires an overhaul of the error system'
-)
+@pytest.mark.skip(reason='incorrect error is raised here - requires an overhaul of the error system')
 async def test_too_many_fields_error(client: Prisma) -> None:
     """Passing in multiple fields in order is not supported"""
     with pytest.raises(prisma.errors.DataError) as exc:
@@ -315,17 +303,13 @@ async def test_too_many_fields_error(client: Prisma) -> None:
             },
         )
 
-    assert exc.match(
-        r'Expected a minimum of 0 and at most 1 fields to be present, got 2'
-    )
+    assert exc.match(r'Expected a minimum of 0 and at most 1 fields to be present, got 2')
 
 
 @pytest.mark.asyncio
 async def test_order_field_not_nullable(client: Prisma) -> None:
     """Order by fields, if present, cannot be None"""
-    with pytest.raises(
-        prisma.errors.FieldNotFoundError, match=r'orderBy.desc'
-    ):
+    with pytest.raises(prisma.errors.FieldNotFoundError, match=r'orderBy.desc'):
         await client.post.find_many(order={'desc': None})  # type: ignore
 
 

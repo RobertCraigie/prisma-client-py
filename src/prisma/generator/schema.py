@@ -26,9 +26,7 @@ class PrismaType(BaseModel):
     subtypes: List['PrismaType'] = []
 
     @classmethod
-    def from_subtypes(
-        cls, subtypes: List['PrismaType'], **kwargs: Any
-    ) -> Union['PrismaUnion', 'PrismaAlias']:
+    def from_subtypes(cls, subtypes: List['PrismaType'], **kwargs: Any) -> Union['PrismaUnion', 'PrismaAlias']:
         """Return either a `PrismaUnion` or a `PrismaAlias` depending on the number of subtypes"""
         if len(subtypes) > 1:
             return PrismaUnion(subtypes=subtypes, **kwargs)
@@ -79,9 +77,7 @@ class Model(BaseModel):
     info: ModelInfo
 
     if PYDANTIC_V2:
-        model_config: ClassVar[ConfigDict] = ConfigDict(
-            ignored_types=(cached_property,)
-        )
+        model_config: ClassVar[ConfigDict] = ConfigDict(ignored_types=(cached_property,))
     else:
 
         class Config:
@@ -123,20 +119,13 @@ class Model(BaseModel):
                         PrismaDict(
                             total=True,
                             name=f'{name}Inner',
-                            fields={
-                                field.name: field.python_type
-                                for field in map(
-                                    info.resolve_field, key.fields
-                                )
-                            },
+                            fields={field.name: field.python_type for field in map(info.resolve_field, key.fields)},
                         )
                     ],
                 )
             )
 
-        return PrismaType.from_subtypes(
-            subtypes, name=f'{model}WhereUniqueInput'
-        )
+        return PrismaType.from_subtypes(subtypes, name=f'{model}WhereUniqueInput')
 
     @cached_property
     def order_by(self) -> PrismaType:

@@ -15,17 +15,13 @@ def test_delete(client: Prisma) -> None:
     assert post.author is not None
     assert post.author.name == 'Alice'
 
-    deleted = client.post.delete(
-        where={'id': post.id}, include={'author': True}
-    )
+    deleted = client.post.delete(where={'id': post.id}, include={'author': True})
     assert deleted is not None
     assert deleted.title == 'Hi from Prisma!'
     assert deleted.author is not None
     assert deleted.author.name == 'Alice'
 
-    found = client.post.find_unique(
-        where={'id': post.id}, include={'author': True}
-    )
+    found = client.post.find_unique(where={'id': post.id}, include={'author': True})
     assert found is None
 
     user = client.user.find_unique(where={'id': post.author.id})

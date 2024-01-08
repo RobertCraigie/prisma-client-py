@@ -65,9 +65,7 @@ def _resolve_from_binary_paths(binary_paths: dict[str, str]) -> Path | None:
 
 def _can_execute_binary(path: Path) -> bool:
     proc = subprocess.run([str(path), '--version'], check=False)
-    log.debug(
-        'Executable check for %s exited with code: %s', path, proc.returncode
-    )
+    log.debug('Executable check for %s exited with code: %s', path, proc.returncode)
     return proc.returncode == 0
 
 
@@ -89,8 +87,7 @@ def ensure(binary_paths: dict[str, str]) -> Path:
 
         if not Path(binary).exists():
             raise errors.BinaryNotFoundError(
-                'PRISMA_QUERY_ENGINE_BINARY was provided, '
-                f'but no query engine was found at {binary}'
+                'PRISMA_QUERY_ENGINE_BINARY was provided, ' f'but no query engine was found at {binary}'
             )
 
         file = Path(binary)
@@ -115,29 +112,20 @@ def ensure(binary_paths: dict[str, str]) -> Path:
             expected = f'{local_path} or {global_path} to exist but neither'
 
         raise errors.BinaryNotFoundError(
-            f'Expected {expected} were found or could not be executed.\n'
-            + 'Try running prisma py fetch'
+            f'Expected {expected} were found or could not be executed.\n' + 'Try running prisma py fetch'
         )
 
     log.debug('Using Query Engine binary at %s', file)
 
     start_version = time.monotonic()
-    process = subprocess.run(
-        [str(file.absolute()), '--version'], stdout=subprocess.PIPE, check=True
-    )
+    process = subprocess.run([str(file.absolute()), '--version'], stdout=subprocess.PIPE, check=True)
     log.debug('Version check took %s', time_since(start_version))
 
-    version = (
-        str(process.stdout, sys.getdefaultencoding())
-        .replace('query-engine', '')
-        .strip()
-    )
+    version = str(process.stdout, sys.getdefaultencoding()).replace('query-engine', '').strip()
     log.debug('Using query engine version %s', version)
 
     if force_version and version != config.expected_engine_version:
-        raise errors.MismatchedVersionsError(
-            expected=config.expected_engine_version, got=version
-        )
+        raise errors.MismatchedVersionsError(expected=config.expected_engine_version, got=version)
 
     log.debug('Using query engine at %s', file)
     log.debug('Ensuring query engine took: %s', time_since(start_time))
@@ -171,9 +159,7 @@ def handle_response_errors(resp: AbstractResponse[Any], data: Any) -> NoReturn:
 
             if code == 'P2028':
                 if base_error_message.startswith('Transaction already closed'):
-                    raise prisma_errors.TransactionExpiredError(
-                        base_error_message
-                    )
+                    raise prisma_errors.TransactionExpiredError(base_error_message)
                 raise prisma_errors.TransactionError(message)
 
             if 'A value is required but not set' in message:
@@ -191,9 +177,7 @@ def handle_response_errors(resp: AbstractResponse[Any], data: Any) -> NoReturn:
             if exc is not None:
                 raise exc(error)
         except (KeyError, TypeError) as err:
-            log.debug(
-                'Ignoring error while constructing specialized error %s', err
-            )
+            log.debug('Ignoring error while constructing specialized error %s', err)
             continue
 
     try:
@@ -201,6 +185,4 @@ def handle_response_errors(resp: AbstractResponse[Any], data: Any) -> NoReturn:
     except (IndexError, TypeError):
         pass
 
-    raise errors.EngineRequestError(
-        resp, f'Could not process erroneous response: {data}'
-    )
+    raise errors.EngineRequestError(resp, f'Could not process erroneous response: {data}')

@@ -47,9 +47,7 @@ def async_fixture(
     )
 
 
-def assert_similar_time(
-    dt1: datetime, dt2: datetime, threshold: float = 0.5
-) -> None:
+def assert_similar_time(dt1: datetime, dt2: datetime, threshold: float = 0.5) -> None:
     """Assert the delta between the two datetimes is less than the given threshold (in seconds).
 
     This is required as there seems to be small data loss when marshalling and unmarshalling

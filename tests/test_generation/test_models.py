@@ -13,14 +13,9 @@ from prisma.generator.models import Module, Config
 
 def test_module_serialization() -> None:
     """Python module serialization to json"""
-    path = Path(__file__).parent.parent.joinpath(
-        'scripts/partial_type_generator.py'
-    )
+    path = Path(__file__).parent.parent.joinpath('scripts/partial_type_generator.py')
     module = model_parse(Module, {'spec': str(path)})
-    assert (
-        model_parse_json(Module, model_json(module)).spec.name
-        == module.spec.name
-    )
+    assert model_parse_json(Module, model_json(module)).spec.name == module.spec.name
 
 
 def test_recursive_type_depth() -> None:
@@ -37,9 +32,7 @@ def test_recursive_type_depth() -> None:
         )
 
     if PYDANTIC_V2:
-        assert exc.match(
-            'Input should be a valid integer, unable to parse string as an integer'
-        )
+        assert exc.match('Input should be a valid integer, unable to parse string as an integer')
     else:
         assert exc.match('value is not a valid integer')
 
@@ -61,23 +54,15 @@ def test_default_recursive_type_depth(
     """
     c = Config()
     captured = capsys.readouterr()
-    assert 'it is highly recommended to use Pyright' in captured.out.replace(
-        '\n', ' '
-    )
+    assert 'it is highly recommended to use Pyright' in captured.out.replace('\n', ' ')
     assert c.recursive_type_depth == 5
 
     c = Config(recursive_type_depth=5)
     captured = capsys.readouterr()
-    assert (
-        'it is highly recommended to use Pyright'
-        not in captured.out.replace('\n', ' ')
-    )
+    assert 'it is highly recommended to use Pyright' not in captured.out.replace('\n', ' ')
     assert c.recursive_type_depth == 5
 
     c = Config(recursive_type_depth=2)
     captured = capsys.readouterr()
-    assert (
-        'it is highly recommended to use Pyright'
-        not in captured.out.replace('\n', ' ')
-    )
+    assert 'it is highly recommended to use Pyright' not in captured.out.replace('\n', ' ')
     assert c.recursive_type_depth == 2

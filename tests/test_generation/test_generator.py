@@ -57,13 +57,7 @@ def test_erroneous_template_cleanup(testdir: Testdir) -> None:
     assert_module_not_clean(path)
 
     template = '{{ undefined.foo }}'
-    template_path = (
-        testdir.path
-        / 'prisma'
-        / 'generator'
-        / 'templates'
-        / 'template.py.jinja'
-    )
+    template_path = testdir.path / 'prisma' / 'generator' / 'templates' / 'template.py.jinja'
     template_path.write_text(template)
 
     with pytest.raises(subprocess.CalledProcessError) as exc:
@@ -95,10 +89,7 @@ def test_invoke_outside_generation() -> None:
     with pytest.raises(RuntimeError) as exc:
         Generator.invoke()
 
-    assert (
-        exc.value.args[0]
-        == 'Attempted to invoke a generator outside of Prisma generation'
-    )
+    assert exc.value.args[0] == 'Attempted to invoke a generator outside of Prisma generation'
 
 
 def test_invalid_type_argument() -> None:

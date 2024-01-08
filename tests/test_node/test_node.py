@@ -44,9 +44,7 @@ def assert_strategy(strategy: node.Node) -> None:
     elif strategy.target == 'npm':
         _assert_can_run_npm(strategy)
     else:  # pragma: no cover
-        raise ValueError(
-            f'No tests implemented for strategy target: {strategy.target}'
-        )
+        raise ValueError(f'No tests implemented for strategy target: {strategy.target}')
 
 
 def test_resolve_bad_target() -> None:
@@ -215,9 +213,7 @@ def test_node_version(target: Target, fake_process: FakeProcess) -> None:
         # register the same process twice as we will call it twice
         # in our assertions and fake_process consumes called processes
         for _ in range(2):
-            fake_process.register_subprocess(
-                [str(path), '--version'], stdout=stdout
-            )
+            fake_process.register_subprocess([str(path), '--version'], stdout=stdout)
 
     which = shutil.which(target)
     assert which is not None

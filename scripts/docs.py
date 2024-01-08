@@ -18,9 +18,7 @@ def main() -> None:
     # and remove docs/index.md from version control
     content = ROOTDIR.joinpath('README.md').read_text()
     if SHOWCASE_GIF not in content:
-        raise RuntimeError(
-            'Could not find showcase GIF in README, has it been updated?'
-        )
+        raise RuntimeError('Could not find showcase GIF in README, has it been updated?')
 
     content, n = re.subn(
         r'(<img src="https:\/\/img\.shields\.io\/static\/v1\?label=prisma&message)=(\d?.)+(&color=blue&logo=prisma" alt="Supported Prisma version is) (\d?.)+">',

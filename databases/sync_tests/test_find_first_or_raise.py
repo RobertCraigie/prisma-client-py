@@ -368,15 +368,11 @@ def test_list_wrapper_query_transformation(client: Prisma) -> None:
     }
 
     client.user.create({'name': 'Robert house'})
-    found = client.user.find_first_or_raise(
-        where=query, order={'created_at': 'asc'}
-    )
+    found = client.user.find_first_or_raise(where=query, order={'created_at': 'asc'})
     assert found.name == 'Robert house'
 
     client.user.create({'name': '40 robert'})
-    found = client.user.find_first_or_raise(
-        skip=1, where=query, order={'created_at': 'asc'}
-    )
+    found = client.user.find_first_or_raise(skip=1, where=query, order={'created_at': 'asc'})
     assert found.name == '40 robert'
 
 

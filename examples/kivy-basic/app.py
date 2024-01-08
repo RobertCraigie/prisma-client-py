@@ -30,9 +30,7 @@ class App(MDApp):
         )
 
         # Add a little message
-        self.root.ids.word_label.text = (
-            f'{self.root.ids.word_input.text} Added'
-        )
+        self.root.ids.word_label.text = f'{self.root.ids.word_input.text} Added'
 
         # Clear the input box
         self.root.ids.word_input.text = ''

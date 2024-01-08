@@ -58,9 +58,7 @@ DEFAULT_ENV = Environment(
 # results in an overly restrictive type
 DEFAULT_ENV.filters['quote'] = quote  # pyright: ignore
 
-partial_models_ctx: ContextVar[List[PartialModel]] = ContextVar(
-    'partial_models_ctx', default=[]
-)
+partial_models_ctx: ContextVar[List[PartialModel]] = ContextVar('partial_models_ctx', default=[])
 
 
 class GenericGenerator(ABC, Generic[BaseModelT]):
@@ -96,9 +94,7 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
         ```
         """
         if not os.environ.get('PRISMA_GENERATOR_INVOCATION'):
-            raise RuntimeError(
-                'Attempted to invoke a generator outside of Prisma generation'
-            )
+            raise RuntimeError('Attempted to invoke a generator outside of Prisma generation')
 
         request = None
         try:
@@ -125,8 +121,7 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
             elif isinstance(exc, PartialTypeGeneratorError):
                 # TODO: remove our internal frame from this stack trace
                 message = (
-                    'An exception ocurred while running the partial type generator\n'
-                    + traceback.format_exc().strip()
+                    'An exception ocurred while running the partial type generator\n' + traceback.format_exc().strip()
                 )
             else:
                 message = traceback.format_exc().strip()
@@ -153,14 +148,10 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
             )
         elif request.method == 'generate':
             if request.params is None:  # pragma: no cover
-                raise RuntimeError(
-                    'Prisma JSONRPC did not send data to generate.'
-                )
+                raise RuntimeError('Prisma JSONRPC did not send data to generate.')
 
             if DEBUG_GENERATOR:
-                _write_debug_data(
-                    'params', json.dumps(request.params, indent=2)
-                )
+                _write_debug_data('params', json.dumps(request.params, indent=2))
 
             data = model_parse(self.data_class, request.params)
 
@@ -170,9 +161,7 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
             self.generate(data)
             response = jsonrpc.SuccessResponse(id=request.id, result=None)
         else:  # pragma: no cover
-            raise RuntimeError(
-                f'JSON RPC received unexpected method: {request.method}'
-            )
+            raise RuntimeError(f'JSON RPC received unexpected method: {request.method}')
 
         jsonrpc.reply(response)
 
@@ -204,9 +193,7 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
 
         args = get_args(typ)
         if not args:
-            raise RuntimeError(
-                f'Could not resolve generic arguments from type: {typ}'
-            )
+            raise RuntimeError(f'Could not resolve generic arguments from type: {typ}')
 
         model = args[0]
         if not issubclass(model, BaseModel):
@@ -226,9 +213,7 @@ class BaseGenerator(GenericGenerator[DefaultData]):
 
 class Generator(GenericGenerator[PythonData]):
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
-        raise TypeError(
-            f'{Generator} cannot be subclassed, maybe you meant {BaseGenerator}?'
-        )
+        raise TypeError(f'{Generator} cannot be subclassed, maybe you meant {BaseGenerator}?')
 
     def get_manifest(self) -> Manifest:
         return Manifest(
@@ -258,11 +243,7 @@ class Generator(GenericGenerator[PythonData]):
 
         try:
             for name in DEFAULT_ENV.list_templates():
-                if (
-                    not name.endswith('.py.jinja')
-                    or name.startswith('_')
-                    or name in DEFERRED_TEMPLATES
-                ):
+                if not name.endswith('.py.jinja') or name.startswith('_') or name in DEFERRED_TEMPLATES:
                     continue
 
                 render_template(rootdir, name, params)
@@ -281,9 +262,7 @@ class Generator(GenericGenerator[PythonData]):
         log.debug('Finished generating Prisma Client Python')
 
 
-def cleanup_templates(
-    rootdir: Path, *, env: Optional[Environment] = None
-) -> None:
+def cleanup_templates(rootdir: Path, *, env: Optional[Environment] = None) -> None:
     """Revert module to pre-generation state"""
     if env is None:
         env = DEFAULT_ENV

@@ -30,17 +30,13 @@ def push_coverage(session: nox.Session) -> None:
     )
 
     with session.chdir(CACHE_DIR):
-        session.run(
-            'coverage-badge', '-o', str(TMP_SVG_PATH), '--cov-ignore-errors'
-        )
+        session.run('coverage-badge', '-o', str(TMP_SVG_PATH), '--cov-ignore-errors')
 
     shutil.copytree('htmlcov', TMP_HTMLCOV_PATH)
 
     repo = Repo(Path.cwd())
     if repo.is_dirty():
-        raise ValueError(
-            f'Expected repo to not be dirty; Untracked files: {repo.untracked_files}'
-        )
+        raise ValueError(f'Expected repo to not be dirty; Untracked files: {repo.untracked_files}')
 
     head_summary = maybe_decode(repo.head.commit.summary)
 

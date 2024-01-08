@@ -137,10 +137,7 @@ def get_list_types() -> Iterable[Tuple[str, str]]:
     # WARNING: do not edit this function without also editing Field.is_supported_scalar_list_type()
     return chain(
         ((t, TYPE_MAPPING[t]) for t in FILTER_TYPES),
-        (
-            (enum.name, f"'enums.{enum.name}'")
-            for enum in get_datamodel().enums
-        ),
+        ((enum.name, f"'enums.{enum.name}'") for enum in get_datamodel().enums),
     )
 
 
@@ -258,17 +255,13 @@ class Module(BaseModel):
         if PYDANTIC_V2:
             spec: Annotated[
                 machinery.ModuleSpec,
-                PlainSerializer(
-                    lambda x: _module_spec_serializer(x), return_type=str
-                ),
+                PlainSerializer(lambda x: _module_spec_serializer(x), return_type=str),
             ]
         else:
             spec: machinery.ModuleSpec
 
     if PYDANTIC_V2:
-        model_config: ClassVar[ConfigDict] = ConfigDict(
-            arbitrary_types_allowed=True
-        )
+        model_config: ClassVar[ConfigDict] = ConfigDict(arbitrary_types_allowed=True)
     else:
 
         class Config(BaseModel.Config):
@@ -294,13 +287,9 @@ class Module(BaseModel):
 
         path = Path.cwd().joinpath(value)
         if path.exists():
-            spec = importlib_util.spec_from_file_location(
-                'prisma.partial_type_generator', value
-            )
+            spec = importlib_util.spec_from_file_location('prisma.partial_type_generator', value)
         elif value.startswith('.'):
-            raise ValueError(
-                f'No file found at {value} and relative imports are not allowed.'
-            )
+            raise ValueError(f'No file found at {value} and relative imports are not allowed.')
         else:
             try:
                 spec = importlib_util.find_spec(value)
@@ -308,9 +297,7 @@ class Module(BaseModel):
                 spec = None
 
         if spec is None:
-            raise ValueError(
-                f'Could not find a python file or module at {value}'
-            )
+            raise ValueError(f'Could not find a python file or module at {value}')
 
         return spec
 
@@ -319,9 +306,7 @@ class Module(BaseModel):
         mod = importlib_util.module_from_spec(self.spec)
         loader = self.spec.loader
         assert loader is not None, 'Expected an import loader to exist.'
-        assert isinstance(
-            loader, InspectLoader
-        ), f'Cannot execute module from loader type: {type(loader)}'
+        assert isinstance(loader, InspectLoader), f'Cannot execute module from loader type: {type(loader)}'
 
         try:
             loader.exec_module(mod)
@@ -342,12 +327,8 @@ class GenericData(GenericModel, Generic[ConfigT]):
     dmmf: 'DMMF' = FieldInfo(alias='dmmf')
     schema_path: Path = FieldInfo(alias='schemaPath')
     datasources: List['Datasource'] = FieldInfo(alias='datasources')
-    other_generators: List['Generator[_ModelAllowAll]'] = FieldInfo(
-        alias='otherGenerators'
-    )
-    binary_paths: 'BinaryPaths' = FieldInfo(
-        alias='binaryPaths', default_factory=lambda: BinaryPaths()
-    )
+    other_generators: List['Generator[_ModelAllowAll]'] = FieldInfo(alias='otherGenerators')
+    binary_paths: 'BinaryPaths' = FieldInfo(alias='binaryPaths', default_factory=lambda: BinaryPaths())
 
     if PYDANTIC_V2:
 
@@ -464,15 +445,12 @@ class Generator(GenericModel, Generic[ConfigT]):
 
     @field_validator('binary_targets')
     @classmethod
-    def warn_binary_targets(
-        cls, targets: List['ValueFromEnvVar']
-    ) -> List['ValueFromEnvVar']:
+    def warn_binary_targets(cls, targets: List['ValueFromEnvVar']) -> List['ValueFromEnvVar']:
         # Prisma by default sends one binary target which is the current platform.
         if len(targets) > 1:
             click.echo(
                 click.style(
-                    'Warning: '
-                    + 'The binaryTargets option is not officially supported by Prisma Client Python.',
+                    'Warning: ' + 'The binaryTargets option is not officially supported by Prisma Client Python.',
                     fg='yellow',
                 ),
                 file=sys.stdout,
@@ -510,25 +488,17 @@ class OptionalValueFromEnvVar(BaseModel):
 class Config(BaseSettings):
     """Custom generator config options."""
 
-    interface: InterfaceChoices = FieldInfo(
-        default=InterfaceChoices.asyncio, env='PRISMA_PY_CONFIG_INTERFACE'
-    )
-    partial_type_generator: Optional[Module] = FieldInfo(
-        default=None, env='PRISMA_PY_CONFIG_PARTIAL_TYPE_GENERATOR'
-    )
+    interface: InterfaceChoices = FieldInfo(default=InterfaceChoices.asyncio, env='PRISMA_PY_CONFIG_INTERFACE')
+    partial_type_generator: Optional[Module] = FieldInfo(default=None, env='PRISMA_PY_CONFIG_PARTIAL_TYPE_GENERATOR')
     recursive_type_depth: int = FieldInfo(
         default_factory=_recursive_type_depth_factory,
         env='PRISMA_PY_CONFIG_RECURSIVE_TYPE_DEPTH',
     )
-    engine_type: EngineType = FieldInfo(
-        default=EngineType.binary, env='PRISMA_PY_CONFIG_ENGINE_TYPE'
-    )
+    engine_type: EngineType = FieldInfo(default=EngineType.binary, env='PRISMA_PY_CONFIG_ENGINE_TYPE')
 
     # this should be a list of experimental features
     # https://github.com/prisma/prisma/issues/12442
-    enable_experimental_decimal: bool = FieldInfo(
-        default=False, env='PRISMA_PY_CONFIG_ENABLE_EXPERIMENTAL_DECIMAL'
-    )
+    enable_experimental_decimal: bool = FieldInfo(default=False, env='PRISMA_PY_CONFIG_ENABLE_EXPERIMENTAL_DECIMAL')
 
     # this seems to be the only good method for setting the contextvar as
     # we don't control the actual construction of the object like we do for
@@ -557,9 +527,7 @@ class Config(BaseSettings):
                 allow_population_by_field_name: bool = True
 
                 @classmethod
-                def customise_sources(
-                    cls, init_settings, env_settings, file_secret_settings
-                ):
+                def customise_sources(cls, init_settings, env_settings, file_secret_settings):
                     # prioritise env settings over init settings
                     return env_settings, init_settings, file_secret_settings
 
@@ -580,9 +548,7 @@ class Config(BaseSettings):
 
     @root_validator(pre=True, skip_on_failure=True)
     @classmethod
-    def removed_http_option_validator(
-        cls, values: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def removed_http_option_validator(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         http = values.get('http')
         if http is not None:
             if http in {'aiohttp', 'httpx-async'}:
@@ -604,9 +570,7 @@ class Config(BaseSettings):
 
         @root_validator(pre=True, skip_on_failure=True)
         @classmethod
-        def partial_type_generator_converter(
-            cls, values: Dict[str, Any]
-        ) -> Dict[str, Any]:
+        def partial_type_generator_converter(cls, values: Dict[str, Any]) -> Dict[str, Any]:
             # ensure env resolving happens
             values = cast(Dict[str, Any], cls.root_validator(values))  # type: ignore
 
@@ -626,13 +590,9 @@ class Config(BaseSettings):
 
     else:
 
-        @field_validator(
-            'partial_type_generator', pre=True, always=True, allow_reuse=True
-        )
+        @field_validator('partial_type_generator', pre=True, always=True, allow_reuse=True)
         @classmethod
-        def _partial_type_generator_converter(
-            cls, value: Optional[str]
-        ) -> Optional[Module]:
+        def _partial_type_generator_converter(cls, value: Optional[str]) -> Optional[Module]:
             try:
                 return Module(
                     spec=value  # pyright: ignore[reportGeneralTypeIssues]
@@ -656,13 +616,9 @@ class Config(BaseSettings):
         if value == EngineType.binary:
             return value
         elif value == EngineType.dataproxy:  # pragma: no cover
-            raise ValueError(
-                'Prisma Client Python does not support the Prisma Data Proxy yet.'
-            )
+            raise ValueError('Prisma Client Python does not support the Prisma Data Proxy yet.')
         elif value == EngineType.library:  # pragma: no cover
-            raise ValueError(
-                'Prisma Client Python does not support native engine bindings yet.'
-            )
+            raise ValueError('Prisma Client Python does not support native engine bindings yet.')
         else:  # pragma: no cover
             assert_never(value)
 
@@ -708,9 +664,7 @@ class Model(BaseModel):
     documentation: Optional[str] = None
     db_name: Optional[str] = FieldInfo(alias='dbName')
     is_generated: bool = FieldInfo(alias='isGenerated')
-    compound_primary_key: Optional['PrimaryKey'] = FieldInfo(
-        alias='primaryKey'
-    )
+    compound_primary_key: Optional['PrimaryKey'] = FieldInfo(alias='primaryKey')
     unique_indexes: List['UniqueIndex'] = FieldInfo(alias='uniqueIndexes')
     all_fields: List['Field'] = FieldInfo(alias='fields')
 
@@ -847,12 +801,8 @@ class Field(BaseModel):
     default: Optional[Union['DefaultValue', object, List[object]]] = None
     has_default_value: bool = FieldInfo(alias='hasDefaultValue')
 
-    relation_name: Optional[str] = FieldInfo(
-        alias='relationName', default=None
-    )
-    relation_on_delete: Optional[str] = FieldInfo(
-        alias='relationOnDelete', default=None
-    )
+    relation_name: Optional[str] = FieldInfo(alias='relationName', default=None)
+    relation_on_delete: Optional[str] = FieldInfo(alias='relationOnDelete', default=None)
     relation_to_fields: Optional[List[str]] = FieldInfo(
         alias='relationToFields',
         default=None,
@@ -884,10 +834,7 @@ class Field(BaseModel):
 
             # skip validating the experimental flag if we are
             # being called from a custom generator
-            if (
-                isinstance(config, Config)
-                and not config.enable_experimental_decimal
-            ):
+            if isinstance(config, Config) and not config.enable_experimental_decimal:
                 raise ValueError(
                     'Support for the Decimal type is experimental\n'
                     '  As such you must set the `enable_experimental_decimal` config flag to true\n'
@@ -907,8 +854,7 @@ class Field(BaseModel):
 
         if iskeyword(name):
             raise ValueError(
-                f'Field name "{name}" shadows a Python keyword; '
-                f'use a different field name with \'@map("{name}")\'.'
+                f'Field name "{name}" shadows a Python keyword; ' f'use a different field name with \'@map("{name}")\'.'
             )
 
         if name == 'prisma':
@@ -1054,9 +1000,7 @@ class Field(BaseModel):
         return self.python_type
 
     def check_supported_scalar_list_type(self) -> None:
-        if (
-            self.type not in FILTER_TYPES and self.kind != 'enum'
-        ):  # pragma: no branch
+        if self.type not in FILTER_TYPES and self.kind != 'enum':  # pragma: no branch
             raise UnsupportedListTypeError(self.type)
 
     def get_relational_model(self) -> Optional['Model']:
@@ -1091,9 +1035,7 @@ class Field(BaseModel):
 
     def _get_sample_data(self) -> str:
         if self.is_relational:  # pragma: no cover
-            raise RuntimeError(
-                'Data sampling for relational fields not supported yet'
-            )
+            raise RuntimeError('Data sampling for relational fields not supported yet')
 
         if self.kind == 'enum':
             enum = self.get_corresponding_enum()

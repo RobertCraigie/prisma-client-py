@@ -36,9 +36,7 @@ class DatabaseConfig(BaseModel):
     default_date_func: str
 
     # TODO: run this under coverage
-    def supports_feature(
-        self, feature: DatabaseFeature
-    ) -> bool:  # pragma: no cover
+    def supports_feature(self, feature: DatabaseFeature) -> bool:  # pragma: no cover
         if feature not in get_args(DatabaseFeature):
             raise RuntimeError(f'Unknown feature: {feature}')
 

@@ -62,21 +62,15 @@ cli = typer.Typer(
 @cli.command()
 def test(
     *,
-    databases: list[str] = cast(
-        'list[str]', SUPPORTED_DATABASES
-    ),  # pyright: ignore[reportCallInDefaultInitializer]
-    exclude_databases: list[
-        str
-    ] = [],  # pyright: ignore[reportCallInDefaultInitializer]
+    databases: list[str] = cast('list[str]', SUPPORTED_DATABASES),  # pyright: ignore[reportCallInDefaultInitializer]
+    exclude_databases: list[str] = [],  # pyright: ignore[reportCallInDefaultInitializer]
     inplace: bool = False,
     pytest_args: Optional[str] = None,
     lint: bool = True,
     test: bool = True,
     coverage: bool = False,
     pydantic_v2: bool = True,
-    for_async: bool = typer.Option(
-        default=True, is_flag=False
-    ),  # pyright: ignore[reportCallInDefaultInitializer]
+    for_async: bool = typer.Option(default=True, is_flag=False),  # pyright: ignore[reportCallInDefaultInitializer]
 ) -> None:
     """Run unit tests and Pyright"""
     if not pydantic_v2:
@@ -86,9 +80,7 @@ def test(
 
     exclude = set(validate_databases(exclude_databases))
     validated_databases: list[SupportedDatabase] = [
-        database
-        for database in validate_databases(databases)
-        if database not in exclude
+        database for database in validate_databases(databases) if database not in exclude
     ]
 
     with session.chdir(DATABASES_DIR):
@@ -102,9 +94,7 @@ def test(
             if coverage:  # pragma: no branch
                 setup_coverage(session, identifier=database)
 
-            runner = Runner(
-                database=database, track_coverage=coverage, for_async=for_async
-            )
+            runner = Runner(database=database, track_coverage=coverage, for_async=for_async)
             runner.setup()
 
             if test:  # pragma: no branch
@@ -124,16 +114,12 @@ def serve(database: str, *, version: Optional[str] = None) -> None:
 @cli.command(name='test-inverse')
 def test_inverse(
     *,
-    databases: list[str] = cast(
-        'list[str]', SUPPORTED_DATABASES
-    ),  # pyright: ignore[reportCallInDefaultInitializer]
+    databases: list[str] = cast('list[str]', SUPPORTED_DATABASES),  # pyright: ignore[reportCallInDefaultInitializer]
     coverage: bool = False,
     inplace: bool = False,
     pytest_args: Optional[str] = None,
     pydantic_v2: bool = True,
-    for_async: bool = typer.Option(
-        default=True, is_flag=False
-    ),  # pyright: ignore[reportCallInDefaultInitializer]
+    for_async: bool = typer.Option(default=True, is_flag=False),  # pyright: ignore[reportCallInDefaultInitializer]
 ) -> None:
     """Ensure unsupported features actually result in either:
 
@@ -177,9 +163,7 @@ def test_inverse(
                     runner.setup()
 
                 if result.did_raise:
-                    print(
-                        'Test setup failed (expectedly); Skipping pytest & pyright checks'
-                    )
+                    print('Test setup failed (expectedly); Skipping pytest & pyright checks')
                     continue
 
                 with raises_command({1}):
@@ -196,9 +180,7 @@ def test_inverse(
             )
 
 
-def _setup_test_env(
-    session: nox.Session, *, pydantic_v2: bool, inplace: bool
-) -> None:
+def _setup_test_env(session: nox.Session, *, pydantic_v2: bool, inplace: bool) -> None:
     if pydantic_v2:
         session.install('-r', '../pipelines/requirements/deps/pydantic.txt')
     else:
@@ -241,9 +223,7 @@ def raises_command(
     except CommandFailed as exc:
         match = COMMAND_FAILED_RE.match(exc.reason or '')
         if match is None:
-            raise RuntimeError(
-                f'Could not extract exit code from exception {exc}'
-            )
+            raise RuntimeError(f'Could not extract exit code from exception {exc}')
 
         exit_code = int(match.group(1))
         if exit_code not in allowed_exit_codes:
@@ -370,36 +350,26 @@ class Runner:
         self.session.run('pyright', '-p', str(self.pyright_config.absolute()))
 
     def _create_pyright_config(self) -> None:
-        pkg_location = os.path.relpath(
-            get_pkg_location(session_ctx.get(), 'prisma'), DATABASES_DIR
-        )
+        pkg_location = os.path.relpath(get_pkg_location(session_ctx.get(), 'prisma'), DATABASES_DIR)
 
         pyright_config = deepcopy(PYRIGHT_CONFIG)
         pyright_config['exclude'].extend(self.exclude_files)
 
         # exclude the mypy plugin so that we don't have to install `mypy`, it is also
         # not dynamically generated which means it will stay the same across database providers
-        pyright_config['exclude'].append(
-            str(Path(pkg_location).joinpath('mypy.py'))
-        )
+        pyright_config['exclude'].append(str(Path(pkg_location).joinpath('mypy.py')))
 
         # add the generated client code to Pyright too
         pyright_config['include'].append(pkg_location)
 
         # ensure only the tests for sync / async are checked
-        pyright_config['include'].append(
-            tests_reldir(for_async=self.for_async)
-        )
+        pyright_config['include'].append(tests_reldir(for_async=self.for_async))
 
         self.pyright_config.write_text(json.dumps(pyright_config, indent=2))
 
     @cached_property
     def python_args(self) -> list[str]:
-        return shlex.split(
-            'coverage run --rcfile=../.coveragerc -m'
-            if self.track_coverage
-            else 'python -m'
-        )
+        return shlex.split('coverage run --rcfile=../.coveragerc -m' if self.track_coverage else 'python -m')
 
     @property
     def pyright_config(self) -> Path:
@@ -415,12 +385,7 @@ class Runner:
     def exclude_files(self) -> set[str]:
         files = [
             tests_relpath(path, for_async=self.for_async)
-            for path in flatten(
-                [
-                    FEATURES_MAPPING[feature]
-                    for feature in self.config.unsupported_features
-                ]
-            )
+            for path in flatten([FEATURES_MAPPING[feature] for feature in self.config.unsupported_features])
         ]
 
         # ensure the tests for the sync client are not ran during the async tests anc vice versa
@@ -453,9 +418,7 @@ def validate_database(database: str) -> SupportedDatabase:
 
 
 def tests_reldir(*, for_async: bool) -> str:
-    return str(
-        (TESTS_DIR if for_async else SYNC_TESTS_DIR).relative_to(DATABASES_DIR)
-    )
+    return str((TESTS_DIR if for_async else SYNC_TESTS_DIR).relative_to(DATABASES_DIR))
 
 
 def tests_relpath(path: str, *, for_async: bool) -> str:

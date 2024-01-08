@@ -259,9 +259,7 @@ async def test_query_first(raw_queries: RawQueries) -> None:
         await User.prisma().create({'name': 'Robert'}),
         await User.prisma().create({'name': 'Tegan'}),
     ]
-    user = await User.prisma().query_first(
-        raw_queries.find_user_by_id_limit_1, users[1].id
-    )
+    user = await User.prisma().query_first(raw_queries.find_user_by_id_limit_1, users[1].id)
     assert user is not None
     assert user.name == 'Tegan'
 

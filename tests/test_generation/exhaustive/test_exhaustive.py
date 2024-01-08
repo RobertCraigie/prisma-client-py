@@ -18,7 +18,6 @@ from ...utils import skipif_windows
 
 
 class OSAgnosticSingleFileExtension(SingleFileSnapshotExtension):
-
     # syrupy's types are only written to target mypy, as such
     # pyright does not understand them and reports them as unknown.
     # As this method is only called internally it is safe to type as Any
@@ -29,9 +28,7 @@ class OSAgnosticSingleFileExtension(SingleFileSnapshotExtension):
         exclude: Optional[Any] = None,
         matcher: Optional[Any] = None,
     ) -> bytes:
-        serialized = DataSerializer.serialize(
-            data, exclude=exclude, matcher=matcher
-        )
+        serialized = DataSerializer.serialize(data, exclude=exclude, matcher=matcher)
         return bytes(serialized, 'utf-8')
 
     # we disable diffs as we don't really care what the diff is
@@ -41,9 +38,7 @@ class OSAgnosticSingleFileExtension(SingleFileSnapshotExtension):
     def diff_snapshots(self, serialized_data: Any, snapshot_data: Any) -> str:
         return 'diff-is-disabled'  # pragma: no cover
 
-    def diff_lines(
-        self, serialized_data: Any, snapshot_data: Any
-    ) -> Iterator[str]:
+    def diff_lines(self, serialized_data: Any, snapshot_data: Any) -> Iterator[str]:
         yield 'diff-is-disabled'  # pragma: no cover
 
 
@@ -63,9 +58,7 @@ def get_files_from_templates(directory: Path) -> List[str]:
     for template in directory.iterdir():
         if template.is_dir():
             files.extend(get_files_from_templates(template))
-        elif template.name.endswith(
-            '.py.jinja'
-        ) and not template.name.startswith('_'):
+        elif template.name.endswith('.py.jinja') and not template.name.startswith('_'):
             if directory.name == 'templates':
                 name = template.name
             else:
@@ -88,17 +81,13 @@ def path_replacer(
 ) -> Callable[[object, object], Optional[object]]:
     def pathlib_matcher(data: object, path: object) -> Optional[object]:
         if not isinstance(data, str):  # pragma: no cover
-            raise RuntimeError(
-                f'schema_path_matcher expected data to be a `str` but received {type(data)} instead.'
-            )
+            raise RuntimeError(f'schema_path_matcher expected data to be a `str` but received {type(data)} instead.')
 
         data = data.replace(
             f"Path('{schema_path.absolute().as_posix()}')",
             "Path('<absolute-schema-path>')",
         )
-        data = BINARY_PATH_RE.sub(
-            "BINARY_PATHS = '<binary-paths-removed>'", data
-        )
+        data = BINARY_PATH_RE.sub("BINARY_PATHS = '<binary-paths-removed>'", data)
         return data
 
     return pathlib_matcher

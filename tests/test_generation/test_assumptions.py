@@ -51,9 +51,7 @@ def test_can_generate_from_env_var(testdir: Testdir) -> None:
     }}
     """
 
-    with temp_env_update(
-        {'PRISMA_TEST_ASSUMPTIONS_OUTPUT': str(testdir.path / 'prisma')}
-    ):
+    with temp_env_update({'PRISMA_TEST_ASSUMPTIONS_OUTPUT': str(testdir.path / 'prisma')}):
         testdir.generate(schema=schema)
 
 
@@ -80,10 +78,7 @@ def test_relational_field_cannot_be_unique(testdir: Testdir) -> None:
         testdir.generate(schema=schema)
 
     output = exc.value.output.decode('utf-8')
-    assert (
-        'The field `author` is a relation field and cannot be marked with `unique`.'
-        in output
-    )
+    assert 'The field `author` is a relation field and cannot be marked with `unique`.' in output
 
 
 def test_enum_same_name_as_model_disallowed(testdir: Testdir) -> None:
@@ -107,10 +102,7 @@ def test_enum_same_name_as_model_disallowed(testdir: Testdir) -> None:
         testdir.generate(schema=schema)
 
     output = exc.value.output.decode('utf-8')
-    assert (
-        'The enum "User" cannot be defined because a model with that name already exists.'
-        in output
-    )
+    assert 'The enum "User" cannot be defined because a model with that name already exists.' in output
 
 
 def test_multiple_compund_ids_disallowed(testdir: Testdir) -> None:

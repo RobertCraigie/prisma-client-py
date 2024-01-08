@@ -57,9 +57,5 @@ def pytest_sessionfinish(session: pytest.Session) -> None:
         LOGGING_CONTEXT_MANAGER.__exit__(None, None, None)
 
 
-def pytest_collection_modifyitems(
-    session: pytest.Session, config: Config, items: List[pytest.Item]
-) -> None:
-    items.sort(
-        key=lambda item: item.__class__.__name__ == 'IntegrationTestItem'
-    )
+def pytest_collection_modifyitems(session: pytest.Session, config: Config, items: List[pytest.Item]) -> None:
+    items.sort(key=lambda item: item.__class__.__name__ == 'IntegrationTestItem')

@@ -121,9 +121,7 @@ async def test_find_unique_include_take(client: Prisma, user_id: str) -> None:
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_find_unique_include_where(
-    client: Prisma, user_id: str, posts: List[Post]
-) -> None:
+async def test_find_unique_include_where(client: Prisma, user_id: str, posts: List[Post]) -> None:
     """Including a one-to-many relationship with a where argument filters results"""
     user = await client.user.find_unique(
         where={'id': user_id},
@@ -137,9 +135,7 @@ async def test_find_unique_include_where(
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_find_unique_include_pagination(
-    client: Prisma, user_id: str, posts: List[Post]
-) -> None:
+async def test_find_unique_include_pagination(client: Prisma, user_id: str, posts: List[Post]) -> None:
     """Pagination by cursor id works forwards and backwards"""
     user = await client.user.find_unique(
         where={'id': user_id},
@@ -180,9 +176,7 @@ async def test_find_unique_include_pagination(
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_find_unique_include_nested_where_or(
-    client: Prisma, user_id: str, posts: List[Post]
-) -> None:
+async def test_find_unique_include_nested_where_or(client: Prisma, user_id: str, posts: List[Post]) -> None:
     """Include with nested or argument"""
     user = await client.user.find_unique(
         where={'id': user_id},
@@ -217,9 +211,7 @@ async def test_find_unique_include_nested_where_or(
 
 @pytest.mark.asyncio
 @pytest.mark.persist_data
-async def test_find_unique_include_nested_include(
-    client: Prisma, user_id: str
-) -> None:
+async def test_find_unique_include_nested_include(client: Prisma, user_id: str) -> None:
     """Multiple nested include arguments returns all models"""
     user = await client.user.find_unique(
         where={'id': user_id},

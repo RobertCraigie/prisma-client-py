@@ -81,9 +81,7 @@ def test_include_missing_relational_field() -> None:
             },
         )
 
-    assert exc.match(
-        r'Field: "profile" either does not exist or is not a relational field on the UserOnlyName model'
-    )
+    assert exc.match(r'Field: "profile" either does not exist or is not a relational field on the UserOnlyName model')
 
 
 @pytest.mark.prisma

@@ -10,9 +10,7 @@ from ... import __version__, config
 from ...binaries.platform import binary_platform
 
 
-@click.command(
-    'version', short_help='Display Prisma Client Python version information.'
-)
+@click.command('version', short_help='Display Prisma Client Python version information.')
 @click.option(
     '--json',
     'output_json',
@@ -45,10 +43,6 @@ def cli(output_json: bool) -> None:
     }
 
     if output_json:
-        click.echo(
-            json.dumps(
-                {k.replace(' ', '-'): v for k, v in info.items()}, indent=2
-            )
-        )
+        click.echo(json.dumps({k.replace(' ', '-'): v for k, v in info.items()}, indent=2))
     else:
         click.echo(pretty_info(info))

@@ -28,7 +28,6 @@ log: logging.Logger = logging.getLogger(__name__)
 
 
 class PrismaCLI(click.MultiCommand):
-
     base_package: str = 'prisma.cli.commands'
     folder: Path = Path(__file__).parent / 'commands'
 
@@ -48,9 +47,7 @@ class PrismaCLI(click.MultiCommand):
         commands.sort()
         return commands
 
-    def get_command(
-        self, ctx: click.Context, cmd_name: str
-    ) -> Optional[click.Command]:
+    def get_command(self, ctx: click.Context, cmd_name: str) -> Optional[click.Command]:
         name = f'{self.base_package}.{cmd_name}'
         if not module_exists(name):
             # command not found
@@ -58,9 +55,7 @@ class PrismaCLI(click.MultiCommand):
 
         mod = __import__(name, None, None, ['cli'])
 
-        assert hasattr(
-            mod, 'cli'
-        ), f'Expected command module {name} to contain a "cli" attribute'
+        assert hasattr(mod, 'cli'), f'Expected command module {name} to contain a "cli" attribute'
         assert isinstance(mod.cli, click.Command), (
             f'Expected command module attribute {name}.cli to be a {click.Command} '
             f'instance but got {type(mod.cli)} instead'
@@ -105,9 +100,7 @@ class EnumChoice(click.Choice):
         param: Optional[click.Parameter],
         ctx: Optional[click.Context],
     ) -> str:
-        return str(
-            cast(Any, self.__enum(super().convert(value, param, ctx)).value)
-        )
+        return str(cast(Any, self.__enum(super().convert(value, param, ctx)).value))
 
 
 def is_module(path: Path) -> bool:
@@ -120,9 +113,7 @@ def maybe_exit(retcode: int) -> None:
         sys.exit(retcode)
 
 
-def generate_client(
-    schema: Optional[str] = None, *, reload: bool = False
-) -> None:
+def generate_client(schema: Optional[str] = None, *, reload: bool = False) -> None:
     """Run `prisma generate` and update sys.modules"""
     args = ['generate']
     if schema is not None:
@@ -137,10 +128,7 @@ def generate_client(
 
 
 def warning(message: str) -> None:
-    click.echo(
-        click.style('WARNING: ', fg='bright_yellow')
-        + click.style(message, bold=True)
-    )
+    click.echo(click.style('WARNING: ', fg='bright_yellow') + click.style(message, bold=True))
 
 
 @overload

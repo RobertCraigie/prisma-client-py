@@ -32,9 +32,7 @@ async def test_model_query(client: Prisma) -> None:
             },
         )
 
-    found = await client.user.find_unique(
-        where={'id': user.id}, include={'profile': True}
-    )
+    found = await client.user.find_unique(where={'id': user.id}, include={'profile': True})
     assert found is not None
     assert found.name == 'Robert'
     assert found.profile is not None
@@ -63,9 +61,7 @@ async def test_context_manager(client: Prisma) -> None:
             },
         )
 
-    found = await client.user.find_unique(
-        where={'id': user.id}, include={'profile': True}
-    )
+    found = await client.user.find_unique(where={'id': user.id}, include={'profile': True})
     assert found is not None
     assert found.name == 'Robert'
     assert found.profile is not None
@@ -109,9 +105,7 @@ async def test_timeout(client: Prisma) -> None:
     # this outer block is necessary becuse to the context manager it appears that no error
     # ocurred so it will attempt to commit the transaction, triggering the expired error again
     with pytest.raises(prisma.errors.TransactionExpiredError):
-        async with client.tx(
-            timeout=timedelta(milliseconds=50)
-        ) as transaction:
+        async with client.tx(timeout=timedelta(milliseconds=50)) as transaction:
             await asyncio.sleep(0.05)
 
             with pytest.raises(prisma.errors.TransactionExpiredError) as exc:
@@ -121,15 +115,11 @@ async def test_timeout(client: Prisma) -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.skipif(
-    CURRENT_DATABASE == 'sqlite', reason='This is currently broken...'
-)
+@pytest.mark.skipif(CURRENT_DATABASE == 'sqlite', reason='This is currently broken...')
 async def test_concurrent_transactions(client: Prisma) -> None:
     """Two separate transactions can be used independently of each other at the same time"""
     timeout = timedelta(milliseconds=15000)
-    async with client.tx(timeout=timeout) as tx1, client.tx(
-        timeout=timeout
-    ) as tx2:
+    async with client.tx(timeout=timeout) as tx1, client.tx(timeout=timeout) as tx2:
         user1 = await tx1.user.create({'name': 'Tegan'})
         user2 = await tx2.user.create({'name': 'Robert'})
 

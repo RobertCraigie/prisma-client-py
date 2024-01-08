@@ -27,9 +27,7 @@ def assert_session_state(http: HTTP, state: State) -> None:
         with pytest.raises(HTTPClientClosedError):
             assert http.session
     else:  # pragma: no cover
-        raise ValueError(
-            f'Unknown value {state} for state, must be one of initial, open or closed'
-        )
+        raise ValueError(f'Unknown value {state} for state, must be one of initial, open or closed')
 
 
 @pytest.mark.asyncio

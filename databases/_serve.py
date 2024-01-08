@@ -21,9 +21,7 @@ def start_database(
     if database == 'sqlite':
         raise ValueError('Cannot start a server for SQLite.')
 
-    args = shlex.split(
-        f'docker compose -f {DOCKER_COMPOSE_FILE} up -d --remove-orphans'
-    )
+    args = shlex.split(f'docker compose -f {DOCKER_COMPOSE_FILE} up -d --remove-orphans')
     session.run_always(
         *args,
         f'{database}{_format_version(version)}',

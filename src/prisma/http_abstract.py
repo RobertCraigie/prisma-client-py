@@ -54,9 +54,7 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         ...
 
     @abstractmethod
-    def request(
-        self, method: Method, url: str, **kwargs: Any
-    ) -> MaybeCoroutine['AbstractResponse[Response]']:
+    def request(self, method: Method, url: str, **kwargs: Any) -> MaybeCoroutine['AbstractResponse[Response]']:
         ...
 
     @abstractmethod
@@ -85,9 +83,7 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         return cast(Session, session)
 
     @session.setter
-    def session(
-        self, value: Optional[Session]
-    ) -> None:  # pyright: ignore[reportPropertyTypeMismatch]
+    def session(self, value: Optional[Session]) -> None:  # pyright: ignore[reportPropertyTypeMismatch]
         self._session = value
 
     def should_close(self) -> bool:

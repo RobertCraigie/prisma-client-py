@@ -32,11 +32,7 @@ def test_json(client: Prisma) -> None:
     assert metrics.counters[0].value > 0
 
     assert len(metrics.gauges) > 0
-    gauge = next(
-        filter(
-            lambda g: g.key == 'prisma_pool_connections_open', metrics.gauges
-        )
-    )
+    gauge = next(filter(lambda g: g.key == 'prisma_pool_connections_open', metrics.gauges))
     assert gauge.value > 0
 
     assert len(metrics.histograms) > 0

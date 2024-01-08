@@ -37,9 +37,7 @@ VERSION_RE = re.compile(r'v?(\d+)(?:\.?(\d+))')
 
 class UnknownTargetError(PrismaError):
     def __init__(self, *, target: str) -> None:
-        super().__init__(
-            f'Unknown target: {target}; Valid choices are: {", ".join(get_args(cast(type, Target)))}'
-        )
+        super().__init__(f'Unknown target: {target}; Valid choices are: {", ".join(get_args(cast(type, Target)))}')
 
 
 # TODO: add tests for this error

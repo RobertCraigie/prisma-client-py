@@ -108,14 +108,9 @@ def test_docs_example(snapshot: SnapshotAssertion, client: Prisma) -> None:
 
 @pytest.mark.persist_data
 @pytest.mark.parametrize('order', ['asc', 'desc'])
-def test_order(
-    snapshot: SnapshotAssertion, client: Prisma, order: SortOrder
-) -> None:
+def test_order(snapshot: SnapshotAssertion, client: Prisma, order: SortOrder) -> None:
     """Test ordering results by a grouped field"""
-    assert (
-        client.profile.group_by(['country'], order={'country': order})
-        == snapshot
-    )
+    assert client.profile.group_by(['country'], order={'country': order}) == snapshot
 
 
 @pytest.mark.persist_data
@@ -160,8 +155,7 @@ def test_order_mismatched_arguments(client: Prisma) -> None:
         )
 
     assert exc.match(
-        r'Every field used for orderBy must be included in the by-arguments of the query\. '
-        r'Missing fields: country'
+        r'Every field used for orderBy must be included in the by-arguments of the query\. ' r'Missing fields: country'
     )
 
 
@@ -189,9 +183,7 @@ def test_take_missing_order_argument(client: Prisma) -> None:
     with pytest.raises(TypeError) as exc:
         client.profile.group_by(['country'], take=1)
 
-    assert exc.match(
-        "Missing argument: 'order' which is required when 'take' is present"
-    )
+    assert exc.match("Missing argument: 'order' which is required when 'take' is present")
 
 
 @pytest.mark.persist_data
@@ -218,9 +210,7 @@ def test_skip_missing_order_argument(client: Prisma) -> None:
     with pytest.raises(TypeError) as exc:
         client.profile.group_by(['country'], skip=1)
 
-    assert exc.match(
-        "Missing argument: 'order' which is required when 'skip' is present"
-    )
+    assert exc.match("Missing argument: 'order' which is required when 'skip' is present")
 
 
 @pytest.mark.persist_data
@@ -277,9 +267,7 @@ def test_having_missing_field_in_by(client: Prisma) -> None:
 
 
 @pytest.mark.persist_data
-def test_having_aggregation(
-    snapshot: SnapshotAssertion, client: Prisma
-) -> None:
+def test_having_aggregation(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Having aggregation filters records correctly"""
     assert (
         client.profile.group_by(
@@ -318,9 +306,7 @@ def test_having_aggregation(
 
 
 @pytest.mark.persist_data
-def test_having_aggregation_nested(
-    snapshot: SnapshotAssertion, client: Prisma
-) -> None:
+def test_having_aggregation_nested(snapshot: SnapshotAssertion, client: Prisma) -> None:
     """Having aggregation filters nested within statements correctly filters records"""
     results = client.profile.group_by(
         by=['country'],

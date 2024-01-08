@@ -11,11 +11,7 @@ def iter_templates_dir(path: Path) -> Iterator[Path]:
     for template in templates.iterdir():
         name = template.name
 
-        if (
-            template.is_dir()
-            or not name.endswith('.py.jinja')
-            or name.startswith('_')
-        ):
+        if template.is_dir() or not name.endswith('.py.jinja') or name.startswith('_'):
             continue
 
         yield resolve_template_path(path, template.relative_to(templates))

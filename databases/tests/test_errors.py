@@ -58,9 +58,7 @@ async def test_foreign_key_violation_error(client: Prisma) -> None:
     """The ForeignKeyViolationError is raised when a foreign key is invalid."""
     with pytest.raises(
         ForeignKeyViolationError,
-        match=re.compile(
-            r'foreign key constraint failed on the field', re.IGNORECASE
-        ),
+        match=re.compile(r'foreign key constraint failed on the field', re.IGNORECASE),
     ):
         await client.post.create(
             data={

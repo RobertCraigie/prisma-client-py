@@ -10,12 +10,8 @@ from ..utils import Testdir
 def _remove_known_warnings(output: str) -> str:
     # as we run generation under coverage we need to remove any warnings
     # for example, coverage.py will warn that the tests module was not imported
-    output = re.sub(
-        r'.* prisma:GeneratorProcess .* CoverageWarning:.*', '', output
-    )
-    output = re.sub(
-        r'.* prisma:GeneratorProcess .* was never imported.*', '', output
-    )
+    output = re.sub(r'.* prisma:GeneratorProcess .* CoverageWarning:.*', '', output)
+    output = re.sub(r'.* prisma:GeneratorProcess .* was never imported.*', '', output)
 
     # unknown why this is logged but it doesn't seem to effect anything
     output = re.sub(
@@ -45,9 +41,8 @@ def test_model_name_python_keyword(testdir: Testdir) -> None:
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(schema=schema)
 
-    assert (
-        'Model name "from" shadows a Python keyword; use a different model name with \'@@map("from")\''
-        in str(exc.value.output, 'utf-8')
+    assert 'Model name "from" shadows a Python keyword; use a different model name with \'@@map("from")\'' in str(
+        exc.value.output, 'utf-8'
     )
 
 
@@ -87,8 +82,7 @@ def test_field_name_basemodel_attribute(testdir: Testdir) -> None:
 
     assert (
         'Field name "json" shadows a BaseModel attribute; '
-        'use a different field name with \'@map("json")\''
-        in str(exc.value.output, 'utf-8')
+        'use a different field name with \'@map("json")\'' in str(exc.value.output, 'utf-8')
     )
 
 
@@ -106,9 +100,8 @@ def test_field_name_python_keyword(testdir: Testdir) -> None:
     with pytest.raises(subprocess.CalledProcessError) as exc:
         testdir.generate(schema=schema)
 
-    assert (
-        'Field name "from" shadows a Python keyword; use a different field name with \'@map("from")\''
-        in str(exc.value.output, 'utf-8')
+    assert 'Field name "from" shadows a Python keyword; use a different field name with \'@map("from")\'' in str(
+        exc.value.output, 'utf-8'
     )
 
 
@@ -153,8 +146,7 @@ def test_field_name_matching_query_builder_alias_not_allowed(
         testdir.generate(schema=schema)
 
     assert (
-        'Field name "order_by" shadows an internal keyword; '
-        'use a different field name with \'@map("order_by")\''
+        'Field name "order_by" shadows an internal keyword; ' 'use a different field name with \'@map("order_by")\''
     ) in str(exc.value.output, 'utf-8')
 
 
@@ -172,16 +164,11 @@ def test_native_binary_target_no_warning(testdir: Testdir) -> None:
 def test_binary_targets_warning(testdir: Testdir) -> None:
     """Binary targets option being present raises a warning"""
     with temp_env_update({'PRISMA_PY_DEBUG': '0'}):
-        result = testdir.generate(
-            options='binaryTargets = ["native", "rhel-openssl-1.1.x"]'
-        )
+        result = testdir.generate(options='binaryTargets = ["native", "rhel-openssl-1.1.x"]')
 
     stdout = result.stdout.decode('utf-8')
     assert_no_generator_output(stdout)
-    assert (
-        'Warning: The binaryTargets option '
-        'is not officially supported by Prisma Client Python' in stdout
-    )
+    assert 'Warning: The binaryTargets option ' 'is not officially supported by Prisma Client Python' in stdout
 
 
 @pytest.mark.parametrize(
@@ -197,14 +184,8 @@ def test_old_http_option(testdir: Testdir, http: str, new: str) -> None:
         testdir.generate(options=f'http = "{http}"')
 
     stdout = exc.value.stdout.decode('utf-8')
-    assert (
-        'The http option has been removed '
-        'in favour of the interface option.' in stdout
-    )
-    assert (
-        'Please remove the http option from '
-        'your Prisma schema and replace it with:' in stdout
-    )
+    assert 'The http option has been removed ' 'in favour of the interface option.' in stdout
+    assert 'Please remove the http option from ' 'your Prisma schema and replace it with:' in stdout
     assert f'interface = "{new}"' in stdout
 
 
@@ -224,9 +205,7 @@ def test_decimal_type_experimental(testdir: Testdir) -> None:
 
     output = str(exc.value.output, 'utf-8')
     assert 'Support for the Decimal type is experimental' in output
-    assert (
-        'set the `enable_experimental_decimal` config flag to true' in output
-    )
+    assert 'set the `enable_experimental_decimal` config flag to true' in output
 
 
 def test_composite_type_not_supported(testdir: Testdir) -> None:
@@ -254,7 +233,4 @@ def test_composite_type_not_supported(testdir: Testdir) -> None:
 
     output = str(exc.value.output, 'utf-8')
     assert 'Composite types are not supported yet.' in output
-    assert (
-        'https://github.com/RobertCraigie/prisma-client-py/issues/314'
-        in output
-    )
+    assert 'https://github.com/RobertCraigie/prisma-client-py/issues/314' in output

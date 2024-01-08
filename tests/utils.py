@@ -132,9 +132,7 @@ class Runner:
         call stack.
         """
 
-        def _patched_subprocess_run(
-            *args: Any, **kwargs: Any
-        ) -> 'subprocess.CompletedProcess[str]':
+        def _patched_subprocess_run(*args: Any, **kwargs: Any) -> 'subprocess.CompletedProcess[str]':
             kwargs['stdout'] = subprocess.PIPE
             kwargs['stderr'] = subprocess.PIPE
             kwargs['encoding'] = sys.getdefaultencoding()
@@ -148,9 +146,7 @@ class Runner:
             return process
 
         old_subprocess_run = subprocess.run
-        self._patcher.setattr(
-            subprocess, 'run', _patched_subprocess_run, raising=True
-        )
+        self._patcher.setattr(subprocess, 'run', _patched_subprocess_run, raising=True)
 
 
 class Testdir:
@@ -162,9 +158,7 @@ class Testdir:
     def __init__(self, pytester: Pytester) -> None:
         self.pytester = pytester
 
-    def _make_relative(
-        self, path: Union[str, Path]
-    ) -> str:  # pragma: no cover
+    def _make_relative(self, path: Union[str, Path]) -> str:  # pragma: no cover
         if not isinstance(path, Path):
             path = Path(path)
 
@@ -192,9 +186,7 @@ class Testdir:
         copy_tree(BASE_PACKAGE_DIR, path)
 
         if clean:  # pragma: no branch
-            result = self.runpython_c(
-                'import prisma_cleanup; prisma_cleanup.cleanup()'
-            )
+            result = self.runpython_c('import prisma_cleanup; prisma_cleanup.cleanup()')
             assert result.ret == 0
 
     def generate(
@@ -210,9 +202,7 @@ class Testdir:
         )
         print(str(proc.stdout, sys.getdefaultencoding()), file=sys.stdout)
         if proc.returncode != 0:
-            raise subprocess.CalledProcessError(
-                proc.returncode, args, proc.stdout, proc.stderr
-            )
+            raise subprocess.CalledProcessError(proc.returncode, args, proc.stdout, proc.stderr)
 
         return proc
 
@@ -242,9 +232,7 @@ class Testdir:
     def makefile(self, ext: str, *args: str, **kwargs: str) -> None:
         self.pytester.makefile(ext, *args, **kwargs)
 
-    def runpytest(
-        self, *args: Union[str, 'os.PathLike[str]'], **kwargs: Any
-    ) -> 'RunResult':
+    def runpytest(self, *args: Union[str, 'os.PathLike[str]'], **kwargs: Any) -> 'RunResult':
         # pytest-sugar breaks result parsing
         return self.pytester.runpytest('-p', 'no:sugar', *args, **kwargs)
 
@@ -330,6 +318,4 @@ def patch_method(
     return lambda: captured
 
 
-skipif_windows = pytest.mark.skipif(
-    platform.name() == 'windows', reason='Test is disabled on windows'
-)
+skipif_windows = pytest.mark.skipif(platform.name() == 'windows', reason='Test is disabled on windows')

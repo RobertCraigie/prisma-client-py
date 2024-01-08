@@ -50,9 +50,7 @@ class DefaultConfig(BaseSettings):
     )
 
     # Workaround to support setting the binary platform until it can be properly implemented
-    binary_platform: Optional[str] = Field(
-        env='PRISMA_BINARY_PLATFORM', default=None
-    )
+    binary_platform: Optional[str] = Field(env='PRISMA_BINARY_PLATFORM', default=None)
 
     # Whether or not to use the global node installation (if available)
     use_global_node: bool = Field(env='PRISMA_USE_GLOBAL_NODE', default=True)
@@ -69,10 +67,7 @@ class DefaultConfig(BaseSettings):
     # Where to download nodeenv to, defaults to ~/.cache/prisma-python/nodeenv
     nodeenv_cache_dir: Path = Field(
         env='PRISMA_NODEENV_CACHE_DIR',
-        default_factory=lambda: Path.home()
-        / '.cache'
-        / 'prisma-python'
-        / 'nodeenv',
+        default_factory=lambda: Path.home() / '.cache' / 'prisma-python' / 'nodeenv',
     )
 
     if PYDANTIC_V2:
@@ -84,9 +79,7 @@ class DefaultConfig(BaseSettings):
                 extra: Extra = pydantic.Extra.ignore
 
                 @classmethod
-                def customise_sources(
-                    cls, init_settings, env_settings, file_secret_settings
-                ):
+                def customise_sources(cls, init_settings, env_settings, file_secret_settings):
                     # prioritise env settings over init settings
                     return env_settings, init_settings, file_secret_settings
 
@@ -114,11 +107,7 @@ class Config(DefaultConfig):
             path = Path('pyproject.toml')
 
         if path.exists():
-            config = (
-                tomlkit.loads(path.read_text())
-                .get('tool', {})
-                .get('prisma', {})
-            )
+            config = tomlkit.loads(path.read_text()).get('tool', {}).get('prisma', {})
         else:
             config = {}
 

@@ -20,9 +20,7 @@ class HTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
                 async for chunk in resp.aiter_bytes():
                     fd.write(chunk)
 
-    async def request(
-        self, method: Method, url: str, **kwargs: Any
-    ) -> 'Response':
+    async def request(self, method: Method, url: str, **kwargs: Any) -> 'Response':
         return Response(await self.session.request(method, url, **kwargs))
 
     def open(self) -> None:
@@ -56,6 +54,4 @@ class Response(AbstractResponse[httpx.Response]):
         return json.loads(await self.original.aread(), **kwargs)
 
     async def text(self, **kwargs: Any) -> str:
-        return ''.join(
-            [part async for part in self.original.aiter_text(**kwargs)]
-        )
+        return ''.join([part async for part in self.original.aiter_text(**kwargs)])

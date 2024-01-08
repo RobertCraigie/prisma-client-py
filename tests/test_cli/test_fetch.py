@@ -9,9 +9,7 @@ from ..utils import Runner, set_config
 
 def assert_success(result: Result) -> None:
     assert result.exit_code == 0
-    assert result.output.endswith(
-        f'Downloaded binaries to {config.binary_cache_dir}\n'
-    )
+    assert result.output.endswith(f'Downloaded binaries to {config.binary_cache_dir}\n')
 
 
 def test_fetch(runner: Runner) -> None:
