@@ -16,6 +16,7 @@ def lint(session: nox.Session) -> None:
 
     generate(session)
 
+    session.run('ruff', 'check')
     session.run('ruff', 'format', '--check')
     session.run('pyright')
     session.run('pyright', '--ignoreexternal', '--verifytypes', 'prisma')

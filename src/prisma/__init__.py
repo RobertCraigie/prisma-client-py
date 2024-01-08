@@ -43,7 +43,7 @@ except ModuleNotFoundError:
         def __getattr__(name: str):
             try:
                 return globals()[name]
-            except KeyError:
+            except KeyError as err:
                 # TODO: support checking for 'models' here too
                 if name in {'Prisma', 'Client'}:
                     # TODO: remove this frame from the stack trace
@@ -54,7 +54,7 @@ except ModuleNotFoundError:
                     ) from None
 
                 # leaves handling of this potential error to Python as per PEP 562
-                raise AttributeError()
+                raise AttributeError() from err
 
 
 setup_logging()

@@ -180,7 +180,7 @@ class NodeBinaryStrategy(Strategy):
                     stderr=sys.stderr,
                 )
             except Exception as exc:
-                print(
+                print(  # noqa: T201
                     'nodeenv installation failed; You may want to try installing `nodejs-bin` as it is more reliable.',
                     file=sys.stderr,
                 )

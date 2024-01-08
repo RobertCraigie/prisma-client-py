@@ -2,13 +2,40 @@
 line-length = 120
 output-format = "grouped"
 target-version = "py37"
+select = [
+  # bugbear rules
+  "B",
+  # remove unused imports
+  "F401",
+  # bare except statements
+  "E722",
+  # unused arguments
+  "ARG",
+  # print statements
+  "T201",
+  "T203",
+]
+ignore = [
+  # mutable defaults
+  "B006",
+  # function calls in defaults
+  "B008",
+]
+extend-exclude = ["typesafety/**.py"]
 
 # TODO: isort
-# TODO: lint rules
 
 [tool.ruff.format]
 quote-style = "single"
 docstring-code-format = true
+
+[tool.ruff.per-file-ignores]
+"bin/**.py" = ["T201", "T203"]
+"tests/**.py" = ["T201", "T203", "ARG"]
+"examples/**.py" = ["T201", "T203"]
+"databases/**.py" = ["T201", "T203"]
+"docs/**.py" = ["T201", "T203"]
+"pipelines/**.py" = ["T201", "T203"]
 
 [tool.pyright]
 include = [

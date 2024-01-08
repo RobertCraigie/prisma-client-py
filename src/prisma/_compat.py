@@ -121,7 +121,10 @@ else:
         BaseConfig = None
 
     else:
-        from pydantic import BaseSettings, BaseConfig
+        from pydantic import (
+            BaseSettings as BaseSettings,
+            BaseConfig as BaseConfig,
+        )
 
         BaseSettingsConfig = BaseSettings.Config
 
@@ -130,19 +133,19 @@ else:
 if TYPE_CHECKING:
     from pydantic.v1 import Extra as Extra
 
-    def get_args(t: type[Any]) -> tuple[Any, ...]:
+    def get_args(t: type[Any]) -> tuple[Any, ...]:  # noqa: ARG001
         ...
 
-    def is_union(tp: type[Any] | None) -> bool:
+    def is_union(tp: type[Any] | None) -> bool:  # noqa: ARG001
         ...
 
-    def get_origin(t: type[Any]) -> type[Any] | None:
+    def get_origin(t: type[Any]) -> type[Any] | None:  # noqa: ARG001
         ...
 
-    def is_literal_type(type_: type[Any]) -> bool:
+    def is_literal_type(type_: type[Any]) -> bool:  # noqa: ARG001
         ...
 
-    def is_typeddict(type_: type[Any]) -> bool:
+    def is_typeddict(type_: type[Any]) -> bool:  # noqa: ARG001
         ...
 
 else:
@@ -339,9 +342,9 @@ if TYPE_CHECKING:
     StrEnum = Enum
 else:
     try:
-        from enum import StrEnum
+        from enum import StrEnum as StrEnum
     except ImportError:
-        from strenum import StrEnum
+        from strenum import StrEnum as StrEnum
 
 
 def removeprefix(string: str, prefix: str) -> str:

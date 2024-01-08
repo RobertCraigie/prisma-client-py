@@ -66,7 +66,7 @@ log: logging.Logger = logging.getLogger(__name__)
 # pyright: reportGeneralTypeIssues=false, reportUnnecessaryComparison=false
 
 
-def plugin(version: str) -> TypingType[Plugin]:
+def plugin(version: str) -> TypingType[Plugin]:  # noqa: ARG001
     return PrismaPlugin
 
 
