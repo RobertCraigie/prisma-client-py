@@ -24,9 +24,7 @@ def linux_distro() -> str:
     if distro_id == 'alpine':
         return 'alpine'
 
-    if any(
-        distro in distro_id_like for distro in ['centos', 'fedora', 'rhel']
-    ):
+    if any(distro in distro_id_like for distro in ['centos', 'fedora', 'rhel']):
         return 'rhel'
 
     # default to debian
@@ -34,9 +32,7 @@ def linux_distro() -> str:
 
 
 def _get_linux_distro_details() -> Tuple[str, str]:
-    process = subprocess.run(
-        ['cat', '/etc/os-release'], stdout=subprocess.PIPE, check=True
-    )
+    process = subprocess.run(['cat', '/etc/os-release'], stdout=subprocess.PIPE, check=True)
     output = str(process.stdout, sys.getdefaultencoding())
 
     match = re.search(r'ID="?([^"\n]*)"?', output)
@@ -62,9 +58,7 @@ def binary_platform() -> str:
 
 
 def get_openssl() -> str:
-    process = subprocess.run(
-        ['openssl', 'version', '-v'], stdout=subprocess.PIPE, check=True
-    )
+    process = subprocess.run(['openssl', 'version', '-v'], stdout=subprocess.PIPE, check=True)
     return parse_openssl_version(str(process.stdout, sys.getdefaultencoding()))
 
 
