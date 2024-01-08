@@ -2,7 +2,7 @@
 -r node.txt
 -r dev.txt
 -r deps/pyright.txt
--r deps/blue.txt
+-r deps/ruff.txt
 -r deps/mypy.txt
 -r ../../databases/requirements.txt
 interrogate==1.5.0

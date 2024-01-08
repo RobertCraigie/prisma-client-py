@@ -18,7 +18,7 @@ test:
 
 .PHONY: format
 format:
-	blue .
+	ruff format
 	for schema in `find . -name '*.schema.prisma'` ; do \
         prisma format --schema=$$schema ; \
     done

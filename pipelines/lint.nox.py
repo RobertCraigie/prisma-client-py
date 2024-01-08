@@ -16,7 +16,7 @@ def lint(session: nox.Session) -> None:
 
     generate(session)
 
-    session.run('blue', '--check', '.')
+    session.run('ruff', 'format', '--check')
     session.run('pyright')
     session.run('pyright', '--ignoreexternal', '--verifytypes', 'prisma')
     session.run(
@@ -59,10 +59,10 @@ def mypy(session: nox.Session) -> None:
 @nox.session
 def format(session: nox.Session) -> None:
     """Format Python source code and all Prisma Schema files"""
-    session.install('-r', 'pipelines/requirements/deps/blue.txt')
+    session.install('-r', 'pipelines/requirements/deps/ruff.txt')
     session.install('-e', '.')
 
-    session.run('blue', '.')
+    session.run('ruff', 'format')
 
     for entry in Path.cwd().glob('**/*.schema.prisma'):
         session.run('prisma', 'format', f'--schema={entry}')

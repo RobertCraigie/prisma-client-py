@@ -1,3 +1,15 @@
+[tool.ruff]
+line-length = 120
+output-format = "grouped"
+target-version = "py37"
+
+# TODO: isort
+# TODO: lint rules
+
+[tool.ruff.format]
+quote-style = "single"
+docstring-code-format = true
+
 [tool.pyright]
 include = [
     "src",

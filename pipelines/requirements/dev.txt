@@ -1,8 +1,8 @@
 -r deps/syrupy.txt
+-r deps/ruff.txt
 
 nox==2022.11.21
 wheel==0.42.0
-blue==0.9.1
 pre-commit==2.21.0
 twine==4.0.2
 typer==0.9.0
