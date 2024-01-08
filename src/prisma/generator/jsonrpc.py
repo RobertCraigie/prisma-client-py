@@ -106,5 +106,5 @@ def parse(line: str) -> Request:
 
 def reply(response: Response) -> None:
     dumped = model_json(response) + '\n'
-    print(dumped, file=sys.stderr, flush=True)
+    print(dumped, file=sys.stderr, flush=True)  # noqa: T201
     log.debug('Replied with %s', dumped)

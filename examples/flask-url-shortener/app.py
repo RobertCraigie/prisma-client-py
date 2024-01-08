@@ -15,7 +15,7 @@ def get_db() -> Prisma:
         return db
 
 
-def close_db(exc: Optional[Exception] = None) -> None:
+def close_db(exc: Optional[Exception] = None) -> None:  # noqa: ARG001
     client = get_client()
     if client.is_connected():
         client.disconnect()

@@ -223,7 +223,7 @@ def raises_command(
     except CommandFailed as exc:
         match = COMMAND_FAILED_RE.match(exc.reason or '')
         if match is None:
-            raise RuntimeError(f'Could not extract exit code from exception {exc}')
+            raise RuntimeError(f'Could not extract exit code from exception {exc}') from exc
 
         exit_code = int(match.group(1))
         if exit_code not in allowed_exit_codes:
@@ -231,7 +231,7 @@ def raises_command(
                 f'Unknown code: {exit_code}; Something may have gone wrong '
                 + 'or this exit code must be added to the list of known exit codes; '
                 + f'Allowed exit codes: {allowed_exit_codes}'
-            )
+            ) from exc
 
         result.did_raise = True
 

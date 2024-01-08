@@ -31,7 +31,7 @@ class PrismaCLI(click.MultiCommand):
     base_package: str = 'prisma.cli.commands'
     folder: Path = Path(__file__).parent / 'commands'
 
-    def list_commands(self, ctx: click.Context) -> List[str]:
+    def list_commands(self, ctx: click.Context) -> List[str]:  # noqa: ARG002
         commands: List[str] = []
 
         for path in self.folder.iterdir():
@@ -47,7 +47,7 @@ class PrismaCLI(click.MultiCommand):
         commands.sort()
         return commands
 
-    def get_command(self, ctx: click.Context, cmd_name: str) -> Optional[click.Command]:
+    def get_command(self, ctx: click.Context, cmd_name: str) -> Optional[click.Command]:  # noqa: ARG002
         name = f'{self.base_package}.{cmd_name}'
         if not module_exists(name):
             # command not found

@@ -59,7 +59,7 @@ def cleanup(pkg_name: str = 'prisma') -> None:
     from prisma.generator.generator import cleanup_templates
 
     cleanup_templates(rootdir=pkg_path.parent)
-    print(f'Successfully removed all auto-generated files from {pkg_path}')
+    print(f'Successfully removed all auto-generated files from {pkg_path}')  # noqa: T201
 
 
 if __name__ == '__main__':

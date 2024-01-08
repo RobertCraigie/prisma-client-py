@@ -13,7 +13,7 @@ async def main(client: Prisma) -> None:
         ...
 
     assert user.posts is not None
-    for post in user.posts:
+    for _post in user.posts:
         ...
 
     reveal_type(user.posts)  # T: List[Post]

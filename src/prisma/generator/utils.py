@@ -105,7 +105,7 @@ def copy_tree(src: Path, dst: Path) -> None:
         makedirs: Any,
         name: str,
         mode: int = 511,
-        exist_ok: bool = True,
+        exist_ok: bool = True,  # noqa: ARG001
     ) -> None:
         makedirs(name, mode, exist_ok=True)
 
