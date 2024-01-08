@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="d_b22d2f7038698a23___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-01-08 04:43 +0000
+            created at 2024-01-08 14:01 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -115,7 +115,7 @@
     <p class="run"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t">    <span class="nam">base_package</span><span class="op">:</span> <span class="nam">str</span> <span class="op">=</span> <span class="str">'prisma.cli.commands'</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t">    <span class="nam">folder</span><span class="op">:</span> <span class="nam">Path</span> <span class="op">=</span> <span class="nam">Path</span><span class="op">(</span><span class="nam">__file__</span><span class="op">)</span><span class="op">.</span><span class="nam">parent</span> <span class="op">/</span> <span class="str">'commands'</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t">    <span class="key">def</span> <span class="nam">list_commands</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">ctx</span><span class="op">:</span> <span class="nam">click</span><span class="op">.</span><span class="nam">Context</span><span class="op">)</span> <span class="op">-></span> <span class="nam">List</span><span class="op">[</span><span class="nam">str</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t">    <span class="key">def</span> <span class="nam">list_commands</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">ctx</span><span class="op">:</span> <span class="nam">click</span><span class="op">.</span><span class="nam">Context</span><span class="op">)</span> <span class="op">-></span> <span class="nam">List</span><span class="op">[</span><span class="nam">str</span><span class="op">]</span><span class="op">:</span>  <span class="com"># noqa: ARG002</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t">        <span class="nam">commands</span><span class="op">:</span> <span class="nam">List</span><span class="op">[</span><span class="nam">str</span><span class="op">]</span> <span class="op">=</span> <span class="op">[</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">        <span class="key">for</span> <span class="nam">path</span> <span class="key">in</span> <span class="nam">self</span><span class="op">.</span><span class="nam">folder</span><span class="op">.</span><span class="nam">iterdir</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -131,7 +131,7 @@
     <p class="run"><span class="n"><a id="t47" href="#t47">47</a></span><span class="t">        <span class="nam">commands</span><span class="op">.</span><span class="nam">sort</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t48" href="#t48">48</a></span><span class="t">        <span class="key">return</span> <span class="nam">commands</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t">    <span class="key">def</span> <span class="nam">get_command</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">ctx</span><span class="op">:</span> <span class="nam">click</span><span class="op">.</span><span class="nam">Context</span><span class="op">,</span> <span class="nam">cmd_name</span><span class="op">:</span> <span class="nam">str</span><span class="op">)</span> <span class="op">-></span> <span class="nam">Optional</span><span class="op">[</span><span class="nam">click</span><span class="op">.</span><span class="nam">Command</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t">    <span class="key">def</span> <span class="nam">get_command</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">ctx</span><span class="op">:</span> <span class="nam">click</span><span class="op">.</span><span class="nam">Context</span><span class="op">,</span> <span class="nam">cmd_name</span><span class="op">:</span> <span class="nam">str</span><span class="op">)</span> <span class="op">-></span> <span class="nam">Optional</span><span class="op">[</span><span class="nam">click</span><span class="op">.</span><span class="nam">Command</span><span class="op">]</span><span class="op">:</span>  <span class="com"># noqa: ARG002</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t">        <span class="nam">name</span> <span class="op">=</span> <span class="str">f'{self.base_package}.{cmd_name}'</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t52" href="#t52">52</a></span><span class="t">        <span class="key">if</span> <span class="key">not</span> <span class="nam">module_exists</span><span class="op">(</span><span class="nam">name</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t53" href="#t53">53</a></span><span class="t">            <span class="com"># command not found</span>&nbsp;</span><span class="r"></span></p>
@@ -257,7 +257,7 @@
             <a id="nextFileLink" class="nav" href="d_b22d2f7038698a23___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-01-08 04:43 +0000
+            created at 2024-01-08 14:01 +0000
         </p>
     </div>
 </footer>
