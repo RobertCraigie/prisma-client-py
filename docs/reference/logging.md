@@ -25,7 +25,7 @@ This will not yet output any debug messages, in order to do so you must either:
 
   or
 
-* Programmatically engable debug messages
+* Programmatically enable debug messages
 
   ```py
   import logging
