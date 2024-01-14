@@ -4,7 +4,7 @@ __title__ = 'prisma'
 __author__ = 'RobertCraigie'
 __license__ = 'APACHE'
 __copyright__ = 'Copyright 2020-2023 RobertCraigie'
-__version__ = '0.11.0'
+__version__ = '0.12.0'
 
 from typing import TYPE_CHECKING
 
