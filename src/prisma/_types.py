@@ -1,4 +1,4 @@
-from typing import Callable, Coroutine, TypeVar, Type, Tuple, Any
+from typing import Callable, Coroutine, TypeVar, Type, Tuple, Any, Union
 from pydantic import BaseModel
 from typing_extensions import (
     TypeGuard as TypeGuard,
@@ -10,6 +10,8 @@ from typing_extensions import (
 )
 
 Method = Literal['GET', 'POST']
+
+_T = TypeVar('_T')
 
 CallableT = TypeVar('CallableT', bound='FuncType')
 BaseModelT = TypeVar('BaseModelT', bound=BaseModel)
@@ -27,6 +29,23 @@ class InheritsGeneric(Protocol):
 class _GenericAlias(Protocol):
     __origin__: Type[object]
 
+
+class NotGiven:
+    """Represents cases where a value has not been explicitly given.
+
+
+    Useful when `None` is not a possible default value.
+    """
+
+    def __bool__(self) -> bool:
+        return False
+
+    def __repr__(self) -> str:
+        return 'NOT_GIVEN'
+
+
+NOT_GIVEN = NotGiven()
+NotGivenOr = Union[_T, NotGiven]
 
 PrismaMethod = Literal[
     # raw queries
