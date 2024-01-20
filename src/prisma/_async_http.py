@@ -6,10 +6,10 @@ import httpx
 from ._types import Method
 from .http_abstract import AbstractHTTP, AbstractResponse
 
-__all__ = ('HTTP', 'Response', 'client')
+__all__ = ('HTTP', 'AsyncHTTP', 'Response', 'client')
 
 
-class HTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
+class AsyncHTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
     session: httpx.AsyncClient
 
     async def download(self, url: str, dest: str) -> None:
@@ -33,6 +33,9 @@ class HTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
             # session is not optional, however the argument that
             # the setter takes is optional, so this is fine
             self.session = None  # type: ignore[assignment]
+
+
+HTTP = AsyncHTTP
 
 
 client: HTTP = HTTP()

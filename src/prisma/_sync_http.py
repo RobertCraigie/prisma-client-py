@@ -5,10 +5,10 @@ import httpx
 from ._types import Method
 from .http_abstract import AbstractHTTP, AbstractResponse
 
-__all__ = ('HTTP', 'Response', 'client')
+__all__ = ('HTTP', 'SyncHTTP', 'Response', 'client')
 
 
-class HTTP(AbstractHTTP[httpx.Client, httpx.Response]):
+class SyncHTTP(AbstractHTTP[httpx.Client, httpx.Response]):
     session: httpx.Client
 
     def download(self, url: str, dest: str) -> None:
@@ -32,6 +32,8 @@ class HTTP(AbstractHTTP[httpx.Client, httpx.Response]):
     def __del__(self) -> None:
         self.close()
 
+
+HTTP = SyncHTTP
 
 client: HTTP = HTTP()
 
