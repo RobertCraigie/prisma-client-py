@@ -499,7 +499,7 @@ class Prisma:
 
     def _create_engine(self, dml_path: Path = PACKAGED_SCHEMA_PATH) -> AbstractEngine:
         if ENGINE_TYPE == EngineType.binary:
-            return QueryEngine(dml_path=dml_path, log_queries=self._log_queries, **self._http_config)
+            return QueryEngine(dml_path=dml_path, log_queries=self._log_queries, http_config=self._http_config)
 
         raise NotImplementedError(f'Unsupported engine type: {ENGINE_TYPE}')
 
