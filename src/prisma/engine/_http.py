@@ -9,12 +9,11 @@ import httpx
 
 from . import utils, errors
 from ..utils import is_dict
-from ._abstract import SyncAbstractEngine, AsyncAbstractEngine
 from .._types import Method
-from ..http_abstract import AbstractResponse
+from ._abstract import SyncAbstractEngine, AsyncAbstractEngine
 from .._sync_http import SyncHTTP
 from .._async_http import AsyncHTTP
-
+from ..http_abstract import AbstractResponse
 
 log: logging.Logger = logging.getLogger(__name__)
 
