@@ -7,10 +7,13 @@ import inspect
 import logging
 import warnings
 import contextlib
-from typing import Any, Dict, Union, TypeVar, Iterator, NoReturn, Coroutine
+from typing import TYPE_CHECKING, Any, Dict, Union, TypeVar, Iterator, NoReturn, Coroutine
 from importlib.util import find_spec
 
 from ._types import CoroType, FuncType, TypeGuard
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeGuard
 
 _T = TypeVar('_T')
 
@@ -132,3 +135,7 @@ def make_optional(value: _T) -> _T | None:
     but want to mark it as potentially None.
     """
     return value
+
+
+def is_dict(obj: object) -> TypeGuard[dict[object, object]]:
+    return isinstance(obj, dict)
