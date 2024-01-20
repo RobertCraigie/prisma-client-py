@@ -42,6 +42,7 @@ LiteralString = str
 from typing import TypeVar
 
 import httpx
+from . import _types
 from .utils import _NoneType
 
 
@@ -66,16 +67,7 @@ class DatasourceOverride(_DatasourceOverrideOptional):
     url: str
 
 
-# NOTE: we don't support some options as their type hints are not publicly exposed
-# https://github.com/encode/httpx/discussions/1977
-class HttpConfig(TypedDict, total=False):
-    app: Callable[[Mapping[str, Any], Any], Any]
-    http1: bool
-    http2: bool
-    limits: httpx.Limits
-    timeout: Union[None, float, httpx.Timeout]
-    trust_env: bool
-    max_redirects: int
+HttpConfig = _types.HttpConfig
 
 
 # types that can be serialized to json by our query builder

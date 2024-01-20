@@ -1,4 +1,6 @@
-from typing import Any, Type, Tuple, TypeVar, Callable, Coroutine
+from __future__ import annotations
+
+from typing import Any, Type, Tuple, Mapping, TypeVar, Callable, Coroutine
 from typing_extensions import (
     Literal as Literal,
     Protocol as Protocol,
@@ -8,6 +10,7 @@ from typing_extensions import (
     runtime_checkable as runtime_checkable,
 )
 
+import httpx
 from pydantic import BaseModel
 
 Method = Literal['GET', 'POST']
@@ -51,3 +54,15 @@ PrismaMethod = Literal[
     'find_unique',
     'find_unique_or_raise',
 ]
+
+
+# NOTE: we don't support some options as their type hints are not publicly exposed
+# https://github.com/encode/httpx/discussions/1977
+class HttpConfig(TypedDict, total=False):
+    app: Callable[[Mapping[str, Any], Any], Any]
+    http1: bool
+    http2: bool
+    limits: httpx.Limits
+    timeout: None | float | httpx.Timeout
+    trust_env: bool
+    max_redirects: int
