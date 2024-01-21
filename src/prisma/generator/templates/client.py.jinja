@@ -385,22 +385,6 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
         else:  # pragma: no cover
             raise RuntimeError(f'Unhandled engine type: {ENGINE_TYPE}')
 
-    def _make_sqlite_datasource(self) -> DatasourceOverride:
-        return {
-            'name': '{{ datasources[0].name }}',
-            'url': self._make_sqlite_url(self._default_datasource['url']),
-        }
-
-    def _make_sqlite_url(self, url: str, *, relative_to: Path = SCHEMA_PATH.parent) -> str:
-        url_path = removeprefix(removeprefix(url, 'file:'), 'sqlite:')
-        if url_path == url:
-            return url
-
-        if Path(url_path).is_absolute():
-            return url
-
-        return f'file:{relative_to.joinpath(url_path).resolve()}'
-
 
 class TransactionManager:
     """Context manager for wrapping a Prisma instance within a transaction.

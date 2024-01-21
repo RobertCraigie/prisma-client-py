@@ -10,6 +10,7 @@ from typing_extensions import Self
 from ._types import Datasource, HttpConfig, TransactionId, DatasourceOverride
 from .engine import BaseAbstractEngine, SyncAbstractEngine, AsyncAbstractEngine
 from .errors import ClientNotConnectedError, ClientNotRegisteredError
+from ._compat import removeprefix
 from ._registry import get_client
 from .generator.models import EngineType
 
@@ -191,6 +192,28 @@ class BasePrisma(Generic[_EngineT]):
             new._engine = self._internal_engine
 
         return new
+
+    def _make_sqlite_datasource(self) -> DatasourceOverride:
+        """Override the default SQLite path to protect against
+        https://github.com/RobertCraigie/prisma-client-py/issues/409
+        """
+        return {
+            'name': self._default_datasource['name'],
+            'url': self._make_sqlite_url(self._default_datasource['url']),
+        }
+
+    def _make_sqlite_url(self, url: str, *, relative_to: Path | None = None) -> str:
+        url_path = removeprefix(removeprefix(url, 'file:'), 'sqlite:')
+        if url_path == url:
+            return url
+
+        if Path(url_path).is_absolute():
+            return url
+
+        if relative_to is None:
+            relative_to = self._schema_path.parent
+
+        return f'file:{relative_to.joinpath(url_path).resolve()}'
 
 
 class SyncBasePrisma(BasePrisma[SyncAbstractEngine]):
