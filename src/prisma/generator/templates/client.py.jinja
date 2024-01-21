@@ -11,6 +11,7 @@ from types import TracebackType
 from pydantic import BaseModel
 
 from . import types, models, errors, actions
+from ._base_client import UseClientDefault, USE_CLIENT_DEFAULT
 from .types import DatasourceOverride, HttpConfig, MetricsFormat
 from ._types import BaseModelT, PrismaMethod, TransactionId
 from .bases import _PrismaModel
@@ -23,6 +24,7 @@ from ._raw_query import deserialize_raw_results
 from ._metrics import Metrics
 
 # re-exports
+from ._base_client import load_env as load_env
 from ._registry import (
     register as register,
     get_client as get_client,
@@ -48,42 +50,6 @@ SCHEMA_PATH = Path('{{ schema_path.as_posix() }}')
 PACKAGED_SCHEMA_PATH = Path(__file__).parent.joinpath('schema.prisma')
 ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
 BINARY_PATHS = model_parse(BinaryPaths, {{ binary_paths.dict(by_alias=True) }})
-
-class UseClientDefault:
-    """For certain parameters such as `timeout=...` we can make our intent more clear
-    by typing the parameter with this class rather than using None, for example:
-
-    ```py
-    def connect(timeout: Union[int, timedelta, UseClientDefault] = UseClientDefault()) -> None: ...
-    ```
-
-    relays the intention more clearly than:
-
-    ```py
-    def connect(timeout: Union[int, timedelta, None] = None) -> None: ...
-    ```
-
-    This solution also allows us to indicate an "unset" state that is uniquely distinct
-    from `None` which may be useful in the future.
-    """
-
-
-_USE_CLIENT_DEFAULT = UseClientDefault()
-
-
-def load_env(*, override: bool = False, **kwargs: Any) -> None:
-    """Load environemntal variables from dotenv files
-
-    Loads from the following files relative to the current
-    working directory:
-
-    - .env
-    - prisma/.env
-    """
-    from dotenv import load_dotenv
-
-    load_dotenv('.env', override=override, **kwargs)
-    load_dotenv('prisma/.env', override=override, **kwargs)
 
 
 class Prisma:
@@ -111,9 +77,9 @@ class Prisma:
         use_dotenv: bool = True,
         log_queries: bool = False,
         auto_register: bool = False,
-        datasource: Optional[DatasourceOverride] = None,
-        connect_timeout: Union[int, timedelta] = DEFAULT_CONNECT_TIMEOUT,
-        http: Optional[HttpConfig] = None,
+        datasource: DatasourceOverride | None = None,
+        connect_timeout: int | timedelta = DEFAULT_CONNECT_TIMEOUT,
+        http: HttpConfig | None = None,
     ) -> None:
         {% for model in dmmf.datamodel.models %}
         self.{{ model.name.lower() }} = actions.{{ model.name }}Actions[models.{{ model.name }}](self, models.{{ model.name }})
@@ -198,7 +164,7 @@ class Prisma:
 
     {{ maybe_async_def }}connect(
         self,
-        timeout: Union[int, timedelta, UseClientDefault] = _USE_CLIENT_DEFAULT,
+        timeout: Union[int, timedelta, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> None:
         """Connect to the Prisma query engine.
 
