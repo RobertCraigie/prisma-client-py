@@ -6,17 +6,14 @@ import time
 import socket
 import logging
 import subprocess
+from typing import Any, Dict, Type, NoReturn
 from pathlib import Path
-from typing import NoReturn, Dict, Type, Any
 
 from . import errors
-from .. import errors as prisma_errors
-
-from .. import config
-from ..http_abstract import AbstractResponse
+from .. import config, errors as prisma_errors
 from ..utils import DEBUG_GENERATOR, time_since
 from ..binaries import platform
-
+from ..http_abstract import AbstractResponse
 
 log: logging.Logger = logging.getLogger(__name__)
 

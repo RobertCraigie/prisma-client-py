@@ -1,5 +1,6 @@
 from pathlib import Path
-from prisma.generator import BaseGenerator, Manifest, DefaultData
+
+from prisma.generator import Manifest, DefaultData, BaseGenerator
 
 TEMPLATE = """
 # My Prisma Schema

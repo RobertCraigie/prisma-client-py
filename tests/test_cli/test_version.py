@@ -5,7 +5,6 @@ from _pytest.monkeypatch import MonkeyPatch
 
 from tests.utils import Runner
 
-
 HASH = re.compile(r'[a-f0-9]{40}')
 PLACEHOLDER = re.compile(r'.*')
 SEMANTIC_VERSION = re.compile(r'(\d?\d\.){2}\d?\da?')

@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta
 from typing import List
+from datetime import datetime, timedelta
 
 import pytest
+
 from prisma import Prisma
 
 

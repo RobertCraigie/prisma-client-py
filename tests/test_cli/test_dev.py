@@ -12,8 +12,8 @@ from _pytest.monkeypatch import MonkeyPatch
 from prisma.http import client
 from prisma.utils import temp_env_update
 from prisma.cli.commands import dev
-from ..utils import Testdir, Runner
 
+from ..utils import Runner, Testdir
 
 PRISMA_MODULE = ['coverage', 'run', '-m', 'prisma']
 

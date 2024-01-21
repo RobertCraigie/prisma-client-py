@@ -3,42 +3,41 @@ import copy
 import logging
 import builtins
 import operator
-from configparser import ConfigParser
 from typing import (
-    Optional,
-    Callable,
-    Dict,
     Any,
-    Union,
+    Dict,
     Type as TypingType,
+    Union,
+    Callable,
+    Optional,
     cast,
 )
+from configparser import ConfigParser
 
-from mypy.options import Options
-from mypy.errorcodes import ErrorCode
-from mypy.types import (
-    UnionType,
-    NoneType,
-    Type,
-    Instance,
-)
 from mypy.nodes import (
-    Node,
-    Expression,
-    DictExpr,
-    StrExpr,
-    NameExpr,
     Var,
-    BytesExpr,
-    CallExpr,
-    IntExpr,
+    Node,
     Context,
+    IntExpr,
+    StrExpr,
+    CallExpr,
+    DictExpr,
+    NameExpr,
     TypeInfo,
+    BytesExpr,
+    Expression,
     SymbolTable,
     SymbolTableNode,
 )
+from mypy.types import (
+    Type,
+    Instance,
+    NoneType,
+    UnionType,
+)
 from mypy.plugin import Plugin, MethodContext, CheckerPluginInterface
-
+from mypy.options import Options
+from mypy.errorcodes import ErrorCode
 
 # match any direct children of an actions class
 CLIENT_ACTION_CHILD = re.compile(r'prisma\.actions\.(.*)Actions\.(?P<name>(((?!\.).)*$))')

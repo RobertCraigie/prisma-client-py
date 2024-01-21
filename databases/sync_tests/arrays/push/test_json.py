@@ -1,4 +1,4 @@
-from prisma import Prisma, Json
+from prisma import Json, Prisma
 
 
 def test_pushing_json(client: Prisma) -> None:

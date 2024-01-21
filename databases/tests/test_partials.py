@@ -1,11 +1,11 @@
 import pytest
-from prisma.errors import UnknownRelationalFieldError
 
+from prisma.errors import UnknownRelationalFieldError
 from prisma.partials import (
-    PostOnlyPublished,
-    PostWithAuthor,
-    PostWithCustomAuthor,
     UserOnlyName,
+    PostWithAuthor,
+    PostOnlyPublished,
+    PostWithCustomAuthor,
 )
 
 

@@ -1,9 +1,10 @@
 import pytest
+
 import prisma
 from prisma import Prisma
-from prisma.models import Unique2, User, Types
-
 from lib.testing import async_fixture
+from prisma.models import User, Types, Unique2
+
 from ..utils import CURRENT_DATABASE
 
 

@@ -5,27 +5,28 @@ import sys
 import uuid
 import inspect
 import textwrap
-import subprocess
 import contextlib
-from pathlib import Path
+import subprocess
 from typing import (
+    TYPE_CHECKING,
     Any,
-    Callable,
-    Mapping,
-    Optional,
     List,
     Tuple,
     Union,
+    Mapping,
+    Callable,
     Iterator,
-    TYPE_CHECKING,
+    Optional,
     cast,
 )
+from pathlib import Path
 
 import click
 import pytest
-from click.testing import CliRunner, Result
+from click.testing import Result, CliRunner
 
 from prisma import _config
+from lib.utils import escape_path
 from prisma.cli import main
 from prisma._proxy import LazyProxy
 from prisma._types import FuncType
@@ -33,12 +34,9 @@ from prisma.binaries import platform
 from prisma.generator.utils import copy_tree
 from prisma.generator.generator import BASE_PACKAGE_DIR
 
-from lib.utils import escape_path
-
-
 if TYPE_CHECKING:
+    from _pytest.pytester import Pytester, RunResult
     from _pytest.monkeypatch import MonkeyPatch
-    from _pytest.pytester import RunResult, Pytester
 
 
 CapturedArgs = Tuple[Tuple[object, ...], Mapping[str, object]]

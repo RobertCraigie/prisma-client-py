@@ -2,8 +2,8 @@
 # pyright: reportIncompatibleVariableOverride=false
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, List, Union, ClassVar, Optional
 from pathlib import Path
-from typing import TYPE_CHECKING, Union, Optional, List, ClassVar
 
 import tomlkit
 import pydantic
@@ -11,12 +11,12 @@ import pydantic
 from ._proxy import LazyProxy
 from ._compat import (
     PYDANTIC_V2,
+    Field,
+    ConfigDict,
     BaseSettings,
     BaseSettingsConfig,
-    ConfigDict,
-    Field,
-    model_parse,
     model_dict,
+    model_parse,
 )
 
 

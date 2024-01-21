@@ -5,15 +5,14 @@ import sys
 import json
 import logging
 import subprocess
+from typing import Any, Dict, List, Optional, NamedTuple
 from pathlib import Path
-from typing import Any, List, Optional, Dict, NamedTuple
 
 import click
 
-from ._node import node, npm
 from .. import config
+from ._node import npm, node
 from ..errors import PrismaError
-
 
 log: logging.Logger = logging.getLogger(__name__)
 

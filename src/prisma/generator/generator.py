@@ -4,30 +4,29 @@ import json
 import shutil
 import logging
 import traceback
-from pathlib import Path
 from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Type, Generic, Optional, cast
+from pathlib import Path
 from contextvars import ContextVar
-from typing import Generic, Dict, Type, List, Any, Optional, cast
 
-from jinja2 import Environment, FileSystemLoader, StrictUndefined
+from jinja2 import Environment, StrictUndefined, FileSystemLoader
 from pydantic import BaseModel, ValidationError
 
 from . import jsonrpc
-from .jsonrpc import Manifest
-from .filters import quote
-from .models import DefaultData, PythonData
+from .. import __version__
 from .types import PartialModel
 from .utils import (
     copy_tree,
     is_same_path,
     resolve_template_path,
 )
-from .errors import PartialTypeGeneratorError
-from .. import __version__
 from ..utils import DEBUG, DEBUG_GENERATOR
-from .._compat import cached_property, model_json, model_parse
+from .errors import PartialTypeGeneratorError
+from .models import PythonData, DefaultData
 from .._types import BaseModelT, InheritsGeneric, get_args
-
+from .filters import quote
+from .jsonrpc import Manifest
+from .._compat import model_json, model_parse, cached_property
 
 __all__ = (
     'BASE_PACKAGE_DIR',

@@ -1,6 +1,5 @@
 from prisma.models import Post, User
 
-
 Post.create_partial('PostWithAuthor', include=['id', 'title', 'author'])
 
 User.create_partial('UserOnlyName', include=['name'])

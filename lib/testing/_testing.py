@@ -1,22 +1,21 @@
 from __future__ import annotations
 
 from typing import (
+    TYPE_CHECKING,
     Any,
     Union,
     Callable,
     Iterable,
     Optional,
-    TYPE_CHECKING,
     cast,
 )
 from datetime import datetime, timezone
 
 import pytest_asyncio
 
-
 if TYPE_CHECKING:
-    from _pytest.config import Config
     from _pytest.scope import _ScopeName
+    from _pytest.config import Config
     from _pytest.fixtures import FixtureFunctionMarker
 
 

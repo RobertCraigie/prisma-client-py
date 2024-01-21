@@ -3,15 +3,14 @@ from __future__ import annotations
 import sys
 import json
 import logging
+from typing import Any, Dict, List, Type, Union, Optional
 from pathlib import Path
-from typing import Dict, List, Optional, Union, Type, Any
-from typing_extensions import TypedDict, Literal
+from typing_extensions import Literal, TypedDict
 
 from pydantic import Field
 
 from .models import BaseModel
 from .._compat import model_json
-
 
 log: logging.Logger = logging.getLogger(__name__)
 

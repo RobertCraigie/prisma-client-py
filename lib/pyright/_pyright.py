@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing_extensions import TypedDict, Literal
+from typing_extensions import Literal, TypedDict
 
 
 class PyrightDiagnostics(TypedDict, total=False):

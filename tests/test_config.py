@@ -1,13 +1,14 @@
 import warnings
-from mock import MagicMock
-from pathlib import Path
 from typing import cast
+from pathlib import Path
 from textwrap import dedent
 
+from mock import MagicMock
 from pytest_mock import MockerFixture
-from prisma._config import Config, LazyConfigProxy
-from prisma._compat import model_fields, _get_field_env_var
+
 from prisma.utils import temp_env_update
+from prisma._compat import model_fields, _get_field_env_var
+from prisma._config import Config, LazyConfigProxy
 
 from .utils import Testdir
 

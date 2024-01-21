@@ -7,11 +7,10 @@ import inspect
 import logging
 import warnings
 import contextlib
+from typing import Any, Dict, Union, TypeVar, Iterator, NoReturn, Coroutine
 from importlib.util import find_spec
-from typing import Any, TypeVar, Union, Dict, Iterator, Coroutine, NoReturn
 
-from ._types import FuncType, CoroType, TypeGuard
-
+from ._types import CoroType, FuncType, TypeGuard
 
 _T = TypeVar('_T')
 

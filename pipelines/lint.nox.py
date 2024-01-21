@@ -64,6 +64,7 @@ def format(session: nox.Session) -> None:
     session.install('-e', '.')
 
     session.run('ruff', 'format')
+    session.run('ruff', 'check', '--fix')
 
     for entry in Path.cwd().glob('**/*.schema.prisma'):
         session.run('prisma', 'format', f'--schema={entry}')

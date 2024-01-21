@@ -3,7 +3,6 @@ import click
 from .utils import PathlibPath
 from .._types import FuncType
 
-
 schema: FuncType = click.option(
     '--schema',
     type=PathlibPath(exists=True, dir_okay=False, resolve_path=True),

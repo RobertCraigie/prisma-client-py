@@ -1,22 +1,21 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from typing import (
     Any,
-    Union,
-    Coroutine,
-    Type,
     Dict,
-    TypeVar,
+    Type,
+    Union,
     Generic,
+    TypeVar,
     Optional,
+    Coroutine,
     cast,
 )
 
-from httpx import Headers, Limits, Timeout
+from httpx import Limits, Headers, Timeout
 
-from ._types import Method
 from .utils import _NoneType
+from ._types import Method
 from .errors import HTTPClientClosedError
-
 
 Session = TypeVar('Session')
 Response = TypeVar('Response')

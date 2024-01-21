@@ -1,6 +1,6 @@
 import pytest
-from prisma import Prisma
 
+from prisma import Prisma
 
 # TODO: more tests
 

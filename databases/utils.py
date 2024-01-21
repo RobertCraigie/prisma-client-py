@@ -11,7 +11,6 @@ from syrupy.extensions.amber import AmberSnapshotExtension
 from ._types import DatabaseMapping
 from ._compat import LiteralString
 
-
 DatabaseFeature = Literal[
     'enum',
     'json',

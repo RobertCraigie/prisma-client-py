@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import List, cast
+from pathlib import Path
 from typing_extensions import get_args
 
 from lib import pyright
-from ._types import SupportedDatabase, DatabaseMapping
+
 from .utils import DatabaseConfig, DatabaseFeature
+from ._types import DatabaseMapping, SupportedDatabase
 
 
 def _fromdir(path: str) -> list[str]:

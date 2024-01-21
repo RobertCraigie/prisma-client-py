@@ -2,23 +2,22 @@ from __future__ import annotations
 
 import os
 import sys
-from typing import List, Iterator, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Iterator
 
 import pytest
 
 import prisma
 from prisma import Prisma
 from prisma.cli import setup_logging
-
 from lib.testing.shared_conftest import *
 from lib.testing.shared_conftest.async_client import *
-from .utils import Runner, Testdir
 
+from .utils import Runner, Testdir
 
 if TYPE_CHECKING:
     from _pytest.config import Config
-    from _pytest.monkeypatch import MonkeyPatch
     from _pytest.pytester import Pytester
+    from _pytest.monkeypatch import MonkeyPatch
 
 
 LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)

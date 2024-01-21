@@ -3,55 +3,54 @@ import sys
 import enum
 import textwrap
 import importlib
-from pathlib import Path
-from keyword import iskeyword
-from itertools import chain
-from importlib import machinery, util as importlib_util
-from importlib.abc import InspectLoader
-from contextvars import ContextVar
 from typing import (
     TYPE_CHECKING,
     Any,
-    ClassVar,
+    Dict,
+    List,
+    Type,
+    Tuple,
+    Union,
     Generic,
+    TypeVar,
+    ClassVar,
     Iterable,
+    Iterator,
     NoReturn,
     Optional,
-    List,
-    Tuple,
-    TypeVar,
-    Union,
-    Iterator,
-    Dict,
-    Type,
     cast,
 )
+from keyword import iskeyword
+from pathlib import Path
+from importlib import util as importlib_util, machinery
+from itertools import chain
+from contextvars import ContextVar
+from importlib.abc import InspectLoader
 from typing_extensions import Annotated
 
 import click
 import pydantic
 from pydantic.fields import PrivateAttr
 
-from .utils import Faker, Sampler, clean_multiline
 from .. import config
+from .utils import Faker, Sampler, clean_multiline
 from ..utils import DEBUG_GENERATOR, assert_never
+from ..errors import UnsupportedListTypeError
 from .._compat import (
     PYDANTIC_V2,
+    Field as FieldInfo,
     BaseConfig,
     ConfigDict,
     BaseSettings,
-    BaseSettingsConfig,
-    PlainSerializer,
     GenericModel,
-    Field as FieldInfo,
-    root_validator,
-    field_validator,
-    cached_property,
+    PlainSerializer,
+    BaseSettingsConfig,
     model_rebuild,
+    root_validator,
+    cached_property,
+    field_validator,
 )
 from .._constants import QUERY_BUILDER_ALIASES
-from ..errors import UnsupportedListTypeError
-
 
 __all__ = (
     'AnyData',
@@ -1121,8 +1120,8 @@ model_rebuild(Generator)
 model_rebuild(Datasource)
 
 
-from .schema import Schema
 from .errors import (
-    PartialTypeGeneratorError,
     TemplateError,
+    PartialTypeGeneratorError,
 )
+from .schema import Schema

@@ -4,7 +4,6 @@ import pytest
 
 from prisma.models import User
 
-
 # pyright: reportUnusedClass=false
 
 

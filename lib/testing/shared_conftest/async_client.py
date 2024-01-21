@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING, AsyncIterator
 
 import prisma
 from prisma import Prisma
-
 from lib.testing import async_fixture
+
 from ._utils import request_has_client
 
 if TYPE_CHECKING:

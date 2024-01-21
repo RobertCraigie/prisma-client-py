@@ -1,4 +1,5 @@
 import pytest
+
 from prisma import Prisma, errors
 from prisma.types import UserWhereInput
 

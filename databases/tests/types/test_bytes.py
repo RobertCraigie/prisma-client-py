@@ -9,11 +9,11 @@ from prisma.fields import Base64
 from prisma.models import Types
 from prisma._compat import (
     PYDANTIC_V2,
-    model_json_schema,
-    model_parse_json,
+    model_dict,
     model_json,
     model_parse,
-    model_dict,
+    model_parse_json,
+    model_json_schema,
 )
 
 

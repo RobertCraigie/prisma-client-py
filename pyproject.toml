@@ -3,6 +3,8 @@ line-length = 120
 output-format = "grouped"
 target-version = "py37"
 select = [
+  # isort
+  "I",
   # bugbear rules
   "B",
   # remove unused imports
@@ -23,7 +25,12 @@ ignore = [
 ]
 extend-exclude = ["typesafety/**.py"]
 
-# TODO: isort
+[tool.ruff.lint.isort]
+length-sort = true
+length-sort-straight = true
+combine-as-imports = true
+extra-standard-library = ["typing_extensions"]
+known-first-party = ["prisma", "lib"]
 
 [tool.ruff.format]
 quote-style = "single"
@@ -32,7 +39,7 @@ docstring-code-format = true
 [tool.ruff.per-file-ignores]
 "bin/**.py" = ["T201", "T203"]
 "tests/**.py" = ["T201", "T203", "ARG"]
-"examples/**.py" = ["T201", "T203"]
+"examples/**.py" = ["T201", "T203", "I"]
 "databases/**.py" = ["T201", "T203"]
 "docs/**.py" = ["T201", "T203"]
 "pipelines/**.py" = ["T201", "T203"]

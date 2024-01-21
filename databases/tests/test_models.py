@@ -1,4 +1,5 @@
 import pytest
+
 from prisma.models import User
 
 from ..utils import RawQueries

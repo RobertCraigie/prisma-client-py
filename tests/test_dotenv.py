@@ -2,10 +2,10 @@ import os
 from typing import Iterator
 
 import pytest
+
 from prisma import Prisma, load_env
 
 from .utils import Testdir
-
 
 ENV_KEY = '_PRISMA_PY_TESTING_DOTENV_DATABSE_URL'
 DEFAULT_VALUE = 'file:dev.db'

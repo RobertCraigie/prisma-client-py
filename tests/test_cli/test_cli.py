@@ -3,10 +3,9 @@ from typing import List
 
 import click
 import pytest
-from prisma.cli.utils import EnumChoice
 
 from tests.utils import Runner
-
+from prisma.cli.utils import EnumChoice
 
 # TODO: doesn't look like this file is type checked by mypy
 

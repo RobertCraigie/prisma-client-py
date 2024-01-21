@@ -1,4 +1,5 @@
 import pytest
+
 import prisma
 from prisma import Prisma, register, get_client
 from prisma.testing import reset_client, unregister_client

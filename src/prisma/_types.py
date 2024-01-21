@@ -1,13 +1,14 @@
-from typing import Callable, Coroutine, TypeVar, Type, Tuple, Any
-from pydantic import BaseModel
+from typing import Any, Type, Tuple, TypeVar, Callable, Coroutine
 from typing_extensions import (
-    TypeGuard as TypeGuard,
-    TypedDict as TypedDict,
-    Protocol as Protocol,
     Literal as Literal,
+    Protocol as Protocol,
+    TypedDict as TypedDict,
+    TypeGuard as TypeGuard,
     get_args as get_args,
     runtime_checkable as runtime_checkable,
 )
+
+from pydantic import BaseModel
 
 Method = Literal['GET', 'POST']
 

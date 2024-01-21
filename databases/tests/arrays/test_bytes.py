@@ -1,7 +1,8 @@
 import pytest
-from prisma import Prisma, Base64
+
+from prisma import Base64, Prisma
 from prisma.models import Lists
-from prisma._compat import model_parse, model_dict
+from prisma._compat import model_dict, model_parse
 
 
 @pytest.mark.asyncio

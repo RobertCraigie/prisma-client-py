@@ -4,25 +4,24 @@ import os
 import sys
 import logging
 from enum import Enum
-from pathlib import Path
 from typing import (
-    Optional,
-    List,
-    Union,
-    NoReturn,
-    Mapping,
     Any,
+    List,
     Type,
-    overload,
+    Union,
+    Mapping,
+    NoReturn,
+    Optional,
     cast,
+    overload,
 )
+from pathlib import Path
 
 import click
 
 from . import prisma
 from ..utils import module_exists
 from .._types import Literal
-
 
 log: logging.Logger = logging.getLogger(__name__)
 

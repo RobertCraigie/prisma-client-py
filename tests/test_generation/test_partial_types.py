@@ -4,9 +4,10 @@ import subprocess
 from typing_extensions import Literal
 
 import pytest
-from prisma._compat import PYDANTIC_V2
-from ..utils import Testdir
 
+from prisma._compat import PYDANTIC_V2
+
+from ..utils import Testdir
 
 SCHEMA = """
 datasource db {{
@@ -80,30 +81,32 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
     def tests() -> None:  # mark: filedef
         import sys
         import datetime
-        from typing import Type, Dict, Iterator, Tuple, Set, Optional, TypeVar
+        from typing import Set, Dict, Type, Tuple, TypeVar, Iterator, Optional
+
         from pydantic import BaseModel
+
         from prisma import Base64
         from prisma._compat import (
             PYDANTIC_V2,
-            model_fields,
-            is_field_required,
-            model_parse,
-            model_field_type,
             get_args,
-            get_origin,
             is_union,
+            get_origin,
+            model_parse,
+            model_fields,
+            model_field_type,
+            is_field_required,
         )
         from prisma.partials import (  # type: ignore[attr-defined]
-            PostWithoutDesc,  # pyright: ignore
-            PostOptionalPublished,  # pyright: ignore
-            PostRequiredDesc,  # pyright: ignore
             PostOnlyId,  # pyright: ignore
-            PostNoRelations,  # pyright: ignore
-            PostOptionalInclude,  # pyright: ignore
-            PostRequiredAuthor,  # pyright: ignore
-            PostModifiedAuthor,  # pyright: ignore
-            UserModifiedPosts,  # pyright: ignore
             UserBytesList,  # pyright: ignore
+            PostNoRelations,  # pyright: ignore
+            PostWithoutDesc,  # pyright: ignore
+            PostRequiredDesc,  # pyright: ignore
+            UserModifiedPosts,  # pyright: ignore
+            PostModifiedAuthor,  # pyright: ignore
+            PostRequiredAuthor,  # pyright: ignore
+            PostOptionalInclude,  # pyright: ignore
+            PostOptionalPublished,  # pyright: ignore
             PostNoRelationsAndExclude,  # pyright: ignore
         )
 

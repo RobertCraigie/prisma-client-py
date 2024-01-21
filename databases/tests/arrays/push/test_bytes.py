@@ -1,5 +1,6 @@
 import pytest
-from prisma import Prisma, Base64
+
+from prisma import Base64, Prisma
 
 
 @pytest.mark.asyncio

@@ -1,4 +1,4 @@
-from prisma import Prisma, Base64
+from prisma import Base64, Prisma
 
 
 def test_pushing_byte(client: Prisma) -> None:

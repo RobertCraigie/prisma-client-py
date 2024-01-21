@@ -1,9 +1,9 @@
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import discord
 from discord.ext import commands  # pyright: reportMissingTypeStubs=false
-from prisma import Prisma
 
+from prisma import Prisma
 
 # commands.Bot is only a Generic Type while type checking
 # that's why we have to do this little dance around it

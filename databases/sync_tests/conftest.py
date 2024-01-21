@@ -6,16 +6,15 @@ import pytest
 from syrupy.assertion import SnapshotAssertion
 
 from prisma._compat import model_parse_json
-
 from lib.testing.shared_conftest import *
 from lib.testing.shared_conftest.sync_client import *
+
 from ..utils import (
     RAW_QUERIES_MAPPING,
     RawQueries,
     DatabaseConfig,
     AmberSharedExtension,
 )
-
 
 # TODO: the async tests conftest.py is imported somehow which breaks this...
 # prisma.register(Prisma())

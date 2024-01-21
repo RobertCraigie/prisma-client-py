@@ -1,10 +1,10 @@
 import pytest
 
-from prisma import errors, Prisma
+from prisma import Prisma, errors
 from prisma.models import Post, User
 from prisma.partials import PostOnlyPublished
 
-from ..utils import DatabaseConfig, RawQueries
+from ..utils import RawQueries, DatabaseConfig
 
 
 def test_query_raw(
