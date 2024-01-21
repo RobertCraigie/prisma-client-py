@@ -19,7 +19,7 @@ from ._http import SyncHTTPEngine, AsyncHTTPEngine
 from ..types import MetricsFormat, DatasourceOverride
 from ..utils import DEBUG, _env_bool, time_since
 from .._types import HttpConfig, TransactionId
-from ..builder import dumps
+from .._builder import dumps
 from ..binaries import platform
 from .._constants import DEFAULT_CONNECT_TIMEOUT
 

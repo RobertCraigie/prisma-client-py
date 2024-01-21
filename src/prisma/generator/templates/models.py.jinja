@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 from . import types, enums, errors, fields, bases
 from ._types import FuncType
 from ._compat import model_rebuild, field_validator
-from .builder import serialize_base64
+from ._builder import serialize_base64
 from .generator import partial_models_ctx, PartialModelField
 
 

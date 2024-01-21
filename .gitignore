@@ -130,7 +130,7 @@ src/prisma/client.py
 src/prisma/models.py
 src/prisma/fields.py
 src/prisma/actions.py
-src/prisma/builder.py
+src/prisma/metadata.py
 src/prisma/partials.py
 src/prisma/engine/http.py
 src/prisma/engine/query.py
