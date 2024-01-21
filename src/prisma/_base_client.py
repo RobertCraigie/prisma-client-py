@@ -8,7 +8,13 @@ from datetime import timedelta
 from typing_extensions import Self
 
 from ._types import Datasource, HttpConfig, TransactionId, DatasourceOverride
-from .engine import BaseAbstractEngine, SyncAbstractEngine, AsyncAbstractEngine
+from .engine import (
+    SyncQueryEngine,
+    AsyncQueryEngine,
+    BaseAbstractEngine,
+    SyncAbstractEngine,
+    AsyncAbstractEngine,
+)
 from .errors import ClientNotConnectedError, ClientNotRegisteredError
 from ._compat import removeprefix
 from ._registry import get_client
@@ -215,10 +221,146 @@ class BasePrisma(Generic[_EngineT]):
 
         return f'file:{relative_to.joinpath(url_path).resolve()}'
 
+    def _prepare_connect_args(
+        self,
+        *,
+        timeout: int | timedelta | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> tuple[timedelta, list[DatasourceOverride] | None]:
+        """Returns (timeout, datasources) to be passed to `AbstractEngine.connect()`"""
+        if isinstance(timeout, UseClientDefault):
+            timeout = self._connect_timeout
+
+        if isinstance(timeout, int):
+            message = (
+                'Passing an int as `timeout` argument is deprecated '
+                'and will be removed in the next major release. '
+                'Use a `datetime.timedelta` instance instead.'
+            )
+            warnings.warn(message, DeprecationWarning, stacklevel=2)
+            timeout = timedelta(seconds=timeout)
+
+        datasources: list[DatasourceOverride] | None = None
+        if self._datasource is not None:
+            ds = self._datasource.copy()
+            ds.setdefault('name', self._default_datasource['name'])
+            datasources = [ds]
+        elif self._active_provider == 'sqlite':
+            # Override the default SQLite path to protect against
+            # https://github.com/RobertCraigie/prisma-client-py/issues/409
+            datasources = [self._make_sqlite_datasource()]
+
+        return timeout, datasources
+
 
 class SyncBasePrisma(BasePrisma[SyncAbstractEngine]):
     __slots__ = ()
 
+    def connect(
+        self,
+        timeout: int | timedelta | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> None:
+        """Connect to the Prisma query engine.
+
+        It is required to call this before accessing data.
+        """
+        if self._internal_engine is None:
+            self._internal_engine = self._create_engine(dml_path=self._packaged_schema_path)
+
+        timeout, datasources = self._prepare_connect_args(timeout=timeout)
+
+        self._internal_engine.connect(
+            timeout=timeout,
+            datasources=datasources,
+        )
+
+    def disconnect(self, timeout: float | timedelta | None = None) -> None:
+        """Disconnect the Prisma query engine."""
+        if self._internal_engine is not None:
+            engine = self._internal_engine
+            self._internal_engine = None
+
+            if isinstance(timeout, (int, float)):
+                message = (
+                    'Passing a number as `timeout` argument is deprecated '
+                    'and will be removed in the next major release. '
+                    'Use a `datetime.timedelta` instead.'
+                )
+                warnings.warn(message, DeprecationWarning, stacklevel=2)
+                timeout = timedelta(seconds=timeout)
+
+            engine.close(timeout=timeout)
+            engine.stop(timeout=timeout)
+
+    def _create_engine(self, dml_path: Path | None = None) -> SyncAbstractEngine:
+        if self._engine_type == EngineType.binary:
+            return SyncQueryEngine(
+                dml_path=dml_path or self._packaged_schema_path,
+                log_queries=self._log_queries,
+                http_config=self._http_config,
+            )
+
+        raise NotImplementedError(f'Unsupported engine type: {self._engine_type}')
+
+    @property
+    def _engine_class(self) -> type[SyncAbstractEngine]:
+        if self._engine_type == EngineType.binary:
+            return SyncQueryEngine
+
+        raise RuntimeError(f'Unhandled engine type: {self._engine_type}')
+
 
 class AsyncBasePrisma(BasePrisma[AsyncAbstractEngine]):
     __slots__ = ()
+
+    async def connect(
+        self,
+        timeout: int | timedelta | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> None:
+        """Connect to the Prisma query engine.
+
+        It is required to call this before accessing data.
+        """
+        if self._internal_engine is None:
+            self._internal_engine = self._create_engine(dml_path=self._packaged_schema_path)
+
+        timeout, datasources = self._prepare_connect_args(timeout=timeout)
+
+        await self._internal_engine.connect(
+            timeout=timeout,
+            datasources=datasources,
+        )
+
+    async def disconnect(self, timeout: float | timedelta | None = None) -> None:
+        """Disconnect the Prisma query engine."""
+        if self._internal_engine is not None:
+            engine = self._internal_engine
+            self._internal_engine = None
+
+            if isinstance(timeout, (int, float)):
+                message = (
+                    'Passing a number as `timeout` argument is deprecated '
+                    'and will be removed in the next major release. '
+                    'Use a `datetime.timedelta` instead.'
+                )
+                warnings.warn(message, DeprecationWarning, stacklevel=2)
+                timeout = timedelta(seconds=timeout)
+
+            await engine.aclose(timeout=timeout)
+            engine.stop(timeout=timeout)
+
+    def _create_engine(self, dml_path: Path | None = None) -> AsyncAbstractEngine:
+        if self._engine_type == EngineType.binary:
+            return AsyncQueryEngine(
+                dml_path=dml_path or self._packaged_schema_path,
+                log_queries=self._log_queries,
+                http_config=self._http_config,
+            )
+
+        raise NotImplementedError(f'Unsupported engine type: {self._engine_type}')
+
+    @property
+    def _engine_class(self) -> type[AsyncAbstractEngine]:
+        if self._engine_type == EngineType.binary:
+            return AsyncQueryEngine
+
+        raise RuntimeError(f'Unhandled engine type: {self._engine_type}')
