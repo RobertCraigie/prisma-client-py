@@ -11,7 +11,7 @@ from types import TracebackType
 from pydantic import BaseModel
 
 from . import types, models, errors, actions
-from ._base_client import UseClientDefault, USE_CLIENT_DEFAULT
+from ._base_client import BasePrisma, UseClientDefault, USE_CLIENT_DEFAULT
 from .types import DatasourceOverride, HttpConfig, MetricsFormat
 from ._types import BaseModelT, PrismaMethod, TransactionId
 from .bases import _PrismaModel
@@ -52,7 +52,7 @@ ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
 BINARY_PATHS = model_parse(BinaryPaths, {{ binary_paths.dict(by_alias=True) }})
 
 
-class Prisma:
+class Prisma(BasePrisma[AbstractEngine]):
     {% for model in dmmf.datamodel.models %}
     {{ model.instance_name }}: 'actions.{{ model.name }}Actions[models.{{ model.name }}]'
     {% endfor %}
@@ -61,13 +61,6 @@ class Prisma:
         {% for model in dmmf.datamodel.models %}
         '{{ model.instance_name }}',
         {% endfor %}
-        '__engine',
-        '__copied',
-        '_tx_id',
-        '_datasource',
-        '_log_queries',
-        '_http_config',
-        '_connect_timeout',
         '_active_provider',
     )
 
@@ -81,47 +74,21 @@ class Prisma:
         connect_timeout: int | timedelta = DEFAULT_CONNECT_TIMEOUT,
         http: HttpConfig | None = None,
     ) -> None:
+        super().__init__(
+            use_dotenv=use_dotenv,
+            log_queries=log_queries,
+            datasource=datasource,
+            connect_timeout=connect_timeout,
+            http=http,
+        )
+        self._active_provider = '{{ active_provider }}'
+
         {% for model in dmmf.datamodel.models %}
         self.{{ model.instance_name }} = actions.{{ model.name }}Actions[models.{{ model.name }}](self, models.{{ model.name }})
         {% endfor %}
 
-        # NOTE: if you add any more properties here then you may also need to forward
-        # them in the `_copy()` method.
-        self.__engine: Optional[AbstractEngine] = None
-        self._active_provider = '{{ active_provider }}'
-        self._log_queries = log_queries
-        self._datasource = datasource
-
-        if isinstance(connect_timeout, int):
-            message = (
-                'Passing an int as `connect_timeout` argument is deprecated '
-                'and will be removed in the next major release. '
-                'Use a `datetime.timedelta` instance instead.'
-            )
-            warnings.warn(message, DeprecationWarning, stacklevel=2)
-            connect_timeout = timedelta(seconds=connect_timeout)
-
-        self._connect_timeout = connect_timeout
-        self._http_config: HttpConfig = http or {}
-        self._tx_id: Optional[TransactionId] = None
-        self.__copied: bool = False
-
-        if use_dotenv:
-            load_env()
-
         if auto_register:
             register(self)
-
-    def __del__(self) -> None:
-        # Note: as the transaction manager holds a reference to the original
-        # client as well as the transaction client the original client cannot
-        # be `free`d before the transaction is finished. So stopping the engine
-        # here should be safe.
-        if self.__engine is not None and not self.__copied:
-            log.debug('unclosed client - stopping engine')
-            engine = self.__engine
-            self.__engine = None
-            engine.stop()
 
     {% if is_async %}
     async def __aenter__(self) -> 'Prisma':
@@ -151,17 +118,6 @@ class Prisma:
             self.disconnect()
     {% endif %}
 
-    def is_registered(self) -> bool:
-        """Returns True if this client instance is registered"""
-        try:
-            return get_client() is self
-        except errors.ClientNotRegisteredError:
-            return False
-
-    def is_connected(self) -> bool:
-        """Returns True if the client is connected to the query engine, False otherwise."""
-        return self.__engine is not None
-
     {{ maybe_async_def }}connect(
         self,
         timeout: Union[int, timedelta, UseClientDefault] = USE_CLIENT_DEFAULT,
@@ -182,8 +138,8 @@ class Prisma:
             warnings.warn(message, DeprecationWarning, stacklevel=2)
             timeout = timedelta(seconds=timeout)
 
-        if self.__engine is None:
-            self.__engine = self._create_engine(dml_path=PACKAGED_SCHEMA_PATH)
+        if self._internal_engine is None:
+            self._internal_engine = self._create_engine(dml_path=PACKAGED_SCHEMA_PATH)
 
         datasources: Optional[List[types.DatasourceOverride]] = None
         if self._datasource is not None:
@@ -197,16 +153,16 @@ class Prisma:
             datasources = [self._make_sqlite_datasource()]
         {% endif %}
 
-        {{ maybe_await }}self.__engine.connect(
+        {{ maybe_await }}self._internal_engine.connect(
             timeout=timeout,
             datasources=datasources,
         )
 
     {{ maybe_async_def }}disconnect(self, timeout: Union[float, timedelta, None] = None) -> None:
         """Disconnect the Prisma query engine."""
-        if self.__engine is not None:
-            engine = self.__engine
-            self.__engine = None
+        if self._internal_engine is not None:
+            engine = self._internal_engine
+            self._internal_engine = None
             if isinstance(timeout, (int, float)):
                 message = (
                     'Passing a number as `timeout` argument is deprecated '
@@ -408,25 +364,6 @@ class Prisma:
         )
         return {{ maybe_await }}self._engine.query(builder.build(), tx_id=self._tx_id)
 
-    def _copy(self) -> 'Prisma':
-        """Return a new Prisma instance using the same engine process (if connected).
-
-        This is only intended for private usage, there are no guarantees around this API.
-        """
-        new = Prisma(
-            use_dotenv=False,
-            http=self._http_config,
-            datasource=self._datasource,
-            log_queries=self._log_queries,
-            connect_timeout=self._connect_timeout,
-        )
-        new.__copied = True
-
-        if self.__engine is not None:
-            new._engine = self.__engine
-
-        return new
-
     def _create_engine(self, dml_path: Path = PACKAGED_SCHEMA_PATH) -> AbstractEngine:
         if ENGINE_TYPE == EngineType.binary:
             return QueryEngine(dml_path=dml_path, log_queries=self._log_queries, http_config=self._http_config)
@@ -439,17 +376,6 @@ class Prisma:
             return QueryEngine
         else:  # pragma: no cover
             raise RuntimeError(f'Unhandled engine type: {ENGINE_TYPE}')
-
-    @property
-    def _engine(self) -> AbstractEngine:
-        engine = self.__engine
-        if engine is None:
-            raise errors.ClientNotConnectedError()
-        return engine
-
-    @_engine.setter
-    def _engine(self, engine: AbstractEngine) -> None:
-        self.__engine = engine
 
     def _make_sqlite_datasource(self) -> DatasourceOverride:
         return {
