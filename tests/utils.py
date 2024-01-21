@@ -20,6 +20,7 @@ from typing import (
     cast,
 )
 from pathlib import Path
+from typing_extensions import override
 
 import click
 import pytest
@@ -251,9 +252,11 @@ class Testdir:
     def path(self) -> Path:
         return Path(self.pytester.path)
 
+    @override
     def __repr__(self) -> str:  # pragma: no cover
         return str(self)
 
+    @override
     def __str__(self) -> str:  # pragma: no cover
         return f'<Testdir {self.path} >'
 

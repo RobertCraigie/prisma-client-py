@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar, Iterable, cast
+from typing_extensions import override
 
 T = TypeVar('T')
 
@@ -17,12 +18,15 @@ class LazyProxy(Generic[T], ABC):
     def __getattr__(self, attr: str) -> object:
         return getattr(self.__get_proxied__(), attr)
 
+    @override
     def __repr__(self) -> str:
         return repr(self.__get_proxied__())
 
+    @override
     def __str__(self) -> str:
         return str(self.__get_proxied__())
 
+    @override
     def __dir__(self) -> Iterable[str]:
         return self.__get_proxied__().__dir__()
 

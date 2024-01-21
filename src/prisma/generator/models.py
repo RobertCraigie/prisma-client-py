@@ -26,7 +26,7 @@ from importlib import util as importlib_util, machinery
 from itertools import chain
 from contextvars import ContextVar
 from importlib.abc import InspectLoader
-from typing_extensions import Annotated
+from typing_extensions import Annotated, override
 
 import click
 import pydantic
@@ -243,6 +243,7 @@ class EngineType(str, enum.Enum):
     library = 'library'
     dataproxy = 'dataproxy'
 
+    @override
     def __str__(self) -> str:
         return self.value
 
@@ -339,6 +340,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
     else:
 
         @classmethod
+        @override
         def parse_obj(cls, obj: Any) -> 'GenericData[ConfigT]':
             data = super().parse_obj(obj)  # pyright: ignore[reportDeprecated]
             data_ctx.set(data)

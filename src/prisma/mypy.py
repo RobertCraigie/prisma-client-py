@@ -13,6 +13,7 @@ from typing import (
     cast,
 )
 from configparser import ConfigParser
+from typing_extensions import override
 
 from mypy.nodes import (
     Var,
@@ -91,6 +92,7 @@ class PrismaPlugin(Plugin):
         self.config = PrismaPluginConfig(options)
         super().__init__(options)
 
+    @override
     def get_method_hook(self, fullname: str) -> Optional[Callable[[MethodContext], Type]]:
         match = CLIENT_ACTION_CHILD.match(fullname)
         if not match:

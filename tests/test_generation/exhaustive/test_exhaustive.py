@@ -5,6 +5,7 @@ import sys
 import subprocess
 from typing import Any, List, Callable, Iterator, Optional
 from pathlib import Path
+from typing_extensions import override
 
 import pytest
 from syrupy.assertion import SnapshotAssertion
@@ -22,6 +23,7 @@ class OSAgnosticSingleFileExtension(SingleFileSnapshotExtension):
     # syrupy's types are only written to target mypy, as such
     # pyright does not understand them and reports them as unknown.
     # As this method is only called internally it is safe to type as Any
+    @override
     def serialize(
         self,
         data: Any,
@@ -36,9 +38,11 @@ class OSAgnosticSingleFileExtension(SingleFileSnapshotExtension):
     # we just care that there is a diff and it can take a very
     # long time for syrupy to calculate the diff
     # https://github.com/tophat/syrupy/issues/581
+    @override
     def diff_snapshots(self, serialized_data: Any, snapshot_data: Any) -> str:
         return 'diff-is-disabled'  # pragma: no cover
 
+    @override
     def diff_lines(self, serialized_data: Any, snapshot_data: Any) -> Iterator[str]:
         yield 'diff-is-disabled'  # pragma: no cover
 

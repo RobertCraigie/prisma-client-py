@@ -1,4 +1,4 @@
-from typing_extensions import final
+from typing_extensions import final, override
 
 from pytest_mock import MockerFixture
 
@@ -6,9 +6,11 @@ from prisma._proxy import LazyProxy
 
 
 class MyObject:
+    @override
     def __repr__(self) -> str:
         return '<MyObject foo!>'
 
+    @override
     def __str__(self) -> str:
         return 'foo!'
 
@@ -19,6 +21,7 @@ class MyObject:
 
 @final
 class MyProxy(LazyProxy[MyObject]):
+    @override
     def __load__(self) -> MyObject:
         return MyObject()
 

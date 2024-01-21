@@ -4,6 +4,7 @@ import json
 import logging
 from typing import Any, NoReturn
 from datetime import timedelta
+from typing_extensions import override
 
 import httpx
 
@@ -112,6 +113,7 @@ class SyncHTTPEngine(BaseHTTPEngine, SyncAbstractEngine):
         super().__init__(url=url, headers=headers)
         self.session = SyncHTTP(**kwargs)
 
+    @override
     def close(
         self,
         *,
@@ -119,6 +121,7 @@ class SyncHTTPEngine(BaseHTTPEngine, SyncAbstractEngine):
     ) -> None:
         self._close_session()
 
+    @override
     async def aclose(self, *, timeout: timedelta | None = None) -> None:
         pass
 
@@ -177,9 +180,11 @@ class AsyncHTTPEngine(BaseHTTPEngine, AsyncAbstractEngine):
         super().__init__(url=url, headers=headers)
         self.session = AsyncHTTP(**kwargs)
 
+    @override
     def close(self, *, timeout: timedelta | None = None) -> None:
         pass
 
+    @override
     async def aclose(
         self,
         *,

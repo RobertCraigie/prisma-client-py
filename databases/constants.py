@@ -124,6 +124,7 @@ PYRIGHT_CONFIG: pyright.Config = {
     'reportUnknownVariableType': False,
     'reportUnknownArgumentType': False,
     # very strict errors
+    'reportImplicitOverride': True,
     'reportUnusedCallResult': False,
     'reportImplicitStringConcatenation': False,
     'reportCallInDefaultInitializer': True,

@@ -49,7 +49,7 @@ from datetime import timezone
 from abc import abstractmethod, ABC
 from functools import singledispatch
 from typing import ForwardRef
-from typing_extensions import TypeGuard
+from typing_extensions import TypeGuard, override
 
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
@@ -460,6 +460,7 @@ class Node(AbstractNode):
         """
         return None
 
+    @override
     def render(self) -> Optional[str]:
         """Render the node and it's children and to string.
 
@@ -537,12 +538,15 @@ class RootNode(Node):
     __slots__ = ()
 
 
+    @override
     def enter(self) -> str:
         return f'{self.builder.operation} {{'
 
+    @override
     def depart(self) -> str:
         return '}'
 
+    @override
     def render(self) -> str:
         content = super().render()
         if not content:  # pragma: no cover
@@ -572,6 +576,7 @@ class ResultNode(Node):
     def __init__(self, indent: str = '', **kwargs: Any) -> None:
         super().__init__(indent=indent, **kwargs)
 
+    @override
     def enter(self) -> str:
         model = self.builder.model
         if model is not None:
@@ -582,9 +587,11 @@ class ResultNode(Node):
         method = self.builder.method_format.format(model=model_name)
         return f'result: {method}'
 
+    @override
     def depart(self) -> Optional[str]:
         return None
 
+    @override
     def create_children(self) -> List[ChildType]:
         return [
             Arguments.create(
@@ -614,15 +621,19 @@ class Arguments(Node):
         super().__init__(**kwargs)
         self.arguments = arguments
 
+    @override
     def should_render(self) -> bool:
         return bool(self.children)
 
+    @override
     def enter(self) -> str:
         return '('
 
+    @override
     def depart(self) -> str:
         return ')'
 
+    @override
     def create_children(self, arguments: Optional[Dict[str, Any]] = None) -> List[ChildType]:
         children: List[ChildType] = []
 
@@ -673,12 +684,15 @@ class Data(Node):
         super().__init__(**kwargs)
         self.data = data
 
+    @override
     def enter(self) -> str:
         return '{'
 
+    @override
     def depart(self) -> str:
         return '}'
 
+    @override
     def create_children(self) -> List[ChildType]:
         children: List[ChildType] = []
 
@@ -706,12 +720,15 @@ class ListNode(Node):
         super().__init__(joiner=joiner, **kwargs)
         self.data = data
 
+    @override
     def enter(self) -> str:
         return '['
 
+    @override
     def depart(self) -> str:
         return ']'
 
+    @override
     def create_children(self) -> List[ChildType]:
         children: List[ChildType] = []
 
@@ -785,15 +802,19 @@ class Selection(Node):
         self.include = include
         self.root_selection = root_selection
 
+    @override
     def should_render(self) -> bool:
         return bool(self.children)
 
+    @override
     def enter(self) -> str:
         return '{'
 
+    @override
     def depart(self) -> str:
         return '}'
 
+    @override
     def create_children(self) -> List[ChildType]:
         model = self.model
         include = self.include
@@ -879,6 +900,7 @@ class Key(AbstractNode):
         self.node = node
         self.sep = sep
 
+    @override
     def render(self) -> str:
         content = self.node.render()
         if content:

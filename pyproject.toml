@@ -69,6 +69,8 @@ typeCheckingMode = "strict"
 reportUnusedImport = true
 reportPrivateUsage = false
 
+reportImplicitOverride = true
+
 # TODO: pending some major refactoring, enable this
 reportImportCycles = false
 

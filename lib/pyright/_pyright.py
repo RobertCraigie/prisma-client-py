@@ -9,6 +9,7 @@ class PyrightDiagnostics(TypedDict, total=False):
     reportUnusedImport: bool
     reportPrivateUsage: bool
     reportImportCycles: bool
+    reportImplicitOverride: bool
     reportUnusedCallResult: bool
     reportUnknownMemberType: bool
     reportUnknownVariableType: bool

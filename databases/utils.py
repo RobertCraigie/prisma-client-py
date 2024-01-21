@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import Set
 from pathlib import Path
-from typing_extensions import Literal, get_args
+from typing_extensions import Literal, get_args, override
 
 from pydantic import BaseModel
 from syrupy.extensions.amber import AmberSnapshotExtension
@@ -57,6 +57,7 @@ class AmberSharedExtension(AmberSnapshotExtension):
     """Syrupy extension that stores the snapshots in a parent __shared_snapshots__ dir"""
 
     @property
+    @override
     def _dirname(self) -> str:
         test_dir = Path(self.test_location.filepath).parent
         if test_dir.is_relative_to(SYNC_TESTS_DIR):

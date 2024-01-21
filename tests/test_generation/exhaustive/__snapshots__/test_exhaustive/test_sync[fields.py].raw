@@ -39,6 +39,7 @@ from typing_extensions import TypedDict, Literal
 
 LiteralString = str
 # -- template fields.py.jinja --
+from typing_extensions import override
 from ._compat import PYDANTIC_V2, CoreSchema, core_schema
 
 import base64
@@ -112,6 +113,7 @@ class Json(BaseJson):
         def __getitem__(self, i: '_JsonKeys') -> 'Serializable':
             ...
 
+        @override
         def __getitem__(self, i: Union['_JsonKeys', slice]) -> 'Serializable':  # pyright: ignore[reportIncompatibleMethodOverride]
             ...
 
@@ -209,12 +211,15 @@ class Base64:
             f'Could not convert type: {type(value)} to a Base64 object; Expected a string or bytes object'
         )
 
+    @override
     def __str__(self) -> str:
         return self._raw.decode(BASE64_ENCODING)
 
+    @override
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}({self._raw})'  # type: ignore[str-bytes-safe]
 
+    @override
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Base64):
             return self._raw == other._raw

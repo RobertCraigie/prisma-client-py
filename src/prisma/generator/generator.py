@@ -8,6 +8,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Type, Generic, Optional, cast
 from pathlib import Path
 from contextvars import ContextVar
+from typing_extensions import override
 
 from jinja2 import Environment, StrictUndefined, FileSystemLoader
 from pydantic import BaseModel, ValidationError
@@ -211,9 +212,11 @@ class BaseGenerator(GenericGenerator[DefaultData]):
 
 
 class Generator(GenericGenerator[PythonData]):
+    @override
     def __init_subclass__(cls, *args: Any, **kwargs: Any) -> None:
         raise TypeError(f'{Generator} cannot be subclassed, maybe you meant {BaseGenerator}?')
 
+    @override
     def get_manifest(self) -> Manifest:
         return Manifest(
             name=f'Prisma Client Python (v{__version__})',
@@ -223,6 +226,7 @@ class Generator(GenericGenerator[PythonData]):
             ],
         )
 
+    @override
     def generate(self, data: PythonData) -> None:
         config = data.generator.config
         rootdir = Path(data.generator.output.value)
