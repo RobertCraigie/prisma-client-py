@@ -3,12 +3,12 @@ from __future__ import annotations
 import logging
 import warnings
 from types import TracebackType
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, overload
 from pathlib import Path
 from datetime import timedelta
-from typing_extensions import Self
+from typing_extensions import Self, Literal
 
-from ._types import Datasource, HttpConfig, TransactionId, DatasourceOverride
+from ._types import Datasource, HttpConfig, MetricsFormat, TransactionId, DatasourceOverride
 from .engine import (
     SyncQueryEngine,
     AsyncQueryEngine,
@@ -17,7 +17,8 @@ from .engine import (
     AsyncAbstractEngine,
 )
 from .errors import ClientNotConnectedError, ClientNotRegisteredError
-from ._compat import removeprefix
+from ._compat import model_parse, removeprefix
+from ._metrics import Metrics
 from ._registry import get_client
 from .generator.models import EngineType
 
@@ -305,6 +306,44 @@ class SyncBasePrisma(BasePrisma[SyncAbstractEngine]):
         if self.is_connected():
             self.disconnect()
 
+    @overload
+    def get_metrics(
+        self,
+        format: Literal['json'] = 'json',
+        *,
+        global_labels: dict[str, str] | None = None,
+    ) -> Metrics:
+        ...
+
+    @overload
+    def get_metrics(
+        self,
+        format: Literal['prometheus'],
+        *,
+        global_labels: dict[str, str] | None = None,
+    ) -> str:
+        ...
+
+    def get_metrics(
+        self,
+        format: MetricsFormat = 'json',
+        *,
+        global_labels: dict[str, str] | None = None,
+    ) -> str | Metrics:
+        """Metrics give you a detailed insight into how the Prisma Client interacts with your database.
+
+        You can retrieve metrics in either JSON or Prometheus formats.
+
+        For more details see https://www.prisma.io/docs/concepts/components/prisma-client/metrics.
+        """
+        response = self._engine.metrics(format=format, global_labels=global_labels)
+        if format == 'prometheus':
+            # For the prometheus format we return the response as-is
+            assert isinstance(response, str)
+            return response
+
+        return model_parse(Metrics, response)
+
     def _create_engine(self, dml_path: Path | None = None) -> SyncAbstractEngine:
         if self._engine_type == EngineType.binary:
             return SyncQueryEngine(
@@ -374,6 +413,44 @@ class AsyncBasePrisma(BasePrisma[AsyncAbstractEngine]):
     ) -> None:
         if self.is_connected():
             await self.disconnect()
+
+    @overload
+    async def get_metrics(
+        self,
+        format: Literal['json'] = 'json',
+        *,
+        global_labels: dict[str, str] | None = None,
+    ) -> Metrics:
+        ...
+
+    @overload
+    async def get_metrics(
+        self,
+        format: Literal['prometheus'],
+        *,
+        global_labels: dict[str, str] | None = None,
+    ) -> str:
+        ...
+
+    async def get_metrics(
+        self,
+        format: MetricsFormat = 'json',
+        *,
+        global_labels: dict[str, str] | None = None,
+    ) -> str | Metrics:
+        """Metrics give you a detailed insight into how the Prisma Client interacts with your database.
+
+        You can retrieve metrics in either JSON or Prometheus formats.
+
+        For more details see https://www.prisma.io/docs/concepts/components/prisma-client/metrics.
+        """
+        response = await self._engine.metrics(format=format, global_labels=global_labels)
+        if format == 'prometheus':
+            # For the prometheus format we return the response as-is
+            assert isinstance(response, str)
+            return response
+
+        return model_parse(Metrics, response)
 
     def _create_engine(self, dml_path: Path | None = None) -> AsyncAbstractEngine:
         if self._engine_type == EngineType.binary:
