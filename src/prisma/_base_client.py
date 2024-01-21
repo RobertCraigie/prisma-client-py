@@ -7,7 +7,7 @@ from datetime import timedelta
 from typing_extensions import Self
 
 from ._types import HttpConfig, TransactionId, DatasourceOverride
-from .engine import BaseAbstractEngine
+from .engine import BaseAbstractEngine, SyncAbstractEngine, AsyncAbstractEngine
 from .errors import ClientNotConnectedError, ClientNotRegisteredError
 from ._registry import get_client
 
@@ -158,3 +158,11 @@ class BasePrisma(Generic[_EngineT]):
             new._engine = self._internal_engine
 
         return new
+
+
+class SyncBasePrisma(BasePrisma[SyncAbstractEngine]):
+    __slots__ = ()
+
+
+class AsyncBasePrisma(BasePrisma[AsyncAbstractEngine]):
+    __slots__ = ()
