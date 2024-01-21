@@ -12,9 +12,9 @@ from pydantic import BaseModel
 
 from . import types, models, errors, actions
 from .types import DatasourceOverride, HttpConfig, MetricsFormat
-from ._types import BaseModelT, PrismaMethod
+from ._types import BaseModelT, PrismaMethod, TransactionId
 from .bases import _PrismaModel
-from .engine import AbstractEngine, QueryEngine, TransactionId
+from .engine import AbstractEngine, QueryEngine
 from .builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix, model_parse

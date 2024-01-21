@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, overload
 from datetime import timedelta
 from typing_extensions import Literal
 
-from ._types import TransactionId
+from .._types import TransactionId
 from .._compat import get_running_loop
 from .._constants import DEFAULT_CONNECT_TIMEOUT
 
