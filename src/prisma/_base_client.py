@@ -8,7 +8,9 @@ from pathlib import Path
 from datetime import timedelta
 from typing_extensions import Self, Literal
 
-from ._types import Datasource, HttpConfig, MetricsFormat, TransactionId, DatasourceOverride
+from pydantic import BaseModel
+
+from ._types import Datasource, HttpConfig, PrismaMethod, MetricsFormat, TransactionId, DatasourceOverride
 from .engine import (
     SyncQueryEngine,
     AsyncQueryEngine,
@@ -18,6 +20,7 @@ from .engine import (
 )
 from .errors import ClientNotConnectedError, ClientNotRegisteredError
 from ._compat import model_parse, removeprefix
+from ._builder import QueryBuilder
 from ._metrics import Metrics
 from ._registry import get_client
 from .generator.models import EngineType
@@ -78,9 +81,11 @@ class BasePrisma(Generic[_EngineT]):
 
     # from generation
     _schema_path: Path
+    _prisma_models: set[str]
     _packaged_schema_path: Path
     _engine_type: EngineType
     _default_datasource: Datasource
+    _relational_field_mappings: dict[str, dict[str, str]]
 
     __slots__ = (
         '_copied',
@@ -90,11 +95,13 @@ class BasePrisma(Generic[_EngineT]):
         '_http_config',
         '_schema_path',
         '_engine_type',
+        '_prisma_models',
         '_active_provider',
         '_connect_timeout',
         '_internal_engine',
         '_default_datasource',
         '_packaged_schema_path',
+        '_relational_field_mappings',
     )
 
     def __init__(
@@ -137,6 +144,8 @@ class BasePrisma(Generic[_EngineT]):
         packaged_schema_path: Path,
         active_provider: str,
         default_datasource: Datasource,
+        prisma_models: set[str],
+        relational_field_mappings: dict[str, dict[str, str]],
     ) -> None:
         """We pass through generated metadata using this method
         instead of the `__init__()` because that causes weirdness
@@ -145,9 +154,11 @@ class BasePrisma(Generic[_EngineT]):
         """
         self._schema_path = schema_path
         self._engine_type = engine_type
+        self._prisma_models = prisma_models
         self._active_provider = active_provider
         self._default_datasource = default_datasource
         self._packaged_schema_path = packaged_schema_path
+        self._relational_field_mappings = relational_field_mappings
 
     def is_registered(self) -> bool:
         """Returns True if this client instance is registered"""
@@ -252,6 +263,23 @@ class BasePrisma(Generic[_EngineT]):
             datasources = [self._make_sqlite_datasource()]
 
         return timeout, datasources
+
+    def _make_query_builder(
+        self,
+        *,
+        method: PrismaMethod,
+        arguments: dict[str, Any],
+        model: type[BaseModel] | None,
+        root_selection: list[str] | None,
+    ) -> QueryBuilder:
+        return QueryBuilder(
+            method=method,
+            model=model,
+            arguments=arguments,
+            root_selection=root_selection,
+            prisma_models=self._prisma_models,
+            relational_field_mappings=self._relational_field_mappings,
+        )
 
 
 class SyncBasePrisma(BasePrisma[SyncAbstractEngine]):
@@ -361,6 +389,19 @@ class SyncBasePrisma(BasePrisma[SyncAbstractEngine]):
 
         raise RuntimeError(f'Unhandled engine type: {self._engine_type}')
 
+    # TODO: don't return Any
+    def _execute(
+        self,
+        method: PrismaMethod,
+        arguments: dict[str, Any],
+        model: type[BaseModel] | None = None,
+        root_selection: list[str] | None = None,
+    ) -> Any:
+        builder = self._make_query_builder(
+            method=method, model=model, arguments=arguments, root_selection=root_selection
+        )
+        return self._engine.query(builder.build(), tx_id=self._tx_id)
+
 
 class AsyncBasePrisma(BasePrisma[AsyncAbstractEngine]):
     __slots__ = ()
@@ -468,3 +509,17 @@ class AsyncBasePrisma(BasePrisma[AsyncAbstractEngine]):
             return AsyncQueryEngine
 
         raise RuntimeError(f'Unhandled engine type: {self._engine_type}')
+
+    # TODO: don't return Any
+    async def _execute(
+        self,
+        *,
+        method: PrismaMethod,
+        arguments: dict[str, Any],
+        model: type[BaseModel] | None = None,
+        root_selection: list[str] | None = None,
+    ) -> Any:
+        builder = self._make_query_builder(
+            method=method, model=model, arguments=arguments, root_selection=root_selection
+        )
+        return await self._engine.query(builder.build(), tx_id=self._tx_id)

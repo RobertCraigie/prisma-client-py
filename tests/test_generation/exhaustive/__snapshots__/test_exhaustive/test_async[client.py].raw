@@ -139,7 +139,9 @@ class Prisma(AsyncBasePrisma):
         self._set_generated_properties(
             schema_path=SCHEMA_PATH,
             engine_type=ENGINE_TYPE,
+            prisma_models=PRISMA_MODELS,
             packaged_schema_path=PACKAGED_SCHEMA_PATH,
+            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
             active_provider='postgresql',
             default_datasource={
                 'name': 'db',
@@ -292,24 +294,6 @@ class Prisma(AsyncBasePrisma):
     def is_transaction(self) -> bool:
         """Returns True if the client is wrapped within a transaction"""
         return self._tx_id is not None
-
-    # TODO: don't return Any
-    async def _execute(
-        self,
-        method: PrismaMethod,
-        arguments: dict[str, Any],
-        model: type[BaseModel] | None = None,
-        root_selection: list[str] | None = None
-    ) -> Any:
-        builder = QueryBuilder(
-            method=method,
-            model=model,
-            arguments=arguments,
-            root_selection=root_selection,
-            prisma_models=PRISMA_MODELS,
-            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
-        )
-        return await self._engine.query(builder.build(), tx_id=self._tx_id)
 
 
 class TransactionManager:
