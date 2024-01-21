@@ -22,6 +22,14 @@ from ._constants import DEFAULT_CONNECT_TIMEOUT, DEFAULT_TX_MAX_WAIT, DEFAULT_TX
 from ._raw_query import deserialize_raw_results
 from ._metrics import Metrics
 
+# re-exports
+from ._registry import (
+    register as register,
+    get_client as get_client,
+    RegisteredClient as RegisteredClient,
+)
+
+
 __all__ = (
     'ENGINE_TYPE',
     'SCHEMA_PATH',
@@ -40,10 +48,6 @@ SCHEMA_PATH = Path('{{ schema_path.as_posix() }}')
 PACKAGED_SCHEMA_PATH = Path(__file__).parent.joinpath('schema.prisma')
 ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
 BINARY_PATHS = model_parse(BinaryPaths, {{ binary_paths.dict(by_alias=True) }})
-
-RegisteredClient = Union['Prisma', Callable[[], 'Prisma']]
-_registered_client: Optional[RegisteredClient] = None
-
 
 class UseClientDefault:
     """For certain parameters such as `timeout=...` we can make our intent more clear
@@ -80,46 +84,6 @@ def load_env(*, override: bool = False, **kwargs: Any) -> None:
 
     load_dotenv('.env', override=override, **kwargs)
     load_dotenv('prisma/.env', override=override, **kwargs)
-
-
-def register(client: RegisteredClient) -> None:
-    """Register a client instance to be retrieved by `get_client()`
-
-    This function _must_ only be called once, preferrably as soon as possible
-    to avoid any potentially confusing errors with threads or processes.
-    """
-    global _registered_client
-
-    if _registered_client is not None:
-        raise errors.ClientAlreadyRegisteredError()
-
-    if not isinstance(client, Prisma) and not callable(client):
-        raise TypeError(
-            f'Expected either a {Prisma} instance or a function that returns a {Prisma} but got {client} instead.'
-        )
-
-    _registered_client = client
-
-
-def get_client() -> 'Prisma':
-    """Get the registered client instance
-
-    Raises errors.ClientNotRegisteredError() if no client instance has been registered.
-    """
-    registered = _registered_client
-    if registered is None:
-        raise errors.ClientNotRegisteredError() from None
-
-    if isinstance(registered, Prisma):
-        return registered
-
-    client = registered()
-    if not isinstance(client, Prisma):  # pyright: ignore[reportUnnecessaryIsInstance]
-        raise TypeError(
-            f'Registered function returned {client} instead of a {Prisma} instance.'
-        )
-
-    return client
 
 
 class Prisma:
