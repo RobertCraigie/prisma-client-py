@@ -52,21 +52,12 @@ from .utils import _NoneType
 # TODO: add an argument to signify that the last iteration should be skipped
 
 
-SortMode = Literal['default', 'insensitive']
-SortOrder = Literal['asc', 'desc']
+SortMode = _types.SortMode
+SortOrder = _types.SortOrder
 
-MetricsFormat = Literal['json', 'prometheus']
+MetricsFormat = _types.MetricsFormat
 
-
-class _DatasourceOverrideOptional(TypedDict, total=False):
-    env: str
-    name: str
-
-
-class DatasourceOverride(_DatasourceOverrideOptional):
-    url: str
-
-
+DatasourceOverride = _types.DatasourceOverride
 HttpConfig = _types.HttpConfig
 
 

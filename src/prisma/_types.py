@@ -66,3 +66,18 @@ class HttpConfig(TypedDict, total=False):
     timeout: None | float | httpx.Timeout
     trust_env: bool
     max_redirects: int
+
+
+SortMode = Literal['default', 'insensitive']
+SortOrder = Literal['asc', 'desc']
+
+MetricsFormat = Literal['json', 'prometheus']
+
+
+class _DatasourceOverrideOptional(TypedDict, total=False):
+    env: str
+    name: str
+
+
+class DatasourceOverride(_DatasourceOverrideOptional):
+    url: str
