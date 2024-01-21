@@ -62,7 +62,7 @@ from ._raw_query import deserialize_raw_results
 from ._metrics import Metrics
 
 # re-exports
-from ._base_client import load_env as load_env
+from ._base_client import SyncBasePrisma, AsyncBasePrisma, load_env as load_env
 from ._registry import (
     register as register,
     get_client as get_client,
@@ -90,7 +90,7 @@ ENGINE_TYPE: EngineType = EngineType.binary
 BINARY_PATHS = '<binary-paths-removed>'
 
 
-class Prisma(BasePrisma[AbstractEngine]):
+class Prisma(AsyncBasePrisma):
     post: 'actions.PostActions[models.Post]'
     user: 'actions.UserActions[models.User]'
     m: 'actions.MActions[models.M]'
