@@ -174,6 +174,9 @@ class SyncQueryEngine(BaseQueryEngine, SyncHTTPEngine):
         datasources: list[DatasourceOverride] | None = None,
     ) -> None:
         log.debug('Connecting to query engine')
+        if datasources:
+            log.debug('Datasources: %s', datasources)
+
         if self.process is not None:
             raise errors.AlreadyConnectedError('Already connected to the query engine')
 
@@ -333,6 +336,9 @@ class AsyncQueryEngine(BaseQueryEngine, AsyncHTTPEngine):
         datasources: list[DatasourceOverride] | None = None,
     ) -> None:
         log.debug('Connecting to query engine')
+        if datasources:
+            log.debug('Datasources: %s', datasources)
+
         if self.process is not None:
             raise errors.AlreadyConnectedError('Already connected to the query engine')
 
