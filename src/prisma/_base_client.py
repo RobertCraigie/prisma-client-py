@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import warnings
+from types import TracebackType
 from typing import Any, Generic, TypeVar
 from pathlib import Path
 from datetime import timedelta
@@ -291,6 +292,19 @@ class SyncBasePrisma(BasePrisma[SyncAbstractEngine]):
             engine.close(timeout=timeout)
             engine.stop(timeout=timeout)
 
+    def __enter__(self) -> Self:
+        self.connect()
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
+        if self.is_connected():
+            self.disconnect()
+
     def _create_engine(self, dml_path: Path | None = None) -> SyncAbstractEngine:
         if self._engine_type == EngineType.binary:
             return SyncQueryEngine(
@@ -347,6 +361,19 @@ class AsyncBasePrisma(BasePrisma[AsyncAbstractEngine]):
 
             await engine.aclose(timeout=timeout)
             engine.stop(timeout=timeout)
+
+    async def __aenter__(self) -> Self:
+        await self.connect()
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
+        if self.is_connected():
+            await self.disconnect()
 
     def _create_engine(self, dml_path: Path | None = None) -> AsyncAbstractEngine:
         if self._engine_type == EngineType.binary:

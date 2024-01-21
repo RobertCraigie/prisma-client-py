@@ -97,34 +97,6 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
         if auto_register:
             register(self)
 
-    {% if is_async %}
-    async def __aenter__(self) -> 'Prisma':
-        await self.connect()
-        return self
-
-    async def __aexit__(
-        self,
-        exc_type: Optional[Type[BaseException]],
-        exc: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
-    ) -> None:
-        if self.is_connected():
-            await self.disconnect()
-    {% else %}
-    def __enter__(self) -> 'Prisma':
-        self.connect()
-        return self
-
-    def __exit__(
-        self,
-        exc_type: Optional[Type[BaseException]],
-        exc: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
-    ) -> None:
-        if self.is_connected():
-            self.disconnect()
-    {% endif %}
-
     {% if active_provider != 'mongodb' %}
     {{ maybe_async_def }}execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = {{ maybe_await }}self._execute(
