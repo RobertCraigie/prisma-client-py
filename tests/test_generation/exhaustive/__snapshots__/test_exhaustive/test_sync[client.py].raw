@@ -162,19 +162,6 @@ class Prisma(SyncBasePrisma):
         if auto_register:
             register(self)
 
-    def __enter__(self) -> 'Prisma':
-        self.connect()
-        return self
-
-    def __exit__(
-        self,
-        exc_type: Optional[Type[BaseException]],
-        exc: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
-    ) -> None:
-        if self.is_connected():
-            self.disconnect()
-
     def execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = self._execute(
             method='execute_raw',
