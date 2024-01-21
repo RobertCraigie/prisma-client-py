@@ -53,12 +53,13 @@ from ._base_client import BasePrisma, UseClientDefault, USE_CLIENT_DEFAULT
 from .types import DatasourceOverride, HttpConfig, MetricsFormat
 from ._types import BaseModelT, PrismaMethod, TransactionId
 from .bases import _PrismaModel
-from .builder import QueryBuilder, dumps
+from ._builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix, model_parse
 from ._constants import DEFAULT_CONNECT_TIMEOUT, DEFAULT_TX_MAX_WAIT, DEFAULT_TX_TIMEOUT
 from ._raw_query import deserialize_raw_results
 from ._metrics import Metrics
+from .metadata import PRISMA_MODELS, RELATIONAL_FIELD_MAPPINGS
 
 # re-exports
 from ._base_client import SyncBasePrisma, AsyncBasePrisma, load_env as load_env
@@ -305,6 +306,8 @@ class Prisma(SyncBasePrisma):
             model=model,
             arguments=arguments,
             root_selection=root_selection,
+            prisma_models=PRISMA_MODELS,
+            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
         )
         return self._engine.query(builder.build(), tx_id=self._tx_id)
 
@@ -440,7 +443,11 @@ class Batch:
         self.e = EBatchActions(self)
 
     def _add(self, **kwargs: Any) -> None:
-        builder = QueryBuilder(**kwargs)
+        builder = QueryBuilder(
+            **kwargs,
+            prisma_models=PRISMA_MODELS,
+            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
+        )
         self.__queries.append(builder.build_query())
 
     def commit(self) -> None:

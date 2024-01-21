@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-# fmt: off
-# I prefer this way of formatting
 import datetime
 from typing import Any, Optional
 
@@ -14,7 +12,8 @@ from prisma.bases import _PrismaModel as PrismaModel
 from prisma.utils import _NoneType
 from prisma.errors import UnknownModelError, UnknownRelationalFieldError
 from prisma._compat import PYDANTIC_V2
-from prisma.builder import QueryBuilder, serializer
+from prisma._builder import QueryBuilder, serializer
+from prisma.metadata import PRISMA_MODELS, RELATIONAL_FIELD_MAPPINGS
 
 # TODO: more tests
 # TODO: cleanup registered serializers
@@ -34,6 +33,8 @@ def build_query(
         method=method,
         arguments=arguments,
         **kwargs,
+        prisma_models=PRISMA_MODELS,
+        relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
     ).build_query()
 
 
@@ -42,13 +43,17 @@ def test_basic_building(snapshot: SnapshotAssertion) -> None:
     query = QueryBuilder(
         method='find_unique',
         model=models.User,
-        arguments={'where': {'id': '1'}}
+        arguments={'where': {'id': '1'}},
+        prisma_models=PRISMA_MODELS,
+        relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
     ).build_query()
     assert query == snapshot
 
     query = QueryBuilder(
         method='query_raw',
-        arguments={'where': {'id': '1'}}
+        arguments={'where': {'id': '1'}},
+        prisma_models=PRISMA_MODELS,
+        relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
     ).build_query()
     assert query == snapshot
 
@@ -63,12 +68,12 @@ def test_invalid_include() -> None:
                 'include': {
                     'hello': True,
                 }
-            }
+            },
+            prisma_models=PRISMA_MODELS,
+            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
         ).build_query()
 
-    assert exception.match(
-        'Field: "hello" either does not exist or is not a relational field on the User model'
-    )
+    assert exception.match('Field: "hello" either does not exist or is not a relational field on the User model')
 
 
 def test_include_no_model() -> None:
@@ -76,7 +81,7 @@ def test_include_no_model() -> None:
     with pytest.raises(ValueError) as exc:
         build_query(
             method='query_raw',
-            arguments={'include': {'posts': True}}
+            arguments={'include': {'posts': True}},
         )
 
     assert exc.match('Cannot include fields when model is None.')
@@ -87,10 +92,9 @@ def test_include_with_arguments(snapshot: SnapshotAssertion) -> None:
     query = QueryBuilder(
         method='find_unique',
         model=models.User,
-        arguments={
-            'where': {'id': 1},
-            'include': {'posts': {'where': {'id': 1}}}
-        }
+        arguments={'where': {'id': 1}, 'include': {'posts': {'where': {'id': 1}}}},
+        prisma_models=PRISMA_MODELS,
+        relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
     ).build_query()
     assert query == snapshot
 
@@ -101,8 +105,10 @@ def test_raw_queries(snapshot: SnapshotAssertion) -> None:
         method='query_raw',
         arguments={
             'query': 'SELECT * FROM User where id = $1',
-            'parameters': ["1263526"],
-        }
+            'parameters': ['1263526'],
+        },
+        prisma_models=PRISMA_MODELS,
+        relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
     ).build_query()
     assert query == snapshot
 
@@ -112,11 +118,9 @@ def test_datetime_serialization_tz_aware(snapshot: SnapshotAssertion) -> None:
     query = QueryBuilder(
         method='find_unique',
         model=models.Post,
-        arguments={
-            'where': {
-                'created_at': datetime.datetime(1985, 10, 26, 1, 1, 1, tzinfo=datetime.timezone.max)
-            }
-        }
+        arguments={'where': {'created_at': datetime.datetime(1985, 10, 26, 1, 1, 1, tzinfo=datetime.timezone.max)}},
+        prisma_models=PRISMA_MODELS,
+        relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
     ).build_query()
     assert query == snapshot
 
@@ -128,9 +132,11 @@ def test_datetime_serialization_tz_unaware(snapshot: SnapshotAssertion) -> None:
         model=models.Post,
         arguments={
             'where': {
-                'created_at': datetime.datetime(1985, 10, 26, 1, 1, 1)
+                'created_at': datetime.datetime(1985, 10, 26, 1, 1, 1),
             }
-        }
+        },
+        prisma_models=PRISMA_MODELS,
+        relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
     ).build_query()
     assert query == snapshot
 
@@ -144,13 +150,16 @@ def test_unicode(snapshot: SnapshotAssertion) -> None:
             'where': {
                 'name': '❤',
             }
-        }
+        },
+        prisma_models=PRISMA_MODELS,
+        relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
     ).build_query()
     assert query == snapshot
 
 
 def test_unknown_model() -> None:
     """Passing unknown model raises an error"""
+
     class FooModel(PrismaModel):
         __prisma_model__ = 'Foo'
 
@@ -159,6 +168,8 @@ def test_unknown_model() -> None:
             method='find_unique',
             model=FooModel,
             arguments={},
+            prisma_models=PRISMA_MODELS,
+            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
         ).build_query()
 
     assert exc.match(r'Model: "Foo" does not exist\.')
@@ -169,12 +180,12 @@ def test_unserializable_type() -> None:
     with pytest.raises(TypeError) as exc:
         QueryBuilder(
             method='find_first',
-            arguments={
-                'where': QueryBuilder
-            }
+            arguments={'where': QueryBuilder},
+            prisma_models=PRISMA_MODELS,
+            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
         ).build_query()
 
-    assert exc.match(r'Type <class \'prisma.builder.QueryBuilder\'> not serializable')
+    assert exc.match(r'Type <class \'prisma._builder.QueryBuilder\'> not serializable')
 
 
 def test_unserializable_instance() -> None:
@@ -183,8 +194,10 @@ def test_unserializable_instance() -> None:
         QueryBuilder(
             method='find_first',
             arguments={
-                'where': _NoneType()
-            }
+                'where': _NoneType(),
+            },
+            prisma_models=PRISMA_MODELS,
+            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
         ).build_query()
 
     assert exc.match(r'Type <class \'prisma.utils._NoneType\'> not serializable')
@@ -192,6 +205,7 @@ def test_unserializable_instance() -> None:
 
 def test_custom_serialization(snapshot: SnapshotAssertion) -> None:
     """Registering a custom serializer serializes as expected"""
+
     class Foo:
         def __init__(self, arg: int) -> None:
             self.arg = arg
@@ -207,13 +221,16 @@ def test_custom_serialization(snapshot: SnapshotAssertion) -> None:
             'where': {
                 'title': Foo(1),
             }
-        }
+        },
+        prisma_models=PRISMA_MODELS,
+        relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
     ).build_query()
     assert query == snapshot
 
 
 def test_select(snapshot: SnapshotAssertion) -> None:
     """Selecting a subset of fields"""
+
     class OtherModel(PrismaModel):
         name: str
         __prisma_model__ = 'User'
@@ -235,6 +252,8 @@ def test_select(snapshot: SnapshotAssertion) -> None:
                 'title': 'Foo',
             },
         },
+        prisma_models=PRISMA_MODELS,
+        relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
     ).build_query()
     assert query == snapshot
 
@@ -247,6 +266,8 @@ def test_select(snapshot: SnapshotAssertion) -> None:
                     'posts': True,
                 },
             },
+            prisma_models=PRISMA_MODELS,
+            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
         ).build_query()
 
     assert exc.match(r'Field: "posts" either does not exist or is not a relational field on the OtherModel model')
@@ -259,6 +280,8 @@ def test_select(snapshot: SnapshotAssertion) -> None:
                 'author': True,
             },
         },
+        prisma_models=PRISMA_MODELS,
+        relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
     ).build_query()
     assert query == snapshot
 
@@ -267,6 +290,7 @@ def test_select_non_prisma_model_basemodel(snapshot: SnapshotAssertion) -> None:
     """Fields that point to a `BaseModel` but do not set the `__prisma_model__`
     class variable are included by default as scalar fields.
     """
+
     class OtherModel(PrismaModel):
         name: str
         __prisma_model__ = 'User'
@@ -292,6 +316,8 @@ def test_select_non_prisma_model_basemodel(snapshot: SnapshotAssertion) -> None:
                 'title': 'Foo',
             },
         },
+        prisma_models=PRISMA_MODELS,
+        relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
     ).build_query()
     assert query == snapshot
 
@@ -310,9 +336,13 @@ def test_forward_reference_error() -> None:
 
         __prisma_model__ = 'Post'
 
-    with pytest.raises(RuntimeError, match=r'Forward references must be evaluated using CustomModel\.update_forward_refs\(\)'):
+    with pytest.raises(
+        RuntimeError, match=r'Forward references must be evaluated using CustomModel\.update_forward_refs\(\)'
+    ):
         QueryBuilder(
             method='find_first',
             model=CustomModel,
             arguments={},
+            prisma_models=PRISMA_MODELS,
+            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
         ).build_query()

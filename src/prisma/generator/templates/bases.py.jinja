@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from . import fields, actions
 from ._types import FuncType
-from .builder import serialize_base64
+from ._builder import serialize_base64
 from ._compat import PYDANTIC_V2, ConfigDict
 
 if TYPE_CHECKING:
