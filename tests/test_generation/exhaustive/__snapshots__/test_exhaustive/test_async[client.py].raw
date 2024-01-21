@@ -117,7 +117,6 @@ class Prisma(AsyncBasePrisma):
         'c',
         'd',
         'e',
-        '_active_provider',
     )
 
     def __init__(
@@ -131,13 +130,22 @@ class Prisma(AsyncBasePrisma):
         http: HttpConfig | None = None,
     ) -> None:
         super().__init__(
+            http=http,
             use_dotenv=use_dotenv,
             log_queries=log_queries,
             datasource=datasource,
             connect_timeout=connect_timeout,
-            http=http,
         )
-        self._active_provider = 'postgresql'
+        self._set_generated_properties(
+            schema_path=SCHEMA_PATH,
+            engine_type=ENGINE_TYPE,
+            packaged_schema_path=PACKAGED_SCHEMA_PATH,
+            active_provider='postgresql',
+            default_datasource={
+                'name': 'db',
+                'url': OptionalValueFromEnvVar(**{'value': None, 'fromEnvVar': 'DB_URL'}).resolve(),
+            },
+        )
 
         self.post = actions.PostActions[models.Post](self, models.Post)
         self.user = actions.UserActions[models.User](self, models.User)
@@ -430,13 +438,6 @@ class Prisma(AsyncBasePrisma):
             return url
 
         return f'file:{relative_to.joinpath(url_path).resolve()}'
-
-    @property
-    def _default_datasource(self) -> DatasourceOverride:
-        return {
-            'name': 'db',
-            'url': OptionalValueFromEnvVar(**{'value': None, 'fromEnvVar': 'DB_URL'}).resolve(),
-        }
 
 
 class TransactionManager:

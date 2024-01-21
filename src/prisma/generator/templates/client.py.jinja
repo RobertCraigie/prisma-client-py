@@ -61,7 +61,6 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
         {% for model in dmmf.datamodel.models %}
         '{{ model.instance_name }}',
         {% endfor %}
-        '_active_provider',
     )
 
     def __init__(
@@ -75,13 +74,22 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
         http: HttpConfig | None = None,
     ) -> None:
         super().__init__(
+            http=http,
             use_dotenv=use_dotenv,
             log_queries=log_queries,
             datasource=datasource,
             connect_timeout=connect_timeout,
-            http=http,
         )
-        self._active_provider = '{{ active_provider }}'
+        self._set_generated_properties(
+            schema_path=SCHEMA_PATH,
+            engine_type=ENGINE_TYPE,
+            packaged_schema_path=PACKAGED_SCHEMA_PATH,
+            active_provider='{{ active_provider }}',
+            default_datasource={
+                'name': '{{ datasources[0].name }}',
+                'url': OptionalValueFromEnvVar(**{{ datasources[0].url.dict(by_alias=True) }}).resolve(),
+            },
+        )
 
         {% for model in dmmf.datamodel.models %}
         self.{{ model.instance_name }} = actions.{{ model.name }}Actions[models.{{ model.name }}](self, models.{{ model.name }})
@@ -392,13 +400,6 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
             return url
 
         return f'file:{relative_to.joinpath(url_path).resolve()}'
-
-    @property
-    def _default_datasource(self) -> DatasourceOverride:
-        return {
-            'name': '{{ datasources[0].name }}',
-            'url': OptionalValueFromEnvVar(**{{ datasources[0].url.dict(by_alias=True) }}).resolve(),
-        }
 
 
 class TransactionManager:

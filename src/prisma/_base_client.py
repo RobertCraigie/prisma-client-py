@@ -3,13 +3,15 @@ from __future__ import annotations
 import logging
 import warnings
 from typing import Any, Generic, TypeVar
+from pathlib import Path
 from datetime import timedelta
 from typing_extensions import Self
 
-from ._types import HttpConfig, TransactionId, DatasourceOverride
+from ._types import Datasource, HttpConfig, TransactionId, DatasourceOverride
 from .engine import BaseAbstractEngine, SyncAbstractEngine, AsyncAbstractEngine
 from .errors import ClientNotConnectedError, ClientNotRegisteredError
 from ._registry import get_client
+from .generator.models import EngineType
 
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -65,14 +67,25 @@ class BasePrisma(Generic[_EngineT]):
     _internal_engine: _EngineT | None
     _copied: bool
 
+    # from generation
+    _schema_path: Path
+    _packaged_schema_path: Path
+    _engine_type: EngineType
+    _default_datasource: Datasource
+
     __slots__ = (
         '_copied',
         '_tx_id',
         '_datasource',
         '_log_queries',
         '_http_config',
+        '_schema_path',
+        '_engine_type',
+        '_active_provider',
         '_connect_timeout',
         '_internal_engine',
+        '_default_datasource',
+        '_packaged_schema_path',
     )
 
     def __init__(
@@ -106,6 +119,26 @@ class BasePrisma(Generic[_EngineT]):
 
         if use_dotenv:
             load_env()
+
+    def _set_generated_properties(
+        self,
+        *,
+        schema_path: Path,
+        engine_type: EngineType,
+        packaged_schema_path: Path,
+        active_provider: str,
+        default_datasource: Datasource,
+    ) -> None:
+        """We pass through generated metadata using this method
+        instead of the `__init__()` because that causes weirdness
+        for our `_copy()` method as this base class has arguments
+        that the subclasses do not.
+        """
+        self._schema_path = schema_path
+        self._engine_type = engine_type
+        self._active_provider = active_provider
+        self._default_datasource = default_datasource
+        self._packaged_schema_path = packaged_schema_path
 
     def is_registered(self) -> bool:
         """Returns True if this client instance is registered"""
