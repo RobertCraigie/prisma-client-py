@@ -101,7 +101,7 @@ def test_invalid_type_argument() -> None:
             return super().get_manifest()  # type: ignore
 
         def generate(self, data: Path) -> None:  # pragma: no cover
-            return super().generate(data)
+            raise NotImplementedError()
 
     with pytest.raises(TypeError) as exc:
         MyGenerator().data_class  # noqa: B018
@@ -114,7 +114,7 @@ def test_invalid_type_argument() -> None:
             return super().get_manifest()  # type: ignore
 
         def generate(self, data: Manifest) -> None:  # pragma: no cover
-            return super().generate(data)
+            raise NotImplementedError()
 
     data_class = MyGenerator2().data_class
     assert data_class == Manifest
