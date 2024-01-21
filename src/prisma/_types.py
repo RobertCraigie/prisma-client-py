@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Type, Tuple, Mapping, TypeVar, Callable, Coroutine
 from typing_extensions import (
     Literal as Literal,
+    NewType,
     Protocol as Protocol,
     TypedDict as TypedDict,
     TypeGuard as TypeGuard,
@@ -81,3 +82,6 @@ class _DatasourceOverrideOptional(TypedDict, total=False):
 
 class DatasourceOverride(_DatasourceOverrideOptional):
     url: str
+
+
+TransactionId = NewType('TransactionId', str)

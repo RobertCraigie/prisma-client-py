@@ -9,22 +9,19 @@ import signal
 import asyncio
 import logging
 import subprocess
-from datetime import timedelta
-from pathlib import Path
 from typing import Any, overload
+from pathlib import Path
+from datetime import timedelta
 from typing_extensions import Literal
 
 from . import utils, errors
 from ._http import SyncHTTPEngine, AsyncHTTPEngine
-from ..utils import DEBUG
-from ..binaries import platform
-from ..utils import time_since, _env_bool
-from ..types import DatasourceOverride, MetricsFormat
-from .._types import HttpConfig
+from ..types import MetricsFormat, DatasourceOverride
+from ..utils import DEBUG, _env_bool, time_since
+from .._types import HttpConfig, TransactionId
 from ..builder import dumps
+from ..binaries import platform
 from .._constants import DEFAULT_CONNECT_TIMEOUT
-from ._types import TransactionId
-
 
 __all__ = (
     'SyncQueryEngine',
