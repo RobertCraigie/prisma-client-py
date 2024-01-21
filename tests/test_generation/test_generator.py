@@ -2,6 +2,7 @@ import sys
 import subprocess
 from typing import cast
 from pathlib import Path
+from typing_extensions import override
 
 import pytest
 from jinja2 import Environment, FileSystemLoader
@@ -97,9 +98,11 @@ def test_invalid_type_argument() -> None:
     """Non-BaseModel argument to GenericGenerator raises an error"""
 
     class MyGenerator(GenericGenerator[Path]):  # type: ignore
+        @override
         def get_manifest(self) -> Manifest:  # pragma: no cover
             return super().get_manifest()  # type: ignore
 
+        @override
         def generate(self, data: Path) -> None:  # pragma: no cover
             raise NotImplementedError()
 
@@ -110,9 +113,11 @@ def test_invalid_type_argument() -> None:
     assert 'pydantic.main.BaseModel' in exc.value.args[0]
 
     class MyGenerator2(GenericGenerator[Manifest]):
+        @override
         def get_manifest(self) -> Manifest:  # pragma: no cover
             return super().get_manifest()  # type: ignore
 
+        @override
         def generate(self, data: Manifest) -> None:  # pragma: no cover
             raise NotImplementedError()
 

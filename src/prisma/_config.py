@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Union, ClassVar, Optional
 from pathlib import Path
+from typing_extensions import override
 
 import tomlkit
 import pydantic
@@ -119,6 +120,7 @@ class Config(DefaultConfig):
 
 
 class LazyConfigProxy(LazyProxy[Config]):
+    @override
     def __load__(self) -> Config:
         return Config.load()
 

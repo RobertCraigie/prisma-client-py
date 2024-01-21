@@ -16,6 +16,7 @@ from typing import (
     overload,
 )
 from pathlib import Path
+from typing_extensions import override
 
 import click
 
@@ -30,6 +31,7 @@ class PrismaCLI(click.MultiCommand):
     base_package: str = 'prisma.cli.commands'
     folder: Path = Path(__file__).parent / 'commands'
 
+    @override
     def list_commands(self, ctx: click.Context) -> List[str]:  # noqa: ARG002
         commands: List[str] = []
 
@@ -46,6 +48,7 @@ class PrismaCLI(click.MultiCommand):
         commands.sort()
         return commands
 
+    @override
     def get_command(self, ctx: click.Context, cmd_name: str) -> Optional[click.Command]:  # noqa: ARG002
         name = f'{self.base_package}.{cmd_name}'
         if not module_exists(name):
@@ -66,6 +69,7 @@ class PrismaCLI(click.MultiCommand):
 class PathlibPath(click.Path):
     """A Click path argument that returns a pathlib Path, not a string"""
 
+    @override
     def convert(
         self,
         value: str | os.PathLike[str],
@@ -93,6 +97,7 @@ class EnumChoice(click.Choice):
         self.__enum = enum
         super().__init__([item.value for item in enum.__members__.values()])
 
+    @override
     def convert(
         self,
         value: str,

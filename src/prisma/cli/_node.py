@@ -9,7 +9,7 @@ import subprocess
 from abc import ABC, abstractmethod
 from typing import IO, Any, Union, Mapping, cast
 from pathlib import Path
-from typing_extensions import Literal
+from typing_extensions import Literal, override
 
 from .. import config
 from .._proxy import LazyProxy
@@ -117,9 +117,11 @@ class NodeBinaryStrategy(Strategy):
         self.resolver = resolver
 
     @property
+    @override
     def target_bin(self) -> Path:
         return self.path.parent
 
+    @override
     def __run__(
         self,
         *args: str,
@@ -216,6 +218,7 @@ class NodeJSPythonStrategy(Strategy):
         self.target = target
         self.resolver = 'nodejs-bin'
 
+    @override
     def __run__(
         self,
         *args: str,
@@ -257,6 +260,7 @@ class NodeJSPythonStrategy(Strategy):
         return Path(nodejs.node.path)
 
     @property
+    @override
     def target_bin(self) -> Path:
         return Path(self.node_path).parent
 
@@ -397,6 +401,7 @@ class LazyBinaryProxy(LazyProxy[Node]):
         super().__init__()
         self.target = target
 
+    @override
     def __load__(self) -> Node:
         return resolve(self.target)
 

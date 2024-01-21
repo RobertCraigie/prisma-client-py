@@ -12,7 +12,7 @@ import subprocess
 from typing import Any, overload
 from pathlib import Path
 from datetime import timedelta
-from typing_extensions import Literal
+from typing_extensions import Literal, override
 
 from . import utils, errors
 from ._http import SyncHTTPEngine, AsyncHTTPEngine
@@ -153,6 +153,7 @@ class SyncQueryEngine(BaseQueryEngine, SyncHTTPEngine):
         # ensure the query engine process is terminated when we are
         atexit.register(self.stop)
 
+    @override
     def close(self, *, timeout: timedelta | None = None) -> None:
         log.debug('Disconnecting query engine...')
 
@@ -161,10 +162,12 @@ class SyncQueryEngine(BaseQueryEngine, SyncHTTPEngine):
 
         log.debug('Disconnected query engine')
 
+    @override
     async def aclose(self, *, timeout: timedelta | None = None) -> None:
         self.close(timeout=timeout)
         self._close_session()
 
+    @override
     def connect(
         self,
         timeout: timedelta = DEFAULT_CONNECT_TIMEOUT,
@@ -219,6 +222,7 @@ class SyncQueryEngine(BaseQueryEngine, SyncHTTPEngine):
         else:
             raise errors.EngineConnectionError('Could not connect to the query engine') from last_exc
 
+    @override
     def query(
         self,
         content: str,
@@ -236,6 +240,7 @@ class SyncQueryEngine(BaseQueryEngine, SyncHTTPEngine):
             headers=headers,
         )
 
+    @override
     def start_transaction(self, *, content: str) -> TransactionId:
         result = self.request(
             'POST',
@@ -244,9 +249,11 @@ class SyncQueryEngine(BaseQueryEngine, SyncHTTPEngine):
         )
         return TransactionId(result['id'])
 
+    @override
     def commit_transaction(self, tx_id: TransactionId) -> None:
         self.request('POST', f'/transaction/{tx_id}/commit')
 
+    @override
     def rollback_transaction(self, tx_id: TransactionId) -> None:
         self.request('POST', f'/transaction/{tx_id}/rollback')
 
@@ -268,6 +275,7 @@ class SyncQueryEngine(BaseQueryEngine, SyncHTTPEngine):
     ) -> str:
         ...
 
+    @override
     def metrics(
         self,
         *,
@@ -305,6 +313,7 @@ class AsyncQueryEngine(BaseQueryEngine, AsyncHTTPEngine):
         # ensure the query engine process is terminated when we are
         atexit.register(self.stop)
 
+    @override
     def close(self, *, timeout: timedelta | None = None) -> None:
         log.debug('Disconnecting query engine...')
 
@@ -312,10 +321,12 @@ class AsyncQueryEngine(BaseQueryEngine, AsyncHTTPEngine):
 
         log.debug('Disconnected query engine')
 
+    @override
     async def aclose(self, *, timeout: timedelta | None = None) -> None:
         self.close(timeout=timeout)
         await self._close_session()
 
+    @override
     async def connect(
         self,
         timeout: timedelta = DEFAULT_CONNECT_TIMEOUT,
@@ -370,6 +381,7 @@ class AsyncQueryEngine(BaseQueryEngine, AsyncHTTPEngine):
         else:
             raise errors.EngineConnectionError('Could not connect to the query engine') from last_exc
 
+    @override
     async def query(
         self,
         content: str,
@@ -387,6 +399,7 @@ class AsyncQueryEngine(BaseQueryEngine, AsyncHTTPEngine):
             headers=headers,
         )
 
+    @override
     async def start_transaction(self, *, content: str) -> TransactionId:
         result = await self.request(
             'POST',
@@ -395,9 +408,11 @@ class AsyncQueryEngine(BaseQueryEngine, AsyncHTTPEngine):
         )
         return TransactionId(result['id'])
 
+    @override
     async def commit_transaction(self, tx_id: TransactionId) -> None:
         await self.request('POST', f'/transaction/{tx_id}/commit')
 
+    @override
     async def rollback_transaction(self, tx_id: TransactionId) -> None:
         await self.request('POST', f'/transaction/{tx_id}/rollback')
 
@@ -419,6 +434,7 @@ class AsyncQueryEngine(BaseQueryEngine, AsyncHTTPEngine):
     ) -> str:
         ...
 
+    @override
     async def metrics(
         self,
         *,
