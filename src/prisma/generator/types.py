@@ -1,6 +1,6 @@
 from typing import Mapping, Optional
-from .._types import TypedDict
 
+from .._types import TypedDict
 
 __all__ = (
     'PartialModel',

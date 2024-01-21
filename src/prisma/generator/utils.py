@@ -1,13 +1,13 @@
 import os
 import shutil
-from textwrap import dedent
-from typing import Any, List, Dict, Iterator, TypeVar, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Union, TypeVar, Iterator
 from pathlib import Path
+from textwrap import dedent
 
 from ..utils import monkeypatch
 
 if TYPE_CHECKING:
-    from .models import Model, Field
+    from .models import Field, Model
 
 
 T = TypeVar('T')

@@ -1,16 +1,15 @@
 import sys
 import logging
+from typing import Any, Dict, Tuple, Optional
 from pathlib import Path
-from typing import Optional, Dict, Any, Tuple
 
 import click
 import pydantic
 
 from .. import prisma, options
 from ..utils import EnumChoice, PathlibPath, warning
-from ...generator.models import InterfaceChoices
 from ..._compat import PYDANTIC_V2
-
+from ...generator.models import InterfaceChoices
 
 ARG_TO_CONFIG_KEY = {
     'partials': 'partial_type_generator',

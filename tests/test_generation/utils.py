@@ -1,5 +1,5 @@
-from pathlib import Path
 from typing import Iterator
+from pathlib import Path
 
 from prisma.generator.utils import resolve_template_path
 

@@ -1,4 +1,5 @@
 import re
+
 import pytest
 
 from prisma import Prisma

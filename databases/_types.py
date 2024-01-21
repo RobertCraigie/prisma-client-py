@@ -1,6 +1,5 @@
-from typing_extensions import Literal, TypedDict
 from typing import Generic, TypeVar
-
+from typing_extensions import Literal, TypedDict
 
 _T = TypeVar('_T')
 

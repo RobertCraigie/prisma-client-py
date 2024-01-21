@@ -1,5 +1,5 @@
-from dirty_equals import IsPartialDict
 import pytest
+from dirty_equals import IsPartialDict
 
 from prisma import Prisma
 from prisma.enums import Role

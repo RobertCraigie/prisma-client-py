@@ -1,19 +1,19 @@
+import signal
 import asyncio
 import contextlib
-import signal
-from pathlib import Path
 from typing import Iterator, Optional
+from pathlib import Path
 
 import pytest
-from _pytest.monkeypatch import MonkeyPatch
 from pytest_subprocess import FakeProcess
+from _pytest.monkeypatch import MonkeyPatch
 
-from prisma import Prisma, config, BINARY_PATHS
+from prisma import BINARY_PATHS, Prisma, config
 from prisma.utils import temp_env_update
-from prisma.binaries import platform
-from prisma.engine import errors, utils
-from prisma.engine.query import QueryEngine
+from prisma.engine import utils, errors
 from prisma._compat import get_running_loop
+from prisma.binaries import platform
+from prisma.engine.query import QueryEngine
 
 from .utils import Testdir, skipif_windows
 

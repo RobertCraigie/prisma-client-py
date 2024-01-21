@@ -1,5 +1,6 @@
 import pytest
-from prisma import Prisma, Json
+
+from prisma import Json, Prisma
 
 
 @pytest.mark.asyncio

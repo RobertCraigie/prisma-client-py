@@ -10,7 +10,6 @@ from typing import (
 from ._types import BaseModelT
 from ._compat import model_parse
 
-
 # From: https://github.com/prisma/prisma/blob/main/packages/client/src/runtime/utils/deserializeRawResults.ts
 # Last checked: 2022-12-04
 """

@@ -6,10 +6,10 @@ from prisma import Prisma
 from prisma.fields import Base64
 from prisma.models import Types
 from prisma._compat import (
+    model_dict,
+    model_json,
     model_parse,
     model_parse_json,
-    model_json,
-    model_dict,
 )
 
 

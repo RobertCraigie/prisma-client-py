@@ -1,26 +1,26 @@
 import json
 from enum import Enum
+from typing import (
+    Any,
+    Dict,
+    Type,
+    Tuple,
+    Callable,
+    Iterator,
+    Optional,
+    Generator,
+)
 from pathlib import Path
 from itertools import chain
-from typing import (
-    Optional,
-    Iterator,
-    Dict,
-    Any,
-    Callable,
-    Generator,
-    Tuple,
-    Type,
-)
 
-import pydantic
 import pytest
+import pydantic
 from _pytest.monkeypatch import MonkeyPatch
+
 from prisma.utils import temp_env_update
 from prisma.generator.models import InterfaceChoices
 
-from ..utils import Testdir, Runner
-
+from ..utils import Runner, Testdir
 
 # all these tests simply ensure the correct config is being parsed by generator.run,
 # as each config option is individually tested elsewwere we can be sure that each

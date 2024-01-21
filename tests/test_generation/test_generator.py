@@ -1,11 +1,13 @@
 import sys
 import subprocess
-from pathlib import Path
 from typing import cast
+from pathlib import Path
 
 import pytest
 from jinja2 import Environment, FileSystemLoader
+
 from prisma import __version__
+from prisma._compat import PYDANTIC_V2
 from prisma.generator import (
     BASE_PACKAGE_DIR,
     Manifest,
@@ -15,7 +17,6 @@ from prisma.generator import (
     cleanup_templates,
 )
 from prisma.generator.utils import Faker, copy_tree
-from prisma._compat import PYDANTIC_V2
 
 from .utils import assert_module_is_clean, assert_module_not_clean
 from ..utils import Testdir

@@ -7,13 +7,13 @@ from pathlib import Path
 
 import pytest
 from pytest_subprocess import FakeProcess
+
 from prisma.cli import _node as node
-from prisma.cli._node import Target
-from prisma._config import Config
 from prisma._compat import nodejs
+from prisma._config import Config
+from prisma.cli._node import Target
 
 from ..utils import set_config
-
 
 THIS_DIR = Path(__file__).parent
 

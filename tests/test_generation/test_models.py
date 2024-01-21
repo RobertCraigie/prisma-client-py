@@ -2,13 +2,14 @@ from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
+
 from prisma._compat import (
     PYDANTIC_V2,
+    model_json,
     model_parse,
     model_parse_json,
-    model_json,
 )
-from prisma.generator.models import Module, Config
+from prisma.generator.models import Config, Module
 
 
 def test_module_serialization() -> None:

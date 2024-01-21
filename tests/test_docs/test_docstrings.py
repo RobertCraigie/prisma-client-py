@@ -3,8 +3,8 @@ import inspect
 from typing import Any
 
 import pytest
-from prisma.actions import PostActions
 
+from prisma.actions import PostActions
 
 METHODS = [member for name, member in inspect.getmembers(PostActions) if not name.startswith('_')]
 

@@ -2,11 +2,11 @@ import json
 
 from pydantic import BaseModel
 
-from prisma import Prisma, Json
+from prisma import Json, Prisma
 from prisma.models import Types
 
-from ...._compat import LiteralString
 from ...._types import DatabaseMapping, SupportedDatabase
+from ...._compat import LiteralString
 
 
 class Queries(BaseModel):

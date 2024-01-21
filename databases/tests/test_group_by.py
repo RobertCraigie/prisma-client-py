@@ -3,10 +3,8 @@ from syrupy.assertion import SnapshotAssertion
 
 import prisma
 from prisma import Prisma
-from prisma.types import SortOrder
-
 from lib.testing import async_fixture
-
+from prisma.types import SortOrder
 
 # TODO: test all types
 # TODO: test working with the results

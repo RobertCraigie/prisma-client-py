@@ -1,1 +1,1 @@
-from ._pyright import PyrightConfig as PyrightConfig, Config as Config
+from ._pyright import Config as Config, PyrightConfig as PyrightConfig

@@ -6,16 +6,15 @@ from syrupy.assertion import SnapshotAssertion
 import prisma
 from prisma import Prisma
 from prisma._compat import model_parse_json
-
 from lib.testing.shared_conftest import *
 from lib.testing.shared_conftest.async_client import *
+
 from ..utils import (
     RAW_QUERIES_MAPPING,
     RawQueries,
     DatabaseConfig,
     AmberSharedExtension,
 )
-
 
 prisma.register(Prisma())
 

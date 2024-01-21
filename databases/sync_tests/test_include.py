@@ -3,9 +3,8 @@ from typing import List
 import pytest
 
 from prisma import Prisma
-from prisma.models import Post
-
 from lib.testing import async_fixture
+from prisma.models import Post
 
 
 @async_fixture(scope='module', name='user_id')

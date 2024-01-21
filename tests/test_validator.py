@@ -1,7 +1,7 @@
 import pytest
 from syrupy.assertion import SnapshotAssertion
 
-from prisma import validate, types
+from prisma import types, validate
 from prisma._compat import PYDANTIC_V2
 
 

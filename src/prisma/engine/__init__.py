@@ -1,5 +1,5 @@
-from .errors import *
 from ._types import TransactionId as TransactionId
+from .errors import *
 
 try:
     from .query import *

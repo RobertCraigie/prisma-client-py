@@ -1,6 +1,6 @@
 import pytest
-from prisma import errors, Prisma
 
+from prisma import Prisma, errors
 from lib.testing import assert_time_like_now
 
 

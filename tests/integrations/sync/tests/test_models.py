@@ -1,7 +1,8 @@
 import threading
-from typing import Optional, NoReturn, Any
+from typing import Any, NoReturn, Optional
 
 import pytest
+
 from prisma import Prisma
 from prisma.models import User
 

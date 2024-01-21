@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
-from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, Callable, cast
 from asyncio import get_running_loop as get_running_loop
 
 import pydantic
@@ -10,7 +10,6 @@ from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 
 from .utils import make_optional
-
 
 _T = TypeVar('_T')
 _ModelT = TypeVar('_ModelT', bound=BaseModel)
@@ -79,8 +78,8 @@ if TYPE_CHECKING:
         ...
 
     from pydantic import (
-        GetCoreSchemaHandler as GetCoreSchemaHandler,
         PlainSerializer as PlainSerializer,
+        GetCoreSchemaHandler as GetCoreSchemaHandler,
     )
     from pydantic_core import (
         CoreSchema as CoreSchema,
@@ -92,8 +91,8 @@ if TYPE_CHECKING:
 
 else:
     if PYDANTIC_V2:
+        from pydantic import PlainSerializer, GetCoreSchemaHandler
         from pydantic_core import CoreSchema, core_schema
-        from pydantic import GetCoreSchemaHandler, PlainSerializer
     else:
         core_schema = None
         CoreSchema = None
@@ -122,8 +121,8 @@ else:
 
     else:
         from pydantic import (
-            BaseSettings as BaseSettings,
             BaseConfig as BaseConfig,
+            BaseSettings as BaseSettings,
         )
 
         BaseSettingsConfig = BaseSettings.Config
@@ -151,18 +150,22 @@ if TYPE_CHECKING:
 else:
     if PYDANTIC_V2:
         from pydantic.v1 import Extra as Extra
-        from pydantic.v1.typing import get_args as get_args
-        from pydantic.v1.typing import is_union as is_union
-        from pydantic.v1.typing import get_origin as get_origin
-        from pydantic.v1.typing import is_typeddict as is_typeddict
-        from pydantic.v1.typing import is_literal_type as is_literal_type
+        from pydantic.v1.typing import (
+            get_args as get_args,
+            is_union as is_union,
+            get_origin as get_origin,
+            is_typeddict as is_typeddict,
+            is_literal_type as is_literal_type,
+        )
     else:
         from pydantic import Extra as Extra
-        from pydantic.typing import get_args as get_args
-        from pydantic.typing import is_union as is_union
-        from pydantic.typing import get_origin as get_origin
-        from pydantic.typing import is_typeddict as is_typeddict
-        from pydantic.typing import is_literal_type as is_literal_type
+        from pydantic.typing import (
+            get_args as get_args,
+            is_union as is_union,
+            get_origin as get_origin,
+            is_typeddict as is_typeddict,
+            is_literal_type as is_literal_type,
+        )
 
 
 # refactored config

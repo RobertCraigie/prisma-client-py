@@ -3,16 +3,17 @@ from __future__ import annotations
 import re
 import sys
 import subprocess
+from typing import Any, List, Callable, Iterator, Optional
 from pathlib import Path
-from typing import Any, Callable, Iterator, List, Optional
 
 import pytest
 from syrupy.assertion import SnapshotAssertion
-from syrupy.extensions.amber.serializer import DataSerializer
 from syrupy.extensions.single_file import SingleFileSnapshotExtension
+from syrupy.extensions.amber.serializer import DataSerializer
 
 from prisma.generator import BASE_PACKAGE_DIR
 from prisma.generator.utils import remove_suffix
+
 from .utils import ROOTDIR
 from ...utils import skipif_windows
 

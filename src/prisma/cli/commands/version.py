@@ -5,8 +5,8 @@ from importlib import import_module
 
 import click
 
+from ... import config, __version__
 from ..utils import pretty_info
-from ... import __version__, config
 from ...binaries.platform import binary_platform
 
 

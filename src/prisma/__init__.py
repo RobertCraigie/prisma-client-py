@@ -8,26 +8,29 @@ __version__ = '0.12.0'
 
 from typing import TYPE_CHECKING
 
-from ._config import config as config
-from .utils import setup_logging
 from . import errors as errors
-from .validator import *
+from .utils import setup_logging
 from ._types import PrismaMethod as PrismaMethod
+from ._config import config as config
 from ._metrics import (
     Metric as Metric,
     Metrics as Metrics,
     MetricHistogram as MetricHistogram,
 )
+from .validator import *
 
-
+# the import ordering is important here because
+# we rely on the fact that `prisma/client.py` is the
+# first piece of generated code that is loaded. This is
+# especially useful for `python -m prisma_cleanup`
 try:
-    from .client import *
+    from .client import *  # noqa: I001
     from .fields import *
     from . import (
+        bases as bases,
+        types as types,
         models as models,
         partials as partials,
-        types as types,
-        bases as bases,
     )
 except ModuleNotFoundError:
     # code has not been generated yet

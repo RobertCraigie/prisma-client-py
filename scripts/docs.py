@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
-from prisma import config
 
+from prisma import config
 
 ROOTDIR = Path(__file__).parent.parent
 DOCS_DIR = ROOTDIR / 'docs'

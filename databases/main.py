@@ -6,46 +6,45 @@ import json
 import shlex
 import shutil
 import contextlib
-from pathlib import Path
 from copy import deepcopy
-from contextvars import ContextVar, copy_context
 from typing import (
-    Optional,
     Iterator,
+    Optional,
     cast,
 )
+from pathlib import Path
+from contextvars import ContextVar, copy_context
 
 import nox
 import yaml
 import click
 import rtoml
 import typer
+from jinja2 import Environment, StrictUndefined, FileSystemLoader
 from nox.command import CommandFailed
-from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 from lib.utils import flatten, escape_path
+from prisma._compat import model_copy, model_json, cached_property
 from pipelines.utils import (
     setup_coverage,
     get_pkg_location,
     maybe_install_nodejs_bin,
 )
-from prisma._compat import cached_property, model_json, model_copy
 
 from .utils import DatabaseConfig
-from ._types import SupportedDatabase
 from ._serve import start_database
+from ._types import SupportedDatabase
 from .constants import (
-    SUPPORTED_DATABASES,
-    DATABASES_DIR,
-    CONFIG_MAPPING,
     ROOT_DIR,
-    PYTEST_CONFIG,
-    FEATURES_MAPPING,
-    PYRIGHT_CONFIG,
     TESTS_DIR,
+    DATABASES_DIR,
+    PYTEST_CONFIG,
+    CONFIG_MAPPING,
+    PYRIGHT_CONFIG,
     SYNC_TESTS_DIR,
+    FEATURES_MAPPING,
+    SUPPORTED_DATABASES,
 )
-
 
 # TODO: switch to a pretty logging setup
 # structlog?

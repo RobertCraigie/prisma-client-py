@@ -6,8 +6,7 @@ from pathlib import Path
 import nox
 
 from lib.utils import maybe_decode
-from pipelines.utils import setup_env, CACHE_DIR, TMP_DIR
-
+from pipelines.utils import TMP_DIR, CACHE_DIR, setup_env
 
 BADGE_BRANCH = 'static/coverage'
 TMP_SVG_PATH = TMP_DIR / 'coverage.svg'

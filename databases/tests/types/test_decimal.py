@@ -1,11 +1,11 @@
 from decimal import Decimal, getcontext
-from dirty_equals import IsPartialDict
 
 import pytest
+from dirty_equals import IsPartialDict
+
 from prisma import Prisma
 from prisma.models import Types
 from prisma._compat import PYDANTIC_V2, model_json_schema
-
 
 DEFAULT_PRECISION = getcontext().prec
 

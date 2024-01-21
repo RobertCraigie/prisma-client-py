@@ -1,11 +1,11 @@
 import pytest
 from pydantic import BaseModel
 
-from prisma import Prisma, Base64
+from prisma import Base64, Prisma
 from prisma.models import Types
 
-from ...._compat import LiteralString
 from ...._types import DatabaseMapping, SupportedDatabase
+from ...._compat import LiteralString
 
 
 class Queries(BaseModel):

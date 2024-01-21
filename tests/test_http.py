@@ -1,15 +1,14 @@
 from typing import TYPE_CHECKING, cast
 
-import pytest
 import httpx
+import pytest
 
 from prisma.http import HTTP
-from prisma._types import Literal
 from prisma.utils import _NoneType
+from prisma._types import Literal
 from prisma.errors import HTTPClientClosedError
 
 from .utils import patch_method
-
 
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch

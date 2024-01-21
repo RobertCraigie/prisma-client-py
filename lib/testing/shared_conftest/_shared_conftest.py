@@ -1,14 +1,13 @@
 import asyncio
-from typing import TYPE_CHECKING, Iterator, Iterable
+from typing import TYPE_CHECKING, Iterable, Iterator
 from pathlib import Path
 
 import pytest
 
-from prisma.testing import reset_client
 from prisma.utils import get_or_create_event_loop
+from prisma.testing import reset_client
 
 from ._utils import request_has_client
-
 
 if TYPE_CHECKING:
     from _pytest.fixtures import FixtureRequest

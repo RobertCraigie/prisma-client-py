@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TypeVar
 from pathlib import Path
 
-
 T = TypeVar('T')
 
 

@@ -1,7 +1,6 @@
 from pathlib import Path
 from textwrap import dedent
 
-
 ROOTDIR = Path(__file__).parent
 
 

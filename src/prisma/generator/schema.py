@@ -1,16 +1,16 @@
 from enum import Enum
-from typing import Any, Dict, List, Tuple, Type, Union
+from typing import Any, Dict, List, Type, Tuple, Union
 from typing_extensions import ClassVar
 
 from pydantic import BaseModel
 
-from .models import AnyData, Model as ModelInfo, PrimaryKey
+from .models import Model as ModelInfo, AnyData, PrimaryKey
 from .._compat import (
     PYDANTIC_V2,
     ConfigDict,
+    model_rebuild,
     root_validator,
     cached_property,
-    model_rebuild,
 )
 
 

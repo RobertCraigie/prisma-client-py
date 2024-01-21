@@ -1,11 +1,12 @@
 import datetime
-from dirty_equals import IsPartialDict
+
 import pytest
+from dirty_equals import IsPartialDict
+
 from prisma import Prisma
+from lib.testing import assert_similar_time
 from prisma.models import Types
 from prisma._compat import PYDANTIC_V2, model_json_schema
-
-from lib.testing import assert_similar_time
 
 
 @pytest.mark.asyncio

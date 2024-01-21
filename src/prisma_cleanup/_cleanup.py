@@ -3,7 +3,6 @@ import pkgutil
 from pathlib import Path
 from typing_extensions import Protocol, runtime_checkable
 
-
 PRISMA_INIT_CONTENTS = "__title__ = 'prisma'"
 
 

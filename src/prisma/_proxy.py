@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Generic, Iterable, TypeVar, cast
-
+from typing import Generic, TypeVar, Iterable, cast
 
 T = TypeVar('T')
 

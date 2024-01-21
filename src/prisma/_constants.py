@@ -1,6 +1,5 @@
-from datetime import timedelta
 from typing import Dict
-
+from datetime import timedelta
 
 DEFAULT_CONNECT_TIMEOUT: timedelta = timedelta(seconds=10)
 DEFAULT_TX_MAX_WAIT: timedelta = timedelta(milliseconds=2000)

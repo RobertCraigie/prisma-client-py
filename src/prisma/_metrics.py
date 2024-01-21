@@ -1,12 +1,11 @@
 # copied from https://github.com/prisma/prisma/blob/23d5ef0672372035a84552b6b457197ca19f486d/packages/client/src/runtime/core/engines/common/types/Metrics.ts
 from __future__ import annotations
 
-from typing import Generic, List, TypeVar, Dict, NamedTuple
+from typing import Dict, List, Generic, TypeVar, NamedTuple
 
 from pydantic import BaseModel
 
 from ._compat import GenericModel, model_rebuild
-
 
 __all__ = (
     'Metrics',

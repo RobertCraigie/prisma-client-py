@@ -1,6 +1,8 @@
 from pathlib import Path
+
 from pydantic import BaseModel
-from prisma.generator import GenericGenerator, GenericData, Manifest
+
+from prisma.generator import Manifest, GenericData, GenericGenerator
 
 
 class Config(BaseModel):

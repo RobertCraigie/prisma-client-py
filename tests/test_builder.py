@@ -9,13 +9,12 @@ import pytest
 from pydantic import BaseModel
 from syrupy.assertion import SnapshotAssertion
 
-from prisma import models, PrismaMethod
-from prisma._compat import PYDANTIC_V2
-from prisma.utils import _NoneType
+from prisma import PrismaMethod, models
 from prisma.bases import _PrismaModel as PrismaModel
+from prisma.utils import _NoneType
+from prisma.errors import UnknownModelError, UnknownRelationalFieldError
+from prisma._compat import PYDANTIC_V2
 from prisma.builder import QueryBuilder, serializer
-from prisma.errors import UnknownRelationalFieldError, UnknownModelError
-
 
 # TODO: more tests
 # TODO: cleanup registered serializers

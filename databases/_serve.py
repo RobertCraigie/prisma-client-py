@@ -7,7 +7,6 @@ import nox
 
 from ._types import SupportedDatabase
 
-
 DOCKER_COMPOSE_FILE = Path(__file__).parent / 'docker-compose.yml'
 
 

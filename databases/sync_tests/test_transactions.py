@@ -1,12 +1,13 @@
 import time
-from datetime import timedelta
 from typing import Optional
+from datetime import timedelta
 
 import pytest
 
 import prisma
 from prisma import Prisma
 from prisma.models import User, Profile
+
 from ..utils import CURRENT_DATABASE
 
 

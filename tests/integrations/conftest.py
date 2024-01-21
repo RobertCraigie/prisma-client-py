@@ -3,15 +3,14 @@ from __future__ import annotations
 import sys
 import shutil
 import subprocess
+from typing import TYPE_CHECKING, Any, Union, Iterator, Optional, cast
 from pathlib import Path
 from functools import lru_cache
-from typing import Optional, Union, Iterator, cast, Any, TYPE_CHECKING
 
 import pytest
-
+from _pytest._code import ExceptionInfo
 from _pytest.nodes import Node
 from _pytest.config import Config
-from _pytest._code import ExceptionInfo
 from _pytest._code.code import TerminalRepr
 
 if TYPE_CHECKING:

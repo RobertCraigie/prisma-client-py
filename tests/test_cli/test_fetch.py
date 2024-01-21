@@ -4,6 +4,7 @@ from click.testing import Result
 
 from prisma import config
 from prisma._config import Config
+
 from ..utils import Runner, set_config
 
 

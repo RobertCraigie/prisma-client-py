@@ -3,7 +3,6 @@ from typing import Any
 from ..errors import PrismaError
 from ..http_abstract import AbstractResponse
 
-
 __all__ = (
     'EngineError',
     'BinaryNotFoundError',

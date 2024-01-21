@@ -1,6 +1,7 @@
 import inspect
 
 import pytest
+
 import prisma
 from prisma import Prisma, register, get_client
 

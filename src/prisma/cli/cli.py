@@ -2,18 +2,16 @@ import os
 import sys
 import logging
 import contextlib
-from typing import List, Iterator, Optional, NoReturn
+from typing import List, Iterator, NoReturn, Optional
 
 import click
 
 from . import prisma
-from .utils import error
-from .custom import cli
-
 from .. import _sync_http as http
+from .utils import error
 from ..utils import DEBUG
+from .custom import cli
 from ..generator import Generator
-
 
 __all__ = ('main', 'setup_logging')
 

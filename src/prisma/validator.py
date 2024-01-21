@@ -1,13 +1,12 @@
 import sys
 from types import ModuleType
+from typing import Any, Type, TypeVar, cast
 from functools import lru_cache
-from typing import Type, TypeVar, Any, cast
 
 from pydantic import BaseModel
 
-from ._compat import PYDANTIC_V2, Extra, is_typeddict
 from ._types import Protocol, runtime_checkable
-
+from ._compat import PYDANTIC_V2, Extra, is_typeddict
 
 __all__ = ('validate',)
 
