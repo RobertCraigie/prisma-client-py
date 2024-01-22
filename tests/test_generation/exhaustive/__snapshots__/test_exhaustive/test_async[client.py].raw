@@ -60,6 +60,7 @@ from ._constants import DEFAULT_CONNECT_TIMEOUT, DEFAULT_TX_MAX_WAIT, DEFAULT_TX
 from ._raw_query import deserialize_raw_results
 from ._metrics import Metrics
 from .metadata import PRISMA_MODELS, RELATIONAL_FIELD_MAPPINGS
+from ._transactions import AsyncTransactionManager, SyncTransactionManager
 
 # re-exports
 from ._base_client import SyncBasePrisma, AsyncBasePrisma, load_env as load_env
@@ -257,7 +258,7 @@ class Prisma(AsyncBasePrisma):
 
         return deserialize_raw_results(result)
 
-    def batch_(self) -> 'Batch':
+    def batch_(self) -> Batch:
         """Returns a context manager for grouping write queries into a single transaction."""
         return Batch(client=self)
 
@@ -266,7 +267,7 @@ class Prisma(AsyncBasePrisma):
         *,
         max_wait: Union[int, timedelta] = DEFAULT_TX_MAX_WAIT,
         timeout: Union[int, timedelta] = DEFAULT_TX_TIMEOUT,
-    ) -> 'TransactionManager':
+    ) -> TransactionManager:
         """Returns a context manager for executing queries within a database transaction.
 
         Entering the context manager returns a new Prisma instance wrapping all
@@ -289,108 +290,14 @@ class Prisma(AsyncBasePrisma):
 
         In the above example, if the first database call succeeds but the second does not then neither of the records will be created.
         """
-        return TransactionManager(client=self, max_wait=max_wait, timeout=timeout)
-
-    def is_transaction(self) -> bool:
-        """Returns True if the client is wrapped within a transaction"""
-        return self._tx_id is not None
-
-
-class TransactionManager:
-    """Context manager for wrapping a Prisma instance within a transaction.
-
-    This should never be created manually, instead it should be used
-    through the Prisma.tx() method.
-    """
-
-    def __init__(self, *, client: Prisma, max_wait: Union[int, timedelta], timeout: Union[int, timedelta]) -> None:
-        self.__client = client
-
-        if isinstance(max_wait, int):
-            message = (
-                'Passing an int as `max_wait` argument is deprecated '
-                'and will be removed in the next major release. '
-                'Use a `datetime.timedelta` instance instead.'
-            )
-            warnings.warn(message, DeprecationWarning, stacklevel=3)
-            max_wait = timedelta(milliseconds=max_wait)
-
-        self._max_wait = max_wait
-
-        if isinstance(timeout, int):
-            message = (
-                'Passing an int as `timeout` argument is deprecated '
-                'and will be removed in the next major release. '
-                'Use a `datetime.timedelta` instance instead.'
-            )
-            warnings.warn(message, DeprecationWarning, stacklevel=3)
-            timeout = timedelta(milliseconds=timeout)
-
-        self._timeout = timeout
-
-        self._tx_id: Optional[TransactionId] = None
-
-    async def start(self, *, _from_context: bool = False) -> Prisma:
-        """Start the transaction and return the wrapped Prisma instance"""
-        if self.__client.is_transaction():
-            # if we were called from the context manager then the stacklevel
-            # needs to be one higher to warn on the actual offending code
-            warnings.warn(
-                'The current client is already in a transaction. This can lead to surprising behaviour.',
-                UserWarning,
-                stacklevel=3 if _from_context else 2
-            )
-
-        tx_id = await self.__client._engine.start_transaction(
-            content=dumps(
-                {
-                    'timeout': int(self._timeout.total_seconds() * 1000),
-                    'max_wait': int(self._max_wait.total_seconds() * 1000),
-                }
-            ),
+        return TransactionManager(
+            client=self,
+            max_wait=max_wait,
+            timeout=timeout,
         )
-        self._tx_id = tx_id
-        client = self.__client._copy()
-        client._tx_id = tx_id
-        return client
 
-    async def commit(self) -> None:
-        """Commit the transaction to the database, this transaction will no longer be usable"""
-        if self._tx_id is None:
-            raise errors.TransactionNotStartedError()
 
-        await self.__client._engine.commit_transaction(self._tx_id)
-
-    async def rollback(self) -> None:
-        """Do not commit the changes to the database, this transaction will no longer be usable"""
-        if self._tx_id is None:
-            raise errors.TransactionNotStartedError()
-
-        await self.__client._engine.rollback_transaction(self._tx_id)
-
-    async def __aenter__(self) -> Prisma:
-        return await self.start(_from_context=True)
-
-    async def __aexit__(
-        self,
-        exc_type: Optional[Type[BaseException]],
-        exc: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
-    ) -> None:
-        if exc is None:
-            log.debug('Transaction exited with no exception - commiting')
-            await self.commit()
-            return
-
-        log.debug('Transaction exited with exc type: %s - rolling back', exc_type)
-
-        try:
-            await self.rollback()
-        except Exception as exc:
-            log.warning(
-                'Encountered exc `%s` while rolling back a transaction. Ignoring and raising original exception',
-                exc
-            )
+TransactionManager = AsyncTransactionManager[Prisma]
 
 
 # TODO: this should return the results as well
