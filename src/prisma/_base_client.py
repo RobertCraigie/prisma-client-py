@@ -167,6 +167,10 @@ class BasePrisma(Generic[_EngineT]):
         except ClientNotRegisteredError:
             return False
 
+    def is_transaction(self) -> bool:
+        """Returns True if the client is wrapped within a transaction"""
+        return self._tx_id is not None
+
     def is_connected(self) -> bool:
         """Returns True if the client is connected to the query engine, False otherwise."""
         return self._internal_engine is not None
