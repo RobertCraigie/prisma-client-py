@@ -743,8 +743,16 @@ class Model(BaseModel):
             return True
 
     @property
+    def instance_name(self) -> str:
+        """The name of this model in the generated client class, e.g.
+
+        `User` -> `Prisma().user`
+        """
+        return self.name.lower()
+
+    @property
     def plural_name(self) -> str:
-        name = self.name
+        name = self.instance_name
         if name.endswith('s'):
             return name
         return f'{name}s'
