@@ -51,7 +51,7 @@ DEFAULT_ENV = Environment(
     lstrip_blocks=True,
     loader=FileSystemLoader(Path(__file__).parent / 'templates'),
     undefined=StrictUndefined,
-    extensions=['jinja2_strcase.StrcaseExtension']
+    extensions=['jinja2_strcase.StrcaseExtension'],
 )
 
 # the type: ignore is required because Jinja2 filters are not typed

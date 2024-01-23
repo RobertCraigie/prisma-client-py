@@ -95,8 +95,8 @@ class Prisma:
     user: 'actions.UserActions[models.User]'
     m: 'actions.MActions[models.M]'
     n: 'actions.NActions[models.N]'
-    oneoptional: 'actions.OneOptionalActions[models.OneOptional]'
-    manyrequired: 'actions.ManyRequiredActions[models.ManyRequired]'
+    one_optional: 'actions.OneOptionalActions[models.OneOptional]'
+    many_required: 'actions.ManyRequiredActions[models.ManyRequired]'
     lists: 'actions.ListsActions[models.Lists]'
     a: 'actions.AActions[models.A]'
     b: 'actions.BActions[models.B]'
@@ -109,8 +109,8 @@ class Prisma:
         'user',
         'm',
         'n',
-        'oneoptional',
-        'manyrequired',
+        'one_optional',
+        'many_required',
         'lists',
         'a',
         'b',
@@ -141,8 +141,8 @@ class Prisma:
         self.user = actions.UserActions[models.User](self, models.User)
         self.m = actions.MActions[models.M](self, models.M)
         self.n = actions.NActions[models.N](self, models.N)
-        self.oneoptional = actions.OneOptionalActions[models.OneOptional](self, models.OneOptional)
-        self.manyrequired = actions.ManyRequiredActions[models.ManyRequired](self, models.ManyRequired)
+        self.one_optional = actions.OneOptionalActions[models.OneOptional](self, models.OneOptional)
+        self.many_required = actions.ManyRequiredActions[models.ManyRequired](self, models.ManyRequired)
         self.lists = actions.ListsActions[models.Lists](self, models.Lists)
         self.a = actions.AActions[models.A](self, models.A)
         self.b = actions.BActions[models.B](self, models.B)
@@ -617,8 +617,8 @@ class Batch:
     user: 'UserBatchActions'
     m: 'MBatchActions'
     n: 'NBatchActions'
-    oneoptional: 'OneOptionalBatchActions'
-    manyrequired: 'ManyRequiredBatchActions'
+    one_optional: 'OneOptionalBatchActions'
+    many_required: 'ManyRequiredBatchActions'
     lists: 'ListsBatchActions'
     a: 'ABatchActions'
     b: 'BBatchActions'
@@ -634,8 +634,8 @@ class Batch:
         self.user = UserBatchActions(self)
         self.m = MBatchActions(self)
         self.n = NBatchActions(self)
-        self.oneoptional = OneOptionalBatchActions(self)
-        self.manyrequired = ManyRequiredBatchActions(self)
+        self.one_optional = OneOptionalBatchActions(self)
+        self.many_required = ManyRequiredBatchActions(self)
         self.lists = ListsBatchActions(self)
         self.a = ABatchActions(self)
         self.b = BBatchActions(self)
