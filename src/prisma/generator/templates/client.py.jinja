@@ -54,12 +54,12 @@ BINARY_PATHS = model_parse(BinaryPaths, {{ binary_paths.dict(by_alias=True) }})
 
 class Prisma:
     {% for model in dmmf.datamodel.models %}
-    {{ model.name.lower() }}: 'actions.{{ model.name }}Actions[models.{{ model.name }}]'
+    {{ model.name | to_snake | lower  }}: 'actions.{{ model.name }}Actions[models.{{ model.name }}]'
     {% endfor %}
 
     __slots__ = (
         {% for model in dmmf.datamodel.models %}
-        '{{ model.name.lower() }}',
+        '{{ model.name | to_snake | lower }}',
         {% endfor %}
         '__engine',
         '__copied',
@@ -82,7 +82,7 @@ class Prisma:
         http: HttpConfig | None = None,
     ) -> None:
         {% for model in dmmf.datamodel.models %}
-        self.{{ model.name.lower() }} = actions.{{ model.name }}Actions[models.{{ model.name }}](self, models.{{ model.name }})
+        self.{{ model.name | to_snake | lower }} = actions.{{ model.name }}Actions[models.{{ model.name }}](self, models.{{ model.name }})
         {% endfor %}
 
         # NOTE: if you add any more properties here then you may also need to forward
@@ -602,7 +602,7 @@ class TransactionManager:
 # TODO: don't require copy-pasting arguments between actions and batch actions
 class Batch:
     {% for model in dmmf.datamodel.models %}
-    {{ model.name.lower() }}: '{{ model.name }}BatchActions'
+    {{ model.name | to_snake | lower }}: '{{ model.name }}BatchActions'
     {% endfor %}
 
     def __init__(self, client: Prisma) -> None:
@@ -610,7 +610,7 @@ class Batch:
         self.__queries: List[str] = []
         self._active_provider = client._active_provider
         {% for model in dmmf.datamodel.models %}
-        self.{{ model.name.lower() }} = {{ model.name }}BatchActions(self)
+        self.{{ model.name | to_snake | lower }} = {{ model.name }}BatchActions(self)
         {% endfor %}
 
     def _add(self, **kwargs: Any) -> None:
