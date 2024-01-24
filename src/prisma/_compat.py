@@ -338,16 +338,10 @@ else:
     except ImportError:
         nodejs = None
 
-
-if TYPE_CHECKING:
-    from enum import Enum
-
-    StrEnum = Enum
-else:
-    try:
-        from enum import StrEnum as StrEnum
-    except ImportError:
-        from strenum import StrEnum as StrEnum
+try:
+    from enum import StrEnum as StrEnum
+except ImportError:
+    from strenum import StrEnum as StrEnum
 
 
 def removeprefix(string: str, prefix: str) -> str:
