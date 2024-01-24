@@ -9,7 +9,7 @@ from ._builder import serialize_base64
 from ._compat import PYDANTIC_V2, ConfigDict
 
 if TYPE_CHECKING:
-    from .client import Prisma
+    from .client import {{ names.client_class(is_async) }}
 
 
 _PrismaModelT = TypeVar('_PrismaModelT', bound='_PrismaModel')
@@ -42,7 +42,7 @@ class Base{{ model.name }}(_PrismaModel):
     __prisma_model__: ClassVar[Literal['{{ model.name }}']] = '{{ model.name }}'  # pyright: ignore[reportIncompatibleVariableOverride]
 
     @classmethod
-    def prisma(cls: Type[_PrismaModelT], client: Optional['Prisma'] = None) -> 'actions.{{ model.name }}Actions[_PrismaModelT]':
+    def prisma(cls: Type[_PrismaModelT], client: Optional['{{ names.client_class(is_async) }}'] = None) -> 'actions.{{ model.name }}Actions[_PrismaModelT]':
         from .client import get_client
 
         return actions.{{ model.name }}Actions[_PrismaModelT](client or get_client(), cls)

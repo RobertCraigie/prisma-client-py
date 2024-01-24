@@ -9,7 +9,7 @@ from . import types, errors, bases
 from ._compat import model_parse
 
 if TYPE_CHECKING:
-    from .client import Client
+    from .client import {{ names.client_class(is_async) }}
     from .bases import _PrismaModel
 
 
@@ -47,7 +47,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[{{ ModelType }}]) -> None:
+    def __init__(self, client: {{ names.client_class(is_async) }}, model: Type[{{ ModelType }}]) -> None:
         self._client = client
         self._model = model
 
