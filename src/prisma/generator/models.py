@@ -1098,6 +1098,11 @@ class _ModelAllowAll(BaseModel):
             extra: pydantic.Extra = pydantic.Extra.allow
 
 
+class PythonNames(BaseModel):
+    def client_class(self, _for_async: bool) -> str:
+        return 'Prisma'
+
+
 class PythonData(GenericData[Config]):
     """Data class including the default Prisma Client Python config"""
 
@@ -1110,6 +1115,8 @@ class PythonData(GenericData[Config]):
                 machinery.ModuleSpec: _module_spec_serializer,
             }
             keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
+
+    names: PythonNames = PythonNames()
 
 
 class DefaultData(GenericData[_EmptyModel]):

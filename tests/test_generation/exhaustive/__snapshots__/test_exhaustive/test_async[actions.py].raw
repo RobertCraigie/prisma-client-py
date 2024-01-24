@@ -47,7 +47,7 @@ from . import types, errors, bases
 from ._compat import model_parse
 
 if TYPE_CHECKING:
-    from .client import Client
+    from .client import Prisma
     from .bases import _PrismaModel
 
 
@@ -60,7 +60,7 @@ class PostActions(Generic[_PrismaModelT]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -1088,7 +1088,7 @@ class UserActions(Generic[_PrismaModelT]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -2136,7 +2136,7 @@ class MActions(Generic[_PrismaModelT]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -3179,7 +3179,7 @@ class NActions(Generic[_PrismaModelT]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -4227,7 +4227,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -5270,7 +5270,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -6313,7 +6313,7 @@ class ListsActions(Generic[_PrismaModelT]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -7331,7 +7331,7 @@ class AActions(Generic[_PrismaModelT]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -8367,7 +8367,7 @@ class BActions(Generic[_PrismaModelT]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -9405,7 +9405,7 @@ class CActions(Generic[_PrismaModelT]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -10446,7 +10446,7 @@ class DActions(Generic[_PrismaModelT]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
@@ -11489,7 +11489,7 @@ class EActions(Generic[_PrismaModelT]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[_PrismaModelT]) -> None:
+    def __init__(self, client: Prisma, model: Type[_PrismaModelT]) -> None:
         self._client = client
         self._model = model
 
