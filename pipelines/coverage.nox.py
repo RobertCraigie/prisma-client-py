@@ -16,6 +16,7 @@ TMP_README_PATH = TMP_DIR / 'README.md'
 
 @nox.session(name='push-coverage')
 def push_coverage(session: nox.Session) -> None:
+    """Push the coverage report to a specific coverage branch. Only for CI"""
     # We have to import `git` here as it will cause an error on machines that don't have
     # git installed. This happens in our docker tests.
     from git.repo import Repo
@@ -87,6 +88,7 @@ def push_coverage(session: nox.Session) -> None:
 
 @nox.session
 def setup(session: nox.Session) -> None:
+    """Cleans up the environment to prepare for coverage tracking"""
     setup_env(session)
     session.install('-r', 'pipelines/requirements/coverage.txt')
     session.run('coverage', 'erase')
@@ -114,6 +116,7 @@ def _setup_report(session: nox.Session) -> None:
 
 @nox.session
 def report(session: nox.Session) -> None:
+    """Generate a test coverage report"""
     _setup_report(session)
 
     session.run('coverage', 'report', '-i', '--skip-covered')
