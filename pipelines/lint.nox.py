@@ -8,6 +8,7 @@ from pipelines.utils.prisma import generate
 
 @nox.session
 def lint(session: nox.Session) -> None:
+    """Run all linters, including formatting checks and type-checking"""
     setup_env(session)
     session.install('-r', 'pipelines/requirements/lint.txt')
 
