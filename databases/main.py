@@ -183,7 +183,7 @@ def _setup_test_env(session: nox.Session, *, pydantic_v2: bool, inplace: bool) -
     if pydantic_v2:
         session.install('-r', '../pipelines/requirements/deps/pydantic.txt')
     else:
-        session.install('pydantic<2')
+        session.install('pydantic==1.10.0')
 
     session.install('-r', 'requirements.txt')
     maybe_install_nodejs_bin(session)
