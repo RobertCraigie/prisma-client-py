@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="d_9698fc63fa8926e5_test_create_many_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-01-23 21:32 +0000
+            created at 2024-01-25 21:20 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -102,8 +102,8 @@
     <p class="run"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t">    <span class="key">assert</span> <span class="nam">post</span><span class="op">.</span><span class="nam">title</span> <span class="op">==</span> <span class="str">'Hi from Prisma!'</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t">    <span class="key">assert</span> <span class="nam">post</span><span class="op">.</span><span class="nam">description</span> <span class="op">==</span> <span class="str">'Prisma is a database toolkit that makes databases easy.'</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t">    <span class="key">assert</span> <span class="nam">post</span><span class="op">.</span><span class="nam">published</span> <span class="key">is</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t">    <span class="nam">assert_time_like_now</span><span class="op">(</span><span class="nam">post</span><span class="op">.</span><span class="nam">created_at</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t">    <span class="nam">assert_time_like_now</span><span class="op">(</span><span class="nam">post</span><span class="op">.</span><span class="nam">updated_at</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t">    <span class="nam">assert_time_like_now</span><span class="op">(</span><span class="nam">post</span><span class="op">.</span><span class="nam">created_at</span><span class="op">,</span> <span class="nam">threshold</span><span class="op">=</span><span class="num">60</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t">    <span class="nam">assert_time_like_now</span><span class="op">(</span><span class="nam">post</span><span class="op">.</span><span class="nam">updated_at</span><span class="op">,</span> <span class="nam">threshold</span><span class="op">=</span><span class="num">60</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">    <span class="nam">user</span> <span class="op">=</span> <span class="key">await</span> <span class="nam">client</span><span class="op">.</span><span class="nam">user</span><span class="op">.</span><span class="nam">create</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">        <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
@@ -226,7 +226,7 @@
             <a id="nextFileLink" class="nav" href="d_9698fc63fa8926e5_test_create_many_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-01-23 21:32 +0000
+            created at 2024-01-25 21:20 +0000
         </p>
     </div>
 </footer>
