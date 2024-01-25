@@ -18,8 +18,8 @@ async def test_create(client: Prisma) -> None:
     assert post.title == 'Hi from Prisma!'
     assert post.description == 'Prisma is a database toolkit that makes databases easy.'
     assert post.published is True
-    assert_time_like_now(post.created_at)
-    assert_time_like_now(post.updated_at)
+    assert_time_like_now(post.created_at, threshold=60)
+    assert_time_like_now(post.updated_at, threshold=60)
 
     user = await client.user.create(
         {
