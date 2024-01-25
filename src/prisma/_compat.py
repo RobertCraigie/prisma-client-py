@@ -339,16 +339,10 @@ else:
         nodejs = None
 
 
-if TYPE_CHECKING:
-    if sys.version_info < (3, 11):
-        from strenum import StrEnum as StrEnum
-    else:
-        from enum import StrEnum as StrEnum
+if sys.version_info < (3, 11):
+    from strenum import StrEnum
 else:
-    try:
-        from enum import StrEnum as StrEnum
-    except ImportError:
-        from strenum import StrEnum as StrEnum
+    from enum import StrEnum
 
 
 def removeprefix(string: str, prefix: str) -> str:
