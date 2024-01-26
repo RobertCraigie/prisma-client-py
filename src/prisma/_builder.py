@@ -16,7 +16,6 @@ from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 
 from . import fields
-from .types import Serializable
 from ._types import PrismaMethod
 from .errors import InvalidModelError, UnknownModelError, UnknownRelationalFieldError
 from ._compat import get_args, is_union, get_origin, model_fields, model_field_type
@@ -24,7 +23,8 @@ from ._typing import is_list_type
 from ._constants import QUERY_BUILDER_ALIASES
 
 if TYPE_CHECKING:
-    from .bases import _PrismaModel as PrismaModel
+    from .bases import _PrismaModel as PrismaModel  # noqa: TID251
+    from .types import Serializable  # noqa: TID251
 
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -320,7 +320,7 @@ def _field_is_prisma_model(field: FieldInfo, *, name: str, parent: type[BaseMode
 
 
 def _is_prisma_model_type(type_: type[BaseModel]) -> TypeGuard[type[PrismaModel]]:
-    from .bases import _PrismaModel
+    from .bases import _PrismaModel  # noqa: TID251
 
     return issubclass(type_, _PrismaModel)
 

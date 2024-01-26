@@ -24,13 +24,13 @@ from .validator import *
 # first piece of generated code that is loaded. This is
 # especially useful for `python -m prisma_cleanup`
 try:
-    from .client import *  # noqa: I001
-    from .fields import *
+    from .client import *  # noqa: I001, TID251
+    from .fields import *  # noqa: TID251
     from . import (
-        bases as bases,
-        types as types,
-        models as models,
-        partials as partials,
+        bases as bases,  # noqa: TID251
+        types as types,  # noqa: TID251
+        models as models,  # noqa: TID251
+        partials as partials,  # noqa: TID251
     )
 except ModuleNotFoundError:
     # code has not been generated yet

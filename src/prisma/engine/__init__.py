@@ -11,8 +11,8 @@ from ._abstract import (
 )
 
 try:
-    from .query import *
-    from .abstract import *
+    from .query import *  # noqa: TID251
+    from .abstract import *  # noqa: TID251
 except ModuleNotFoundError:
     # code has not been generated yet
     pass

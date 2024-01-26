@@ -19,6 +19,8 @@ select = [
   # typing.TYPE_CHECKING misuse
   "TCH004",
   "TCH005",
+  # import rules
+  "TID251",
 ]
 ignore = [
   # mutable defaults
@@ -39,11 +41,32 @@ known-first-party = ["prisma", "lib"]
 quote-style = "single"
 docstring-code-format = true
 
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"prisma.http".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+"prisma.bases".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+"prisma.enums".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+"prisma.types".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+"prisma.client".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+"prisma.fields".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+"prisma.models".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+"prisma.actions".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+"prisma.metadata".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+"prisma.partials".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+"prisma.engine.http".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+"prisma.engine.query".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+"prisma.engine.abstract".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+
 [tool.ruff.per-file-ignores]
 "bin/**.py" = ["T201", "T203"]
-"tests/**.py" = ["T201", "T203", "ARG"]
-"examples/**.py" = ["T201", "T203", "I"]
-"databases/**.py" = ["T201", "T203"]
+"tests/**.py" = [
+  "T201",
+  "T203",
+  "ARG",
+  # ignore errors about generated imports
+  "TID251"
+]
+"examples/**.py" = ["T201", "T203", "I", "TID251"]
+"databases/**.py" = ["T201", "T203", "TID251"]
 "docs/**.py" = ["T201", "T203"]
 "pipelines/**.py" = ["T201", "T203"]
 
