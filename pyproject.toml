@@ -47,7 +47,6 @@ docstring-code-format = true
 "prisma.enums".msg = "This is a generated file, it should only be imported at runtime in other generated files."
 "prisma.types".msg = "This is a generated file, it should only be imported at runtime in other generated files."
 "prisma.client".msg = "This is a generated file, it should only be imported at runtime in other generated files."
-"prisma.fields".msg = "This is a generated file, it should only be imported at runtime in other generated files."
 "prisma.models".msg = "This is a generated file, it should only be imported at runtime in other generated files."
 "prisma.actions".msg = "This is a generated file, it should only be imported at runtime in other generated files."
 "prisma.metadata".msg = "This is a generated file, it should only be imported at runtime in other generated files."
