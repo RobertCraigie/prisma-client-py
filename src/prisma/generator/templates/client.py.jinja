@@ -17,7 +17,7 @@ from ._types import BaseModelT, PrismaMethod, TransactionId
 from .bases import _PrismaModel
 from ._builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
-from ._compat import removeprefix, model_parse
+from ._compat import StrEnum, removeprefix, model_parse
 from ._constants import DEFAULT_CONNECT_TIMEOUT, DEFAULT_TX_MAX_WAIT, DEFAULT_TX_TIMEOUT
 from ._raw_query import deserialize_raw_results
 from ._metrics import Metrics
@@ -37,6 +37,7 @@ __all__ = (
     'ENGINE_TYPE',
     'SCHEMA_PATH',
     'BINARY_PATHS',
+    'TransactionIsolationLevel',
     'Batch',
     'Prisma',
     'Client',
@@ -202,6 +203,7 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
     def tx(
         self,
         *,
+        isolation_level: Optional[TransactionIsolationLevel] = None,
         max_wait: Union[int, timedelta] = DEFAULT_TX_MAX_WAIT,
         timeout: Union[int, timedelta] = DEFAULT_TX_TIMEOUT,
     ) -> TransactionManager:
@@ -210,6 +212,9 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
         Entering the context manager returns a new Prisma instance wrapping all
         actions within a transaction, queries will be isolated to the Prisma instance and
         will not be commited to the database until the context manager exits.
+
+        By default, Prisma sets the isolation level to the value currently configured in the database. You can modify this
+        default with the `isolation_level` argument (see [supported isolation levels](https://www.prisma.io/docs/orm/prisma-client/queries/transactions#supported-isolation-levels)).
 
         By default, Prisma will wait a maximum of 2 seconds to acquire a transaction from the database. You can modify this
         default with the `max_wait` argument which accepts a value in milliseconds or `datetime.timedelta`.
@@ -231,10 +236,30 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
             client=self,
             max_wait=max_wait,
             timeout=timeout,
+            isolation_level=isolation_level,
         )
 
 
-TransactionManager = {% if is_async %}AsyncTransactionManager{% else %}SyncTransactionManager{% endif %}[Prisma]
+{% if active_provider == 'mongodb' %}
+class TransactionIsolationLevel(StrEnum):
+    """This feature is not available on MongoDB, because MongoDB doesn't support isolation levels."""
+    pass
+{% else %}
+class TransactionIsolationLevel(StrEnum):
+    """Represents an enumeration of the supported isolation levels by the current database."""
+    {% if active_provider not in ['cockroachdb', 'sqlite'] %}
+    READ_UNCOMMITTED = 'ReadUncommitted'
+    READ_COMMITTED = 'ReadCommitted'
+    REPEATABLE_READ = 'RepeatableRead'
+    {% endif %}
+    {% if active_provider == 'sqlserver' %}
+    SNAPSHOT = 'Snapshot'
+    {% endif %}
+    SERIALIZABLE = 'Serializable'
+{% endif %}
+
+
+TransactionManager = {% if is_async %}AsyncTransactionManager{% else %}SyncTransactionManager{% endif %}[Prisma, TransactionIsolationLevel]
 
 
 # TODO: this should return the results as well
