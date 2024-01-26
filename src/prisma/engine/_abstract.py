@@ -10,7 +10,7 @@ from .._compat import get_running_loop
 from .._constants import DEFAULT_CONNECT_TIMEOUT
 
 if TYPE_CHECKING:
-    from ..types import MetricsFormat, DatasourceOverride
+    from ..types import MetricsFormat, DatasourceOverride  # noqa: TID251
 
 
 __all__ = (

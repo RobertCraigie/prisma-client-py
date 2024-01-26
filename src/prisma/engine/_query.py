@@ -9,19 +9,22 @@ import signal
 import asyncio
 import logging
 import subprocess
-from typing import Any, overload
+from typing import TYPE_CHECKING, Any, overload
 from pathlib import Path
 from datetime import timedelta
 from typing_extensions import Literal, override
 
 from . import utils, errors
 from ._http import SyncHTTPEngine, AsyncHTTPEngine
-from ..types import MetricsFormat, DatasourceOverride
 from ..utils import DEBUG, _env_bool, time_since
 from .._types import HttpConfig, TransactionId
 from .._builder import dumps
 from ..binaries import platform
 from .._constants import DEFAULT_CONNECT_TIMEOUT
+
+if TYPE_CHECKING:
+    from ..types import MetricsFormat, DatasourceOverride  # noqa: TID251
+
 
 __all__ = (
     'SyncQueryEngine',
@@ -50,7 +53,7 @@ class BaseQueryEngine:
 
     def _ensure_file(self) -> Path:
         # circular import
-        from ..client import BINARY_PATHS
+        from ..client import BINARY_PATHS  # noqa: TID251
 
         return utils.ensure(BINARY_PATHS.query_engine)
 
