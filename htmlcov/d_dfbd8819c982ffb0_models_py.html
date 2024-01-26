@@ -55,8 +55,8 @@
             </div>
         </aside>
         <h2>
-            <span class="text">602 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">571<span class="text"> run</span></button>
+            <span class="text">606 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">575<span class="text"> run</span></button>
             <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">31<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">23<span class="text"> excluded</span></button>
             <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">12<span class="text"> partial</span></button>
@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="d_dfbd8819c982ffb0_schema_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-01-25 23:28 +0000
+            created at 2024-01-26 09:03 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -1182,43 +1182,50 @@
     <p class="run"><span class="n"><a id="t1098" href="#t1098">1098</a></span><span class="t">            <span class="nam">extra</span><span class="op">:</span> <span class="nam">pydantic</span><span class="op">.</span><span class="nam">Extra</span> <span class="op">=</span> <span class="nam">pydantic</span><span class="op">.</span><span class="nam">Extra</span><span class="op">.</span><span class="nam">allow</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1099" href="#t1099">1099</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1100" href="#t1100">1100</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1101" href="#t1101">1101</a></span><span class="t"><span class="key">class</span> <span class="nam">PythonData</span><span class="op">(</span><span class="nam">GenericData</span><span class="op">[</span><span class="nam">Config</span><span class="op">]</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1102" href="#t1102">1102</a></span><span class="t">    <span class="str">"""Data class including the default Prisma Client Python config"""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1103" href="#t1103">1103</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1104" href="#t1104">1104</a></span><span class="t">    <span class="key">if</span> <span class="key">not</span> <span class="nam">PYDANTIC_V2</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1101" href="#t1101">1101</a></span><span class="t"><span class="key">class</span> <span class="nam">PythonNames</span><span class="op">(</span><span class="nam">BaseModel</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1102" href="#t1102">1102</a></span><span class="t">    <span class="key">def</span> <span class="nam">client_class</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">_for_async</span><span class="op">:</span> <span class="nam">bool</span><span class="op">)</span> <span class="op">-></span> <span class="nam">str</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1103" href="#t1103">1103</a></span><span class="t">        <span class="key">return</span> <span class="str">'Prisma'</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1104" href="#t1104">1104</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1105" href="#t1105">1105</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1106" href="#t1106">1106</a></span><span class="t">        <span class="key">class</span> <span class="nam">Config</span><span class="op">(</span><span class="nam">BaseConfig</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1107" href="#t1107">1107</a></span><span class="t">            <span class="nam">arbitrary_types_allowed</span><span class="op">:</span> <span class="nam">bool</span> <span class="op">=</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1108" href="#t1108">1108</a></span><span class="t">            <span class="nam">json_encoders</span><span class="op">:</span> <span class="nam">Dict</span><span class="op">[</span><span class="nam">Type</span><span class="op">[</span><span class="nam">Any</span><span class="op">]</span><span class="op">,</span> <span class="nam">Any</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1109" href="#t1109">1109</a></span><span class="t">                <span class="nam">Path</span><span class="op">:</span> <span class="nam">_pathlib_serializer</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1110" href="#t1110">1110</a></span><span class="t">                <span class="nam">machinery</span><span class="op">.</span><span class="nam">ModuleSpec</span><span class="op">:</span> <span class="nam">_module_spec_serializer</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1111" href="#t1111">1111</a></span><span class="t">            <span class="op">}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="exc show_exc"><span class="n"><a id="t1112" href="#t1112">1112</a></span><span class="t">            <span class="nam">keep_untouched</span><span class="op">:</span> <span class="nam">Tuple</span><span class="op">[</span><span class="nam">Type</span><span class="op">[</span><span class="nam">Any</span><span class="op">]</span><span class="op">,</span> <span class="op">...</span><span class="op">]</span> <span class="op">=</span> <span class="op">(</span><span class="nam">cached_property</span><span class="op">,</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1113" href="#t1113">1113</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1114" href="#t1114">1114</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1115" href="#t1115">1115</a></span><span class="t"><span class="key">class</span> <span class="nam">DefaultData</span><span class="op">(</span><span class="nam">GenericData</span><span class="op">[</span><span class="nam">_EmptyModel</span><span class="op">]</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1116" href="#t1116">1116</a></span><span class="t">    <span class="str">"""Data class without any config options"""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1117" href="#t1117">1117</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1106" href="#t1106">1106</a></span><span class="t"><span class="key">class</span> <span class="nam">PythonData</span><span class="op">(</span><span class="nam">GenericData</span><span class="op">[</span><span class="nam">Config</span><span class="op">]</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1107" href="#t1107">1107</a></span><span class="t">    <span class="str">"""Data class including the default Prisma Client Python config"""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1108" href="#t1108">1108</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1109" href="#t1109">1109</a></span><span class="t">    <span class="key">if</span> <span class="key">not</span> <span class="nam">PYDANTIC_V2</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1110" href="#t1110">1110</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1111" href="#t1111">1111</a></span><span class="t">        <span class="key">class</span> <span class="nam">Config</span><span class="op">(</span><span class="nam">BaseConfig</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1112" href="#t1112">1112</a></span><span class="t">            <span class="nam">arbitrary_types_allowed</span><span class="op">:</span> <span class="nam">bool</span> <span class="op">=</span> <span class="key">True</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1113" href="#t1113">1113</a></span><span class="t">            <span class="nam">json_encoders</span><span class="op">:</span> <span class="nam">Dict</span><span class="op">[</span><span class="nam">Type</span><span class="op">[</span><span class="nam">Any</span><span class="op">]</span><span class="op">,</span> <span class="nam">Any</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1114" href="#t1114">1114</a></span><span class="t">                <span class="nam">Path</span><span class="op">:</span> <span class="nam">_pathlib_serializer</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1115" href="#t1115">1115</a></span><span class="t">                <span class="nam">machinery</span><span class="op">.</span><span class="nam">ModuleSpec</span><span class="op">:</span> <span class="nam">_module_spec_serializer</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1116" href="#t1116">1116</a></span><span class="t">            <span class="op">}</span>&nbsp;</span><span class="r"></span></p>
+    <p class="exc show_exc"><span class="n"><a id="t1117" href="#t1117">1117</a></span><span class="t">            <span class="nam">keep_untouched</span><span class="op">:</span> <span class="nam">Tuple</span><span class="op">[</span><span class="nam">Type</span><span class="op">[</span><span class="nam">Any</span><span class="op">]</span><span class="op">,</span> <span class="op">...</span><span class="op">]</span> <span class="op">=</span> <span class="op">(</span><span class="nam">cached_property</span><span class="op">,</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1118" href="#t1118">1118</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1119" href="#t1119">1119</a></span><span class="t"><span class="com"># this has to be defined as a type alias instead of a class</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1120" href="#t1120">1120</a></span><span class="t"><span class="com"># as its purpose is to signify that the data is config agnostic</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1121" href="#t1121">1121</a></span><span class="t"><span class="nam">AnyData</span> <span class="op">=</span> <span class="nam">GenericData</span><span class="op">[</span><span class="nam">Any</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1122" href="#t1122">1122</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1123" href="#t1123">1123</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">Enum</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1124" href="#t1124">1124</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">DMMF</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1125" href="#t1125">1125</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">GenericData</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1126" href="#t1126">1126</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">Field</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1127" href="#t1127">1127</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">Model</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1128" href="#t1128">1128</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">Datamodel</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1129" href="#t1129">1129</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">Generator</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1130" href="#t1130">1130</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">Datasource</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1131" href="#t1131">1131</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1132" href="#t1132">1132</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1133" href="#t1133">1133</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">errors</span> <span class="key">import</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1134" href="#t1134">1134</a></span><span class="t">    <span class="nam">TemplateError</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1135" href="#t1135">1135</a></span><span class="t">    <span class="nam">PartialTypeGeneratorError</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1136" href="#t1136">1136</a></span><span class="t"><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1137" href="#t1137">1137</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">schema</span> <span class="key">import</span> <span class="nam">Schema</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1119" href="#t1119">1119</a></span><span class="t">    <span class="nam">names</span><span class="op">:</span> <span class="nam">PythonNames</span> <span class="op">=</span> <span class="nam">PythonNames</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1120" href="#t1120">1120</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1121" href="#t1121">1121</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1122" href="#t1122">1122</a></span><span class="t"><span class="key">class</span> <span class="nam">DefaultData</span><span class="op">(</span><span class="nam">GenericData</span><span class="op">[</span><span class="nam">_EmptyModel</span><span class="op">]</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1123" href="#t1123">1123</a></span><span class="t">    <span class="str">"""Data class without any config options"""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1124" href="#t1124">1124</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1125" href="#t1125">1125</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1126" href="#t1126">1126</a></span><span class="t"><span class="com"># this has to be defined as a type alias instead of a class</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1127" href="#t1127">1127</a></span><span class="t"><span class="com"># as its purpose is to signify that the data is config agnostic</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1128" href="#t1128">1128</a></span><span class="t"><span class="nam">AnyData</span> <span class="op">=</span> <span class="nam">GenericData</span><span class="op">[</span><span class="nam">Any</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1129" href="#t1129">1129</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1130" href="#t1130">1130</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">Enum</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1131" href="#t1131">1131</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">DMMF</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1132" href="#t1132">1132</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">GenericData</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1133" href="#t1133">1133</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">Field</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1134" href="#t1134">1134</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">Model</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1135" href="#t1135">1135</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">Datamodel</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1136" href="#t1136">1136</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">Generator</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1137" href="#t1137">1137</a></span><span class="t"><span class="nam">model_rebuild</span><span class="op">(</span><span class="nam">Datasource</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1138" href="#t1138">1138</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1139" href="#t1139">1139</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1140" href="#t1140">1140</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">errors</span> <span class="key">import</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1141" href="#t1141">1141</a></span><span class="t">    <span class="nam">TemplateError</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1142" href="#t1142">1142</a></span><span class="t">    <span class="nam">PartialTypeGeneratorError</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1143" href="#t1143">1143</a></span><span class="t"><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1144" href="#t1144">1144</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">schema</span> <span class="key">import</span> <span class="nam">Schema</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -1228,7 +1235,7 @@
             <a id="nextFileLink" class="nav" href="d_dfbd8819c982ffb0_schema_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-01-25 23:28 +0000
+            created at 2024-01-26 09:03 +0000
         </p>
     </div>
 </footer>
