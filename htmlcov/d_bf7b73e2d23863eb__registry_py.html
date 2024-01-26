@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="d_bf7b73e2d23863eb__sync_http_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-01-26 09:44 +0000
+            created at 2024-01-26 14:49 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -89,7 +89,7 @@
     <p class="run"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="key">from</span> <span class="op">.</span><span class="nam">errors</span> <span class="key">import</span> <span class="nam">ClientNotRegisteredError</span><span class="op">,</span> <span class="nam">ClientAlreadyRegisteredError</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="exc show_exc"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t"><span class="key">if</span> <span class="nam">TYPE_CHECKING</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="exc show_exc"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t">    <span class="key">from</span> <span class="op">.</span><span class="nam">client</span> <span class="key">import</span> <span class="nam">Prisma</span>&nbsp;</span><span class="r"></span></p>
+    <p class="exc show_exc"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t">    <span class="key">from</span> <span class="op">.</span><span class="nam">client</span> <span class="key">import</span> <span class="nam">Prisma</span>  <span class="com"># noqa: TID251</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t"><span class="nam">RegisteredClient</span> <span class="op">=</span> <span class="nam">Union</span><span class="op">[</span><span class="str">'Prisma'</span><span class="op">,</span> <span class="nam">Callable</span><span class="op">[</span><span class="op">[</span><span class="op">]</span><span class="op">,</span> <span class="str">'Prisma'</span><span class="op">]</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
@@ -102,7 +102,7 @@
     <p class="pln"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t"><span class="str">    This function _must_ only be called once, preferrably as soon as possible</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t"><span class="str">    to avoid any potentially confusing errors with threads or processes.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t">    <span class="key">from</span> <span class="op">.</span><span class="nam">client</span> <span class="key">import</span> <span class="nam">Prisma</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t">    <span class="key">from</span> <span class="op">.</span><span class="nam">client</span> <span class="key">import</span> <span class="nam">Prisma</span>  <span class="com"># noqa: TID251</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t">    <span class="key">global</span> <span class="nam">_registered_client</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -122,7 +122,7 @@
     <p class="pln"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t"><span class="str">    Raises errors.ClientNotRegisteredError() if no client instance has been registered.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t">    <span class="key">from</span> <span class="op">.</span><span class="nam">client</span> <span class="key">import</span> <span class="nam">Prisma</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t">    <span class="key">from</span> <span class="op">.</span><span class="nam">client</span> <span class="key">import</span> <span class="nam">Prisma</span>  <span class="com"># noqa: TID251</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t">    <span class="nam">registered</span> <span class="op">=</span> <span class="nam">_registered_client</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t44" href="#t44">44</a></span><span class="t">    <span class="key">if</span> <span class="nam">registered</span> <span class="key">is</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -145,7 +145,7 @@
             <a id="nextFileLink" class="nav" href="d_bf7b73e2d23863eb__sync_http_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-01-26 09:44 +0000
+            created at 2024-01-26 14:49 +0000
         </p>
     </div>
 </footer>
