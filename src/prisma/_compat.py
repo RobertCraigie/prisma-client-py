@@ -339,14 +339,25 @@ else:
         nodejs = None
 
 
+# Note: this shim is due to an inconsistency with string enums
+# that was fixed in Python3.11, for reference see:
+# - https://blog.pecar.me/python-enum#there-be-dragons
+# - https://github.com/python/cpython/issues/100458
 if TYPE_CHECKING:
-    from enum import Enum
-
-    StrEnum = Enum
-else:
-    try:
+    if sys.version_info >= (3, 11):
         from enum import StrEnum as StrEnum
-    except ImportError:
+    else:
+        # Note: we have to define our own `StrEnum`
+        # class as the backport we're using doesn't
+        # define good types.
+        from enum import Enum
+
+        class StrEnum(str, Enum):
+            ...
+else:
+    if sys.version_info >= (3, 11):
+        from enum import StrEnum as StrEnum
+    else:
         from strenum import StrEnum as StrEnum
 
 
