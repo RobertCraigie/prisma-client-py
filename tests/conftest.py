@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, List, Iterator
 
 import pytest
 
+pytest.register_assert_rewrite('lib.testing')
+
 import prisma
 from prisma import Prisma
 from prisma.cli import setup_logging
