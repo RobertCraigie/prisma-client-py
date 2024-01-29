@@ -579,7 +579,7 @@ class Config(BaseSettings):
 
             try:
                 values['partial_type_generator'] = Module(
-                    spec=value  # pyright: ignore[reportGeneralTypeIssues]
+                    spec=value  # pyright: ignore[reportArgumentType]
                 )
             except ValueError:
                 if value is None:
@@ -596,7 +596,7 @@ class Config(BaseSettings):
         def _partial_type_generator_converter(cls, value: Optional[str]) -> Optional[Module]:
             try:
                 return Module(
-                    spec=value  # pyright: ignore[reportGeneralTypeIssues]
+                    spec=value  # pyright: ignore[reportArgumentType]
                 )
             except ValueError:
                 if value is None:
