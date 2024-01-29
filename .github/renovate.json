@@ -13,11 +13,6 @@
   },
   "packageRules": [
     {
-        "groupName": "dev",
-        "matchPaths": ["pipelines/requirements/**/*.txt", "databases/*.txt"],
-        "excludePackageNames": ["mypy", "pytest-mypy-plugins"]
-    },
-    {
         "groupName": "mypy",
         "matchPackagePatterns": ["mypy"]
     },
