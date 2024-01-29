@@ -59,6 +59,7 @@ model Types {
   json_obj Json     @default("{}")
   datetime DateTime @default(now())
   decimal  Decimal  @default(22.99)
+  role     Role     @default(USER)
 }
 
 model Lists {

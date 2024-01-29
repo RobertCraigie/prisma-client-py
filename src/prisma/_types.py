@@ -84,4 +84,13 @@ class DatasourceOverride(_DatasourceOverrideOptional):
     url: str
 
 
+class _DatasourceOptional(TypedDict, total=False):
+    env: str
+
+
+class Datasource(_DatasourceOptional):
+    name: str
+    url: str
+
+
 TransactionId = NewType('TransactionId', str)

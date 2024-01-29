@@ -1,52 +1,37 @@
-{% set annotations = true %}
-{% include '_header.py.jinja' %}
-{% from '_utils.py.jinja' import maybe_async_def, maybe_await with context %}
-# -- template builder.py.jinja --
+from __future__ import annotations
 
 import json
-import logging
+import decimal
 import inspect
-from textwrap import indent
+import logging
+import datetime
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any, Union, Mapping, Iterable, ForwardRef, cast
 from datetime import timezone
-from abc import abstractmethod, ABC
+from textwrap import indent
 from functools import singledispatch
-from typing import ForwardRef
-from typing_extensions import TypeGuard, override
+from typing_extensions import Literal, TypeGuard, override
 
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 
 from . import fields
-from .types import Serializable
-from .errors import UnknownModelError, UnknownRelationalFieldError, InvalidModelError
-from ._constants import QUERY_BUILDER_ALIASES
 from ._types import PrismaMethod
+from .errors import InvalidModelError, UnknownModelError, UnknownRelationalFieldError
+from ._compat import get_args, is_union, get_origin, model_fields, model_field_type
 from ._typing import is_list_type
-from ._compat import model_fields, model_field_type, is_union, get_args, get_origin
+from ._constants import QUERY_BUILDER_ALIASES
 
 if TYPE_CHECKING:
-    from .bases import _PrismaModel as PrismaModel
+    from .bases import _PrismaModel as PrismaModel  # noqa: TID251
+    from .types import Serializable  # noqa: TID251
 
 
 log: logging.Logger = logging.getLogger(__name__)
 
 ChildType = Union['AbstractNode', str]
-ITERABLES: Tuple[Type[Any], ...] = (list, tuple, set)
-PRISMA_MODELS: Set[str] = {
-    {% for model in dmmf.datamodel.models %}
-    '{{ model.name }}',
-    {% endfor %}
-}
 
-RELATIONAL_FIELD_MAPPINGS: Dict[str, Dict[str, str]] = {
-    {% for model in dmmf.datamodel.models %}
-    '{{ model.name }}': {
-        {% for field in model.relational_fields %}
-        '{{ field.name }}': '{{ field.get_relational_model().name }}',
-        {% endfor %}
-    },
-    {% endfor %}
-}
+ITERABLES: tuple[type[Any], ...] = (list, tuple, set)
 
 METHOD_OPERATION_MAPPING: dict[PrismaMethod, Operation] = {
     'create': 'mutation',
@@ -59,7 +44,6 @@ METHOD_OPERATION_MAPPING: dict[PrismaMethod, Operation] = {
     'execute_raw': 'mutation',
     'delete_many': 'mutation',
     'update_many': 'mutation',
-
     'count': 'query',
     'group_by': 'query',
     'find_many': 'query',
@@ -80,7 +64,6 @@ METHOD_FORMAT_MAPPING: dict[PrismaMethod, str] = {
     'execute_raw': 'executeRaw',
     'delete_many': 'deleteMany{model}',
     'update_many': 'updateMany{model}',
-
     'count': 'aggregate{model}',
     'group_by': 'groupBy{model}',
     'find_many': 'findMany{model}',
@@ -92,7 +75,6 @@ METHOD_FORMAT_MAPPING: dict[PrismaMethod, str] = {
 
 MISSING = object()
 Operation = Literal['query', 'mutation']
-
 
 
 class QueryBuilder:
@@ -120,6 +102,15 @@ class QueryBuilder:
     root_selection: list[str] | None
     """List of fields to select"""
 
+    prisma_models: set[str]
+    """The names of all models present in the schema.prisma"""
+
+    relational_field_mappings: dict[str, dict[str, str]]
+    """A mapping of model name to a mapping of field name to relational model name
+
+    e.g. {'User': {'posts': 'Post'}}
+    """
+
     __slots__ = (
         'method',
         'method_format',
@@ -128,6 +119,8 @@ class QueryBuilder:
         'include',
         'arguments',
         'root_selection',
+        'prisma_models',
+        'relational_field_mappings',
     )
 
     def __init__(
@@ -135,13 +128,17 @@ class QueryBuilder:
         *,
         method: PrismaMethod,
         arguments: dict[str, Any],
+        prisma_models: set[str],
+        relational_field_mappings: dict[str, dict[str, str]],
         model: type[BaseModel] | None = None,
-        root_selection: list[str] | None = None
+        root_selection: list[str] | None = None,
     ) -> None:
         self.method = method
         self.method_format = METHOD_FORMAT_MAPPING[method]
         self.operation = METHOD_OPERATION_MAPPING[method]
         self.root_selection = root_selection
+        self.prisma_models = prisma_models
+        self.relational_field_mappings = relational_field_mappings
         self.arguments = args = self._transform_aliases(arguments)
         self.include = args.pop('include', None)
 
@@ -155,7 +152,6 @@ class QueryBuilder:
                 raise InvalidModelError(model)
 
             self.model = model
-
 
     def build(self) -> str:
         """Build the payload that should be sent to the QueryEngine"""
@@ -216,7 +212,7 @@ class QueryBuilder:
             raise InvalidModelError(model)
 
         name = model.__prisma_model__
-        if name not in PRISMA_MODELS:
+        if name not in self.prisma_models:
             raise UnknownModelError(name)
 
         # by default we exclude every field that points to a PrismaModel as that indicates that it is a relational field
@@ -227,7 +223,7 @@ class QueryBuilder:
             if not _field_is_prisma_model(info, name=field, parent=model)
         ]
 
-    def get_relational_model(self, current_model: Type[PrismaModel], field: str) -> Type[PrismaModel]:
+    def get_relational_model(self, current_model: type[PrismaModel], field: str) -> type[PrismaModel]:
         """Returns the model that the field is related to.
 
         Raises UnknownModelError if the current model is invalid.
@@ -240,7 +236,7 @@ class QueryBuilder:
         name = cast(str, name)
 
         try:
-            mappings = RELATIONAL_FIELD_MAPPINGS[name]
+            mappings = self.relational_field_mappings[name]
         except KeyError as exc:
             raise UnknownModelError(name) from exc
 
@@ -250,18 +246,18 @@ class QueryBuilder:
         try:
             info = model_fields(current_model)[field]
         except KeyError as exc:
-            raise UnknownRelationalFieldError(model=current_model.__name__, field=field)
+            raise UnknownRelationalFieldError(model=current_model.__name__, field=field) from exc
 
         model = _prisma_model_for_field(info, name=field, parent=current_model)
         if not model:
             raise RuntimeError(
-                f'The `{field}` field doesn\'t appear to be a Prisma Model type. ' +
-                'Is the field a pydantic.BaseModel type and does it have a `__prisma_model__` class variable?'
+                f"The `{field}` field doesn't appear to be a Prisma Model type. "
+                + 'Is the field a pydantic.BaseModel type and does it have a `__prisma_model__` class variable?'
             )
 
         return model
 
-    def _transform_aliases(self, arguments: Dict[str, Any]) -> Dict[str, Any]:
+    def _transform_aliases(self, arguments: dict[str, Any]) -> dict[str, Any]:
         """Transform dict keys to match global aliases
 
         e.g. order_by -> orderBy
@@ -324,7 +320,7 @@ def _field_is_prisma_model(field: FieldInfo, *, name: str, parent: type[BaseMode
 
 
 def _is_prisma_model_type(type_: type[BaseModel]) -> TypeGuard[type[PrismaModel]]:
-    from .bases import _PrismaModel
+    from .bases import _PrismaModel  # noqa: TID251
 
     return issubclass(type_, _PrismaModel)
 
@@ -333,7 +329,7 @@ class AbstractNode(ABC):
     __slots__ = ()
 
     @abstractmethod
-    def render(self) -> Optional[str]:
+    def render(self) -> str | None:
         """Render the node to a string
 
         None is returned if the node should not be rendered.
@@ -351,10 +347,11 @@ class AbstractNode(ABC):
 
 class Node(AbstractNode):
     """Base node handling rendering of child nodes"""
+
     joiner: str
     indent: str
     builder: QueryBuilder
-    children: List[ChildType]
+    children: list[ChildType]
 
     __slots__ = (
         'joiner',
@@ -364,26 +361,21 @@ class Node(AbstractNode):
     )
 
     def __init__(
-        self,
-        builder: QueryBuilder,
-        *,
-        joiner: str = '\n',
-        indent: str = '  ',
-        children: Optional[List[ChildType]] = None
+        self, builder: QueryBuilder, *, joiner: str = '\n', indent: str = '  ', children: list[ChildType] | None = None
     ) -> None:
         self.builder = builder
         self.joiner = joiner
         self.indent = indent
         self.children = children if children is not None else []
 
-    def enter(self) -> Optional[str]:
+    def enter(self) -> str | None:
         """Get the string used to enter the node.
 
         This string will be rendered *before* the children.
         """
         return None
 
-    def depart(self) -> Optional[str]:
+    def depart(self) -> str | None:
         """Get the string used to depart the node.
 
         This string will be rendered *after* the children.
@@ -391,7 +383,7 @@ class Node(AbstractNode):
         return None
 
     @override
-    def render(self) -> Optional[str]:
+    def render(self) -> str | None:
         """Render the node and it's children and to string.
 
         Rendering a node involves 4 steps:
@@ -404,13 +396,13 @@ class Node(AbstractNode):
         if not self.should_render():
             return None
 
-        strings: List[str] = []
+        strings: list[str] = []
         entered = self.enter()
         if entered is not None:
             strings.append(entered)
 
         for child in self.children:
-            content: Optional[str] = None
+            content: str | None = None
 
             if isinstance(child, str):
                 content = child
@@ -430,7 +422,7 @@ class Node(AbstractNode):
         """Add a child"""
         self.children.append(child)
 
-    def create_children(self) -> List[ChildType]:
+    def create_children(self) -> list[ChildType]:
         """Create the node's children
 
         If children are passed to the constructor, the children
@@ -440,7 +432,7 @@ class Node(AbstractNode):
         return []
 
     @classmethod
-    def create(cls, builder: Optional[QueryBuilder] = None, **kwargs: Any) -> 'Node':
+    def create(cls, builder: QueryBuilder | None = None, **kwargs: Any) -> 'Node':
         """Create the node and its children
 
         This is useful for subclasses that add extra attributes in __init__
@@ -467,7 +459,6 @@ class RootNode(Node):
 
     __slots__ = ()
 
-    {% raw %}
     @override
     def enter(self) -> str:
         return f'{self.builder.operation} {{'
@@ -475,7 +466,6 @@ class RootNode(Node):
     @override
     def depart(self) -> str:
         return '}'
-    {% endraw %}
 
     @override
     def render(self) -> str:
@@ -519,11 +509,11 @@ class ResultNode(Node):
         return f'result: {method}'
 
     @override
-    def depart(self) -> Optional[str]:
+    def depart(self) -> str | None:
         return None
 
     @override
-    def create_children(self) -> List[ChildType]:
+    def create_children(self) -> list[ChildType]:
         return [
             Arguments.create(
                 self.builder,
@@ -544,11 +534,12 @@ class Arguments(Node):
         }
     )
     """
-    arguments: Dict[str, Any]
+
+    arguments: dict[str, Any]
 
     __slots__ = ('arguments',)
 
-    def __init__(self, arguments: Dict[str, Any], **kwargs: Any) -> None:
+    def __init__(self, arguments: dict[str, Any], **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.arguments = arguments
 
@@ -565,8 +556,8 @@ class Arguments(Node):
         return ')'
 
     @override
-    def create_children(self, arguments: Optional[Dict[str, Any]] = None) -> List[ChildType]:
-        children: List[ChildType] = []
+    def create_children(self, arguments: dict[str, Any] | None = None) -> list[ChildType]:
+        children: list[ChildType] = []
 
         for arg, value in self.arguments.items():
             if value is None:
@@ -574,9 +565,7 @@ class Arguments(Node):
                 continue
 
             if isinstance(value, dict):
-                children.append(
-                    Key(arg, node=Data.create(self.builder, data=value))
-                )
+                children.append(Key(arg, node=Data.create(self.builder, data=value)))
             elif isinstance(value, ITERABLES):
                 # NOTE: we have a special case for execute_raw, query_raw and query_first
                 # here as prisma expects parameters to be passed as a json string
@@ -603,15 +592,12 @@ class Data(Node):
         ]
     }
     """
+
     data: Mapping[str, Any]
 
     __slots__ = ('data',)
 
-    def __init__(
-        self,
-        data: Mapping[str, Any],
-        **kwargs: Any
-    ) -> None:
+    def __init__(self, data: Mapping[str, Any], **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.data = data
 
@@ -624,18 +610,14 @@ class Data(Node):
         return '}'
 
     @override
-    def create_children(self) -> List[ChildType]:
-        children: List[ChildType] = []
+    def create_children(self) -> list[ChildType]:
+        children: list[ChildType] = []
 
         for key, value in self.data.items():
             if isinstance(value, dict):
-                children.append(
-                    Key(key, node=Data.create(self.builder, data=value))
-                )
+                children.append(Key(key, node=Data.create(self.builder, data=value)))
             elif isinstance(value, (list, tuple, set)):
-                children.append(
-                    Key(key, node=ListNode.create(self.builder, data=value))
-                )
+                children.append(Key(key, node=ListNode.create(self.builder, data=value)))
             else:
                 children.append(f'{key}: {dumps(value)}')
 
@@ -660,8 +642,8 @@ class ListNode(Node):
         return ']'
 
     @override
-    def create_children(self) -> List[ChildType]:
-        children: List[ChildType] = []
+    def create_children(self) -> list[ChildType]:
+        children: list[ChildType] = []
 
         for item in self.data:
             if isinstance(item, dict):
@@ -711,6 +693,7 @@ class Selection(Node):
         }
     }
     """
+
     model: type[PrismaModel] | None
     include: dict[str, Any] | None
     root_selection: list[str] | None
@@ -726,7 +709,7 @@ class Selection(Node):
         model: type[PrismaModel] | None = None,
         include: dict[str, Any] | None = None,
         root_selection: list[str] | None = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self.model = model
@@ -746,11 +729,11 @@ class Selection(Node):
         return '}'
 
     @override
-    def create_children(self) -> List[ChildType]:
+    def create_children(self) -> list[ChildType]:
         model = self.model
         include = self.include
         builder = self.builder
-        children: List[ChildType] = []
+        children: list[ChildType] = []
 
         # root_selection, if present overrides the default fields
         # for a model as it is used by methods such as count()
@@ -775,9 +758,7 @@ class Selection(Node):
                             node=Selection.create(
                                 builder,
                                 include=None,
-                                model=builder.get_relational_model(
-                                    current_model=model, field=key
-                                ),
+                                model=builder.get_relational_model(current_model=model, field=key),
                             ),
                         )
                     )
@@ -791,31 +772,26 @@ class Selection(Node):
                             Key(
                                 key,
                                 sep='',
-                                node=Arguments.create(
-                                    builder, arguments=args
-                                ),
+                                node=Arguments.create(builder, arguments=args),
                             ),
                             Selection.create(
                                 builder,
                                 include=nested_include,
-                                model=builder.get_relational_model(
-                                    current_model=model, field=key
-                                ),
+                                model=builder.get_relational_model(current_model=model, field=key),
                             ),
                         ]
                     )
                 elif value is False:
                     continue
                 else:
-                    raise TypeError(
-                        f'Expected `bool` or `dict` include value but got {type(value)} instead.'
-                    )
+                    raise TypeError(f'Expected `bool` or `dict` include value but got {type(value)} instead.')
 
         return children
 
 
 class Key(AbstractNode):
     """Node for rendering a child node with a prefixed key"""
+
     key: str
     sep: str
     node: Node
@@ -896,6 +872,7 @@ def dumps(obj: Any, **kwargs: Any) -> str:
     kwargs.setdefault('default', serializer)
     kwargs.setdefault('ensure_ascii', False)
     return json.dumps(obj, **kwargs)
+
 
 # black does not respect the fmt: off comment without this
 # fmt: on

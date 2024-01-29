@@ -743,8 +743,16 @@ class Model(BaseModel):
             return True
 
     @property
+    def instance_name(self) -> str:
+        """The name of this model in the generated client class, e.g.
+
+        `User` -> `Prisma().user`
+        """
+        return self.name.lower()
+
+    @property
     def plural_name(self) -> str:
-        name = self.name
+        name = self.instance_name
         if name.endswith('s'):
             return name
         return f'{name}s'
@@ -1090,6 +1098,11 @@ class _ModelAllowAll(BaseModel):
             extra: pydantic.Extra = pydantic.Extra.allow
 
 
+class PythonNames(BaseModel):
+    def client_class(self, _for_async: bool) -> str:
+        return 'Prisma'
+
+
 class PythonData(GenericData[Config]):
     """Data class including the default Prisma Client Python config"""
 
@@ -1102,6 +1115,8 @@ class PythonData(GenericData[Config]):
                 machinery.ModuleSpec: _module_spec_serializer,
             }
             keep_untouched: Tuple[Type[Any], ...] = (cached_property,)
+
+    names: PythonNames = PythonNames()
 
 
 class DefaultData(GenericData[_EmptyModel]):

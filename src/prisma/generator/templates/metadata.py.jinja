@@ -1,0 +1,23 @@
+from __future__ import annotations
+{% include '_pragma.py.jinja' %}
+# fmt: off
+# -- template metadata.py.jinja --
+
+
+PRISMA_MODELS: set[str] = {
+    {% for model in dmmf.datamodel.models %}
+    '{{ model.name }}',
+    {% endfor %}
+}
+
+RELATIONAL_FIELD_MAPPINGS: dict[str, dict[str, str]] = {
+    {% for model in dmmf.datamodel.models %}
+    '{{ model.name }}': {
+        {% for field in model.relational_fields %}
+        '{{ field.name }}': '{{ field.get_relational_model().name }}',
+        {% endfor %}
+    },
+    {% endfor %}
+}
+
+# fmt: on

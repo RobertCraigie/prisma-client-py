@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Union, Callable
 from .errors import ClientNotRegisteredError, ClientAlreadyRegisteredError
 
 if TYPE_CHECKING:
-    from .client import Prisma
+    from .client import Prisma  # noqa: TID251
 
 
 RegisteredClient = Union['Prisma', Callable[[], 'Prisma']]
@@ -18,7 +18,7 @@ def register(client: RegisteredClient) -> None:
     This function _must_ only be called once, preferrably as soon as possible
     to avoid any potentially confusing errors with threads or processes.
     """
-    from .client import Prisma
+    from .client import Prisma  # noqa: TID251
 
     global _registered_client
 
@@ -38,7 +38,7 @@ def get_client() -> Prisma:
 
     Raises errors.ClientNotRegisteredError() if no client instance has been registered.
     """
-    from .client import Prisma
+    from .client import Prisma  # noqa: TID251
 
     registered = _registered_client
     if registered is None:

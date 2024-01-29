@@ -49,20 +49,21 @@ from types import TracebackType
 from pydantic import BaseModel
 
 from . import types, models, errors, actions
-from ._base_client import UseClientDefault, USE_CLIENT_DEFAULT
+from ._base_client import BasePrisma, UseClientDefault, USE_CLIENT_DEFAULT
 from .types import DatasourceOverride, HttpConfig, MetricsFormat
 from ._types import BaseModelT, PrismaMethod, TransactionId
 from .bases import _PrismaModel
-from .engine import AbstractEngine, QueryEngine
-from .builder import QueryBuilder, dumps
+from ._builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix, model_parse
 from ._constants import DEFAULT_CONNECT_TIMEOUT, DEFAULT_TX_MAX_WAIT, DEFAULT_TX_TIMEOUT
 from ._raw_query import deserialize_raw_results
 from ._metrics import Metrics
+from .metadata import PRISMA_MODELS, RELATIONAL_FIELD_MAPPINGS
+from ._transactions import AsyncTransactionManager, SyncTransactionManager
 
 # re-exports
-from ._base_client import load_env as load_env
+from ._base_client import SyncBasePrisma, AsyncBasePrisma, load_env as load_env
 from ._registry import (
     register as register,
     get_client as get_client,
@@ -90,7 +91,7 @@ ENGINE_TYPE: EngineType = EngineType.binary
 BINARY_PATHS = '<binary-paths-removed>'
 
 
-class Prisma:
+class Prisma(AsyncBasePrisma):
     post: 'actions.PostActions[models.Post]'
     user: 'actions.UserActions[models.User]'
     m: 'actions.MActions[models.M]'
@@ -117,14 +118,6 @@ class Prisma:
         'c',
         'd',
         'e',
-        '__engine',
-        '__copied',
-        '_tx_id',
-        '_datasource',
-        '_log_queries',
-        '_http_config',
-        '_connect_timeout',
-        '_active_provider',
     )
 
     def __init__(
@@ -137,6 +130,26 @@ class Prisma:
         connect_timeout: int | timedelta = DEFAULT_CONNECT_TIMEOUT,
         http: HttpConfig | None = None,
     ) -> None:
+        super().__init__(
+            http=http,
+            use_dotenv=use_dotenv,
+            log_queries=log_queries,
+            datasource=datasource,
+            connect_timeout=connect_timeout,
+        )
+        self._set_generated_properties(
+            schema_path=SCHEMA_PATH,
+            engine_type=ENGINE_TYPE,
+            prisma_models=PRISMA_MODELS,
+            packaged_schema_path=PACKAGED_SCHEMA_PATH,
+            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
+            active_provider='postgresql',
+            default_datasource={
+                'name': 'db',
+                'url': OptionalValueFromEnvVar(**{'value': None, 'fromEnvVar': 'DB_URL'}).resolve(),
+            },
+        )
+
         self.post = actions.PostActions[models.Post](self, models.Post)
         self.user = actions.UserActions[models.User](self, models.User)
         self.m = actions.MActions[models.M](self, models.M)
@@ -150,117 +163,8 @@ class Prisma:
         self.d = actions.DActions[models.D](self, models.D)
         self.e = actions.EActions[models.E](self, models.E)
 
-        # NOTE: if you add any more properties here then you may also need to forward
-        # them in the `_copy()` method.
-        self.__engine: Optional[AbstractEngine] = None
-        self._active_provider = 'postgresql'
-        self._log_queries = log_queries
-        self._datasource = datasource
-
-        if isinstance(connect_timeout, int):
-            message = (
-                'Passing an int as `connect_timeout` argument is deprecated '
-                'and will be removed in the next major release. '
-                'Use a `datetime.timedelta` instance instead.'
-            )
-            warnings.warn(message, DeprecationWarning, stacklevel=2)
-            connect_timeout = timedelta(seconds=connect_timeout)
-
-        self._connect_timeout = connect_timeout
-        self._http_config: HttpConfig = http or {}
-        self._tx_id: Optional[TransactionId] = None
-        self.__copied: bool = False
-
-        if use_dotenv:
-            load_env()
-
         if auto_register:
             register(self)
-
-    def __del__(self) -> None:
-        # Note: as the transaction manager holds a reference to the original
-        # client as well as the transaction client the original client cannot
-        # be `free`d before the transaction is finished. So stopping the engine
-        # here should be safe.
-        if self.__engine is not None and not self.__copied:
-            log.debug('unclosed client - stopping engine')
-            engine = self.__engine
-            self.__engine = None
-            engine.stop()
-
-    async def __aenter__(self) -> 'Prisma':
-        await self.connect()
-        return self
-
-    async def __aexit__(
-        self,
-        exc_type: Optional[Type[BaseException]],
-        exc: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
-    ) -> None:
-        if self.is_connected():
-            await self.disconnect()
-
-    def is_registered(self) -> bool:
-        """Returns True if this client instance is registered"""
-        try:
-            return get_client() is self
-        except errors.ClientNotRegisteredError:
-            return False
-
-    def is_connected(self) -> bool:
-        """Returns True if the client is connected to the query engine, False otherwise."""
-        return self.__engine is not None
-
-    async def connect(
-        self,
-        timeout: Union[int, timedelta, UseClientDefault] = USE_CLIENT_DEFAULT,
-    ) -> None:
-        """Connect to the Prisma query engine.
-
-        It is required to call this before accessing data.
-        """
-        if isinstance(timeout, UseClientDefault):
-            timeout = self._connect_timeout
-
-        if isinstance(timeout, int):
-            message = (
-                'Passing an int as `timeout` argument is deprecated '
-                'and will be removed in the next major release. '
-                'Use a `datetime.timedelta` instance instead.'
-            )
-            warnings.warn(message, DeprecationWarning, stacklevel=2)
-            timeout = timedelta(seconds=timeout)
-
-        if self.__engine is None:
-            self.__engine = self._create_engine(dml_path=PACKAGED_SCHEMA_PATH)
-
-        datasources: Optional[List[types.DatasourceOverride]] = None
-        if self._datasource is not None:
-            ds = self._datasource.copy()
-            ds.setdefault('name', 'db')
-            datasources = [ds]
-
-        await self.__engine.connect(
-            timeout=timeout,
-            datasources=datasources,
-        )
-
-    async def disconnect(self, timeout: Union[float, timedelta, None] = None) -> None:
-        """Disconnect the Prisma query engine."""
-        if self.__engine is not None:
-            engine = self.__engine
-            self.__engine = None
-            if isinstance(timeout, (int, float)):
-                message = (
-                    'Passing a number as `timeout` argument is deprecated '
-                    'and will be removed in the next major release. '
-                    'Use a `datetime.timedelta` instead.'
-                )
-                warnings.warn(message, DeprecationWarning, stacklevel=2)
-                timeout = timedelta(seconds=timeout)
-            await engine.aclose(timeout=timeout)
-            engine.stop(timeout=timeout)
 
     async def execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = await self._execute(
@@ -354,7 +258,7 @@ class Prisma:
 
         return deserialize_raw_results(result)
 
-    def batch_(self) -> 'Batch':
+    def batch_(self) -> Batch:
         """Returns a context manager for grouping write queries into a single transaction."""
         return Batch(client=self)
 
@@ -363,7 +267,7 @@ class Prisma:
         *,
         max_wait: Union[int, timedelta] = DEFAULT_TX_MAX_WAIT,
         timeout: Union[int, timedelta] = DEFAULT_TX_TIMEOUT,
-    ) -> 'TransactionManager':
+    ) -> TransactionManager:
         """Returns a context manager for executing queries within a database transaction.
 
         Entering the context manager returns a new Prisma instance wrapping all
@@ -386,228 +290,14 @@ class Prisma:
 
         In the above example, if the first database call succeeds but the second does not then neither of the records will be created.
         """
-        return TransactionManager(client=self, max_wait=max_wait, timeout=timeout)
-
-    def is_transaction(self) -> bool:
-        """Returns True if the client is wrapped within a transaction"""
-        return self._tx_id is not None
-
-    @overload
-    async def get_metrics(
-        self,
-        format: Literal['json'] = 'json',
-        *,
-        global_labels: dict[str, str] | None = None,
-    ) -> Metrics:
-        ...
-
-    @overload
-    async def get_metrics(
-        self,
-        format: Literal['prometheus'],
-        *,
-        global_labels: dict[str, str] | None = None,
-    ) -> str:
-        ...
-
-    async def get_metrics(
-        self,
-        format: MetricsFormat = 'json',
-        *,
-        global_labels: dict[str, str] | None = None,
-    ) -> str | Metrics:
-        """Metrics give you a detailed insight into how the Prisma Client interacts with your database.
-
-        You can retrieve metrics in either JSON or Prometheus formats.
-
-        For more details see https://www.prisma.io/docs/concepts/components/prisma-client/metrics.
-        """
-        response = await self._engine.metrics(format=format, global_labels=global_labels)
-        if format == 'prometheus':
-            # For the prometheus format we return the response as-is
-            assert isinstance(response, str)
-            return response
-
-        return model_parse(Metrics, response)
-
-    # TODO: don't return Any
-    async def _execute(
-        self,
-        method: PrismaMethod,
-        arguments: dict[str, Any],
-        model: type[BaseModel] | None = None,
-        root_selection: list[str] | None = None
-    ) -> Any:
-        builder = QueryBuilder(
-            method=method,
-            model=model,
-            arguments=arguments,
-            root_selection=root_selection,
+        return TransactionManager(
+            client=self,
+            max_wait=max_wait,
+            timeout=timeout,
         )
-        return await self._engine.query(builder.build(), tx_id=self._tx_id)
-
-    def _copy(self) -> 'Prisma':
-        """Return a new Prisma instance using the same engine process (if connected).
-
-        This is only intended for private usage, there are no guarantees around this API.
-        """
-        new = Prisma(
-            use_dotenv=False,
-            http=self._http_config,
-            datasource=self._datasource,
-            log_queries=self._log_queries,
-            connect_timeout=self._connect_timeout,
-        )
-        new.__copied = True
-
-        if self.__engine is not None:
-            new._engine = self.__engine
-
-        return new
-
-    def _create_engine(self, dml_path: Path = PACKAGED_SCHEMA_PATH) -> AbstractEngine:
-        if ENGINE_TYPE == EngineType.binary:
-            return QueryEngine(dml_path=dml_path, log_queries=self._log_queries, http_config=self._http_config)
-
-        raise NotImplementedError(f'Unsupported engine type: {ENGINE_TYPE}')
-
-    @property
-    def _engine_class(self) -> Type[AbstractEngine]:
-        if ENGINE_TYPE == EngineType.binary:
-            return QueryEngine
-        else:  # pragma: no cover
-            raise RuntimeError(f'Unhandled engine type: {ENGINE_TYPE}')
-
-    @property
-    def _engine(self) -> AbstractEngine:
-        engine = self.__engine
-        if engine is None:
-            raise errors.ClientNotConnectedError()
-        return engine
-
-    @_engine.setter
-    def _engine(self, engine: AbstractEngine) -> None:
-        self.__engine = engine
-
-    def _make_sqlite_datasource(self) -> DatasourceOverride:
-        return {
-            'name': 'db',
-            'url': self._make_sqlite_url(self._default_datasource['url']),
-        }
-
-    def _make_sqlite_url(self, url: str, *, relative_to: Path = SCHEMA_PATH.parent) -> str:
-        url_path = removeprefix(removeprefix(url, 'file:'), 'sqlite:')
-        if url_path == url:
-            return url
-
-        if Path(url_path).is_absolute():
-            return url
-
-        return f'file:{relative_to.joinpath(url_path).resolve()}'
-
-    @property
-    def _default_datasource(self) -> DatasourceOverride:
-        return {
-            'name': 'db',
-            'url': OptionalValueFromEnvVar(**{'value': None, 'fromEnvVar': 'DB_URL'}).resolve(),
-        }
 
 
-class TransactionManager:
-    """Context manager for wrapping a Prisma instance within a transaction.
-
-    This should never be created manually, instead it should be used
-    through the Prisma.tx() method.
-    """
-
-    def __init__(self, *, client: Prisma, max_wait: Union[int, timedelta], timeout: Union[int, timedelta]) -> None:
-        self.__client = client
-
-        if isinstance(max_wait, int):
-            message = (
-                'Passing an int as `max_wait` argument is deprecated '
-                'and will be removed in the next major release. '
-                'Use a `datetime.timedelta` instance instead.'
-            )
-            warnings.warn(message, DeprecationWarning, stacklevel=3)
-            max_wait = timedelta(milliseconds=max_wait)
-
-        self._max_wait = max_wait
-
-        if isinstance(timeout, int):
-            message = (
-                'Passing an int as `timeout` argument is deprecated '
-                'and will be removed in the next major release. '
-                'Use a `datetime.timedelta` instance instead.'
-            )
-            warnings.warn(message, DeprecationWarning, stacklevel=3)
-            timeout = timedelta(milliseconds=timeout)
-
-        self._timeout = timeout
-
-        self._tx_id: Optional[TransactionId] = None
-
-    async def start(self, *, _from_context: bool = False) -> Prisma:
-        """Start the transaction and return the wrapped Prisma instance"""
-        if self.__client.is_transaction():
-            # if we were called from the context manager then the stacklevel
-            # needs to be one higher to warn on the actual offending code
-            warnings.warn(
-                'The current client is already in a transaction. This can lead to surprising behaviour.',
-                UserWarning,
-                stacklevel=3 if _from_context else 2
-            )
-
-        tx_id = await self.__client._engine.start_transaction(
-            content=dumps(
-                {
-                    'timeout': int(self._timeout.total_seconds() * 1000),
-                    'max_wait': int(self._max_wait.total_seconds() * 1000),
-                }
-            ),
-        )
-        self._tx_id = tx_id
-        client = self.__client._copy()
-        client._tx_id = tx_id
-        return client
-
-    async def commit(self) -> None:
-        """Commit the transaction to the database, this transaction will no longer be usable"""
-        if self._tx_id is None:
-            raise errors.TransactionNotStartedError()
-
-        await self.__client._engine.commit_transaction(self._tx_id)
-
-    async def rollback(self) -> None:
-        """Do not commit the changes to the database, this transaction will no longer be usable"""
-        if self._tx_id is None:
-            raise errors.TransactionNotStartedError()
-
-        await self.__client._engine.rollback_transaction(self._tx_id)
-
-    async def __aenter__(self) -> Prisma:
-        return await self.start(_from_context=True)
-
-    async def __aexit__(
-        self,
-        exc_type: Optional[Type[BaseException]],
-        exc: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
-    ) -> None:
-        if exc is None:
-            log.debug('Transaction exited with no exception - commiting')
-            await self.commit()
-            return
-
-        log.debug('Transaction exited with exc type: %s - rolling back', exc_type)
-
-        try:
-            await self.rollback()
-        except Exception as exc:
-            log.warning(
-                'Encountered exc `%s` while rolling back a transaction. Ignoring and raising original exception',
-                exc
-            )
+TransactionManager = AsyncTransactionManager[Prisma]
 
 
 # TODO: this should return the results as well
@@ -644,7 +334,11 @@ class Batch:
         self.e = EBatchActions(self)
 
     def _add(self, **kwargs: Any) -> None:
-        builder = QueryBuilder(**kwargs)
+        builder = QueryBuilder(
+            **kwargs,
+            prisma_models=PRISMA_MODELS,
+            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
+        )
         self.__queries.append(builder.build_query())
 
     async def commit(self) -> None:

@@ -9,7 +9,7 @@ from . import types, errors, bases
 from ._compat import model_parse
 
 if TYPE_CHECKING:
-    from .client import Client
+    from .client import {{ names.client_class(is_async) }}
     from .bases import _PrismaModel
 
 
@@ -47,7 +47,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         '_model',
     )
 
-    def __init__(self, client: 'Client', model: Type[{{ ModelType }}]) -> None:
+    def __init__(self, client: {{ names.client_class(is_async) }}, model: Type[{{ ModelType }}]) -> None:
         self._client = client
         self._model = model
 
@@ -159,7 +159,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         -------
         ```py
         # create a {{ model.name }} record from just the required fields
-        {{ model.name | to_snake | lower }} = {{ maybe_await }}{{ model.name }}.prisma().create(
+        {{ model.instance_name }} = {{ maybe_await }}{{ model.name }}.prisma().create(
             data={
                 # data to create a {{ model.name }} record
                 {% for field in model.scalar_fields %}
@@ -275,7 +275,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         Example
         -------
         ```py
-        {{ model.name | to_snake | lower }} = {{ maybe_await }}{{ model.name }}.prisma().delete(
+        {{ model.instance_name }} = {{ maybe_await }}{{ model.name }}.prisma().delete(
             where={
                 {{ sample_where_unique(model) }}
             },
@@ -325,7 +325,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         Example
         -------
         ```py
-        {{ model.name | to_snake | lower }} = {{ maybe_await }}{{ model.name }}.prisma().find_unique(
+        {{ model.instance_name }} = {{ maybe_await }}{{ model.name }}.prisma().find_unique(
             where={
                 {{ sample_where_unique(model) }}
             },
@@ -374,7 +374,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         Example
         -------
         ```py
-        {{ model.name | to_snake | lower }} = {{ maybe_await }}{{ model.name }}.prisma().find_unique_or_raise(
+        {{ model.instance_name }} = {{ maybe_await }}{{ model.name }}.prisma().find_unique_or_raise(
             where={
                 {{ sample_where_unique(model) }}
             },
@@ -435,11 +435,11 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         -------
         ```py
         # find the first 10 {{ model.name }} records
-        {{ model.plural_name.lower() }} = {{ maybe_await }}{{ model.name }}.prisma().find_many(take=10)
+        {{ model.plural_name }} = {{ maybe_await }}{{ model.name }}.prisma().find_many(take=10)
 
         {% set field = model.sampler().get_field() %}
         # find the first 5 {{ model.name }} records ordered by the {{ field.name }} field
-        {{ model.plural_name.lower() }} = {{ maybe_await }}{{ model.name }}.prisma().find_many(
+        {{ model.plural_name }} = {{ maybe_await }}{{ model.name }}.prisma().find_many(
             take=5,
             order={
                 '{{ field.name }}': 'desc',
@@ -504,7 +504,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         ```py
         {% set field = model.sampler().get_field() %}
         # find the second {{ model.name }} record ordered by the {{ field.name }} field
-        {{ model.name | to_snake | lower }} = {{ maybe_await }}{{ model.name }}.prisma().find_first(
+        {{ model.instance_name }} = {{ maybe_await }}{{ model.name }}.prisma().find_first(
             skip=1,
             order={
                 '{{ field.name }}': 'desc',
@@ -572,7 +572,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         ```py
         {% set field = model.sampler().get_field() %}
         # find the second {{ model.name }} record ordered by the {{ field.name }} field
-        {{ model.name | to_snake | lower }} = {{ maybe_await }}{{ model.name }}.prisma().find_first_or_raise(
+        {{ model.instance_name }} = {{ maybe_await }}{{ model.name }}.prisma().find_first_or_raise(
             skip=1,
             order={
                 '{{ field.name }}': 'desc',
@@ -625,7 +625,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         Example
         -------
         ```py
-        {{ model.name | to_snake | lower }} = {{ maybe_await }}{{ model.name }}.prisma().update(
+        {{ model.instance_name }} = {{ maybe_await }}{{ model.name }}.prisma().update(
             where={
                 {{ sample_where_unique(model) }}
             },
@@ -682,7 +682,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         ```py
         {% if model.id_field %}
         {% set id_sample = model.id_field.get_sample_data() %}
-        {{ model.name | to_snake | lower }} = {{ maybe_await }}{{ model.name }}.prisma().upsert(
+        {{ model.instance_name }} = {{ maybe_await }}{{ model.name }}.prisma().upsert(
             where={
                 '{{ model.id_field.name }}': {{ id_sample }},
             },
@@ -705,7 +705,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             },
         )
         {% else %}
-        {{ model.name | to_snake | lower }} = {{ maybe_await }}{{ model.name }}.prisma().upsert(
+        {{ model.instance_name }} = {{ maybe_await }}{{ model.name }}.prisma().upsert(
             where={
                 # {{ model.name }} where unique filter
             },

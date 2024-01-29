@@ -218,7 +218,13 @@ For a more specififc test case look through the tests and find one that is simil
 
 ### Snapshot Tests
 
-We use [syrupy](https://github.com/tophat/syrupy) to manage our test snapshots. You can update the generated snapshots by running tests with `--snapshot-update`, for example:
+We use [inline-snapshot](https://github.com/15r10nk/inline-snapshot) for, you guessed it, inline snapshots! If you're working with these snapshots you'll likely want to run tests with `--inline-snapshot=create` or `--inline-snapshot=fix`, for example:
+
+```
+nox -s test -p 3.9 -- --inline-snapshot=fix
+```
+
+We also use [syrupy](https://github.com/tophat/syrupy) to manage test snapshots that would be better to persist to standalone files. You can update the generated snapshots by running tests with `--snapshot-update`, for example:
 
 ```
 nox -s test -p 3.9 -- --snapshot-update tests/test_generation/exhaustive
