@@ -33,7 +33,7 @@ import pydantic
 from pydantic.fields import PrivateAttr
 
 from .. import config
-from .utils import Faker, Sampler, clean_multiline
+from .utils import Faker, Sampler, clean_multiline, to_camel_case, to_pascal_case, to_snake_case
 from ..utils import DEBUG_GENERATOR, assert_never
 from ..errors import UnsupportedListTypeError
 from .._compat import (
@@ -246,6 +246,14 @@ class EngineType(str, enum.Enum):
     @override
     def __str__(self) -> str:
         return self.value
+
+
+class ClientCasing(str, enum.Enum):
+    snake_case = 'snake_case'
+    camel_case = 'camel_case'
+    lower_case = 'lower_case'
+    upper_case = 'upper_case'
+    pascal_case = 'pascal_case'
 
 
 class Module(BaseModel):
@@ -496,6 +504,7 @@ class Config(BaseSettings):
         env='PRISMA_PY_CONFIG_RECURSIVE_TYPE_DEPTH',
     )
     engine_type: EngineType = FieldInfo(default=EngineType.binary, env='PRISMA_PY_CONFIG_ENGINE_TYPE')
+    client_casing: ClientCasing = FieldInfo(default=ClientCasing.lower_case)
 
     # this should be a list of experimental features
     # https://github.com/prisma/prisma/issues/12442
@@ -684,7 +693,8 @@ class Model(BaseModel):
                 f'use a different model name with \'@@map("{name}")\'.'
             )
 
-        if iskeyword(name.lower()):
+        config = get_config()
+        if isinstance(config, Config) and config.client_casing == ClientCasing.lower_case and iskeyword(name.lower()):
             raise ValueError(
                 f'Model name "{name}" results in a client property that shadows a Python keyword; '
                 f'use a different model name with \'@@map("{name}")\'.'
@@ -748,6 +758,13 @@ class Model(BaseModel):
 
         `User` -> `Prisma().user`
         """
+        config = get_config()
+        if isinstance(config, Config) and config.client_casing == ClientCasing.camel_case:
+            return to_camel_case(self.name)
+        elif isinstance(config, Config) and config.client_casing == ClientCasing.pascal_case:
+            return to_pascal_case(self.name)
+        elif isinstance(config, Config) and config.client_casing == ClientCasing.snake_case:
+            return to_snake_case(self.name)
         return self.name.lower()
 
     @property
