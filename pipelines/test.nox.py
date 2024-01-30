@@ -40,5 +40,6 @@ def test(session: nox.Session) -> None:
         *pytest_args,
         env={
             'PYTEST_PLUGINS': 'pytester',
+            'PYTHONHASHSEED': '0',
         },
     )
