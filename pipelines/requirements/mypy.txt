@@ -1,4 +1,5 @@
 -r test.txt
 -r node.txt
 -r deps/mypy.txt
+-r deps/pydantic.txt
 types-mock
