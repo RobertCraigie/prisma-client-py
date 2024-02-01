@@ -12,7 +12,6 @@ generator db {
   output                      = "../../../.tests_cache/generation/exhaustive/__prisma_async_output__/prisma"
   enable_experimental_decimal = true
   partial_type_generator      = "tests/test_generation/exhaustive/partials.py"
-  client_casing               = "snake_case"
 }
 
 /// Post model documentation
