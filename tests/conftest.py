@@ -25,6 +25,8 @@ LOGGING_CONTEXT_MANAGER = setup_logging(use_handler=False)
 
 prisma.register(Prisma())
 
+pytest.register_assert_rewrite('tests.test_generation.utils')
+
 
 @pytest.fixture()
 def runner(monkeypatch: 'MonkeyPatch') -> Runner:
