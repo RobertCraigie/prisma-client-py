@@ -623,7 +623,10 @@ class N(bases.BaseN):
 
 
 class OneOptional(bases.BaseOneOptional):
-    """Represents a OneOptional record"""
+    """Also used to test model schema extensions
+
+    @Python(instance_name: "one_optional")
+    """
 
     id: _int
     many: Optional[List['models.ManyRequired']] = None

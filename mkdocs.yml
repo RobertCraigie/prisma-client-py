@@ -59,6 +59,7 @@ nav:
   - Reference:
       - Query Operations: reference/operations.md
       - Client: reference/client.md
+      - Schema Extensions: reference/schema-extensions.md
       - Transactions: reference/transactions.md
       - Selecting Fields: reference/selecting-fields.md
       - Model Based Access: reference/model-actions.md

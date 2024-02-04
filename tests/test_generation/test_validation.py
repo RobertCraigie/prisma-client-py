@@ -151,6 +151,24 @@ def test_field_name_matching_query_builder_alias_not_allowed(
     ) in str(exc.value.output, 'utf-8')
 
 
+def test_custom_model_instance_name_not_valid_identifier(
+    testdir: Testdir,
+) -> None:
+    schema = (
+        testdir.SCHEMA_HEADER
+        + """
+        /// @Python(instance_name: "1")
+        model User {{
+            id String @id
+        }}
+    """
+    )
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    assert 'Custom Model instance_name "1" is not a valid Python identifier' in str(exc.value.output, 'utf-8')
+
+
 def test_native_binary_target_no_warning(testdir: Testdir) -> None:
     """binaryTargets only being native does not raise warning"""
     with temp_env_update({'PRISMA_PY_DEBUG': '0'}):

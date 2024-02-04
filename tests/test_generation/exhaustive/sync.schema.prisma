@@ -81,6 +81,9 @@ model N {
   optional_boolean Boolean?
 }
 
+/// Also used to test model schema extensions
+///
+/// @Python(instance_name: "one_optional")
 model OneOptional {
   id               Int             @id @default(autoincrement())
   many             ManyRequired[]
