@@ -4339,7 +4339,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         -------
         ```py
         # create a OneOptional record from just the required fields
-        one_optional = OneOptional.prisma().create(
+        oneoptional = OneOptional.prisma().create(
             data={
                 # data to create a OneOptional record
                 'int': 1573199653,
@@ -4465,7 +4465,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        one_optional = OneOptional.prisma().delete(
+        oneoptional = OneOptional.prisma().delete(
             where={
                 'id': 300568396,
             },
@@ -4517,7 +4517,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        one_optional = OneOptional.prisma().find_unique(
+        oneoptional = OneOptional.prisma().find_unique(
             where={
                 'id': 632626069,
             },
@@ -4568,7 +4568,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        one_optional = OneOptional.prisma().find_unique_or_raise(
+        oneoptional = OneOptional.prisma().find_unique_or_raise(
             where={
                 'id': 1724011690,
             },
@@ -4698,7 +4698,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         -------
         ```py
         # find the second OneOptional record ordered by the float field
-        one_optional = OneOptional.prisma().find_first(
+        oneoptional = OneOptional.prisma().find_first(
             skip=1,
             order={
                 'float': 'desc',
@@ -4766,7 +4766,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         -------
         ```py
         # find the second OneOptional record ordered by the optional_float field
-        one_optional = OneOptional.prisma().find_first_or_raise(
+        oneoptional = OneOptional.prisma().find_first_or_raise(
             skip=1,
             order={
                 'optional_float': 'desc',
@@ -4820,7 +4820,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        one_optional = OneOptional.prisma().update(
+        oneoptional = OneOptional.prisma().update(
             where={
                 'id': 470157467,
             },
@@ -4877,7 +4877,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        one_optional = OneOptional.prisma().upsert(
+        oneoptional = OneOptional.prisma().upsert(
             where={
                 'id': 1209209912,
             },
@@ -5382,7 +5382,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         -------
         ```py
         # create a ManyRequired record from just the required fields
-        many_required = ManyRequired.prisma().create(
+        manyrequired = ManyRequired.prisma().create(
             data={
                 # data to create a ManyRequired record
                 'int': 536951780,
@@ -5508,7 +5508,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        many_required = ManyRequired.prisma().delete(
+        manyrequired = ManyRequired.prisma().delete(
             where={
                 'id': 976832615,
             },
@@ -5560,7 +5560,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        many_required = ManyRequired.prisma().find_unique(
+        manyrequired = ManyRequired.prisma().find_unique(
             where={
                 'id': 1696425492,
             },
@@ -5611,7 +5611,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        many_required = ManyRequired.prisma().find_unique_or_raise(
+        manyrequired = ManyRequired.prisma().find_unique_or_raise(
             where={
                 'id': 169262781,
             },
@@ -5741,7 +5741,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         -------
         ```py
         # find the second ManyRequired record ordered by the optional_int field
-        many_required = ManyRequired.prisma().find_first(
+        manyrequired = ManyRequired.prisma().find_first(
             skip=1,
             order={
                 'optional_int': 'desc',
@@ -5809,7 +5809,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         -------
         ```py
         # find the second ManyRequired record ordered by the float field
-        many_required = ManyRequired.prisma().find_first_or_raise(
+        manyrequired = ManyRequired.prisma().find_first_or_raise(
             skip=1,
             order={
                 'float': 'desc',
@@ -5863,7 +5863,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        many_required = ManyRequired.prisma().update(
+        manyrequired = ManyRequired.prisma().update(
             where={
                 'id': 1023081650,
             },
@@ -5920,7 +5920,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        many_required = ManyRequired.prisma().upsert(
+        manyrequired = ManyRequired.prisma().upsert(
             where={
                 'id': 327681027,
             },

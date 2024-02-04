@@ -96,8 +96,8 @@ class Prisma(AsyncBasePrisma):
     user: 'actions.UserActions[models.User]'
     m: 'actions.MActions[models.M]'
     n: 'actions.NActions[models.N]'
-    one_optional: 'actions.OneOptionalActions[models.OneOptional]'
-    many_required: 'actions.ManyRequiredActions[models.ManyRequired]'
+    oneoptional: 'actions.OneOptionalActions[models.OneOptional]'
+    manyrequired: 'actions.ManyRequiredActions[models.ManyRequired]'
     lists: 'actions.ListsActions[models.Lists]'
     a: 'actions.AActions[models.A]'
     b: 'actions.BActions[models.B]'
@@ -110,8 +110,8 @@ class Prisma(AsyncBasePrisma):
         'user',
         'm',
         'n',
-        'one_optional',
-        'many_required',
+        'oneoptional',
+        'manyrequired',
         'lists',
         'a',
         'b',
@@ -154,8 +154,8 @@ class Prisma(AsyncBasePrisma):
         self.user = actions.UserActions[models.User](self, models.User)
         self.m = actions.MActions[models.M](self, models.M)
         self.n = actions.NActions[models.N](self, models.N)
-        self.one_optional = actions.OneOptionalActions[models.OneOptional](self, models.OneOptional)
-        self.many_required = actions.ManyRequiredActions[models.ManyRequired](self, models.ManyRequired)
+        self.oneoptional = actions.OneOptionalActions[models.OneOptional](self, models.OneOptional)
+        self.manyrequired = actions.ManyRequiredActions[models.ManyRequired](self, models.ManyRequired)
         self.lists = actions.ListsActions[models.Lists](self, models.Lists)
         self.a = actions.AActions[models.A](self, models.A)
         self.b = actions.BActions[models.B](self, models.B)
@@ -307,8 +307,8 @@ class Batch:
     user: 'UserBatchActions'
     m: 'MBatchActions'
     n: 'NBatchActions'
-    one_optional: 'OneOptionalBatchActions'
-    many_required: 'ManyRequiredBatchActions'
+    oneoptional: 'OneOptionalBatchActions'
+    manyrequired: 'ManyRequiredBatchActions'
     lists: 'ListsBatchActions'
     a: 'ABatchActions'
     b: 'BBatchActions'
@@ -324,8 +324,8 @@ class Batch:
         self.user = UserBatchActions(self)
         self.m = MBatchActions(self)
         self.n = NBatchActions(self)
-        self.one_optional = OneOptionalBatchActions(self)
-        self.many_required = ManyRequiredBatchActions(self)
+        self.oneoptional = OneOptionalBatchActions(self)
+        self.manyrequired = ManyRequiredBatchActions(self)
         self.lists = ListsBatchActions(self)
         self.a = ABatchActions(self)
         self.b = BBatchActions(self)

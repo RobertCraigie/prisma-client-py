@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 from typing import TYPE_CHECKING, Any, Dict, List, Union, TypeVar, Iterator
 from pathlib import Path
@@ -122,3 +123,29 @@ def clean_multiline(string: str) -> str:
     assert string, 'Expected non-empty string'
     lines = string.splitlines()
     return '\n'.join([dedent(lines[0]), *lines[1:]])
+
+
+ACRONYM_RE = re.compile(r'([A-Z\d]+)(?=[A-Z\d]|$)')
+PASCAL_RE = re.compile(r'([^\-_]+)')
+SPLIT_RE = re.compile(r'([\-_]*[A-Z][^A-Z]*[\-_]*)')
+UNDERSCORE_RE = re.compile(r'(?<=[^\-_])[\-_]+[^\-_]')
+
+
+def to_snake_case(input_str: str) -> str:
+    input_str = ACRONYM_RE.sub(lambda m: m.group(0).title(), input_str)
+    input_str = '_'.join(s for s in SPLIT_RE.split(input_str) if s)
+    return input_str.lower()
+
+
+def to_camel_case(input_str: str) -> str:
+    if len(input_str) != 0 and not input_str[:2].isupper():
+        input_str = input_str[0].lower() + input_str[1:]
+    return UNDERSCORE_RE.sub(lambda m: m.group(0)[-1].upper(), input_str)
+
+
+def to_pascal_case(input_str: str) -> str:
+    def _replace_fn(match: re.Match[str]) -> str:
+        return match.group(1)[0].upper() + match.group(1)[1:]
+
+    input_str = to_camel_case(PASCAL_RE.sub(_replace_fn, input_str))
+    return input_str[0].upper() + input_str[1:] if len(input_str) != 0 else input_str
