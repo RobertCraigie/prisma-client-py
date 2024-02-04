@@ -11,6 +11,12 @@ WORKDIR /home/prisma/prisma-client-py
 # https://github.com/docker-library/python/issues/359
 RUN certutil -generateSSTFromWU roots.sst; certutil -addstore -f root roots.sst;  del roots.sst
 
+# Download and install Git
+RUN Invoke-WebRequest -Uri "https://github.com/git-for-windows/git/releases/download/v2.32.0.windows.1/Git-2.32.0-64-bit.exe" -OutFile "git-installer.exe" -UseBasicParsing; \
+    Start-Process ./git-installer.exe -ArgumentList '/VERYSILENT /NORESTART /NOCANCEL /SP- /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS' -NoNewWindow -Wait; \
+    Remove-Item git-installer.exe
+RUN git --version
+
 COPY . .
 
 RUN pip install . -r pipelines/requirements/dev.txt
