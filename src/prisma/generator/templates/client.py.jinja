@@ -54,6 +54,8 @@ BINARY_PATHS = model_parse(BinaryPaths, {{ model_dict(binary_paths, by_alias=Tru
 
 
 class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}):
+    # Note: these property names can be customised using `/// @Python(instance_name: '...')`
+    # https://prisma-client-py.readthedocs.io/en/stable/reference/schema-extensions/#instance_name
     {% for model in dmmf.datamodel.models %}
     {{ model.instance_name }}: 'actions.{{ model.name }}Actions[models.{{ model.name }}]'
     {% endfor %}

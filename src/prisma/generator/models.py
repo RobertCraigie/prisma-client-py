@@ -46,12 +46,14 @@ from .._compat import (
     PlainSerializer,
     BaseSettingsConfig,
     model_dict,
+    model_parse,
     model_rebuild,
     root_validator,
     cached_property,
     field_validator,
 )
 from .._constants import QUERY_BUILDER_ALIASES
+from ._dsl_parser import parse_schema_dsl
 
 __all__ = (
     'AnyData',
@@ -662,6 +664,21 @@ class EnumValue(BaseModel):
     db_name: Optional[str] = FieldInfo(alias='dbName')
 
 
+class ModelExtension(BaseModel):
+    instance_name: Optional[str] = None
+
+    @field_validator('instance_name')
+    @classmethod
+    def instance_name_validator(cls, name: Optional[str]) -> Optional[str]:
+        if not name:
+            return name
+
+        if not name.isidentifier():
+            raise ValueError(f'Custom Model instance_name "{name}" is not a valid Python identifier')
+
+        return name
+
+
 class Model(BaseModel):
     name: str
     documentation: Optional[str] = None
@@ -671,11 +688,30 @@ class Model(BaseModel):
     unique_indexes: List['UniqueIndex'] = FieldInfo(alias='uniqueIndexes')
     all_fields: List['Field'] = FieldInfo(alias='fields')
 
+    # stores the parsed DSL, not an actual field defined by prisma
+    extension: Optional[ModelExtension] = None
+
     _sampler: Sampler = PrivateAttr()
 
     def __init__(self, **data: Any) -> None:
         super().__init__(**data)
         self._sampler = Sampler(self)
+
+    @root_validator(pre=True, allow_reuse=True)
+    @classmethod
+    def validate_dsl_extension(cls, values: Dict[Any, Any]) -> Dict[Any, Any]:
+        documentation = values.get('documentation')
+        if not documentation:
+            return values
+
+        parsed = parse_schema_dsl(documentation)
+        if parsed['type'] == 'invalid':
+            raise ValueError(parsed['error'])
+
+        if parsed['type'] == 'ok':
+            values['extension'] = model_parse(ModelExtension, parsed['value']['arguments'])
+
+        return values
 
     @field_validator('name')
     @classmethod
@@ -750,6 +786,9 @@ class Model(BaseModel):
 
         `User` -> `Prisma().user`
         """
+        if self.extension and self.extension.instance_name:
+            return self.extension.instance_name
+
         return self.name.lower()
 
     @property

@@ -11,7 +11,7 @@ from prisma.models import Post
 def user_id_fixture(client: Prisma) -> str:
     user = client.user.create({'name': 'Robert'})
     posts = create_or_get_posts(client, user.id)
-    client.category.create(
+    client.custom_category.create(
         {
             'name': 'My Category',
             'posts': {'connect': [{'id': posts[0].id}, {'id': posts[1].id}]},

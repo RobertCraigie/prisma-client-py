@@ -41,6 +41,8 @@ model Category {
   name  String
 }
 
+/// We need this because of foo bar baz
+/// @Python(instance_name: "profile_custom_name")
 model Profile {
   id      Int     @id @default(autoincrement())
   user    User    @relation(fields: [user_id], references: [id])

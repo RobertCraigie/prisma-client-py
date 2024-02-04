@@ -51,6 +51,7 @@ model Post {
   categories  Category[]
 }
 
+/// @Python(instance_name: "custom_category")
 model Category {
   id    String @id @default(uuid())
   posts Post[]
