@@ -25,7 +25,8 @@ repos:
             exclude: |
               (?x)^(
                 .*\.ambr|
-                .*\.raw
+                .*\.raw|
+                .*test_schema_dsl_parser.py
               )$
           - id: mixed-line-ending
             args: [--fix=lf]
