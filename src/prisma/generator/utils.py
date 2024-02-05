@@ -125,6 +125,8 @@ def clean_multiline(string: str) -> str:
     return '\n'.join([dedent(lines[0]), *lines[1:]])
 
 
+# https://github.com/nficano/humps/blob/master/humps/main.py
+
 ACRONYM_RE = re.compile(r'([A-Z\d]+)(?=[A-Z\d]|$)')
 PASCAL_RE = re.compile(r'([^\-_]+)')
 SPLIT_RE = re.compile(r'([\-_]*[A-Z][^A-Z]*[\-_]*)')
