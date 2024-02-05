@@ -28,7 +28,7 @@ ignore = [
   # function calls in defaults
   "B008",
 ]
-extend-exclude = ["typesafety/**.py"]
+extend-exclude = ["typesafety/**.py", "src/prisma/_vendor/**.py"]
 
 [tool.ruff.lint.isort]
 length-sort = true
@@ -54,6 +54,8 @@ docstring-code-format = true
 "prisma.engine.http".msg = "This is a generated file, it should only be imported at runtime in other generated files."
 "prisma.engine.query".msg = "This is a generated file, it should only be imported at runtime in other generated files."
 "prisma.engine.abstract".msg = "This is a generated file, it should only be imported at runtime in other generated files."
+
+"lark".msg = "Lark is only used to bundle a standalone, vendored version of lark. See `lark.nox.py`"
 
 [tool.ruff.per-file-ignores]
 "bin/**.py" = ["T201", "T203"]
@@ -83,6 +85,7 @@ ignore = [
     "databases/sync_tests",
     # TODO: this should not ignore tests/integrations/conftest.py
     "tests/integrations/**/*",
+    "src/prisma/_vendor/**.py",
 ]
 pythonVersion = "3.9"
 

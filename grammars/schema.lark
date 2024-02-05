@@ -1,0 +1,32 @@
+# Lark grammar for our custom DSL inside Prisma Schemas, e.g.
+#
+# ```prisma
+# /// @Python(name: foo)
+# model bar {
+#   // ...
+# }
+# ```
+
+start: "@" ident "(" argument_list ")"
+
+?ident: "Python"
+
+argument_list: [argument ("," argument)* ","?]
+
+argument: key ":" value
+
+key: CNAME
+value: ESCAPED_STRING
+
+NAME: /[A-Za-z_][A-Za-z0-9_]*/
+CNAME: /[A-Za-z_][A-Za-z0-9_]*/
+
+%import common.ESCAPED_STRING
+%import common.WS
+%ignore WS
+
+_STRING_INNER: /.*?/
+_STRING_ESC_INNER: _STRING_INNER /(?<!\\)(\\\\)*?/
+
+// Add support for single quotes
+%extend ESCAPED_STRING: "'" _STRING_ESC_INNER "'"
