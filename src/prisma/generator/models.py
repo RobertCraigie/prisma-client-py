@@ -765,7 +765,12 @@ class Model(BaseModel):
             return to_pascal_case(self.name)
         elif isinstance(config, Config) and config.client_casing == ClientCasing.snake_case:
             return to_snake_case(self.name)
-        return self.name.lower()
+        elif isinstance(config, Config) and config.client_casing == ClientCasing.upper_case:
+            return self.name.upper()
+        elif isinstance(config, Config) and config.client_casing == ClientCasing.lower_case:
+            return self.name.lower()
+        else:
+            return assert_never()
 
     @property
     def plural_name(self) -> str:
