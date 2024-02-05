@@ -1,5 +1,6 @@
 -r deps/syrupy.txt
 -r deps/ruff.txt
+-r deps/lark.txt
 
 nox==2023.4.22
 wheel==0.42.0

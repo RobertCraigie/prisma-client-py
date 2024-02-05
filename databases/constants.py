@@ -111,7 +111,7 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
 # config files
 PYRIGHT_CONFIG: pyright.Config = {
     'include': [],
-    'exclude': [],
+    'exclude': ['../src/prisma/_vendor/**.py', '**/prisma/_vendor/**.py'],
     # required so that Pyright can resolve the `lib` module
     'extraPaths': ['../'],
     'typeCheckingMode': 'strict',
