@@ -11,11 +11,11 @@ if TYPE_CHECKING:
     from .models import Field, Model
 
 
-T = TypeVar("T")
+T = TypeVar('T')
 
 # we have to use a mapping outside of the `Sampler` class
 # to avoid https://github.com/RobertCraigie/prisma-client-py/issues/402
-SAMPLER_ITER_MAPPING: "Dict[str, Iterator[Field]]" = {}
+SAMPLER_ITER_MAPPING: 'Dict[str, Iterator[Field]]' = {}
 
 
 class Faker:
@@ -28,7 +28,7 @@ class Faker:
     def __init__(self, seed: int = 1) -> None:
         self._state = seed
 
-    def __iter__(self) -> "Faker":
+    def __iter__(self) -> 'Faker':
         return self
 
     def __next__(self) -> int:
@@ -36,7 +36,7 @@ class Faker:
         return state
 
     def string(self) -> str:
-        return "".join([chr(97 + int(n)) for n in str(self.integer())])
+        return ''.join([chr(97 + int(n)) for n in str(self.integer())])
 
     def boolean(self) -> bool:
         return next(self) % 2 == 0
@@ -47,18 +47,18 @@ class Faker:
     @classmethod
     def from_list(cls, values: List[T]) -> T:
         # TODO: actual implementation
-        assert values, "Expected non-empty list"
+        assert values, 'Expected non-empty list'
         return values[0]
 
 
 class Sampler:
-    model: "Model"
+    model: 'Model'
 
-    def __init__(self, model: "Model") -> None:
+    def __init__(self, model: 'Model') -> None:
         self.model = model
         SAMPLER_ITER_MAPPING[model.name] = model.scalar_fields
 
-    def get_field(self) -> "Field":
+    def get_field(self) -> 'Field':
         mapping = SAMPLER_ITER_MAPPING
 
         try:
@@ -75,7 +75,7 @@ def is_same_path(path: Path, other: Path) -> bool:
 
 
 def resolve_template_path(rootdir: Path, name: Union[str, Path]) -> Path:
-    return rootdir.joinpath(remove_suffix(name, ".jinja"))
+    return rootdir.joinpath(remove_suffix(name, '.jinja'))
 
 
 def remove_suffix(path: Union[str, Path], suf: str) -> str:
@@ -110,39 +110,37 @@ def copy_tree(src: Path, dst: Path) -> None:
     ) -> None:
         makedirs(name, mode, exist_ok=True)
 
-    with monkeypatch(os, "makedirs", _patched_makedirs):
+    with monkeypatch(os, 'makedirs', _patched_makedirs):
         shutil.copytree(
             str(src),
             str(dst),
-            ignore=shutil.ignore_patterns("*.pyc", "__pycache__"),
+            ignore=shutil.ignore_patterns('*.pyc', '__pycache__'),
         )
 
 
 def clean_multiline(string: str) -> str:
-    string = string.lstrip("\n")
-    assert string, "Expected non-empty string"
+    string = string.lstrip('\n')
+    assert string, 'Expected non-empty string'
     lines = string.splitlines()
-    return "\n".join([dedent(lines[0]), *lines[1:]])
+    return '\n'.join([dedent(lines[0]), *lines[1:]])
 
 
 # https://github.com/nficano/humps/blob/master/humps/main.py
 
-ACRONYM_RE = re.compile(r"([A-Z\d]+)(?=[A-Z\d]|$)")
-PASCAL_RE = re.compile(r"([^\-_]+)")
-SPLIT_RE = re.compile(r"([\-_]*[A-Z][^A-Z]*[\-_]*)")
-UNDERSCORE_RE = re.compile(r"(?<=[^\-_])[\-_]+[^\-_]")
+ACRONYM_RE = re.compile(r'([A-Z\d]+)(?=[A-Z\d]|$)')
+PASCAL_RE = re.compile(r'([^\-_]+)')
+SPLIT_RE = re.compile(r'([\-_]*[A-Z][^A-Z]*[\-_]*)')
+UNDERSCORE_RE = re.compile(r'(?<=[^\-_])[\-_]+[^\-_]')
 
 
 def to_snake_case(input_str: str) -> str:
-    if (
-        to_camel_case(input_str) == input_str or to_pascal_case(input_str) == input_str
-    ):  # if camel case or pascal case
+    if to_camel_case(input_str) == input_str or to_pascal_case(input_str) == input_str:  # if camel case or pascal case
         input_str = ACRONYM_RE.sub(lambda m: m.group(0).title(), input_str)
-        input_str = "_".join(s for s in SPLIT_RE.split(input_str) if s)
+        input_str = '_'.join(s for s in SPLIT_RE.split(input_str) if s)
         return input_str.lower()
     else:
-        input_str = re.sub(r"[^a-zA-Z0-9]", "_", input_str)
-        input_str = input_str.lower().strip("_")
+        input_str = re.sub(r'[^a-zA-Z0-9]', '_', input_str)
+        input_str = input_str.lower().strip('_')
 
         return input_str
 
