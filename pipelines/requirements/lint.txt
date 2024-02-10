@@ -7,4 +7,4 @@
 -r deps/pydantic.txt
 -r ../../databases/requirements.txt
 interrogate==1.5.0
-slotscheck==0.17.1
+slotscheck==0.17.3
