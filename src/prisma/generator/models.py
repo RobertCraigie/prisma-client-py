@@ -45,6 +45,7 @@ from .._compat import (
     GenericModel,
     PlainSerializer,
     BaseSettingsConfig,
+    model_dict,
     model_rebuild,
     root_validator,
     cached_property,
@@ -359,6 +360,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
             get_list_types,
             clean_multiline,
             format_documentation,
+            model_dict,
         ]:
             params[func.__name__] = func
 

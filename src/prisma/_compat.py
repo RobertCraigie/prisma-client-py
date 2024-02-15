@@ -263,15 +263,21 @@ def model_json(
 def model_dict(
     model: BaseModel,
     *,
+    by_alias: bool = False,
     exclude: set[str] | None = None,
     exclude_unset: bool = False,
 ) -> dict[str, Any]:
     if PYDANTIC_V2:
-        return model.model_dump(exclude_unset=exclude_unset, exclude=exclude)
+        return model.model_dump(
+            exclude_unset=exclude_unset,
+            exclude=exclude,
+            by_alias=by_alias,
+        )
 
     return model.dict(  # pyright: ignore[reportDeprecated]
         exclude=exclude,
         exclude_unset=exclude_unset,
+        by_alias=by_alias,
     )
 
 
