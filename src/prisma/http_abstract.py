@@ -12,21 +12,17 @@ from typing import (
 )
 from typing_extensions import override
 
-from httpx import Limits, Headers, Timeout
+from httpx import Headers
 
 from .utils import _NoneType
 from ._types import Method
 from .errors import HTTPClientClosedError
+from ._constants import DEFAULT_HTTP_CONFIG
 
 Session = TypeVar('Session')
 Response = TypeVar('Response')
 ReturnType = TypeVar('ReturnType')
 MaybeCoroutine = Union[Coroutine[Any, Any, ReturnType], ReturnType]
-
-DEFAULT_CONFIG: Dict[str, Any] = {
-    'limits': Limits(max_connections=1000),
-    'timeout': Timeout(30),
-}
 
 
 class AbstractHTTP(ABC, Generic[Session, Response]):
@@ -45,7 +41,7 @@ class AbstractHTTP(ABC, Generic[Session, Response]):
         # Session = open
         self._session: Optional[Union[Session, Type[_NoneType]]] = _NoneType
         self.session_kwargs = {
-            **DEFAULT_CONFIG,
+            **DEFAULT_HTTP_CONFIG,
             **kwargs,
         }
 

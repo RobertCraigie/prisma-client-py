@@ -2,11 +2,12 @@ from typing import TYPE_CHECKING, cast
 
 import httpx
 import pytest
+from pytest_mock import MockerFixture
 
 from prisma.http import HTTP
 from prisma.utils import _NoneType
 from prisma._types import Literal
-from prisma.errors import HTTPClientClosedError
+from prisma.errors import HTTPClientClosedError, HTTPClientTimeoutError
 
 from .utils import patch_method
 
@@ -81,3 +82,26 @@ async def test_httpx_default_config(monkeypatch: 'MonkeyPatch') -> None:
             'timeout': httpx.Timeout(30),
         },
     )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    'httpx_error',
+    [
+        httpx.ConnectTimeout(''),
+        httpx.ReadTimeout(''),
+        httpx.WriteTimeout(''),
+        httpx.PoolTimeout(''),
+    ],
+)
+async def test_http_timeout_error(httpx_error: BaseException, mocker: MockerFixture) -> None:
+    """Ensure that `httpx.TimeoutException` is converted to `prisma.errors.HTTPClientTimeoutError`."""
+    mocker.patch('httpx.AsyncClient.request', side_effect=httpx_error)
+
+    http = HTTP()
+    http.open()
+
+    with pytest.raises(HTTPClientTimeoutError) as exc_info:
+        await http.request('GET', '/')
+
+    assert exc_info.value.__cause__ == httpx_error

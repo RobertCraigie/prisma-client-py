@@ -10,10 +10,10 @@ from pytest_mock import MockerFixture
 from prisma import ENGINE_TYPE, SCHEMA_PATH, Prisma, errors, get_client
 from prisma.types import HttpConfig
 from prisma.testing import reset_client
+from prisma._constants import DEFAULT_HTTP_CONFIG
 from prisma.cli.prisma import run
 from prisma.engine.http import HTTPEngine
 from prisma.engine.errors import AlreadyConnectedError
-from prisma.http_abstract import DEFAULT_CONFIG
 
 from .utils import Testdir, patch_method
 
@@ -140,7 +140,7 @@ async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
 
         captured = getter()
         assert captured is not None
-        assert captured == ((), {**DEFAULT_CONFIG, **config})
+        assert captured == ((), {**DEFAULT_HTTP_CONFIG, **config})
 
     await _test({'timeout': 1})
     await _test({'timeout': httpx.Timeout(5, connect=10, read=30)})
