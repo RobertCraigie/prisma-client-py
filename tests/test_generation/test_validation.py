@@ -11,12 +11,12 @@ from ..utils import Testdir
 def _remove_known_warnings(output: str) -> str:
     # as we run generation under coverage we need to remove any warnings
     # for example, coverage.py will warn that the tests module was not imported
-    output = re.sub(r'.* prisma:GeneratorProcess .* CoverageWarning:.*', '', output)
-    output = re.sub(r'.* prisma:GeneratorProcess .* was never imported.*', '', output)
+    output = re.sub(r'.*prisma:GeneratorProcess .* CoverageWarning:.*', '', output)
+    output = re.sub(r'.*prisma:GeneratorProcess .* was never imported.*', '', output)
 
     # unknown why this is logged but it doesn't seem to effect anything
     output = re.sub(
-        r'.* prisma:GeneratorProcess  child exited with code null.*',
+        r'.*prisma:GeneratorProcess child exited with code null.*',
         '',
         output,
     )
