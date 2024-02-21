@@ -16,7 +16,7 @@ def _remove_known_warnings(output: str) -> str:
 
     # unknown why this is logged but it doesn't seem to effect anything
     output = re.sub(
-        r'.* prisma:GeneratorProcess  child exited with code null.*',
+        r'.*prisma:GeneratorProcess child exited with code null.*',
         '',
         output,
     )
