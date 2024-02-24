@@ -1,7 +1,7 @@
+import warnings
 from typing import TYPE_CHECKING, Any, Mapping
 from pathlib import Path
 from datetime import timedelta
-import warnings
 
 import httpx
 import pytest
