@@ -1,10 +1,11 @@
 from enum import Enum
-from typing import Any, Dict, List, Type, Tuple, Union
+from typing import Any, Dict, List, Type, Tuple, Union, Optional
 from typing_extensions import ClassVar
 
 from pydantic import BaseModel
 
-from .models import Model as ModelInfo, AnyData, PrimaryKey
+from .utils import to_constant_case
+from .models import Model as ModelInfo, AnyData, PrimaryKey, DMMFEnumType
 from .._compat import (
     PYDANTIC_V2,
     ConfigDict,
@@ -18,6 +19,7 @@ class Kind(str, Enum):
     alias = 'alias'
     union = 'union'
     typeddict = 'typeddict'
+    enum = 'enum'
 
 
 class PrismaType(BaseModel):
@@ -43,6 +45,11 @@ class PrismaDict(PrismaType):
 class PrismaUnion(PrismaType):
     kind: Kind = Kind.union
     subtypes: List[PrismaType]
+
+
+class PrismaEnum(PrismaType):
+    kind: Kind = Kind.enum
+    members: List[Tuple[str, str]]
 
 
 class PrismaAlias(PrismaType):
@@ -141,6 +148,29 @@ class Model(BaseModel):
             for field in self.info.scalar_fields
         ]
         return PrismaType.from_subtypes(subtypes, name=f'{model}OrderByInput')
+
+
+class ClientTypes(BaseModel):
+    transaction_isolation_level: Optional[PrismaEnum]
+
+    @classmethod
+    def from_data(cls, data: AnyData) -> 'ClientTypes':
+        enum_types = data.dmmf.prisma_schema.enum_types.prisma
+
+        return cls(
+            transaction_isolation_level=construct_enum_type(enum_types, name='TransactionIsolationLevel'),
+        )
+
+
+def construct_enum_type(dmmf_enum_types: List[DMMFEnumType], *, name: str) -> Optional[PrismaEnum]:
+    enum_type = next((t for t in dmmf_enum_types if t.name == name), None)
+    if not enum_type:
+        return None
+
+    return PrismaEnum(
+        name=name,
+        members=[(to_constant_case(str(value)), str(value)) for value in enum_type.values],
+    )
 
 
 model_rebuild(Schema)

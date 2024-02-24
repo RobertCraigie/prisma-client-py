@@ -353,6 +353,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
         """Get the parameters that should be sent to Jinja templates"""
         params = vars(self)
         params['type_schema'] = Schema.from_data(self)
+        params['client_types'] = ClientTypes.from_data(self)
 
         # add utility functions
         for func in [
@@ -628,11 +629,22 @@ class Config(BaseSettings):
             assert_never(value)
 
 
+class DMMFEnumType(BaseModel):
+    name: str
+    values: List[object]
+
+
+class DMMFEnumTypes(BaseModel):
+    prisma: List[DMMFEnumType]
+
+
+class PrismaSchema(BaseModel):
+    enum_types: DMMFEnumTypes = FieldInfo(alias='enumTypes')
+
+
 class DMMF(BaseModel):
     datamodel: 'Datamodel'
-
-    # TODO
-    prisma_schema: Any = FieldInfo(alias='schema')
+    prisma_schema: PrismaSchema = FieldInfo(alias='schema')
 
 
 class Datamodel(BaseModel):
@@ -1182,4 +1194,4 @@ from .errors import (
     TemplateError,
     PartialTypeGeneratorError,
 )
-from .schema import Schema
+from .schema import Schema, ClientTypes
