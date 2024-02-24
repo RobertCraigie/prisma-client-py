@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Mapping
 from pathlib import Path
 from datetime import timedelta
+import warnings
 
 import httpx
 import pytest
@@ -148,7 +149,6 @@ async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
     await _test({'http1': True, 'http2': False})
     await _test(
         config={
-            'app': mock_app,
             'timeout': 200,
             'http1': True,
             'http2': False,
@@ -157,6 +157,10 @@ async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
             'trust_env': False,
         },
     )
+
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        await _test({'app': mock_app})
 
 
 def test_old_client_alias() -> None:
