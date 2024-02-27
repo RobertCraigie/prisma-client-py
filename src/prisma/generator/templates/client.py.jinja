@@ -50,10 +50,12 @@ log: logging.Logger = logging.getLogger(__name__)
 SCHEMA_PATH = Path('{{ schema_path.as_posix() }}')
 PACKAGED_SCHEMA_PATH = Path(__file__).parent.joinpath('schema.prisma')
 ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
-BINARY_PATHS = model_parse(BinaryPaths, {{ binary_paths.dict(by_alias=True) }})
+BINARY_PATHS = model_parse(BinaryPaths, {{ model_dict(binary_paths, by_alias=True) }})
 
 
 class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}):
+    # Note: these property names can be customised using `/// @Python(instance_name: '...')`
+    # https://prisma-client-py.readthedocs.io/en/stable/reference/schema-extensions/#instance_name
     {% for model in dmmf.datamodel.models %}
     {{ model.instance_name }}: 'actions.{{ model.name }}Actions[models.{{ model.name }}]'
     {% endfor %}
@@ -90,7 +92,7 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
             active_provider='{{ active_provider }}',
             default_datasource={
                 'name': '{{ datasources[0].name }}',
-                'url': OptionalValueFromEnvVar(**{{ datasources[0].url.dict(by_alias=True) }}).resolve(),
+                'url': OptionalValueFromEnvVar(**{{ model_dict(datasources[0].url, by_alias=True) }}).resolve(),
             },
         )
 

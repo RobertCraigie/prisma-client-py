@@ -1,0 +1,9 @@
+# This is a separate grammar from `schema.lark` so we can
+# use it to find parts of text that are attempting to be a valid
+# `@Python()` declaration.
+#
+# More context here: https://github.com/lark-parser/lark/discussions/1390
+
+start: "@Python(" ANYTHING_EXCEPT_PAREN ")"
+
+ANYTHING_EXCEPT_PAREN: /[^)]+/

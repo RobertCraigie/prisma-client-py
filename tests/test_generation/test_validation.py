@@ -11,12 +11,12 @@ from ..utils import Testdir
 def _remove_known_warnings(output: str) -> str:
     # as we run generation under coverage we need to remove any warnings
     # for example, coverage.py will warn that the tests module was not imported
-    output = re.sub(r'.* prisma:GeneratorProcess .* CoverageWarning:.*', '', output)
-    output = re.sub(r'.* prisma:GeneratorProcess .* was never imported.*', '', output)
+    output = re.sub(r'.*prisma:GeneratorProcess .* CoverageWarning:.*', '', output)
+    output = re.sub(r'.*prisma:GeneratorProcess .* was never imported.*', '', output)
 
     # unknown why this is logged but it doesn't seem to effect anything
     output = re.sub(
-        r'.* prisma:GeneratorProcess  child exited with code null.*',
+        r'.*prisma:GeneratorProcess child exited with code null.*',
         '',
         output,
     )
@@ -149,6 +149,24 @@ def test_field_name_matching_query_builder_alias_not_allowed(
     assert (
         'Field name "order_by" shadows an internal keyword; ' 'use a different field name with \'@map("order_by")\''
     ) in str(exc.value.output, 'utf-8')
+
+
+def test_custom_model_instance_name_not_valid_identifier(
+    testdir: Testdir,
+) -> None:
+    schema = (
+        testdir.SCHEMA_HEADER
+        + """
+        /// @Python(instance_name: "1")
+        model User {{
+            id String @id
+        }}
+    """
+    )
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        testdir.generate(schema=schema)
+
+    assert 'Custom Model instance_name "1" is not a valid Python identifier' in str(exc.value.output, 'utf-8')
 
 
 def test_native_binary_target_no_warning(testdir: Testdir) -> None:

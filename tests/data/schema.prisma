@@ -4,7 +4,9 @@ datasource db {
 }
 
 generator client {
-  provider                    = "prisma-client-py"
+  // ensure all warnings that are reported during generation
+  // are raised as errors so we catch them early
+  provider                    = "python -W error -m prisma"
   interface                   = "asyncio"
   recursive_type_depth        = 5
   partial_type_generator      = "tests/scripts/partial_type_generator.py"
@@ -39,6 +41,8 @@ model Category {
   name  String
 }
 
+/// We need this because of foo bar baz
+/// @Python(instance_name: "profile_custom_name")
 model Profile {
   id      Int     @id @default(autoincrement())
   user    User    @relation(fields: [user_id], references: [id])

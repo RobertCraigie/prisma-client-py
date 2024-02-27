@@ -4339,7 +4339,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         -------
         ```py
         # create a OneOptional record from just the required fields
-        oneoptional = OneOptional.prisma().create(
+        one_optional = OneOptional.prisma().create(
             data={
                 # data to create a OneOptional record
                 'int': 1573199653,
@@ -4465,7 +4465,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        oneoptional = OneOptional.prisma().delete(
+        one_optional = OneOptional.prisma().delete(
             where={
                 'id': 300568396,
             },
@@ -4517,7 +4517,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        oneoptional = OneOptional.prisma().find_unique(
+        one_optional = OneOptional.prisma().find_unique(
             where={
                 'id': 632626069,
             },
@@ -4568,7 +4568,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        oneoptional = OneOptional.prisma().find_unique_or_raise(
+        one_optional = OneOptional.prisma().find_unique_or_raise(
             where={
                 'id': 1724011690,
             },
@@ -4630,10 +4630,10 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         -------
         ```py
         # find the first 10 OneOptional records
-        oneoptionals = OneOptional.prisma().find_many(take=10)
+        one_optionals = OneOptional.prisma().find_many(take=10)
 
         # find the first 5 OneOptional records ordered by the optional_int field
-        oneoptionals = OneOptional.prisma().find_many(
+        one_optionals = OneOptional.prisma().find_many(
             take=5,
             order={
                 'optional_int': 'desc',
@@ -4698,7 +4698,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         -------
         ```py
         # find the second OneOptional record ordered by the float field
-        oneoptional = OneOptional.prisma().find_first(
+        one_optional = OneOptional.prisma().find_first(
             skip=1,
             order={
                 'float': 'desc',
@@ -4766,7 +4766,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         -------
         ```py
         # find the second OneOptional record ordered by the optional_float field
-        oneoptional = OneOptional.prisma().find_first_or_raise(
+        one_optional = OneOptional.prisma().find_first_or_raise(
             skip=1,
             order={
                 'optional_float': 'desc',
@@ -4820,7 +4820,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        oneoptional = OneOptional.prisma().update(
+        one_optional = OneOptional.prisma().update(
             where={
                 'id': 470157467,
             },
@@ -4877,7 +4877,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         Example
         -------
         ```py
-        oneoptional = OneOptional.prisma().upsert(
+        one_optional = OneOptional.prisma().upsert(
             where={
                 'id': 1209209912,
             },

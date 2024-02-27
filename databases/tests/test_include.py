@@ -11,7 +11,7 @@ from prisma.models import Post
 async def user_id_fixture(client: Prisma) -> str:
     user = await client.user.create({'name': 'Robert'})
     posts = await create_or_get_posts(client, user.id)
-    await client.category.create(
+    await client.custom_category.create(
         {
             'name': 'My Category',
             'posts': {'connect': [{'id': posts[0].id}, {'id': posts[1].id}]},

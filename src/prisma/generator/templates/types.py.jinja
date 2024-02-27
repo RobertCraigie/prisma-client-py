@@ -65,6 +65,11 @@ from .utils import _NoneType
     },
     total={{ type.total }}
 )
+{% elif type.kind == 'enum' %}
+class {{ type.name }}(StrEnum):
+    {% for name, value in type.members %}
+    {{ name }} = "{{ value }}"
+    {% endfor %}
 {% else %}
 {{ raise_err('Unhandled type kind: %s' % type.kind) }}
 {% endif %}

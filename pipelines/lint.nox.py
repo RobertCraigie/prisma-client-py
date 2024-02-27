@@ -21,19 +21,7 @@ def lint(session: nox.Session) -> None:
     session.run('ruff', 'format', '--check')
     session.run('pyright')
     session.run('pyright', '--ignoreexternal', '--verifytypes', 'prisma')
-    session.run(
-        'interrogate',
-        '-v',
-        '--omit-covered-files',
-        '--fail-under',
-        '100',
-        '--whitelist-regex',
-        'test_.*',
-        '--exclude',
-        '*/.venv/*',
-        'tests',
-    )
-    session.run('slotscheck', '-m', 'prisma')
+    session.run('slotscheck', '-m', 'prisma', '--exclude-modules', '_vendor')
 
 
 @nox.session

@@ -358,6 +358,11 @@ class Runner:
         # not dynamically generated which means it will stay the same across database providers
         pyright_config['exclude'].append(str(Path(pkg_location).joinpath('mypy.py')))
 
+        # exclude our vendored code
+        # this needs to explicitly be the package location as otherwise our `include`
+        # of the package directory overrides other `exclude`s for the vendor dir
+        pyright_config['exclude'].append(str(Path(pkg_location).joinpath('_vendor')))
+
         # add the generated client code to Pyright too
         pyright_config['include'].append(pkg_location)
 
