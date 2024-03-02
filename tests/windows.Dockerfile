@@ -2,7 +2,7 @@
 # and should not form the basis of an official image pushed out
 # to a registry
 
-FROM winamd64/python:3.11
+FROM winamd64/python:3.12
 
 ENV PRISMA_PY_DEBUG=1
 
