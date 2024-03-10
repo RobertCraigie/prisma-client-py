@@ -22,7 +22,7 @@ File = Union[int, IO[Any]]
 Target = Literal['node', 'npm']
 
 # taken from https://github.com/prisma/prisma/blob/main/package.json
-MIN_NODE_VERSION = (14, 17)
+MIN_NODE_VERSION = (16, 13)
 
 # mapped the node version above from https://nodejs.org/en/download/releases/
 MIN_NPM_VERSION = (6, 14)
