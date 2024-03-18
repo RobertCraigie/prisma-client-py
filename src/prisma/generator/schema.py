@@ -28,12 +28,12 @@ class PrismaType(BaseModel):
     subtypes: List['PrismaType'] = []
 
     @classmethod
-    def from_subtypes(cls, subtypes: List['PrismaType'], **kwargs: Any) -> Union['PrismaUnion', 'PrismaAlias']:
-        """Return either a `PrismaUnion` or a `PrismaAlias` depending on the number of subtypes"""
-        if len(subtypes) > 1:
-            return PrismaUnion(subtypes=subtypes, **kwargs)
+    def from_variants(cls, variants: List['PrismaType'], **kwargs: Any) -> Union['PrismaUnion', 'PrismaAlias']:
+        """Return either a `PrismaUnion` or a `PrismaAlias` depending on the number of variants"""
+        if len(variants) > 1:
+            return PrismaUnion(variants=variants, **kwargs)
 
-        return PrismaAlias(subtypes=subtypes, **kwargs)
+        return PrismaAlias(subtypes=variants, **kwargs)
 
 
 class PrismaDict(PrismaType):
@@ -44,7 +44,18 @@ class PrismaDict(PrismaType):
 
 class PrismaUnion(PrismaType):
     kind: Kind = Kind.union
-    subtypes: List[PrismaType]
+    variants: List[PrismaType]
+
+    @root_validator(pre=True)
+    @classmethod
+    def add_subtypes(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        # add all variants as subtypes so that we don't have to special
+        # case rendering subtypes for unions
+        if 'variants' in values:
+            subtypes = values.get('subtypes', [])
+            subtypes.extend(values['variants'])
+            values['subtypes'] = subtypes
+        return values
 
 
 class PrismaEnum(PrismaType):
@@ -94,7 +105,7 @@ class Model(BaseModel):
     def where_unique(self) -> PrismaType:
         info = self.info
         model = info.name
-        subtypes: List[PrismaType] = [
+        variants: List[PrismaType] = [
             PrismaDict(
                 total=True,
                 name=f'_{model}WhereUnique_{field.name}_Input',
@@ -115,7 +126,7 @@ class Model(BaseModel):
             else:
                 name = f'_{model}Compound{key.name}Key'
 
-            subtypes.append(
+            variants.append(
                 PrismaDict(
                     name=name,
                     total=True,
@@ -132,12 +143,12 @@ class Model(BaseModel):
                 )
             )
 
-        return PrismaType.from_subtypes(subtypes, name=f'{model}WhereUniqueInput')
+        return PrismaType.from_variants(variants, name=f'{model}WhereUniqueInput')
 
     @cached_property
     def order_by(self) -> PrismaType:
         model = self.info.name
-        subtypes: List[PrismaType] = [
+        variants: List[PrismaType] = [
             PrismaDict(
                 name=f'_{model}_{field.name}_OrderByInput',
                 total=True,
@@ -147,7 +158,7 @@ class Model(BaseModel):
             )
             for field in self.info.scalar_fields
         ]
-        return PrismaType.from_subtypes(subtypes, name=f'{model}OrderByInput')
+        return PrismaType.from_variants(variants, name=f'{model}OrderByInput')
 
 
 class ClientTypes(BaseModel):
