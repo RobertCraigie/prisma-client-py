@@ -84,7 +84,6 @@ class BasePrisma(Generic[_EngineT]):
     _prisma_models: set[str]
     _packaged_schema_path: Path
     _engine_type: EngineType
-    _default_datasource: Datasource
     _relational_field_mappings: dict[str, dict[str, str]]
 
     __slots__ = (
@@ -99,7 +98,6 @@ class BasePrisma(Generic[_EngineT]):
         '_active_provider',
         '_connect_timeout',
         '_internal_engine',
-        '_default_datasource',
         '_packaged_schema_path',
         '_relational_field_mappings',
     )
@@ -143,7 +141,6 @@ class BasePrisma(Generic[_EngineT]):
         engine_type: EngineType,
         packaged_schema_path: Path,
         active_provider: str,
-        default_datasource: Datasource,
         prisma_models: set[str],
         relational_field_mappings: dict[str, dict[str, str]],
     ) -> None:
@@ -156,9 +153,12 @@ class BasePrisma(Generic[_EngineT]):
         self._engine_type = engine_type
         self._prisma_models = prisma_models
         self._active_provider = active_provider
-        self._default_datasource = default_datasource
         self._packaged_schema_path = packaged_schema_path
         self._relational_field_mappings = relational_field_mappings
+
+    @property
+    def _default_datasource(self) -> Datasource:
+        raise NotImplementedError('`_default_datasource` should be implemented in a subclass')
 
     def is_registered(self) -> bool:
         """Returns True if this client instance is registered"""
