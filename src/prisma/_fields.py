@@ -79,12 +79,10 @@ class Json(BaseJson):
         # cast(Dict[str, Any], user.json_obj)
         # prisma.validate(ExpectedType, user.json_obj)  # NOTE: not implemented yet
         @overload  # type: ignore
-        def __getitem__(self, i: slice) -> List[Serializable]:
-            ...
+        def __getitem__(self, i: slice) -> List[Serializable]: ...
 
         @overload
-        def __getitem__(self, i: _JsonKeys) -> Serializable:
-            ...
+        def __getitem__(self, i: _JsonKeys) -> Serializable: ...
 
         @override
         def __getitem__(self, i: Union[_JsonKeys, slice]) -> Serializable:  # pyright: ignore[reportIncompatibleMethodOverride]

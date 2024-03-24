@@ -36,16 +36,14 @@ type PrismaType =
 
 
 @overload
-def deserialize_raw_results(raw_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    ...
+def deserialize_raw_results(raw_list: list[dict[str, Any]]) -> list[dict[str, Any]]: ...
 
 
 @overload
 def deserialize_raw_results(
     raw_list: list[dict[str, object]],
     model: type[BaseModelT],
-) -> list[BaseModelT]:
-    ...
+) -> list[BaseModelT]: ...
 
 
 def deserialize_raw_results(
@@ -74,8 +72,7 @@ def _deserialize_prisma_object(
     raw_obj: dict[str, Any],
     *,
     for_model: bool,
-) -> dict[str, Any]:
-    ...
+) -> dict[str, Any]: ...
 
 
 @overload
@@ -84,8 +81,7 @@ def _deserialize_prisma_object(
     *,
     for_model: bool,
     model: type[BaseModelT],
-) -> BaseModelT:
-    ...
+) -> BaseModelT: ...
 
 
 def _deserialize_prisma_object(

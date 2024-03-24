@@ -8,8 +8,7 @@ PRISMA_INIT_CONTENTS = "__title__ = 'prisma'"
 
 @runtime_checkable
 class SourceLoader(Protocol):
-    def get_filename(self) -> str:
-        ...
+    def get_filename(self) -> str: ...
 
 
 def main(*args: str) -> None:

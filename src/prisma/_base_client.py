@@ -33,15 +33,13 @@ class UseClientDefault:
     by typing the parameter with this class rather than using None, for example:
 
     ```py
-    def connect(timeout: Union[int, timedelta, UseClientDefault] = UseClientDefault()) -> None:
-        ...
+    def connect(timeout: Union[int, timedelta, UseClientDefault] = UseClientDefault()) -> None: ...
     ```
 
     relays the intention more clearly than:
 
     ```py
-    def connect(timeout: Union[int, timedelta, None] = None) -> None:
-        ...
+    def connect(timeout: Union[int, timedelta, None] = None) -> None: ...
     ```
 
     This solution also allows us to indicate an "unset" state that is uniquely distinct
@@ -344,8 +342,7 @@ class SyncBasePrisma(BasePrisma[SyncAbstractEngine]):
         format: Literal['json'] = 'json',
         *,
         global_labels: dict[str, str] | None = None,
-    ) -> Metrics:
-        ...
+    ) -> Metrics: ...
 
     @overload
     def get_metrics(
@@ -353,8 +350,7 @@ class SyncBasePrisma(BasePrisma[SyncAbstractEngine]):
         format: Literal['prometheus'],
         *,
         global_labels: dict[str, str] | None = None,
-    ) -> str:
-        ...
+    ) -> str: ...
 
     def get_metrics(
         self,
@@ -465,8 +461,7 @@ class AsyncBasePrisma(BasePrisma[AsyncAbstractEngine]):
         format: Literal['json'] = 'json',
         *,
         global_labels: dict[str, str] | None = None,
-    ) -> Metrics:
-        ...
+    ) -> Metrics: ...
 
     @overload
     async def get_metrics(
@@ -474,8 +469,7 @@ class AsyncBasePrisma(BasePrisma[AsyncAbstractEngine]):
         format: Literal['prometheus'],
         *,
         global_labels: dict[str, str] | None = None,
-    ) -> str:
-        ...
+    ) -> str: ...
 
     async def get_metrics(
         self,
