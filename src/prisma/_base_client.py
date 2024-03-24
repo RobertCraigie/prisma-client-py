@@ -84,6 +84,7 @@ class BasePrisma(Generic[_EngineT]):
     _prisma_models: set[str]
     _packaged_schema_path: Path
     _engine_type: EngineType
+    _default_datasource_name: str
     _relational_field_mappings: dict[str, dict[str, str]]
 
     __slots__ = (
@@ -99,6 +100,7 @@ class BasePrisma(Generic[_EngineT]):
         '_connect_timeout',
         '_internal_engine',
         '_packaged_schema_path',
+        '_default_datasource_name',
         '_relational_field_mappings',
     )
 
@@ -143,6 +145,7 @@ class BasePrisma(Generic[_EngineT]):
         active_provider: str,
         prisma_models: set[str],
         relational_field_mappings: dict[str, dict[str, str]],
+        default_datasource_name: str,
     ) -> None:
         """We pass through generated metadata using this method
         instead of the `__init__()` because that causes weirdness
@@ -155,6 +158,7 @@ class BasePrisma(Generic[_EngineT]):
         self._active_provider = active_provider
         self._packaged_schema_path = packaged_schema_path
         self._relational_field_mappings = relational_field_mappings
+        self._default_datasource_name = default_datasource_name
 
     @property
     def _default_datasource(self) -> Datasource:
@@ -259,7 +263,7 @@ class BasePrisma(Generic[_EngineT]):
         datasources: list[DatasourceOverride] | None = None
         if self._datasource is not None:
             ds = self._datasource.copy()
-            ds.setdefault('name', self._default_datasource['name'])
+            ds.setdefault('name', self._default_datasource_name)
             datasources = [ds]
         elif self._active_provider == 'sqlite':
             # Override the default SQLite path to protect against

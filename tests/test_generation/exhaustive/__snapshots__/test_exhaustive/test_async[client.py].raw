@@ -147,6 +147,7 @@ class Prisma(AsyncBasePrisma):
             packaged_schema_path=PACKAGED_SCHEMA_PATH,
             relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
             active_provider='postgresql',
+            default_datasource_name='db',
         )
 
         self.post = actions.PostActions[models.Post](self, models.Post)
