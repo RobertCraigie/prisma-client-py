@@ -7,13 +7,14 @@ import logging
 from datetime import timedelta
 from pathlib import Path
 from types import TracebackType
+from typing_extensions import override
 
 from pydantic import BaseModel
 
 from . import types, models, errors, actions
 from ._base_client import BasePrisma, UseClientDefault, USE_CLIENT_DEFAULT
 from .types import DatasourceOverride, HttpConfig, MetricsFormat
-from ._types import BaseModelT, PrismaMethod, TransactionId
+from ._types import BaseModelT, PrismaMethod, TransactionId, Datasource
 from .bases import _PrismaModel
 from ._builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
@@ -90,10 +91,7 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
             packaged_schema_path=PACKAGED_SCHEMA_PATH,
             relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
             active_provider='{{ active_provider }}',
-            default_datasource={
-                'name': '{{ datasources[0].name }}',
-                'url': OptionalValueFromEnvVar(**{{ model_dict(datasources[0].url, by_alias=True) }}).resolve(),
-            },
+            default_datasource_name='{{ datasources[0].name }}',
         )
 
         {% for model in dmmf.datamodel.models %}
@@ -102,6 +100,14 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
 
         if auto_register:
             register(self)
+
+    @property
+    @override
+    def _default_datasource(self) -> Datasource:
+        return {
+            'name': '{{ datasources[0].name }}',
+            'url': OptionalValueFromEnvVar(**{{ model_dict(datasources[0].url, by_alias=True) }}).resolve(),
+        }
 
     {% if active_provider != 'mongodb' %}
     {{ maybe_async_def }}execute_raw(self, query: LiteralString, *args: Any) -> int:
