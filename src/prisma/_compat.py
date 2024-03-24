@@ -74,8 +74,7 @@ if TYPE_CHECKING:
         pydantic.BaseConfig  # pyright: ignore[reportDeprecated]
     )
 
-    class BaseConfig:
-        ...
+    class BaseConfig: ...
 
     from pydantic import (
         PlainSerializer as PlainSerializer,
@@ -86,8 +85,7 @@ if TYPE_CHECKING:
         core_schema as core_schema,
     )
 
-    class GenericModel(BaseModel):
-        ...
+    class GenericModel(BaseModel): ...
 
 else:
     if PYDANTIC_V2:
@@ -104,8 +102,7 @@ else:
     else:
         from pydantic.generics import GenericModel as PydanticGenericModel
 
-        class GenericModel(PydanticGenericModel, BaseModel):
-            ...
+        class GenericModel(PydanticGenericModel, BaseModel): ...
 
     if PYDANTIC_V2:
         from pydantic import model_validator
@@ -358,8 +355,7 @@ if TYPE_CHECKING:
         # define good types.
         from enum import Enum
 
-        class StrEnum(str, Enum):
-            ...
+        class StrEnum(str, Enum): ...
 else:
     if sys.version_info >= (3, 11):
         from enum import StrEnum as StrEnum

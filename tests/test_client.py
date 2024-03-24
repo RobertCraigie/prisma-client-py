@@ -127,8 +127,7 @@ async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
 
     getter = patch_method(monkeypatch, httpx.AsyncClient, '__init__', mock___init__)
 
-    def mock_app(args: Mapping[str, object], data: object) -> object:
-        ...
+    def mock_app(args: Mapping[str, object], data: object) -> object: ...
 
     async def _test(config: HttpConfig) -> None:
         client = Prisma(

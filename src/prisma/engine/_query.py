@@ -269,8 +269,7 @@ class SyncQueryEngine(BaseQueryEngine, SyncHTTPEngine):
         *,
         format: Literal['json'],
         global_labels: dict[str, str] | None,
-    ) -> dict[str, Any]:
-        ...
+    ) -> dict[str, Any]: ...
 
     @overload
     def metrics(
@@ -278,8 +277,7 @@ class SyncQueryEngine(BaseQueryEngine, SyncHTTPEngine):
         *,
         format: Literal['prometheus'],
         global_labels: dict[str, str] | None,
-    ) -> str:
-        ...
+    ) -> str: ...
 
     @override
     def metrics(
@@ -431,8 +429,7 @@ class AsyncQueryEngine(BaseQueryEngine, AsyncHTTPEngine):
         *,
         format: Literal['json'],
         global_labels: dict[str, str] | None,
-    ) -> dict[str, Any]:
-        ...
+    ) -> dict[str, Any]: ...
 
     @overload
     async def metrics(
@@ -440,8 +437,7 @@ class AsyncQueryEngine(BaseQueryEngine, AsyncHTTPEngine):
         *,
         format: Literal['prometheus'],
         global_labels: dict[str, str] | None,
-    ) -> str:
-        ...
+    ) -> str: ...
 
     @override
     async def metrics(

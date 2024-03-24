@@ -73,8 +73,7 @@ class GenericGenerator(ABC, Generic[BaseModelT]):
         ...
 
     @abstractmethod
-    def generate(self, data: BaseModelT) -> None:
-        ...
+    def generate(self, data: BaseModelT) -> None: ...
 
     @classmethod
     def invoke(cls) -> None:
