@@ -10,7 +10,7 @@ from typing_extensions import override
 import pytest
 from syrupy.assertion import SnapshotAssertion
 from syrupy.extensions.single_file import SingleFileSnapshotExtension
-from syrupy.extensions.amber.serializer import DataSerializer
+from syrupy.extensions.amber.serializer import AmberDataSerializer
 
 from prisma.generator import BASE_PACKAGE_DIR
 from prisma.generator.utils import remove_suffix
@@ -28,10 +28,11 @@ class OSAgnosticSingleFileExtension(SingleFileSnapshotExtension):
         self,
         data: Any,
         *,
+        include: Optional[Any] = None,
         exclude: Optional[Any] = None,
         matcher: Optional[Any] = None,
     ) -> bytes:
-        serialized = DataSerializer.serialize(data, exclude=exclude, matcher=matcher)
+        serialized = AmberDataSerializer.serialize(data, exclude=exclude, include=include, matcher=matcher)
         return bytes(serialized, 'utf-8')
 
     # we disable diffs as we don't really care what the diff is
