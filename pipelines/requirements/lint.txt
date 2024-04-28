@@ -6,4 +6,4 @@
 -r deps/mypy.txt
 -r deps/pydantic.txt
 -r ../../databases/requirements.txt
-slotscheck==0.17.3
+slotscheck==0.19.0
