@@ -256,8 +256,8 @@ def test_partial_types(testdir: Testdir, location: str, options: str) -> None:
             UserModifiedPosts(
                 id='1',
                 name='Robert',
-                created_at=datetime.datetime.utcnow(),
-                updated_at=datetime.datetime.utcnow(),
+                created_at=datetime.datetime.now(datetime.timezone.utc),
+                updated_at=datetime.datetime.now(datetime.timezone.utc),
                 posts=[PostOnlyId(id='2')],
             )
             field = model_fields(UserModifiedPosts)['posts']

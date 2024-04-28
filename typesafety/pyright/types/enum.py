@@ -17,4 +17,4 @@ def use_str_enum_as_str():
 
 
 def raise_error_on_invalid_type():
-    _test_int: int = Role.USER  # E: Expression of type "Literal[Role.USER]" cannot be assigned to declared type "int"
+    _test_int: int = Role.USER  # E: Expression of type "Literal[Role.USER]" is incompatible with declared type "int"

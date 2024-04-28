@@ -228,7 +228,7 @@ def test_filtering_nulls(client: Prisma) -> None:
 
 def test_precision_loss(client: Prisma) -> None:
     """https://github.com/RobertCraigie/prisma-client-py/issues/129"""
-    date = datetime.datetime.utcnow()
+    date = datetime.datetime.now(datetime.timezone.utc)
     post = client.post.create(
         data={
             'title': 'My first post',

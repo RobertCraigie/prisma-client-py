@@ -9,7 +9,7 @@ async def main(client: Prisma) -> None:
     reveal_type(user)  # T: User
     reveal_type(user.id)  # T: str
 
-    user.foo  # E: Cannot access member "foo" for type "User"
+    user.foo  # E: Cannot access attribute "foo" for class "User"
 
     result = await client.query_first('')
     reveal_type(result)  # T: dict[str, Any]

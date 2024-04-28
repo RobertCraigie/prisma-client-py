@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from prisma import Prisma, Base64, Json
 from prisma.enums import Role
 
@@ -29,7 +29,7 @@ async def filtering(client: Prisma) -> None:
         where={  # E: Argument of type "dict[str, dict[str, datetime | None]]" cannot be assigned to parameter "where" of type "ListsWhereInput | None" in function "find_first"
             'dates': {
                 'equals': None,
-                'has': datetime.utcnow(),
+                'has': datetime.now(timezone.utc),
             },
         },
     )
