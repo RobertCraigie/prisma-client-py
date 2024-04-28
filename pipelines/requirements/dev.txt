@@ -2,7 +2,7 @@
 -r deps/ruff.txt
 -r deps/lark.txt
 
-nox==2023.4.22
+nox==2024.4.15
 wheel==0.42.0
 pre-commit==2.21.0
 twine==4.0.2
