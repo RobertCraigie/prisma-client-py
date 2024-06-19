@@ -114,6 +114,23 @@ In the case that this example runs successfully, then both database writes are c
         )
     ```
 
+## Isolation levels
+
+By default, Prisma sets the isolation level to the value currently configured in the database. You can modify this
+default with the `isolation_level` argument (see [supported isolation levels](https://www.prisma.io/docs/orm/prisma-client/queries/transactions#supported-isolation-levels)).
+
+!!! note
+    Prisma Client Python generates `TransactionIsolationLevel` enumeration that includes only the options supported by the current database.
+
+```py
+from prisma import Prisma, TransactionIsolationLevel
+
+client = Prisma()
+client.tx(
+    isolation_level=TransactionIsolationLevel.READ_UNCOMMITTED,
+)
+```
+
 ## Timeouts
 
 You can pass the following options to configure how timeouts are applied to your transaction:
