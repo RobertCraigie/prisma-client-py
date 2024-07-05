@@ -220,7 +220,7 @@ This option controls the version of Prisma to use. It should be noted that this 
 
 | Option           | Environment Variable  | Default  |
 | ---------------- | --------------------- | -------- |
-| `prisma_version` | `PRISMA_VERSION`      | `5.8.0` |
+| `prisma_version` | `PRISMA_VERSION`      | `5.15.0` |
 
 ### Expected Engine Version
 
@@ -228,7 +228,7 @@ This is an internal option that is here as a safeguard for the `prisma_version` 
 
 | Option                    | Environment Variable             | Default                                    |
 | ------------------------- | -------------------------------- | ------------------------------------------ |
-| `expected_engine_version` | `PRISMA_EXPECTED_ENGINE_VERSION` | `0a83d8541752d7582de2ebc1ece46519ce72a848` |
+| `expected_engine_version` | `PRISMA_EXPECTED_ENGINE_VERSION` | `12e25d8d06f6ea5a0252864dd9a03b1bb51f3022` |
 
 
 ### Binary Platform

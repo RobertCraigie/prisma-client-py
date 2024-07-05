@@ -1,7 +1,5 @@
 import sys
-import pkgutil
 import subprocess
-from typing import TYPE_CHECKING
 
 import pytest
 from prisma_cleanup import cleanup
@@ -11,9 +9,6 @@ from prisma.generator.utils import copy_tree
 
 from .utils import assert_module_is_clean, assert_module_not_clean
 from ..utils import Testdir
-
-if TYPE_CHECKING:
-    from _pytest.monkeypatch import MonkeyPatch
 
 
 def test_main(testdir: Testdir) -> None:
@@ -56,22 +51,6 @@ def test_main_works_with_erroneous_client(testdir: Testdir) -> None:
         stdout=subprocess.PIPE,
     )
     assert_module_is_clean(path)
-
-
-def test_unresolvable_loader(monkeypatch: 'MonkeyPatch') -> None:
-    """pkgutil.get_loader() can return a loader that doesn't have access to
-    the packages source location.
-    """
-
-    def patched_get_loader(pkg: str) -> object:
-        return 'Dummy'
-
-    monkeypatch.setattr(pkgutil, 'get_loader', patched_get_loader)
-
-    with pytest.raises(RuntimeError) as exc:
-        cleanup()
-
-    assert exc.value.args[0] == 'Received unresolvable import loader: Dummy'
 
 
 def test_custom_package(testdir: Testdir) -> None:

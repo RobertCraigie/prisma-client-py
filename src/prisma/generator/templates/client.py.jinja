@@ -7,13 +7,14 @@ import logging
 from datetime import timedelta
 from pathlib import Path
 from types import TracebackType
+from typing_extensions import override
 
 from pydantic import BaseModel
 
 from . import types, models, errors, actions
 from ._base_client import BasePrisma, UseClientDefault, USE_CLIENT_DEFAULT
 from .types import DatasourceOverride, HttpConfig, MetricsFormat
-from ._types import BaseModelT, PrismaMethod, TransactionId
+from ._types import BaseModelT, PrismaMethod, TransactionId, Datasource
 from .bases import _PrismaModel
 from ._builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
@@ -51,10 +52,12 @@ log: logging.Logger = logging.getLogger(__name__)
 SCHEMA_PATH = Path('{{ schema_path.as_posix() }}')
 PACKAGED_SCHEMA_PATH = Path(__file__).parent.joinpath('schema.prisma')
 ENGINE_TYPE: EngineType = EngineType.{{ generator.config.engine_type }}
-BINARY_PATHS = model_parse(BinaryPaths, {{ binary_paths.dict(by_alias=True) }})
+BINARY_PATHS = model_parse(BinaryPaths, {{ model_dict(binary_paths, by_alias=True) }})
 
 
 class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}):
+    # Note: these property names can be customised using `/// @Python(instance_name: '...')`
+    # https://prisma-client-py.readthedocs.io/en/stable/reference/schema-extensions/#instance_name
     {% for model in dmmf.datamodel.models %}
     {{ model.instance_name }}: 'actions.{{ model.name }}Actions[models.{{ model.name }}]'
     {% endfor %}
@@ -89,10 +92,7 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
             packaged_schema_path=PACKAGED_SCHEMA_PATH,
             relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
             active_provider='{{ active_provider }}',
-            default_datasource={
-                'name': '{{ datasources[0].name }}',
-                'url': OptionalValueFromEnvVar(**{{ datasources[0].url.dict(by_alias=True) }}).resolve(),
-            },
+            default_datasource_name='{{ datasources[0].name }}',
         )
 
         {% for model in dmmf.datamodel.models %}
@@ -101,6 +101,14 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
 
         if auto_register:
             register(self)
+
+    @property
+    @override
+    def _default_datasource(self) -> Datasource:
+        return {
+            'name': '{{ datasources[0].name }}',
+            'url': OptionalValueFromEnvVar(**{{ model_dict(datasources[0].url, by_alias=True) }}).resolve(),
+        }
 
     {% if active_provider != 'mongodb' %}
     {{ maybe_async_def }}execute_raw(self, query: LiteralString, *args: Any) -> int:

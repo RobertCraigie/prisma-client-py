@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from prisma import Prisma
 
 
@@ -35,16 +35,16 @@ async def filtering(client: Prisma) -> None:
         where={
             'datetime': {
                 'equals': datetime.now(),
-                'in': [datetime.now(), datetime.utcnow()],
-                'not_in': [datetime.now(), datetime.utcnow()],
+                'in': [datetime.now(), datetime.now(timezone.utc)],
+                'not_in': [datetime.now(), datetime.now(timezone.utc)],
                 'lt': datetime.now(),
                 'lte': datetime.now(),
                 'gt': datetime.now(),
                 'gte': datetime.now(),
                 'not': {
                     'equals': datetime.now(),
-                    'in': [datetime.now(), datetime.utcnow()],
-                    'not_in': [datetime.now(), datetime.utcnow()],
+                    'in': [datetime.now(), datetime.now(timezone.utc)],
+                    'not_in': [datetime.now(), datetime.now(timezone.utc)],
                     'lt': datetime.now(),
                     'lte': datetime.now(),
                     'gt': datetime.now(),

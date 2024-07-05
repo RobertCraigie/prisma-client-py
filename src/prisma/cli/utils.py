@@ -135,18 +135,15 @@ def warning(message: str) -> None:
 
 
 @overload
-def error(message: str) -> NoReturn:
-    ...
+def error(message: str) -> NoReturn: ...
 
 
 @overload
-def error(message: str, exit_: Literal[True]) -> NoReturn:
-    ...
+def error(message: str, exit_: Literal[True]) -> NoReturn: ...
 
 
 @overload
-def error(message: str, exit_: Literal[False]) -> None:
-    ...
+def error(message: str, exit_: Literal[False]) -> None: ...
 
 
 def error(message: str, exit_: bool = True) -> Union[None, NoReturn]:

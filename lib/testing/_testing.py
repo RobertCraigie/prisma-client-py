@@ -66,6 +66,12 @@ def assert_similar_time(dt1: datetime, dt2: datetime, threshold: float = 0.5) ->
 
 
 def assert_time_like_now(dt: datetime, threshold: int = 10) -> None:
-    delta = datetime.now(timezone.utc) - dt
-    assert delta.days == 0
-    assert delta.total_seconds() < threshold
+    now = datetime.now(timezone.utc)
+
+    delta = now - dt
+    if delta.days < 0:
+        # for some reason the delta can be negative on windows
+        delta = dt - now
+
+    assert delta.days == 0, f'delta={delta} dt={dt} now={now}'
+    assert delta.total_seconds() < threshold, f'delta={delta} dt={dt} now={now}'

@@ -33,15 +33,13 @@ class UseClientDefault:
     by typing the parameter with this class rather than using None, for example:
 
     ```py
-    def connect(timeout: Union[int, timedelta, UseClientDefault] = UseClientDefault()) -> None:
-        ...
+    def connect(timeout: Union[int, timedelta, UseClientDefault] = UseClientDefault()) -> None: ...
     ```
 
     relays the intention more clearly than:
 
     ```py
-    def connect(timeout: Union[int, timedelta, None] = None) -> None:
-        ...
+    def connect(timeout: Union[int, timedelta, None] = None) -> None: ...
     ```
 
     This solution also allows us to indicate an "unset" state that is uniquely distinct
@@ -84,7 +82,7 @@ class BasePrisma(Generic[_EngineT]):
     _prisma_models: set[str]
     _packaged_schema_path: Path
     _engine_type: EngineType
-    _default_datasource: Datasource
+    _default_datasource_name: str
     _relational_field_mappings: dict[str, dict[str, str]]
 
     __slots__ = (
@@ -99,8 +97,8 @@ class BasePrisma(Generic[_EngineT]):
         '_active_provider',
         '_connect_timeout',
         '_internal_engine',
-        '_default_datasource',
         '_packaged_schema_path',
+        '_default_datasource_name',
         '_relational_field_mappings',
     )
 
@@ -143,9 +141,9 @@ class BasePrisma(Generic[_EngineT]):
         engine_type: EngineType,
         packaged_schema_path: Path,
         active_provider: str,
-        default_datasource: Datasource,
         prisma_models: set[str],
         relational_field_mappings: dict[str, dict[str, str]],
+        default_datasource_name: str,
     ) -> None:
         """We pass through generated metadata using this method
         instead of the `__init__()` because that causes weirdness
@@ -156,9 +154,13 @@ class BasePrisma(Generic[_EngineT]):
         self._engine_type = engine_type
         self._prisma_models = prisma_models
         self._active_provider = active_provider
-        self._default_datasource = default_datasource
         self._packaged_schema_path = packaged_schema_path
         self._relational_field_mappings = relational_field_mappings
+        self._default_datasource_name = default_datasource_name
+
+    @property
+    def _default_datasource(self) -> Datasource:
+        raise NotImplementedError('`_default_datasource` should be implemented in a subclass')
 
     def is_registered(self) -> bool:
         """Returns True if this client instance is registered"""
@@ -259,7 +261,7 @@ class BasePrisma(Generic[_EngineT]):
         datasources: list[DatasourceOverride] | None = None
         if self._datasource is not None:
             ds = self._datasource.copy()
-            ds.setdefault('name', self._default_datasource['name'])
+            ds.setdefault('name', self._default_datasource_name)
             datasources = [ds]
         elif self._active_provider == 'sqlite':
             # Override the default SQLite path to protect against
@@ -344,8 +346,7 @@ class SyncBasePrisma(BasePrisma[SyncAbstractEngine]):
         format: Literal['json'] = 'json',
         *,
         global_labels: dict[str, str] | None = None,
-    ) -> Metrics:
-        ...
+    ) -> Metrics: ...
 
     @overload
     def get_metrics(
@@ -353,8 +354,7 @@ class SyncBasePrisma(BasePrisma[SyncAbstractEngine]):
         format: Literal['prometheus'],
         *,
         global_labels: dict[str, str] | None = None,
-    ) -> str:
-        ...
+    ) -> str: ...
 
     def get_metrics(
         self,
@@ -465,8 +465,7 @@ class AsyncBasePrisma(BasePrisma[AsyncAbstractEngine]):
         format: Literal['json'] = 'json',
         *,
         global_labels: dict[str, str] | None = None,
-    ) -> Metrics:
-        ...
+    ) -> Metrics: ...
 
     @overload
     async def get_metrics(
@@ -474,8 +473,7 @@ class AsyncBasePrisma(BasePrisma[AsyncAbstractEngine]):
         format: Literal['prometheus'],
         *,
         global_labels: dict[str, str] | None = None,
-    ) -> str:
-        ...
+    ) -> str: ...
 
     async def get_metrics(
         self,

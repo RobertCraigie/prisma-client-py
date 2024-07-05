@@ -45,13 +45,14 @@ import logging
 from datetime import timedelta
 from pathlib import Path
 from types import TracebackType
+from typing_extensions import override
 
 from pydantic import BaseModel
 
 from . import types, models, errors, actions
 from ._base_client import BasePrisma, UseClientDefault, USE_CLIENT_DEFAULT
 from .types import DatasourceOverride, HttpConfig, MetricsFormat
-from ._types import BaseModelT, PrismaMethod, TransactionId
+from ._types import BaseModelT, PrismaMethod, TransactionId, Datasource
 from .bases import _PrismaModel
 from ._builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
@@ -93,11 +94,13 @@ BINARY_PATHS = '<binary-paths-removed>'
 
 
 class Prisma(AsyncBasePrisma):
+    # Note: these property names can be customised using `/// @Python(instance_name: '...')`
+    # https://prisma-client-py.readthedocs.io/en/stable/reference/schema-extensions/#instance_name
     post: 'actions.PostActions[models.Post]'
     user: 'actions.UserActions[models.User]'
     m: 'actions.MActions[models.M]'
     n: 'actions.NActions[models.N]'
-    oneoptional: 'actions.OneOptionalActions[models.OneOptional]'
+    one_optional: 'actions.OneOptionalActions[models.OneOptional]'
     manyrequired: 'actions.ManyRequiredActions[models.ManyRequired]'
     lists: 'actions.ListsActions[models.Lists]'
     a: 'actions.AActions[models.A]'
@@ -111,7 +114,7 @@ class Prisma(AsyncBasePrisma):
         'user',
         'm',
         'n',
-        'oneoptional',
+        'one_optional',
         'manyrequired',
         'lists',
         'a',
@@ -145,17 +148,14 @@ class Prisma(AsyncBasePrisma):
             packaged_schema_path=PACKAGED_SCHEMA_PATH,
             relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
             active_provider='postgresql',
-            default_datasource={
-                'name': 'db',
-                'url': OptionalValueFromEnvVar(**{'value': None, 'fromEnvVar': 'DB_URL'}).resolve(),
-            },
+            default_datasource_name='db',
         )
 
         self.post = actions.PostActions[models.Post](self, models.Post)
         self.user = actions.UserActions[models.User](self, models.User)
         self.m = actions.MActions[models.M](self, models.M)
         self.n = actions.NActions[models.N](self, models.N)
-        self.oneoptional = actions.OneOptionalActions[models.OneOptional](self, models.OneOptional)
+        self.one_optional = actions.OneOptionalActions[models.OneOptional](self, models.OneOptional)
         self.manyrequired = actions.ManyRequiredActions[models.ManyRequired](self, models.ManyRequired)
         self.lists = actions.ListsActions[models.Lists](self, models.Lists)
         self.a = actions.AActions[models.A](self, models.A)
@@ -166,6 +166,14 @@ class Prisma(AsyncBasePrisma):
 
         if auto_register:
             register(self)
+
+    @property
+    @override
+    def _default_datasource(self) -> Datasource:
+        return {
+            'name': 'db',
+            'url': OptionalValueFromEnvVar(**{'value': None, 'fromEnvVar': 'DB_URL'}).resolve(),
+        }
 
     async def execute_raw(self, query: LiteralString, *args: Any) -> int:
         resp = await self._execute(
@@ -321,7 +329,7 @@ class Batch:
     user: 'UserBatchActions'
     m: 'MBatchActions'
     n: 'NBatchActions'
-    oneoptional: 'OneOptionalBatchActions'
+    one_optional: 'OneOptionalBatchActions'
     manyrequired: 'ManyRequiredBatchActions'
     lists: 'ListsBatchActions'
     a: 'ABatchActions'
@@ -338,7 +346,7 @@ class Batch:
         self.user = UserBatchActions(self)
         self.m = MBatchActions(self)
         self.n = NBatchActions(self)
-        self.oneoptional = OneOptionalBatchActions(self)
+        self.one_optional = OneOptionalBatchActions(self)
         self.manyrequired = ManyRequiredBatchActions(self)
         self.lists = ListsBatchActions(self)
         self.a = ABatchActions(self)

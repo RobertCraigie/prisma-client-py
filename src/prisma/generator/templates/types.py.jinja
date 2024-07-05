@@ -49,8 +49,8 @@ from .utils import _NoneType
 {{ type.name }} = {{ type.to }}
 {% elif type.kind == 'union' %}
 {{ type.name }} = Union[
-    {% for subtype in type.subtypes %}
-    '{{ subtype.name }}',
+    {% for variant in type.variants %}
+    '{{ variant.name }}',
     {% endfor %}
 ]
 {% elif type.kind == 'typeddict' %}
@@ -65,6 +65,11 @@ from .utils import _NoneType
     },
     total={{ type.total }}
 )
+{% elif type.kind == 'enum' %}
+class {{ type.name }}(StrEnum):
+    {% for name, value in type.members %}
+    {{ name }} = "{{ value }}"
+    {% endfor %}
 {% else %}
 {{ raise_err('Unhandled type kind: %s' % type.kind) }}
 {% endif %}

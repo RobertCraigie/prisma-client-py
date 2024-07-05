@@ -1,5 +1,5 @@
 from typing import List
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 import pytest
 
@@ -8,7 +8,7 @@ from prisma import Prisma
 
 def _utcnow() -> datetime:
     # workaround for https://github.com/RobertCraigie/prisma-client-py/issues/129
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     return now.replace(microsecond=int(now.microsecond / 1000) * 1000)
 
 

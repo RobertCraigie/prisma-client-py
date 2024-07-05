@@ -34,9 +34,17 @@ ENV DOCKER_TARGETARCH=${TARGETARCH}
 RUN \
     if [[ $OS_DISTRO =~ alpine ]]; then \
       adduser -u ${PRISMA_USER_ID} -D prisma; \
-      apk add gcc musl-dev yaml-dev yaml libffi-dev; \
+      apk add gcc musl-dev yaml-dev yaml libffi-dev git; \
     elif bash -c "[[ ${OS_DISTRO} =~ slim ]]"; then \
       useradd --create-home --uid ${PRISMA_USER_ID} --shell /bin/bash prisma; \
+      apt-get update; \
+      apt-get install -y --no-install-recommends \
+        git \
+        ca-certificates \
+        apt-transport-https; \
+      # Cleanup to reduce image size
+      apt-get clean; \
+      rm -rf /var/lib/apt/lists/*; \
     else \
       echo "Unrecognized distro $OS_DISTRO"; \
       exit 99; \

@@ -6,6 +6,7 @@ from pathlib import Path
 from typing_extensions import Literal, TypedDict, get_args, override
 
 from pydantic import BaseModel
+from syrupy.location import PyTestLocation
 from syrupy.extensions.amber import AmberSnapshotExtension
 
 from ._types import DatabaseMapping
@@ -56,10 +57,10 @@ CURRENT_DATABASE = os.environ.get('PRISMA_DATABASE')
 class AmberSharedExtension(AmberSnapshotExtension):
     """Syrupy extension that stores the snapshots in a parent __shared_snapshots__ dir"""
 
-    @property
+    @classmethod
     @override
-    def _dirname(self) -> str:
-        test_dir = Path(self.test_location.filepath).parent
+    def dirname(cls, *, test_location: PyTestLocation) -> str:
+        test_dir = Path(test_location.filepath).parent
         if test_dir.is_relative_to(SYNC_TESTS_DIR):
             rel_dir = test_dir.relative_to(SYNC_TESTS_DIR)
         else:
