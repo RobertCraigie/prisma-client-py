@@ -107,7 +107,7 @@ async def test_timeout(client: Prisma) -> None:
     # ocurred so it will attempt to commit the transaction, triggering the expired error again
     with pytest.raises(prisma.errors.TransactionExpiredError):
         async with client.tx(timeout=timedelta(milliseconds=50)) as transaction:
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.1)
 
             with pytest.raises(prisma.errors.TransactionExpiredError) as exc:
                 await transaction.user.create({'name': 'Robert'})
