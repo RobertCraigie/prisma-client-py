@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 from inline_snapshot import snapshot
 
@@ -15,6 +17,7 @@ else:
     from pydantic import ValidationError  # type: ignore[assignment]
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 12), reason='transitive dep is broken :(')
 def test_valid() -> None:
     """Basic usage with correct data"""
     validated = validate(types.IntFilter, {'equals': 1})
@@ -53,6 +56,7 @@ __root__
     )
 
 
+@pytest.mark.skipif(sys.version_info >= (3, 12), reason='transitive dep is broken :(')
 def test_recursive() -> None:
     """Validating recursive types works as expected"""
     with pytest.raises(ValidationError) as exc:
