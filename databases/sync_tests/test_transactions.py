@@ -102,7 +102,7 @@ def test_timeout(client: Prisma) -> None:
     # ocurred so it will attempt to commit the transaction, triggering the expired error again
     with pytest.raises(prisma.errors.TransactionExpiredError):
         with client.tx(timeout=timedelta(milliseconds=50)) as transaction:
-            time.sleep(0.05)
+            time.sleep(0.1)
 
             with pytest.raises(prisma.errors.TransactionExpiredError) as exc:
                 transaction.user.create({'name': 'Robert'})
