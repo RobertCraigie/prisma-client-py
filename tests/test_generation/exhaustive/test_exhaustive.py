@@ -77,7 +77,10 @@ def get_files_from_templates(directory: Path) -> List[str]:
 
 SYNC_ROOTDIR = ROOTDIR / '__prisma_sync_output__' / 'prisma'
 ASYNC_ROOTDIR = ROOTDIR / '__prisma_async_output__' / 'prisma'
-FILES = get_files_from_templates(BASE_PACKAGE_DIR / 'generator' / 'templates')
+FILES = [
+    *get_files_from_templates(BASE_PACKAGE_DIR / 'generator' / 'templates'),
+    'schema.prisma',
+]
 THIS_DIR = Path(__file__).parent
 BINARY_PATH_RE = re.compile(r'BINARY_PATHS = (.*)')
 
