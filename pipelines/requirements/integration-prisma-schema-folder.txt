@@ -1,0 +1,3 @@
+-r deps/pytest-asyncio.txt
+-r deps/pytest.txt
+pytest-sugar

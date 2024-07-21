@@ -1,0 +1,10 @@
+// prisma/schema/main.prisma
+generator client {
+  provider        = "prisma-client-py"
+  previewFeatures = ["prismaSchemaFolder"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
