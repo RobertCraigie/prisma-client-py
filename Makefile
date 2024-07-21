@@ -19,7 +19,7 @@ test:
 .PHONY: format
 format:
 	ruff format
-	for schema in `find . -name '*.schema.prisma'` ; do \
+	for schema in `find . -name '*.prisma'` ; do \
         prisma format --schema=$$schema ; \
     done
 
