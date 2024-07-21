@@ -81,6 +81,42 @@ jobs:
           name: coverage-data
           path: ".cache/.coverage.*"
 
+  integration:
+    name: integration (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "prisma-schema-folder"
+            args: "-s i:prisma-schema-folder"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install . -r pipelines/requirements/ci.txt
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pipelines/requirements/*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Run tests
+        run: |
+          nox ${{ matrix.args }}
+        env:
+          TARGET_PYTHON: "3.11"
+
   typesafety:
     name: typesafety
     runs-on: ubuntu-latest

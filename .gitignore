@@ -142,6 +142,7 @@ src/prisma/generator/debug-params.json
 
 # test cache files
 *.db
+*.sqlite
 .tests_cache/
 databases/*pyrightconfig.json
 
