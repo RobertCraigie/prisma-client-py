@@ -506,6 +506,8 @@ class Config(BaseSettings):
     # https://github.com/prisma/prisma/issues/12442
     enable_experimental_decimal: bool = FieldInfo(default=False, env='PRISMA_PY_CONFIG_ENABLE_EXPERIMENTAL_DECIMAL')
 
+    pydantic_disable_protected_namespaces: bool = False
+
     # this seems to be the only good method for setting the contextvar as
     # we don't control the actual construction of the object like we do for
     # the Data model.

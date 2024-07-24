@@ -21,6 +21,9 @@ class _PrismaModel(BaseModel):
             use_enum_values=True,
             arbitrary_types_allowed=True,
             populate_by_name=True,
+{% if generator.config.pydantic_disable_protected_namespaces %}
+            protected_namespaces=(),
+{% endif %}
         )
     elif not TYPE_CHECKING:
         from ._compat import BaseConfig
