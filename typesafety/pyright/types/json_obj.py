@@ -19,11 +19,11 @@ def raw() -> None:
     # TODO: these error messages are weird...
     Json(
         'bar',  # E: Argument of type "Literal['bar']" cannot be assigned to parameter "object" of type "ReadableBuffer" in function "__new__"
-        'foo',
+        'foo',  # E: Expected 1 positional argument
     )
     Json(  # E: No overloads for "__new__" match the provided arguments
         'foo',
-        item=1,
+         item=1,  # E: No parameter named "item"
     )
 
     # case: invalid recursive type
