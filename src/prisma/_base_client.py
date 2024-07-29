@@ -82,6 +82,7 @@ class BasePrisma(Generic[_EngineT]):
     _prisma_models: set[str]
     _packaged_schema_path: Path
     _engine_type: EngineType
+    _preview_features: set[str]
     _default_datasource_name: str
     _relational_field_mappings: dict[str, dict[str, str]]
 
@@ -98,6 +99,7 @@ class BasePrisma(Generic[_EngineT]):
         '_connect_timeout',
         '_internal_engine',
         '_packaged_schema_path',
+        '_preview_features',
         '_default_datasource_name',
         '_relational_field_mappings',
     )
@@ -142,6 +144,7 @@ class BasePrisma(Generic[_EngineT]):
         packaged_schema_path: Path,
         active_provider: str,
         prisma_models: set[str],
+        preview_features: set[str],
         relational_field_mappings: dict[str, dict[str, str]],
         default_datasource_name: str,
     ) -> None:
@@ -155,6 +158,7 @@ class BasePrisma(Generic[_EngineT]):
         self._prisma_models = prisma_models
         self._active_provider = active_provider
         self._packaged_schema_path = packaged_schema_path
+        self._preview_features = preview_features
         self._relational_field_mappings = relational_field_mappings
         self._default_datasource_name = default_datasource_name
 

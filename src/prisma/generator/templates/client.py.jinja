@@ -90,6 +90,7 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
             prisma_models=PRISMA_MODELS,
             packaged_schema_path=PACKAGED_SCHEMA_PATH,
             relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
+            preview_features=set({{ generator.preview_features }}),
             active_provider='{{ active_provider }}',
             default_datasource_name='{{ datasources[0].name }}',
         )
