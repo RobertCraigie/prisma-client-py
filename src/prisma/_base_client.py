@@ -226,12 +226,19 @@ class BasePrisma(Generic[_EngineT]):
         """Override the default SQLite path to protect against
         https://github.com/RobertCraigie/prisma-client-py/issues/409
         """
+        source_file_path: str | Path | None = self._default_datasource.get('source_file_path')
+        if source_file_path:
+            source_file_path = Path(source_file_path).parent
+
         return {
             'name': self._default_datasource['name'],
-            'url': self._make_sqlite_url(self._default_datasource['url']),
+            'url': self._make_sqlite_url(
+                self._default_datasource['url'],
+                relative_to=source_file_path,
+            ),
         }
 
-    def _make_sqlite_url(self, url: str, *, relative_to: Path | None = None) -> str:
+    def _make_sqlite_url(self, url: str, *, relative_to: Path | str | None = None) -> str:
         url_path = removeprefix(removeprefix(url, 'file:'), 'sqlite:')
         if url_path == url:
             return url
@@ -241,6 +248,9 @@ class BasePrisma(Generic[_EngineT]):
 
         if relative_to is None:
             relative_to = self._schema_path.parent
+
+        if isinstance(relative_to, str):
+            relative_to = Path(relative_to)
 
         return f'file:{relative_to.joinpath(url_path).resolve()}'
 
@@ -268,10 +278,12 @@ class BasePrisma(Generic[_EngineT]):
             ds.setdefault('name', self._default_datasource_name)
             datasources = [ds]
         elif self._active_provider == 'sqlite':
+            log.debug('overriding default SQLite datasource path')
             # Override the default SQLite path to protect against
             # https://github.com/RobertCraigie/prisma-client-py/issues/409
             datasources = [self._make_sqlite_datasource()]
 
+        log.debug('datasources: %s', datasources)
         return timeout, datasources
 
     def _make_query_builder(

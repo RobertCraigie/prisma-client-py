@@ -88,18 +88,18 @@ BINARY_PATH_RE = re.compile(r'BINARY_PATHS = (.*)')
 def path_replacer(
     schema_path: Path,
 ) -> Callable[[object, object], Optional[object]]:
-    def pathlib_matcher(data: object, path: object) -> Optional[object]:
+    def path_str_matcher(data: object, path: object) -> Optional[object]:
         if not isinstance(data, str):  # pragma: no cover
             raise RuntimeError(f'schema_path_matcher expected data to be a `str` but received {type(data)} instead.')
 
         data = data.replace(
-            f"Path('{schema_path.absolute().as_posix()}')",
-            "Path('<absolute-schema-path>')",
+            f"'{schema_path.absolute().as_posix()}'",
+            "'<absolute-schema-path>'",
         )
         data = BINARY_PATH_RE.sub("BINARY_PATHS = '<binary-paths-removed>'", data)
         return data
 
-    return pathlib_matcher
+    return path_str_matcher
 
 
 # TODO: support running snapshot tests on windows

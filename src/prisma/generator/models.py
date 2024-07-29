@@ -440,6 +440,8 @@ class Datasource(BaseModel):
     active_provider: str = FieldInfo(alias='activeProvider')
     url: 'OptionalValueFromEnvVar'
 
+    source_file_path: Optional[Path] = FieldInfo(alias='sourceFilePath')
+
 
 class Generator(GenericModel, Generic[ConfigT]):
     name: str
