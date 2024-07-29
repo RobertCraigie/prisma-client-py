@@ -146,6 +146,7 @@ class Prisma(SyncBasePrisma):
             prisma_models=PRISMA_MODELS,
             packaged_schema_path=PACKAGED_SCHEMA_PATH,
             relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
+            preview_features=set([]),
             active_provider='postgresql',
             default_datasource_name='db',
         )
@@ -172,6 +173,7 @@ class Prisma(SyncBasePrisma):
         return {
             'name': 'db',
             'url': OptionalValueFromEnvVar(**{'value': None, 'fromEnvVar': 'DB_URL'}).resolve(),
+            'source_file_path': '<absolute-schema-path>',
         }
 
     def execute_raw(self, query: LiteralString, *args: Any) -> int:

@@ -108,6 +108,9 @@ class Prisma({% if is_async %}AsyncBasePrisma{% else %}SyncBasePrisma{% endif %}
         return {
             'name': '{{ datasources[0].name }}',
             'url': OptionalValueFromEnvVar(**{{ model_dict(datasources[0].url, by_alias=True) }}).resolve(),
+            {% if datasources[0].source_file_path %}
+            'source_file_path': '{{ datasources[0].source_file_path.as_posix() }}',
+            {% endif %}
         }
 
     {% if active_provider != 'mongodb' %}

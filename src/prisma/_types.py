@@ -86,6 +86,7 @@ class DatasourceOverride(_DatasourceOverrideOptional):
 
 class _DatasourceOptional(TypedDict, total=False):
     env: str
+    source_file_path: str | None
 
 
 class Datasource(_DatasourceOptional):
