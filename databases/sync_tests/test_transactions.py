@@ -110,7 +110,7 @@ def test_timeout(client: Prisma) -> None:
             raise exc.value
 
 
-@pytest.mark.skipif(CURRENT_DATABASE == 'sqlite', reason='This is currently broken...')
+@pytest.mark.skipif(CURRENT_DATABASE == 'sqlite', reason='SQLite does not support concurrent writes')
 def test_concurrent_transactions(client: Prisma) -> None:
     """Two separate transactions can be used independently of each other at the same time"""
     timeout = timedelta(milliseconds=15000)
@@ -144,6 +144,7 @@ def test_transaction_raises_original_error(client: Prisma) -> None:
             raise RuntimeError('Test error!')
 
 
+@pytest.mark.skipif(CURRENT_DATABASE == 'sqlite', reason='SQLite does not support concurrent writes')
 def test_transaction_within_transaction_warning(client: Prisma) -> None:
     """A warning is raised if a transaction is started from another transaction client"""
     tx1 = client.tx().start()
@@ -160,6 +161,7 @@ def test_transaction_within_transaction_warning(client: Prisma) -> None:
     assert record.filename == __file__
 
 
+@pytest.mark.skipif(CURRENT_DATABASE == 'sqlite', reason='SQLite does not support concurrent writes')
 def test_transaction_within_transaction_context_warning(
     client: Prisma,
 ) -> None:
