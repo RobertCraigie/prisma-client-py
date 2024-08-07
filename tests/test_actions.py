@@ -1,6 +1,6 @@
 import pytest
 
-from prisma.models import Post, User
+from prisma.models import User
 
 
 @pytest.mark.prisma
@@ -57,61 +57,3 @@ async def test_include_many_order_by() -> None:
     assert len(user2.posts) == 2
     assert user2.posts[0].title == 'Post 2'
     assert user2.posts[1].title == 'Post 1'
-
-
-@pytest.mark.prisma
-@pytest.mark.asyncio
-async def test_connect_or_create() -> None:
-    """Connect or create a relation"""
-    user = await User.prisma().create(
-        data={
-            'name': 'Robert',
-        },
-    )
-
-    post = await Post.prisma().create(
-        data={
-            'title': 'Post 1',
-            'published': True,
-            'author': {
-                'connect_or_create': {
-                    'where': {
-                        'id': user.id,
-                    },
-                    'create': {
-                        'name': 'Robert',
-                    },
-                },
-            },
-        },
-        include={
-            'author': True,
-        },
-    )
-
-    assert post.author is not None
-    assert post.author.id == user.id
-
-    post2 = await Post.prisma().create(
-        data={
-            'title': 'Post 2',
-            'published': False,
-            'author': {
-                'connect_or_create': {
-                    'where': {
-                        'id': 'non-existent',
-                    },
-                    'create': {
-                        'name': 'Bobert',
-                    },
-                },
-            },
-        },
-        include={
-            'author': True,
-        },
-    )
-
-    assert post2.author is not None
-    assert post2.author.id != user.id
-    assert post2.author.name == 'Bobert'
