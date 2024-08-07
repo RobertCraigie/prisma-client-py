@@ -102,7 +102,7 @@ async def test_connect_or_create() -> None:
                         'id': 'non-existent',
                     },
                     'create': {
-                        'name': 'Robert',
+                        'name': 'Bobert',
                     },
                 },
             },
@@ -114,3 +114,4 @@ async def test_connect_or_create() -> None:
 
     assert post2.author is not None
     assert post2.author.id != user.id
+    assert post2.author.name == 'Bobert'
