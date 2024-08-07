@@ -127,7 +127,7 @@ def test_required_relation_key_field(client: Prisma) -> None:
     assert profile.user.name == 'Robert'
 
 
-async def test_connect_or_create(client: Prisma) -> None:
+def test_connect_or_create(client: Prisma) -> None:
     """Connect or create a relation"""
     user = client.user.create(
         data={
