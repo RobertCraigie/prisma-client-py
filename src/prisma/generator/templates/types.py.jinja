@@ -486,13 +486,13 @@ class {{ model.name }}ConnectOrCreateWithoutRelationsInput(TypedDict):
 class {{ model.name }}CreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: '{{ model.name }}CreateWithoutRelationsInput'
     connect: '{{ model.name }}WhereUniqueInput'
-    connectOrCreate: '{{ model.name }}ConnectOrCreateWithoutRelationsInput'
+    connect_or_create: '{{ model.name }}ConnectOrCreateWithoutRelationsInput'
 
 
 class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['{{ model.name }}CreateWithoutRelationsInput', List['{{ model.name }}CreateWithoutRelationsInput']]
     connect: Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]
-    connectOrCreate: Union['{{ model.name }}ConnectOrCreateWithoutRelationsInput', List['{{ model.name }}ConnectOrCreateWithoutRelationsInput']]
+    connect_or_create: Union['{{ model.name }}ConnectOrCreateWithoutRelationsInput', List['{{ model.name }}ConnectOrCreateWithoutRelationsInput']]
 
 {{ render_type(model_schema.where_unique) }}
 
@@ -517,7 +517,7 @@ class {{ model.name }}UpdateManyMutationInput(TypedDict, total=False):
 class {{ model.name }}UpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['{{ model.name }}CreateWithoutRelationsInput']
     connect: List['{{ model.name }}WhereUniqueInput']
-    connectOrCreate: List['{{ model.name }}ConnectOrCreateWithoutRelationsInput']
+    connect_or_create: List['{{ model.name }}ConnectOrCreateWithoutRelationsInput']
     set: List['{{ model.name }}WhereUniqueInput']
     disconnect: List['{{ model.name }}WhereUniqueInput']
     delete: List['{{ model.name }}WhereUniqueInput']
@@ -532,7 +532,7 @@ class {{ model.name }}UpdateManyWithoutRelationsInput(TypedDict, total=False):
 class {{ model.name }}UpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: '{{ model.name }}CreateWithoutRelationsInput'
     connect: '{{ model.name }}WhereUniqueInput'
-    connectOrCreate: '{{ model.name }}ConnectOrCreateWithoutRelationsInput'
+    connect_or_create: '{{ model.name }}ConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 

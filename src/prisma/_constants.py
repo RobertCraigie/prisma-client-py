@@ -15,4 +15,5 @@ QUERY_BUILDER_ALIASES: Dict[str, str] = {
     'order_by': 'orderBy',
     'not_in': 'notIn',
     'is_not': 'isNot',
+    'connect_or_create': 'connectOrCreate',
 }

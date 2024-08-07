@@ -74,7 +74,7 @@ async def test_connect_or_create() -> None:
             'title': 'Post 1',
             'published': True,
             'author': {
-                'connectOrCreate': {
+                'connect_or_create': {
                     'where': {
                         'id': user.id,
                     },
@@ -97,7 +97,7 @@ async def test_connect_or_create() -> None:
             'title': 'Post 2',
             'published': False,
             'author': {
-                'connectOrCreate': {
+                'connect_or_create': {
                     'where': {
                         'id': 'non-existent',
                     },

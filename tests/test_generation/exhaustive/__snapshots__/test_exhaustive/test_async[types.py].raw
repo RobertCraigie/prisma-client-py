@@ -1007,13 +1007,13 @@ class PostConnectOrCreateWithoutRelationsInput(TypedDict):
 class PostCreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: 'PostCreateWithoutRelationsInput'
     connect: 'PostWhereUniqueInput'
-    connectOrCreate: 'PostConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'PostConnectOrCreateWithoutRelationsInput'
 
 
 class PostCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['PostCreateWithoutRelationsInput', List['PostCreateWithoutRelationsInput']]
     connect: Union['PostWhereUniqueInput', List['PostWhereUniqueInput']]
-    connectOrCreate: Union['PostConnectOrCreateWithoutRelationsInput', List['PostConnectOrCreateWithoutRelationsInput']]
+    connect_or_create: Union['PostConnectOrCreateWithoutRelationsInput', List['PostConnectOrCreateWithoutRelationsInput']]
 
 _PostWhereUnique_id_Input = TypedDict(
     '_PostWhereUnique_id_Input',
@@ -1048,7 +1048,7 @@ class PostUpdateManyMutationInput(TypedDict, total=False):
 class PostUpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['PostCreateWithoutRelationsInput']
     connect: List['PostWhereUniqueInput']
-    connectOrCreate: List['PostConnectOrCreateWithoutRelationsInput']
+    connect_or_create: List['PostConnectOrCreateWithoutRelationsInput']
     set: List['PostWhereUniqueInput']
     disconnect: List['PostWhereUniqueInput']
     delete: List['PostWhereUniqueInput']
@@ -1063,7 +1063,7 @@ class PostUpdateManyWithoutRelationsInput(TypedDict, total=False):
 class PostUpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: 'PostCreateWithoutRelationsInput'
     connect: 'PostWhereUniqueInput'
-    connectOrCreate: 'PostConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'PostConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 
@@ -2181,13 +2181,13 @@ class UserConnectOrCreateWithoutRelationsInput(TypedDict):
 class UserCreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: 'UserCreateWithoutRelationsInput'
     connect: 'UserWhereUniqueInput'
-    connectOrCreate: 'UserConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'UserConnectOrCreateWithoutRelationsInput'
 
 
 class UserCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['UserCreateWithoutRelationsInput', List['UserCreateWithoutRelationsInput']]
     connect: Union['UserWhereUniqueInput', List['UserWhereUniqueInput']]
-    connectOrCreate: Union['UserConnectOrCreateWithoutRelationsInput', List['UserConnectOrCreateWithoutRelationsInput']]
+    connect_or_create: Union['UserConnectOrCreateWithoutRelationsInput', List['UserConnectOrCreateWithoutRelationsInput']]
 
 _UserWhereUnique_id_Input = TypedDict(
     '_UserWhereUnique_id_Input',
@@ -2247,7 +2247,7 @@ class UserUpdateManyMutationInput(TypedDict, total=False):
 class UserUpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['UserCreateWithoutRelationsInput']
     connect: List['UserWhereUniqueInput']
-    connectOrCreate: List['UserConnectOrCreateWithoutRelationsInput']
+    connect_or_create: List['UserConnectOrCreateWithoutRelationsInput']
     set: List['UserWhereUniqueInput']
     disconnect: List['UserWhereUniqueInput']
     delete: List['UserWhereUniqueInput']
@@ -2262,7 +2262,7 @@ class UserUpdateManyWithoutRelationsInput(TypedDict, total=False):
 class UserUpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: 'UserCreateWithoutRelationsInput'
     connect: 'UserWhereUniqueInput'
-    connectOrCreate: 'UserConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'UserConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 
@@ -3525,13 +3525,13 @@ class MConnectOrCreateWithoutRelationsInput(TypedDict):
 class MCreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: 'MCreateWithoutRelationsInput'
     connect: 'MWhereUniqueInput'
-    connectOrCreate: 'MConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'MConnectOrCreateWithoutRelationsInput'
 
 
 class MCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['MCreateWithoutRelationsInput', List['MCreateWithoutRelationsInput']]
     connect: Union['MWhereUniqueInput', List['MWhereUniqueInput']]
-    connectOrCreate: Union['MConnectOrCreateWithoutRelationsInput', List['MConnectOrCreateWithoutRelationsInput']]
+    connect_or_create: Union['MConnectOrCreateWithoutRelationsInput', List['MConnectOrCreateWithoutRelationsInput']]
 
 _MWhereUnique_id_Input = TypedDict(
     '_MWhereUnique_id_Input',
@@ -3578,7 +3578,7 @@ class MUpdateManyMutationInput(TypedDict, total=False):
 class MUpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['MCreateWithoutRelationsInput']
     connect: List['MWhereUniqueInput']
-    connectOrCreate: List['MConnectOrCreateWithoutRelationsInput']
+    connect_or_create: List['MConnectOrCreateWithoutRelationsInput']
     set: List['MWhereUniqueInput']
     disconnect: List['MWhereUniqueInput']
     delete: List['MWhereUniqueInput']
@@ -3593,7 +3593,7 @@ class MUpdateManyWithoutRelationsInput(TypedDict, total=False):
 class MUpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: 'MCreateWithoutRelationsInput'
     connect: 'MWhereUniqueInput'
-    connectOrCreate: 'MConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'MConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 
@@ -4837,13 +4837,13 @@ class NConnectOrCreateWithoutRelationsInput(TypedDict):
 class NCreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: 'NCreateWithoutRelationsInput'
     connect: 'NWhereUniqueInput'
-    connectOrCreate: 'NConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'NConnectOrCreateWithoutRelationsInput'
 
 
 class NCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['NCreateWithoutRelationsInput', List['NCreateWithoutRelationsInput']]
     connect: Union['NWhereUniqueInput', List['NWhereUniqueInput']]
-    connectOrCreate: Union['NConnectOrCreateWithoutRelationsInput', List['NConnectOrCreateWithoutRelationsInput']]
+    connect_or_create: Union['NConnectOrCreateWithoutRelationsInput', List['NConnectOrCreateWithoutRelationsInput']]
 
 _NWhereUnique_id_Input = TypedDict(
     '_NWhereUnique_id_Input',
@@ -4894,7 +4894,7 @@ class NUpdateManyMutationInput(TypedDict, total=False):
 class NUpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['NCreateWithoutRelationsInput']
     connect: List['NWhereUniqueInput']
-    connectOrCreate: List['NConnectOrCreateWithoutRelationsInput']
+    connect_or_create: List['NConnectOrCreateWithoutRelationsInput']
     set: List['NWhereUniqueInput']
     disconnect: List['NWhereUniqueInput']
     delete: List['NWhereUniqueInput']
@@ -4909,7 +4909,7 @@ class NUpdateManyWithoutRelationsInput(TypedDict, total=False):
 class NUpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: 'NCreateWithoutRelationsInput'
     connect: 'NWhereUniqueInput'
-    connectOrCreate: 'NConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'NConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 
@@ -6195,13 +6195,13 @@ class OneOptionalConnectOrCreateWithoutRelationsInput(TypedDict):
 class OneOptionalCreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: 'OneOptionalCreateWithoutRelationsInput'
     connect: 'OneOptionalWhereUniqueInput'
-    connectOrCreate: 'OneOptionalConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'OneOptionalConnectOrCreateWithoutRelationsInput'
 
 
 class OneOptionalCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['OneOptionalCreateWithoutRelationsInput', List['OneOptionalCreateWithoutRelationsInput']]
     connect: Union['OneOptionalWhereUniqueInput', List['OneOptionalWhereUniqueInput']]
-    connectOrCreate: Union['OneOptionalConnectOrCreateWithoutRelationsInput', List['OneOptionalConnectOrCreateWithoutRelationsInput']]
+    connect_or_create: Union['OneOptionalConnectOrCreateWithoutRelationsInput', List['OneOptionalConnectOrCreateWithoutRelationsInput']]
 
 _OneOptionalWhereUnique_id_Input = TypedDict(
     '_OneOptionalWhereUnique_id_Input',
@@ -6248,7 +6248,7 @@ class OneOptionalUpdateManyMutationInput(TypedDict, total=False):
 class OneOptionalUpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['OneOptionalCreateWithoutRelationsInput']
     connect: List['OneOptionalWhereUniqueInput']
-    connectOrCreate: List['OneOptionalConnectOrCreateWithoutRelationsInput']
+    connect_or_create: List['OneOptionalConnectOrCreateWithoutRelationsInput']
     set: List['OneOptionalWhereUniqueInput']
     disconnect: List['OneOptionalWhereUniqueInput']
     delete: List['OneOptionalWhereUniqueInput']
@@ -6263,7 +6263,7 @@ class OneOptionalUpdateManyWithoutRelationsInput(TypedDict, total=False):
 class OneOptionalUpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: 'OneOptionalCreateWithoutRelationsInput'
     connect: 'OneOptionalWhereUniqueInput'
-    connectOrCreate: 'OneOptionalConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'OneOptionalConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 
@@ -7505,13 +7505,13 @@ class ManyRequiredConnectOrCreateWithoutRelationsInput(TypedDict):
 class ManyRequiredCreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: 'ManyRequiredCreateWithoutRelationsInput'
     connect: 'ManyRequiredWhereUniqueInput'
-    connectOrCreate: 'ManyRequiredConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'ManyRequiredConnectOrCreateWithoutRelationsInput'
 
 
 class ManyRequiredCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['ManyRequiredCreateWithoutRelationsInput', List['ManyRequiredCreateWithoutRelationsInput']]
     connect: Union['ManyRequiredWhereUniqueInput', List['ManyRequiredWhereUniqueInput']]
-    connectOrCreate: Union['ManyRequiredConnectOrCreateWithoutRelationsInput', List['ManyRequiredConnectOrCreateWithoutRelationsInput']]
+    connect_or_create: Union['ManyRequiredConnectOrCreateWithoutRelationsInput', List['ManyRequiredConnectOrCreateWithoutRelationsInput']]
 
 _ManyRequiredWhereUnique_id_Input = TypedDict(
     '_ManyRequiredWhereUnique_id_Input',
@@ -7558,7 +7558,7 @@ class ManyRequiredUpdateManyMutationInput(TypedDict, total=False):
 class ManyRequiredUpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['ManyRequiredCreateWithoutRelationsInput']
     connect: List['ManyRequiredWhereUniqueInput']
-    connectOrCreate: List['ManyRequiredConnectOrCreateWithoutRelationsInput']
+    connect_or_create: List['ManyRequiredConnectOrCreateWithoutRelationsInput']
     set: List['ManyRequiredWhereUniqueInput']
     disconnect: List['ManyRequiredWhereUniqueInput']
     delete: List['ManyRequiredWhereUniqueInput']
@@ -7573,7 +7573,7 @@ class ManyRequiredUpdateManyWithoutRelationsInput(TypedDict, total=False):
 class ManyRequiredUpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: 'ManyRequiredCreateWithoutRelationsInput'
     connect: 'ManyRequiredWhereUniqueInput'
-    connectOrCreate: 'ManyRequiredConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'ManyRequiredConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 
@@ -8836,13 +8836,13 @@ class ListsConnectOrCreateWithoutRelationsInput(TypedDict):
 class ListsCreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: 'ListsCreateWithoutRelationsInput'
     connect: 'ListsWhereUniqueInput'
-    connectOrCreate: 'ListsConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'ListsConnectOrCreateWithoutRelationsInput'
 
 
 class ListsCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['ListsCreateWithoutRelationsInput', List['ListsCreateWithoutRelationsInput']]
     connect: Union['ListsWhereUniqueInput', List['ListsWhereUniqueInput']]
-    connectOrCreate: Union['ListsConnectOrCreateWithoutRelationsInput', List['ListsConnectOrCreateWithoutRelationsInput']]
+    connect_or_create: Union['ListsConnectOrCreateWithoutRelationsInput', List['ListsConnectOrCreateWithoutRelationsInput']]
 
 _ListsWhereUnique_id_Input = TypedDict(
     '_ListsWhereUnique_id_Input',
@@ -8886,7 +8886,7 @@ class ListsUpdateManyMutationInput(TypedDict, total=False):
 class ListsUpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['ListsCreateWithoutRelationsInput']
     connect: List['ListsWhereUniqueInput']
-    connectOrCreate: List['ListsConnectOrCreateWithoutRelationsInput']
+    connect_or_create: List['ListsConnectOrCreateWithoutRelationsInput']
     set: List['ListsWhereUniqueInput']
     disconnect: List['ListsWhereUniqueInput']
     delete: List['ListsWhereUniqueInput']
@@ -8901,7 +8901,7 @@ class ListsUpdateManyWithoutRelationsInput(TypedDict, total=False):
 class ListsUpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: 'ListsCreateWithoutRelationsInput'
     connect: 'ListsWhereUniqueInput'
-    connectOrCreate: 'ListsConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'ListsConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 
@@ -10100,13 +10100,13 @@ class AConnectOrCreateWithoutRelationsInput(TypedDict):
 class ACreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: 'ACreateWithoutRelationsInput'
     connect: 'AWhereUniqueInput'
-    connectOrCreate: 'AConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'AConnectOrCreateWithoutRelationsInput'
 
 
 class ACreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['ACreateWithoutRelationsInput', List['ACreateWithoutRelationsInput']]
     connect: Union['AWhereUniqueInput', List['AWhereUniqueInput']]
-    connectOrCreate: Union['AConnectOrCreateWithoutRelationsInput', List['AConnectOrCreateWithoutRelationsInput']]
+    connect_or_create: Union['AConnectOrCreateWithoutRelationsInput', List['AConnectOrCreateWithoutRelationsInput']]
 
 _AWhereUnique_email_Input = TypedDict(
     '_AWhereUnique_email_Input',
@@ -10169,7 +10169,7 @@ class AUpdateManyMutationInput(TypedDict, total=False):
 class AUpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['ACreateWithoutRelationsInput']
     connect: List['AWhereUniqueInput']
-    connectOrCreate: List['AConnectOrCreateWithoutRelationsInput']
+    connect_or_create: List['AConnectOrCreateWithoutRelationsInput']
     set: List['AWhereUniqueInput']
     disconnect: List['AWhereUniqueInput']
     delete: List['AWhereUniqueInput']
@@ -10184,7 +10184,7 @@ class AUpdateManyWithoutRelationsInput(TypedDict, total=False):
 class AUpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: 'ACreateWithoutRelationsInput'
     connect: 'AWhereUniqueInput'
-    connectOrCreate: 'AConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'AConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 
@@ -11361,13 +11361,13 @@ class BConnectOrCreateWithoutRelationsInput(TypedDict):
 class BCreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: 'BCreateWithoutRelationsInput'
     connect: 'BWhereUniqueInput'
-    connectOrCreate: 'BConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'BConnectOrCreateWithoutRelationsInput'
 
 
 class BCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['BCreateWithoutRelationsInput', List['BCreateWithoutRelationsInput']]
     connect: Union['BWhereUniqueInput', List['BWhereUniqueInput']]
-    connectOrCreate: Union['BConnectOrCreateWithoutRelationsInput', List['BConnectOrCreateWithoutRelationsInput']]
+    connect_or_create: Union['BConnectOrCreateWithoutRelationsInput', List['BConnectOrCreateWithoutRelationsInput']]
 
 _BWhereUnique_id_Input = TypedDict(
     '_BWhereUnique_id_Input',
@@ -11421,7 +11421,7 @@ class BUpdateManyMutationInput(TypedDict, total=False):
 class BUpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['BCreateWithoutRelationsInput']
     connect: List['BWhereUniqueInput']
-    connectOrCreate: List['BConnectOrCreateWithoutRelationsInput']
+    connect_or_create: List['BConnectOrCreateWithoutRelationsInput']
     set: List['BWhereUniqueInput']
     disconnect: List['BWhereUniqueInput']
     delete: List['BWhereUniqueInput']
@@ -11436,7 +11436,7 @@ class BUpdateManyWithoutRelationsInput(TypedDict, total=False):
 class BUpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: 'BCreateWithoutRelationsInput'
     connect: 'BWhereUniqueInput'
-    connectOrCreate: 'BConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'BConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 
@@ -12511,13 +12511,13 @@ class CConnectOrCreateWithoutRelationsInput(TypedDict):
 class CCreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: 'CCreateWithoutRelationsInput'
     connect: 'CWhereUniqueInput'
-    connectOrCreate: 'CConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'CConnectOrCreateWithoutRelationsInput'
 
 
 class CCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['CCreateWithoutRelationsInput', List['CCreateWithoutRelationsInput']]
     connect: Union['CWhereUniqueInput', List['CWhereUniqueInput']]
-    connectOrCreate: Union['CConnectOrCreateWithoutRelationsInput', List['CConnectOrCreateWithoutRelationsInput']]
+    connect_or_create: Union['CConnectOrCreateWithoutRelationsInput', List['CConnectOrCreateWithoutRelationsInput']]
 
 _CCompoundPrimaryKeyInner = TypedDict(
     '_CCompoundPrimaryKeyInner',
@@ -12562,7 +12562,7 @@ class CUpdateManyMutationInput(TypedDict, total=False):
 class CUpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['CCreateWithoutRelationsInput']
     connect: List['CWhereUniqueInput']
-    connectOrCreate: List['CConnectOrCreateWithoutRelationsInput']
+    connect_or_create: List['CConnectOrCreateWithoutRelationsInput']
     set: List['CWhereUniqueInput']
     disconnect: List['CWhereUniqueInput']
     delete: List['CWhereUniqueInput']
@@ -12577,7 +12577,7 @@ class CUpdateManyWithoutRelationsInput(TypedDict, total=False):
 class CUpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: 'CCreateWithoutRelationsInput'
     connect: 'CWhereUniqueInput'
-    connectOrCreate: 'CConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'CConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 
@@ -13669,13 +13669,13 @@ class DConnectOrCreateWithoutRelationsInput(TypedDict):
 class DCreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: 'DCreateWithoutRelationsInput'
     connect: 'DWhereUniqueInput'
-    connectOrCreate: 'DConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'DConnectOrCreateWithoutRelationsInput'
 
 
 class DCreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['DCreateWithoutRelationsInput', List['DCreateWithoutRelationsInput']]
     connect: Union['DWhereUniqueInput', List['DWhereUniqueInput']]
-    connectOrCreate: Union['DConnectOrCreateWithoutRelationsInput', List['DConnectOrCreateWithoutRelationsInput']]
+    connect_or_create: Union['DConnectOrCreateWithoutRelationsInput', List['DConnectOrCreateWithoutRelationsInput']]
 
 _DWhereUnique_id_Input = TypedDict(
     '_DWhereUnique_id_Input',
@@ -13711,7 +13711,7 @@ class DUpdateManyMutationInput(TypedDict, total=False):
 class DUpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['DCreateWithoutRelationsInput']
     connect: List['DWhereUniqueInput']
-    connectOrCreate: List['DConnectOrCreateWithoutRelationsInput']
+    connect_or_create: List['DConnectOrCreateWithoutRelationsInput']
     set: List['DWhereUniqueInput']
     disconnect: List['DWhereUniqueInput']
     delete: List['DWhereUniqueInput']
@@ -13726,7 +13726,7 @@ class DUpdateManyWithoutRelationsInput(TypedDict, total=False):
 class DUpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: 'DCreateWithoutRelationsInput'
     connect: 'DWhereUniqueInput'
-    connectOrCreate: 'DConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'DConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 
@@ -14814,13 +14814,13 @@ class EConnectOrCreateWithoutRelationsInput(TypedDict):
 class ECreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: 'ECreateWithoutRelationsInput'
     connect: 'EWhereUniqueInput'
-    connectOrCreate: 'EConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'EConnectOrCreateWithoutRelationsInput'
 
 
 class ECreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['ECreateWithoutRelationsInput', List['ECreateWithoutRelationsInput']]
     connect: Union['EWhereUniqueInput', List['EWhereUniqueInput']]
-    connectOrCreate: Union['EConnectOrCreateWithoutRelationsInput', List['EConnectOrCreateWithoutRelationsInput']]
+    connect_or_create: Union['EConnectOrCreateWithoutRelationsInput', List['EConnectOrCreateWithoutRelationsInput']]
 
 _EWhereUnique_id_Input = TypedDict(
     '_EWhereUnique_id_Input',
@@ -14852,7 +14852,7 @@ class EUpdateManyMutationInput(TypedDict, total=False):
 class EUpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['ECreateWithoutRelationsInput']
     connect: List['EWhereUniqueInput']
-    connectOrCreate: List['EConnectOrCreateWithoutRelationsInput']
+    connect_or_create: List['EConnectOrCreateWithoutRelationsInput']
     set: List['EWhereUniqueInput']
     disconnect: List['EWhereUniqueInput']
     delete: List['EWhereUniqueInput']
@@ -14867,7 +14867,7 @@ class EUpdateManyWithoutRelationsInput(TypedDict, total=False):
 class EUpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: 'ECreateWithoutRelationsInput'
     connect: 'EWhereUniqueInput'
-    connectOrCreate: 'EConnectOrCreateWithoutRelationsInput'
+    connect_or_create: 'EConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 
