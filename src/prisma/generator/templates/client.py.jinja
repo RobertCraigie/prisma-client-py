@@ -358,8 +358,8 @@ class {{ model.name }}BatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._batcher._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'skip_duplicates')
 
         self._batcher._add(
             method='create_many',

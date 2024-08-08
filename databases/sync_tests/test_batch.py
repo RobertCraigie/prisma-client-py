@@ -3,7 +3,7 @@ import pytest
 import prisma
 from prisma import Prisma
 
-from ..utils import DatabaseConfig, RawQueries
+from ..utils import RawQueries, DatabaseConfig
 
 
 def test_base_usage(client: Prisma) -> None:
