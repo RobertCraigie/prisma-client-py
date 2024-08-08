@@ -18,23 +18,6 @@ async def test_create_many(client: Prisma) -> None:
 
 
 @pytest.mark.asyncio
-async def test_skip_duplicates(client: Prisma) -> None:
-    """Skipping duplcates ignores unique constraint errors"""
-    user = await client.user.create({'name': 'Robert'})
-
-    with pytest.raises(prisma.errors.UniqueViolationError) as exc:
-        await client.user.create_many([{'id': user.id, 'name': 'Robert 2'}])
-
-    assert exc.match(r'Unique constraint failed')
-
-    count = await client.user.create_many(
-        [{'id': user.id, 'name': 'Robert 2'}, {'name': 'Tegan'}],
-        skip_duplicates=True,
-    )
-    assert count == 1
-
-
-@pytest.mark.asyncio
 async def test_required_relation_key_field(client: Prisma) -> None:
     """Explicitly passing a field used as a foreign key connects the relations"""
     user = await client.user.create(

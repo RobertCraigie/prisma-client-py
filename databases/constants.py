@@ -52,6 +52,7 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
             'json',
             'date',
             'arrays',
+            'skip_duplicates',
             'case_sensitivity',
         },
     ),
@@ -102,7 +103,7 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     'transactions': ['test_transactions.py'],
     # not yet implemented
     'date': [],
-    'create_many': ['test_create_many.py'],
+    'skip_duplicates': ['test_skip_duplicates.py'],
     'raw_queries': ['test_raw_queries.py', *_fromdir('types/raw_queries')],
     'case_sensitivity': ['test_case_sensitivity.py'],
 }
