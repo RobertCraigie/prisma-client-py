@@ -135,12 +135,11 @@ def _deserialize_prisma_object(
         key = result.columns[i]
         prisma_type = result.types[i]
 
-        if prisma_type.endswith('-array'):
-            if field is None:
-                # array fields can stil be `None`
-                new_obj[key] = None
-                continue
+        if field is None:
+            new_obj[key] = None
+            continue
 
+        if prisma_type.endswith('-array'):
             if not isinstance(field, list):
                 raise TypeError(
                     f'Expected array data for {key} column with internal type {prisma_type}',
