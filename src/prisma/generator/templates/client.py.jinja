@@ -358,9 +358,6 @@ class {{ model.name }}BatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if self._batcher._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
-
         self._batcher._add(
             method='create_many',
             model=models.{{ model.name }},

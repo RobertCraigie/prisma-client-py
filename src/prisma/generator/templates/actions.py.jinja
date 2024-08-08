@@ -232,8 +232,6 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
 
         resp = {{ maybe_await }}self._client._execute(
             method='create_many',

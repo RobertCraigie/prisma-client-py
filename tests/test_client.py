@@ -33,15 +33,6 @@ async def test_catches_not_connected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_create_many_invalid_provider(client: Prisma) -> None:
-    """Trying to call create_many() fails as SQLite does not support it"""
-    with pytest.raises(errors.UnsupportedDatabaseError) as exc:
-        await client.user.create_many([{'name': 'Robert'}])
-
-    assert exc.match(r'create_many\(\) is not supported by sqlite')
-
-
-@pytest.mark.asyncio
 async def test_datasource_overwriting(testdir: Testdir, client: Prisma) -> None:
     """Ensure the client can connect and query to a custom datasource"""
     # we have to do this messing with the schema so that we can run db push on the new database

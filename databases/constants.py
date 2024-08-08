@@ -52,7 +52,6 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
             'json',
             'date',
             'arrays',
-            'create_many',
             'case_sensitivity',
         },
     ),
