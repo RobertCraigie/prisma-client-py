@@ -420,6 +420,9 @@ class PostBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+
         self._batcher._add(
             method='create_many',
             model=models.Post,
@@ -528,6 +531,9 @@ class UserBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+
         self._batcher._add(
             method='create_many',
             model=models.User,
@@ -636,6 +642,9 @@ class MBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+
         self._batcher._add(
             method='create_many',
             model=models.M,
@@ -744,6 +753,9 @@ class NBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+
         self._batcher._add(
             method='create_many',
             model=models.N,
@@ -852,6 +864,9 @@ class OneOptionalBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+
         self._batcher._add(
             method='create_many',
             model=models.OneOptional,
@@ -960,6 +975,9 @@ class ManyRequiredBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+
         self._batcher._add(
             method='create_many',
             model=models.ManyRequired,
@@ -1068,6 +1086,9 @@ class ListsBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+
         self._batcher._add(
             method='create_many',
             model=models.Lists,
@@ -1176,6 +1197,9 @@ class ABatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+
         self._batcher._add(
             method='create_many',
             model=models.A,
@@ -1284,6 +1308,9 @@ class BBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+
         self._batcher._add(
             method='create_many',
             model=models.B,
@@ -1392,6 +1419,9 @@ class CBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+
         self._batcher._add(
             method='create_many',
             model=models.C,
@@ -1500,6 +1530,9 @@ class DBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+
         self._batcher._add(
             method='create_many',
             model=models.D,
@@ -1608,6 +1641,9 @@ class EBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+
         self._batcher._add(
             method='create_many',
             model=models.E,

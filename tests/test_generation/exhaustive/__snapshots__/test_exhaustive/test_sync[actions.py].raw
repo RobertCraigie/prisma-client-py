@@ -244,6 +244,8 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
 
         resp = self._client._execute(
             method='create_many',
@@ -1282,6 +1284,8 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
 
         resp = self._client._execute(
             method='create_many',
@@ -2325,6 +2329,8 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
 
         resp = self._client._execute(
             method='create_many',
@@ -3369,6 +3375,8 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
 
         resp = self._client._execute(
             method='create_many',
@@ -4412,6 +4420,8 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
 
         resp = self._client._execute(
             method='create_many',
@@ -5453,6 +5463,8 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
 
         resp = self._client._execute(
             method='create_many',
@@ -6479,6 +6491,8 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
 
         resp = self._client._execute(
             method='create_many',
@@ -7507,6 +7521,8 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
 
         resp = self._client._execute(
             method='create_many',
@@ -8541,6 +8557,8 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
 
         resp = self._client._execute(
             method='create_many',
@@ -9583,6 +9601,8 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
 
         resp = self._client._execute(
             method='create_many',
@@ -10619,6 +10639,8 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
 
         resp = self._client._execute(
             method='create_many',
@@ -11654,6 +11676,8 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
 
         resp = self._client._execute(
             method='create_many',

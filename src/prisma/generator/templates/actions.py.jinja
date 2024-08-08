@@ -184,10 +184,8 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
     {{ maybe_async_def }}create_many(
         self,
         data: List[types.{{ model.name }}CreateWithoutRelationsInput],
-        {% if active_provider not in ['mongodb', 'sqlserver', 'sqlite'] %}
         *,
         skip_duplicates: Optional[bool] = None,
-        {% endif %}
     ) -> int:
         """Create multiple {{ model.name }} records at once.
 
@@ -197,10 +195,8 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         ----------
         data
             List of {{ model.name }} record data
-        {% if active_provider not in ['mongodb', 'sqlserver', 'sqlite'] %}
         skip_duplicates
             Boolean flag for ignoring unique constraint errors
-        {% endif %}
 
         Returns
         -------
@@ -236,15 +232,15 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
 
         resp = {{ maybe_await }}self._client._execute(
             method='create_many',
             model=self._model,
             arguments={
                 'data': data,
-                {% if active_provider not in ['mongodb', 'sqlserver', 'sqlite'] %}
                 'skipDuplicates': skip_duplicates,
-                {% endif %}
             },
             root_selection=['count'],
         )

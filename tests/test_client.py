@@ -1,7 +1,7 @@
 import warnings
-from typing import TYPE_CHECKING, Any, Mapping
-from pathlib import Path
 from datetime import timedelta
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Mapping
 
 import httpx
 import pytest
@@ -9,12 +9,12 @@ from mock import AsyncMock
 from pytest_mock import MockerFixture
 
 from prisma import ENGINE_TYPE, SCHEMA_PATH, Prisma, errors, get_client
-from prisma.types import HttpConfig
-from prisma.testing import reset_client
 from prisma.cli.prisma import run
-from prisma.engine.http import HTTPEngine
 from prisma.engine.errors import AlreadyConnectedError
+from prisma.engine.http import HTTPEngine
 from prisma.http_abstract import DEFAULT_CONFIG
+from prisma.testing import reset_client
+from prisma.types import HttpConfig
 
 from .utils import Testdir, patch_method
 
@@ -30,6 +30,14 @@ async def test_catches_not_connected() -> None:
         await client.post.delete_many()
 
     assert 'connect()' in str(exc)
+
+@pytest.mark.asyncio
+async def test_skip_duplicates_invalid_provider(client: Prisma) -> None:
+    """Trying to call skip_duplicates fails as SQLite does not support it"""
+    with pytest.raises(errors.UnsupportedDatabaseError) as exc:
+        await client.user.create_many([{'name': 'Robert'}], skip_duplicates=True)
+
+    assert exc.match(r'skip_duplicates is not supported by sqlite')
 
 
 @pytest.mark.asyncio

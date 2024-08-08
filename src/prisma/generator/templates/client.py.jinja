@@ -355,19 +355,18 @@ class {{ model.name }}BatchActions:
     def create_many(
         self,
         data: List[types.{{ model.name }}CreateWithoutRelationsInput],
-        {% if active_provider not in ['mongodb', 'sqlserver', 'sqlite'] %}
         *,
         skip_duplicates: Optional[bool] = None,
-        {% endif %}
     ) -> None:
+        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+
         self._batcher._add(
             method='create_many',
             model=models.{{ model.name }},
             arguments={
                 'data': data,
-                {% if active_provider not in ['mongodb', 'sqlserver', 'sqlite'] %}
                 'skipDuplicates': skip_duplicates,
-                {% endif %}
             },
             root_selection=['count'],
         )
