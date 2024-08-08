@@ -479,16 +479,20 @@ class {{ model.name }}CreateWithoutRelationsInput({{ model.name }}OptionalCreate
         {% endif %}
     {% endfor %}
 
+class {{ model.name }}ConnectOrCreateWithoutRelationsInput(TypedDict):
+    create: '{{ model.name }}CreateWithoutRelationsInput'
+    where: '{{ model.name }}WhereUniqueInput'
 
 class {{ model.name }}CreateNestedWithoutRelationsInput(TypedDict, total=False):
     create: '{{ model.name }}CreateWithoutRelationsInput'
     connect: '{{ model.name }}WhereUniqueInput'
+    connect_or_create: '{{ model.name }}ConnectOrCreateWithoutRelationsInput'
 
 
 class {{ model.name }}CreateManyNestedWithoutRelationsInput(TypedDict, total=False):
     create: Union['{{ model.name }}CreateWithoutRelationsInput', List['{{ model.name }}CreateWithoutRelationsInput']]
     connect: Union['{{ model.name }}WhereUniqueInput', List['{{ model.name }}WhereUniqueInput']]
-
+    connect_or_create: Union['{{ model.name }}ConnectOrCreateWithoutRelationsInput', List['{{ model.name }}ConnectOrCreateWithoutRelationsInput']]
 
 {{ render_type(model_schema.where_unique) }}
 
@@ -513,6 +517,7 @@ class {{ model.name }}UpdateManyMutationInput(TypedDict, total=False):
 class {{ model.name }}UpdateManyWithoutRelationsInput(TypedDict, total=False):
     create: List['{{ model.name }}CreateWithoutRelationsInput']
     connect: List['{{ model.name }}WhereUniqueInput']
+    connect_or_create: List['{{ model.name }}ConnectOrCreateWithoutRelationsInput']
     set: List['{{ model.name }}WhereUniqueInput']
     disconnect: List['{{ model.name }}WhereUniqueInput']
     delete: List['{{ model.name }}WhereUniqueInput']
@@ -522,19 +527,18 @@ class {{ model.name }}UpdateManyWithoutRelationsInput(TypedDict, total=False):
     # updateMany: List['{{ model.name }}UpdateManyWithWhereUniqueWithoutRelationsInput']
     # deleteMany: List['{{ model.name }}ScalarWhereInput']
     # upsert: List['{{ model.name }}UpserteWithWhereUniqueWithoutRelationsInput']
-    # connectOrCreate: List['{{ model.name }}CreateOrConnectWithoutRelationsInput']
 
 
 class {{ model.name }}UpdateOneWithoutRelationsInput(TypedDict, total=False):
     create: '{{ model.name }}CreateWithoutRelationsInput'
     connect: '{{ model.name }}WhereUniqueInput'
+    connect_or_create: '{{ model.name }}ConnectOrCreateWithoutRelationsInput'
     disconnect: bool
     delete: bool
 
     # TODO
     # update: '{{ model.name }}UpdateInput'
     # upsert: '{{ model.name }}UpsertWithoutRelationsInput'
-    # connectOrCreate: '{{ model.name }}CreateOrConnectWithoutRelationsInput'
 
 
 class {{ model.name }}UpsertInput(TypedDict):

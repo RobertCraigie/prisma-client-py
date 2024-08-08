@@ -133,3 +133,61 @@ async def test_required_relation_key_field(client: Prisma) -> None:
     assert profile.user is not None
     assert profile.user.id == user.id
     assert profile.user.name == 'Robert'
+
+
+@pytest.mark.prisma
+@pytest.mark.asyncio
+async def test_connect_or_create(client: Prisma) -> None:
+    """Connect or create a relation"""
+    user = await client.user.create(
+        data={
+            'name': 'Robert',
+        },
+    )
+
+    post = await client.post.create(
+        data={
+            'title': 'Post 1',
+            'published': True,
+            'author': {
+                'connect_or_create': {
+                    'where': {
+                        'id': user.id,
+                    },
+                    'create': {
+                        'name': 'Robert',
+                    },
+                },
+            },
+        },
+        include={
+            'author': True,
+        },
+    )
+
+    assert post.author is not None
+    assert post.author.id == user.id
+
+    post2 = await client.post.create(
+        data={
+            'title': 'Post 2',
+            'published': False,
+            'author': {
+                'connect_or_create': {
+                    'where': {
+                        'id': 'non-existent',
+                    },
+                    'create': {
+                        'name': 'Bobert',
+                    },
+                },
+            },
+        },
+        include={
+            'author': True,
+        },
+    )
+
+    assert post2.author is not None
+    assert post2.author.id != user.id
+    assert post2.author.name == 'Bobert'
