@@ -31,6 +31,7 @@ async def test_catches_not_connected() -> None:
 
     assert 'connect()' in str(exc)
 
+
 @pytest.mark.asyncio
 async def test_skip_duplicates_invalid_provider(client: Prisma) -> None:
     """Trying to call skip_duplicates fails as SQLite does not support it"""
