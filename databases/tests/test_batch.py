@@ -278,4 +278,4 @@ async def test_skip_duplicates_unsupported(
         async with client.batch_() as batcher:
             batcher.user.create_many([{'name': 'Robert'}], skip_duplicates=True)
 
-    assert exc.match(r'create_many\(\) is not supported')
+    assert exc.match(r'skip_duplicates is not supported')
