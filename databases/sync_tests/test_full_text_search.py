@@ -30,9 +30,12 @@ _postgresql_syntax = FullTextSearchSyntax(
 )
 
 # Map the syntax to the corresponding database
-FULL_TEXT_SEARCH_SYNTAX: DatabaseMapping[FullTextSearchSyntax] = {
+FULL_TEXT_SEARCH_SYNTAX: DatabaseMapping[FullTextSearchSyntax | None] = {
     'mysql': _mysql_syntax,
     'postgresql': _postgresql_syntax,
+    'cockroachdb': None,
+    'mariadb': None,
+    'sqlite': None,
 }
 
 
@@ -42,6 +45,9 @@ def test_full_text_search(client: Prisma) -> None:
     # Determine the correct syntax based on the database
     db_type = cast(SupportedDatabase, client._active_provider)
     syntax = FULL_TEXT_SEARCH_SYNTAX[db_type]
+
+    if syntax is None:
+        pytest.skip(f'Skipping test for {db_type}')
 
     # Create some posts with varied content
     await client.post.create_many(
