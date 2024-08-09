@@ -24,9 +24,6 @@ user = await db.user.create(
 
 ### Many Records
 
-!!! warning
-    `create_many` is not available for SQLite
-
 ```py
 users = await db.user.create_many(
     data=[
@@ -36,6 +33,10 @@ users = await db.user.create_many(
     ]
 )
 ```
+
+!!! warning
+    the `skip_duplicates` argument is not supported when using MongoDB, SQLServer, or SQLite
+
 ```py
 users = await db.user.create_many(
     data=[

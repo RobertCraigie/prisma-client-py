@@ -45,6 +45,7 @@ import warnings
 
 from . import types, errors, bases
 from ._compat import model_parse
+from ._constants import CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED
 
 if TYPE_CHECKING:
     from .client import Prisma
@@ -244,8 +245,8 @@ class PostActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
 
         resp = await self._client._execute(
             method='create_many',
@@ -1284,8 +1285,8 @@ class UserActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
 
         resp = await self._client._execute(
             method='create_many',
@@ -2329,8 +2330,8 @@ class MActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
 
         resp = await self._client._execute(
             method='create_many',
@@ -3375,8 +3376,8 @@ class NActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
 
         resp = await self._client._execute(
             method='create_many',
@@ -4420,8 +4421,8 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
 
         resp = await self._client._execute(
             method='create_many',
@@ -5463,8 +5464,8 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
 
         resp = await self._client._execute(
             method='create_many',
@@ -6491,8 +6492,8 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
 
         resp = await self._client._execute(
             method='create_many',
@@ -7521,8 +7522,8 @@ class AActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
 
         resp = await self._client._execute(
             method='create_many',
@@ -8557,8 +8558,8 @@ class BActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
 
         resp = await self._client._execute(
             method='create_many',
@@ -9601,8 +9602,8 @@ class CActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
 
         resp = await self._client._execute(
             method='create_many',
@@ -10639,8 +10640,8 @@ class DActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
 
         resp = await self._client._execute(
             method='create_many',
@@ -11676,8 +11677,8 @@ class EActions(Generic[_PrismaModelT]):
         )
         ```
         """
-        if self._client._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
 
         resp = await self._client._execute(
             method='create_many',
