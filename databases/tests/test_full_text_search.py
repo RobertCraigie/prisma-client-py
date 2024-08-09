@@ -12,7 +12,6 @@ from .._types import DatabaseMapping, SupportedDatabase
 class FullTextSearchSyntax(BaseModel):
     search_or: str
     search_and: str
-    search_not: str
 
 
 # Define the queries for MySQL

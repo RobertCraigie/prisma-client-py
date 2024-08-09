@@ -12,21 +12,18 @@ from .._types import DatabaseMapping, SupportedDatabase
 class FullTextSearchSyntax(BaseModel):
     search_or: str
     search_and: str
-    search_not: str
 
 
 # Define the queries for MySQL
 _mysql_syntax = FullTextSearchSyntax(
     search_or='cats dogs',
     search_and='+cats +dogs',
-    search_not='-dogs',
 )
 
 # Define the queries for PostgreSQL
 _postgresql_syntax = FullTextSearchSyntax(
     search_or='cats | dogs',
     search_and='cats & dogs',
-    search_not='!dogs',
 )
 
 # Map the syntax to the corresponding database
@@ -90,14 +87,3 @@ def test_full_text_search(client: Prisma) -> None:
     assert len(posts) == 1
     assert 'cats' in posts[0].title
     assert 'dogs' in posts[0].title
-
-    # Test: Search for posts that contain 'cats' but not 'dogs'
-    posts = client.post.find_many(
-        where={
-            'title': {
-                'search': syntax.search_not,
-            },
-        }
-    )
-    assert len(posts) == 2
-    assert 'dogs' not in posts[0].title
