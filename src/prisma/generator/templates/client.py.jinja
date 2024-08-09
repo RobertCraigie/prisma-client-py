@@ -19,7 +19,7 @@ from .bases import _PrismaModel
 from ._builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix, model_parse
-from ._constants import DEFAULT_CONNECT_TIMEOUT, DEFAULT_TX_MAX_WAIT, DEFAULT_TX_TIMEOUT
+from ._constants import CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED, DEFAULT_CONNECT_TIMEOUT, DEFAULT_TX_MAX_WAIT, DEFAULT_TX_TIMEOUT
 from ._raw_query import deserialize_raw_results
 from ._metrics import Metrics
 from .metadata import PRISMA_MODELS, RELATIONAL_FIELD_MAPPINGS
@@ -358,8 +358,8 @@ class {{ model.name }}BatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if self._batcher._active_provider == 'sqlite':
-            raise errors.UnsupportedDatabaseError('sqlite', 'create_many()')
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
 
         self._batcher._add(
             method='create_many',

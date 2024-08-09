@@ -17,3 +17,5 @@ QUERY_BUILDER_ALIASES: Dict[str, str] = {
     'is_not': 'isNot',
     'connect_or_create': 'connectOrCreate',
 }
+
+CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED = {'mongodb', 'sqlserver', 'sqlite'}
