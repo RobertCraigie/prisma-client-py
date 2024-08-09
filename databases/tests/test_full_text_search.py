@@ -1,3 +1,5 @@
+from typing import cast
+
 import pytest
 from pydantic import BaseModel
 
@@ -39,7 +41,7 @@ async def test_full_text_search(client: Prisma) -> None:
     """Ensure that full-text search works correctly on both PostgreSQL and MySQL"""
 
     # Determine the correct syntax based on the database
-    db_type: SupportedDatabase = client._active_provider
+    db_type = cast(SupportedDatabase, client._active_provider)
     syntax = FULL_TEXT_SEARCH_SYNTAX[db_type]
 
     # Create some posts with varied content
