@@ -8,7 +8,7 @@ import prisma
 from prisma import Prisma
 from prisma.models import User, Profile
 
-from ..utils import CURRENT_DATABASE
+from ..utils import CURRENT_DATABASE, ISOLATION_LEVELS_MAPPING, RawQueries
 
 
 @pytest.mark.asyncio
@@ -214,3 +214,67 @@ async def test_transaction_already_closed(client: Prisma) -> None:
         await transaction.user.delete_many()
 
     assert exc.match('Transaction already closed')
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ('input_level',),
+    [
+        pytest.param(
+            'READ_UNCOMMITTED',
+            id='read uncommitted',
+            marks=pytest.mark.skipif(CURRENT_DATABASE in ['cockroachdb', 'sqlite'], reason='Not available'),
+        ),
+        pytest.param(
+            'READ_COMMITTED',
+            id='read committed',
+            marks=pytest.mark.skipif(CURRENT_DATABASE in ['cockroachdb', 'sqlite'], reason='Not available'),
+        ),
+        pytest.param(
+            'REPEATABLE_READ',
+            id='repeatable read',
+            marks=pytest.mark.skipif(CURRENT_DATABASE in ['cockroachdb', 'sqlite'], reason='Not available'),
+        ),
+        pytest.param(
+            'SNAPSHOT',
+            id='snapshot',
+            marks=pytest.mark.skipif(CURRENT_DATABASE != 'sqlserver', reason='Not available'),
+        ),
+        pytest.param(
+            'SERIALIZABLE',
+            id='serializable',
+            marks=pytest.mark.skipif(
+                CURRENT_DATABASE == 'sqlite',
+                reason="SQLite doesn't have the way to query the current transaction isolation level",
+            ),
+        ),
+    ],
+)
+@pytest.mark.skipif(CURRENT_DATABASE == 'mongodb', reason='Not available')
+@pytest.mark.skipif(
+    CURRENT_DATABASE in ['mysql', 'mariadb'],
+    reason="""
+    MySQL 8.0 doesn't have the way to query the current transaction isolation level.
+    See https://bugs.mysql.com/bug.php?id=53341
+
+    Refs:
+    * https://github.com/prisma/prisma/issues/22890
+    """,
+)
+async def test_isolation_level(
+    client: Prisma,
+    database: str,
+    raw_queries: RawQueries,
+    input_level: str,
+) -> None:
+    """Ensure that transaction isolation level is set correctly"""
+    async with client.tx(isolation_level=getattr(prisma.TransactionIsolationLevel, input_level)) as tx:
+        results = await tx.query_raw(raw_queries.select_tx_isolation)
+
+    assert len(results) == 1
+
+    row = results[0]
+    assert any(row)
+
+    level = next(iter(row.values()))
+    assert level == ISOLATION_LEVELS_MAPPING[database][input_level]

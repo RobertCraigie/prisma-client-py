@@ -3,11 +3,12 @@ from __future__ import annotations
 import logging
 import warnings
 from types import TracebackType
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from datetime import timedelta
 
 from ._types import TransactionId
 from .errors import TransactionNotStartedError
+from ._compat import StrEnum
 from ._builder import dumps
 
 if TYPE_CHECKING:
@@ -15,12 +16,18 @@ if TYPE_CHECKING:
 
 log: logging.Logger = logging.getLogger(__name__)
 
+__all__ = (
+    'AsyncTransactionManager',
+    'SyncTransactionManager',
+)
+
 
 _SyncPrismaT = TypeVar('_SyncPrismaT', bound='SyncBasePrisma')
 _AsyncPrismaT = TypeVar('_AsyncPrismaT', bound='AsyncBasePrisma')
+_IsolationLevelT = TypeVar('_IsolationLevelT', bound=StrEnum)
 
 
-class AsyncTransactionManager(Generic[_AsyncPrismaT]):
+class AsyncTransactionManager(Generic[_AsyncPrismaT, _IsolationLevelT]):
     """Context manager for wrapping a Prisma instance within a transaction.
 
     This should never be created manually, instead it should be used
@@ -33,8 +40,10 @@ class AsyncTransactionManager(Generic[_AsyncPrismaT]):
         client: _AsyncPrismaT,
         max_wait: int | timedelta,
         timeout: int | timedelta,
+        isolation_level: _IsolationLevelT | None,
     ) -> None:
         self.__client = client
+        self._isolation_level = isolation_level
 
         if isinstance(max_wait, int):
             message = (
@@ -71,14 +80,15 @@ class AsyncTransactionManager(Generic[_AsyncPrismaT]):
                 stacklevel=3 if _from_context else 2,
             )
 
-        tx_id = await self.__client._engine.start_transaction(
-            content=dumps(
-                {
-                    'timeout': int(self._timeout.total_seconds() * 1000),
-                    'max_wait': int(self._max_wait.total_seconds() * 1000),
-                }
-            ),
-        )
+        content_dict: dict[str, Any] = {
+            'timeout': int(self._timeout.total_seconds() * 1000),
+            'max_wait': int(self._max_wait.total_seconds() * 1000),
+        }
+        if self._isolation_level is not None:
+            content_dict['isolation_level'] = self._isolation_level.value
+
+        tx_id = await self.__client._engine.start_transaction(content=dumps(content_dict))
+
         self._tx_id = tx_id
         client = self.__client._copy()
         client._tx_id = tx_id
@@ -122,7 +132,7 @@ class AsyncTransactionManager(Generic[_AsyncPrismaT]):
             )
 
 
-class SyncTransactionManager(Generic[_SyncPrismaT]):
+class SyncTransactionManager(Generic[_SyncPrismaT, _IsolationLevelT]):
     """Context manager for wrapping a Prisma instance within a transaction.
 
     This should never be created manually, instead it should be used
@@ -135,8 +145,10 @@ class SyncTransactionManager(Generic[_SyncPrismaT]):
         client: _SyncPrismaT,
         max_wait: int | timedelta,
         timeout: int | timedelta,
+        isolation_level: _IsolationLevelT | None,
     ) -> None:
         self.__client = client
+        self._isolation_level = isolation_level
 
         if isinstance(max_wait, int):
             message = (
@@ -173,14 +185,15 @@ class SyncTransactionManager(Generic[_SyncPrismaT]):
                 stacklevel=3 if _from_context else 2,
             )
 
-        tx_id = self.__client._engine.start_transaction(
-            content=dumps(
-                {
-                    'timeout': int(self._timeout.total_seconds() * 1000),
-                    'max_wait': int(self._max_wait.total_seconds() * 1000),
-                }
-            ),
-        )
+        content_dict: dict[str, Any] = {
+            'timeout': int(self._timeout.total_seconds() * 1000),
+            'max_wait': int(self._max_wait.total_seconds() * 1000),
+        }
+        if self._isolation_level is not None:
+            content_dict['isolation_level'] = self._isolation_level.value
+
+        tx_id = self.__client._engine.start_transaction(content=dumps(content_dict))
+
         self._tx_id = tx_id
         client = self.__client._copy()
         client._tx_id = tx_id

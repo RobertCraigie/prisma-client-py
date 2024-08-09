@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import os
-from typing import Set
+from typing import Set, Optional
 from pathlib import Path
-from typing_extensions import Literal, get_args, override
+from typing_extensions import Literal, TypedDict, get_args, override
 
 from pydantic import BaseModel
 from syrupy.location import PyTestLocation
@@ -86,6 +86,8 @@ class RawQueries(BaseModel):
     test_query_raw_no_result: LiteralString
     test_execute_raw_no_result: LiteralString
 
+    select_tx_isolation: LiteralString
+
 
 _mysql_queries = RawQueries(
     count_posts="""
@@ -137,7 +139,11 @@ _mysql_queries = RawQueries(
         SET title = 'updated title'
         WHERE id = 'sdldsd'
     """,
+    select_tx_isolation="""
+        SELECT @@transaction_isolation
+    """,
 )
+
 
 _postgresql_queries = RawQueries(
     count_posts="""
@@ -188,6 +194,9 @@ _postgresql_queries = RawQueries(
         UPDATE "Post"
         SET title = 'updated title'
         WHERE id = 'sdldsd'
+    """,
+    select_tx_isolation="""
+        SHOW transaction_isolation
     """,
 )
 
@@ -246,5 +255,55 @@ RAW_QUERIES_MAPPING: DatabaseMapping[RawQueries] = {
             SET title = 'updated title'
             WHERE id = 'sdldsd'
         """,
+        select_tx_isolation="""
+            Not avaliable
+        """,
     ),
+}
+
+
+class IsolationLevels(TypedDict):
+    READ_UNCOMMITTED: Optional[LiteralString]
+    READ_COMMITTED: Optional[LiteralString]
+    REPEATABLE_READ: Optional[LiteralString]
+    SNAPSHOT: Optional[LiteralString]
+    SERIALIZABLE: Optional[LiteralString]
+
+
+ISOLATION_LEVELS_MAPPING: DatabaseMapping[IsolationLevels] = {
+    'postgresql': {
+        'READ_UNCOMMITTED': 'read uncommitted',
+        'READ_COMMITTED': 'read committed',
+        'REPEATABLE_READ': 'repeatable read',
+        'SNAPSHOT': None,
+        'SERIALIZABLE': 'serializable',
+    },
+    'cockroachdb': {
+        'READ_UNCOMMITTED': None,
+        'READ_COMMITTED': None,
+        'REPEATABLE_READ': None,
+        'SNAPSHOT': None,
+        'SERIALIZABLE': 'SERIALIZABLE',
+    },
+    'mysql': {
+        'READ_UNCOMMITTED': 'READ-UNCOMMITTED',
+        'READ_COMMITTED': 'READ-COMMITTED',
+        'REPEATABLE_READ': 'REPEATABLE-READ',
+        'SNAPSHOT': None,
+        'SERIALIZABLE': 'SERIALIZABLE',
+    },
+    'mariadb': {
+        'READ_UNCOMMITTED': 'READ-UNCOMMITTED',
+        'READ_COMMITTED': 'READ-COMMITTED',
+        'REPEATABLE_READ': 'REPEATABLE-READ',
+        'SNAPSHOT': None,
+        'SERIALIZABLE': 'SERIALIZABLE',
+    },
+    'sqlite': {
+        'READ_UNCOMMITTED': None,
+        'READ_COMMITTED': None,
+        'REPEATABLE_READ': None,
+        'SNAPSHOT': None,
+        'SERIALIZABLE': None,
+    },
 }
