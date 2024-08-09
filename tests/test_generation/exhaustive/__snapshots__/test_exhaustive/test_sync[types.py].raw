@@ -1128,6 +1128,24 @@ _Post_author_id_OrderByInput = TypedDict(
     total=True
 )
 
+_Post_RelevanceInner = TypedDict(
+    '_Post_RelevanceInner',
+    {
+        'fields': 'List[PostScalarFieldKeys]',
+        'search': 'str',
+        'sort': 'SortOrder',
+    },
+    total=True
+)
+
+_Post_RelevanceOrderByInput = TypedDict(
+    '_Post_RelevanceOrderByInput',
+    {
+        '_relevance': '_Post_RelevanceInner',
+    },
+    total=True
+)
+
 PostOrderByInput = Union[
     '_Post_id_OrderByInput',
     '_Post_created_at_OrderByInput',
@@ -1135,6 +1153,7 @@ PostOrderByInput = Union[
     '_Post_content_OrderByInput',
     '_Post_published_OrderByInput',
     '_Post_author_id_OrderByInput',
+    '_Post_RelevanceOrderByInput',
 ]
 
 
@@ -2375,6 +2394,24 @@ _User_optional_boolean_OrderByInput = TypedDict(
     total=True
 )
 
+_User_RelevanceInner = TypedDict(
+    '_User_RelevanceInner',
+    {
+        'fields': 'List[UserScalarFieldKeys]',
+        'search': 'str',
+        'sort': 'SortOrder',
+    },
+    total=True
+)
+
+_User_RelevanceOrderByInput = TypedDict(
+    '_User_RelevanceOrderByInput',
+    {
+        '_relevance': '_User_RelevanceInner',
+    },
+    total=True
+)
+
 UserOrderByInput = Union[
     '_User_id_OrderByInput',
     '_User_email_OrderByInput',
@@ -2388,6 +2425,7 @@ UserOrderByInput = Union[
     '_User_optional_enum_OrderByInput',
     '_User_boolean_OrderByInput',
     '_User_optional_boolean_OrderByInput',
+    '_User_RelevanceOrderByInput',
 ]
 
 
@@ -3698,6 +3736,24 @@ _M_optional_boolean_OrderByInput = TypedDict(
     total=True
 )
 
+_M_RelevanceInner = TypedDict(
+    '_M_RelevanceInner',
+    {
+        'fields': 'List[MScalarFieldKeys]',
+        'search': 'str',
+        'sort': 'SortOrder',
+    },
+    total=True
+)
+
+_M_RelevanceOrderByInput = TypedDict(
+    '_M_RelevanceOrderByInput',
+    {
+        '_relevance': '_M_RelevanceInner',
+    },
+    total=True
+)
+
 MOrderByInput = Union[
     '_M_id_OrderByInput',
     '_M_int_OrderByInput',
@@ -3710,6 +3766,7 @@ MOrderByInput = Union[
     '_M_optional_enum_OrderByInput',
     '_M_boolean_OrderByInput',
     '_M_optional_boolean_OrderByInput',
+    '_M_RelevanceOrderByInput',
 ]
 
 
@@ -5030,6 +5087,24 @@ _N_optional_boolean_OrderByInput = TypedDict(
     total=True
 )
 
+_N_RelevanceInner = TypedDict(
+    '_N_RelevanceInner',
+    {
+        'fields': 'List[NScalarFieldKeys]',
+        'search': 'str',
+        'sort': 'SortOrder',
+    },
+    total=True
+)
+
+_N_RelevanceOrderByInput = TypedDict(
+    '_N_RelevanceOrderByInput',
+    {
+        '_relevance': '_N_RelevanceInner',
+    },
+    total=True
+)
+
 NOrderByInput = Union[
     '_N_id_OrderByInput',
     '_N_int_OrderByInput',
@@ -5044,6 +5119,7 @@ NOrderByInput = Union[
     '_N_optional_enum_OrderByInput',
     '_N_boolean_OrderByInput',
     '_N_optional_boolean_OrderByInput',
+    '_N_RelevanceOrderByInput',
 ]
 
 
@@ -6368,6 +6444,24 @@ _OneOptional_optional_boolean_OrderByInput = TypedDict(
     total=True
 )
 
+_OneOptional_RelevanceInner = TypedDict(
+    '_OneOptional_RelevanceInner',
+    {
+        'fields': 'List[OneOptionalScalarFieldKeys]',
+        'search': 'str',
+        'sort': 'SortOrder',
+    },
+    total=True
+)
+
+_OneOptional_RelevanceOrderByInput = TypedDict(
+    '_OneOptional_RelevanceOrderByInput',
+    {
+        '_relevance': '_OneOptional_RelevanceInner',
+    },
+    total=True
+)
+
 OneOptionalOrderByInput = Union[
     '_OneOptional_id_OrderByInput',
     '_OneOptional_int_OrderByInput',
@@ -6380,6 +6474,7 @@ OneOptionalOrderByInput = Union[
     '_OneOptional_optional_enum_OrderByInput',
     '_OneOptional_boolean_OrderByInput',
     '_OneOptional_optional_boolean_OrderByInput',
+    '_OneOptional_RelevanceOrderByInput',
 ]
 
 
@@ -7686,6 +7781,24 @@ _ManyRequired_optional_boolean_OrderByInput = TypedDict(
     total=True
 )
 
+_ManyRequired_RelevanceInner = TypedDict(
+    '_ManyRequired_RelevanceInner',
+    {
+        'fields': 'List[ManyRequiredScalarFieldKeys]',
+        'search': 'str',
+        'sort': 'SortOrder',
+    },
+    total=True
+)
+
+_ManyRequired_RelevanceOrderByInput = TypedDict(
+    '_ManyRequired_RelevanceOrderByInput',
+    {
+        '_relevance': '_ManyRequired_RelevanceInner',
+    },
+    total=True
+)
+
 ManyRequiredOrderByInput = Union[
     '_ManyRequired_id_OrderByInput',
     '_ManyRequired_one_optional_id_OrderByInput',
@@ -7699,6 +7812,7 @@ ManyRequiredOrderByInput = Union[
     '_ManyRequired_optional_enum_OrderByInput',
     '_ManyRequired_boolean_OrderByInput',
     '_ManyRequired_optional_boolean_OrderByInput',
+    '_ManyRequired_RelevanceOrderByInput',
 ]
 
 
@@ -8998,6 +9112,24 @@ _Lists_decimals_OrderByInput = TypedDict(
     total=True
 )
 
+_Lists_RelevanceInner = TypedDict(
+    '_Lists_RelevanceInner',
+    {
+        'fields': 'List[ListsScalarFieldKeys]',
+        'search': 'str',
+        'sort': 'SortOrder',
+    },
+    total=True
+)
+
+_Lists_RelevanceOrderByInput = TypedDict(
+    '_Lists_RelevanceOrderByInput',
+    {
+        '_relevance': '_Lists_RelevanceInner',
+    },
+    total=True
+)
+
 ListsOrderByInput = Union[
     '_Lists_id_OrderByInput',
     '_Lists_strings_OrderByInput',
@@ -9009,6 +9141,7 @@ ListsOrderByInput = Union[
     '_Lists_bigints_OrderByInput',
     '_Lists_json_objects_OrderByInput',
     '_Lists_decimals_OrderByInput',
+    '_Lists_RelevanceOrderByInput',
 ]
 
 
@@ -10273,6 +10406,24 @@ _A_enum_OrderByInput = TypedDict(
     total=True
 )
 
+_A_RelevanceInner = TypedDict(
+    '_A_RelevanceInner',
+    {
+        'fields': 'List[AScalarFieldKeys]',
+        'search': 'str',
+        'sort': 'SortOrder',
+    },
+    total=True
+)
+
+_A_RelevanceOrderByInput = TypedDict(
+    '_A_RelevanceOrderByInput',
+    {
+        '_relevance': '_A_RelevanceInner',
+    },
+    total=True
+)
+
 AOrderByInput = Union[
     '_A_email_OrderByInput',
     '_A_name_OrderByInput',
@@ -10283,6 +10434,7 @@ AOrderByInput = Union[
     '_A_bInt_OrderByInput',
     '_A_inc_bInt_OrderByInput',
     '_A_enum_OrderByInput',
+    '_A_RelevanceOrderByInput',
 ]
 
 
@@ -11493,12 +11645,31 @@ _B_numFloat_OrderByInput = TypedDict(
     total=True
 )
 
+_B_RelevanceInner = TypedDict(
+    '_B_RelevanceInner',
+    {
+        'fields': 'List[BScalarFieldKeys]',
+        'search': 'str',
+        'sort': 'SortOrder',
+    },
+    total=True
+)
+
+_B_RelevanceOrderByInput = TypedDict(
+    '_B_RelevanceOrderByInput',
+    {
+        '_relevance': '_B_RelevanceInner',
+    },
+    total=True
+)
+
 BOrderByInput = Union[
     '_B_id_OrderByInput',
     '_B_float_OrderByInput',
     '_B_d_float_OrderByInput',
     '_B_decFloat_OrderByInput',
     '_B_numFloat_OrderByInput',
+    '_B_RelevanceOrderByInput',
 ]
 
 
@@ -12642,6 +12813,24 @@ _C_uuid_OrderByInput = TypedDict(
     total=True
 )
 
+_C_RelevanceInner = TypedDict(
+    '_C_RelevanceInner',
+    {
+        'fields': 'List[CScalarFieldKeys]',
+        'search': 'str',
+        'sort': 'SortOrder',
+    },
+    total=True
+)
+
+_C_RelevanceOrderByInput = TypedDict(
+    '_C_RelevanceOrderByInput',
+    {
+        '_relevance': '_C_RelevanceInner',
+    },
+    total=True
+)
+
 COrderByInput = Union[
     '_C_char_OrderByInput',
     '_C_v_char_OrderByInput',
@@ -12649,6 +12838,7 @@ COrderByInput = Union[
     '_C_bit_OrderByInput',
     '_C_v_bit_OrderByInput',
     '_C_uuid_OrderByInput',
+    '_C_RelevanceOrderByInput',
 ]
 
 
@@ -13791,6 +13981,24 @@ _D_binary_OrderByInput = TypedDict(
     total=True
 )
 
+_D_RelevanceInner = TypedDict(
+    '_D_RelevanceInner',
+    {
+        'fields': 'List[DScalarFieldKeys]',
+        'search': 'str',
+        'sort': 'SortOrder',
+    },
+    total=True
+)
+
+_D_RelevanceOrderByInput = TypedDict(
+    '_D_RelevanceOrderByInput',
+    {
+        '_relevance': '_D_RelevanceInner',
+    },
+    total=True
+)
+
 DOrderByInput = Union[
     '_D_id_OrderByInput',
     '_D_bool_OrderByInput',
@@ -13798,6 +14006,7 @@ DOrderByInput = Union[
     '_D_json__OrderByInput',
     '_D_jsonb_OrderByInput',
     '_D_binary_OrderByInput',
+    '_D_RelevanceOrderByInput',
 ]
 
 
@@ -14916,11 +15125,30 @@ _E_ts_OrderByInput = TypedDict(
     total=True
 )
 
+_E_RelevanceInner = TypedDict(
+    '_E_RelevanceInner',
+    {
+        'fields': 'List[EScalarFieldKeys]',
+        'search': 'str',
+        'sort': 'SortOrder',
+    },
+    total=True
+)
+
+_E_RelevanceOrderByInput = TypedDict(
+    '_E_RelevanceOrderByInput',
+    {
+        '_relevance': '_E_RelevanceInner',
+    },
+    total=True
+)
+
 EOrderByInput = Union[
     '_E_id_OrderByInput',
     '_E_date_OrderByInput',
     '_E_time_OrderByInput',
     '_E_ts_OrderByInput',
+    '_E_RelevanceOrderByInput',
 ]
 
 

@@ -87,3 +87,59 @@ def test_full_text_search(client: Prisma) -> None:
     assert len(posts) == 1
     assert 'cats' in posts[0].title
     assert 'dogs' in posts[0].title
+
+
+def test_order_by_relevance(client: Prisma) -> None:
+    """Ensure that ordering by relevance works correctly on both PostgreSQL and MySQL"""
+
+    # Determine the correct syntax based on the database
+    db_type = cast(SupportedDatabase, client._active_provider)
+    syntax = FULL_TEXT_SEARCH_SYNTAX[db_type]
+
+    if syntax is None:
+        pytest.skip(f'Skipping test for {db_type}')
+
+    # Create some posts with varied content
+    client.post.create_many(
+        data=[
+            {
+                'title': 'cats are great pets. dogs are loyal companions.',
+                'published': True,
+            },
+            {
+                'title': 'cats are independent and mysterious animals.',
+                'published': True,
+            },
+            {
+                'title': 'rabbits and hamsters are small and cute pets.',
+                'published': True,
+            },
+        ]
+    )
+
+    # Test: Order posts by relevance descending
+    posts = client.post.find_first(
+        order={
+            '_relevance': {
+                'fields': ['title'],
+                'search': syntax.search_or,
+                'sort': 'desc',
+            },
+        }
+    )
+    assert posts is not None
+    assert 'cats' in posts.title
+    assert 'dogs' in posts.title
+
+    # Test: Order posts by relevance ascending
+    posts = client.post.find_first(
+        order={
+            '_relevance': {
+                'fields': ['title'],
+                'search': syntax.search_or,
+                'sort': 'asc',
+            },
+        }
+    )
+    assert posts is not None
+    assert 'rabbits' in posts.title
