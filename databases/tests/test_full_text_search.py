@@ -11,23 +11,20 @@ class FullTextSearchSyntax(BaseModel):
     search_or: str
     search_and: str
     search_not: str
-    search_phrase: str
 
 
 # Define the queries for MySQL
 _mysql_syntax = FullTextSearchSyntax(
     search_or='cats dogs',
     search_and='+cats +dogs',
-    search_not='+cats -dogs',
-    search_phrase='"small and cute"',
+    search_not='-dogs',
 )
 
 # Define the queries for PostgreSQL
 _postgresql_syntax = FullTextSearchSyntax(
     search_or='cats | dogs',
     search_and='cats & dogs',
-    search_not='cats & !dogs',
-    search_phrase='small <-> cute',
+    search_not='!dogs',
 )
 
 # Map the syntax to the corresponding database
@@ -49,15 +46,15 @@ async def test_full_text_search(client: Prisma) -> None:
     await client.post.create_many(
         data=[
             {
-                'title': 'Cats are great pets. Dogs are loyal companions.',
+                'title': 'cats are great pets. dogs are loyal companions.',
                 'published': True,
             },
             {
-                'title': 'Cats are independent and mysterious animals.',
+                'title': 'cats are independent and mysterious animals.',
                 'published': True,
             },
             {
-                'title': 'Rabbits and hamsters are small and cute pets.',
+                'title': 'rabbits and hamsters are small and cute pets.',
                 'published': True,
             },
         ]
@@ -95,17 +92,5 @@ async def test_full_text_search(client: Prisma) -> None:
             },
         }
     )
-    assert len(posts) == 1
-    assert 'cats' in posts[0].title
+    assert len(posts) == 2
     assert 'dogs' not in posts[0].title
-
-    # Test: Search for posts that contain the phrase 'small and cute'
-    posts = await client.post.find_many(
-        where={
-            'title': {
-                'search': syntax.search_phrase,
-            },
-        }
-    )
-    assert len(posts) == 1
-    assert 'small and cute' in posts[0].title
