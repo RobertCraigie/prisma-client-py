@@ -46,7 +46,7 @@ async def test_full_text_search(client: Prisma) -> None:
     syntax = FULL_TEXT_SEARCH_SYNTAX[db_type]
 
     # Create some posts with varied content
-    await client.post.create_many(
+    client.post.create_many(
         data=[
             {
                 'title': 'Post about cats and dogs',
@@ -67,7 +67,7 @@ async def test_full_text_search(client: Prisma) -> None:
     )
 
     # Test: Search for posts that contain 'cats' or 'dogs'
-    posts = await client.post.find_many(
+    posts = client.post.find_many(
         where={
             'body': {
                 'search': syntax.search_or,
@@ -79,7 +79,7 @@ async def test_full_text_search(client: Prisma) -> None:
     assert any('dogs' in post.body for post in posts)
 
     # Test: Search for posts that contain both 'cats' and 'dogs'
-    posts = await client.post.find_many(
+    posts = client.post.find_many(
         where={
             'body': {
                 'search': syntax.search_and,
@@ -91,7 +91,7 @@ async def test_full_text_search(client: Prisma) -> None:
     assert 'dogs' in posts[0].body
 
     # Test: Search for posts that contain 'cats' but not 'dogs'
-    posts = await client.post.find_many(
+    posts = client.post.find_many(
         where={
             'body': {
                 'search': syntax.search_not,
@@ -103,7 +103,7 @@ async def test_full_text_search(client: Prisma) -> None:
     assert 'dogs' not in posts[0].body
 
     # Test: Search for posts that contain the phrase 'small and cute'
-    posts = await client.post.find_many(
+    posts = client.post.find_many(
         where={
             'body': {
                 'search': syntax.search_phrase,
