@@ -40,6 +40,22 @@ def test_no_file(testdir: Testdir) -> None:
     config = Config.load(path)
     assert isinstance(config.prisma_version, str)
 
+def test_with_file(testdir: Testdir) -> None:
+    """Can works config from pyproject.toml successfully"""
+    path = Path('pyproject.toml')
+    testdir.makefile(
+        '.toml',
+        pyproject=dedent(
+            """
+            [tool.prisma]
+            prisma_version = '~'
+            """
+        ),
+    )
+    
+    assert path.exists()
+    config = Config.load(path)
+    assert config.home_dir == '~'
 
 def test_loading(testdir: Testdir) -> None:
     """Config loading overrides defaults"""
