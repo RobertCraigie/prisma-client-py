@@ -50,7 +50,7 @@ def test_full_text_search(client: Prisma) -> None:
         pytest.skip(f'Skipping test for {db_type}')
 
     # Create some posts with varied content
-    await client.post.create_many(
+    client.post.create_many(
         data=[
             {
                 'title': 'cats are great pets. dogs are loyal companions.',
@@ -68,7 +68,7 @@ def test_full_text_search(client: Prisma) -> None:
     )
 
     # Test: Search for posts that contain 'cats' or 'dogs'
-    posts = await client.post.find_many(
+    posts = client.post.find_many(
         where={
             'title': {
                 'search': syntax.search_or,
@@ -80,7 +80,7 @@ def test_full_text_search(client: Prisma) -> None:
     assert any('dogs' in post.title for post in posts)
 
     # Test: Search for posts that contain both 'cats' and 'dogs'
-    posts = await client.post.find_many(
+    posts = client.post.find_many(
         where={
             'title': {
                 'search': syntax.search_and,
@@ -92,7 +92,7 @@ def test_full_text_search(client: Prisma) -> None:
     assert 'dogs' in posts[0].title
 
     # Test: Search for posts that contain 'cats' but not 'dogs'
-    posts = await client.post.find_many(
+    posts = client.post.find_many(
         where={
             'title': {
                 'search': syntax.search_not,

@@ -14,8 +14,10 @@ generator client {
   engineType                  = "binary"
   enable_experimental_decimal = true
   partial_type_generator      = "{{ partial_generator }}"
-  {% if config.supports_feature('full_text_search') %}
+  {% if config.id == "postgresql" %}
   previewFeatures = ["fullTextSearch"]
+  {% elif config.id == "mysql" %}
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
   {% endif %}
 }
 
