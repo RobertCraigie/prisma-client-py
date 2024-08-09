@@ -49,7 +49,7 @@ def test_with_file(testdir: Testdir) -> None:
         pyproject=dedent(
             """
             [tool.prisma]
-            prisma_version = '~'
+            home_dir = '~'
             """
         ),
     )
