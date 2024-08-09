@@ -1,7 +1,7 @@
 import warnings
-from datetime import timedelta
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Mapping
+from pathlib import Path
+from datetime import timedelta
 
 import httpx
 import pytest
@@ -9,12 +9,12 @@ from mock import AsyncMock
 from pytest_mock import MockerFixture
 
 from prisma import ENGINE_TYPE, SCHEMA_PATH, Prisma, errors, get_client
-from prisma.cli.prisma import run
-from prisma.engine.errors import AlreadyConnectedError
-from prisma.engine.http import HTTPEngine
-from prisma.http_abstract import DEFAULT_CONFIG
-from prisma.testing import reset_client
 from prisma.types import HttpConfig
+from prisma.testing import reset_client
+from prisma.cli.prisma import run
+from prisma.engine.http import HTTPEngine
+from prisma.engine.errors import AlreadyConnectedError
+from prisma.http_abstract import DEFAULT_CONFIG
 
 from .utils import Testdir, patch_method
 
