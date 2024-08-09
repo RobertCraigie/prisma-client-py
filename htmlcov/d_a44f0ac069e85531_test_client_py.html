@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="d_a44f0ac069e85531_test_config_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-08-09 09:53 +0000
+            created at 2024-08-09 19:31 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -117,12 +117,12 @@
     <p class="pln"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t"><span class="op">@</span><span class="nam">pytest</span><span class="op">.</span><span class="nam">mark</span><span class="op">.</span><span class="nam">asyncio</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t"><span class="key">async</span> <span class="key">def</span> <span class="nam">test_create_many_invalid_provider</span><span class="op">(</span><span class="nam">client</span><span class="op">:</span> <span class="nam">Prisma</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">    <span class="str">"""Trying to call create_many() fails as SQLite does not support it"""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t"><span class="key">async</span> <span class="key">def</span> <span class="nam">test_create_many_skip_duplicates_invalid_provider</span><span class="op">(</span><span class="nam">client</span><span class="op">:</span> <span class="nam">Prisma</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">    <span class="str">"""Trying to call skip_duplicates fails as SQLite does not support it"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t">    <span class="key">with</span> <span class="nam">pytest</span><span class="op">.</span><span class="nam">raises</span><span class="op">(</span><span class="nam">errors</span><span class="op">.</span><span class="nam">UnsupportedDatabaseError</span><span class="op">)</span> <span class="key">as</span> <span class="nam">exc</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t">        <span class="key">await</span> <span class="nam">client</span><span class="op">.</span><span class="nam">user</span><span class="op">.</span><span class="nam">create_many</span><span class="op">(</span><span class="op">[</span><span class="op">{</span><span class="str">'name'</span><span class="op">:</span> <span class="str">'Robert'</span><span class="op">}</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t">        <span class="key">await</span> <span class="nam">client</span><span class="op">.</span><span class="nam">user</span><span class="op">.</span><span class="nam">create_many</span><span class="op">(</span><span class="op">[</span><span class="op">{</span><span class="str">'name'</span><span class="op">:</span> <span class="str">'Robert'</span><span class="op">}</span><span class="op">]</span><span class="op">,</span> <span class="nam">skip_duplicates</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t">    <span class="key">assert</span> <span class="nam">exc</span><span class="op">.</span><span class="nam">match</span><span class="op">(</span><span class="str">r'create_many\(\) is not supported by sqlite'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t">    <span class="key">assert</span> <span class="nam">exc</span><span class="op">.</span><span class="nam">match</span><span class="op">(</span><span class="str">r'skip_duplicates is not supported by sqlite'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t44" href="#t44">44</a></span><span class="t"><span class="op">@</span><span class="nam">pytest</span><span class="op">.</span><span class="nam">mark</span><span class="op">.</span><span class="nam">asyncio</span>&nbsp;</span><span class="r"></span></p>
@@ -348,7 +348,7 @@
             <a id="nextFileLink" class="nav" href="d_a44f0ac069e85531_test_config_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2024-08-09 09:53 +0000
+            created at 2024-08-09 19:31 +0000
         </p>
     </div>
 </footer>
