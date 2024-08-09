@@ -1,4 +1,4 @@
-from typing import cast
+from typing import Optional, cast
 
 import pytest
 from pydantic import BaseModel
@@ -30,7 +30,7 @@ _postgresql_syntax = FullTextSearchSyntax(
 )
 
 # Map the syntax to the corresponding database
-FULL_TEXT_SEARCH_SYNTAX: DatabaseMapping[FullTextSearchSyntax | None] = {
+FULL_TEXT_SEARCH_SYNTAX: DatabaseMapping[Optional[FullTextSearchSyntax]] = {
     'mysql': _mysql_syntax,
     'postgresql': _postgresql_syntax,
     'cockroachdb': None,

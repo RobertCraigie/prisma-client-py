@@ -54,6 +54,9 @@ model Post {
   author      User?      @relation(fields: [author_id], references: [id])
   author_id   String?
   categories  Category[]
+  {% if config.id == "mysql" %}
+  @@fulltext([title])
+  {% endif %}
 }
 
 /// @Python(instance_name: "custom_category")
