@@ -49,18 +49,15 @@ async def test_full_text_search(client: Prisma) -> None:
     await client.post.create_many(
         data=[
             {
-                'title': 'Post about cats and dogs',
-                'body': 'Cats are great pets. Dogs are loyal companions.',
+                'title': 'Cats are great pets. Dogs are loyal companions.',
                 'published': True,
             },
             {
-                'title': 'Post about only cats',
-                'body': 'Cats are independent and mysterious animals.',
+                'title': 'Cats are independent and mysterious animals.',
                 'published': True,
             },
             {
-                'title': 'Post about other animals',
-                'body': 'Rabbits and hamsters are small and cute pets.',
+                'title': 'Rabbits and hamsters are small and cute pets.',
                 'published': True,
             },
         ]
@@ -69,46 +66,46 @@ async def test_full_text_search(client: Prisma) -> None:
     # Test: Search for posts that contain 'cats' or 'dogs'
     posts = await client.post.find_many(
         where={
-            'body': {
+            'title': {
                 'search': syntax.search_or,
             },
         }
     )
     assert len(posts) == 2
-    assert any('cats' in post.body for post in posts)
-    assert any('dogs' in post.body for post in posts)
+    assert any('cats' in post.title for post in posts)
+    assert any('dogs' in post.title for post in posts)
 
     # Test: Search for posts that contain both 'cats' and 'dogs'
     posts = await client.post.find_many(
         where={
-            'body': {
+            'title': {
                 'search': syntax.search_and,
             },
         }
     )
     assert len(posts) == 1
-    assert 'cats' in posts[0].body
-    assert 'dogs' in posts[0].body
+    assert 'cats' in posts[0].title
+    assert 'dogs' in posts[0].title
 
     # Test: Search for posts that contain 'cats' but not 'dogs'
     posts = await client.post.find_many(
         where={
-            'body': {
+            'title': {
                 'search': syntax.search_not,
             },
         }
     )
     assert len(posts) == 1
-    assert 'cats' in posts[0].body
-    assert 'dogs' not in posts[0].body
+    assert 'cats' in posts[0].title
+    assert 'dogs' not in posts[0].title
 
     # Test: Search for posts that contain the phrase 'small and cute'
     posts = await client.post.find_many(
         where={
-            'body': {
+            'title': {
                 'search': syntax.search_phrase,
             },
         }
     )
     assert len(posts) == 1
-    assert 'small and cute' in posts[0].body
+    assert 'small and cute' in posts[0].title
