@@ -7,6 +7,7 @@ import warnings
 
 from . import types, errors, bases
 from ._compat import model_parse
+from ._constants import CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED
 
 if TYPE_CHECKING:
     from .client import {{ names.client_class(is_async) }}
@@ -232,8 +233,8 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         ```
         """
-        if skip_duplicates and self._client._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
 
         resp = {{ maybe_await }}self._client._execute(
             method='create_many',

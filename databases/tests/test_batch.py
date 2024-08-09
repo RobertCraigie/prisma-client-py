@@ -3,7 +3,7 @@ import pytest
 import prisma
 from prisma import Prisma
 
-from ..utils import RawQueries, DatabaseConfig
+from ..utils import DatabaseConfig, RawQueries
 
 
 @pytest.mark.asyncio
@@ -266,13 +266,13 @@ async def test_execute_raw(client: Prisma, raw_queries: RawQueries) -> None:
 
 
 @pytest.mark.asyncio
-async def test_skip_duplicates_unsupported(
+async def test_create_many_skip_duplicates_unsupported(
     client: Prisma,
     config: DatabaseConfig,
 ) -> None:
     """Cannot call create_many with skip_duplicates on databases that do not support it"""
-    if 'skip_duplicates' not in config.unsupported_features:
-        pytest.skip('The create_many skip_duplicates argument is supported by the current behaviour')
+    if 'create_many_skip_duplicates' not in config.unsupported_features:
+        pytest.skip('The create_many skip_duplicates argument is supported by the current database')
 
     with pytest.raises(prisma.errors.UnsupportedDatabaseError) as exc:
         async with client.batch_() as batcher:

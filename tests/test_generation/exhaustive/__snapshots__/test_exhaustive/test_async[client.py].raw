@@ -57,7 +57,7 @@ from .bases import _PrismaModel
 from ._builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix, model_parse
-from ._constants import DEFAULT_CONNECT_TIMEOUT, DEFAULT_TX_MAX_WAIT, DEFAULT_TX_TIMEOUT
+from ._constants import CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED, DEFAULT_CONNECT_TIMEOUT, DEFAULT_TX_MAX_WAIT, DEFAULT_TX_TIMEOUT
 from ._raw_query import deserialize_raw_results
 from ._metrics import Metrics
 from .metadata import PRISMA_MODELS, RELATIONAL_FIELD_MAPPINGS
@@ -420,8 +420,8 @@ class PostBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if skip_duplicates and self._batcher._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
 
         self._batcher._add(
             method='create_many',
@@ -531,8 +531,8 @@ class UserBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if skip_duplicates and self._batcher._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
 
         self._batcher._add(
             method='create_many',
@@ -642,8 +642,8 @@ class MBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if skip_duplicates and self._batcher._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
 
         self._batcher._add(
             method='create_many',
@@ -753,8 +753,8 @@ class NBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if skip_duplicates and self._batcher._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
 
         self._batcher._add(
             method='create_many',
@@ -864,8 +864,8 @@ class OneOptionalBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if skip_duplicates and self._batcher._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
 
         self._batcher._add(
             method='create_many',
@@ -975,8 +975,8 @@ class ManyRequiredBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if skip_duplicates and self._batcher._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
 
         self._batcher._add(
             method='create_many',
@@ -1086,8 +1086,8 @@ class ListsBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if skip_duplicates and self._batcher._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
 
         self._batcher._add(
             method='create_many',
@@ -1197,8 +1197,8 @@ class ABatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if skip_duplicates and self._batcher._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
 
         self._batcher._add(
             method='create_many',
@@ -1308,8 +1308,8 @@ class BBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if skip_duplicates and self._batcher._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
 
         self._batcher._add(
             method='create_many',
@@ -1419,8 +1419,8 @@ class CBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if skip_duplicates and self._batcher._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
 
         self._batcher._add(
             method='create_many',
@@ -1530,8 +1530,8 @@ class DBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if skip_duplicates and self._batcher._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
 
         self._batcher._add(
             method='create_many',
@@ -1641,8 +1641,8 @@ class EBatchActions:
         *,
         skip_duplicates: Optional[bool] = None,
     ) -> None:
-        if skip_duplicates and self._batcher._active_provider in ['mongodb', 'sqlserver', 'sqlite']:
-            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'skip_duplicates')
+        if skip_duplicates and self._batcher._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._batcher._active_provider, 'create_many_skip_duplicates')
 
         self._batcher._add(
             method='create_many',
