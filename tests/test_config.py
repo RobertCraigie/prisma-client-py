@@ -49,14 +49,14 @@ def test_with_file(testdir: Testdir) -> None:
         pyproject=dedent(
             """
             [tool.prisma]
-            home_dir = '~'
+            prisma_version = '0.1.2.3'
             """
         ),
     )
 
     assert path.exists()
     config = Config.load(path)
-    assert config.home_dir == '~'
+    assert config.prisma_version == '0.1.2.3'
 
 
 def test_loading(testdir: Testdir) -> None:
