@@ -80,7 +80,8 @@ class Schema(BaseModel):
 
     @classmethod
     def from_data(cls, data: AnyData) -> 'Schema':
-        models = [Model(info=model) for model in data.dmmf.datamodel.models]
+        active_provider = data.datasources[0].active_provider
+        models = [Model(info=model, active_provider=active_provider) for model in data.dmmf.datamodel.models]
         return cls(models=models)
 
     def get_model(self, name: str) -> 'Model':
@@ -93,6 +94,7 @@ class Schema(BaseModel):
 
 class Model(BaseModel):
     info: ModelInfo
+    active_provider: str
 
     if PYDANTIC_V2:
         model_config: ClassVar[ConfigDict] = ConfigDict(ignored_types=(cached_property,))
@@ -159,25 +161,26 @@ class Model(BaseModel):
             for field in self.info.scalar_fields
         ]
         # Full-text search relevance sorting
-        relevance_type = PrismaDict(
-            name=f'_{model}_RelevanceOrderByInput',
-            total=True,
-            fields={
-                '_relevance': f'_{model}_RelevanceInner',
-            },
-            subtypes=[
-                PrismaDict(
-                    name=f'_{model}_RelevanceInner',
-                    total=True,
-                    fields={
-                        'fields': f'List[{model}ScalarFieldKeys]',
-                        'search': 'str',
-                        'sort': 'SortOrder',
-                    },
-                )
-            ],
-        )
-        variants.append(relevance_type)
+        if self.active_provider in {'postgresql', 'mysql'}:
+            relevance_type = PrismaDict(
+                name=f'_{model}_RelevanceOrderByInput',
+                total=True,
+                fields={
+                    '_relevance': f'_{model}_RelevanceInner',
+                },
+                subtypes=[
+                    PrismaDict(
+                        name=f'_{model}_RelevanceInner',
+                        total=True,
+                        fields={
+                            'fields': f'List[{model}ScalarFieldKeys]',
+                            'search': 'str',
+                            'sort': 'SortOrder',
+                        },
+                    )
+                ],
+            )
+            variants.append(relevance_type)
         return PrismaType.from_variants(variants, name=f'{model}OrderByInput')
 
 
