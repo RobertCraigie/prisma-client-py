@@ -23,6 +23,7 @@ DatabaseFeature = Literal[
     'create_many_skip_duplicates',
     'transactions',
     'case_sensitivity',
+    'full_text_search',
 ]
 
 

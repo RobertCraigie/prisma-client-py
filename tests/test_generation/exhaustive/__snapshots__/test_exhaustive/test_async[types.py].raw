@@ -95,6 +95,7 @@ StringFilter = TypedDict(
         'in': List[str],
         'not': Union[str, 'StringFilterRecursive1'],
         'mode': SortMode,
+        'search': str,
     },
     total=False,
 )
@@ -115,6 +116,7 @@ StringFilterRecursive1 = TypedDict(
         'in': List[str],
         'not': Union[str, 'StringFilterRecursive2'],
         'mode': SortMode,
+        'search': str,
     },
     total=False,
 )
@@ -134,6 +136,7 @@ StringFilterRecursive2 = TypedDict(
         'endswith': str,
         'in': List[str],
                 'mode': SortMode,
+        'search': str,
     },
     total=False,
 )

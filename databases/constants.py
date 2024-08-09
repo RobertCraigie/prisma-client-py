@@ -38,6 +38,7 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
             'json_arrays',
             'array_push',
             'transactions',
+            'full_text_search',
         },
     ),
     'sqlite': DatabaseConfig(
@@ -54,6 +55,7 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
             'arrays',
             'create_many_skip_duplicates',
             'case_sensitivity',
+            'full_text_search',
         },
     ),
     'mysql': DatabaseConfig(
@@ -78,6 +80,7 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         unsupported_features={
             'arrays',
             'case_sensitivity',
+            'full_text_search',
         },
     ),
 }
@@ -106,6 +109,7 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     'create_many_skip_duplicates': ['test_create_many_skip_duplicates.py'],
     'raw_queries': ['test_raw_queries.py', *_fromdir('types/raw_queries')],
     'case_sensitivity': ['test_case_sensitivity.py'],
+    'full_text_search': ['test_full_text_search.py'],
 }
 
 # config files
