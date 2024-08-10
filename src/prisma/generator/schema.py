@@ -5,7 +5,7 @@ from typing_extensions import ClassVar
 from pydantic import BaseModel
 
 from .utils import to_constant_case
-from .models import Model as ModelInfo, AnyData, PrimaryKey, DMMFEnumType
+from .models import Model as ModelInfo, AnyData, PrimaryKey, DMMFEnumType, data_ctx
 from .._compat import (
     PYDANTIC_V2,
     ConfigDict,
@@ -80,8 +80,7 @@ class Schema(BaseModel):
 
     @classmethod
     def from_data(cls, data: AnyData) -> 'Schema':
-        active_provider = data.datasources[0].active_provider
-        models = [Model(info=model, active_provider=active_provider) for model in data.dmmf.datamodel.models]
+        models = [Model(info=model) for model in data.dmmf.datamodel.models]
         return cls(models=models)
 
     def get_model(self, name: str) -> 'Model':
@@ -94,7 +93,6 @@ class Schema(BaseModel):
 
 class Model(BaseModel):
     info: ModelInfo
-    active_provider: str
 
     if PYDANTIC_V2:
         model_config: ClassVar[ConfigDict] = ConfigDict(ignored_types=(cached_property,))
@@ -161,7 +159,7 @@ class Model(BaseModel):
             for field in self.info.scalar_fields
         ]
         # Full-text search relevance sorting
-        if self.active_provider in {'postgresql', 'mysql'}:
+        if data_ctx.get().datasources[0].active_provider in {'postgresql', 'mysql'}:
             relevance_type = PrismaDict(
                 name=f'_{model}_RelevanceOrderByInput',
                 total=True,
