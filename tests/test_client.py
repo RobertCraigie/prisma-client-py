@@ -33,12 +33,12 @@ async def test_catches_not_connected() -> None:
 
 
 @pytest.mark.asyncio
-async def test_create_many_invalid_provider(client: Prisma) -> None:
-    """Trying to call create_many() fails as SQLite does not support it"""
+async def test_create_many_skip_duplicates_invalid_provider(client: Prisma) -> None:
+    """Trying to call skip_duplicates fails as SQLite does not support it"""
     with pytest.raises(errors.UnsupportedDatabaseError) as exc:
-        await client.user.create_many([{'name': 'Robert'}])
+        await client.user.create_many([{'name': 'Robert'}], skip_duplicates=True)
 
-    assert exc.match(r'create_many\(\) is not supported by sqlite')
+    assert exc.match(r'skip_duplicates is not supported by sqlite')
 
 
 @pytest.mark.asyncio
