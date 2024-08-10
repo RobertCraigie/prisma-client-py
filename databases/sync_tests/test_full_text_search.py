@@ -73,8 +73,8 @@ def test_full_text_search(client: Prisma) -> None:
         }
     )
     assert len(posts) == 2
-    assert any('cats' in post.title for post in posts)
-    assert any('dogs' in post.title for post in posts)
+    for post in posts:
+        assert 'cats' in post.title or 'dogs' in post.title
 
     # Test: Search for posts that contain both 'cats' and 'dogs'
     posts = client.post.find_many(
@@ -118,7 +118,7 @@ def test_order_by_relevance(client: Prisma) -> None:
     )
 
     # Test: Order posts by relevance descending
-    posts = client.post.find_first(
+    post = client.post.find_first(
         order={
             '_relevance': {
                 'fields': ['title'],
@@ -127,12 +127,12 @@ def test_order_by_relevance(client: Prisma) -> None:
             },
         }
     )
-    assert posts is not None
-    assert 'cats' in posts.title
-    assert 'dogs' in posts.title
+    assert post is not None
+    assert 'cats' in post.title
+    assert 'dogs' in post.title
 
     # Test: Order posts by relevance ascending
-    posts = client.post.find_first(
+    post = client.post.find_first(
         order={
             '_relevance': {
                 'fields': ['title'],
@@ -141,5 +141,5 @@ def test_order_by_relevance(client: Prisma) -> None:
             },
         }
     )
-    assert posts is not None
-    assert 'rabbits' in posts.title
+    assert post is not None
+    assert 'rabbits' in post.title
