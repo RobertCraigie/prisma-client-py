@@ -247,6 +247,72 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
         return int(resp['data']['result']['count'])
 
+    {{ maybe_async_def }}create_many_and_return(
+        self,
+        data: List[types.{{ model.name }}CreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> List[{{ ModelType }}]:
+        """Create multiple {{ model.name }} records at once.
+
+        This method is **not supported** on MariaDB or MySQL.
+
+        The `skip_duplicates` argument is **not supported** on SQLite.
+
+        Parameters
+        ----------
+        data
+            List of {{ model.name }} record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        List[{{ RawModelType }}]
+            The list of all {{ model.name }} records that could be found
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        {{ query_error_doc }}
+        {{ base_error_doc }}
+
+        Example
+        -------
+        ```py
+        records = {{ maybe_await }}{{ model.name }}.prisma().create_many_and_return(
+            data=[
+                {% for _ in range(2) %}
+                {
+                    # data to create a {{ model.name }} record
+                    {% for field in model.scalar_fields %}
+                    {% if field.required_on_create %}
+                    '{{ field.name }}': {{ field.get_sample_data() }},
+                    {% endif %}
+                    {% endfor %}
+                },
+                {% endfor %}
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = {{ maybe_await }}self._client._execute(
+            method='create_many_and_return',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
+
     {{ maybe_async_def }}delete(
         self,
         where: types.{{ model.name }}WhereUniqueInput,
