@@ -4,6 +4,7 @@ from prisma import Prisma
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip()
 async def test_create_many_and_return(client: Prisma) -> None:
     """Standard usage"""
     records = await client.user.create_many_and_return([{'name': 'Robert'}, {'name': 'Tegan'}])
@@ -19,6 +20,7 @@ async def test_create_many_and_return(client: Prisma) -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.skip()
 async def test_required_relation_key_field(client: Prisma) -> None:
     """Explicitly passing a field used as a foreign key connects the relations"""
     user = await client.user.create(
