@@ -5,7 +5,6 @@ from prisma import Prisma
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip()
 async def test_create_many_and_return_skip_duplicates(client: Prisma) -> None:
     """Skipping duplcates ignores unique constraint errors"""
     user = await client.user.create({'name': 'Robert'})
