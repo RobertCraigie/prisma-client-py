@@ -332,6 +332,8 @@ post = await db.post.find_first(
 )
 ```
 
+Please visit Prisma's [documentation](https://www.prisma.io/docs/orm/prisma-client/queries/full-text-search) for more information on full-text search.
+
 #### Integer Fields
 
 ```py
