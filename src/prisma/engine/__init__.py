@@ -1,4 +1,5 @@
 from ._query import (
+    BaseQueryEngine as BaseQueryEngine,
     SyncQueryEngine as SyncQueryEngine,
     AsyncQueryEngine as AsyncQueryEngine,
 )
