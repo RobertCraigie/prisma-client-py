@@ -5,5 +5,5 @@
 -r deps/syrupy.txt
 pytest-sugar
 mock==5.1.0
-pytest-subprocess==1.5.0
+pytest-subprocess==1.5.2
 inline-snapshot==0.12.1
