@@ -200,7 +200,7 @@ class PostActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple Post records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -1232,7 +1232,7 @@ class UserActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple User records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -2279,7 +2279,7 @@ class MActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple M records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -3323,7 +3323,7 @@ class NActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple N records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -4370,7 +4370,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple OneOptional records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -5413,7 +5413,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple ManyRequired records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -6451,7 +6451,7 @@ class ListsActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple Lists records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -7473,7 +7473,7 @@ class AActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple A records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -8509,7 +8509,7 @@ class BActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple B records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -9549,7 +9549,7 @@ class CActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple C records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -10589,7 +10589,7 @@ class DActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple D records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -11630,7 +11630,7 @@ class EActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple E records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------

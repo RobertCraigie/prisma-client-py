@@ -190,7 +190,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
     ) -> int:
         """Create multiple {{ model.name }} records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
