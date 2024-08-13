@@ -91,6 +91,16 @@ def remove_suffix(path: Union[str, Path], suf: str) -> str:
     return path
 
 
+def ensure_writable_dirs(path: str | Path) -> None:
+    import stat
+
+    for root, dirs, _ in os.walk(path):
+        for dir in dirs:
+            dir_path = os.path.join(root, dir)
+            os.makedirs(dir_path, exist_ok=True)
+            os.chmod(dir_path, os.stat(dir_path).st_mode | stat.S_IWRITE | stat.S_IEXEC)
+
+
 def copy_tree(src: Path, dst: Path) -> None:
     """Recursively copy the contents of a directory from src to dst.
 

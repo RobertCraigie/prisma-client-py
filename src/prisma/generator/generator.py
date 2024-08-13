@@ -18,6 +18,7 @@ from .types import PartialModel
 from .utils import (
     copy_tree,
     is_same_path,
+    ensure_writable_dirs,
     resolve_template_path,
 )
 from ..utils import DEBUG, DEBUG_GENERATOR
@@ -232,6 +233,7 @@ class Generator(GenericGenerator[PythonData]):
             rootdir.mkdir(parents=True, exist_ok=True)
 
         if not is_same_path(BASE_PACKAGE_DIR, rootdir):
+            ensure_writable_dirs(rootdir)
             copy_tree(BASE_PACKAGE_DIR, rootdir)
 
         # copy the Prisma Schema file used to generate the client to the
