@@ -14,6 +14,11 @@ generator client {
   engineType                  = "binary"
   enable_experimental_decimal = true
   partial_type_generator      = "{{ partial_generator }}"
+  {% if config.id == "postgresql" %}
+  previewFeatures = ["fullTextSearch"]
+  {% elif config.id == "mysql" %}
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  {% endif %}
 }
 
 model User {
@@ -49,6 +54,9 @@ model Post {
   author      User?      @relation(fields: [author_id], references: [id])
   author_id   String?
   categories  Category[]
+  {% if config.id == "mysql" %}
+  @@fulltext([title])
+  {% endif %}
 }
 
 /// @Python(instance_name: "custom_category")

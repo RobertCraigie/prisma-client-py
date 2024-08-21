@@ -1,5 +1,5 @@
 # TODO: merge with other dev requirements
-dirty-equals==0.7.1.post0
+dirty-equals==0.8.0
 distro
 
 -r ../pipelines/requirements/deps/coverage.txt

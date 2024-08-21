@@ -138,6 +138,9 @@ Serializable = Union[
         {%+ if active_provider in ['postgresql', 'cockroachdb', 'mongodb'] -%}
             'mode': SortMode,
         {% endif %}
+        {%+ if active_provider in ['postgresql', 'mysql'] -%}
+            'search': str,
+        {% endif %}
     },
     total=False,
 )
