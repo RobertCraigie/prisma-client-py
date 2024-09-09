@@ -44,6 +44,7 @@ PrismaMethod = Literal[
     'update',
     'upsert',
     'create_many',
+    'create_many_and_return',
     'delete_many',
     'update_many',
     # read queries

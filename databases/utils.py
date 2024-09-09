@@ -21,6 +21,8 @@ DatabaseFeature = Literal[
     'json_arrays',
     'raw_queries',
     'create_many_skip_duplicates',
+    'create_many_and_return',
+    'create_many_and_return_skip_duplicates',
     'transactions',
     'case_sensitivity',
     'full_text_search',
