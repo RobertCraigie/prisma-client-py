@@ -49,7 +49,7 @@ from typing_extensions import override
 
 from pydantic import BaseModel
 
-from . import types, models, errors, actions
+from . import types, models, errors, actions, __version__, metadata
 from ._base_client import BasePrisma, UseClientDefault, USE_CLIENT_DEFAULT
 from .types import DatasourceOverride, HttpConfig, MetricsFormat
 from ._types import BaseModelT, PrismaMethod, TransactionId, Datasource
@@ -133,6 +133,11 @@ class Prisma(AsyncBasePrisma):
         connect_timeout: int | timedelta = DEFAULT_CONNECT_TIMEOUT,
         http: HttpConfig | None = None,
     ) -> None:
+        if metadata.GENERATED_VERSION != __version__:
+            raise RuntimeError(
+              f'outdated generated client, the client is disabled until `prisma generate` is ran again; generated version={metadata.GENERATED_VERSION} package version={__version__}'
+            )
+
         super().__init__(
             http=http,
             use_dotenv=use_dotenv,

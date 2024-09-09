@@ -8,7 +8,7 @@ import pytest
 from mock import AsyncMock
 from pytest_mock import MockerFixture
 
-from prisma import ENGINE_TYPE, SCHEMA_PATH, Prisma, errors, get_client
+from prisma import ENGINE_TYPE, SCHEMA_PATH, Prisma, errors, metadata, get_client
 from prisma.types import HttpConfig
 from prisma.testing import reset_client
 from prisma.cli.prisma import run
@@ -255,3 +255,15 @@ def test_is_registered(client: Prisma) -> None:
     with reset_client():
         assert not client.is_registered()
         assert not other_client.is_registered()
+
+
+def test_version_mismatch() -> None:
+    old_version = metadata.GENERATED_VERSION
+
+    try:
+        metadata.GENERATED_VERSION = '0.10.4'
+
+        with pytest.raises(RuntimeError, match='outdated generated client'):
+            Prisma()
+    finally:
+        metadata.GENERATED_VERSION = old_version
