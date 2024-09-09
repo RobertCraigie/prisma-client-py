@@ -12,6 +12,7 @@ __all__ = (
     'TableNotFoundError',
     'RecordNotFoundError',
     'HTTPClientClosedError',
+    'HTTPClientTimeoutError',
     'ClientNotConnectedError',
     'PrismaWarning',
     'UnsupportedSubclassWarning',
@@ -42,6 +43,14 @@ class ClientNotConnectedError(PrismaError):
 class HTTPClientClosedError(PrismaError):
     def __init__(self) -> None:
         super().__init__('Cannot make a request from a closed client.')
+
+
+class HTTPClientTimeoutError(PrismaError):
+    def __init__(self) -> None:
+        super().__init__(
+            'HTTP operation has timed out.\n'
+            'The default timeout is 30 seconds. Maybe you should increase it: prisma.Prisma(http_config={"timeout": httpx.Timeout(30)})'
+        )
 
 
 class UnsupportedDatabaseError(PrismaError):
