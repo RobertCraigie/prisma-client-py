@@ -8,7 +8,7 @@
         <img src="https://img.shields.io/discord/933860922039099444?color=blue&label=chat&logo=discord" alt="Chat on Discord">
     </a>
     <a href="https://prisma.io">
-        <img src="https://img.shields.io/static/v1?label=prisma&message=5.17.0&color=blue&logo=prisma" alt="Supported Prisma version is 5.17.0">
+        <img src="https://img.shields.io/static/v1?label=prisma&message=5.19.0&color=blue&logo=prisma" alt="Supported Prisma version is 5.19.0">
     </a>
     <a href="https://github.com/astral-sh/ruff">
         <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2FJacobCoffee%2Fbfb02a83c8da3cbf53f7772f2cee02ec%2Fraw%2Facb94daa3aedecda67e2c7d8c5aec9765db0734d%2Fformat-badge.json" alt="Code style: ruff">

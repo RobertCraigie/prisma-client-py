@@ -24,9 +24,6 @@ user = await db.user.create(
 
 ### Many Records
 
-!!! warning
-    `create_many` is not available for SQLite
-
 ```py
 users = await db.user.create_many(
     data=[
@@ -36,6 +33,10 @@ users = await db.user.create_many(
     ]
 )
 ```
+
+!!! warning
+    the `skip_duplicates` argument is not supported when using MongoDB, SQLServer, or SQLite
+
 ```py
 users = await db.user.create_many(
     data=[
@@ -300,6 +301,7 @@ post = await db.post.find_first(
 
 !!! warning
     Case insensitive filtering is only available on PostgreSQL and MongoDB
+    Full-text search is only available on PostgreSQL and MySQL
 
 ```py
 post = await db.post.find_first(
@@ -318,6 +320,7 @@ post = await db.post.find_first(
             'endswith': 'must end with string',
             'in': ['find_string_1', 'find_string_2'],
             'mode': 'insensitive',
+            'search': 'full-text query',
             'not': {
                 # recursive type
                 'contains': 'string must not be present',
@@ -328,6 +331,8 @@ post = await db.post.find_first(
     },
 )
 ```
+
+Please visit Prisma's [documentation](https://www.prisma.io/docs/orm/prisma-client/queries/full-text-search) for more information on full-text search.
 
 #### Integer Fields
 

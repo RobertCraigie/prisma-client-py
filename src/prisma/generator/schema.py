@@ -5,7 +5,7 @@ from typing_extensions import ClassVar
 from pydantic import BaseModel
 
 from .utils import to_constant_case
-from .models import Model as ModelInfo, AnyData, PrimaryKey, DMMFEnumType
+from .models import Model as ModelInfo, AnyData, PrimaryKey, DMMFEnumType, data_ctx
 from .._compat import (
     PYDANTIC_V2,
     ConfigDict,
@@ -158,6 +158,27 @@ class Model(BaseModel):
             )
             for field in self.info.scalar_fields
         ]
+        # Full-text search relevance sorting
+        if data_ctx.get().datasources[0].active_provider in {'postgresql', 'mysql'}:
+            relevance_type = PrismaDict(
+                name=f'_{model}_RelevanceOrderByInput',
+                total=True,
+                fields={
+                    '_relevance': f'_{model}_RelevanceInner',
+                },
+                subtypes=[
+                    PrismaDict(
+                        name=f'_{model}_RelevanceInner',
+                        total=True,
+                        fields={
+                            'fields': f'List[{model}ScalarFieldKeys]',
+                            'search': 'str',
+                            'sort': 'SortOrder',
+                        },
+                    )
+                ],
+            )
+            variants.append(relevance_type)
         return PrismaType.from_variants(variants, name=f'{model}OrderByInput')
 
 

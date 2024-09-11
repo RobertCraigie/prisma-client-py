@@ -20,9 +20,10 @@ DatabaseFeature = Literal[
     'array_push',
     'json_arrays',
     'raw_queries',
-    'create_many',
+    'create_many_skip_duplicates',
     'transactions',
     'case_sensitivity',
+    'full_text_search',
 ]
 
 
@@ -45,10 +46,7 @@ class DatabaseConfig(BaseModel):
 
 # ------------------ Test helpers ------------------
 
-from .constants import (
-    TESTS_DIR,
-    SYNC_TESTS_DIR,
-)
+from .constants import TESTS_DIR, SYNC_TESTS_DIR
 
 SHARED_SNAPSHOTS_DIR = Path(__file__).parent.joinpath('__shared_snapshots__')
 CURRENT_DATABASE = os.environ.get('PRISMA_DATABASE')

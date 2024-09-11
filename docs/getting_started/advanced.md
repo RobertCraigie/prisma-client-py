@@ -1,5 +1,5 @@
 !!! note
-    Adapted from the Prisma Client Go [documentation](https://github.com/prisma/prisma-client-go/blob/master/docs/advanced.md)
+    Adapted from the Prisma Client Go [documentation](https://github.com/steebchen/prisma-client-go/blob/main/docs/pages/docs/getting-started/advanced.md)
 
 In the [quickstart](quickstart.md), we have created a simple post model and ran a few queries. However, Prisma and the
 Python client are designed to work with relations between models.
