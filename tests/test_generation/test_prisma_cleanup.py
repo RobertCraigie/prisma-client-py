@@ -2,8 +2,8 @@ import sys
 import subprocess
 
 import pytest
-from prisma_cleanup import cleanup
 
+from prisma_cleanup import cleanup
 from prisma.generator import BASE_PACKAGE_DIR
 from prisma.generator.utils import copy_tree
 
