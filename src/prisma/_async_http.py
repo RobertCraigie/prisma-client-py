@@ -23,7 +23,8 @@ class AsyncHTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
 
     @override
     async def request(self, method: Method, url: str, **kwargs: Any) -> 'Response':
-        return Response(await self.session.request(method, url, **kwargs))
+        async with httpx.AsyncClient(**self.session_kwargs) as session:
+            return Response(await session.request(method, url, **kwargs))
 
     @override
     def open(self) -> None:
