@@ -18,7 +18,7 @@ def deserialize(result: Any) -> Any:
 
     if isinstance(result, dict):
         if is_tagged_value(result):
-            return result["value"]  # XXX: will pydantic cast this?
+            return result['value']  # XXX: will pydantic cast this?
 
         return {k: deserialize(v) for k, v in result.items()}
 
@@ -26,20 +26,20 @@ def deserialize(result: Any) -> Any:
 
 
 def is_tagged_value(value: dict[Any, Any]) -> TypeGuard[JsonOutputTaggedValue]:
-    return isinstance(value.get("$type"), str)
+    return isinstance(value.get('$type'), str)
 
 
 def deserialize_tagged_value(tagged: JsonOutputTaggedValue) -> Any:  # JsOutputValue
-    match tagged["$type"]:
-        case "BigInt":
-            return int(tagged["value"])
-        case "Bytes":
-            return Base64.fromb64(tagged["value"])
-        case "DateTime":
-            return datetime.fromisoformat(tagged["value"])
-        case "Decimal":
-            return Decimal(tagged["value"])
-        case "Json":
-            return json.loads(tagged["value"])
+    match tagged['$type']:
+        case 'BigInt':
+            return int(tagged['value'])
+        case 'Bytes':
+            return Base64.fromb64(tagged['value'])
+        case 'DateTime':
+            return datetime.fromisoformat(tagged['value'])
+        case 'Decimal':
+            return Decimal(tagged['value'])
+        case 'Json':
+            return json.loads(tagged['value'])
 
-    return assert_never(tagged["$type"])
+    return assert_never(tagged['$type'])
