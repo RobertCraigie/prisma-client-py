@@ -16,7 +16,7 @@ from ._base_client import BasePrisma, UseClientDefault, USE_CLIENT_DEFAULT
 from .types import DatasourceOverride, HttpConfig, MetricsFormat
 from ._types import BaseModelT, PrismaMethod, TransactionId, Datasource
 from .bases import _PrismaModel
-from ._builder import QueryBuilder, dumps
+from .engine import json as json_proto
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix, model_parse
 from ._constants import CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED, DEFAULT_CONNECT_TIMEOUT, DEFAULT_TX_MAX_WAIT, DEFAULT_TX_TIMEOUT
@@ -258,19 +258,20 @@ class Batch:
 
     def __init__(self, client: Prisma) -> None:
         self.__client = client
-        self.__queries: List[str] = []
+        self.__queries: list[json_proto.JsonQuery] = []
         self._active_provider = client._active_provider
         {% for model in dmmf.datamodel.models %}
         self.{{ model.instance_name }} = {{ model.name }}BatchActions(self)
         {% endfor %}
 
     def _add(self, **kwargs: Any) -> None:
-        builder = QueryBuilder(
-            **kwargs,
-            prisma_models=PRISMA_MODELS,
-            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
+        self.__queries.append(
+            json_proto.serialize(
+                **kwargs,
+                prisma_models=PRISMA_MODELS,
+                relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
+            )
         )
-        self.__queries.append(builder.build_query())
 
     {{ maybe_async_def }}commit(self) -> None:
         """Execute the queries"""
@@ -278,18 +279,12 @@ class Batch:
         queries = self.__queries
         self.__queries = []
 
-        payload = {
-            'batch': [
-                {
-                    'query': query,
-                    'variables': {},
-                }
-                for query in queries
-            ],
-            'transaction': True,
+        payload: json_proto.JsonBatchQuery = {
+            "batch": queries,
+            "transaction": {},
         }
         {{ maybe_await }}self.__client._engine.query(
-            dumps(payload),
+            json_proto.dumps(payload),
             tx_id=self.__client._tx_id,
         )
 
@@ -368,7 +363,7 @@ class {{ model.name }}BatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete(
@@ -427,7 +422,7 @@ class {{ model.name }}BatchActions:
             method='update_many',
             model=models.{{ model.name }},
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete_many(
@@ -437,8 +432,8 @@ class {{ model.name }}BatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.{{ model.name }},
-            arguments={'where': where},
-            root_selection=['count'],
+            arguments={'where': where or {}},
+            root_selection={'count': True},
         )
 
 

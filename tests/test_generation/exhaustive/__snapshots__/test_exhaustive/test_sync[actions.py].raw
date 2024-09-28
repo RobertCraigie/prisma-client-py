@@ -46,6 +46,7 @@ import warnings
 from . import types, errors, bases
 from ._compat import model_parse
 from ._constants import CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED
+from .engine import json as json_proto
 
 if TYPE_CHECKING:
     from .client import Prisma
@@ -190,7 +191,7 @@ class PostActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['createOnePost'])
 
     def create_many(
         self,
@@ -255,9 +256,9 @@ class PostActions(Generic[_PrismaModelT]):
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['createManyPost']['count'])
 
     def delete(
         self,
@@ -309,7 +310,7 @@ class PostActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['deleteOnePost'])
 
     def find_unique(
         self,
@@ -357,7 +358,7 @@ class PostActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findUniquePost']
         if result is None:
             return None
         return model_parse(self._model, result)
@@ -408,7 +409,7 @@ class PostActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findUniqueOrThrowPost'])
 
     def find_many(
         self,
@@ -479,7 +480,7 @@ class PostActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return [model_parse(self._model, r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['findManyPost']]
 
     def find_first(
         self,
@@ -543,7 +544,7 @@ class PostActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findFirstPost']
         if result is None:
             return None
 
@@ -611,7 +612,7 @@ class PostActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findFirstOrThrowPost'])
 
     def update(
         self,
@@ -668,7 +669,7 @@ class PostActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['updateOnePost'])
 
     def upsert(
         self,
@@ -730,7 +731,7 @@ class PostActions(Generic[_PrismaModelT]):
                 'update': data.get('update'),
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['upsertOnePost'])
 
     def update_many(
         self,
@@ -772,9 +773,9 @@ class PostActions(Generic[_PrismaModelT]):
             method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['updateManyPost']['count'])
 
     @overload
     def count(
@@ -905,12 +906,10 @@ class PostActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = ['_count { _all }']
+            root_selection = {'_count': {"selection": {'_all': True}}}
         else:
 
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
+            root_selection = {'_count': select}
 
         resp = self._client._execute(
             method='count',
@@ -925,9 +924,9 @@ class PostActions(Generic[_PrismaModelT]):
         )
 
         if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
+            return cast(int, resp['data']['aggregatePost']['_count']['_all'])
         else:
-            return cast(types.PostCountAggregateOutput, resp['data']['result']['_count'])
+            return cast(types.PostCountAggregateOutput, resp['data']['aggregatePost']['_count'])
 
     def delete_many(
         self,
@@ -961,9 +960,9 @@ class PostActions(Generic[_PrismaModelT]):
             method='delete_many',
             model=self._model,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['deleteManyPost']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -1048,24 +1047,24 @@ class PostActions(Generic[_PrismaModelT]):
             if skip is not None:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
+        root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+            root_selection['avg'] = avg
 
         if min is not None:
-            root_selection.append(_select_fields('_min', min))
+            root_selection['min'] = min
 
         if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+            root_selection['sum'] = sum
 
         if max is not None:
-            root_selection.append(_select_fields('_max', max))
+            root_selection['max'] = max
 
         if count is not None:
             if count is True:
-                root_selection.append('_count { _all }')
+                root_selection['_count'] = {'_all': True}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                root_selection['_count'] = count
 
         resp = self._client._execute(
             method='group_by',
@@ -1080,7 +1079,7 @@ class PostActions(Generic[_PrismaModelT]):
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
+        return resp['data']['groupByPost']  # type: ignore[no-any-return]
 
 
 class UserActions(Generic[_PrismaModelT]):
@@ -1222,7 +1221,7 @@ class UserActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['createOneUser'])
 
     def create_many(
         self,
@@ -1295,9 +1294,9 @@ class UserActions(Generic[_PrismaModelT]):
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['createManyUser']['count'])
 
     def delete(
         self,
@@ -1349,7 +1348,7 @@ class UserActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['deleteOneUser'])
 
     def find_unique(
         self,
@@ -1397,7 +1396,7 @@ class UserActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findUniqueUser']
         if result is None:
             return None
         return model_parse(self._model, result)
@@ -1448,7 +1447,7 @@ class UserActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findUniqueOrThrowUser'])
 
     def find_many(
         self,
@@ -1519,7 +1518,7 @@ class UserActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return [model_parse(self._model, r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['findManyUser']]
 
     def find_first(
         self,
@@ -1583,7 +1582,7 @@ class UserActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findFirstUser']
         if result is None:
             return None
 
@@ -1651,7 +1650,7 @@ class UserActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findFirstOrThrowUser'])
 
     def update(
         self,
@@ -1708,7 +1707,7 @@ class UserActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['updateOneUser'])
 
     def upsert(
         self,
@@ -1778,7 +1777,7 @@ class UserActions(Generic[_PrismaModelT]):
                 'update': data.get('update'),
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['upsertOneUser'])
 
     def update_many(
         self,
@@ -1820,9 +1819,9 @@ class UserActions(Generic[_PrismaModelT]):
             method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['updateManyUser']['count'])
 
     @overload
     def count(
@@ -1953,12 +1952,10 @@ class UserActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = ['_count { _all }']
+            root_selection = {'_count': {"selection": {'_all': True}}}
         else:
 
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
+            root_selection = {'_count': select}
 
         resp = self._client._execute(
             method='count',
@@ -1973,9 +1970,9 @@ class UserActions(Generic[_PrismaModelT]):
         )
 
         if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
+            return cast(int, resp['data']['aggregateUser']['_count']['_all'])
         else:
-            return cast(types.UserCountAggregateOutput, resp['data']['result']['_count'])
+            return cast(types.UserCountAggregateOutput, resp['data']['aggregateUser']['_count'])
 
     def delete_many(
         self,
@@ -2009,9 +2006,9 @@ class UserActions(Generic[_PrismaModelT]):
             method='delete_many',
             model=self._model,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['deleteManyUser']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -2096,24 +2093,24 @@ class UserActions(Generic[_PrismaModelT]):
             if skip is not None:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
+        root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+            root_selection['avg'] = avg
 
         if min is not None:
-            root_selection.append(_select_fields('_min', min))
+            root_selection['min'] = min
 
         if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+            root_selection['sum'] = sum
 
         if max is not None:
-            root_selection.append(_select_fields('_max', max))
+            root_selection['max'] = max
 
         if count is not None:
             if count is True:
-                root_selection.append('_count { _all }')
+                root_selection['_count'] = {'_all': True}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                root_selection['_count'] = count
 
         resp = self._client._execute(
             method='group_by',
@@ -2128,7 +2125,7 @@ class UserActions(Generic[_PrismaModelT]):
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
+        return resp['data']['groupByUser']  # type: ignore[no-any-return]
 
 
 class MActions(Generic[_PrismaModelT]):
@@ -2269,7 +2266,7 @@ class MActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['createOneM'])
 
     def create_many(
         self,
@@ -2340,9 +2337,9 @@ class MActions(Generic[_PrismaModelT]):
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['createManyM']['count'])
 
     def delete(
         self,
@@ -2394,7 +2391,7 @@ class MActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['deleteOneM'])
 
     def find_unique(
         self,
@@ -2442,7 +2439,7 @@ class MActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findUniqueM']
         if result is None:
             return None
         return model_parse(self._model, result)
@@ -2493,7 +2490,7 @@ class MActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findUniqueOrThrowM'])
 
     def find_many(
         self,
@@ -2564,7 +2561,7 @@ class MActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return [model_parse(self._model, r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['findManyM']]
 
     def find_first(
         self,
@@ -2628,7 +2625,7 @@ class MActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findFirstM']
         if result is None:
             return None
 
@@ -2696,7 +2693,7 @@ class MActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findFirstOrThrowM'])
 
     def update(
         self,
@@ -2753,7 +2750,7 @@ class MActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['updateOneM'])
 
     def upsert(
         self,
@@ -2821,7 +2818,7 @@ class MActions(Generic[_PrismaModelT]):
                 'update': data.get('update'),
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['upsertOneM'])
 
     def update_many(
         self,
@@ -2863,9 +2860,9 @@ class MActions(Generic[_PrismaModelT]):
             method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['updateManyM']['count'])
 
     @overload
     def count(
@@ -2996,12 +2993,10 @@ class MActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = ['_count { _all }']
+            root_selection = {'_count': {"selection": {'_all': True}}}
         else:
 
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
+            root_selection = {'_count': select}
 
         resp = self._client._execute(
             method='count',
@@ -3016,9 +3011,9 @@ class MActions(Generic[_PrismaModelT]):
         )
 
         if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
+            return cast(int, resp['data']['aggregateM']['_count']['_all'])
         else:
-            return cast(types.MCountAggregateOutput, resp['data']['result']['_count'])
+            return cast(types.MCountAggregateOutput, resp['data']['aggregateM']['_count'])
 
     def delete_many(
         self,
@@ -3052,9 +3047,9 @@ class MActions(Generic[_PrismaModelT]):
             method='delete_many',
             model=self._model,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['deleteManyM']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -3139,24 +3134,24 @@ class MActions(Generic[_PrismaModelT]):
             if skip is not None:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
+        root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+            root_selection['avg'] = avg
 
         if min is not None:
-            root_selection.append(_select_fields('_min', min))
+            root_selection['min'] = min
 
         if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+            root_selection['sum'] = sum
 
         if max is not None:
-            root_selection.append(_select_fields('_max', max))
+            root_selection['max'] = max
 
         if count is not None:
             if count is True:
-                root_selection.append('_count { _all }')
+                root_selection['_count'] = {'_all': True}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                root_selection['_count'] = count
 
         resp = self._client._execute(
             method='group_by',
@@ -3171,7 +3166,7 @@ class MActions(Generic[_PrismaModelT]):
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
+        return resp['data']['groupByM']  # type: ignore[no-any-return]
 
 
 class NActions(Generic[_PrismaModelT]):
@@ -3313,7 +3308,7 @@ class NActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['createOneN'])
 
     def create_many(
         self,
@@ -3386,9 +3381,9 @@ class NActions(Generic[_PrismaModelT]):
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['createManyN']['count'])
 
     def delete(
         self,
@@ -3440,7 +3435,7 @@ class NActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['deleteOneN'])
 
     def find_unique(
         self,
@@ -3488,7 +3483,7 @@ class NActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findUniqueN']
         if result is None:
             return None
         return model_parse(self._model, result)
@@ -3539,7 +3534,7 @@ class NActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findUniqueOrThrowN'])
 
     def find_many(
         self,
@@ -3610,7 +3605,7 @@ class NActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return [model_parse(self._model, r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['findManyN']]
 
     def find_first(
         self,
@@ -3674,7 +3669,7 @@ class NActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findFirstN']
         if result is None:
             return None
 
@@ -3742,7 +3737,7 @@ class NActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findFirstOrThrowN'])
 
     def update(
         self,
@@ -3799,7 +3794,7 @@ class NActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['updateOneN'])
 
     def upsert(
         self,
@@ -3869,7 +3864,7 @@ class NActions(Generic[_PrismaModelT]):
                 'update': data.get('update'),
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['upsertOneN'])
 
     def update_many(
         self,
@@ -3911,9 +3906,9 @@ class NActions(Generic[_PrismaModelT]):
             method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['updateManyN']['count'])
 
     @overload
     def count(
@@ -4044,12 +4039,10 @@ class NActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = ['_count { _all }']
+            root_selection = {'_count': {"selection": {'_all': True}}}
         else:
 
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
+            root_selection = {'_count': select}
 
         resp = self._client._execute(
             method='count',
@@ -4064,9 +4057,9 @@ class NActions(Generic[_PrismaModelT]):
         )
 
         if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
+            return cast(int, resp['data']['aggregateN']['_count']['_all'])
         else:
-            return cast(types.NCountAggregateOutput, resp['data']['result']['_count'])
+            return cast(types.NCountAggregateOutput, resp['data']['aggregateN']['_count'])
 
     def delete_many(
         self,
@@ -4100,9 +4093,9 @@ class NActions(Generic[_PrismaModelT]):
             method='delete_many',
             model=self._model,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['deleteManyN']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -4187,24 +4180,24 @@ class NActions(Generic[_PrismaModelT]):
             if skip is not None:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
+        root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+            root_selection['avg'] = avg
 
         if min is not None:
-            root_selection.append(_select_fields('_min', min))
+            root_selection['min'] = min
 
         if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+            root_selection['sum'] = sum
 
         if max is not None:
-            root_selection.append(_select_fields('_max', max))
+            root_selection['max'] = max
 
         if count is not None:
             if count is True:
-                root_selection.append('_count { _all }')
+                root_selection['_count'] = {'_all': True}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                root_selection['_count'] = count
 
         resp = self._client._execute(
             method='group_by',
@@ -4219,7 +4212,7 @@ class NActions(Generic[_PrismaModelT]):
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
+        return resp['data']['groupByN']  # type: ignore[no-any-return]
 
 
 class OneOptionalActions(Generic[_PrismaModelT]):
@@ -4360,7 +4353,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['createOneOneOptional'])
 
     def create_many(
         self,
@@ -4431,9 +4424,9 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['createManyOneOptional']['count'])
 
     def delete(
         self,
@@ -4485,7 +4478,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['deleteOneOneOptional'])
 
     def find_unique(
         self,
@@ -4533,7 +4526,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findUniqueOneOptional']
         if result is None:
             return None
         return model_parse(self._model, result)
@@ -4584,7 +4577,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findUniqueOrThrowOneOptional'])
 
     def find_many(
         self,
@@ -4655,7 +4648,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return [model_parse(self._model, r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['findManyOneOptional']]
 
     def find_first(
         self,
@@ -4719,7 +4712,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findFirstOneOptional']
         if result is None:
             return None
 
@@ -4787,7 +4780,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findFirstOrThrowOneOptional'])
 
     def update(
         self,
@@ -4844,7 +4837,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['updateOneOneOptional'])
 
     def upsert(
         self,
@@ -4912,7 +4905,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'update': data.get('update'),
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['upsertOneOneOptional'])
 
     def update_many(
         self,
@@ -4954,9 +4947,9 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['updateManyOneOptional']['count'])
 
     @overload
     def count(
@@ -5087,12 +5080,10 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = ['_count { _all }']
+            root_selection = {'_count': {"selection": {'_all': True}}}
         else:
 
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
+            root_selection = {'_count': select}
 
         resp = self._client._execute(
             method='count',
@@ -5107,9 +5098,9 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         )
 
         if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
+            return cast(int, resp['data']['aggregateOneOptional']['_count']['_all'])
         else:
-            return cast(types.OneOptionalCountAggregateOutput, resp['data']['result']['_count'])
+            return cast(types.OneOptionalCountAggregateOutput, resp['data']['aggregateOneOptional']['_count'])
 
     def delete_many(
         self,
@@ -5143,9 +5134,9 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             method='delete_many',
             model=self._model,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['deleteManyOneOptional']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -5230,24 +5221,24 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             if skip is not None:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
+        root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+            root_selection['avg'] = avg
 
         if min is not None:
-            root_selection.append(_select_fields('_min', min))
+            root_selection['min'] = min
 
         if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+            root_selection['sum'] = sum
 
         if max is not None:
-            root_selection.append(_select_fields('_max', max))
+            root_selection['max'] = max
 
         if count is not None:
             if count is True:
-                root_selection.append('_count { _all }')
+                root_selection['_count'] = {'_all': True}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                root_selection['_count'] = count
 
         resp = self._client._execute(
             method='group_by',
@@ -5262,7 +5253,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
+        return resp['data']['groupByOneOptional']  # type: ignore[no-any-return]
 
 
 class ManyRequiredActions(Generic[_PrismaModelT]):
@@ -5403,7 +5394,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['createOneManyRequired'])
 
     def create_many(
         self,
@@ -5474,9 +5465,9 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['createManyManyRequired']['count'])
 
     def delete(
         self,
@@ -5528,7 +5519,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['deleteOneManyRequired'])
 
     def find_unique(
         self,
@@ -5576,7 +5567,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findUniqueManyRequired']
         if result is None:
             return None
         return model_parse(self._model, result)
@@ -5627,7 +5618,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findUniqueOrThrowManyRequired'])
 
     def find_many(
         self,
@@ -5698,7 +5689,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return [model_parse(self._model, r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['findManyManyRequired']]
 
     def find_first(
         self,
@@ -5762,7 +5753,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findFirstManyRequired']
         if result is None:
             return None
 
@@ -5830,7 +5821,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findFirstOrThrowManyRequired'])
 
     def update(
         self,
@@ -5887,7 +5878,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['updateOneManyRequired'])
 
     def upsert(
         self,
@@ -5955,7 +5946,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'update': data.get('update'),
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['upsertOneManyRequired'])
 
     def update_many(
         self,
@@ -5997,9 +5988,9 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['updateManyManyRequired']['count'])
 
     @overload
     def count(
@@ -6130,12 +6121,10 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = ['_count { _all }']
+            root_selection = {'_count': {"selection": {'_all': True}}}
         else:
 
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
+            root_selection = {'_count': select}
 
         resp = self._client._execute(
             method='count',
@@ -6150,9 +6139,9 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         )
 
         if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
+            return cast(int, resp['data']['aggregateManyRequired']['_count']['_all'])
         else:
-            return cast(types.ManyRequiredCountAggregateOutput, resp['data']['result']['_count'])
+            return cast(types.ManyRequiredCountAggregateOutput, resp['data']['aggregateManyRequired']['_count'])
 
     def delete_many(
         self,
@@ -6186,9 +6175,9 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             method='delete_many',
             model=self._model,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['deleteManyManyRequired']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -6273,24 +6262,24 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             if skip is not None:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
+        root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+            root_selection['avg'] = avg
 
         if min is not None:
-            root_selection.append(_select_fields('_min', min))
+            root_selection['min'] = min
 
         if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+            root_selection['sum'] = sum
 
         if max is not None:
-            root_selection.append(_select_fields('_max', max))
+            root_selection['max'] = max
 
         if count is not None:
             if count is True:
-                root_selection.append('_count { _all }')
+                root_selection['_count'] = {'_all': True}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                root_selection['_count'] = count
 
         resp = self._client._execute(
             method='group_by',
@@ -6305,7 +6294,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
+        return resp['data']['groupByManyRequired']  # type: ignore[no-any-return]
 
 
 class ListsActions(Generic[_PrismaModelT]):
@@ -6441,7 +6430,7 @@ class ListsActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['createOneLists'])
 
     def create_many(
         self,
@@ -6502,9 +6491,9 @@ class ListsActions(Generic[_PrismaModelT]):
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['createManyLists']['count'])
 
     def delete(
         self,
@@ -6556,7 +6545,7 @@ class ListsActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['deleteOneLists'])
 
     def find_unique(
         self,
@@ -6604,7 +6593,7 @@ class ListsActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findUniqueLists']
         if result is None:
             return None
         return model_parse(self._model, result)
@@ -6655,7 +6644,7 @@ class ListsActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findUniqueOrThrowLists'])
 
     def find_many(
         self,
@@ -6726,7 +6715,7 @@ class ListsActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return [model_parse(self._model, r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['findManyLists']]
 
     def find_first(
         self,
@@ -6790,7 +6779,7 @@ class ListsActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findFirstLists']
         if result is None:
             return None
 
@@ -6858,7 +6847,7 @@ class ListsActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findFirstOrThrowLists'])
 
     def update(
         self,
@@ -6915,7 +6904,7 @@ class ListsActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['updateOneLists'])
 
     def upsert(
         self,
@@ -6973,7 +6962,7 @@ class ListsActions(Generic[_PrismaModelT]):
                 'update': data.get('update'),
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['upsertOneLists'])
 
     def update_many(
         self,
@@ -7015,9 +7004,9 @@ class ListsActions(Generic[_PrismaModelT]):
             method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['updateManyLists']['count'])
 
     @overload
     def count(
@@ -7148,12 +7137,10 @@ class ListsActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = ['_count { _all }']
+            root_selection = {'_count': {"selection": {'_all': True}}}
         else:
 
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
+            root_selection = {'_count': select}
 
         resp = self._client._execute(
             method='count',
@@ -7168,9 +7155,9 @@ class ListsActions(Generic[_PrismaModelT]):
         )
 
         if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
+            return cast(int, resp['data']['aggregateLists']['_count']['_all'])
         else:
-            return cast(types.ListsCountAggregateOutput, resp['data']['result']['_count'])
+            return cast(types.ListsCountAggregateOutput, resp['data']['aggregateLists']['_count'])
 
     def delete_many(
         self,
@@ -7204,9 +7191,9 @@ class ListsActions(Generic[_PrismaModelT]):
             method='delete_many',
             model=self._model,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['deleteManyLists']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -7291,24 +7278,24 @@ class ListsActions(Generic[_PrismaModelT]):
             if skip is not None:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
+        root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+            root_selection['avg'] = avg
 
         if min is not None:
-            root_selection.append(_select_fields('_min', min))
+            root_selection['min'] = min
 
         if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+            root_selection['sum'] = sum
 
         if max is not None:
-            root_selection.append(_select_fields('_max', max))
+            root_selection['max'] = max
 
         if count is not None:
             if count is True:
-                root_selection.append('_count { _all }')
+                root_selection['_count'] = {'_all': True}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                root_selection['_count'] = count
 
         resp = self._client._execute(
             method='group_by',
@@ -7323,7 +7310,7 @@ class ListsActions(Generic[_PrismaModelT]):
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
+        return resp['data']['groupByLists']  # type: ignore[no-any-return]
 
 
 class AActions(Generic[_PrismaModelT]):
@@ -7463,7 +7450,7 @@ class AActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['createOneA'])
 
     def create_many(
         self,
@@ -7532,9 +7519,9 @@ class AActions(Generic[_PrismaModelT]):
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['createManyA']['count'])
 
     def delete(
         self,
@@ -7586,7 +7573,7 @@ class AActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['deleteOneA'])
 
     def find_unique(
         self,
@@ -7634,7 +7621,7 @@ class AActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findUniqueA']
         if result is None:
             return None
         return model_parse(self._model, result)
@@ -7685,7 +7672,7 @@ class AActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findUniqueOrThrowA'])
 
     def find_many(
         self,
@@ -7756,7 +7743,7 @@ class AActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return [model_parse(self._model, r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['findManyA']]
 
     def find_first(
         self,
@@ -7820,7 +7807,7 @@ class AActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findFirstA']
         if result is None:
             return None
 
@@ -7888,7 +7875,7 @@ class AActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findFirstOrThrowA'])
 
     def update(
         self,
@@ -7945,7 +7932,7 @@ class AActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['updateOneA'])
 
     def upsert(
         self,
@@ -8009,7 +7996,7 @@ class AActions(Generic[_PrismaModelT]):
                 'update': data.get('update'),
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['upsertOneA'])
 
     def update_many(
         self,
@@ -8051,9 +8038,9 @@ class AActions(Generic[_PrismaModelT]):
             method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['updateManyA']['count'])
 
     @overload
     def count(
@@ -8184,12 +8171,10 @@ class AActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = ['_count { _all }']
+            root_selection = {'_count': {"selection": {'_all': True}}}
         else:
 
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
+            root_selection = {'_count': select}
 
         resp = self._client._execute(
             method='count',
@@ -8204,9 +8189,9 @@ class AActions(Generic[_PrismaModelT]):
         )
 
         if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
+            return cast(int, resp['data']['aggregateA']['_count']['_all'])
         else:
-            return cast(types.ACountAggregateOutput, resp['data']['result']['_count'])
+            return cast(types.ACountAggregateOutput, resp['data']['aggregateA']['_count'])
 
     def delete_many(
         self,
@@ -8240,9 +8225,9 @@ class AActions(Generic[_PrismaModelT]):
             method='delete_many',
             model=self._model,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['deleteManyA']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -8327,24 +8312,24 @@ class AActions(Generic[_PrismaModelT]):
             if skip is not None:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
+        root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+            root_selection['avg'] = avg
 
         if min is not None:
-            root_selection.append(_select_fields('_min', min))
+            root_selection['min'] = min
 
         if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+            root_selection['sum'] = sum
 
         if max is not None:
-            root_selection.append(_select_fields('_max', max))
+            root_selection['max'] = max
 
         if count is not None:
             if count is True:
-                root_selection.append('_count { _all }')
+                root_selection['_count'] = {'_all': True}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                root_selection['_count'] = count
 
         resp = self._client._execute(
             method='group_by',
@@ -8359,7 +8344,7 @@ class AActions(Generic[_PrismaModelT]):
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
+        return resp['data']['groupByA']  # type: ignore[no-any-return]
 
 
 class BActions(Generic[_PrismaModelT]):
@@ -8499,7 +8484,7 @@ class BActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['createOneB'])
 
     def create_many(
         self,
@@ -8568,9 +8553,9 @@ class BActions(Generic[_PrismaModelT]):
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['createManyB']['count'])
 
     def delete(
         self,
@@ -8622,7 +8607,7 @@ class BActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['deleteOneB'])
 
     def find_unique(
         self,
@@ -8670,7 +8655,7 @@ class BActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findUniqueB']
         if result is None:
             return None
         return model_parse(self._model, result)
@@ -8721,7 +8706,7 @@ class BActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findUniqueOrThrowB'])
 
     def find_many(
         self,
@@ -8792,7 +8777,7 @@ class BActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return [model_parse(self._model, r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['findManyB']]
 
     def find_first(
         self,
@@ -8856,7 +8841,7 @@ class BActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findFirstB']
         if result is None:
             return None
 
@@ -8924,7 +8909,7 @@ class BActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findFirstOrThrowB'])
 
     def update(
         self,
@@ -8981,7 +8966,7 @@ class BActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['updateOneB'])
 
     def upsert(
         self,
@@ -9047,7 +9032,7 @@ class BActions(Generic[_PrismaModelT]):
                 'update': data.get('update'),
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['upsertOneB'])
 
     def update_many(
         self,
@@ -9089,9 +9074,9 @@ class BActions(Generic[_PrismaModelT]):
             method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['updateManyB']['count'])
 
     @overload
     def count(
@@ -9222,12 +9207,10 @@ class BActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = ['_count { _all }']
+            root_selection = {'_count': {"selection": {'_all': True}}}
         else:
 
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
+            root_selection = {'_count': select}
 
         resp = self._client._execute(
             method='count',
@@ -9242,9 +9225,9 @@ class BActions(Generic[_PrismaModelT]):
         )
 
         if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
+            return cast(int, resp['data']['aggregateB']['_count']['_all'])
         else:
-            return cast(types.BCountAggregateOutput, resp['data']['result']['_count'])
+            return cast(types.BCountAggregateOutput, resp['data']['aggregateB']['_count'])
 
     def delete_many(
         self,
@@ -9278,9 +9261,9 @@ class BActions(Generic[_PrismaModelT]):
             method='delete_many',
             model=self._model,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['deleteManyB']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -9365,24 +9348,24 @@ class BActions(Generic[_PrismaModelT]):
             if skip is not None:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
+        root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+            root_selection['avg'] = avg
 
         if min is not None:
-            root_selection.append(_select_fields('_min', min))
+            root_selection['min'] = min
 
         if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+            root_selection['sum'] = sum
 
         if max is not None:
-            root_selection.append(_select_fields('_max', max))
+            root_selection['max'] = max
 
         if count is not None:
             if count is True:
-                root_selection.append('_count { _all }')
+                root_selection['_count'] = {'_all': True}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                root_selection['_count'] = count
 
         resp = self._client._execute(
             method='group_by',
@@ -9397,7 +9380,7 @@ class BActions(Generic[_PrismaModelT]):
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
+        return resp['data']['groupByB']  # type: ignore[no-any-return]
 
 
 class CActions(Generic[_PrismaModelT]):
@@ -9539,7 +9522,7 @@ class CActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['createOneC'])
 
     def create_many(
         self,
@@ -9612,9 +9595,9 @@ class CActions(Generic[_PrismaModelT]):
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['createManyC']['count'])
 
     def delete(
         self,
@@ -9667,7 +9650,7 @@ class CActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['deleteOneC'])
 
     def find_unique(
         self,
@@ -9716,7 +9699,7 @@ class CActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findUniqueC']
         if result is None:
             return None
         return model_parse(self._model, result)
@@ -9768,7 +9751,7 @@ class CActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findUniqueOrThrowC'])
 
     def find_many(
         self,
@@ -9839,7 +9822,7 @@ class CActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return [model_parse(self._model, r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['findManyC']]
 
     def find_first(
         self,
@@ -9903,7 +9886,7 @@ class CActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findFirstC']
         if result is None:
             return None
 
@@ -9971,7 +9954,7 @@ class CActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findFirstOrThrowC'])
 
     def update(
         self,
@@ -10029,7 +10012,7 @@ class CActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['updateOneC'])
 
     def upsert(
         self,
@@ -10088,7 +10071,7 @@ class CActions(Generic[_PrismaModelT]):
                 'update': data.get('update'),
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['upsertOneC'])
 
     def update_many(
         self,
@@ -10130,9 +10113,9 @@ class CActions(Generic[_PrismaModelT]):
             method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['updateManyC']['count'])
 
     @overload
     def count(
@@ -10263,12 +10246,10 @@ class CActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = ['_count { _all }']
+            root_selection = {'_count': {"selection": {'_all': True}}}
         else:
 
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
+            root_selection = {'_count': select}
 
         resp = self._client._execute(
             method='count',
@@ -10283,9 +10264,9 @@ class CActions(Generic[_PrismaModelT]):
         )
 
         if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
+            return cast(int, resp['data']['aggregateC']['_count']['_all'])
         else:
-            return cast(types.CCountAggregateOutput, resp['data']['result']['_count'])
+            return cast(types.CCountAggregateOutput, resp['data']['aggregateC']['_count'])
 
     def delete_many(
         self,
@@ -10319,9 +10300,9 @@ class CActions(Generic[_PrismaModelT]):
             method='delete_many',
             model=self._model,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['deleteManyC']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -10406,24 +10387,24 @@ class CActions(Generic[_PrismaModelT]):
             if skip is not None:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
+        root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+            root_selection['avg'] = avg
 
         if min is not None:
-            root_selection.append(_select_fields('_min', min))
+            root_selection['min'] = min
 
         if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+            root_selection['sum'] = sum
 
         if max is not None:
-            root_selection.append(_select_fields('_max', max))
+            root_selection['max'] = max
 
         if count is not None:
             if count is True:
-                root_selection.append('_count { _all }')
+                root_selection['_count'] = {'_all': True}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                root_selection['_count'] = count
 
         resp = self._client._execute(
             method='group_by',
@@ -10438,7 +10419,7 @@ class CActions(Generic[_PrismaModelT]):
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
+        return resp['data']['groupByC']  # type: ignore[no-any-return]
 
 
 class DActions(Generic[_PrismaModelT]):
@@ -10579,7 +10560,7 @@ class DActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['createOneD'])
 
     def create_many(
         self,
@@ -10650,9 +10631,9 @@ class DActions(Generic[_PrismaModelT]):
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['createManyD']['count'])
 
     def delete(
         self,
@@ -10704,7 +10685,7 @@ class DActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['deleteOneD'])
 
     def find_unique(
         self,
@@ -10752,7 +10733,7 @@ class DActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findUniqueD']
         if result is None:
             return None
         return model_parse(self._model, result)
@@ -10803,7 +10784,7 @@ class DActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findUniqueOrThrowD'])
 
     def find_many(
         self,
@@ -10874,7 +10855,7 @@ class DActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return [model_parse(self._model, r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['findManyD']]
 
     def find_first(
         self,
@@ -10938,7 +10919,7 @@ class DActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findFirstD']
         if result is None:
             return None
 
@@ -11006,7 +10987,7 @@ class DActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findFirstOrThrowD'])
 
     def update(
         self,
@@ -11063,7 +11044,7 @@ class DActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['updateOneD'])
 
     def upsert(
         self,
@@ -11131,7 +11112,7 @@ class DActions(Generic[_PrismaModelT]):
                 'update': data.get('update'),
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['upsertOneD'])
 
     def update_many(
         self,
@@ -11173,9 +11154,9 @@ class DActions(Generic[_PrismaModelT]):
             method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['updateManyD']['count'])
 
     @overload
     def count(
@@ -11306,12 +11287,10 @@ class DActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = ['_count { _all }']
+            root_selection = {'_count': {"selection": {'_all': True}}}
         else:
 
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
+            root_selection = {'_count': select}
 
         resp = self._client._execute(
             method='count',
@@ -11326,9 +11305,9 @@ class DActions(Generic[_PrismaModelT]):
         )
 
         if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
+            return cast(int, resp['data']['aggregateD']['_count']['_all'])
         else:
-            return cast(types.DCountAggregateOutput, resp['data']['result']['_count'])
+            return cast(types.DCountAggregateOutput, resp['data']['aggregateD']['_count'])
 
     def delete_many(
         self,
@@ -11362,9 +11341,9 @@ class DActions(Generic[_PrismaModelT]):
             method='delete_many',
             model=self._model,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['deleteManyD']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -11449,24 +11428,24 @@ class DActions(Generic[_PrismaModelT]):
             if skip is not None:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
+        root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+            root_selection['avg'] = avg
 
         if min is not None:
-            root_selection.append(_select_fields('_min', min))
+            root_selection['min'] = min
 
         if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+            root_selection['sum'] = sum
 
         if max is not None:
-            root_selection.append(_select_fields('_max', max))
+            root_selection['max'] = max
 
         if count is not None:
             if count is True:
-                root_selection.append('_count { _all }')
+                root_selection['_count'] = {'_all': True}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                root_selection['_count'] = count
 
         resp = self._client._execute(
             method='group_by',
@@ -11481,7 +11460,7 @@ class DActions(Generic[_PrismaModelT]):
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
+        return resp['data']['groupByD']  # type: ignore[no-any-return]
 
 
 class EActions(Generic[_PrismaModelT]):
@@ -11620,7 +11599,7 @@ class EActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['createOneE'])
 
     def create_many(
         self,
@@ -11687,9 +11666,9 @@ class EActions(Generic[_PrismaModelT]):
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['createManyE']['count'])
 
     def delete(
         self,
@@ -11741,7 +11720,7 @@ class EActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['deleteOneE'])
 
     def find_unique(
         self,
@@ -11789,7 +11768,7 @@ class EActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findUniqueE']
         if result is None:
             return None
         return model_parse(self._model, result)
@@ -11840,7 +11819,7 @@ class EActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findUniqueOrThrowE'])
 
     def find_many(
         self,
@@ -11911,7 +11890,7 @@ class EActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return [model_parse(self._model, r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['findManyE']]
 
     def find_first(
         self,
@@ -11975,7 +11954,7 @@ class EActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findFirstE']
         if result is None:
             return None
 
@@ -12043,7 +12022,7 @@ class EActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findFirstOrThrowE'])
 
     def update(
         self,
@@ -12100,7 +12079,7 @@ class EActions(Generic[_PrismaModelT]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['updateOneE'])
 
     def upsert(
         self,
@@ -12164,7 +12143,7 @@ class EActions(Generic[_PrismaModelT]):
                 'update': data.get('update'),
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['upsertOneE'])
 
     def update_many(
         self,
@@ -12206,9 +12185,9 @@ class EActions(Generic[_PrismaModelT]):
             method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['updateManyE']['count'])
 
     @overload
     def count(
@@ -12339,12 +12318,10 @@ class EActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = ['_count { _all }']
+            root_selection = {'_count': {"selection": {'_all': True}}}
         else:
 
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
+            root_selection = {'_count': select}
 
         resp = self._client._execute(
             method='count',
@@ -12359,9 +12336,9 @@ class EActions(Generic[_PrismaModelT]):
         )
 
         if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
+            return cast(int, resp['data']['aggregateE']['_count']['_all'])
         else:
-            return cast(types.ECountAggregateOutput, resp['data']['result']['_count'])
+            return cast(types.ECountAggregateOutput, resp['data']['aggregateE']['_count'])
 
     def delete_many(
         self,
@@ -12395,9 +12372,9 @@ class EActions(Generic[_PrismaModelT]):
             method='delete_many',
             model=self._model,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['deleteManyE']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -12482,24 +12459,24 @@ class EActions(Generic[_PrismaModelT]):
             if skip is not None:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
+        root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+            root_selection['avg'] = avg
 
         if min is not None:
-            root_selection.append(_select_fields('_min', min))
+            root_selection['min'] = min
 
         if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+            root_selection['sum'] = sum
 
         if max is not None:
-            root_selection.append(_select_fields('_max', max))
+            root_selection['max'] = max
 
         if count is not None:
             if count is True:
-                root_selection.append('_count { _all }')
+                root_selection['_count'] = {'_all': True}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                root_selection['_count'] = count
 
         resp = self._client._execute(
             method='group_by',
@@ -12514,17 +12491,8 @@ class EActions(Generic[_PrismaModelT]):
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
+        return resp['data']['groupByE']  # type: ignore[no-any-return]
 
-
-
-def _select_fields(root: str, select: Mapping[str, Any]) -> str:
-    """Helper to build a GraphQL selection string
-
-    This is a work around until field selection is added to the query builder.
-    """
-
-    return root + ' {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
 
 
 from . import models
