@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import Any, Literal, NotRequired, TypedDict
+from typing import Any, Dict, List, Union, Literal, TypedDict
+from typing_extensions import NotRequired
 
-type JsonQueryAction = Literal[
+JsonQueryAction = Literal[
     'findUnique',
     'findUniqueOrThrow',
     'findFirst',
@@ -39,25 +40,40 @@ EnumTaggedValue = TypedDict('EnumTaggedValue', {'$type': Literal['Enum'], 'value
 JsonTaggedValue = TypedDict('JsonTaggedValue', {'$type': Literal['Json'], 'value': str})
 RawTaggedValue = TypedDict('RawTaggedValue', {'$type': Literal['Raw'], 'value': Any})
 
-type JsonInputTaggedValue = (
-    DateTaggedValue
-    | DecimalTaggedValue
-    | BytesTaggedValue
-    | BigIntTaggedValue
-    | FieldRefTaggedValue
-    | JsonTaggedValue
-    | EnumTaggedValue
-    | RawTaggedValue
-)
 
-type JsonOutputTaggedValue = (
-    DateTaggedValue | DecimalTaggedValue | BytesTaggedValue | BigIntTaggedValue | JsonTaggedValue
-)
+JsonInputTaggedValue = Union[
+    DateTaggedValue,
+    DecimalTaggedValue,
+    BytesTaggedValue,
+    BigIntTaggedValue,
+    FieldRefTaggedValue,
+    JsonTaggedValue,
+    EnumTaggedValue,
+    RawTaggedValue,
+]
+
+JsonOutputTaggedValue = Union[
+    DateTaggedValue,
+    DecimalTaggedValue,
+    BytesTaggedValue,
+    BigIntTaggedValue,
+    JsonTaggedValue,
+]
+
+JsonArgumentValue = Union[
+    int,
+    str,
+    bool,
+    None,
+    RawTaggedValue,
+    List['JsonArgumentValue'],
+    Dict[str, 'JsonArgumentValue'],
+]
 
 
-type JsonArgumentValue = (
-    int | str | bool | None | RawTaggedValue | list[JsonArgumentValue] | dict[str, JsonArgumentValue]
-)
+class JsonFieldSelection(TypedDict):
+    arguments: NotRequired[dict[str, JsonArgumentValue] | RawTaggedValue]
+    selection: JsonSelectionSet
 
 
 _JsonSelectionSet = TypedDict(
@@ -68,12 +84,7 @@ _JsonSelectionSet = TypedDict(
     },
     total=False,
 )
-type JsonSelectionSet = _JsonSelectionSet | dict[str, bool | JsonFieldSelection]
-
-
-class JsonFieldSelection(TypedDict):
-    arguments: NotRequired[dict[str, JsonArgumentValue] | RawTaggedValue]
-    selection: JsonSelectionSet
+JsonSelectionSet = Union[_JsonSelectionSet, Dict[str, Union[bool, JsonFieldSelection]]]
 
 
 class JsonQuery(TypedDict):

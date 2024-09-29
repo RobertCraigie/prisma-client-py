@@ -1,36 +1,36 @@
 from __future__ import annotations
 
 import json
-from contextvars import ContextVar
-from datetime import datetime, timezone
+from typing import TYPE_CHECKING, Any, Type, TypedDict, cast
 from decimal import Decimal
-from functools import singledispatch
 from inspect import isclass
-from typing import TYPE_CHECKING, Any, TypedDict, cast
+from datetime import datetime, timezone
+from functools import singledispatch
+from contextvars import ContextVar
 
 from pydantic import BaseModel
 
-from ..._builder import _is_prisma_model_type, _prisma_model_for_field
-from ..._compat import model_fields
-from ..._constants import QUERY_BUILDER_ALIASES
-from ..._types import PrismaMethod
-from ...errors import InvalidModelError, UnknownModelError, UnknownRelationalFieldError
-from ...fields import Base64, Json
 from .types import (
-    BytesTaggedValue,
+    JsonQuery,
     DateTaggedValue,
+    JsonQueryAction,
+    JsonTaggedValue,
+    BytesTaggedValue,
+    JsonSelectionSet,
     DecimalTaggedValue,
     JsonFieldSelection,
     JsonInputTaggedValue,
-    JsonQuery,
-    JsonQueryAction,
-    JsonSelectionSet,
-    JsonTaggedValue,
 )
+from ..._types import PrismaMethod
+from ...errors import InvalidModelError, UnknownModelError, UnknownRelationalFieldError
+from ...fields import Json, Base64
+from ..._compat import model_fields
+from ..._builder import _is_prisma_model_type, _prisma_model_for_field
+from ..._constants import QUERY_BUILDER_ALIASES
 
 if TYPE_CHECKING:
-    from ...bases import _PrismaModel
-    from ...types import Serializable
+    from ...bases import _PrismaModel  # noqa: TID251
+    from ...types import Serializable  # noqa: TID251
 
 
 METHOD_TO_ACTION: dict[PrismaMethod, JsonQueryAction] = {
@@ -167,10 +167,10 @@ def add_included_relations(selection_set: JsonSelectionSet, include: dict[str, A
 
         context = _serialize_context.get()
         token = _serialize_context.set(
-            context
-            | {
+            {
+                **context,
                 'arguments': value,
-                'model': get_relational_model(context['model'], key),  # type: ignore
+                'model': get_relational_model(cast(Type['_PrismaModel'], context['model']), key),
                 'root_selection': None,
             },
         )

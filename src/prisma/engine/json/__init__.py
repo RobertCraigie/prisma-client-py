@@ -1,4 +1,3 @@
-from .deserializer import deserialize as deserialize
-from .serializer import dumps as dumps
-from .serializer import serialize as serialize
 from .types import *
+from .serializer import dumps as dumps, serialize as serialize
+from .deserializer import deserialize as deserialize
