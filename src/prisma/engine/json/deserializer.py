@@ -7,7 +7,6 @@ from datetime import datetime
 from typing_extensions import TypeGuard
 
 from .types import JsonOutputTaggedValue
-from ...utils import assert_never
 from ...fields import Base64
 
 
@@ -42,5 +41,3 @@ def deserialize_tagged_value(tagged: JsonOutputTaggedValue) -> Any:
         return Decimal(tagged['value'])
     elif tagged['$type'] == 'Json':
         return json.loads(tagged['value'])
-
-    return assert_never(tagged['$type'])  # pragma: no cover
