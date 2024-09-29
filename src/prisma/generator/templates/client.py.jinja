@@ -432,7 +432,7 @@ class {{ model.name }}BatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.{{ model.name }},
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection={'count': True},
         )
 

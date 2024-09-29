@@ -494,7 +494,7 @@ class PostBatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.Post,
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection={'count': True},
         )
 
@@ -605,7 +605,7 @@ class UserBatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.User,
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection={'count': True},
         )
 
@@ -716,7 +716,7 @@ class MBatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.M,
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection={'count': True},
         )
 
@@ -827,7 +827,7 @@ class NBatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.N,
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection={'count': True},
         )
 
@@ -938,7 +938,7 @@ class OneOptionalBatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.OneOptional,
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection={'count': True},
         )
 
@@ -1049,7 +1049,7 @@ class ManyRequiredBatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.ManyRequired,
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection={'count': True},
         )
 
@@ -1160,7 +1160,7 @@ class ListsBatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.Lists,
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection={'count': True},
         )
 
@@ -1271,7 +1271,7 @@ class ABatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.A,
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection={'count': True},
         )
 
@@ -1382,7 +1382,7 @@ class BBatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.B,
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection={'count': True},
         )
 
@@ -1493,7 +1493,7 @@ class CBatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.C,
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection={'count': True},
         )
 
@@ -1604,7 +1604,7 @@ class DBatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.D,
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection={'count': True},
         )
 
@@ -1715,7 +1715,7 @@ class EBatchActions:
         self._batcher._add(
             method='delete_many',
             model=models.E,
-            arguments={'where': where or {}},
+            arguments={'where': where},
             root_selection={'count': True},
         )
 
