@@ -869,10 +869,10 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {'selection': {'_all': True}}}
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
             {% raw %}
-            root_selection = {'_count': {'selection': select}}
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
             {% endraw %}
 
         resp = {{ maybe_await }}self._client._execute(
@@ -1020,22 +1020,22 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['_avg'] = {'selection': avg}
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection['_min'] = {'selection': min}
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection['_sum'] = {'selection': sum}
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection['_max'] = {'selection': max}
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
                 root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = {'selection': count}
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = {{ maybe_await }}self._client._execute(
             method='group_by',

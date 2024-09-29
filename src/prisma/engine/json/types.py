@@ -76,15 +76,7 @@ class JsonFieldSelection(TypedDict):
     selection: JsonSelectionSet
 
 
-_JsonSelectionSet = TypedDict(
-    '_JsonSelectionSet',
-    {
-        '$scalars': bool,
-        '$composites': bool,
-    },
-    total=False,
-)
-JsonSelectionSet = Union[_JsonSelectionSet, Dict[str, Union[bool, JsonFieldSelection]]]
+JsonSelectionSet = Dict[str, Union[bool, JsonFieldSelection]]
 
 
 class JsonQuery(TypedDict):
