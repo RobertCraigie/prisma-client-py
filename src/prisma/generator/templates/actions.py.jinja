@@ -391,7 +391,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['findUniqueOrThrow{{ model.name }}'])
+        return model_parse(self._model, resp['data']['findUnique{{ model.name }}OrThrow'])
 
     {{ maybe_async_def }}find_many(
         self,
@@ -594,7 +594,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['findFirstOrThrow{{ model.name }}'])
+        return model_parse(self._model, resp['data']['findFirst{{ model.name }}OrThrow'])
 
     {{ maybe_async_def }}update(
         self,
@@ -869,10 +869,10 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {"selection": {'_all': True}}}
+            root_selection = {'_count': {'selection': {'_all': True}}}
         else:
             {% raw %}
-            root_selection = {'_count': select}
+            root_selection = {'_count': {'selection': select}}
             {% endraw %}
 
         resp = {{ maybe_await }}self._client._execute(
@@ -1020,22 +1020,22 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['avg'] = avg
+            root_selection['_avg'] = {'selection': avg}
 
         if min is not None:
-            root_selection['min'] = min
+            root_selection['_min'] = {'selection': min}
 
         if sum is not None:
-            root_selection['sum'] = sum
+            root_selection['_sum'] = {'selection': sum}
 
         if max is not None:
-            root_selection['max'] = max
+            root_selection['_max'] = {'selection': max}
 
         if count is not None:
             if count is True:
-                root_selection['_count'] = {'_all': True}
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = count
+                root_selection['_count'] = {'selection': count}
 
         resp = {{ maybe_await }}self._client._execute(
             method='group_by',

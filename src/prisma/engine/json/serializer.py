@@ -74,14 +74,14 @@ def serialize(
     arguments: dict[str, Any],
     prisma_models: set[str],
     relational_field_mappings: dict[str, dict[str, str]],
-    model: type[BaseModel] | None,
-    root_selection: JsonSelectionSet | None,
+    model: type[BaseModel] | None = None,
+    root_selection: JsonSelectionSet | None = None,
 ) -> JsonQuery:
     token = _serialize_context.set(cast(_SerializeContext, locals()))
     try:
         query: JsonQuery = {
             'action': METHOD_TO_ACTION[method],
-            'query': serialize_field_selection(arguments),
+            'query': serialize_field_selection(transform_aliases(arguments)),
         }
     finally:
         _serialize_context.reset(token)
@@ -105,21 +105,37 @@ def transform_aliases(arguments: dict[str, Any]) -> dict[str, Any]:
 
     e.g. order_by -> orderBy
     """
-    return {QUERY_BUILDER_ALIASES.get(key, key): value for key, value in arguments.items() if value is not None}
+    transformed = {}
+    for key, value in arguments.items():
+        alias = QUERY_BUILDER_ALIASES.get(key, key)
+        if isinstance(value, dict):
+            transformed[alias] = transform_aliases(arguments=value)
+        elif isinstance(value, (list, tuple, set)):
+            # it is safe to map any iterable type to a list here as it is only being used
+            # to serialise the query and we only officially support lists anyway
+            transformed[alias] = [
+                transform_aliases(data) if isinstance(data, dict) else data  # type: ignore
+                for data in value
+            ]
+        else:
+            transformed[alias] = value
+    return transformed
 
 
 def serialize_field_selection(arguments: dict[str, Any]) -> JsonFieldSelection:
     context = _serialize_context.get()
-    selection_set = context['root_selection'] or {}
+    selection_set: JsonSelectionSet = {}
 
-    if context['model'] and not is_raw_action(context['method']):
-        selection_set['$composites'] = selection_set['$scalars'] = True
+    if context['root_selection']:
+        selection_set = context['root_selection'].copy()
+    elif context['model'] and not is_raw_action(context['method']):
+        selection_set = {'$scalars': True, '$composites': True}
 
     if include := arguments.pop('include', None):
         add_included_relations(selection_set, include)
 
     return {
-        'arguments': transform_aliases(arguments),
+        'arguments': {key: value for key, value in arguments.items() if value is not None},
         'selection': selection_set,
     }
 
@@ -219,7 +235,7 @@ def serialize_json(obj: Json) -> JsonTaggedValue:
 
     This should only be used for fields that are of the `Json` type.
     """
-    return {'$type': 'Json', 'value': dumps(obj)}
+    return {'$type': 'Json', 'value': dumps(obj.data)}
 
 
 @serializer.register(Base64)
