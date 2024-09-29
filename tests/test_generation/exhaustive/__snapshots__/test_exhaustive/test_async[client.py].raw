@@ -54,7 +54,7 @@ from ._base_client import BasePrisma, UseClientDefault, USE_CLIENT_DEFAULT
 from .types import DatasourceOverride, HttpConfig, MetricsFormat
 from ._types import BaseModelT, PrismaMethod, TransactionId, Datasource
 from .bases import _PrismaModel
-from ._builder import QueryBuilder, dumps
+from .engine import json as json_proto
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
 from ._compat import removeprefix, model_parse
 from ._constants import CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED, DEFAULT_CONNECT_TIMEOUT, DEFAULT_TX_MAX_WAIT, DEFAULT_TX_TIMEOUT
@@ -185,7 +185,7 @@ class Prisma(AsyncBasePrisma):
             },
             model=None,
         )
-        return int(resp['data']['result'])
+        return int(resp['data']['executeRaw'])
 
     @overload
     async def query_first(
@@ -262,7 +262,7 @@ class Prisma(AsyncBasePrisma):
             },
             model=model,
         )
-        result = resp['data']['result']
+        result = resp['data']['queryRaw']
         if model is not None:
             return deserialize_raw_results(result, model=model)
 
@@ -328,7 +328,7 @@ class Batch:
 
     def __init__(self, client: Prisma) -> None:
         self.__client = client
-        self.__queries: List[str] = []
+        self.__queries: list[json_proto.JsonQuery] = []
         self._active_provider = client._active_provider
         self.post = PostBatchActions(self)
         self.user = UserBatchActions(self)
@@ -344,12 +344,13 @@ class Batch:
         self.e = EBatchActions(self)
 
     def _add(self, **kwargs: Any) -> None:
-        builder = QueryBuilder(
-            **kwargs,
-            prisma_models=PRISMA_MODELS,
-            relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
+        self.__queries.append(
+            json_proto.serialize(
+                **kwargs,
+                prisma_models=PRISMA_MODELS,
+                relational_field_mappings=RELATIONAL_FIELD_MAPPINGS,
+            )
         )
-        self.__queries.append(builder.build_query())
 
     async def commit(self) -> None:
         """Execute the queries"""
@@ -357,18 +358,12 @@ class Batch:
         queries = self.__queries
         self.__queries = []
 
-        payload = {
-            'batch': [
-                {
-                    'query': query,
-                    'variables': {},
-                }
-                for query in queries
-            ],
-            'transaction': True,
+        payload: json_proto.JsonBatchQuery = {
+            "batch": queries,
+            "transaction": {},
         }
         await self.__client._engine.query(
-            dumps(payload),
+            json_proto.dumps(payload),
             tx_id=self.__client._tx_id,
         )
 
@@ -430,7 +425,7 @@ class PostBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete(
@@ -489,7 +484,7 @@ class PostBatchActions:
             method='update_many',
             model=models.Post,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete_many(
@@ -500,7 +495,7 @@ class PostBatchActions:
             method='delete_many',
             model=models.Post,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
 
@@ -541,7 +536,7 @@ class UserBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete(
@@ -600,7 +595,7 @@ class UserBatchActions:
             method='update_many',
             model=models.User,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete_many(
@@ -611,7 +606,7 @@ class UserBatchActions:
             method='delete_many',
             model=models.User,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
 
@@ -652,7 +647,7 @@ class MBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete(
@@ -711,7 +706,7 @@ class MBatchActions:
             method='update_many',
             model=models.M,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete_many(
@@ -722,7 +717,7 @@ class MBatchActions:
             method='delete_many',
             model=models.M,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
 
@@ -763,7 +758,7 @@ class NBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete(
@@ -822,7 +817,7 @@ class NBatchActions:
             method='update_many',
             model=models.N,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete_many(
@@ -833,7 +828,7 @@ class NBatchActions:
             method='delete_many',
             model=models.N,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
 
@@ -874,7 +869,7 @@ class OneOptionalBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete(
@@ -933,7 +928,7 @@ class OneOptionalBatchActions:
             method='update_many',
             model=models.OneOptional,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete_many(
@@ -944,7 +939,7 @@ class OneOptionalBatchActions:
             method='delete_many',
             model=models.OneOptional,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
 
@@ -985,7 +980,7 @@ class ManyRequiredBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete(
@@ -1044,7 +1039,7 @@ class ManyRequiredBatchActions:
             method='update_many',
             model=models.ManyRequired,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete_many(
@@ -1055,7 +1050,7 @@ class ManyRequiredBatchActions:
             method='delete_many',
             model=models.ManyRequired,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
 
@@ -1096,7 +1091,7 @@ class ListsBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete(
@@ -1155,7 +1150,7 @@ class ListsBatchActions:
             method='update_many',
             model=models.Lists,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete_many(
@@ -1166,7 +1161,7 @@ class ListsBatchActions:
             method='delete_many',
             model=models.Lists,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
 
@@ -1207,7 +1202,7 @@ class ABatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete(
@@ -1266,7 +1261,7 @@ class ABatchActions:
             method='update_many',
             model=models.A,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete_many(
@@ -1277,7 +1272,7 @@ class ABatchActions:
             method='delete_many',
             model=models.A,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
 
@@ -1318,7 +1313,7 @@ class BBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete(
@@ -1377,7 +1372,7 @@ class BBatchActions:
             method='update_many',
             model=models.B,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete_many(
@@ -1388,7 +1383,7 @@ class BBatchActions:
             method='delete_many',
             model=models.B,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
 
@@ -1429,7 +1424,7 @@ class CBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete(
@@ -1488,7 +1483,7 @@ class CBatchActions:
             method='update_many',
             model=models.C,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete_many(
@@ -1499,7 +1494,7 @@ class CBatchActions:
             method='delete_many',
             model=models.C,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
 
@@ -1540,7 +1535,7 @@ class DBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete(
@@ -1599,7 +1594,7 @@ class DBatchActions:
             method='update_many',
             model=models.D,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete_many(
@@ -1610,7 +1605,7 @@ class DBatchActions:
             method='delete_many',
             model=models.D,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
 
@@ -1651,7 +1646,7 @@ class EBatchActions:
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete(
@@ -1710,7 +1705,7 @@ class EBatchActions:
             method='update_many',
             model=models.E,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
     def delete_many(
@@ -1721,7 +1716,7 @@ class EBatchActions:
             method='delete_many',
             model=models.E,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
 
 
