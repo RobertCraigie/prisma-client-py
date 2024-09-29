@@ -185,7 +185,7 @@ class Prisma(AsyncBasePrisma):
             },
             model=None,
         )
-        return int(resp['data']['result'])
+        return int(resp['data']['executeRaw'])
 
     @overload
     async def query_first(
@@ -262,7 +262,7 @@ class Prisma(AsyncBasePrisma):
             },
             model=model,
         )
-        result = resp['data']['result']
+        result = resp['data']['queryRaw']
         if model is not None:
             return deserialize_raw_results(result, model=model)
 

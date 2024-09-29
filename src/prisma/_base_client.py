@@ -424,16 +424,18 @@ class SyncBasePrisma(BasePrisma[SyncAbstractEngine]):
         model: type[BaseModel] | None = None,
         root_selection: json_proto.JsonSelectionSet | None = None,
     ) -> Any:
-        return self._engine.query(
-            json_proto.dumps(
-                self._serialize(
-                    method=method,
-                    arguments=arguments,
-                    model=model,
-                    root_selection=root_selection,
-                )
-            ),
-            tx_id=self._tx_id,
+        return json_proto.deserialize(
+            self._engine.query(
+                json_proto.dumps(
+                    self._serialize(
+                        method=method,
+                        arguments=arguments,
+                        model=model,
+                        root_selection=root_selection,
+                    )
+                ),
+                tx_id=self._tx_id,
+            )
         )
 
 

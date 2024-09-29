@@ -4,9 +4,10 @@ import json
 from typing import Any
 from decimal import Decimal
 from datetime import datetime
-from typing_extensions import TypeGuard, assert_never
+from typing_extensions import TypeGuard
 
 from .types import JsonOutputTaggedValue
+from ...utils import assert_never
 from ...fields import Base64
 
 
@@ -42,4 +43,4 @@ def deserialize_tagged_value(tagged: JsonOutputTaggedValue) -> Any:
     elif tagged['$type'] == 'Json':
         return json.loads(tagged['value'])
 
-    return assert_never(tagged['$type'])
+    return assert_never(tagged['$type'])  # pragma: no cover

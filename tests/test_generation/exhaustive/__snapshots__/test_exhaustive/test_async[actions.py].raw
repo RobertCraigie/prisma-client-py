@@ -409,7 +409,7 @@ class PostActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['findUniqueOrThrowPost'])
+        return model_parse(self._model, resp['data']['findUniquePostOrThrow'])
 
     async def find_many(
         self,
@@ -612,7 +612,7 @@ class PostActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['findFirstOrThrowPost'])
+        return model_parse(self._model, resp['data']['findFirstPostOrThrow'])
 
     async def update(
         self,
@@ -906,10 +906,10 @@ class PostActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {"selection": {'_all': True}}}
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
 
-            root_selection = {'_count': select}
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
 
         resp = await self._client._execute(
             method='count',
@@ -1049,22 +1049,22 @@ class PostActions(Generic[_PrismaModelT]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['avg'] = avg
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection['min'] = min
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection['sum'] = sum
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection['max'] = max
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
-                root_selection['_count'] = {'_all': True}
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = count
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = await self._client._execute(
             method='group_by',
@@ -1447,7 +1447,7 @@ class UserActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['findUniqueOrThrowUser'])
+        return model_parse(self._model, resp['data']['findUniqueUserOrThrow'])
 
     async def find_many(
         self,
@@ -1650,7 +1650,7 @@ class UserActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['findFirstOrThrowUser'])
+        return model_parse(self._model, resp['data']['findFirstUserOrThrow'])
 
     async def update(
         self,
@@ -1952,10 +1952,10 @@ class UserActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {"selection": {'_all': True}}}
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
 
-            root_selection = {'_count': select}
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
 
         resp = await self._client._execute(
             method='count',
@@ -2095,22 +2095,22 @@ class UserActions(Generic[_PrismaModelT]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['avg'] = avg
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection['min'] = min
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection['sum'] = sum
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection['max'] = max
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
-                root_selection['_count'] = {'_all': True}
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = count
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = await self._client._execute(
             method='group_by',
@@ -2490,7 +2490,7 @@ class MActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['findUniqueOrThrowM'])
+        return model_parse(self._model, resp['data']['findUniqueMOrThrow'])
 
     async def find_many(
         self,
@@ -2693,7 +2693,7 @@ class MActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['findFirstOrThrowM'])
+        return model_parse(self._model, resp['data']['findFirstMOrThrow'])
 
     async def update(
         self,
@@ -2993,10 +2993,10 @@ class MActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {"selection": {'_all': True}}}
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
 
-            root_selection = {'_count': select}
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
 
         resp = await self._client._execute(
             method='count',
@@ -3136,22 +3136,22 @@ class MActions(Generic[_PrismaModelT]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['avg'] = avg
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection['min'] = min
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection['sum'] = sum
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection['max'] = max
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
-                root_selection['_count'] = {'_all': True}
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = count
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = await self._client._execute(
             method='group_by',
@@ -3534,7 +3534,7 @@ class NActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['findUniqueOrThrowN'])
+        return model_parse(self._model, resp['data']['findUniqueNOrThrow'])
 
     async def find_many(
         self,
@@ -3737,7 +3737,7 @@ class NActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['findFirstOrThrowN'])
+        return model_parse(self._model, resp['data']['findFirstNOrThrow'])
 
     async def update(
         self,
@@ -4039,10 +4039,10 @@ class NActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {"selection": {'_all': True}}}
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
 
-            root_selection = {'_count': select}
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
 
         resp = await self._client._execute(
             method='count',
@@ -4182,22 +4182,22 @@ class NActions(Generic[_PrismaModelT]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['avg'] = avg
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection['min'] = min
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection['sum'] = sum
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection['max'] = max
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
-                root_selection['_count'] = {'_all': True}
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = count
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = await self._client._execute(
             method='group_by',
@@ -4577,7 +4577,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['findUniqueOrThrowOneOptional'])
+        return model_parse(self._model, resp['data']['findUniqueOneOptionalOrThrow'])
 
     async def find_many(
         self,
@@ -4780,7 +4780,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['findFirstOrThrowOneOptional'])
+        return model_parse(self._model, resp['data']['findFirstOneOptionalOrThrow'])
 
     async def update(
         self,
@@ -5080,10 +5080,10 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {"selection": {'_all': True}}}
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
 
-            root_selection = {'_count': select}
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
 
         resp = await self._client._execute(
             method='count',
@@ -5223,22 +5223,22 @@ class OneOptionalActions(Generic[_PrismaModelT]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['avg'] = avg
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection['min'] = min
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection['sum'] = sum
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection['max'] = max
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
-                root_selection['_count'] = {'_all': True}
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = count
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = await self._client._execute(
             method='group_by',
@@ -5618,7 +5618,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['findUniqueOrThrowManyRequired'])
+        return model_parse(self._model, resp['data']['findUniqueManyRequiredOrThrow'])
 
     async def find_many(
         self,
@@ -5821,7 +5821,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['findFirstOrThrowManyRequired'])
+        return model_parse(self._model, resp['data']['findFirstManyRequiredOrThrow'])
 
     async def update(
         self,
@@ -6121,10 +6121,10 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {"selection": {'_all': True}}}
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
 
-            root_selection = {'_count': select}
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
 
         resp = await self._client._execute(
             method='count',
@@ -6264,22 +6264,22 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['avg'] = avg
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection['min'] = min
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection['sum'] = sum
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection['max'] = max
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
-                root_selection['_count'] = {'_all': True}
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = count
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = await self._client._execute(
             method='group_by',
@@ -6644,7 +6644,7 @@ class ListsActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['findUniqueOrThrowLists'])
+        return model_parse(self._model, resp['data']['findUniqueListsOrThrow'])
 
     async def find_many(
         self,
@@ -6847,7 +6847,7 @@ class ListsActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['findFirstOrThrowLists'])
+        return model_parse(self._model, resp['data']['findFirstListsOrThrow'])
 
     async def update(
         self,
@@ -7137,10 +7137,10 @@ class ListsActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {"selection": {'_all': True}}}
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
 
-            root_selection = {'_count': select}
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
 
         resp = await self._client._execute(
             method='count',
@@ -7280,22 +7280,22 @@ class ListsActions(Generic[_PrismaModelT]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['avg'] = avg
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection['min'] = min
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection['sum'] = sum
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection['max'] = max
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
-                root_selection['_count'] = {'_all': True}
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = count
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = await self._client._execute(
             method='group_by',
@@ -7672,7 +7672,7 @@ class AActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['findUniqueOrThrowA'])
+        return model_parse(self._model, resp['data']['findUniqueAOrThrow'])
 
     async def find_many(
         self,
@@ -7875,7 +7875,7 @@ class AActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['findFirstOrThrowA'])
+        return model_parse(self._model, resp['data']['findFirstAOrThrow'])
 
     async def update(
         self,
@@ -8171,10 +8171,10 @@ class AActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {"selection": {'_all': True}}}
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
 
-            root_selection = {'_count': select}
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
 
         resp = await self._client._execute(
             method='count',
@@ -8314,22 +8314,22 @@ class AActions(Generic[_PrismaModelT]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['avg'] = avg
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection['min'] = min
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection['sum'] = sum
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection['max'] = max
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
-                root_selection['_count'] = {'_all': True}
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = count
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = await self._client._execute(
             method='group_by',
@@ -8706,7 +8706,7 @@ class BActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['findUniqueOrThrowB'])
+        return model_parse(self._model, resp['data']['findUniqueBOrThrow'])
 
     async def find_many(
         self,
@@ -8909,7 +8909,7 @@ class BActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['findFirstOrThrowB'])
+        return model_parse(self._model, resp['data']['findFirstBOrThrow'])
 
     async def update(
         self,
@@ -9207,10 +9207,10 @@ class BActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {"selection": {'_all': True}}}
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
 
-            root_selection = {'_count': select}
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
 
         resp = await self._client._execute(
             method='count',
@@ -9350,22 +9350,22 @@ class BActions(Generic[_PrismaModelT]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['avg'] = avg
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection['min'] = min
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection['sum'] = sum
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection['max'] = max
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
-                root_selection['_count'] = {'_all': True}
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = count
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = await self._client._execute(
             method='group_by',
@@ -9751,7 +9751,7 @@ class CActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['findUniqueOrThrowC'])
+        return model_parse(self._model, resp['data']['findUniqueCOrThrow'])
 
     async def find_many(
         self,
@@ -9954,7 +9954,7 @@ class CActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['findFirstOrThrowC'])
+        return model_parse(self._model, resp['data']['findFirstCOrThrow'])
 
     async def update(
         self,
@@ -10246,10 +10246,10 @@ class CActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {"selection": {'_all': True}}}
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
 
-            root_selection = {'_count': select}
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
 
         resp = await self._client._execute(
             method='count',
@@ -10389,22 +10389,22 @@ class CActions(Generic[_PrismaModelT]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['avg'] = avg
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection['min'] = min
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection['sum'] = sum
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection['max'] = max
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
-                root_selection['_count'] = {'_all': True}
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = count
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = await self._client._execute(
             method='group_by',
@@ -10784,7 +10784,7 @@ class DActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['findUniqueOrThrowD'])
+        return model_parse(self._model, resp['data']['findUniqueDOrThrow'])
 
     async def find_many(
         self,
@@ -10987,7 +10987,7 @@ class DActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['findFirstOrThrowD'])
+        return model_parse(self._model, resp['data']['findFirstDOrThrow'])
 
     async def update(
         self,
@@ -11287,10 +11287,10 @@ class DActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {"selection": {'_all': True}}}
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
 
-            root_selection = {'_count': select}
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
 
         resp = await self._client._execute(
             method='count',
@@ -11430,22 +11430,22 @@ class DActions(Generic[_PrismaModelT]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['avg'] = avg
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection['min'] = min
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection['sum'] = sum
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection['max'] = max
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
-                root_selection['_count'] = {'_all': True}
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = count
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = await self._client._execute(
             method='group_by',
@@ -11819,7 +11819,7 @@ class EActions(Generic[_PrismaModelT]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['findUniqueOrThrowE'])
+        return model_parse(self._model, resp['data']['findUniqueEOrThrow'])
 
     async def find_many(
         self,
@@ -12022,7 +12022,7 @@ class EActions(Generic[_PrismaModelT]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['findFirstOrThrowE'])
+        return model_parse(self._model, resp['data']['findFirstEOrThrow'])
 
     async def update(
         self,
@@ -12318,10 +12318,10 @@ class EActions(Generic[_PrismaModelT]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = {'_count': {"selection": {'_all': True}}}
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
 
-            root_selection = {'_count': select}
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
 
         resp = await self._client._execute(
             method='count',
@@ -12461,22 +12461,22 @@ class EActions(Generic[_PrismaModelT]):
 
         root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection['avg'] = avg
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection['min'] = min
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection['sum'] = sum
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection['max'] = max
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
-                root_selection['_count'] = {'_all': True}
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection['_count'] = count
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = await self._client._execute(
             method='group_by',

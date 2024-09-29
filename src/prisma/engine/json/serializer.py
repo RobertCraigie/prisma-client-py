@@ -176,7 +176,7 @@ def get_relational_model(current_model: type[_PrismaModel], field: str) -> type[
     return model
 
 
-def add_included_relations(selection_set: JsonSelectionSet, include: dict[str, Any]):
+def add_included_relations(selection_set: JsonSelectionSet, include: dict[str, Any]) -> None:
     for key, value in include.items():
         if not value:
             continue
