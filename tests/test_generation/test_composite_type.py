@@ -26,15 +26,18 @@ def test_composite_type_not_supported(testdir: Testdir) -> None:
     )
     testdir.generate(schema=schema)
 
-    client_types_path = testdir.path / "prisma" / "types.py"
+    client_types_path = testdir.path / 'prisma' / 'types.py'
     client_types = client_types_path.read_text()
 
-    assert dedent("""
+    assert (
+        dedent("""
         class UserSettings(TypedDict, total=False):
             theme: _str
-    """).strip() in client_types
+    """).strip()
+        in client_types
+    )
 
     for line in client_types.splitlines():
         line = line.strip()
-        if line.startswith("settings:"):
+        if line.startswith('settings:'):
             assert line == "settings: 'UserSettings'"

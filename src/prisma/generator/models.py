@@ -1029,7 +1029,7 @@ class Field(BaseModel):
             and not self.relation_name
             and not self.is_list
         )
-    
+
     @property
     def is_composite_type(self) -> bool:
         if self.kind != 'object':
