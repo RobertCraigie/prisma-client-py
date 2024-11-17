@@ -440,6 +440,16 @@ class _{{ type }}ListUpdatePush(TypedDict):
 
 {% endfor %}
 
+{% for composite_type in dmmf.datamodel.types %}
+# {{ composite_type.name }} types
+
+class {{ composite_type.name }}(TypedDict, total=False):
+    {% for field in composite_type.fields %}
+    {{ field.name }}: {{ field.maybe_optional(field.create_input_type) }}
+    {% endfor %}
+{% endfor %}
+
+
 {% for model in dmmf.datamodel.models %}
 {% set model_schema = type_schema.get_model(model.name) %}
 # {{ model.name }} types
