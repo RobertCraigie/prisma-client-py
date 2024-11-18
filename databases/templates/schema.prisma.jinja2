@@ -242,11 +242,11 @@ enum Role {
 model User {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   name String
-  {# contact Contact #}
+  contact Contact
 }
 
-{# type Contact {
+type Contact {
   email String
   phone String
-} #}
+}
 {% endif %}
