@@ -13,7 +13,9 @@ generator client {
   recursive_type_depth        = -1
   engineType                  = "binary"
   enable_experimental_decimal = true
+  {% if partial_generator %}
   partial_type_generator      = "{{ partial_generator }}"
+  {% endif %}
   {% if config.id == "postgresql" %}
   previewFeatures = ["fullTextSearch"]
   {% elif config.id == "mysql" %}
@@ -21,6 +23,7 @@ generator client {
   {% endif %}
 }
 
+{% if config.id != "mongodb" %}
 model User {
   id         String   @id @default(cuid())
   created_at DateTime @default(now())
@@ -232,4 +235,18 @@ enum Role {
   EDITOR
 }
 
+{% endif %}
+{% endif %}
+
+{% if config.id == "mongodb" %}
+model User {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  {# contact Contact #}
+}
+
+{# type Contact {
+  email String
+  phone String
+} #}
 {% endif %}

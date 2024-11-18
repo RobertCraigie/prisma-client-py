@@ -83,6 +83,15 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
             'full_text_search',
         },
     ),
+    'mongodb': DatabaseConfig(
+        id='mongodb',
+        name='MongoDB',
+        env_var='MONGODB_URL',
+        bools_are_ints=False,
+        default_date_func='',
+        autoincrement_id='',
+        unsupported_features=set(),
+    ),
 }
 SUPPORTED_DATABASES = cast(List[SupportedDatabase], list(get_args(SupportedDatabase)))
 
