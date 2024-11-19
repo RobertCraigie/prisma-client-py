@@ -723,6 +723,7 @@ class Selection(Node):
 
             if not isinstance(model, type(BaseModel)):
                 raise ValueError(f'Expected model to be a Pydantic model but got {type(model)} instead.')
+            model = cast(type[BaseModel], model)
 
             for key, value in include.items():
                 if value is True:

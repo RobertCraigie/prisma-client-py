@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Dict, Mapping, Optional
+from typing import Any, Dict, Mapping, Optional
 
 from .._types import TypedDict
 
@@ -29,5 +29,5 @@ class PartialModel(TypedDict):
 class MetaFieldsInterface:
     @staticmethod
     @abstractmethod
-    def get_meta_fields() -> Dict[str, PartialModelField]:
+    def get_meta_fields() -> Dict[Any, PartialModelField]:
         ...

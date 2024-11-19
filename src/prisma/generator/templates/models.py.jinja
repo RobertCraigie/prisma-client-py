@@ -6,6 +6,7 @@ import logging
 import inspect
 import warnings
 from collections import OrderedDict
+from typing_extensions import override
 
 from pydantic import BaseModel, Field
 
@@ -187,6 +188,7 @@ class {{ model.name }}(bases.Base{{ model.name }}, MetaFieldsInterface):
         _created_partial_types.add(name)
     
     @staticmethod
+    @override
     def get_meta_fields() -> Dict['types.{{ model.name }}Keys', PartialModelField]:
         return _{{ model.name }}_fields
 
