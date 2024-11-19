@@ -3,11 +3,13 @@
 
 from collections import OrderedDict
 
+from pydantic import BaseModel
+
 from . import types, enums, errors, fields, bases
 from .generator import partial_models_ctx, PartialModelField, MetaFieldsInterface
 
 {% for composite_type in dmmf.datamodel.types %}
-class {{ composite_type.name }}(MetaFieldsInterface):
+class {{ composite_type.name }}(BaseModel, MetaFieldsInterface):
     {% for field in composite_type.fields %}
     {{ field.name }}: {{ field.python_type_as_string }}
     {% endfor %}

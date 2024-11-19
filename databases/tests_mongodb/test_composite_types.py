@@ -10,3 +10,4 @@ async def test_composite_types(client: Prisma) -> None:
 
     assert user is not None
     assert user.name == 'Alice'
+    assert user.contact.email == 'test@test.com'
