@@ -186,7 +186,7 @@ class {{ model.name }}(bases.Base{{ model.name }}, MetaFieldsInterface):
             }
         )
         _created_partial_types.add(name)
-    
+
     @staticmethod
     @override
     def get_meta_fields() -> Dict['types.{{ model.name }}Keys', PartialModelField]:

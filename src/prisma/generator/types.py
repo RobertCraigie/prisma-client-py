@@ -29,5 +29,4 @@ class PartialModel(TypedDict):
 class MetaFieldsInterface:
     @staticmethod
     @abstractmethod
-    def get_meta_fields() -> Dict[Any, PartialModelField]:
-        ...
+    def get_meta_fields() -> Dict[Any, PartialModelField]: ...
