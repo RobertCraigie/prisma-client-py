@@ -1,0 +1,35 @@
+{% include '_header.py.jinja' %}
+{% from '_utils.py.jinja' import recursive_types with context %}
+
+from collections import OrderedDict
+
+from . import types, enums, errors, fields, bases
+from .generator import partial_models_ctx, PartialModelField, MetaFieldsInterface
+
+{% for composite_type in dmmf.datamodel.types %}
+class {{ composite_type.name }}(MetaFieldsInterface):
+    {% for field in composite_type.fields %}
+    {{ field.name }}: {{ field.python_type_as_string }}
+    {% endfor %}
+
+    @staticmethod
+    def get_meta_fields() -> Dict['types.{{ composite_type.name }}Keys', PartialModelField]:
+        return _{{ composite_type.name }}_fields
+
+_{{ composite_type.name }}_fields: Dict['types.{{ composite_type.name }}Keys', PartialModelField] = OrderedDict(
+    [
+        {% for field in composite_type.fields %}
+        ('{{ field.name }}', {
+            'name': '{{ field.name }}',
+            'is_list': {{ field.is_list }},
+            'optional': {{ field.is_optional }},
+            'type': {{ field.python_type_as_string }},
+            'is_relational': {{ field.relation_name is not none }},
+            'documentation': {% if field.documentation is none %}None{% else %}'''{{ field.documentation }}'''{% endif %},
+            'composite_type': {% if field.is_composite_type %}{{ field.type }}{% else %}None{% endif %},
+        }),
+        {% endfor %}
+    ],
+)
+
+{% endfor %}

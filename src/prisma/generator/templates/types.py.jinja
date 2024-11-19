@@ -447,6 +447,12 @@ class {{ composite_type.name }}(TypedDict, total=False):
     {% for field in composite_type.fields %}
     {{ field.name }}: {{ field.maybe_optional(field.create_input_type) }}
     {% endfor %}
+
+{{ composite_type.name }}Keys = Literal[
+    {% for field in composite_type.fields %}
+    '{{ field.name }}',
+    {% endfor %}
+]
 {% endfor %}
 
 
