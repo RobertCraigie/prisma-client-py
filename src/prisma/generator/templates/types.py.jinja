@@ -443,10 +443,17 @@ class _{{ type }}ListUpdatePush(TypedDict):
 {% for composite_type in dmmf.datamodel.types %}
 # {{ composite_type.name }} types
 
-class {{ composite_type.name }}(TypedDict, total=False):
+class {{ composite_type.name }}(TypedDict):
     {% for field in composite_type.fields %}
     {{ field.name }}: {{ field.maybe_optional(field.create_input_type) }}
     {% endfor %}
+
+
+class Partial{{ composite_type.name }}(TypedDict, total=False):
+    {% for field in composite_type.fields %}
+    {{ field.name }}: {{ field.maybe_optional(field.create_input_type, True) }}
+    {% endfor %}
+
 
 {{ composite_type.name }}Keys = Literal[
     {% for field in composite_type.fields %}
@@ -790,6 +797,49 @@ class {{ model.name }}NumberAggregateInput(TypedDict, total=False):
 {% else -%}
     {{ model.name }}RelationalFieldKeys = _NoneType
 {% endif %}
+
+{% endfor %}
+
+{% for composite_type in dmmf.datamodel.types %}
+
+{{ composite_type.name }}Filter = Union[
+    {{ composite_type.name }},
+    '{{ composite_type.name }}FilterOperations',
+]
+
+{{ composite_type.name }}FilterOperations = TypedDict(
+    '{{ composite_type.name }}FilterOperations',
+    {
+        'equals': '{{ composite_type.name }}',
+        'is': 'Partial{{ composite_type.name }}',
+        'is_not': 'Partial{{ composite_type.name }}',
+    },
+    total=False,
+)
+
+class {{ composite_type.name }}OptionalFilterOperations({{ composite_type.name }}FilterOperations):
+    is_set: bool
+
+
+class {{ composite_type.name }}FilterWithQuantifiers(Partial{{ composite_type.name }}, total=False):
+    AND: 'List[{{ composite_type.name }}FilterWithQuantifiers]'
+    OR: 'List[{{ composite_type.name }}FilterWithQuantifiers]'
+    NOT: 'List[{{ composite_type.name }}FilterWithQuantifiers]'
+
+
+{{ composite_type.name }}ListFilter = Union[
+    List[{{ composite_type.name }}],
+    '{{ composite_type.name }}ListFilterOperations',
+]
+
+
+class {{ composite_type.name }}ListFilterOperations(TypedDict, total=False):
+    equals: List['{{ composite_type.name }}']
+    is_empty: bool
+    is_set: bool
+    every: '{{ composite_type.name }}FilterWithQuantifiers'
+    some: '{{ composite_type.name }}FilterWithQuantifiers'
+    none: '{{ composite_type.name }}FilterWithQuantifiers'
 
 {% endfor %}
 

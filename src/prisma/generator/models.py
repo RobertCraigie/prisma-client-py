@@ -984,10 +984,15 @@ class Field(BaseModel):
 
     @property
     def where_input_type(self) -> str:
-        if self.is_composite_type:
-            return self.python_type
-
         typ = self.type
+
+        if self.is_composite_type:
+            if self.is_list:
+                return f"'types.{typ}ListFilter'"
+            if self.is_optional:
+                return f"'types.{typ}OptionalFilter'"
+            return f"'types.{typ}Filter'"
+
         if self.is_relational:
             if self.is_list:
                 return f"'{typ}ListRelationFilter'"
@@ -1058,9 +1063,9 @@ class Field(BaseModel):
     def is_number(self) -> bool:
         return self.type in {'Int', 'BigInt', 'Float'}
 
-    def maybe_optional(self, typ: str) -> str:
+    def maybe_optional(self, typ: str, force: bool = False) -> str:
         """Wrap the given type string within `Optional` if applicable"""
-        if self.is_required or self.is_relational:
+        if (not force) and (self.is_required or self.is_relational or self.is_composite_type):
             return typ
         return f'Optional[{typ}]'
 

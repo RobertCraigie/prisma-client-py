@@ -63,7 +63,7 @@ async def test_composite_type_without_complete_where(client: Prisma) -> None:
             'contact': {
                 'email': 'alice@example.com',
             },
-        })
+        }) # type: ignore
     
     assert '`where.contact.phone`: A value is required but not set' in str(exc.value)
     
@@ -142,7 +142,7 @@ async def test_composite_type_with_where_equals_without_all_fields(client: Prism
                     'email': 'alice@example.com',
                 }
             },
-        })
+        }) # type: ignore
 
     assert '`where.contact.equals.phone`: A value is required but not set' in str(exc.value)
 
