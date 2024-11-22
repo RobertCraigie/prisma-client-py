@@ -242,23 +242,11 @@ enum Role {
 model User {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   name String
-  contact Contact
-  pets    Pet[]
+  {# contact Contact #}
 }
 
-type Contact {
+{# type Contact {
   email String
   phone String
-}
-
-type Pet {
-  name String
-  type PetType
-}
-
-enum PetType {
-  CAT
-  DOG
-  FISH
-}
+} #}
 {% endif %}
