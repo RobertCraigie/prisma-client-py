@@ -299,7 +299,7 @@ class Runner:
                 # template variables
                 config=self.config,
                 for_async=self.for_async,
-                partial_generator=(escape_path(DATABASES_DIR / 'partials.py') if self.config.id != 'mongodb' else None),
+                partial_generator=escape_path(DATABASES_DIR / 'partials.py'),
             )
         )
 
@@ -326,8 +326,6 @@ class Runner:
         )
 
         args = []
-        if self.config.id == 'mongodb':
-            args.append('tests_mongodb')
         if pytest_args is not None:  # pragma: no cover
             args = shlex.split(pytest_args)
 
@@ -396,10 +394,6 @@ class Runner:
 
         # ensure the tests for the sync client are not ran during the async tests anc vice versa
         files.append(tests_reldir(for_async=not self.for_async))
-
-        if self.config.id == 'mongodb':
-            files.append(tests_relpath('.', for_async=True))
-            files.append(tests_relpath('.', for_async=False))
 
         return set(files)
 
