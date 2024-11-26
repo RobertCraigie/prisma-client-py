@@ -23,6 +23,8 @@ BaseModelT = TypeVar('BaseModelT', bound=BaseModel)
 FuncType = Callable[..., object]
 CoroType = Callable[..., Coroutine[Any, Any, object]]
 
+ExcMapping = Mapping[Type[BaseException], Type[BaseException]]
+
 
 @runtime_checkable
 class InheritsGeneric(Protocol):

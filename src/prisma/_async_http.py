@@ -4,15 +4,28 @@ from typing_extensions import override
 
 import httpx
 
+from .utils import ExcConverter
 from ._types import Method
+from .errors import HTTPClientTimeoutError
 from .http_abstract import AbstractHTTP, AbstractResponse
 
 __all__ = ('HTTP', 'AsyncHTTP', 'Response', 'client')
 
 
+convert_exc = ExcConverter(
+    {
+        httpx.ConnectTimeout: HTTPClientTimeoutError,
+        httpx.ReadTimeout: HTTPClientTimeoutError,
+        httpx.WriteTimeout: HTTPClientTimeoutError,
+        httpx.PoolTimeout: HTTPClientTimeoutError,
+    }
+)
+
+
 class AsyncHTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
     session: httpx.AsyncClient
 
+    @convert_exc
     @override
     async def download(self, url: str, dest: str) -> None:
         async with self.session.stream('GET', url, timeout=None) as resp:
@@ -21,14 +34,17 @@ class AsyncHTTP(AbstractHTTP[httpx.AsyncClient, httpx.Response]):
                 async for chunk in resp.aiter_bytes():
                     fd.write(chunk)
 
+    @convert_exc
     @override
     async def request(self, method: Method, url: str, **kwargs: Any) -> 'Response':
         return Response(await self.session.request(method, url, **kwargs))
 
+    @convert_exc
     @override
     def open(self) -> None:
         self.session = httpx.AsyncClient(**self.session_kwargs)
 
+    @convert_exc
     @override
     async def close(self) -> None:
         if self.should_close():
