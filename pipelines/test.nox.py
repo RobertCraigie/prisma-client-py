@@ -37,6 +37,7 @@ def test(session: nox.Session) -> None:
         '-m',
         'pytest',
         '--ignore=databases',
+        '--snapshot-diff-mode=disabled',
         *pytest_args,
         env={
             'PYTEST_PLUGINS': 'pytester',
