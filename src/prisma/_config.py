@@ -108,7 +108,7 @@ class Config(DefaultConfig):
             path = Path('pyproject.toml')
 
         if path.exists():
-            config = tomlkit.loads(path.read_text()).get('tool', {}).get('prisma', {})
+            config = tomlkit.loads(path.read_text(encoding='utf-8')).get('tool', {}).get('prisma', {})
         else:
             config = {}
 
