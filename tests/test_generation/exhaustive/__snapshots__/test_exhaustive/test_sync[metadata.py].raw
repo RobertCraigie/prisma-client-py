@@ -5,6 +5,7 @@ from __future__ import annotations
 # fmt: off
 # -- template metadata.py.jinja --
 
+GENERATED_VERSION: str = '0.15.0'
 
 PRISMA_MODELS: set[str] = {
     'Post',
