@@ -1,3 +1,23 @@
+"""
+prisma.http
+~~~~~~~~~~~
+
+Imports an async or sync HTTP client based on the user
+defined interface in the schema.
+
+For example this generator defined in the schema will generate
+an async HTTP client.
+```prisma
+generator client {
+  provider                    = "prisma-client-py"
+  interface                   = "asyncio"
+  recursive_type_depth        = -1
+}
+```
+
+:auto-generated:
+"""
+
 {% include '_header.py.jinja' %}
 # -- template http.py.jinja --
 {% if generator.config.interface == 'asyncio' %}
