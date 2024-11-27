@@ -745,7 +745,7 @@ class Selection(Node):
                 for field, info in model.get_meta_fields().items():
                     children.append(self._get_child_from_model(field, info))
             else:
-                children.extend(builder.get_default_fields(model)) # type: ignore
+                children.extend(builder.get_default_fields(model))  # type: ignore
 
         if include is not None:
             if model is None:
@@ -810,9 +810,9 @@ class Selection(Node):
                     model=composite_type,
                 ),
             )
-        
-        if info.get("is_relational"):
-            return ""
+
+        if info.get('is_relational'):
+            return ''
 
         return field
 
