@@ -203,6 +203,26 @@ class QueryBuilder:
         )
         return root
 
+    def get_default_fields(self, model: type[PrismaModel]) -> list[str]:
+        """Returns a list of all the scalar fields of a model
+        Raises UnknownModelError if the current model cannot be found.
+        """
+        name = getattr(model, '__prisma_model__', MISSING)
+        if name is MISSING:
+            raise InvalidModelError(model)
+
+        name = model.__prisma_model__
+        if name not in self.prisma_models:
+            raise UnknownModelError(name)
+
+        # by default we exclude every field that points to a PrismaModel as that indicates that it is a relational field
+        # we explicitly keep fields that point to anything else, even other pydantic.BaseModel types, as they can be used to deserialize JSON
+        return [
+            field
+            for field, info in model_fields(model).items()
+            if not _field_is_prisma_model(info, name=field, parent=model)
+        ]
+
     def get_relational_model(self, current_model: type[BaseModel], field: str) -> type[PrismaModel]:
         """Returns the model that the field is related to.
 
@@ -289,6 +309,13 @@ def _prisma_model_for_field(
             return type_
 
     return None
+
+
+def _field_is_prisma_model(field: FieldInfo, *, name: str, parent: type[BaseModel]) -> bool:
+    """Whether or not the given field info represents a model at the database level.
+    This will return `True` for cases where the field represents a list of models or a single model.
+    """
+    return _prisma_model_for_field(field, name=name, parent=parent) is not None
 
 
 def _is_prisma_model_type(type_: type[BaseModel]) -> TypeGuard[type[PrismaModel]]:
@@ -714,8 +741,11 @@ class Selection(Node):
         if root_selection is not None:
             children.extend(root_selection)
         elif model is not None:
-            for field, info in model.get_meta_fields().items():
-                children.append(self._get_child_from_model(field, info))
+            if hasattr(model, 'get_meta_fields'):
+                for field, info in model.get_meta_fields().items():
+                    children.append(self._get_child_from_model(field, info))
+            else:
+                children.extend(builder.get_default_fields(model)) # type: ignore
 
         if include is not None:
             if model is None:
@@ -780,6 +810,9 @@ class Selection(Node):
                     model=composite_type,
                 ),
             )
+        
+        if info.get("is_relational"):
+            return ""
 
         return field
 
