@@ -127,6 +127,7 @@ src/prisma/bases.py
 src/prisma/types.py
 src/prisma/enums.py
 src/prisma/client.py
+src/prisma/composite_types.py
 src/prisma/models.py
 src/prisma/actions.py
 src/prisma/metadata.py
