@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Type, Tuple, Mapping, TypeVar, Callable, Coroutine
+from typing import Any, Type, Tuple, TypeVar, Callable, Coroutine
 from typing_extensions import (
     Literal as Literal,
     NewType,
@@ -60,7 +60,6 @@ PrismaMethod = Literal[
 # NOTE: we don't support some options as their type hints are not publicly exposed
 # https://github.com/encode/httpx/discussions/1977
 class HttpConfig(TypedDict, total=False):
-    app: Callable[[Mapping[str, Any], Any], Any]
     http1: bool
     http2: bool
     limits: httpx.Limits

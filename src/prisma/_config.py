@@ -27,13 +27,13 @@ class DefaultConfig(BaseSettings):
     #       doesn't change then the CLI is incorrectly cached
     prisma_version: str = Field(
         env='PRISMA_VERSION',
-        default='5.19.0',
+        default='6.0.0',
     )
 
     # Engine binary versions can be found under https://github.com/prisma/prisma-engine/commits/main
     expected_engine_version: str = Field(
         env='PRISMA_EXPECTED_ENGINE_VERSION',
-        default='5fe21811a6ba0b952a3bc71400666511fe3b902f',
+        default='5dbef10bdbfb579e07d35cc85fb1518d357cb99e',
     )
 
     # Home directory, used to build the `binary_cache_dir` option by default, useful in multi-user
@@ -56,7 +56,7 @@ class DefaultConfig(BaseSettings):
     # Whether or not to use the global node installation (if available)
     use_global_node: bool = Field(env='PRISMA_USE_GLOBAL_NODE', default=True)
 
-    # Whether or not to use the `nodejs-bin` package (if installed)
+    # Whether or not to use the `nodejs-wheel-binaries` package (if installed)
     use_nodejs_bin: bool = Field(env='PRISMA_USE_NODEJS_BIN', default=True)
 
     # Extra arguments to pass to nodeenv, arguments are passed after the path, e.g. python -m nodeenv <path> <extra args>

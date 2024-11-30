@@ -1,1 +1,1 @@
-nodejs-bin
+nodejs-wheel-binaries>=20.14.0
