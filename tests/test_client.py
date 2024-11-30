@@ -1,5 +1,4 @@
-import warnings
-from typing import TYPE_CHECKING, Any, Mapping
+from typing import TYPE_CHECKING, Any
 from pathlib import Path
 from datetime import timedelta
 
@@ -127,8 +126,6 @@ async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
 
     getter = patch_method(monkeypatch, httpx.AsyncClient, '__init__', mock___init__)
 
-    def mock_app(args: Mapping[str, object], data: object) -> object: ...
-
     async def _test(config: HttpConfig) -> None:
         client = Prisma(
             http=config,
@@ -156,10 +153,6 @@ async def test_custom_http_options(monkeypatch: 'MonkeyPatch') -> None:
             'trust_env': False,
         },
     )
-
-    with warnings.catch_warnings():
-        warnings.simplefilter('ignore')
-        await _test({'app': mock_app})
 
 
 def test_old_client_alias() -> None:
