@@ -6,6 +6,7 @@ import sys
 import shutil
 import logging
 import subprocess
+import importlib.metadata
 from abc import ABC, abstractmethod
 from typing import IO, Any, Union, Mapping, cast
 from pathlib import Path
@@ -14,7 +15,7 @@ from typing_extensions import Literal, override
 from .. import config
 from .._proxy import LazyProxy
 from ..errors import PrismaError
-from .._compat import nodejs, get_args
+from .._compat import get_args, nodejs_wheel
 from ..binaries import platform
 
 log: logging.Logger = logging.getLogger(__name__)
@@ -22,10 +23,10 @@ File = Union[int, IO[Any]]
 Target = Literal['node', 'npm']
 
 # taken from https://github.com/prisma/prisma/blob/main/package.json
-MIN_NODE_VERSION = (16, 13)
+MIN_NODE_VERSION = (18, 18)
 
 # mapped the node version above from https://nodejs.org/en/download/releases/
-MIN_NPM_VERSION = (6, 14)
+MIN_NPM_VERSION = (10, 0)
 
 # we only care about the first two entries in the version number
 VERSION_RE = re.compile(r'v?(\d+)(?:\.?(\d+))')
@@ -43,7 +44,7 @@ class UnknownTargetError(PrismaError):
 class MissingNodejsBinError(PrismaError):
     def __init__(self) -> None:
         super().__init__(
-            'Attempted to access a function that requires the `nodejs-bin` package to be installed but it is not.'
+            'Attempted to access a function that requires the `nodejs-wheel-binaries` package to be installed but it is not.'
         )
 
 
@@ -182,7 +183,7 @@ class NodeBinaryStrategy(Strategy):
                 )
             except Exception as exc:
                 print(  # noqa: T201
-                    'nodeenv installation failed; You may want to try installing `nodejs-bin` as it is more reliable.',
+                    'nodeenv installation failed; You may want to try installing `nodejs-wheel-binaries` as it is more reliable.',
                     file=sys.stderr,
                 )
                 raise exc
@@ -212,11 +213,11 @@ class NodeBinaryStrategy(Strategy):
 
 class NodeJSPythonStrategy(Strategy):
     target: Target
-    resolver: Literal['nodejs-bin']
+    resolver: Literal['nodejs-wheel-binaries']
 
     def __init__(self, *, target: Target) -> None:
         self.target = target
-        self.resolver = 'nodejs-bin'
+        self.resolver = 'nodejs-wheel-binaries'
 
     @override
     def __run__(
@@ -228,36 +229,43 @@ class NodeJSPythonStrategy(Strategy):
         stderr: File | None = None,
         env: Mapping[str, str] | None = None,
     ) -> subprocess.CompletedProcess[bytes]:
-        if nodejs is None:
+        if nodejs_wheel is None:
             raise MissingNodejsBinError()
 
         func = None
         if self.target == 'node':
-            func = nodejs.node.run
+            func = nodejs_wheel.node
         elif self.target == 'npm':
-            func = nodejs.npm.run
+            func = nodejs_wheel.npm
         else:
             raise UnknownTargetError(target=self.target)
 
-        return cast(
+        proc = cast(
             'subprocess.CompletedProcess[bytes]',
             func(
                 args,
-                check=check,
                 cwd=cwd,
                 env=env,
                 stdout=stdout,
                 stderr=stderr,
+                return_completed_process=True,
             ),
         )
+        if check:
+            proc.check_returncode()
+
+        return proc
 
     @property
     def node_path(self) -> Path:
         """Returns the path to the `node` binary"""
-        if nodejs is None:
+        if nodejs_wheel is None:
             raise MissingNodejsBinError()
 
-        return Path(nodejs.node.path)
+        if os.name == 'nt':
+            return Path(nodejs_wheel.executable.ROOT_DIR).joinpath('node.exe')
+
+        return Path(nodejs_wheel.executable.ROOT_DIR).joinpath('bin/node')
 
     @property
     @override
@@ -273,9 +281,11 @@ def resolve(target: Target) -> Node:
         raise UnknownTargetError(target=target)
 
     if config.use_nodejs_bin:
-        log.debug('Checking if nodejs-bin is installed')
-        if nodejs is not None:
-            log.debug('Using nodejs-bin with version: %s', nodejs.node_version)
+        log.debug('Checking if nodejs-wheel-binaries is installed')
+        if nodejs_wheel is not None:
+            log.debug(
+                'Using nodejs-wheel-binaries with version: %s', importlib.metadata.version('nodejs-wheel-binaries')
+            )
             return NodeJSPythonStrategy(target=target)
 
     return NodeBinaryStrategy.resolve(target)
@@ -342,7 +352,7 @@ def _should_use_binary(target: Target, path: Path) -> bool:
 
     This only applies to the global node installation as:
 
-    - the minimum version of `nodejs-bin` is higher than our requirement
+    - the minimum version of `nodejs-wheel-binaries` is higher than our requirement
     - `nodeenv` defaults to the latest stable version of node
     """
     if target == 'node':
