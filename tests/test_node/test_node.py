@@ -230,14 +230,14 @@ def test_node_version(target: Target, fake_process: FakeProcess) -> None:
     assert version == (1, 32433)
     assert node._should_use_binary(target, path) is False
 
-    _register_process('v16.15.a4')
+    _register_process('v18.19.a4')
     version = node._get_binary_version(target, path)
-    assert version == (16, 15)
+    assert version == (18, 19)
     assert node._should_use_binary(target, path) is True
 
-    _register_process('v16.13.1')
+    _register_process('v18.18.1')
     version = node._get_binary_version(target, path)
-    assert version == (16, 13)
+    assert version == (18, 18)
     assert node._should_use_binary(target, path) is True
 
 
