@@ -53,4 +53,4 @@ def binary_platform() -> str:
 
 
 def get_openssl() -> str:
-    return ".".join(str(x) for x in ssl.OPENSSL_VERSION_INFO)
+    return '.'.join(str(x) for x in ssl.OPENSSL_VERSION_INFO)
