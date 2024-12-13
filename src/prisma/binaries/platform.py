@@ -32,7 +32,7 @@ def linux_distro() -> str:
 
 
 def _get_linux_distro_details() -> Tuple[str, str]:
-    if hasattr(platform, 'freedesktop_os_release'):
+    if hasattr(_platform, 'freedesktop_os_release'):
         # For python >= 3.10
         distro = _platform.freedesktop_os_release()
     else:
