@@ -1,6 +1,4 @@
-import re
-import sys
-import subprocess
+import ssl
 import platform as _platform
 from functools import lru_cache
 from typing import Tuple
@@ -32,15 +30,12 @@ def linux_distro() -> str:
 
 
 def _get_linux_distro_details() -> Tuple[str, str]:
-    process = subprocess.run(['cat', '/etc/os-release'], stdout=subprocess.PIPE, check=True)
-    output = str(process.stdout, sys.getdefaultencoding())
-
-    match = re.search(r'ID="?([^"\n]*)"?', output)
-    distro_id = match.group(1) if match else ''
-
-    match = re.search(r'ID_LIKE="?([^"\n]*)"?', output)
-    distro_id_like = match.group(1) if match else ''
-    return distro_id, distro_id_like
+    if hasattr(_platform, 'freedesktop_os_release'):
+        # For python >= 3.10
+        distro = _platform.freedesktop_os_release()
+    else:
+        distro = _platform.linux_distribution()
+    return distro.get('ID', ''), distro.get('ID_LIKE', '')
 
 
 @lru_cache(maxsize=None)
@@ -58,14 +53,4 @@ def binary_platform() -> str:
 
 
 def get_openssl() -> str:
-    process = subprocess.run(['openssl', 'version', '-v'], stdout=subprocess.PIPE, check=True)
-    return parse_openssl_version(str(process.stdout, sys.getdefaultencoding()))
-
-
-def parse_openssl_version(string: str) -> str:
-    match = re.match(r'^OpenSSL\s(\d+\.\d+)\.\d+', string)
-    if match is None:
-        # default
-        return '1.1.x'
-
-    return match.group(1) + '.x'
+    return '.'.join(str(x) for x in ssl.OPENSSL_VERSION_INFO)
