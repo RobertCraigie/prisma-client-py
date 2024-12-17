@@ -49,18 +49,19 @@ from typing_extensions import override
 
 from pydantic import BaseModel
 
-from . import types, models, errors, actions
+from . import types, models, errors, actions, __version__
 from ._base_client import BasePrisma, UseClientDefault, USE_CLIENT_DEFAULT
 from .types import DatasourceOverride, HttpConfig, MetricsFormat
 from ._types import BaseModelT, PrismaMethod, TransactionId, Datasource
 from .bases import _PrismaModel
 from ._builder import QueryBuilder, dumps
 from .generator.models import EngineType, OptionalValueFromEnvVar, BinaryPaths
+from .generator.utils import is_outdated
 from ._compat import removeprefix, model_parse
 from ._constants import CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED, DEFAULT_CONNECT_TIMEOUT, DEFAULT_TX_MAX_WAIT, DEFAULT_TX_TIMEOUT
 from ._raw_query import deserialize_raw_results
 from ._metrics import Metrics
-from .metadata import PRISMA_MODELS, RELATIONAL_FIELD_MAPPINGS
+from .metadata import PRISMA_MODELS, PKG_VERSION, RELATIONAL_FIELD_MAPPINGS
 from ._transactions import AsyncTransactionManager, SyncTransactionManager
 
 # re-exports
@@ -133,6 +134,10 @@ class Prisma(SyncBasePrisma):
         connect_timeout: int | timedelta = DEFAULT_CONNECT_TIMEOUT,
         http: HttpConfig | None = None,
     ) -> None:
+        if is_outdated(__version__, PKG_VERSION):
+            # https://github.com/RobertCraigie/prisma-client-py/issues/1008
+            warnings.warn("Generated client is outdated. You should regenerate it.", UserWarning)
+
         super().__init__(
             http=http,
             use_dotenv=use_dotenv,

@@ -10,6 +10,8 @@ PRISMA_MODELS: set[str] = {
     {% endfor %}
 }
 
+PKG_VERSION: str = '{{ pkg_version }}'
+
 RELATIONAL_FIELD_MAPPINGS: dict[str, dict[str, str]] = {
     {% for model in dmmf.datamodel.models %}
     '{{ model.name }}': {

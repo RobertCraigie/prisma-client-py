@@ -32,7 +32,7 @@ import click
 import pydantic
 from pydantic.fields import PrivateAttr
 
-from .. import config
+from .. import config, __version__
 from .utils import Faker, Sampler, clean_multiline
 from ..utils import DEBUG_GENERATOR, assert_never
 from ..errors import UnsupportedListTypeError
@@ -354,6 +354,7 @@ class GenericData(GenericModel, Generic[ConfigT]):
         params = vars(self)
         params['type_schema'] = Schema.from_data(self)
         params['client_types'] = ClientTypes.from_data(self)
+        params['pkg_version'] = __version__
 
         # add utility functions
         for func in [

@@ -255,3 +255,15 @@ def test_is_registered(client: Prisma) -> None:
     with reset_client():
         assert not client.is_registered()
         assert not other_client.is_registered()
+
+
+def test_warn_if_generated_client_is_outdated(mocker: MockerFixture) -> None:
+    """Tests a warning if the generated client is outdated
+
+    https://github.com/RobertCraigie/prisma-client-py/issues/1008
+    """
+    mocker.patch('prisma.__version__', '0.15.1')
+    mocker.patch('prisma.metadata.PKG_VERSION', '0.15.0')
+
+    with pytest.warns(UserWarning, match='Generated client is outdated. You should regenerate it.'):
+        _ = Prisma()

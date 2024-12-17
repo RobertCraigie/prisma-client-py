@@ -2,6 +2,7 @@ import pytest
 
 from prisma.generator.utils import (
     copy_tree,
+    is_outdated,
     to_camel_case,
     to_snake_case,
     to_pascal_case,
@@ -86,3 +87,18 @@ def test_to_camel_case(input_str: str, expected: str) -> None:
 )
 def test_to_constant_case(input_str: str, expected: str) -> None:
     assert to_constant_case(input_str) == expected
+
+
+@pytest.mark.parametrize(
+    'latest_version,current_version,expected',
+    [
+        ('0.0.9', '1.0.0', False),
+        ('0.9.0', '1.0.0', False),
+        ('1.0.0', '1.0.0', False),
+        ('1.0.1', '1.0.0', True),
+        ('1.1.0', '1.0.0', True),
+        ('2.0.0', '1.0.0', True),
+    ],
+)
+def test_is_outdated(latest_version: str, current_version: str, expected: bool) -> None:
+    assert is_outdated(latest_version, current_version) == expected

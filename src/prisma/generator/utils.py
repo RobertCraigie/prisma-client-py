@@ -168,3 +168,16 @@ def to_constant_case(input_str: str) -> str:
     fooBar -> FOO_BAR
     """
     return to_snake_case(input_str).upper()
+
+
+def is_outdated(latest_version: str, current_version: str) -> bool:
+    l_major, l_minor, l_patch = [int(x) for x in latest_version.split('.')]
+    c_major, c_minor, c_patch = [int(x) for x in current_version.split('.')]
+
+    if l_major != c_major:
+        return l_major > c_major
+
+    if l_minor != c_minor:
+        return l_minor > c_minor
+
+    return l_patch > c_patch

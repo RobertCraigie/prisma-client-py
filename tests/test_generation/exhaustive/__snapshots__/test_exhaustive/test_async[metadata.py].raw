@@ -21,6 +21,8 @@ PRISMA_MODELS: set[str] = {
     'E',
 }
 
+PKG_VERSION: str = '0.15.0'
+
 RELATIONAL_FIELD_MAPPINGS: dict[str, dict[str, str]] = {
     'Post': {
         'author': 'User',
