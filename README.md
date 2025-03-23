@@ -22,6 +22,9 @@
     </div>
 </div>
 
+> [!WARNING]
+> Prisma Client Python is no longer being maintained. See [this issue](https://github.com/RobertCraigie/prisma-client-py/issues/1073) for more information.
+
 <hr>
 
 ## What is Prisma Client Python?
