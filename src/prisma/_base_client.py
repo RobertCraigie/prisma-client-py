@@ -10,17 +10,24 @@ from typing_extensions import Self, Literal
 
 from pydantic import BaseModel
 
-from ._types import Datasource, HttpConfig, PrismaMethod, MetricsFormat, TransactionId, DatasourceOverride
+from ._types import (
+    Datasource,
+    HttpConfig,
+    PrismaMethod,
+    MetricsFormat,
+    TransactionId,
+    DatasourceOverride,
+)
 from .engine import (
     SyncQueryEngine,
     AsyncQueryEngine,
     BaseAbstractEngine,
     SyncAbstractEngine,
     AsyncAbstractEngine,
+    json as json_proto,
 )
 from .errors import ClientNotConnectedError, ClientNotRegisteredError
 from ._compat import model_parse, removeprefix
-from ._builder import QueryBuilder
 from ._metrics import Metrics
 from ._registry import get_client
 from .generator.models import EngineType
@@ -286,15 +293,15 @@ class BasePrisma(Generic[_EngineT]):
         log.debug('datasources: %s', datasources)
         return timeout, datasources
 
-    def _make_query_builder(
+    def _serialize(
         self,
         *,
         method: PrismaMethod,
         arguments: dict[str, Any],
         model: type[BaseModel] | None,
-        root_selection: list[str] | None,
-    ) -> QueryBuilder:
-        return QueryBuilder(
+        root_selection: json_proto.JsonSelectionSet | None = None,
+    ) -> json_proto.JsonQuery:
+        return json_proto.serialize(
             method=method,
             model=model,
             arguments=arguments,
@@ -415,12 +422,21 @@ class SyncBasePrisma(BasePrisma[SyncAbstractEngine]):
         method: PrismaMethod,
         arguments: dict[str, Any],
         model: type[BaseModel] | None = None,
-        root_selection: list[str] | None = None,
+        root_selection: json_proto.JsonSelectionSet | None = None,
     ) -> Any:
-        builder = self._make_query_builder(
-            method=method, model=model, arguments=arguments, root_selection=root_selection
+        return json_proto.deserialize(
+            self._engine.query(
+                json_proto.dumps(
+                    self._serialize(
+                        method=method,
+                        arguments=arguments,
+                        model=model,
+                        root_selection=root_selection,
+                    )
+                ),
+                tx_id=self._tx_id,
+            )
         )
-        return self._engine.query(builder.build(), tx_id=self._tx_id)
 
 
 class AsyncBasePrisma(BasePrisma[AsyncAbstractEngine]):
@@ -535,9 +551,18 @@ class AsyncBasePrisma(BasePrisma[AsyncAbstractEngine]):
         method: PrismaMethod,
         arguments: dict[str, Any],
         model: type[BaseModel] | None = None,
-        root_selection: list[str] | None = None,
+        root_selection: json_proto.JsonSelectionSet | None = None,
     ) -> Any:
-        builder = self._make_query_builder(
-            method=method, model=model, arguments=arguments, root_selection=root_selection
+        return json_proto.deserialize(
+            await self._engine.query(
+                json_proto.dumps(
+                    self._serialize(
+                        method=method,
+                        arguments=arguments,
+                        model=model,
+                        root_selection=root_selection,
+                    )
+                ),
+                tx_id=self._tx_id,
+            )
         )
-        return await self._engine.query(builder.build(), tx_id=self._tx_id)

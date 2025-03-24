@@ -8,6 +8,7 @@ import warnings
 from . import types, errors, bases
 from ._compat import model_parse
 from ._constants import CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED
+from .engine import json as json_proto
 
 if TYPE_CHECKING:
     from .client import {{ names.client_class(is_async) }}
@@ -180,7 +181,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['createOne{{ model.name }}'])
 
     {{ maybe_async_def }}create_many(
         self,
@@ -243,9 +244,9 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'data': data,
                 'skipDuplicates': skip_duplicates,
             },
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['createMany{{ model.name }}']['count'])
 
     {{ maybe_async_def }}delete(
         self,
@@ -295,7 +296,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['deleteOne{{ model.name }}'])
 
     {{ maybe_async_def }}find_unique(
         self,
@@ -341,7 +342,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'include': include,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findUnique{{ model.name }}']
         if result is None:
             return None
         return model_parse(self._model, result)
@@ -390,7 +391,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'include': include,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findUnique{{ model.name }}OrThrow'])
 
     {{ maybe_async_def }}find_many(
         self,
@@ -461,7 +462,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'distinct': distinct,
             },
         )
-        return [model_parse(self._model, r) for r in resp['data']['result']]
+        return [model_parse(self._model, r) for r in resp['data']['findMany{{ model.name }}']]
 
     {{ maybe_async_def }}find_first(
         self,
@@ -525,7 +526,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'distinct': distinct,
             },
         )
-        result = resp['data']['result']
+        result = resp['data']['findFirst{{ model.name }}']
         if result is None:
             return None
 
@@ -593,7 +594,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'distinct': distinct,
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['findFirst{{ model.name }}OrThrow'])
 
     {{ maybe_async_def }}update(
         self,
@@ -649,7 +650,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         except errors.RecordNotFoundError:
             return None
 
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['updateOne{{ model.name }}'])
 
     {{ maybe_async_def }}upsert(
         self,
@@ -732,7 +733,7 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
                 'update': data.get('update'),
             },
         )
-        return model_parse(self._model, resp['data']['result'])
+        return model_parse(self._model, resp['data']['upsertOne{{ model.name }}'])
 
     {{ maybe_async_def }}update_many(
         self,
@@ -774,9 +775,9 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             method='update_many',
             model=self._model,
             arguments={'data': data, 'where': where,},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['updateMany{{ model.name }}']['count'])
 
     @overload
     {{ maybe_async_def }}count(
@@ -868,12 +869,10 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         # later is to handle the case that the given select dictionary is empty, this
         # is a limitation of our types.
         if not select:
-            root_selection = ['_count { _all }']
+            root_selection: json_proto.JsonSelectionSet = {'_count': {'selection': {'_all': True}}}
         else:
             {% raw %}
-            root_selection = [
-                '_count {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-            ]
+            root_selection = {'_count': {'selection': cast(json_proto.JsonSelectionSet, select)}}
             {% endraw %}
 
         resp = {{ maybe_await }}self._client._execute(
@@ -889,9 +888,9 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
         )
 
         if select is None:
-            return cast(int, resp['data']['result']['_count']['_all'])
+            return cast(int, resp['data']['aggregate{{ model.name }}']['_count']['_all'])
         else:
-            return cast(types.{{ model.name }}CountAggregateOutput, resp['data']['result']['_count'])
+            return cast(types.{{ model.name }}CountAggregateOutput, resp['data']['aggregate{{ model.name }}']['_count'])
 
     {{ maybe_async_def }}delete_many(
         self,
@@ -924,9 +923,9 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             method='delete_many',
             model=self._model,
             arguments={'where': where},
-            root_selection=['count'],
+            root_selection={'count': True},
         )
-        return int(resp['data']['result']['count'])
+        return int(resp['data']['deleteMany{{ model.name }}']['count'])
 
     # TODO: make this easier to work with safely, currently output fields are typed as
     #       not required, we should refactor the return type
@@ -1019,24 +1018,24 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             if skip is not None:
                 raise TypeError('Missing argument: \'order\' which is required when \'skip\' is present')
 
-        root_selection: List[str] = [*by]
+        root_selection: json_proto.JsonSelectionSet = {key: True for key in by}
         if avg is not None:
-            root_selection.append(_select_fields('_avg', avg))
+            root_selection['_avg'] = {'selection': cast(json_proto.JsonSelectionSet, avg)}
 
         if min is not None:
-            root_selection.append(_select_fields('_min', min))
+            root_selection['_min'] = {'selection': cast(json_proto.JsonSelectionSet, min)}
 
         if sum is not None:
-            root_selection.append(_select_fields('_sum', sum))
+            root_selection['_sum'] = {'selection': cast(json_proto.JsonSelectionSet, sum)}
 
         if max is not None:
-            root_selection.append(_select_fields('_max', max))
+            root_selection['_max'] = {'selection': cast(json_proto.JsonSelectionSet, max)}
 
         if count is not None:
             if count is True:
-                root_selection.append('_count { _all }')
+                root_selection['_count'] = {'selection': {'_all': True}}
             elif isinstance(count, dict):
-                root_selection.append(_select_fields('_count', count))
+                root_selection['_count'] = {'selection': cast(json_proto.JsonSelectionSet, count)}
 
         resp = {{ maybe_await }}self._client._execute(
             method='group_by',
@@ -1051,19 +1050,9 @@ class {{ model.name }}Actions(Generic[{{ ModelType }}]):
             },
             root_selection=root_selection,
         )
-        return resp['data']['result']  # type: ignore[no-any-return]
+        return resp['data']['groupBy{{ model.name }}']  # type: ignore[no-any-return]
 
 {% endfor %}
-
-
-def _select_fields(root: str, select: Mapping[str, Any]) -> str:
-    """Helper to build a GraphQL selection string
-
-    This is a work around until field selection is added to the query builder.
-    """
-    {% raw %}
-    return root + ' {{ {0} }}'.format(' '.join(k for k, v in select.items() if v is True))
-    {% endraw %}
 
 
 from . import models

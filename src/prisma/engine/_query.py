@@ -74,7 +74,7 @@ class BaseQueryEngine:
             RUST_LOG='error',
             RUST_LOG_FORMAT='json',
             PRISMA_CLIENT_ENGINE_TYPE='binary',
-            PRISMA_ENGINE_PROTOCOL='graphql',
+            PRISMA_ENGINE_PROTOCOL='json',
         )
 
         if DEBUG:
