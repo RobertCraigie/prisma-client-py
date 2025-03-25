@@ -332,14 +332,14 @@ else:
 
 
 if TYPE_CHECKING:
-    import nodejs as _nodejs
+    import nodejs_wheel as _nodejs_wheel
 
-    nodejs = make_optional(_nodejs)
+    nodejs_wheel = make_optional(_nodejs_wheel)
 else:
     try:
-        import nodejs
+        import nodejs_wheel
     except ImportError:
-        nodejs = None
+        nodejs_wheel = None
 
 
 # Note: this shim is due to an inconsistency with string enums

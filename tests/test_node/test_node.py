@@ -9,7 +9,7 @@ import pytest
 from pytest_subprocess import FakeProcess
 
 from prisma.cli import _node as node
-from prisma._compat import nodejs
+from prisma._compat import nodejs_wheel
 from prisma._config import Config
 from prisma.cli._node import Target
 
@@ -57,7 +57,7 @@ def test_resolve_bad_target() -> None:
 
 
 @parametrize_target
-@pytest.mark.skipif(nodejs is None, reason='nodejs-bin is not installed')
+@pytest.mark.skipif(nodejs_wheel is None, reason='nodejs-bin is not installed')
 def test_nodejs_bin(target: Target) -> None:
     """When `nodejs-bin` is installed, it is resolved to and can be successfully used"""
     with set_config(
@@ -67,7 +67,7 @@ def test_nodejs_bin(target: Target) -> None:
         )
     ):
         strategy = node.resolve(target)
-        assert strategy.resolver == 'nodejs-bin'
+        assert strategy.resolver == 'nodejs-wheel-binaries'
         assert_strategy(strategy)
 
 
@@ -230,14 +230,14 @@ def test_node_version(target: Target, fake_process: FakeProcess) -> None:
     assert version == (1, 32433)
     assert node._should_use_binary(target, path) is False
 
-    _register_process('v16.15.a4')
+    _register_process('v18.19.a4')
     version = node._get_binary_version(target, path)
-    assert version == (16, 15)
+    assert version == (18, 19)
     assert node._should_use_binary(target, path) is True
 
-    _register_process('v16.13.1')
+    _register_process('v18.18.1')
     version = node._get_binary_version(target, path)
-    assert version == (16, 13)
+    assert version == (18, 18)
     assert node._should_use_binary(target, path) is True
 
 
