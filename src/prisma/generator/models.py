@@ -2,6 +2,7 @@ import os
 import sys
 import enum
 import textwrap
+import warnings
 import importlib
 from typing import (
     TYPE_CHECKING,
@@ -652,19 +653,13 @@ class DMMF(BaseModel):
 class Datamodel(BaseModel):
     enums: List['Enum']
     models: List['Model']
+    types: List['Types']
 
-    # not implemented yet
-    types: List[object]
 
-    @field_validator('types')
-    @classmethod
-    def no_composite_types_validator(cls, types: List[object]) -> object:
-        if types:
-            raise ValueError(
-                'Composite types are not supported yet. Please indicate you need this here: https://github.com/RobertCraigie/prisma-client-py/issues/314'
-            )
-
-        return types
+class Types(BaseModel):
+    name: str
+    db_name: Optional[str] = FieldInfo(alias='dbName')
+    fields: List['TypeField']
 
 
 class Enum(BaseModel):
@@ -761,7 +756,7 @@ class Model(BaseModel):
     @property
     def scalar_fields(self) -> Iterator['Field']:
         for field in self.all_fields:
-            if not field.is_relational:
+            if not field.is_relational and not field.is_composite_type:
                 yield field
 
     @property
@@ -960,6 +955,9 @@ class Field(BaseModel):
         if self.kind == 'enum':
             return f"'enums.{self.type}'"
 
+        if self.is_composite_type:
+            return f"'{self.type}'"
+
         if self.kind == 'object':
             return f"'models.{self.type}'"
 
@@ -973,6 +971,9 @@ class Field(BaseModel):
 
     @property
     def create_input_type(self) -> str:
+        if self.is_composite_type:
+            return self.python_type
+
         if self.kind != 'object':
             return self.python_type
 
@@ -984,6 +985,14 @@ class Field(BaseModel):
     @property
     def where_input_type(self) -> str:
         typ = self.type
+
+        if self.is_composite_type:
+            if self.is_list:
+                return f"'types.{typ}ListFilter'"
+            if self.is_optional:
+                return f"'types.{typ}OptionalFilter'"
+            return f"'types.{typ}Filter'"
+
         if self.is_relational:
             if self.is_list:
                 return f"'{typ}ListRelationFilter'"
@@ -1027,6 +1036,18 @@ class Field(BaseModel):
         )
 
     @property
+    def is_composite_type(self) -> bool:
+        if self.kind != 'object':
+            return False
+
+        types = get_datamodel().types
+        for typ in types:
+            if typ.name == self.type:
+                return True
+
+        return False
+
+    @property
     def is_optional(self) -> bool:
         return not (self.is_required and not self.relation_name)
 
@@ -1042,13 +1063,16 @@ class Field(BaseModel):
     def is_number(self) -> bool:
         return self.type in {'Int', 'BigInt', 'Float'}
 
-    def maybe_optional(self, typ: str) -> str:
+    def maybe_optional(self, typ: str, force: bool = False) -> str:
         """Wrap the given type string within `Optional` if applicable"""
-        if self.is_required or self.is_relational:
+        if (not force) and (self.is_required or self.is_relational or self.is_composite_type):
             return typ
         return f'Optional[{typ}]'
 
     def get_update_input_type(self) -> str:
+        if self.is_composite_type:
+            return self.python_type
+
         if self.kind == 'object':
             if self.is_list:
                 return f"'{self.type}UpdateManyWithoutRelationsInput'"
@@ -1106,6 +1130,11 @@ class Field(BaseModel):
             assert enum is not None, self.type
             return f'enums.{enum.name}.{FAKER.from_list(enum.values).name}'
 
+        if self.kind == 'object':
+            # TODO
+            warnings.warn('Data sampling for object fields not supported yet', stacklevel=2)
+            return f'{{}}'
+
         typ = self.type
         if typ == 'Boolean':
             return str(FAKER.boolean())
@@ -1128,6 +1157,11 @@ class Field(BaseModel):
             return f"Decimal('{FAKER.integer()}.{FAKER.integer() // 10000}')"
         else:  # pragma: no cover
             raise RuntimeError(f'Sample data not supported for {typ} yet')
+
+
+class TypeField(Field):
+    is_generated: None = None  # type: ignore
+    is_updated_at: None = None  # type: ignore
 
 
 class DefaultValue(BaseModel):

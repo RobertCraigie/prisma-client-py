@@ -20,6 +20,7 @@ from ._types import PrismaMethod
 from .errors import InvalidModelError, UnknownModelError, UnknownRelationalFieldError
 from ._compat import get_args, is_union, get_origin, model_fields, model_field_type
 from ._typing import is_list_type
+from .generator import PartialModelField, MetaFieldsInterface
 from ._constants import QUERY_BUILDER_ALIASES
 
 if TYPE_CHECKING:
@@ -204,7 +205,6 @@ class QueryBuilder:
 
     def get_default_fields(self, model: type[PrismaModel]) -> list[str]:
         """Returns a list of all the scalar fields of a model
-
         Raises UnknownModelError if the current model cannot be found.
         """
         name = getattr(model, '__prisma_model__', MISSING)
@@ -223,7 +223,7 @@ class QueryBuilder:
             if not _field_is_prisma_model(info, name=field, parent=model)
         ]
 
-    def get_relational_model(self, current_model: type[PrismaModel], field: str) -> type[PrismaModel]:
+    def get_relational_model(self, current_model: type[BaseModel], field: str) -> type[PrismaModel]:
         """Returns the model that the field is related to.
 
         Raises UnknownModelError if the current model is invalid.
@@ -313,7 +313,6 @@ def _prisma_model_for_field(
 
 def _field_is_prisma_model(field: FieldInfo, *, name: str, parent: type[BaseModel]) -> bool:
     """Whether or not the given field info represents a model at the database level.
-
     This will return `True` for cases where the field represents a list of models or a single model.
     """
     return _prisma_model_for_field(field, name=name, parent=parent) is not None
@@ -694,7 +693,7 @@ class Selection(Node):
     }
     """
 
-    model: type[PrismaModel] | None
+    model: type[MetaFieldsInterface] | None
     include: dict[str, Any] | None
     root_selection: list[str] | None
 
@@ -706,7 +705,7 @@ class Selection(Node):
 
     def __init__(
         self,
-        model: type[PrismaModel] | None = None,
+        model: type[MetaFieldsInterface] | None = None,
         include: dict[str, Any] | None = None,
         root_selection: list[str] | None = None,
         **kwargs: Any,
@@ -742,11 +741,19 @@ class Selection(Node):
         if root_selection is not None:
             children.extend(root_selection)
         elif model is not None:
-            children.extend(builder.get_default_fields(model))
+            if hasattr(model, 'get_meta_fields'):
+                for field, info in model.get_meta_fields().items():
+                    children.append(self._get_child_from_model(field, info))
+            else:
+                children.extend(builder.get_default_fields(model))  # type: ignore
 
         if include is not None:
             if model is None:
                 raise ValueError('Cannot include fields when model is None.')
+
+            if not isinstance(model, type(BaseModel)):
+                raise ValueError(f'Expected model to be a Pydantic model but got {type(model)} instead.')
+            model = cast(type[BaseModel], model)
 
             for key, value in include.items():
                 if value is True:
@@ -787,6 +794,27 @@ class Selection(Node):
                     raise TypeError(f'Expected `bool` or `dict` include value but got {type(value)} instead.')
 
         return children
+
+    def _get_child_from_model(self, field: str, info: PartialModelField) -> ChildType:
+        builder = self.builder
+
+        composite_type = info.get('composite_type')
+
+        if composite_type is not None:
+            return Key(
+                field,
+                sep=' ',
+                node=Selection.create(
+                    builder,
+                    include=None,
+                    model=composite_type,
+                ),
+            )
+
+        if info.get('is_relational'):
+            return ''
+
+        return field
 
 
 class Key(AbstractNode):
