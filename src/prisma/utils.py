@@ -6,11 +6,13 @@ import asyncio
 import inspect
 import logging
 import warnings
+import functools
 import contextlib
-from typing import TYPE_CHECKING, Any, Dict, Union, TypeVar, Iterator, NoReturn, Coroutine
+from types import TracebackType
+from typing import TYPE_CHECKING, Any, Dict, Type, Union, TypeVar, Callable, Iterator, NoReturn, Optional, Coroutine
 from importlib.util import find_spec
 
-from ._types import CoroType, FuncType, TypeGuard
+from ._types import CoroType, FuncType, TypeGuard, ExcMapping
 
 if TYPE_CHECKING:
     from typing_extensions import TypeGuard
@@ -139,3 +141,56 @@ def make_optional(value: _T) -> _T | None:
 
 def is_dict(obj: object) -> TypeGuard[dict[object, object]]:
     return isinstance(obj, dict)
+
+
+# TODO: improve typing
+class MaybeAsyncContextDecorator(contextlib.ContextDecorator):
+    """`ContextDecorator` compatible with sync/async functions."""
+
+    def __call__(self, func: Callable[..., Any]) -> Callable[..., Any]:  # type: ignore[override]
+        @functools.wraps(func)
+        async def async_inner(*args: Any, **kwargs: Any) -> object:
+            async with self._recreate_cm():  # type: ignore[attr-defined]
+                return await func(*args, **kwargs)
+
+        @functools.wraps(func)
+        def sync_inner(*args: Any, **kwargs: Any) -> object:
+            with self._recreate_cm():  # type: ignore[attr-defined]
+                return func(*args, **kwargs)
+
+        if is_coroutine(func):
+            return async_inner
+        else:
+            return sync_inner
+
+
+class ExcConverter(MaybeAsyncContextDecorator):
+    """`MaybeAsyncContextDecorator` to convert exceptions."""
+
+    def __init__(self, exc_mapping: ExcMapping) -> None:
+        self._exc_mapping = exc_mapping
+
+    def __enter__(self) -> 'ExcConverter':
+        return self
+
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
+        if exc is not None and exc_type is not None:
+            target_exc_type = self._exc_mapping.get(exc_type)
+            if target_exc_type is not None:
+                raise target_exc_type() from exc
+
+    async def __aenter__(self) -> 'ExcConverter':
+        return self.__enter__()
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
+        self.__exit__(exc_type, exc, exc_tb)
