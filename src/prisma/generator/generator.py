@@ -45,6 +45,9 @@ GENERIC_GENERATOR_NAME = 'prisma.generator.generator.GenericGenerator'
 # set of templates that should be rendered after every other template
 DEFERRED_TEMPLATES = {'partials.py.jinja'}
 
+# template files that shouldn't actually result in an output file
+IGNORE_TEMPLATES = {'_utils.py.jinja', '_header.py.jinja', '_pragma.py.jinja'}
+
 DEFAULT_ENV = Environment(
     trim_blocks=True,
     lstrip_blocks=True,
@@ -244,7 +247,7 @@ class Generator(GenericGenerator[PythonData]):
 
         try:
             for name in DEFAULT_ENV.list_templates():
-                if not name.endswith('.py.jinja') or name.startswith('_') or name in DEFERRED_TEMPLATES:
+                if not name.endswith('.py.jinja') or name in IGNORE_TEMPLATES or name in DEFERRED_TEMPLATES:
                     continue
 
                 render_template(rootdir, name, params)
