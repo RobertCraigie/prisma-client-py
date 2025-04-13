@@ -238,7 +238,7 @@ class Generator(GenericGenerator[PythonData]):
         # package so we can use it to instantiate the query engine
         packaged_schema = rootdir / 'schema.prisma'
         if not is_same_path(data.schema_path, packaged_schema):
-            packaged_schema.write_text(data.datamodel)
+            packaged_schema.write_text(data.datamodel, encoding='utf-8')
 
         params = data.to_params()
 
