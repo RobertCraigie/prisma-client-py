@@ -3,6 +3,7 @@ from __future__ import annotations
 # fmt: off
 # -- template metadata.py.jinja --
 
+GENERATED_VERSION: str = '{{ generated_version }}'
 
 PRISMA_MODELS: set[str] = {
     {% for model in dmmf.datamodel.models %}

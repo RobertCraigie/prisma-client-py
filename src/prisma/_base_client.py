@@ -186,7 +186,7 @@ class BasePrisma(Generic[_EngineT]):
         # client as well as the transaction client the original client cannot
         # be `free`d before the transaction is finished. So stopping the engine
         # here should be safe.
-        if self._internal_engine is not None and not self._copied:
+        if hasattr(self, '_internal_engine') and self._internal_engine is not None and not self._copied:
             log.debug('unclosed client - stopping engine')
             engine = self._internal_engine
             self._internal_engine = None

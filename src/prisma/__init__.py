@@ -6,7 +6,8 @@ __license__ = 'APACHE'
 __copyright__ = 'Copyright 2020-2023 RobertCraigie'
 __version__ = '0.15.0'
 
-from typing import TYPE_CHECKING
+import sys as _sys
+from typing import TYPE_CHECKING, Union
 
 from . import errors as errors
 from .utils import setup_logging
@@ -18,6 +19,13 @@ from ._metrics import (
     MetricHistogram as MetricHistogram,
 )
 from .validator import *
+
+try:
+    from .metadata import GENERATED_VERSION as _generated_version  # noqa: TID251
+
+    GENERATED_VERSION: Union[str, None] = _generated_version
+except ImportError:
+    GENERATED_VERSION = None  # pyright: ignore[reportConstantRedefinition]
 
 # the import ordering is important here because
 # we rely on the fact that `prisma/client.py` is the
@@ -49,7 +57,6 @@ except ModuleNotFoundError:
             except KeyError as err:
                 # TODO: support checking for 'models' here too
                 if name in {'Prisma', 'Client'}:
-                    # TODO: remove this frame from the stack trace
                     raise RuntimeError(
                         "The Client hasn't been generated yet, "
                         'you must run `prisma generate` before you can use the client.\n'
@@ -58,6 +65,10 @@ except ModuleNotFoundError:
 
                 # leaves handling of this potential error to Python as per PEP 562
                 raise AttributeError() from err
+except Exception as exc:
+    if GENERATED_VERSION == __version__:
+        raise
 
+    print('ignoring error during generated client import as the generated client is outdated', file=_sys.stderr)  # noqa: T201
 
 setup_logging()

@@ -351,9 +351,12 @@ class GenericData(GenericModel, Generic[ConfigT]):
 
     def to_params(self) -> Dict[str, Any]:
         """Get the parameters that should be sent to Jinja templates"""
+        from .. import __version__
+
         params = vars(self)
         params['type_schema'] = Schema.from_data(self)
         params['client_types'] = ClientTypes.from_data(self)
+        params['generated_version'] = __version__
 
         # add utility functions
         for func in [
