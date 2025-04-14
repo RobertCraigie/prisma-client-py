@@ -54,6 +54,7 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
             'date',
             'arrays',
             'create_many_skip_duplicates',
+            'create_many_and_return_skip_duplicates',
             'case_sensitivity',
             'full_text_search',
         },
@@ -68,6 +69,8 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
         unsupported_features={
             'arrays',
             'case_sensitivity',
+            'create_many_and_return',
+            'create_many_and_return_skip_duplicates',
         },
     ),
     'mariadb': DatabaseConfig(
@@ -81,6 +84,8 @@ CONFIG_MAPPING: DatabaseMapping[DatabaseConfig] = {
             'arrays',
             'case_sensitivity',
             'full_text_search',
+            'create_many_and_return',
+            'create_many_and_return_skip_duplicates',
         },
     ),
 }
@@ -107,6 +112,8 @@ FEATURES_MAPPING: dict[DatabaseFeature, list[str]] = {
     # not yet implemented
     'date': [],
     'create_many_skip_duplicates': ['test_create_many_skip_duplicates.py'],
+    'create_many_and_return': ['test_create_many_and_return.py'],
+    'create_many_and_return_skip_duplicates': ['test_create_many_and_return_skip_duplicates.py'],
     'raw_queries': ['test_raw_queries.py', *_fromdir('types/raw_queries')],
     'case_sensitivity': ['test_case_sensitivity.py'],
     'full_text_search': ['test_full_text_search.py'],

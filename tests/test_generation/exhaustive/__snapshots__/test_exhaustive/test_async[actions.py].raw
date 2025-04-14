@@ -200,7 +200,7 @@ class PostActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple Post records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -259,6 +259,74 @@ class PostActions(Generic[_PrismaModelT]):
         )
         return int(resp['data']['result']['count'])
 
+    async def create_many_and_return(
+        self,
+        data: List[types.PostCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> List[_PrismaModelT]:
+        """Create multiple Post records at once.
+
+        This method is **not supported** on MariaDB or MySQL.
+
+        The `skip_duplicates` argument is **not supported** on SQLite.
+
+        Parameters
+        ----------
+        data
+            List of Post record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        List[prisma.models.Post]
+            The list of all Post records that could be found
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        records = await Post.prisma().create_many_and_return(
+            data=[
+                {
+                    # data to create a Post record
+                    'title': 'eigcfgbif',
+                    'author_id': 1062517886,
+                },
+                {
+                    # data to create a Post record
+                    'title': 'cghideieh',
+                    'author_id': 180171308,
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many_and_return',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
+
     async def delete(
         self,
         where: types.PostWhereUniqueInput,
@@ -292,7 +360,7 @@ class PostActions(Generic[_PrismaModelT]):
         ```py
         post = await Post.prisma().delete(
             where={
-                'id': 486256185,
+                'id': 836760821,
             },
         )
         ```
@@ -344,7 +412,7 @@ class PostActions(Generic[_PrismaModelT]):
         ```py
         post = await Post.prisma().find_unique(
             where={
-                'id': 1062517886,
+                'id': 595337866,
             },
         )
         ```
@@ -395,7 +463,7 @@ class PostActions(Generic[_PrismaModelT]):
         ```py
         post = await Post.prisma().find_unique_or_raise(
             where={
-                'id': 267834847,
+                'id': 790425851,
             },
         )
         ```
@@ -647,7 +715,7 @@ class PostActions(Generic[_PrismaModelT]):
         ```py
         post = await Post.prisma().update(
             where={
-                'id': 180171308,
+                'id': 2111915288,
             },
             data={
                 # data to update the Post record to
@@ -704,17 +772,17 @@ class PostActions(Generic[_PrismaModelT]):
         ```py
         post = await Post.prisma().upsert(
             where={
-                'id': 836760821,
+                'id': 1149758321,
             },
             data={
                 'create': {
-                    'id': 836760821,
-                    'title': 'dgiiaaijj',
-                    'author_id': 1508029952,
+                    'id': 1149758321,
+                    'title': 'cghideieh',
+                    'author_id': 180171308,
                 },
                 'update': {
-                    'title': 'dgiiaaijj',
-                    'author_id': 1508029952,
+                    'title': 'cghideieh',
+                    'author_id': 180171308,
                 },
             },
         )
@@ -762,7 +830,7 @@ class PostActions(Generic[_PrismaModelT]):
         # update all Post records
         total = await Post.prisma().update_many(
             data={
-                'author_id': 595337866
+                'author_id': 1644289366
             },
             where={}
         )
@@ -1125,7 +1193,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```py
         users = await User.prisma().query_raw(
             'SELECT * FROM User WHERE id = $1',
-            790425851,
+            1388290519,
         )
         ```
         """
@@ -1165,7 +1233,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```py
         user = await User.prisma().query_first(
             'SELECT * FROM User WHERE email = $1',
-            'cbbbjbfcii',
+            'bgehebiafc',
         )
         ```
         """
@@ -1204,10 +1272,10 @@ class UserActions(Generic[_PrismaModelT]):
         user = await User.prisma().create(
             data={
                 # data to create a User record
-                'email': 'bbejhfidcb',
-                'int': 1644289366,
-                'float': 1388290519.164741,
-                'string': 'bghffegacj',
+                'email': 'bghffegacj',
+                'int': 1767274722,
+                'float': 326272115.134320,
+                'string': 'ghfhiafcb',
                 'enum': enums.ABeautifulEnum.A,
                 'boolean': True,
             },
@@ -1232,7 +1300,7 @@ class UserActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple User records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -1264,19 +1332,19 @@ class UserActions(Generic[_PrismaModelT]):
             data=[
                 {
                     # data to create a User record
-                    'email': 'dcgchcbbf',
-                    'int': 1343201072,
-                    'float': 675780521.74496,
-                    'string': 'bjgjgibgbf',
+                    'email': 'bjgjgibgbf',
+                    'int': 1116175964,
+                    'float': 861472101.130300,
+                    'string': 'bgiggdidbf',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
                 {
                     # data to create a User record
-                    'email': 'igbehcbab',
-                    'int': 1303003706,
-                    'float': 1686638315.200043,
-                    'string': 'bigibebcib',
+                    'email': 'bigibebcib',
+                    'int': 1860847622,
+                    'float': 1448521415.162865,
+                    'string': 'bcejgaggif',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -1298,6 +1366,82 @@ class UserActions(Generic[_PrismaModelT]):
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    async def create_many_and_return(
+        self,
+        data: List[types.UserCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> List[_PrismaModelT]:
+        """Create multiple User records at once.
+
+        This method is **not supported** on MariaDB or MySQL.
+
+        The `skip_duplicates` argument is **not supported** on SQLite.
+
+        Parameters
+        ----------
+        data
+            List of User record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        List[prisma.models.User]
+            The list of all User records that could be found
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        records = await User.prisma().create_many_and_return(
+            data=[
+                {
+                    # data to create a User record
+                    'email': 'hgdhbjhhj',
+                    'int': 429995104,
+                    'float': 1775811865.89314,
+                    'string': 'jjfeafhfj',
+                    'enum': enums.ABeautifulEnum.A,
+                    'boolean': True,
+                },
+                {
+                    # data to create a User record
+                    'email': 'chbfcacbd',
+                    'int': 456633834,
+                    'float': 2058258651.158368,
+                    'string': 'ihieecagf',
+                    'enum': enums.ABeautifulEnum.A,
+                    'boolean': True,
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many_and_return',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
 
     async def delete(
         self,
@@ -1332,7 +1476,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```py
         user = await User.prisma().delete(
             where={
-                'id': 1448521415,
+                'id': 1627576247,
             },
         )
         ```
@@ -1384,7 +1528,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```py
         user = await User.prisma().find_unique(
             where={
-                'id': 1628650740,
+                'id': 2054802212,
             },
         )
         ```
@@ -1435,7 +1579,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```py
         user = await User.prisma().find_unique_or_raise(
             where={
-                'id': 1249606685,
+                'id': 60335757,
             },
         )
         ```
@@ -1687,7 +1831,7 @@ class UserActions(Generic[_PrismaModelT]):
         ```py
         user = await User.prisma().update(
             where={
-                'id': 835903122,
+                'id': 684462146,
             },
             data={
                 # data to update the User record to
@@ -1744,23 +1888,23 @@ class UserActions(Generic[_PrismaModelT]):
         ```py
         user = await User.prisma().upsert(
             where={
-                'id': 763719779,
+                'id': 1625503827,
             },
             data={
                 'create': {
-                    'id': 763719779,
-                    'email': 'igbehcbab',
-                    'int': 1303003706,
-                    'float': 1686638315.200043,
-                    'string': 'bigibebcib',
+                    'id': 1625503827,
+                    'email': 'chbfcacbd',
+                    'int': 456633834,
+                    'float': 2058258651.158368,
+                    'string': 'ihieecagf',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
                 'update': {
-                    'email': 'igbehcbab',
-                    'int': 1303003706,
-                    'float': 1686638315.200043,
-                    'string': 'bigibebcib',
+                    'email': 'chbfcacbd',
+                    'int': 456633834,
+                    'float': 2058258651.158368,
+                    'string': 'ihieecagf',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -1810,7 +1954,7 @@ class UserActions(Generic[_PrismaModelT]):
         # update all User records
         total = await User.prisma().update_many(
             data={
-                'optional_float': 429995104.177581
+                'optional_float': 521827728.126603
             },
             where={}
         )
@@ -2173,7 +2317,7 @@ class MActions(Generic[_PrismaModelT]):
         ```py
         users = await M.prisma().query_raw(
             'SELECT * FROM M WHERE id = $1',
-            893145566,
+            93253262,
         )
         ```
         """
@@ -2213,7 +2357,7 @@ class MActions(Generic[_PrismaModelT]):
         ```py
         user = await M.prisma().query_first(
             'SELECT * FROM M WHERE int = $1',
-            995405759,
+            2053047983,
         )
         ```
         """
@@ -2252,9 +2396,9 @@ class MActions(Generic[_PrismaModelT]):
         m = await M.prisma().create(
             data={
                 # data to create a M record
-                'int': 2102736524,
-                'float': 271520213.45663,
-                'string': 'caficfigfb',
+                'int': 685333180,
+                'float': 127474245.94892,
+                'string': 'bjgejjabff',
                 'enum': enums.ABeautifulEnum.A,
                 'boolean': True,
             },
@@ -2279,7 +2423,7 @@ class MActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple M records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -2311,17 +2455,17 @@ class MActions(Generic[_PrismaModelT]):
             data=[
                 {
                     # data to create a M record
-                    'int': 878442065,
-                    'float': 1675280054.162757,
-                    'string': 'cafeiaccbc',
+                    'int': 255202753,
+                    'float': 1223573862.54126,
+                    'string': 'bageiegghg',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': False,
                 },
                 {
                     # data to create a M record
-                    'int': 684462146,
-                    'float': 1625503827.52182,
-                    'string': 'bcggadccgf',
+                    'int': 1024265714,
+                    'float': 872078403.187474,
+                    'string': 'jbgijghgb',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -2343,6 +2487,80 @@ class MActions(Generic[_PrismaModelT]):
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    async def create_many_and_return(
+        self,
+        data: List[types.MCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> List[_PrismaModelT]:
+        """Create multiple M records at once.
+
+        This method is **not supported** on MariaDB or MySQL.
+
+        The `skip_duplicates` argument is **not supported** on SQLite.
+
+        Parameters
+        ----------
+        data
+            List of M record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        List[prisma.models.M]
+            The list of all M records that could be found
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        records = await M.prisma().create_many_and_return(
+            data=[
+                {
+                    # data to create a M record
+                    'int': 820312479,
+                    'float': 92728044.34485,
+                    'string': 'bbcbhebbda',
+                    'enum': enums.ABeautifulEnum.A,
+                    'boolean': False,
+                },
+                {
+                    # data to create a M record
+                    'int': 208521688,
+                    'float': 860811569.166093,
+                    'string': 'fcfhgbjed',
+                    'enum': enums.ABeautifulEnum.A,
+                    'boolean': True,
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many_and_return',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
 
     async def delete(
         self,
@@ -2377,7 +2595,7 @@ class MActions(Generic[_PrismaModelT]):
         ```py
         m = await M.prisma().delete(
             where={
-                'id': 2053047983,
+                'id': 493907821,
             },
         )
         ```
@@ -2429,7 +2647,7 @@ class MActions(Generic[_PrismaModelT]):
         ```py
         m = await M.prisma().find_unique(
             where={
-                'id': 685333180,
+                'id': 639686562,
             },
         )
         ```
@@ -2480,7 +2698,7 @@ class MActions(Generic[_PrismaModelT]):
         ```py
         m = await M.prisma().find_unique_or_raise(
             where={
-                'id': 127474245,
+                'id': 654007347,
             },
         )
         ```
@@ -2732,7 +2950,7 @@ class MActions(Generic[_PrismaModelT]):
         ```py
         m = await M.prisma().update(
             where={
-                'id': 948921754,
+                'id': 1905261552,
             },
             data={
                 # data to update the M record to
@@ -2789,21 +3007,21 @@ class MActions(Generic[_PrismaModelT]):
         ```py
         m = await M.prisma().upsert(
             where={
-                'id': 1964990155,
+                'id': 78746985,
             },
             data={
                 'create': {
-                    'id': 1964990155,
-                    'int': 684462146,
-                    'float': 1625503827.52182,
-                    'string': 'bcggadccgf',
+                    'id': 78746985,
+                    'int': 208521688,
+                    'float': 860811569.166093,
+                    'string': 'fcfhgbjed',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
                 'update': {
-                    'int': 684462146,
-                    'float': 1625503827.52182,
-                    'string': 'bcggadccgf',
+                    'int': 208521688,
+                    'float': 860811569.166093,
+                    'string': 'fcfhgbjed',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -2853,7 +3071,7 @@ class MActions(Generic[_PrismaModelT]):
         # update all M records
         total = await M.prisma().update_many(
             data={
-                'string': 'bcciijbibg'
+                'string': 'bdjidcidac'
             },
             where={}
         )
@@ -3216,7 +3434,7 @@ class NActions(Generic[_PrismaModelT]):
         ```py
         users = await N.prisma().query_raw(
             'SELECT * FROM N WHERE id = $1',
-            255202753,
+            856000655,
         )
         ```
         """
@@ -3256,7 +3474,7 @@ class NActions(Generic[_PrismaModelT]):
         ```py
         user = await N.prisma().query_first(
             'SELECT * FROM N WHERE int = $1',
-            1223573862,
+            1452336924,
         )
         ```
         """
@@ -3295,10 +3513,10 @@ class NActions(Generic[_PrismaModelT]):
         n = await N.prisma().create(
             data={
                 # data to create a N record
-                'int': 541269159,
-                'float': 1064846676.50838,
-                'string': 'bacecgfhbe',
-                'json_': Json({'ihcahiead': True}),
+                'int': 1573199653,
+                'float': 2013903098.50096,
+                'string': 'biaagcedjc',
+                'json_': Json({'cahhaghecf': True}),
                 'enum': enums.ABeautifulEnum.A,
                 'boolean': True,
             },
@@ -3323,7 +3541,7 @@ class NActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple N records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -3355,19 +3573,19 @@ class NActions(Generic[_PrismaModelT]):
             data=[
                 {
                     # data to create a N record
-                    'int': 916896761,
-                    'float': 769267518.82031,
-                    'string': 'jchciaee',
-                    'json_': Json({'deeificjd': True}),
+                    'int': 926677639,
+                    'float': 1447624116.173808,
+                    'string': 'deajegcfi',
+                    'json_': Json({'gabahhhjf': True}),
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
                 {
                     # data to create a N record
-                    'int': 1495896251,
-                    'float': 208521688.86081,
-                    'string': 'bggajdcbbi',
-                    'json_': Json({'fcfhgbjed': True}),
+                    'int': 1855826649,
+                    'float': 1611009182.44667,
+                    'string': 'daafgidjg',
+                    'json_': Json({'gdcgcgagj': True}),
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -3389,6 +3607,82 @@ class NActions(Generic[_PrismaModelT]):
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    async def create_many_and_return(
+        self,
+        data: List[types.NCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> List[_PrismaModelT]:
+        """Create multiple N records at once.
+
+        This method is **not supported** on MariaDB or MySQL.
+
+        The `skip_duplicates` argument is **not supported** on SQLite.
+
+        Parameters
+        ----------
+        data
+            List of N record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        List[prisma.models.N]
+            The list of all N records that could be found
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        records = await N.prisma().create_many_and_return(
+            data=[
+                {
+                    # data to create a N record
+                    'int': 470157467,
+                    'float': 1209209912.153674,
+                    'string': 'ececbijji',
+                    'json_': Json({'cbcfgdcdhf': True}),
+                    'enum': enums.ABeautifulEnum.A,
+                    'boolean': True,
+                },
+                {
+                    # data to create a N record
+                    'int': 924723277,
+                    'float': 1621937922.184883,
+                    'string': 'bjcbfcieaa',
+                    'json_': Json({'cbaaechiej': True}),
+                    'enum': enums.ABeautifulEnum.A,
+                    'boolean': True,
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many_and_return',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
 
     async def delete(
         self,
@@ -3423,7 +3717,7 @@ class NActions(Generic[_PrismaModelT]):
         ```py
         n = await N.prisma().delete(
             where={
-                'id': 493907821,
+                'id': 928152175,
             },
         )
         ```
@@ -3475,7 +3769,7 @@ class NActions(Generic[_PrismaModelT]):
         ```py
         n = await N.prisma().find_unique(
             where={
-                'id': 639686562,
+                'id': 273032060,
             },
         )
         ```
@@ -3526,7 +3820,7 @@ class NActions(Generic[_PrismaModelT]):
         ```py
         n = await N.prisma().find_unique_or_raise(
             where={
-                'id': 654007347,
+                'id': 982848517,
             },
         )
         ```
@@ -3778,7 +4072,7 @@ class NActions(Generic[_PrismaModelT]):
         ```py
         n = await N.prisma().update(
             where={
-                'id': 1905261552,
+                'id': 510737498,
             },
             data={
                 # data to update the N record to
@@ -3835,23 +4129,23 @@ class NActions(Generic[_PrismaModelT]):
         ```py
         n = await N.prisma().upsert(
             where={
-                'id': 78746985,
+                'id': 2117488267,
             },
             data={
                 'create': {
-                    'id': 78746985,
-                    'int': 1495896251,
-                    'float': 208521688.86081,
-                    'string': 'bggajdcbbi',
-                    'json_': Json({'fcfhgbjed': True}),
+                    'id': 2117488267,
+                    'int': 924723277,
+                    'float': 1621937922.184883,
+                    'string': 'bjcbfcieaa',
+                    'json_': Json({'cbaaechiej': True}),
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
                 'update': {
-                    'int': 1495896251,
-                    'float': 208521688.86081,
-                    'string': 'bggajdcbbi',
-                    'json_': Json({'fcfhgbjed': True}),
+                    'int': 924723277,
+                    'float': 1621937922.184883,
+                    'string': 'bjcbfcieaa',
+                    'json_': Json({'cbaaechiej': True}),
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -3901,7 +4195,7 @@ class NActions(Generic[_PrismaModelT]):
         # update all N records
         total = await N.prisma().update_many(
             data={
-                'string': 'bdjidcidac'
+                'string': 'beabjeejdg'
             },
             where={}
         )
@@ -4264,7 +4558,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```py
         users = await OneOptional.prisma().query_raw(
             'SELECT * FROM OneOptional WHERE id = $1',
-            856000655,
+            1297607553,
         )
         ```
         """
@@ -4304,7 +4598,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```py
         user = await OneOptional.prisma().query_first(
             'SELECT * FROM OneOptional WHERE int = $1',
-            1452336924,
+            519488550,
         )
         ```
         """
@@ -4343,9 +4637,9 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         one_optional = await OneOptional.prisma().create(
             data={
                 # data to create a OneOptional record
-                'int': 1573199653,
-                'float': 2013903098.50096,
-                'string': 'biaagcedjc',
+                'int': 976832615,
+                'float': 1696425492.16926,
+                'string': 'bacdaibgfa',
                 'enum': enums.ABeautifulEnum.A,
                 'boolean': False,
             },
@@ -4370,7 +4664,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple OneOptional records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -4402,17 +4696,17 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             data=[
                 {
                     # data to create a OneOptional record
-                    'int': 1672112838,
-                    'float': 926677639.144762,
-                    'string': 'bhdiaidiaf',
+                    'int': 527748992,
+                    'float': 2029357497.131859,
+                    'string': 'cbccbbcdfb',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
                 {
                     # data to create a OneOptional record
-                    'int': 601077795,
-                    'float': 290603296.185582,
-                    'string': 'bgbbaajbic',
+                    'int': 1717307509,
+                    'float': 1598124042.81762,
+                    'string': 'badaffhddg',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': False,
                 },
@@ -4434,6 +4728,80 @@ class OneOptionalActions(Generic[_PrismaModelT]):
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    async def create_many_and_return(
+        self,
+        data: List[types.OneOptionalCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> List[_PrismaModelT]:
+        """Create multiple OneOptional records at once.
+
+        This method is **not supported** on MariaDB or MySQL.
+
+        The `skip_duplicates` argument is **not supported** on SQLite.
+
+        Parameters
+        ----------
+        data
+            List of OneOptional record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        List[prisma.models.OneOptional]
+            The list of all OneOptional records that could be found
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        records = await OneOptional.prisma().create_many_and_return(
+            data=[
+                {
+                    # data to create a OneOptional record
+                    'int': 210666198,
+                    'float': 1276057943.74556,
+                    'string': 'dahihgbeb',
+                    'enum': enums.ABeautifulEnum.A,
+                    'boolean': True,
+                },
+                {
+                    # data to create a OneOptional record
+                    'int': 1526854643,
+                    'float': 958077104.151305,
+                    'string': 'caeghehde',
+                    'enum': enums.ABeautifulEnum.A,
+                    'boolean': False,
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many_and_return',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
 
     async def delete(
         self,
@@ -4468,7 +4836,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```py
         one_optional = await OneOptional.prisma().delete(
             where={
-                'id': 300568396,
+                'id': 1183911900,
             },
         )
         ```
@@ -4520,7 +4888,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```py
         one_optional = await OneOptional.prisma().find_unique(
             where={
-                'id': 632626069,
+                'id': 1589704933,
             },
         )
         ```
@@ -4571,7 +4939,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```py
         one_optional = await OneOptional.prisma().find_unique_or_raise(
             where={
-                'id': 1724011690,
+                'id': 1243475898,
             },
         )
         ```
@@ -4823,7 +5191,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```py
         one_optional = await OneOptional.prisma().update(
             where={
-                'id': 470157467,
+                'id': 1369828971,
             },
             data={
                 # data to update the OneOptional record to
@@ -4880,21 +5248,21 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         ```py
         one_optional = await OneOptional.prisma().upsert(
             where={
-                'id': 1209209912,
+                'id': 1678593480,
             },
             data={
                 'create': {
-                    'id': 1209209912,
-                    'int': 601077795,
-                    'float': 290603296.185582,
-                    'string': 'bgbbaajbic',
+                    'id': 1678593480,
+                    'int': 1526854643,
+                    'float': 958077104.151305,
+                    'string': 'caeghehde',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': False,
                 },
                 'update': {
-                    'int': 601077795,
-                    'float': 290603296.185582,
-                    'string': 'bgbbaajbic',
+                    'int': 1526854643,
+                    'float': 958077104.151305,
+                    'string': 'caeghehde',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': False,
                 },
@@ -4944,7 +5312,7 @@ class OneOptionalActions(Generic[_PrismaModelT]):
         # update all OneOptional records
         total = await OneOptional.prisma().update_many(
             data={
-                'string': 'bfdgheeegf'
+                'string': 'eadfcbbcb'
             },
             where={}
         )
@@ -5307,7 +5675,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```py
         users = await ManyRequired.prisma().query_raw(
             'SELECT * FROM ManyRequired WHERE id = $1',
-            424218998,
+            648760710,
         )
         ```
         """
@@ -5347,7 +5715,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```py
         user = await ManyRequired.prisma().query_first(
             'SELECT * FROM ManyRequired WHERE one_optional_id = $1',
-            2125632375,
+            607323719,
         )
         ```
         """
@@ -5386,9 +5754,9 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         manyrequired = await ManyRequired.prisma().create(
             data={
                 # data to create a ManyRequired record
-                'int': 536951780,
-                'float': 924723277.162193,
-                'string': 'bieiidcabj',
+                'int': 1468890740,
+                'float': 629039005.121416,
+                'string': 'ijigbdcbj',
                 'enum': enums.ABeautifulEnum.A,
                 'boolean': True,
             },
@@ -5413,7 +5781,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple ManyRequired records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -5445,17 +5813,17 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             data=[
                 {
                     # data to create a ManyRequired record
-                    'int': 2100427849,
-                    'float': 849140046.92815,
-                    'string': 'chdadcaga',
+                    'int': 954620057,
+                    'float': 1214809950.104782,
+                    'string': 'bdachdeiga',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': False,
                 },
                 {
                     # data to create a ManyRequired record
-                    'int': 510737498,
-                    'float': 2117488267.140194,
-                    'string': 'bcjhgahffd',
+                    'int': 280083306,
+                    'float': 549668955.7679,
+                    'string': 'cajicjjdef',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -5477,6 +5845,80 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    async def create_many_and_return(
+        self,
+        data: List[types.ManyRequiredCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> List[_PrismaModelT]:
+        """Create multiple ManyRequired records at once.
+
+        This method is **not supported** on MariaDB or MySQL.
+
+        The `skip_duplicates` argument is **not supported** on SQLite.
+
+        Parameters
+        ----------
+        data
+            List of ManyRequired record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        List[prisma.models.ManyRequired]
+            The list of all ManyRequired records that could be found
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        records = await ManyRequired.prisma().create_many_and_return(
+            data=[
+                {
+                    # data to create a ManyRequired record
+                    'int': 811863863,
+                    'float': 1388801188.75257,
+                    'string': 'bbihggdcji',
+                    'enum': enums.ABeautifulEnum.A,
+                    'boolean': False,
+                },
+                {
+                    # data to create a ManyRequired record
+                    'int': 1214295824,
+                    'float': 1021417993.35150,
+                    'string': 'bdcbbieibf',
+                    'enum': enums.ABeautifulEnum.A,
+                    'boolean': True,
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many_and_return',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
 
     async def delete(
         self,
@@ -5511,7 +5953,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```py
         manyrequired = await ManyRequired.prisma().delete(
             where={
-                'id': 976832615,
+                'id': 1191235013,
             },
         )
         ```
@@ -5563,7 +6005,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```py
         manyrequired = await ManyRequired.prisma().find_unique(
             where={
-                'id': 1696425492,
+                'id': 627561242,
             },
         )
         ```
@@ -5614,7 +6056,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```py
         manyrequired = await ManyRequired.prisma().find_unique_or_raise(
             where={
-                'id': 169262781,
+                'id': 1872952907,
             },
         )
         ```
@@ -5866,7 +6308,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```py
         manyrequired = await ManyRequired.prisma().update(
             where={
-                'id': 1023081650,
+                'id': 1793282088,
             },
             data={
                 # data to update the ManyRequired record to
@@ -5923,21 +6365,21 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         ```py
         manyrequired = await ManyRequired.prisma().upsert(
             where={
-                'id': 327681027,
+                'id': 1814397249,
             },
             data={
                 'create': {
-                    'id': 327681027,
-                    'int': 510737498,
-                    'float': 2117488267.140194,
-                    'string': 'bcjhgahffd',
+                    'id': 1814397249,
+                    'int': 1214295824,
+                    'float': 1021417993.35150,
+                    'string': 'bdcbbieibf',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
                 'update': {
-                    'int': 510737498,
-                    'float': 2117488267.140194,
-                    'string': 'bcjhgahffd',
+                    'int': 1214295824,
+                    'float': 1021417993.35150,
+                    'string': 'bdcbbieibf',
                     'enum': enums.ABeautifulEnum.A,
                     'boolean': True,
                 },
@@ -5987,7 +6429,7 @@ class ManyRequiredActions(Generic[_PrismaModelT]):
         # update all ManyRequired records
         total = await ManyRequired.prisma().update_many(
             data={
-                'optional_float': 527748992.202935
+                'optional_float': 1923090150.127724
             },
             where={}
         )
@@ -6350,7 +6792,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```py
         users = await Lists.prisma().query_raw(
             'SELECT * FROM Lists WHERE id = $1',
-            'bdbifjhbbi',
+            'bbgaifhdaa',
         )
         ```
         """
@@ -6390,7 +6832,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```py
         user = await Lists.prisma().query_first(
             'SELECT * FROM Lists WHERE strings = $1',
-            ['cbccbbcdfb'],
+            ['dgbcdaegb'],
         )
         ```
         """
@@ -6451,7 +6893,7 @@ class ListsActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple Lists records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -6506,6 +6948,70 @@ class ListsActions(Generic[_PrismaModelT]):
         )
         return int(resp['data']['result']['count'])
 
+    async def create_many_and_return(
+        self,
+        data: List[types.ListsCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> List[_PrismaModelT]:
+        """Create multiple Lists records at once.
+
+        This method is **not supported** on MariaDB or MySQL.
+
+        The `skip_duplicates` argument is **not supported** on SQLite.
+
+        Parameters
+        ----------
+        data
+            List of Lists record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        List[prisma.models.Lists]
+            The list of all Lists records that could be found
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        records = await Lists.prisma().create_many_and_return(
+            data=[
+                {
+                    # data to create a Lists record
+                },
+                {
+                    # data to create a Lists record
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many_and_return',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
+
     async def delete(
         self,
         where: types.ListsWhereUniqueInput,
@@ -6539,7 +7045,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```py
         lists = await Lists.prisma().delete(
             where={
-                'id': 'bacejedaca',
+                'id': 'beagfbbjig',
             },
         )
         ```
@@ -6591,7 +7097,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```py
         lists = await Lists.prisma().find_unique(
             where={
-                'id': 'bhbhdahfaj',
+                'id': 'beicihhijb',
             },
         )
         ```
@@ -6642,7 +7148,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```py
         lists = await Lists.prisma().find_unique_or_raise(
             where={
-                'id': 'bfjibceaec',
+                'id': 'fgggcdcjg',
             },
         )
         ```
@@ -6894,7 +7400,7 @@ class ListsActions(Generic[_PrismaModelT]):
         ```py
         lists = await Lists.prisma().update(
             where={
-                'id': 'ibhgcdbgd',
+                'id': 'ccjbbjigf',
             },
             data={
                 # data to update the Lists record to
@@ -6951,11 +7457,11 @@ class ListsActions(Generic[_PrismaModelT]):
         ```py
         lists = await Lists.prisma().upsert(
             where={
-                'id': 'badaffhddg',
+                'id': 'bhfaabbaha',
             },
             data={
                 'create': {
-                    'id': 'badaffhddg',
+                    'id': 'bhfaabbaha',
                 },
                 'update': {
                 },
@@ -7005,7 +7511,7 @@ class ListsActions(Generic[_PrismaModelT]):
         # update all Lists records
         total = await Lists.prisma().update_many(
             data={
-                'ints': [1131525873]
+                'ints': [410943775]
             },
             where={}
         )
@@ -7368,7 +7874,7 @@ class AActions(Generic[_PrismaModelT]):
         ```py
         users = await A.prisma().query_raw(
             'SELECT * FROM A WHERE email = $1',
-            'cbagggbji',
+            'jajacedge',
         )
         ```
         """
@@ -7408,7 +7914,7 @@ class AActions(Generic[_PrismaModelT]):
         ```py
         user = await A.prisma().query_first(
             'SELECT * FROM A WHERE name = $1',
-            'bchgafhjed',
+            'hffgbabgf',
         )
         ```
         """
@@ -7447,10 +7953,10 @@ class AActions(Generic[_PrismaModelT]):
         a = await A.prisma().create(
             data={
                 # data to create a A record
-                'email': 'heffgjdei',
-                'int': 307876141,
-                'sInt': 1674049122,
-                'bInt': 18322255716,
+                'email': 'biacbiieja',
+                'int': 294916155,
+                'sInt': 564073304,
+                'bInt': 4567783500,
             },
         )
         ```
@@ -7473,7 +7979,7 @@ class AActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple A records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -7505,17 +8011,17 @@ class AActions(Generic[_PrismaModelT]):
             data=[
                 {
                     # data to create a A record
-                    'email': 'jfiahhbae',
-                    'int': 1513050921,
-                    'sInt': 204674734,
-                    'bInt': 24811819956,
+                    'email': 'badagbgeha',
+                    'int': 816411927,
+                    'sInt': 1084099844,
+                    'bInt': 12956427036,
                 },
                 {
                     # data to create a A record
-                    'email': 'bbidjbbjaa',
-                    'int': 1589704933,
-                    'sInt': 1243475898,
-                    'bInt': 16437947652,
+                    'email': 'hffhfabhi',
+                    'int': 1128680371,
+                    'sInt': 259061104,
+                    'bInt': 13388860140,
                 },
             ],
             skip_duplicates=True,
@@ -7535,6 +8041,78 @@ class AActions(Generic[_PrismaModelT]):
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    async def create_many_and_return(
+        self,
+        data: List[types.ACreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> List[_PrismaModelT]:
+        """Create multiple A records at once.
+
+        This method is **not supported** on MariaDB or MySQL.
+
+        The `skip_duplicates` argument is **not supported** on SQLite.
+
+        Parameters
+        ----------
+        data
+            List of A record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        List[prisma.models.A]
+            The list of all A records that could be found
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        records = await A.prisma().create_many_and_return(
+            data=[
+                {
+                    # data to create a A record
+                    'email': 'bdadhibhec',
+                    'int': 1573908495,
+                    'sInt': 1195899036,
+                    'bInt': 8868257724,
+                },
+                {
+                    # data to create a A record
+                    'email': 'bhcccbeaba',
+                    'int': 1269136939,
+                    'sInt': 573178504,
+                    'bInt': 17283182988,
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many_and_return',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
 
     async def delete(
         self,
@@ -7569,7 +8147,7 @@ class AActions(Generic[_PrismaModelT]):
         ```py
         a = await A.prisma().delete(
             where={
-                'email': 'bghifjdeia',
+                'email': 'bbifhdiicc',
             },
         )
         ```
@@ -7621,7 +8199,7 @@ class AActions(Generic[_PrismaModelT]):
         ```py
         a = await A.prisma().find_unique(
             where={
-                'email': 'eadfcbbcb',
+                'email': 'bgjeccejad',
             },
         )
         ```
@@ -7672,7 +8250,7 @@ class AActions(Generic[_PrismaModelT]):
         ```py
         a = await A.prisma().find_unique_or_raise(
             where={
-                'email': 'geihgahba',
+                'email': 'bjagdgabbg',
             },
         )
         ```
@@ -7924,7 +8502,7 @@ class AActions(Generic[_PrismaModelT]):
         ```py
         a = await A.prisma().update(
             where={
-                'email': 'gahdcdhbj',
+                'email': 'bjbbcffdij',
             },
             data={
                 # data to update the A record to
@@ -7981,19 +8559,19 @@ class AActions(Generic[_PrismaModelT]):
         ```py
         a = await A.prisma().upsert(
             where={
-                'email': 'begiijahea',
+                'email': 'begcgchdi',
             },
             data={
                 'create': {
-                    'email': 'begiijahea',
-                    'int': 1589704933,
-                    'sInt': 1243475898,
-                    'bInt': 16437947652,
+                    'email': 'begcgchdi',
+                    'int': 1269136939,
+                    'sInt': 573178504,
+                    'bInt': 17283182988,
                 },
                 'update': {
-                    'int': 1589704933,
-                    'sInt': 1243475898,
-                    'bInt': 16437947652,
+                    'int': 1269136939,
+                    'sInt': 573178504,
+                    'bInt': 17283182988,
                 },
             },
         )
@@ -8041,7 +8619,7 @@ class AActions(Generic[_PrismaModelT]):
         # update all A records
         total = await A.prisma().update_many(
             data={
-                'inc_sInt': 629039005
+                'inc_sInt': 1719240611
             },
             where={}
         )
@@ -8404,7 +8982,7 @@ class BActions(Generic[_PrismaModelT]):
         ```py
         users = await B.prisma().query_raw(
             'SELECT * FROM B WHERE id = $1',
-            'bcbebgiaic',
+            'bjeifffjdg',
         )
         ```
         """
@@ -8444,7 +9022,7 @@ class BActions(Generic[_PrismaModelT]):
         ```py
         user = await B.prisma().query_first(
             'SELECT * FROM B WHERE float = $1',
-            898613219.65837,
+            1383253593.35466,
         )
         ```
         """
@@ -8483,10 +9061,10 @@ class BActions(Generic[_PrismaModelT]):
         b = await B.prisma().create(
             data={
                 # data to create a B record
-                'float': 954620057.121480,
-                'd_float': 1047820095.130273,
-                'decFloat': Decimal('893052245.28008'),
-                'numFloat': Decimal('549668955.7679'),
+                'float': 647166719.35708,
+                'd_float': 612396821.180813,
+                'decFloat': Decimal('1151748123.7806'),
+                'numFloat': Decimal('444983185.4561'),
             },
         )
         ```
@@ -8509,7 +9087,7 @@ class BActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple B records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -8541,17 +9119,17 @@ class BActions(Generic[_PrismaModelT]):
             data=[
                 {
                     # data to create a B record
-                    'float': 2098299345.24590,
-                    'd_float': 811863863.138880,
-                    'decFloat': Decimal('752577037.118766'),
-                    'numFloat': Decimal('769681363.121429'),
+                    'float': 769084151.133459,
+                    'd_float': 1116761037.117260,
+                    'decFloat': Decimal('330014611.176815'),
+                    'numFloat': Decimal('71628745.5576'),
                 },
                 {
                     # data to create a B record
-                    'float': 1021417993.35150,
-                    'd_float': 1321184815.36973,
-                    'decFloat': Decimal('1191235013.62756'),
-                    'numFloat': Decimal('1872952907.179328'),
+                    'float': 812032495.132356,
+                    'd_float': 43796357.134553,
+                    'decFloat': Decimal('1965387275.80487'),
+                    'numFloat': Decimal('1566496513.85000'),
                 },
             ],
             skip_duplicates=True,
@@ -8571,6 +9149,78 @@ class BActions(Generic[_PrismaModelT]):
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    async def create_many_and_return(
+        self,
+        data: List[types.BCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> List[_PrismaModelT]:
+        """Create multiple B records at once.
+
+        This method is **not supported** on MariaDB or MySQL.
+
+        The `skip_duplicates` argument is **not supported** on SQLite.
+
+        Parameters
+        ----------
+        data
+            List of B record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        List[prisma.models.B]
+            The list of all B records that could be found
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        records = await B.prisma().create_many_and_return(
+            data=[
+                {
+                    # data to create a B record
+                    'float': 2109399015.128266,
+                    'd_float': 241230397.47586,
+                    'decFloat': Decimal('1716228995.186973'),
+                    'numFloat': Decimal('1585341753.2927'),
+                },
+                {
+                    # data to create a B record
+                    'float': 1588192479.89840,
+                    'd_float': 777460725.43789,
+                    'decFloat': Decimal('393342971.16382'),
+                    'numFloat': Decimal('248152689.34171'),
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many_and_return',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
 
     async def delete(
         self,
@@ -8605,7 +9255,7 @@ class BActions(Generic[_PrismaModelT]):
         ```py
         b = await B.prisma().delete(
             where={
-                'id': 'bibedjhcej',
+                'id': 'bgjchggecd',
             },
         )
         ```
@@ -8657,7 +9307,7 @@ class BActions(Generic[_PrismaModelT]):
         ```py
         b = await B.prisma().find_unique(
             where={
-                'id': 'bjcdajabfa',
+                'id': 'igggcfjg',
             },
         )
         ```
@@ -8708,7 +9358,7 @@ class BActions(Generic[_PrismaModelT]):
         ```py
         b = await B.prisma().find_unique_or_raise(
             where={
-                'id': 'bchhceeeff',
+                'id': 'bgjhijffjh',
             },
         )
         ```
@@ -8960,7 +9610,7 @@ class BActions(Generic[_PrismaModelT]):
         ```py
         b = await B.prisma().update(
             where={
-                'id': 'bbgaifhdaa',
+                'id': 'bcigdhache',
             },
             data={
                 # data to update the B record to
@@ -9017,21 +9667,21 @@ class BActions(Generic[_PrismaModelT]):
         ```py
         b = await B.prisma().upsert(
             where={
-                'id': 'dgbcdaegb',
+                'id': 'igefhgdhb',
             },
             data={
                 'create': {
-                    'id': 'dgbcdaegb',
-                    'float': 1021417993.35150,
-                    'd_float': 1321184815.36973,
-                    'decFloat': Decimal('1191235013.62756'),
-                    'numFloat': Decimal('1872952907.179328'),
+                    'id': 'igefhgdhb',
+                    'float': 1588192479.89840,
+                    'd_float': 777460725.43789,
+                    'decFloat': Decimal('393342971.16382'),
+                    'numFloat': Decimal('248152689.34171'),
                 },
                 'update': {
-                    'float': 1021417993.35150,
-                    'd_float': 1321184815.36973,
-                    'decFloat': Decimal('1191235013.62756'),
-                    'numFloat': Decimal('1872952907.179328'),
+                    'float': 1588192479.89840,
+                    'd_float': 777460725.43789,
+                    'decFloat': Decimal('393342971.16382'),
+                    'numFloat': Decimal('248152689.34171'),
                 },
             },
         )
@@ -9079,7 +9729,7 @@ class BActions(Generic[_PrismaModelT]):
         # update all B records
         total = await B.prisma().update_many(
             data={
-                'id': 'beagfbbjig'
+                'id': 'ejbiifbae'
             },
             where={}
         )
@@ -9442,7 +10092,7 @@ class CActions(Generic[_PrismaModelT]):
         ```py
         users = await C.prisma().query_raw(
             'SELECT * FROM C WHERE char = $1',
-            'beicihhijb',
+            'djcfgedjd',
         )
         ```
         """
@@ -9482,7 +10132,7 @@ class CActions(Generic[_PrismaModelT]):
         ```py
         user = await C.prisma().query_first(
             'SELECT * FROM C WHERE v_char = $1',
-            'fgggcdcjg',
+            'bdbjcdegag',
         )
         ```
         """
@@ -9521,12 +10171,12 @@ class CActions(Generic[_PrismaModelT]):
         c = await C.prisma().create(
             data={
                 # data to create a C record
-                'char': 'ccjbbjigf',
-                'v_char': 'bhfaabbaha',
-                'text': 'ebajedhhf',
-                'bit': 'jajacedge',
-                'v_bit': 'hffgbabgf',
-                'uuid': 'biacbiieja',
+                'char': 'hbchfebch',
+                'v_char': 'bcjjffegfc',
+                'text': 'cahaeaicjd',
+                'bit': 'ibbjaacbi',
+                'v_bit': 'djgacbcch',
+                'uuid': 'geeeegace',
             },
         )
         ```
@@ -9549,7 +10199,7 @@ class CActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple C records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -9581,21 +10231,21 @@ class CActions(Generic[_PrismaModelT]):
             data=[
                 {
                     # data to create a C record
-                    'char': 'cjejbgbff',
-                    'v_char': 'fgeahddae',
-                    'text': 'diageigcf',
-                    'bit': 'badagbgeha',
-                    'v_bit': 'ibgebbjch',
-                    'uuid': 'baieajjiee',
+                    'char': 'bbgdigchd',
+                    'v_char': 'dajcifgdi',
+                    'text': 'ccedhdbj',
+                    'bit': 'bjaabjjjce',
+                    'v_bit': 'cafhdcdcjd',
+                    'uuid': 'bdeebbhbdi',
                 },
                 {
                     # data to create a C record
-                    'char': 'bahjhaccfd',
-                    'v_char': 'hffhfabhi',
-                    'text': 'bbcigiadhb',
-                    'bit': 'cfjagbbae',
-                    'v_bit': 'bbbfhdidef',
-                    'uuid': 'bdadhibhec',
+                    'char': 'cafcbdchah',
+                    'v_char': 'bdffbehbae',
+                    'text': 'ieahjgeb',
+                    'bit': 'hfeeddceg',
+                    'v_bit': 'dbecgbbid',
+                    'uuid': 'cchghigae',
                 },
             ],
             skip_duplicates=True,
@@ -9615,6 +10265,82 @@ class CActions(Generic[_PrismaModelT]):
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    async def create_many_and_return(
+        self,
+        data: List[types.CCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> List[_PrismaModelT]:
+        """Create multiple C records at once.
+
+        This method is **not supported** on MariaDB or MySQL.
+
+        The `skip_duplicates` argument is **not supported** on SQLite.
+
+        Parameters
+        ----------
+        data
+            List of C record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        List[prisma.models.C]
+            The list of all C records that could be found
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        records = await C.prisma().create_many_and_return(
+            data=[
+                {
+                    # data to create a C record
+                    'char': 'ecdjjjhab',
+                    'v_char': 'biachfede',
+                    'text': 'fhgaibff',
+                    'bit': 'cadajbcbca',
+                    'v_bit': 'bjheigfcdd',
+                    'uuid': 'bjejigcdcg',
+                },
+                {
+                    # data to create a C record
+                    'char': 'bifiiibcah',
+                    'v_char': 'dbjibjdaa',
+                    'text': 'dgijbdiaf',
+                    'bit': 'begfaigba',
+                    'v_bit': 'bdjiafcgjb',
+                    'uuid': 'bficecgcfg',
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many_and_return',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
 
     async def delete(
         self,
@@ -10120,7 +10846,7 @@ class CActions(Generic[_PrismaModelT]):
         # update all C records
         total = await C.prisma().update_many(
             data={
-                'uuid': 'bfhdjaiejf'
+                'uuid': 'cbjjeedcj'
             },
             where={}
         )
@@ -10483,7 +11209,7 @@ class DActions(Generic[_PrismaModelT]):
         ```py
         users = await D.prisma().query_raw(
             'SELECT * FROM D WHERE id = $1',
-            'bbjfijjadg',
+            'dedgbbhja',
         )
         ```
         """
@@ -10563,10 +11289,10 @@ class DActions(Generic[_PrismaModelT]):
             data={
                 # data to create a D record
                 'bool': True,
-                'xml': 'bcgjbdgjdj',
-                'json_': Json({'fhdbhifae': True}),
-                'jsonb': Json({'beeacgfcej': True}),
-                'binary': Base64.encode(b'bbifhdiicc'),
+                'xml': 'fcjcagef',
+                'json_': Json({'bgdhaeacic': True}),
+                'jsonb': Json({'caffafcheh': True}),
+                'binary': Base64.encode(b'fjjbegge'),
             },
         )
         ```
@@ -10589,7 +11315,7 @@ class DActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple D records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -10622,18 +11348,18 @@ class DActions(Generic[_PrismaModelT]):
                 {
                     # data to create a D record
                     'bool': False,
-                    'xml': 'bjagdgabbg',
-                    'json_': Json({'bjbbcffdij': True}),
-                    'jsonb': Json({'begcgchdi': True}),
-                    'binary': Base64.encode(b'bhbjceagbb'),
+                    'xml': 'cdcaejhgg',
+                    'json_': Json({'jbijgfbfj': True}),
+                    'jsonb': Json({'ggfbeddia': True}),
+                    'binary': Base64.encode(b'djjejdaj'),
                 },
                 {
                     # data to create a D record
                     'bool': True,
-                    'xml': 'bdidcfdfjd',
-                    'json_': Json({'dfeggejja': True}),
-                    'jsonb': Json({'gehbgghbj': True}),
-                    'binary': Base64.encode(b'dfhaijeie'),
+                    'xml': 'bgchfbjibb',
+                    'json_': Json({'bajecchdjc': True}),
+                    'jsonb': Json({'dfgacajif': True}),
+                    'binary': Base64.encode(b'bgdiddfadi'),
                 },
             ],
             skip_duplicates=True,
@@ -10653,6 +11379,80 @@ class DActions(Generic[_PrismaModelT]):
             root_selection=['count'],
         )
         return int(resp['data']['result']['count'])
+
+    async def create_many_and_return(
+        self,
+        data: List[types.DCreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> List[_PrismaModelT]:
+        """Create multiple D records at once.
+
+        This method is **not supported** on MariaDB or MySQL.
+
+        The `skip_duplicates` argument is **not supported** on SQLite.
+
+        Parameters
+        ----------
+        data
+            List of D record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        List[prisma.models.D]
+            The list of all D records that could be found
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        records = await D.prisma().create_many_and_return(
+            data=[
+                {
+                    # data to create a D record
+                    'bool': False,
+                    'xml': 'bahchhihdc',
+                    'json_': Json({'bihjdcibib': True}),
+                    'jsonb': Json({'bfhhjbbdha': True}),
+                    'binary': Base64.encode(b'faehcjfdb'),
+                },
+                {
+                    # data to create a D record
+                    'bool': True,
+                    'xml': 'bdaacgjbaf',
+                    'json_': Json({'biibaighec': True}),
+                    'jsonb': Json({'baicdfeidj': True}),
+                    'binary': Base64.encode(b'befgiciadg'),
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many_and_return',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
 
     async def delete(
         self,
@@ -10687,7 +11487,7 @@ class DActions(Generic[_PrismaModelT]):
         ```py
         d = await D.prisma().delete(
             where={
-                'id': 'gbcdjgicb',
+                'id': 'cbcehahedh',
             },
         )
         ```
@@ -10739,7 +11539,7 @@ class DActions(Generic[_PrismaModelT]):
         ```py
         d = await D.prisma().find_unique(
             where={
-                'id': 'biaibdagac',
+                'id': 'bcjihiaide',
             },
         )
         ```
@@ -10790,7 +11590,7 @@ class DActions(Generic[_PrismaModelT]):
         ```py
         d = await D.prisma().find_unique_or_raise(
             where={
-                'id': 'bbfbheibcd',
+                'id': 'bagfijcgfj',
             },
         )
         ```
@@ -11042,7 +11842,7 @@ class DActions(Generic[_PrismaModelT]):
         ```py
         d = await D.prisma().update(
             where={
-                'id': 'hiagajie',
+                'id': 'bcggehiidc',
             },
             data={
                 # data to update the D record to
@@ -11099,23 +11899,23 @@ class DActions(Generic[_PrismaModelT]):
         ```py
         d = await D.prisma().upsert(
             where={
-                'id': 'eeejidbif',
+                'id': 'bjcdacgacf',
             },
             data={
                 'create': {
-                    'id': 'eeejidbif',
+                    'id': 'bjcdacgacf',
                     'bool': True,
-                    'xml': 'bdidcfdfjd',
-                    'json_': Json({'dfeggejja': True}),
-                    'jsonb': Json({'gehbgghbj': True}),
-                    'binary': Base64.encode(b'dfhaijeie'),
+                    'xml': 'bdaacgjbaf',
+                    'json_': Json({'biibaighec': True}),
+                    'jsonb': Json({'baicdfeidj': True}),
+                    'binary': Base64.encode(b'befgiciadg'),
                 },
                 'update': {
                     'bool': True,
-                    'xml': 'bdidcfdfjd',
-                    'json_': Json({'dfeggejja': True}),
-                    'jsonb': Json({'gehbgghbj': True}),
-                    'binary': Base64.encode(b'dfhaijeie'),
+                    'xml': 'bdaacgjbaf',
+                    'json_': Json({'biibaighec': True}),
+                    'jsonb': Json({'baicdfeidj': True}),
+                    'binary': Base64.encode(b'befgiciadg'),
                 },
             },
         )
@@ -11163,7 +11963,7 @@ class DActions(Generic[_PrismaModelT]):
         # update all D records
         total = await D.prisma().update_many(
             data={
-                'binary': Base64.encode(b'efgbahec')
+                'binary': Base64.encode(b'jfieeahi')
             },
             where={}
         )
@@ -11526,7 +12326,7 @@ class EActions(Generic[_PrismaModelT]):
         ```py
         users = await E.prisma().query_raw(
             'SELECT * FROM E WHERE id = $1',
-            'hgjaiebfb',
+            'bijfjbddfj',
         )
         ```
         """
@@ -11630,7 +12430,7 @@ class EActions(Generic[_PrismaModelT]):
     ) -> int:
         """Create multiple E records at once.
 
-        This function is *not* available when using SQLite.
+        The `skip_duplicates` argument is not supported when using SQLite, MongoDB or SQLServer
 
         Parameters
         ----------
@@ -11691,6 +12491,76 @@ class EActions(Generic[_PrismaModelT]):
         )
         return int(resp['data']['result']['count'])
 
+    async def create_many_and_return(
+        self,
+        data: List[types.ECreateWithoutRelationsInput],
+        *,
+        skip_duplicates: Optional[bool] = None,
+    ) -> List[_PrismaModelT]:
+        """Create multiple E records at once.
+
+        This method is **not supported** on MariaDB or MySQL.
+
+        The `skip_duplicates` argument is **not supported** on SQLite.
+
+        Parameters
+        ----------
+        data
+            List of E record data
+        skip_duplicates
+            Boolean flag for ignoring unique constraint errors
+
+        Returns
+        -------
+        List[prisma.models.E]
+            The list of all E records that could be found
+
+        Raises
+        ------
+        prisma.errors.UnsupportedDatabaseError
+            Attempting to query when using SQLite
+        prisma.errors.UniqueViolationError
+            A unique constraint check has failed, these can be ignored with the `skip_duplicates` argument
+        prisma.errors.MissingRequiredValueError
+            Value is required but was not found
+        prisma.errors.PrismaError
+            Catch all for every exception raised by Prisma Client Python
+
+        Example
+        -------
+        ```py
+        records = await E.prisma().create_many_and_return(
+            data=[
+                {
+                    # data to create a E record
+                    'date': datetime.datetime.utcnow(),
+                    'time': datetime.datetime.utcnow(),
+                    'ts': datetime.datetime.utcnow(),
+                },
+                {
+                    # data to create a E record
+                    'date': datetime.datetime.utcnow(),
+                    'time': datetime.datetime.utcnow(),
+                    'ts': datetime.datetime.utcnow(),
+                },
+            ],
+            skip_duplicates=True,
+        )
+        ```
+        """
+        if skip_duplicates and self._client._active_provider in CREATE_MANY_SKIP_DUPLICATES_UNSUPPORTED:
+            raise errors.UnsupportedDatabaseError(self._client._active_provider, 'create_many_skip_duplicates')
+
+        resp = await self._client._execute(
+            method='create_many_and_return',
+            model=self._model,
+            arguments={
+                'data': data,
+                'skipDuplicates': skip_duplicates,
+            },
+        )
+        return [model_parse(self._model, r) for r in resp['data']['result']]
+
     async def delete(
         self,
         where: types.EWhereUniqueInput,
@@ -11724,7 +12594,7 @@ class EActions(Generic[_PrismaModelT]):
         ```py
         e = await E.prisma().delete(
             where={
-                'id': 'bddefjjabc',
+                'id': 'cdcdjdcee',
             },
         )
         ```
@@ -11776,7 +12646,7 @@ class EActions(Generic[_PrismaModelT]):
         ```py
         e = await E.prisma().find_unique(
             where={
-                'id': 'bbbghgbadh',
+                'id': 'bbbgjdbgcb',
             },
         )
         ```
@@ -11827,7 +12697,7 @@ class EActions(Generic[_PrismaModelT]):
         ```py
         e = await E.prisma().find_unique_or_raise(
             where={
-                'id': 'bbhcgagaic',
+                'id': 'bcedacgecg',
             },
         )
         ```
@@ -12079,7 +12949,7 @@ class EActions(Generic[_PrismaModelT]):
         ```py
         e = await E.prisma().update(
             where={
-                'id': 'ddaabegbb',
+                'id': 'cbdffjeh',
             },
             data={
                 # data to update the E record to
@@ -12136,11 +13006,11 @@ class EActions(Generic[_PrismaModelT]):
         ```py
         e = await E.prisma().upsert(
             where={
-                'id': 'bhgibfgbbc',
+                'id': 'idbcdhbci',
             },
             data={
                 'create': {
-                    'id': 'bhgibfgbbc',
+                    'id': 'idbcdhbci',
                     'date': datetime.datetime.utcnow(),
                     'time': datetime.datetime.utcnow(),
                     'ts': datetime.datetime.utcnow(),

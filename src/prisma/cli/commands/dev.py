@@ -29,13 +29,12 @@ def playground(schema: Optional[str], skip_generate: bool) -> None:
     else:
         generate_client(schema=schema, reload=True)
 
-    # TODO: this assumes we are generating to the same location that we are being invoked from
     from ... import Prisma
-    from ...engine import QueryEngine
+    from ...engine import QueryEngine, BaseQueryEngine
 
     client = Prisma()
     engine_class = client._engine_class
-    if engine_class.__name__ == 'QueryEngine':
+    if issubclass(engine_class, BaseQueryEngine):
         with temp_env_update({'__PRISMA_PY_PLAYGROUND': '1'}):
             maybe_async_run(client.connect)
 
